@@ -1,0 +1,82 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Python code style
+[*.py]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length = 100
+
+# Documentation requirements
+[docstrings]
+style = google  # Use Google-style docstrings
+require_class_docstrings = true
+require_function_docstrings = true
+require_return_docstrings = true
+require_parameter_docstrings = true
+
+# Import organization
+[imports]
+stdlib_first = true
+group_by_package = true
+local_package_imports_first = false
+alphabetical_within_groups = true
+max_line_length = 100
+
+# Project-specific patterns
+[fin_statement_model]
+# Node naming convention
+node_class_suffix = Node
+calculation_class_suffix = CalculationNode
+# Standard method names
+calculation_method = calculate
+standard_init_params = name, inputs
+# Required base classes
+node_base_class = Node
+calculation_base_class = CalculationNode
+
+# Financial metric conventions
+[metrics]
+metric_definitions_file = metrics.py
+standard_metric_format = lowercase_with_underscores
+required_metric_fields = inputs, formula, description
+
+# Testing standards
+[tests]
+test_file_pattern = test_*.py
+require_docstrings = true
+min_coverage = 80
+standard_test_import = pytest
+
+# Documentation files
+[*.md]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
+# Type checking
+[mypy]
+python_version = 3.9
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+strict_optional = true
+
+# Tool configurations
+[tools]
+formatter = black
+linter = flake8
+type_checker = mypy
+
+# Forecasting conventions
+[forecasts]
+forecast_class_suffix = ForecastNode
+required_forecast_methods = forecast_value 

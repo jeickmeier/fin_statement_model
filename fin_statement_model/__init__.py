@@ -6,17 +6,19 @@ __all__ = ['LLMClient', 'LLMConfig', 'Graph', 'Node', 'FinancialStatementItemNod
            'CalculationNode', 'AdditionCalculationNode', 'SubtractionCalculationNode',
            'MultiplicationCalculationNode', 'DivisionCalculationNode',
            'MetricCalculationNode', 'FinancialStatementGraph', 'ForecastNode',
-           'FixedGrowthForecastNode', 'CurveGrowthForecastNode', 'StatisticalGrowForecastNode',
-           'CustomGrowForecastNode', 'YoYGrowthNode', 'MultiPeriodStatNode', 'METRIC_DEFINITIONS']
+           'FixedGrowthForecastNode', 'CurveGrowthForecastNode', 'StatisticalGrowthForecastNode',
+           'CustomGrowthForecastNode', 'YoYGrowthNode', 'MultiPeriodStatNode', 'METRIC_DEFINITIONS',
+           'create_financial_statement']
 
 from .llm.llm_client import LLMClient, LLMConfig
-from .graph import Graph
-from .nodes import (Node, FinancialStatementItemNode, CalculationNode,
+from .core.graph import Graph
+from .core.nodes import (Node, FinancialStatementItemNode, CalculationNode,
                     AdditionCalculationNode, SubtractionCalculationNode,
                     MultiplicationCalculationNode, DivisionCalculationNode,
                     MetricCalculationNode)
-from .financial_statement import FinancialStatementGraph
+from .core.financial_statement import FinancialStatementGraph
 from .forecasts import (ForecastNode, FixedGrowthForecastNode, CurveGrowthForecastNode,
-                        StatisticalGrowForecastNode, CustomGrowForecastNode)
-from .stats import YoYGrowthNode, MultiPeriodStatNode
-from .metrics import METRIC_DEFINITIONS
+                        StatisticalGrowthForecastNode, CustomGrowthForecastNode)
+from .core.stats import YoYGrowthNode, MultiPeriodStatNode
+from .core.metrics import METRIC_DEFINITIONS
+from .utils.create_financial_statement import create_financial_statement

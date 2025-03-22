@@ -27,102 +27,77 @@ Example usage:
 The script will output the calculated net profit margin and DuPont ROE for FY2022.
 """
 
-from fin_statement_model.financial_statement import FinancialStatementGraph
+from fin_statement_model.core.financial_statement import FinancialStatementGraph
+import matplotlib.pyplot as plt
 
-if __name__ == "__main__":
-    """
-    Generate historical financial data for the example company.
+# Define periods
+historical_periods = ["FY2020", "FY2021", "FY2022"]
+forecast_periods = ["FY2023", "FY2024", "FY2025"]
+all_periods = historical_periods + forecast_periods
 
-    Creates dictionaries mapping fiscal years to financial values:
-    - Revenue grows 10% year over year from $1000 base
-    - Cost of goods sold (COGS) is 40% of revenue
-    - Operating expenses (OPEX) are 20% of revenue  
-    - Interest expense is fixed at $50 per year
-    - Tax is 10% of revenue
-    - Net income is calculated as: Revenue - COGS - OPEX - Interest - Tax
+# Create a graph with all periods
+fsg = FinancialStatementGraph(periods=all_periods)
 
-    The data covers fiscal years 2020-2022 (FY2020-FY2022).
-    """
-    periods = ["FY2020", "FY2021", "FY2022"]
-    revenue_data = {"FY2020": 1000.0, "FY2021": 1100.0, "FY2022": 1210.0}
-    cogs_data = {p: revenue_data[p] * 0.4 for p in periods}
-    opex_data = {p: revenue_data[p] * 0.2 for p in periods}
-    interest_data = {p: 50.0 for p in periods}
-    tax_data = {p: revenue_data[p] * 0.1 for p in periods}
-    net_income_data = {p: (revenue_data[p] - cogs_data[p] - opex_data[p] - interest_data[p] - tax_data[p])
-                       for p in periods}
+# Add more complete financial statement data
+fsg.add_financial_statement_item("revenue_americas", {"FY2020": 1000.0, "FY2021": 1100.0, "FY2022": 1210.0})
+fsg.add_financial_statement_item("revenue_europe", {"FY2020": 800.0, "FY2021": 880.0, "FY2022": 968.0})
+fsg.add_financial_statement_item("revenue_apac", {"FY2020": 500.0, "FY2021": 575.0, "FY2022": 661.3})
+fsg.add_financial_statement_item("expenses", {"FY2020": 1800.0, "FY2021": 1950.0, "FY2022": 2145.0})
 
-    """
-    Create a FinancialStatementGraph instance and add raw financial statement items.
-    """
-    fsg = FinancialStatementGraph(periods=periods)
- 
-    # Add financial statement items for each regional revenue
-    fsg.add_financial_statement_item("revenue_americas", revenue_data)
-    fsg.add_financial_statement_item("revenue_europe", revenue_data)
-    fsg.add_financial_statement_item("revenue_apac", revenue_data)
+# Add your calculations
+fsg.add_calculation("total_revenue", ["revenue_americas", "revenue_europe", "revenue_apac"], "addition")
+fsg.add_calculation("operating_profit", ["total_revenue", "expenses"], "subtraction")
 
-    # Now define a calculation node for total revenue as the sum of these three
-    fsg.add_calculation("revenue", ["revenue_americas", "revenue_europe", "revenue_apac"], "addition")
-
-    fsg.add_financial_statement_item("cost_of_goods_sold", cogs_data)
-    fsg.add_financial_statement_item("operating_expenses", opex_data)
-    fsg.add_financial_statement_item("interest_expense", interest_data)
-    fsg.add_financial_statement_item("taxes", tax_data)
-    fsg.add_financial_statement_item("net_income", net_income_data)
-
-    # Add balance sheet items needed for DuPont ROE calculation
-    # Total assets grows 10% year over year from $5000 base
-    total_assets_data = {"FY2020": 5000.0, "FY2021": 5500.0, "FY2022": 6050.0}
-    fsg.add_financial_statement_item("total_assets", total_assets_data)
-    
-    # Add total_assets_previous (shifted by one period)
-    total_assets_previous_data = {
-        "FY2020": 4545.45,  # FY2019 value (5000/1.1)
-        "FY2021": 5000.0,   # FY2020 value
-        "FY2022": 5500.0    # FY2021 value
+fsg.create_forecast(
+    forecast_periods,
+    {
+        "revenue_americas": [0.05, 0.06, 0.07],  # Curve growth
+        "revenue_europe": {
+            "distribution": "normal",
+            "params": {"mean": 0.05, "std": 0.02}
+        },  #Statistical
+        "revenue_apac": None,  # Historical Average
+        "expenses": 0.04  # Simple growth
+    },
+    method={
+        "revenue_americas": "curve",
+        "revenue_europe": "statistical",
+        "revenue_apac": "historical_growth",
+        "expenses": "simple"
     }
-    fsg.add_financial_statement_item("total_assets_previous", total_assets_previous_data)
-    
-    # Total equity grows 5% year over year from $3000 base
-    total_equity_data = {"FY2020": 3000.0, "FY2021": 3150.0, "FY2022": 3307.5}
-    fsg.add_financial_statement_item("total_equity", total_equity_data)
-    
-    # Add total_equity_previous (shifted by one period)
-    total_equity_previous_data = {
-        "FY2020": 2857.14,  # FY2019 value (3000/1.05)
-        "FY2021": 3000.0,   # FY2020 value
-        "FY2022": 3150.0    # FY2021 value
-    }
-    fsg.add_financial_statement_item("total_equity_previous", total_equity_previous_data)
-    
-    # Add shares outstanding (constant at 1000)
-    fsg.add_financial_statement_item("shares_outstanding", {"FY2020": 1000, "FY2021": 1000, "FY2022": 1000})
+)
 
-    """
-    Add metrics to the graph.
-    """
-    # Add metric: gross_profit
-    fsg.add_metric("gross_profit")
-    # Add metric: net_profit_margin
-    fsg.add_metric("net_profit_margin")
-    # Add metric: asset_turnover
-    fsg.add_metric("asset_turnover")
-    # Add metric: equity_multiplier
-    fsg.add_metric("equity_multiplier")
-    # Add metric: dupont_roe
-    fsg.add_metric("dupont_roe")
+# Recalculate all values
+fsg.recalculate_all()
 
-    """
-    Calculate metrics for specific time periods.
-    """
-    # Calculate net_profit_margin in FY2022
-    npm_2022 = fsg.calculate_financial_statement("net_profit_margin", "FY2022")
-    print("Net Profit Margin FY2022:", npm_2022)
+# Display the results
+df = fsg.to_dataframe()
+print("Financial Statement Forecast:")
+print(df)
 
-    # Calculate and print DuPont ROE components and final value
-    print("\nDuPont ROE Analysis FY2022:")
-    print("Net Profit Margin:", fsg.calculate_financial_statement("net_profit_margin", "FY2022"))
-    print("Asset Turnover:", fsg.calculate_financial_statement("asset_turnover", "FY2022"))
-    print("Equity Multiplier:", fsg.calculate_financial_statement("equity_multiplier", "FY2022"))
-    print("DuPont ROE:", fsg.calculate_financial_statement("dupont_roe", "FY2022"))
+# Growth rates table
+growth_df = df.pct_change(axis=1)
+print("\nYear-over-Year Growth Rates:")
+print(growth_df)
+
+# Plot revenue by region
+plt.figure(figsize=(12, 6))
+for region in ["revenue_americas", "revenue_europe", "revenue_apac"]:
+    plt.plot(df.loc[region], marker='o', label=region)
+
+plt.axvline(x="FY2022", color='gray', linestyle='--', label='Forecast Start')
+plt.title('Revenue Forecast by Region')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Plot total metrics
+plt.figure(figsize=(12, 6))
+plt.plot(df.loc["total_revenue"], marker='o', label='Total Revenue')
+plt.plot(df.loc["expenses"], marker='s', label='Expenses')
+plt.plot(df.loc["operating_profit"], marker='^', label='Operating Profit')
+plt.axvline(x="FY2022", color='gray', linestyle='--', label='Forecast Start')
+plt.title('Financial Performance Forecast')
+plt.legend()
+plt.grid(True)
+plt.show()

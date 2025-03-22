@@ -1,0 +1,16 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+## Library Description
+
+The Financial Statement Model library provides tools for:
+- Building and analyzing financial statement data models
+- Creating calculation graphs for financial metrics
+- Importing financial data from various sources (Excel, APIs, etc.)
+- Performing forecasting and scenario analysis on financial statements
+- Generating reports and visualizations of financial data
+- Supporting extensible financial calculations and custom metrics
+
+The library uses a node-based graph structure where financial items are nodes and calculations define relationships between these nodes.

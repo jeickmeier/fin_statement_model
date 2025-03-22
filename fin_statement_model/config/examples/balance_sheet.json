@@ -1,0 +1,380 @@
+{
+  "id": "balance_sheet",
+  "name": "Balance Sheet",
+  "description": "Standard Balance Sheet with assets, liabilities, and equity sections",
+  "metadata": {
+    "type": "financial_statement",
+    "version": "1.0.0",
+    "display_options": {
+      "sign_convention": "standard",
+      "show_subtotals": true,
+      "decimal_places": 2
+    }
+  },
+  "sections": [
+    {
+      "id": "assets_section",
+      "name": "Assets",
+      "description": "Company assets",
+      "items": [
+        {
+          "id": "current_assets_section",
+          "name": "Current Assets",
+          "type": "section",
+          "description": "Assets expected to be converted to cash within one year",
+          "items": [
+            {
+              "id": "cash_and_equivalents",
+              "name": "Cash and Cash Equivalents",
+              "node_id": "cash_equivalents",
+              "description": "Cash and highly liquid short-term investments",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "short_term_investments",
+              "name": "Short-term Investments",
+              "node_id": "short_term_investments",
+              "description": "Investments expected to be converted to cash within one year",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "accounts_receivable",
+              "name": "Accounts Receivable",
+              "node_id": "accounts_receivable",
+              "description": "Amounts owed to the company by customers for goods or services delivered",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "inventory",
+              "name": "Inventory",
+              "node_id": "inventory",
+              "description": "Goods available for sale",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "prepaid_expenses",
+              "name": "Prepaid Expenses",
+              "node_id": "prepaid_expenses",
+              "description": "Expenses paid in advance but not yet incurred",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "other_current_assets",
+              "name": "Other Current Assets",
+              "node_id": "other_current_assets",
+              "description": "Other assets expected to be converted to cash within one year",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "total_current_assets",
+              "name": "Total Current Assets",
+              "type": "subtotal",
+              "description": "Sum of all current assets",
+              "calculation": {
+                "type": "addition",
+                "inputs": [
+                  "cash_and_equivalents", 
+                  "short_term_investments", 
+                  "accounts_receivable", 
+                  "inventory", 
+                  "prepaid_expenses", 
+                  "other_current_assets"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "non_current_assets_section",
+          "name": "Non-Current Assets",
+          "type": "section",
+          "description": "Assets not expected to be converted to cash within one year",
+          "items": [
+            {
+              "id": "property_plant_equipment",
+              "name": "Property, Plant, and Equipment",
+              "node_id": "ppe",
+              "description": "Tangible assets used in operations over multiple years",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "accumulated_depreciation",
+              "name": "Accumulated Depreciation",
+              "node_id": "accum_depreciation",
+              "description": "Accumulated depreciation of PP&E",
+              "sign_convention": "negative"
+            },
+            {
+              "id": "net_property_plant_equipment",
+              "name": "Net Property, Plant, and Equipment",
+              "type": "calculated",
+              "description": "PP&E less accumulated depreciation",
+              "calculation": {
+                "type": "addition",
+                "inputs": ["property_plant_equipment", "accumulated_depreciation"]
+              }
+            },
+            {
+              "id": "goodwill",
+              "name": "Goodwill",
+              "node_id": "goodwill",
+              "description": "The excess of the purchase price over the fair value of net assets acquired",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "intangible_assets",
+              "name": "Intangible Assets",
+              "node_id": "intangible_assets",
+              "description": "Non-physical assets such as patents, trademarks, and copyrights",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "long_term_investments",
+              "name": "Long-term Investments",
+              "node_id": "long_term_investments",
+              "description": "Investments not expected to be converted to cash within one year",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "other_non_current_assets",
+              "name": "Other Non-Current Assets",
+              "node_id": "other_non_current_assets",
+              "description": "Other assets not expected to be converted to cash within one year",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "total_non_current_assets",
+              "name": "Total Non-Current Assets",
+              "type": "subtotal",
+              "description": "Sum of all non-current assets",
+              "calculation": {
+                "type": "addition",
+                "inputs": [
+                  "net_property_plant_equipment", 
+                  "goodwill", 
+                  "intangible_assets", 
+                  "long_term_investments", 
+                  "other_non_current_assets"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "total_assets",
+          "name": "Total Assets",
+          "type": "subtotal",
+          "description": "Sum of all assets",
+          "calculation": {
+            "type": "addition",
+            "inputs": ["total_current_assets", "total_non_current_assets"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "liabilities_equity_section",
+      "name": "Liabilities and Equity",
+      "description": "Company liabilities and equity",
+      "items": [
+        {
+          "id": "liabilities_section",
+          "name": "Liabilities",
+          "type": "section",
+          "description": "Company obligations",
+          "items": [
+            {
+              "id": "current_liabilities_section",
+              "name": "Current Liabilities",
+              "type": "section",
+              "description": "Obligations due within one year",
+              "items": [
+                {
+                  "id": "accounts_payable",
+                  "name": "Accounts Payable",
+                  "node_id": "accounts_payable",
+                  "description": "Amounts owed to suppliers for goods or services purchased",
+                  "sign_convention": "positive"
+                },
+                {
+                  "id": "short_term_debt",
+                  "name": "Short-term Debt",
+                  "node_id": "short_term_debt",
+                  "description": "Debt due within one year",
+                  "sign_convention": "positive"
+                },
+                {
+                  "id": "accrued_expenses",
+                  "name": "Accrued Expenses",
+                  "node_id": "accrued_expenses",
+                  "description": "Expenses incurred but not yet paid",
+                  "sign_convention": "positive"
+                },
+                {
+                  "id": "deferred_revenue",
+                  "name": "Deferred Revenue",
+                  "node_id": "deferred_revenue",
+                  "description": "Payments received for goods or services not yet delivered",
+                  "sign_convention": "positive"
+                },
+                {
+                  "id": "other_current_liabilities",
+                  "name": "Other Current Liabilities",
+                  "node_id": "other_current_liabilities",
+                  "description": "Other obligations due within one year",
+                  "sign_convention": "positive"
+                },
+                {
+                  "id": "total_current_liabilities",
+                  "name": "Total Current Liabilities",
+                  "type": "subtotal",
+                  "description": "Sum of all current liabilities",
+                  "calculation": {
+                    "type": "addition",
+                    "inputs": [
+                      "accounts_payable", 
+                      "short_term_debt", 
+                      "accrued_expenses", 
+                      "deferred_revenue", 
+                      "other_current_liabilities"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "non_current_liabilities_section",
+              "name": "Non-Current Liabilities",
+              "type": "section",
+              "description": "Obligations not due within one year",
+              "items": [
+                {
+                  "id": "long_term_debt",
+                  "name": "Long-term Debt",
+                  "node_id": "long_term_debt",
+                  "description": "Debt not due within one year",
+                  "sign_convention": "positive"
+                },
+                {
+                  "id": "deferred_tax_liabilities",
+                  "name": "Deferred Tax Liabilities",
+                  "node_id": "deferred_tax_liabilities",
+                  "description": "Future tax liabilities",
+                  "sign_convention": "positive"
+                },
+                {
+                  "id": "pension_obligations",
+                  "name": "Pension Obligations",
+                  "node_id": "pension_obligations",
+                  "description": "Obligations related to employee pension plans",
+                  "sign_convention": "positive"
+                },
+                {
+                  "id": "other_non_current_liabilities",
+                  "name": "Other Non-Current Liabilities",
+                  "node_id": "other_non_current_liabilities",
+                  "description": "Other obligations not due within one year",
+                  "sign_convention": "positive"
+                },
+                {
+                  "id": "total_non_current_liabilities",
+                  "name": "Total Non-Current Liabilities",
+                  "type": "subtotal",
+                  "description": "Sum of all non-current liabilities",
+                  "calculation": {
+                    "type": "addition",
+                    "inputs": [
+                      "long_term_debt", 
+                      "deferred_tax_liabilities", 
+                      "pension_obligations", 
+                      "other_non_current_liabilities"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "total_liabilities",
+              "name": "Total Liabilities",
+              "type": "subtotal",
+              "description": "Sum of all liabilities",
+              "calculation": {
+                "type": "addition",
+                "inputs": ["total_current_liabilities", "total_non_current_liabilities"]
+              }
+            }
+          ]
+        },
+        {
+          "id": "equity_section",
+          "name": "Shareholders' Equity",
+          "type": "section",
+          "description": "Shareholders' investment in the company",
+          "items": [
+            {
+              "id": "common_stock",
+              "name": "Common Stock",
+              "node_id": "common_stock",
+              "description": "Par value of issued common stock",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "additional_paid_in_capital",
+              "name": "Additional Paid-in Capital",
+              "node_id": "apic",
+              "description": "Amount paid by shareholders in excess of par value",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "retained_earnings",
+              "name": "Retained Earnings",
+              "node_id": "retained_earnings",
+              "description": "Accumulated earnings not distributed to shareholders",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "treasury_stock",
+              "name": "Treasury Stock",
+              "node_id": "treasury_stock",
+              "description": "Stock repurchased by the company",
+              "sign_convention": "negative"
+            },
+            {
+              "id": "accumulated_other_comprehensive_income",
+              "name": "Accumulated Other Comprehensive Income",
+              "node_id": "aoci",
+              "description": "Unrealized gains and losses not shown in the income statement",
+              "sign_convention": "positive"
+            },
+            {
+              "id": "total_equity",
+              "name": "Total Shareholders' Equity",
+              "type": "subtotal",
+              "description": "Sum of all equity items",
+              "calculation": {
+                "type": "addition",
+                "inputs": [
+                  "common_stock", 
+                  "additional_paid_in_capital", 
+                  "retained_earnings", 
+                  "treasury_stock", 
+                  "accumulated_other_comprehensive_income"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "total_liabilities_equity",
+          "name": "Total Liabilities and Shareholders' Equity",
+          "type": "subtotal",
+          "description": "Sum of total liabilities and total equity",
+          "calculation": {
+            "type": "addition",
+            "inputs": ["total_liabilities", "total_equity"]
+          }
+        }
+      ]
+    }
+  ]
+} 
