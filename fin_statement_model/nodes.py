@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List
 from .metrics import METRIC_DEFINITIONS
+import ast
+import operator
 
 class Node(ABC):
     name: str
@@ -217,47 +219,21 @@ class MetricCalculationNode(Node):
         self.graph = graph
         self.definition = METRIC_DEFINITIONS[metric_name]
 
-        input_nodes = []
+        # Create dictionary of input nodes
+        input_nodes = {}
         for inp in self.definition["inputs"]:
-            n = self.graph.get_node(inp)
-            if n is None:
+            node = self.graph.get_node(inp)
+            if node is None:
                 raise ValueError(f"Input node '{inp}' for metric '{metric_name}' not found.")
-            input_nodes.append(n)
+            input_nodes[inp] = node
 
-        calc_type = self.definition["calculation_type"]
-        if calc_type == 'addition':
-            self.calc_node = AdditionCalculationNode(name + "_calc", input_nodes)
-        elif calc_type == 'subtraction':
-            self.calc_node = SubtractionCalculationNode(name + "_calc", input_nodes)
-        elif calc_type == 'multiplication':
-            self.calc_node = MultiplicationCalculationNode(name + "_calc", input_nodes)
-        elif calc_type == 'division':
-            self.calc_node = DivisionCalculationNode(name + "_calc", input_nodes)
-        elif calc_type == 'average_of_two_periods':
-            if len(input_nodes) != 1:
-                raise ValueError("average_of_two_periods calculation requires exactly one input node.")
-            self.calc_node = TwoPeriodAverageNode(name + "_calc", input_nodes[0], self.graph)
-        else:
-            raise ValueError(f"Unknown calculation type '{calc_type}' for metric '{metric_name}'")
+        self.calc_node = FormulaCalculationNode(
+            name + "_calc",
+            input_nodes,
+            self.definition["formula"]
+        )
 
     def calculate(self, period: str) -> float:
-        """
-        Calculate the metric value for a specific time period.
-
-        This method delegates the actual calculation to the underlying calculation node
-        that was created based on the metric definition.
-
-        Args:
-            period (str): The time period to calculate the value for (e.g. "2022")
-
-        Returns:
-            float: The calculated metric value for the specified period
-
-        Example:
-            # Calculate net profit margin for 2022
-            npm_node = MetricCalculationNode("npm", "net_profit_margin", graph)
-            npm_2022 = npm_node.calculate("2022")
-        """
         return self.calc_node.calculate(period)
 
 class TwoPeriodAverageNode(Node):
@@ -354,3 +330,64 @@ class TwoPeriodAverageNode(Node):
         previous_value = self.input_node.calculate(previous_period)
 
         return (current_value + previous_value) / 2.0
+
+class FormulaCalculationNode(Node):
+    """
+    A node that calculates values based on a mathematical formula string.
+    
+    Attributes:
+        name (str): The identifier for this calculation node
+        inputs (Dict[str, Node]): Dictionary mapping input names to their nodes
+        formula (str): The formula string to evaluate (e.g. "revenue - cost_of_goods_sold")
+        _ast: The parsed abstract syntax tree of the formula
+    """
+    
+    # Supported operators
+    OPERATORS = {
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+        ast.USub: operator.neg,
+    }
+    
+    def __init__(self, name: str, inputs: Dict[str, Node], formula: str):
+        self.name = name
+        self.inputs = inputs
+        self.formula = formula
+        self._ast = ast.parse(formula, mode='eval').body
+        
+    def calculate(self, period: str) -> float:
+        return self._evaluate(self._ast, period)
+    
+    def _evaluate(self, node, period: str) -> float:
+        """Recursively evaluates the AST of the formula."""
+        
+        # Handle numbers
+        if isinstance(node, ast.Num):
+            return float(node.n)
+            
+        # Handle variables (input nodes)
+        if isinstance(node, ast.Name):
+            if node.id not in self.inputs:
+                raise ValueError(f"Unknown variable '{node.id}' in formula")
+            return self.inputs[node.id].calculate(period)
+            
+        # Handle binary operations
+        if isinstance(node, ast.BinOp):
+            left = self._evaluate(node.left, period)
+            right = self._evaluate(node.right, period)
+            op = type(node.op)
+            if op not in self.OPERATORS:
+                raise ValueError(f"Unsupported operator {op.__name__}")
+            return self.OPERATORS[op](left, right)
+            
+        # Handle unary operations (like negative numbers)
+        if isinstance(node, ast.UnaryOp):
+            operand = self._evaluate(node.operand, period)
+            op = type(node.op)
+            if op not in self.OPERATORS:
+                raise ValueError(f"Unsupported unary operator {op.__name__}")
+            return self.OPERATORS[op](operand)
+            
+        raise ValueError(f"Unsupported syntax in formula: {ast.dump(node)}")

@@ -130,6 +130,7 @@ class Graph:
         for node in self.nodes.values():
             node.clear_cache()
 
+
     def topological_sort(self):
         """
         Perform a topological sort of the nodes in the graph.
@@ -181,6 +182,7 @@ class Graph:
             raise ValueError("Cycle detected in graph, can't do a valid topological sort.")
 
         return topo_order
+
 
     def recalculate_all(self, period: str):
         """

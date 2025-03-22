@@ -19,19 +19,15 @@ The example uses simplified sample data where:
 The script demonstrates calculation of metrics like:
     - Gross profit
     - Net profit margin
-    - (Commented example of) DuPont ROE analysis
+    - DuPont ROE analysis
 
 Example usage:
     $ python example_company.py
 
-The script will output the calculated net profit margin for FY2022.
-
-Note: Some metrics like DuPont ROE are commented out as they require additional
-financial statement items that are not included in this simplified example.
+The script will output the calculated net profit margin and DuPont ROE for FY2022.
 """
 
 from fin_statement_model.financial_statement import FinancialStatementGraph
-from fin_statement_model.builder import add_metric
 
 if __name__ == "__main__":
     """
@@ -75,18 +71,47 @@ if __name__ == "__main__":
     fsg.add_financial_statement_item("taxes", tax_data)
     fsg.add_financial_statement_item("net_income", net_income_data)
 
-    # For demonstration, assume these needed raw nodes exist or add dummy data
+    # Add balance sheet items needed for DuPont ROE calculation
+    # Total assets grows 10% year over year from $5000 base
+    total_assets_data = {"FY2020": 5000.0, "FY2021": 5500.0, "FY2022": 6050.0}
+    fsg.add_financial_statement_item("total_assets", total_assets_data)
+    
+    # Add total_assets_previous (shifted by one period)
+    total_assets_previous_data = {
+        "FY2020": 4545.45,  # FY2019 value (5000/1.1)
+        "FY2021": 5000.0,   # FY2020 value
+        "FY2022": 5500.0    # FY2021 value
+    }
+    fsg.add_financial_statement_item("total_assets_previous", total_assets_previous_data)
+    
+    # Total equity grows 5% year over year from $3000 base
+    total_equity_data = {"FY2020": 3000.0, "FY2021": 3150.0, "FY2022": 3307.5}
+    fsg.add_financial_statement_item("total_equity", total_equity_data)
+    
+    # Add total_equity_previous (shifted by one period)
+    total_equity_previous_data = {
+        "FY2020": 2857.14,  # FY2019 value (3000/1.05)
+        "FY2021": 3000.0,   # FY2020 value
+        "FY2022": 3150.0    # FY2021 value
+    }
+    fsg.add_financial_statement_item("total_equity_previous", total_equity_previous_data)
+    
+    # Add shares outstanding (constant at 1000)
     fsg.add_financial_statement_item("shares_outstanding", {"FY2020": 1000, "FY2021": 1000, "FY2022": 1000})
-    fsg.add_financial_statement_item("total_assets", {"FY2021": 5000, "FY2022": 5500})
-    fsg.add_financial_statement_item("total_equity", {"FY2021": 3000, "FY2022": 3200})
 
     """
     Add metrics to the graph.
     """
     # Add metric: gross_profit
-    add_metric(fsg.graph, "gross_profit")
+    fsg.add_metric("gross_profit")
     # Add metric: net_profit_margin
-    add_metric(fsg.graph, "net_profit_margin")
+    fsg.add_metric("net_profit_margin")
+    # Add metric: asset_turnover
+    fsg.add_metric("asset_turnover")
+    # Add metric: equity_multiplier
+    fsg.add_metric("equity_multiplier")
+    # Add metric: dupont_roe
+    fsg.add_metric("dupont_roe")
 
     """
     Calculate metrics for specific time periods.
@@ -95,8 +120,9 @@ if __name__ == "__main__":
     npm_2022 = fsg.calculate_financial_statement("net_profit_margin", "FY2022")
     print("Net Profit Margin FY2022:", npm_2022)
 
-    # Add Dupont ROE (it will recursively ensure net_profit_margin, asset_turnover, equity_multiplier are present)
-    # For this to work, ensure average_total_assets, average_shareholders_equity, etc., are also defined or stubbed.
-    add_metric(fsg.graph, "dupont_roe")
-    print("DuPont ROE FY2021:", fsg.calculate_financial_statement("dupont_roe", "FY2021"))
-    print("DuPont ROE FY2022:", fsg.calculate_financial_statement("dupont_roe", "FY2022"))
+    # Calculate and print DuPont ROE components and final value
+    print("\nDuPont ROE Analysis FY2022:")
+    print("Net Profit Margin:", fsg.calculate_financial_statement("net_profit_margin", "FY2022"))
+    print("Asset Turnover:", fsg.calculate_financial_statement("asset_turnover", "FY2022"))
+    print("Equity Multiplier:", fsg.calculate_financial_statement("equity_multiplier", "FY2022"))
+    print("DuPont ROE:", fsg.calculate_financial_statement("dupont_roe", "FY2022"))
