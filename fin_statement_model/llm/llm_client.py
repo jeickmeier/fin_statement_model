@@ -6,6 +6,7 @@ from typing import Optional, Dict, Any, List
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class LLMConfig:
     api_key: str
@@ -16,13 +17,18 @@ class LLMConfig:
     max_retries: int = 3
     # base_url is no longer needed as the openai library handles the endpoint configuration.
 
+
 class LLMClientError(Exception):
     """Base exception for LLM client errors."""
+
     pass
+
 
 class LLMTimeoutError(LLMClientError):
     """Exception for timeout errors."""
+
     pass
+
 
 class LLMClient:
     def __init__(self, config: Optional[LLMConfig] = None):
@@ -34,7 +40,7 @@ class LLMClient:
         backoff.expo,
         (Exception, LLMTimeoutError),
         max_tries=3,
-        giveup=lambda e: isinstance(e, LLMTimeoutError)
+        giveup=lambda e: isinstance(e, LLMTimeoutError),
     )
     async def _make_api_call(self, messages: List[Dict[str, str]]) -> Dict[str, Any]:
         """
@@ -50,13 +56,15 @@ class LLMClient:
             LLMClientError: For any client-related errors, including timeout if applicable
         """
         try:
-            logger.debug(f"Sending async request to OpenAI API with model {self.config.model_name}")
+            logger.debug(
+                f"Sending async request to OpenAI API with model {self.config.model_name}"
+            )
             response = await openai.ChatCompletion.acreate(
                 model=self.config.model_name,
                 messages=messages,
                 temperature=self.config.temperature,
                 max_tokens=self.config.max_tokens,
-                timeout=self.config.timeout
+                timeout=self.config.timeout,
             )
 
             if not response.get("choices"):

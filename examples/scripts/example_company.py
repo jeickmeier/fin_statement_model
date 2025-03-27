@@ -39,13 +39,23 @@ all_periods = historical_periods + forecast_periods
 fsg = FinancialStatementGraph(periods=all_periods)
 
 # Add more complete financial statement data
-fsg.add_financial_statement_item("revenue_americas", {"FY2020": 1000.0, "FY2021": 1100.0, "FY2022": 1210.0})
-fsg.add_financial_statement_item("revenue_europe", {"FY2020": 800.0, "FY2021": 880.0, "FY2022": 968.0})
-fsg.add_financial_statement_item("revenue_apac", {"FY2020": 500.0, "FY2021": 575.0, "FY2022": 661.3})
-fsg.add_financial_statement_item("expenses", {"FY2020": 1800.0, "FY2021": 1950.0, "FY2022": 2145.0})
+fsg.add_financial_statement_item(
+    "revenue_americas", {"FY2020": 1000.0, "FY2021": 1100.0, "FY2022": 1210.0}
+)
+fsg.add_financial_statement_item(
+    "revenue_europe", {"FY2020": 800.0, "FY2021": 880.0, "FY2022": 968.0}
+)
+fsg.add_financial_statement_item(
+    "revenue_apac", {"FY2020": 500.0, "FY2021": 575.0, "FY2022": 661.3}
+)
+fsg.add_financial_statement_item(
+    "expenses", {"FY2020": 1800.0, "FY2021": 1950.0, "FY2022": 2145.0}
+)
 
 # Add your calculations
-fsg.add_calculation("total_revenue", ["revenue_americas", "revenue_europe", "revenue_apac"], "addition")
+fsg.add_calculation(
+    "total_revenue", ["revenue_americas", "revenue_europe", "revenue_apac"], "addition"
+)
 fsg.add_calculation("operating_profit", ["total_revenue", "expenses"], "subtraction")
 
 fsg.create_forecast(
@@ -54,17 +64,17 @@ fsg.create_forecast(
         "revenue_americas": [0.05, 0.06, 0.07],  # Curve growth
         "revenue_europe": {
             "distribution": "normal",
-            "params": {"mean": 0.05, "std": 0.02}
-        },  #Statistical
+            "params": {"mean": 0.05, "std": 0.02},
+        },  # Statistical
         "revenue_apac": None,  # Historical Average
-        "expenses": 0.04  # Simple growth
+        "expenses": 0.04,  # Simple growth
     },
     method={
         "revenue_americas": "curve",
         "revenue_europe": "statistical",
         "revenue_apac": "historical_growth",
-        "expenses": "simple"
-    }
+        "expenses": "simple",
+    },
 )
 
 # Recalculate all values
@@ -83,21 +93,21 @@ print(growth_df)
 # Plot revenue by region
 plt.figure(figsize=(12, 6))
 for region in ["revenue_americas", "revenue_europe", "revenue_apac"]:
-    plt.plot(df.loc[region], marker='o', label=region)
+    plt.plot(df.loc[region], marker="o", label=region)
 
-plt.axvline(x="FY2022", color='gray', linestyle='--', label='Forecast Start')
-plt.title('Revenue Forecast by Region')
+plt.axvline(x="FY2022", color="gray", linestyle="--", label="Forecast Start")
+plt.title("Revenue Forecast by Region")
 plt.legend()
 plt.grid(True)
 plt.show()
 
 # Plot total metrics
 plt.figure(figsize=(12, 6))
-plt.plot(df.loc["total_revenue"], marker='o', label='Total Revenue')
-plt.plot(df.loc["expenses"], marker='s', label='Expenses')
-plt.plot(df.loc["operating_profit"], marker='^', label='Operating Profit')
-plt.axvline(x="FY2022", color='gray', linestyle='--', label='Forecast Start')
-plt.title('Financial Performance Forecast')
+plt.plot(df.loc["total_revenue"], marker="o", label="Total Revenue")
+plt.plot(df.loc["expenses"], marker="s", label="Expenses")
+plt.plot(df.loc["operating_profit"], marker="^", label="Operating Profit")
+plt.axvline(x="FY2022", color="gray", linestyle="--", label="Forecast Start")
+plt.title("Financial Performance Forecast")
 plt.legend()
 plt.grid(True)
 plt.show()

@@ -12,15 +12,15 @@ from .forecasts import (
     StatisticalGrowthForecastNode,
     CustomGrowthForecastNode,
     AverageValueForecastNode,
-    AverageHistoricalGrowthForecastNode
+    AverageHistoricalGrowthForecastNode,
 )
 
 __all__ = [
-    'ForecastNode',
-    'FixedGrowthForecastNode',
-    'CurveGrowthForecastNode',
-    'StatisticalGrowthForecastNode',
-    'CustomGrowthForecastNode',
-    'AverageValueForecastNode',
-    'AverageHistoricalGrowthForecastNode'
+    "ForecastNode",
+    "FixedGrowthForecastNode",
+    "CurveGrowthForecastNode",
+    "StatisticalGrowthForecastNode",
+    "CustomGrowthForecastNode",
+    "AverageValueForecastNode",
+    "AverageHistoricalGrowthForecastNode",
 ]

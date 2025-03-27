@@ -4,6 +4,7 @@ from .metrics import METRIC_DEFINITIONS
 import ast
 import operator
 
+
 class Node(ABC):
     name: str
 
@@ -17,24 +18,24 @@ class Node(ABC):
 
     def has_attribute(self, attr_name: str) -> bool:
         """Check if the node has a given attribute.
-        
+
         Args:
             attr_name: Name of the attribute to check
-            
+
         Returns:
             bool: True if the node has the attribute, False otherwise
         """
         return hasattr(self, attr_name)
-        
+
     def get_attribute(self, attr_name: str) -> Any:
         """Get the value of a node attribute.
-        
+
         Args:
             attr_name: Name of the attribute to get
-            
+
         Returns:
             Any: The value of the attribute
-            
+
         Raises:
             AttributeError: If the attribute doesn't exist
         """
@@ -44,10 +45,10 @@ class Node(ABC):
 
     def has_value(self, period: str) -> bool:
         """Check if the node has a value for a specific period.
-        
+
         Args:
             period: Period to check
-            
+
         Returns:
             bool: True if the node has a value for the period, False otherwise
         """
@@ -55,13 +56,13 @@ class Node(ABC):
 
     def get_value(self, period: str) -> float:
         """Get the node's value for a specific period.
-        
+
         Args:
             period: Period to get the value for
-            
+
         Returns:
             float: The value for the specified period
-            
+
         Raises:
             NotImplementedError: If the node does not implement this method
         """
@@ -69,11 +70,12 @@ class Node(ABC):
 
     def has_calculation(self) -> bool:
         """Check if the node is a calculation node.
-        
+
         Returns:
             bool: True if the node is a calculation node, False otherwise
         """
         return False
+
 
 class FinancialStatementItemNode(Node):
     """
@@ -97,6 +99,7 @@ class FinancialStatementItemNode(Node):
         # Calculate revenue for 2022
         revenue_2022 = revenue.calculate("2022")  # Returns 1000.0
     """
+
     def __init__(self, name: str, values: Dict[str, float]):
         self.name = name
         self.values = values
@@ -109,40 +112,41 @@ class FinancialStatementItemNode(Node):
 
     def set_value(self, period: str, value: float) -> None:
         """Set the value for a given period.
-        
+
         Args:
             period: Period to set the value for
             value: Value to set
         """
         self.values[period] = value
         self.clear_cache()
-        
+
     def has_value(self, period: str) -> bool:
         """Check if the node has a value for a specific period.
-        
+
         Args:
             period: Period to check
-            
+
         Returns:
             bool: True if the node has a value for the period, False otherwise
         """
         return period in self.values
-        
+
     def get_value(self, period: str) -> float:
         """Get the node's value for a specific period.
-        
+
         Args:
             period: Period to get the value for
-            
+
         Returns:
             float: The value for the specified period
-            
+
         Raises:
             KeyError: If the period does not exist in values
         """
         if period not in self.values:
             return 0.0
         return self.values[period]
+
 
 class CalculationNode(Node):
     """
@@ -166,6 +170,7 @@ class CalculationNode(Node):
         # Calculate total income for 2022
         total_2022 = total_income.calculate("2022")  # Returns 1100.0
     """
+
     def __init__(self, name: str, inputs: List[Node]):
         self.name = name
         self.inputs = inputs
@@ -174,6 +179,7 @@ class CalculationNode(Node):
     @abstractmethod
     def calculate(self, period: str) -> float:
         pass
+
 
 class AdditionCalculationNode(CalculationNode):
     """
@@ -186,15 +192,17 @@ class AdditionCalculationNode(CalculationNode):
         # Create nodes with historical values
         revenue = FinancialStatementItemNode("revenue", {"2022": 1000.0})
         other_income = FinancialStatementItemNode("other_income", {"2022": 100.0})
-        
+
         # Create addition node to sum revenue and other income
         total_income = AdditionCalculationNode("total_income", [revenue, other_income])
-        
+
         # Calculate total income for 2022
         total_2022 = total_income.calculate("2022")  # Returns 1100.0
     """
+
     def calculate(self, period: str) -> float:
         return sum(i.calculate(period) for i in self.inputs)
+
 
 class SubtractionCalculationNode(CalculationNode):
     """
@@ -208,18 +216,20 @@ class SubtractionCalculationNode(CalculationNode):
         # Create nodes with historical values
         revenue = FinancialStatementItemNode("revenue", {"2022": 1000.0})
         expenses = FinancialStatementItemNode("expenses", {"2022": 600.0})
-        
+
         # Create subtraction node to calculate profit
         profit = SubtractionCalculationNode("profit", [revenue, expenses])
-        
+
         # Calculate profit for 2022
         profit_2022 = profit.calculate("2022")  # Returns 400.0
     """
+
     def calculate(self, period: str) -> float:
         result = self.inputs[0].calculate(period)
         for inp in self.inputs[1:]:
             result -= inp.calculate(period)
         return result
+
 
 class MultiplicationCalculationNode(CalculationNode):
     """
@@ -232,18 +242,20 @@ class MultiplicationCalculationNode(CalculationNode):
         # Create nodes with historical values
         revenue = FinancialStatementItemNode("revenue", {"2022": 1000.0})
         margin = FinancialStatementItemNode("margin", {"2022": 0.4})
-        
+
         # Create multiplication node to calculate profit
         profit = MultiplicationCalculationNode("profit", [revenue, margin])
-        
+
         # Calculate profit for 2022
         profit_2022 = profit.calculate("2022")  # Returns 400.0
     """
+
     def calculate(self, period: str) -> float:
         result = 1
         for inp in self.inputs:
             result *= inp.calculate(period)
         return result
+
 
 class DivisionCalculationNode(CalculationNode):
     """
@@ -252,23 +264,24 @@ class DivisionCalculationNode(CalculationNode):
     This node performs division between input nodes for a given time period.
     It takes the first input node's value and divides it by each subsequent input node value in sequence.
     It inherits from CalculationNode and implements the calculate() method for division.
-    
+
     The node will raise a ZeroDivisionError if any divisor (input after the first) equals zero.
 
     Example:
         # Create nodes with historical values
         net_income = FinancialStatementItemNode("net_income", {"2022": 400.0})
         revenue = FinancialStatementItemNode("revenue", {"2022": 1000.0})
-        
+
         # Create division node to calculate profit margin
         margin = DivisionCalculationNode("profit_margin", [net_income, revenue])
-        
+
         # Calculate margin for 2022
         margin_2022 = margin.calculate("2022")  # Returns 0.4 (40%)
 
     Raises:
         ZeroDivisionError: If any divisor (input after the first) equals zero
     """
+
     def calculate(self, period: str) -> float:
         result = self.inputs[0].calculate(period)
         for inp in self.inputs[1:]:
@@ -278,32 +291,34 @@ class DivisionCalculationNode(CalculationNode):
             result /= divisor
         return result
 
+
 class StrategyCalculationNode(CalculationNode):
     """
     A calculation node that uses the Strategy Pattern for performing calculations.
-    
+
     This node delegates the calculation logic to a strategy object, allowing different
     calculation algorithms to be used interchangeably without modifying the node class.
     It supports all built-in calculation types as well as custom strategies.
-    
+
     Attributes:
         name (str): The identifier for this calculation node
         inputs (List[Node]): List of input nodes used in the calculation
         strategy: The calculation strategy to use
-    
+
     Example:
         # Create a strategy calculation node for profit
         from fin_statement_model.calculations import CalculationStrategyRegistry
         strategy = CalculationStrategyRegistry.get_strategy('subtraction')
         profit = StrategyCalculationNode("profit", [revenue, expenses], strategy)
-        
+
         # Calculate profit for 2022
         profit_2022 = profit.calculate("2022")  # Returns 400.0
     """
+
     def __init__(self, name: str, inputs: List[Node], strategy):
         """
         Initialize a strategy calculation node.
-        
+
         Args:
             name (str): The identifier for this calculation node
             inputs (List[Node]): List of input nodes used in the calculation
@@ -313,86 +328,87 @@ class StrategyCalculationNode(CalculationNode):
         self.strategy = strategy
         self.calculation_type = None  # Will be set by add_calculation
         self._values = {}  # Cache for calculated values
-        
+
     def calculate(self, period: str) -> float:
         """
         Calculate the value for the specified period using the strategy.
-        
+
         Args:
             period (str): The time period to calculate for
-            
+
         Returns:
             float: The calculated value
-            
+
         Raises:
             ValueError: If the calculation cannot be performed
         """
         # Check if value is cached
         if period in self._values:
             return self._values[period]
-            
+
         # Collect input values for this period
         input_values = [node for node in self.inputs]
-        
+
         # Calculate using the strategy
         result = self.strategy.calculate(input_values, period)
-        
+
         # Cache the result
         self._values[period] = result
-        
+
         return result
-    
+
     def set_strategy(self, strategy):
         """
         Change the calculation strategy at runtime.
-        
+
         This method allows the calculation behavior to be changed dynamically
         without modifying the node implementation.
-        
+
         Args:
             strategy: The new calculation strategy to use
         """
         self.strategy = strategy
         self.clear_cache()
-    
+
     def has_calculation(self) -> bool:
         """Check if the node is a calculation node.
-        
+
         Returns:
             bool: True if the node is a calculation node, False otherwise
         """
         return True
-        
+
     def clear_cache(self) -> None:
         """Clear the cached values."""
         self._values = {}
-        
+
     def set_value(self, period: str, value: float) -> None:
         """Set the value for a given period.
-        
+
         Args:
             period: Period to set the value for
             value: Value to set
         """
         self._values[period] = value
-        
+
     def get_attribute(self, attr_name: str, default=None) -> Any:
         """Get the value of a node attribute with special handling for input_nodes.
-        
+
         Args:
             attr_name: Name of the attribute to get
             default: Default value to return if the attribute doesn't exist
-            
+
         Returns:
             Any: The value of the attribute or the default value
         """
-        if attr_name == 'input_nodes' and hasattr(self, 'input_names'):
+        if attr_name == "input_nodes" and hasattr(self, "input_names"):
             return self.input_names
-        
+
         if hasattr(self, attr_name):
             return getattr(self, attr_name)
-            
+
         return default
+
 
 class MetricCalculationNode(Node):
     """
@@ -425,10 +441,11 @@ class MetricCalculationNode(Node):
     Example:
         # Create metric node for net profit margin
         npm_node = MetricCalculationNode("npm", "net_profit_margin", graph)
-        
+
         # Calculate net profit margin for 2022
         npm_2022 = npm_node.calculate("2022")
     """
+
     def __init__(self, name: str, metric_name: str, graph):
         self.name = name
         self.metric_name = metric_name
@@ -440,17 +457,18 @@ class MetricCalculationNode(Node):
         for inp in self.definition["inputs"]:
             node = self.graph.get_node(inp)
             if node is None:
-                raise ValueError(f"Input node '{inp}' for metric '{metric_name}' not found.")
+                raise ValueError(
+                    f"Input node '{inp}' for metric '{metric_name}' not found."
+                )
             input_nodes[inp] = node
 
         self.calc_node = FormulaCalculationNode(
-            name + "_calc",
-            input_nodes,
-            self.definition["formula"]
+            name + "_calc", input_nodes, self.definition["formula"]
         )
 
     def calculate(self, period: str) -> float:
         return self.calc_node.calculate(period)
+
 
 class TwoPeriodAverageNode(Node):
     """
@@ -483,10 +501,11 @@ class TwoPeriodAverageNode(Node):
         })
         graph.periods = ["2021", "2022"]
         avg_assets = TwoPeriodAverageNode("avg_total_assets", total_assets, graph)
-        
+
         # Calculate average for 2022
         avg_2022 = avg_assets.calculate("2022")  # Returns 1100.0
     """
+
     def __init__(self, name: str, input_node: Node, graph):
         self.name = name
         self.input_node = input_node
@@ -519,15 +538,15 @@ class TwoPeriodAverageNode(Node):
             })
             graph.periods = ["2021", "2022"]
             avg_assets = TwoPeriodAverageNode("avg_total_assets", total_assets, graph)
-            
+
             # Calculate average for 2022
             avg_2022 = avg_assets.calculate("2022")  # Returns 1100.0
-            
+
             # Will raise ValueError since 2021 has no previous period
             avg_2021 = avg_assets.calculate("2021")  # Raises ValueError
         """
         # Ensure graph.periods is available and sorted
-        if not hasattr(self.graph, 'periods') or not self.graph.periods:
+        if not hasattr(self.graph, "periods") or not self.graph.periods:
             raise ValueError("Graph does not have a defined list of periods.")
 
         periods_list = self.graph.periods
@@ -538,7 +557,9 @@ class TwoPeriodAverageNode(Node):
         if idx == 0:
             # If there's no previous period, we can't calculate an average
             # Decide how to handle this. Perhaps return just current value or raise an error.
-            raise ValueError(f"No previous period available before '{period}' to calculate average.")
+            raise ValueError(
+                f"No previous period available before '{period}' to calculate average."
+            )
 
         previous_period = periods_list[idx - 1]
 
@@ -547,17 +568,18 @@ class TwoPeriodAverageNode(Node):
 
         return (current_value + previous_value) / 2.0
 
+
 class FormulaCalculationNode(Node):
     """
     A node that calculates values based on a mathematical formula string.
-    
+
     Attributes:
         name (str): The identifier for this calculation node
         inputs (Dict[str, Node]): Dictionary mapping input names to their nodes
         formula (str): The formula string to evaluate (e.g. "revenue - cost_of_goods_sold")
         _ast: The parsed abstract syntax tree of the formula
     """
-    
+
     # Supported operators
     OPERATORS = {
         ast.Add: operator.add,
@@ -566,29 +588,29 @@ class FormulaCalculationNode(Node):
         ast.Div: operator.truediv,
         ast.USub: operator.neg,
     }
-    
+
     def __init__(self, name: str, inputs: Dict[str, Node], formula: str):
         self.name = name
         self.inputs = inputs
         self.formula = formula
-        self._ast = ast.parse(formula, mode='eval').body
-        
+        self._ast = ast.parse(formula, mode="eval").body
+
     def calculate(self, period: str) -> float:
         return self._evaluate(self._ast, period)
-    
+
     def _evaluate(self, node, period: str) -> float:
         """Recursively evaluates the AST of the formula."""
-        
+
         # Handle numbers
         if isinstance(node, ast.Num):
             return float(node.n)
-            
+
         # Handle variables (input nodes)
         if isinstance(node, ast.Name):
             if node.id not in self.inputs:
                 raise ValueError(f"Unknown variable '{node.id}' in formula")
             return self.inputs[node.id].calculate(period)
-            
+
         # Handle binary operations
         if isinstance(node, ast.BinOp):
             left = self._evaluate(node.left, period)
@@ -597,7 +619,7 @@ class FormulaCalculationNode(Node):
             if op not in self.OPERATORS:
                 raise ValueError(f"Unsupported operator {op.__name__}")
             return self.OPERATORS[op](left, right)
-            
+
         # Handle unary operations (like negative numbers)
         if isinstance(node, ast.UnaryOp):
             operand = self._evaluate(node.operand, period)
@@ -605,5 +627,5 @@ class FormulaCalculationNode(Node):
             if op not in self.OPERATORS:
                 raise ValueError(f"Unsupported unary operator {op.__name__}")
             return self.OPERATORS[op](operand)
-            
+
         raise ValueError(f"Unsupported syntax in formula: {ast.dump(node)}")

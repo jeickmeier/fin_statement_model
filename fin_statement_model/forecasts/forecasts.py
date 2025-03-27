@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class ForecastNode(Node):
     """
     Base class for forecast nodes that project future values based on historical data.
@@ -32,19 +33,20 @@ class ForecastNode(Node):
         base = "FY2022"
         forecasts = ["FY2023", "FY2024", "FY2025"]
         node = FixedGrowthForecastNode(revenue_node, base, forecasts, 0.05)
-        
+
         # Get forecasted value
         fy2024_revenue = node.calculate("FY2024")
     """
+
     def __init__(self, input_node: Node, base_period: str, forecast_periods: List[str]):
         self.name = input_node.name
         self.input_node = input_node
         self.base_period = base_period
         self.forecast_periods = forecast_periods
         self._cache = {}
-        
+
         # Copy historical values from input node
-        if hasattr(input_node, 'values'):
+        if hasattr(input_node, "values"):
             self.values = input_node.values.copy()
         else:
             self.values = {}
@@ -70,20 +72,20 @@ class ForecastNode(Node):
             # Get historical value
             base_value = node.calculate("FY2022")  # Returns actual historical value
 
-            # Get forecasted value 
+            # Get forecasted value
             forecast_value = node.calculate("FY2024")  # Returns projected value
         """
         if period not in self._cache:
             self._cache[period] = self._calculate_value(period)
         return self._cache[period]
-    
+
     def forecast_value(self, period: str) -> float:
         """
         Alias for calculate() method to meet project standards.
-        
+
         Args:
             period (str): The period to calculate the value for (e.g. "FY2023")
-            
+
         Returns:
             float: The calculated value for the specified period
         """
@@ -105,34 +107,38 @@ class ForecastNode(Node):
     def _calculate_value(self, period: str) -> float:
         """
         Calculate the value for a specific period.
-        
+
         For historical periods (up to base_period), returns the actual value.
         For forecast periods, calculates the value using the growth rate.
-        
+
         Args:
             period: The period to calculate the value for
-            
+
         Returns:
             float: The calculated value for the period
-            
+
         Raises:
             ValueError: If the period is not in base_period or forecast_periods
         """
         # For historical periods, return the actual value
         if period <= self.base_period:
             return self.values.get(period, 0.0)
-            
+
         # For forecast periods, calculate using growth rate
         if period not in self.forecast_periods:
-            raise ValueError(f"Period '{period}' not in forecast periods for {self.name}")
-            
+            raise ValueError(
+                f"Period '{period}' not in forecast periods for {self.name}"
+            )
+
         # Get the previous period's value
         prev_period = self._get_previous_period(period)
         prev_value = self.calculate(prev_period)
-        
+
         # Get the growth rate for this period
-        growth_factor = self._get_growth_factor_for_period(period, prev_period, prev_value)
-        
+        growth_factor = self._get_growth_factor_for_period(
+            period, prev_period, prev_value
+        )
+
         # Calculate the new value
         return prev_value * (1 + growth_factor)
 
@@ -141,8 +147,11 @@ class ForecastNode(Node):
         idx = all_periods.index(current_period)
         return all_periods[idx - 1]
 
-    def _get_growth_factor_for_period(self, period: str, prev_period: str, prev_value: float) -> float:
+    def _get_growth_factor_for_period(
+        self, period: str, prev_period: str, prev_value: float
+    ) -> float:
         raise NotImplementedError("Implement in subclass.")
+
 
 class FixedGrowthForecastNode(ForecastNode):
     """
@@ -154,7 +163,7 @@ class FixedGrowthForecastNode(ForecastNode):
 
     Args:
         input_node (Node): The node containing historical/base values
-        base_period (str): The last historical period (e.g. "FY2022") 
+        base_period (str): The last historical period (e.g. "FY2022")
         forecast_periods (List[str]): List of future periods to forecast
         growth_rate (float): The fixed growth rate to apply (e.g. 0.05 for 5% growth)
 
@@ -171,14 +180,28 @@ class FixedGrowthForecastNode(ForecastNode):
         fy2024_revenue = forecast.calculate("FY2024")
         # Returns: base_value * (1.05)^2
     """
-    def __init__(self, input_node: Node, base_period: str, forecast_periods: List[str], growth_rate: float):
+
+    def __init__(
+        self,
+        input_node: Node,
+        base_period: str,
+        forecast_periods: List[str],
+        growth_rate: float,
+    ):
         super().__init__(input_node, base_period, forecast_periods)
         self.growth_rate = float(growth_rate)  # Ensure it's a float
-        logger.debug(f"Created FixedGrowthForecastNode with growth rate: {self.growth_rate}")
+        logger.debug(
+            f"Created FixedGrowthForecastNode with growth rate: {self.growth_rate}"
+        )
 
-    def _get_growth_factor_for_period(self, period: str, prev_period: str, prev_value: float) -> float:
-        logger.debug(f"FixedGrowthForecastNode: Using growth rate {self.growth_rate} for period {period}")
+    def _get_growth_factor_for_period(
+        self, period: str, prev_period: str, prev_value: float
+    ) -> float:
+        logger.debug(
+            f"FixedGrowthForecastNode: Using growth rate {self.growth_rate} for period {period}"
+        )
         return self.growth_rate
+
 
 class CurveGrowthForecastNode(ForecastNode):
     """
@@ -211,24 +234,40 @@ class CurveGrowthForecastNode(ForecastNode):
         fy2024_revenue = forecast.calculate("FY2024")
         # Returns: base_value * (1.08) * (1.06)
     """
-    def __init__(self, input_node: Node, base_period: str, forecast_periods: List[str], growth_rates: List[float]):
+
+    def __init__(
+        self,
+        input_node: Node,
+        base_period: str,
+        forecast_periods: List[str],
+        growth_rates: List[float],
+    ):
         super().__init__(input_node, base_period, forecast_periods)
         if len(growth_rates) != len(forecast_periods):
             raise ValueError("Number of growth rates must match forecast periods.")
-        self.growth_rates = [float(rate) for rate in growth_rates]  # Ensure all are floats
-        logger.debug(f"Created CurveGrowthForecastNode with growth rates: {self.growth_rates}")
+        self.growth_rates = [
+            float(rate) for rate in growth_rates
+        ]  # Ensure all are floats
+        logger.debug(
+            f"Created CurveGrowthForecastNode with growth rates: {self.growth_rates}"
+        )
         logger.debug(f"  Base period: {base_period}")
         logger.debug(f"  Forecast periods: {forecast_periods}")
         logger.debug(f"  Base value: {input_node.calculate(base_period)}")
 
-    def _get_growth_factor_for_period(self, period: str, prev_period: str, prev_value: float) -> float:
+    def _get_growth_factor_for_period(
+        self, period: str, prev_period: str, prev_value: float
+    ) -> float:
         """Get the growth factor for a specific period."""
         idx = self.forecast_periods.index(period)
         growth_rate = self.growth_rates[idx]
-        logger.debug(f"CurveGrowthForecastNode: Using growth rate {growth_rate} for period {period}")
+        logger.debug(
+            f"CurveGrowthForecastNode: Using growth rate {growth_rate} for period {period}"
+        )
         logger.debug(f"  Previous period: {prev_period}")
         logger.debug(f"  Previous value: {prev_value}")
         return growth_rate
+
 
 class StatisticalGrowthForecastNode(ForecastNode):
     """
@@ -249,7 +288,7 @@ class StatisticalGrowthForecastNode(ForecastNode):
         # Create node with normally distributed growth rates
         from numpy.random import normal
         forecast = StatisticalGrowthForecastNode(
-            revenue_node, 
+            revenue_node,
             "FY2022",
             ["FY2023", "FY2024", "FY2025"],
             lambda: normal(0.05, 0.02)  # Mean 5% growth, 2% std dev
@@ -259,12 +298,22 @@ class StatisticalGrowthForecastNode(ForecastNode):
         fy2024_revenue = forecast.calculate("FY2024")
         # Returns: base_value * (1 + r1) * (1 + r2) where r1,r2 are random
     """
-    def __init__(self, input_node: Node, base_period: str, forecast_periods: List[str], distribution_callable: Callable[[], float]):
+
+    def __init__(
+        self,
+        input_node: Node,
+        base_period: str,
+        forecast_periods: List[str],
+        distribution_callable: Callable[[], float],
+    ):
         super().__init__(input_node, base_period, forecast_periods)
         self.distribution_callable = distribution_callable
 
-    def _get_growth_factor_for_period(self, period: str, prev_period: str, prev_value: float) -> float:
+    def _get_growth_factor_for_period(
+        self, period: str, prev_period: str, prev_value: float
+    ) -> float:
         return self.distribution_callable()
+
 
 class CustomGrowthForecastNode(ForecastNode):
     """
@@ -300,12 +349,22 @@ class CustomGrowthForecastNode(ForecastNode):
             custom_growth
         )
     """
-    def __init__(self, input_node: Node, base_period: str, forecast_periods: List[str], growth_function: Callable[[str, str, float], float]):
+
+    def __init__(
+        self,
+        input_node: Node,
+        base_period: str,
+        forecast_periods: List[str],
+        growth_function: Callable[[str, str, float], float],
+    ):
         super().__init__(input_node, base_period, forecast_periods)
         self.growth_function = growth_function
 
-    def _get_growth_factor_for_period(self, period: str, prev_period: str, prev_value: float) -> float:
+    def _get_growth_factor_for_period(
+        self, period: str, prev_period: str, prev_value: float
+    ) -> float:
         return self.growth_function(period, prev_period, prev_value)
+
 
 class AverageValueForecastNode(ForecastNode):
     """
@@ -335,26 +394,40 @@ class AverageValueForecastNode(ForecastNode):
         fy2024_revenue = forecast.calculate("FY2024")
         # Returns: avg_value
     """
-    def __init__(self, input_node: Node, base_period: str, forecast_periods: List[str], average_value: float):
+
+    def __init__(
+        self,
+        input_node: Node,
+        base_period: str,
+        forecast_periods: List[str],
+        average_value: float,
+    ):
         super().__init__(input_node, base_period, forecast_periods)
         self.average_value = float(average_value)  # Ensure it's a float
-        logger.debug(f"Created AverageValueForecastNode with average value: {self.average_value}")
+        logger.debug(
+            f"Created AverageValueForecastNode with average value: {self.average_value}"
+        )
 
     def _calculate_value(self, period: str) -> float:
         """Calculate the value for a specific period."""
         # For historical periods, return the actual value
         if period <= self.base_period:
             return self.values.get(period, 0.0)
-            
+
         # For forecast periods, return the average value
         if period not in self.forecast_periods:
-            raise ValueError(f"Period '{period}' not in forecast periods for {self.name}")
-            
+            raise ValueError(
+                f"Period '{period}' not in forecast periods for {self.name}"
+            )
+
         return self.average_value
 
-    def _get_growth_factor_for_period(self, period: str, prev_period: str, prev_value: float) -> float:
+    def _get_growth_factor_for_period(
+        self, period: str, prev_period: str, prev_value: float
+    ) -> float:
         """Not used for average value forecasts."""
-        return 0.0 
+        return 0.0
+
 
 class AverageHistoricalGrowthForecastNode(ForecastNode):
     """
@@ -382,45 +455,64 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
         fy2024_revenue = forecast.calculate("FY2024")
         # Returns: base_value * (1 + avg_growth_rate)^2
     """
-    def __init__(self, input_node: Node, base_period: str, forecast_periods: List[str], growth_params: float = 0.0):
+
+    def __init__(
+        self,
+        input_node: Node,
+        base_period: str,
+        forecast_periods: List[str],
+        growth_params: float = 0.0,
+    ):
         super().__init__(input_node, base_period, forecast_periods)
         self.avg_growth_rate = self._calculate_average_growth_rate()
-        logger.debug(f"Created AverageHistoricalGrowthForecastNode with growth rate: {self.avg_growth_rate}")
+        logger.debug(
+            f"Created AverageHistoricalGrowthForecastNode with growth rate: {self.avg_growth_rate}"
+        )
 
     def _calculate_average_growth_rate(self) -> float:
         """
         Calculate the average historical growth rate from input node values.
-        
+
         Returns:
             float: The average growth rate across historical periods
         """
         if not self.values:
-            logger.warning(f"No historical values found for {self.name}, using 0% growth")
+            logger.warning(
+                f"No historical values found for {self.name}, using 0% growth"
+            )
             return 0.0
 
         # Get sorted historical periods up to base period
-        historical_periods = sorted([p for p in self.values.keys() if p <= self.base_period])
+        historical_periods = sorted(
+            [p for p in self.values.keys() if p <= self.base_period]
+        )
         if len(historical_periods) < 2:
-            logger.warning(f"Insufficient historical data for {self.name}, using 0% growth")
+            logger.warning(
+                f"Insufficient historical data for {self.name}, using 0% growth"
+            )
             return 0.0
 
         # Calculate growth rates between consecutive periods
         growth_rates = []
         for i in range(1, len(historical_periods)):
-            prev_period = historical_periods[i-1]
+            prev_period = historical_periods[i - 1]
             curr_period = historical_periods[i]
             prev_value = self.values[prev_period]
             curr_value = self.values[curr_period]
-            
+
             if prev_value == 0:
-                logger.warning(f"Zero value found for {self.name} in period {prev_period}, skipping growth rate")
+                logger.warning(
+                    f"Zero value found for {self.name} in period {prev_period}, skipping growth rate"
+                )
                 continue
-                
+
             growth_rate = (curr_value - prev_value) / prev_value
             growth_rates.append(growth_rate)
 
         if not growth_rates:
-            logger.warning(f"No valid growth rates calculated for {self.name}, using 0% growth")
+            logger.warning(
+                f"No valid growth rates calculated for {self.name}, using 0% growth"
+            )
             return 0.0
 
         # Calculate and return average growth rate
@@ -428,17 +520,21 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
         logger.debug(f"Calculated average growth rate for {self.name}: {avg_growth}")
         return avg_growth
 
-    def _get_growth_factor_for_period(self, period: str, prev_period: str, prev_value: float) -> float:
+    def _get_growth_factor_for_period(
+        self, period: str, prev_period: str, prev_value: float
+    ) -> float:
         """
         Get the growth factor for a specific period.
-        
+
         Args:
             period (str): The current period
             prev_period (str): The previous period
             prev_value (float): The value from the previous period
-            
+
         Returns:
             float: The growth rate to apply
         """
-        logger.debug(f"AverageHistoricalGrowthForecastNode: Using growth rate {self.avg_growth_rate} for period {period}")
-        return self.avg_growth_rate 
+        logger.debug(
+            f"AverageHistoricalGrowthForecastNode: Using growth rate {self.avg_growth_rate} for period {period}"
+        )
+        return self.avg_growth_rate

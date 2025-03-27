@@ -8,7 +8,7 @@ def create_financial_statement(cells_info):
 
     This function groups cells by the 'row_name' (representing the financial statement item) and
     constructs a mapping of periods (from 'column_name') to values.
-    
+
     Args:
         cells_info (list): List of dictionaries representing Excel cells.
             Example entry:
@@ -36,9 +36,9 @@ def create_financial_statement(cells_info):
     unique_periods = set()
     for cell in cells_info:
         # Clean the item name and period
-        item_name = cell.get('row_name', '').strip()
-        period = cell.get('column_name', '').strip()
-        value = cell.get('value')
+        item_name = cell.get("row_name", "").strip()
+        period = cell.get("column_name", "").strip()
+        value = cell.get("value")
 
         if not item_name or not period:
             continue
@@ -63,37 +63,37 @@ def create_financial_statement(cells_info):
 
 
 # If run as a script, example usage:
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Example cells_info list
     cells_info = [
         {
-            'cell_location': 'H63',
-            'column': 'H',
-            'row': 63,
-            'value': 22,
-            'formula': '=G63',
-            'precedents': ['I63', 'H66'],
-            'dependencies': ['G63'],
-            'column_name': '2024',
-            'row_name': 'Other Income / (Expense):',
-            'formula_with_row_names': '=Other Income / (Expense):',
-            'precedents_names': ['Other Income / (Expense):', 'Pre-Tax Income:'],
-            'dependent_names': ['Other Income / (Expense):']
+            "cell_location": "H63",
+            "column": "H",
+            "row": 63,
+            "value": 22,
+            "formula": "=G63",
+            "precedents": ["I63", "H66"],
+            "dependencies": ["G63"],
+            "column_name": "2024",
+            "row_name": "Other Income / (Expense):",
+            "formula_with_row_names": "=Other Income / (Expense):",
+            "precedents_names": ["Other Income / (Expense):", "Pre-Tax Income:"],
+            "dependent_names": ["Other Income / (Expense):"],
         },
         {
-            'cell_location': 'H64',
-            'column': 'H',
-            'row': 64,
-            'value': 50,
-            'formula': '',
-            'precedents': [],
-            'dependencies': [],
-            'column_name': '2024',
-            'row_name': 'Revenue:',
-            'formula_with_row_names': '',
-            'precedents_names': [],
-            'dependent_names': []
-        }
+            "cell_location": "H64",
+            "column": "H",
+            "row": 64,
+            "value": 50,
+            "formula": "",
+            "precedents": [],
+            "dependencies": [],
+            "column_name": "2024",
+            "row_name": "Revenue:",
+            "formula_with_row_names": "",
+            "precedents_names": [],
+            "dependent_names": [],
+        },
     ]
 
     # Create the financial statement object
@@ -102,4 +102,4 @@ if __name__ == '__main__':
     # For demonstration, try calculating a dummy statement (actual calculation requires properly setup nodes)
     # This only shows the stored items
     for node in fs.graph.nodes.values():
-        print(f"Item: {node.name}, Values: {getattr(node, 'values', {})}") 
+        print(f"Item: {node.name}, Values: {getattr(node, 'values', {})}")

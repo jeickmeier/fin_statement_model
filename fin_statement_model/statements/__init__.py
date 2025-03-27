@@ -13,24 +13,21 @@ from .statement_structure import (
     LineItem,
     CalculatedLineItem,
     SubtotalLineItem,
-    StatementItemType
+    StatementItemType,
 )
-from .statement_config import (
-    StatementConfig,
-    load_statement_config
-)
+from .statement_config import StatementConfig, load_statement_config
 from .statement_formatter import StatementFormatter
 from .statement_manager import StatementManager
 
 __all__ = [
-    'StatementStructure',
-    'Section',
-    'LineItem',
-    'CalculatedLineItem',
-    'SubtotalLineItem',
-    'StatementItemType',
-    'StatementConfig',
-    'load_statement_config',
-    'StatementFormatter',
-    'StatementManager'
-] 
+    "StatementStructure",
+    "Section",
+    "LineItem",
+    "CalculatedLineItem",
+    "SubtotalLineItem",
+    "StatementItemType",
+    "StatementConfig",
+    "load_statement_config",
+    "StatementFormatter",
+    "StatementManager",
+]

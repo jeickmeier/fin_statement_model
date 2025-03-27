@@ -2,6 +2,7 @@ import statistics
 from typing import List
 from .nodes import Node
 
+
 class YoYGrowthNode(Node):
     """
     A node that calculates year-over-year growth between two periods.
@@ -30,7 +31,7 @@ class YoYGrowthNode(Node):
             "2022": 1200.0
         })
         revenue_growth = YoYGrowthNode("revenue_growth", revenue, "2021", "2022")
-        
+
         # Calculate growth
         growth = revenue_growth.calculate()  # Returns 0.2 (20% growth)
 
@@ -38,7 +39,10 @@ class YoYGrowthNode(Node):
         float: The calculated growth rate as a decimal (e.g. 0.2 for 20% growth)
         float('nan'): If prior period value is zero
     """
-    def __init__(self, name: str, input_node: Node, prior_period: str, current_period: str):
+
+    def __init__(
+        self, name: str, input_node: Node, prior_period: str, current_period: str
+    ):
         self.name = name
         self.input_node = input_node
         self.prior_period = prior_period
@@ -67,18 +71,19 @@ class YoYGrowthNode(Node):
                 "2022": 1200.0
             })
             growth = YoYGrowthNode("revenue_growth", revenue, "2021", "2022")
-            
+
             # Calculate growth rate
             rate = growth.calculate()  # Returns 0.2 (20% growth)
-            
+
             # Period parameter is ignored
             rate = growth.calculate("2022")  # Still returns 0.2
         """
         prior_value = self.input_node.calculate(self.prior_period)
         current_value = self.input_node.calculate(self.current_period)
         if prior_value == 0:
-            return float('nan')
+            return float("nan")
         return (current_value - prior_value) / prior_value
+
 
 class MultiPeriodStatNode(Node):
     """
@@ -120,11 +125,18 @@ class MultiPeriodStatNode(Node):
             revenue,
             ["2020", "2021", "2022"]
         )
-        
+
         # Calculate standard deviation
         std_dev = volatility.calculate()  # Returns standard deviation of revenue
     """
-    def __init__(self, name: str, input_node: Node, periods: List[str], stat_func=statistics.stdev):
+
+    def __init__(
+        self,
+        name: str,
+        input_node: Node,
+        periods: List[str],
+        stat_func=statistics.stdev,
+    ):
         self.name = name
         self.input_node = input_node
         self.periods = periods
@@ -153,7 +165,7 @@ class MultiPeriodStatNode(Node):
                 "2022": 1100.0
             })
             volatility = MultiPeriodStatNode(
-                "revenue_volatility", 
+                "revenue_volatility",
                 revenue,
                 ["2020", "2021", "2022"]
             )
@@ -163,5 +175,5 @@ class MultiPeriodStatNode(Node):
         """
         values = [self.input_node.calculate(p) for p in self.periods]
         if len(values) < 2:
-            return float('nan')
+            return float("nan")
         return self.stat_func(values)

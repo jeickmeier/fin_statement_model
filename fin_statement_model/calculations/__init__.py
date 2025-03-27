@@ -13,17 +13,17 @@ from .calculation_strategy import (
     MultiplicationStrategy,
     DivisionStrategy,
     WeightedAverageStrategy,
-    CustomFormulaStrategy
+    CustomFormulaStrategy,
 )
 from .strategy_registry import CalculationStrategyRegistry
 
 __all__ = [
-    'CalculationStrategy',
-    'AdditionStrategy',
-    'SubtractionStrategy',
-    'MultiplicationStrategy',
-    'DivisionStrategy',
-    'WeightedAverageStrategy',
-    'CustomFormulaStrategy',
-    'CalculationStrategyRegistry'
-] 
+    "CalculationStrategy",
+    "AdditionStrategy",
+    "SubtractionStrategy",
+    "MultiplicationStrategy",
+    "DivisionStrategy",
+    "WeightedAverageStrategy",
+    "CustomFormulaStrategy",
+    "CalculationStrategyRegistry",
+]
