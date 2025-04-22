@@ -20,6 +20,9 @@ require_class_docstrings = true
 require_function_docstrings = true
 require_return_docstrings = true
 require_parameter_docstrings = true
+max_first_line_length = 72
+# 1-line summary must start with an imperative verb
+# Args/Returns sections must be preceded by a blank line
 
 # Import organization
 [imports]
@@ -27,23 +30,28 @@ stdlib_first = true
 group_by_package = true
 local_package_imports_first = false
 alphabetical_within_groups = true
-max_line_length = 100
 
 # Project-specific patterns
 [fin_statement_model]
 # Node naming convention
 node_class_suffix = Node
 calculation_class_suffix = CalculationNode
+forecast_class_suffix = ForecastNode
 # Standard method names
 calculation_method = calculate
+forecast_method = forecast_value
 standard_init_params = name, inputs
 # Required base classes
 node_base_class = Node
 calculation_base_class = CalculationNode
+forecast_base_class = ForecastNode
+# Module size limits
+max_module_lines = 300
+max_class_lines = 300
 
 # Financial metric conventions
 [metrics]
-metric_definitions_file = metrics.py
+metric_definitions_file = metrics.yaml
 standard_metric_format = lowercase_with_underscores
 required_metric_fields = inputs, formula, description
 
@@ -53,6 +61,7 @@ test_file_pattern = test_*.py
 require_docstrings = true
 min_coverage = 80
 standard_test_import = pytest
+use_fixtures = true
 
 # Documentation files
 [*.md]
@@ -62,21 +71,27 @@ trim_trailing_whitespace = true
 
 # Type checking
 [mypy]
+# See [tool.mypy] in pyproject.toml for configuration
 python_version = 3.9
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-no_implicit_optional = true
-strict_optional = true
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true
 
 # Tool configurations
 [tools]
+# See [tool.black], [tool.ruff] in pyproject.toml for configuration
 formatter = black
-linter = flake8
+linter = ruff
 type_checker = mypy
+package_manager = uv
 
-# Forecasting conventions
-[forecasts]
-forecast_class_suffix = ForecastNode
-required_forecast_methods = forecast_value 
+# Package dependencies
+[dependencies]
+# See [project.dependencies] and [dependency-groups] in pyproject.toml
+runtime_packages = numpy, pandas, matplotlib, requests, plotly, nbformat, playwright, openai, backoff, openpyxl, ipykernel, pyyaml
+dev_packages = ruff, pytest, pytest-cov, pytest-asyncio
+
+# Pre-commit configuration
+[pre-commit]
+config_file = .pre-commit-config.yaml
+hooks = black, ruff, mypy, ruff-format

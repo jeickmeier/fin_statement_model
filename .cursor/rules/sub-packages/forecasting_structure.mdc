@@ -1,0 +1,30 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Purpose
+The `forecasting` layer provides predictive models that build on the **core graph**.  It
+may import from `fin_statement_model.core` and `preprocessing` for cleaned data, but **must
+not** be imported by those layers.
+
+# Allowed Dependencies
+- Core scientific stack:
+  - numpy
+  - pandas
+  - scipy
+- Time series analysis:
+  - statsmodels
+  - pmdarima
+- Machine learning:
+  - scikit-learn
+  - xgboost
+  - lightgbm
+- Optional heavy deps:
+  - torch (PyTorch)
+  - tensorflow
+
+Typical responsibilities:
+* Time‑series forecasting of node values (e.g. revenue growth, cash‑flow projections)
+* Scenario analysis & Monte‑Carlo simulation
+* Model evaluation / back‑testing helpers

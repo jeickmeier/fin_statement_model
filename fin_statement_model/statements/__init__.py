@@ -1,5 +1,4 @@
-"""
-Financial statements module for the Financial Statement Model.
+"""Financial statements module for the Financial Statement Model.
 
 This module defines configurable financial statement structures,
 including various types of financial statements (Income Statement,
@@ -7,7 +6,7 @@ Balance Sheet, Cash Flow) with hierarchical sections and line items
 defined through configuration.
 """
 
-from .statement_structure import (
+from .structure import (
     StatementStructure,
     Section,
     LineItem,
@@ -15,19 +14,23 @@ from .statement_structure import (
     SubtotalLineItem,
     StatementItemType,
 )
-from .statement_config import StatementConfig, load_statement_config
-from .statement_formatter import StatementFormatter
-from .statement_manager import StatementManager
+from .config.config import StatementConfig, load_statement_config
+from .formatter import StatementFormatter
+from .manager import StatementManager
+from .factory import StatementFactory
+from .graph.financial_graph import FinancialStatementGraph
 
 __all__ = [
-    "StatementStructure",
-    "Section",
-    "LineItem",
     "CalculatedLineItem",
-    "SubtotalLineItem",
-    "StatementItemType",
+    "FinancialStatementGraph",
+    "LineItem",
+    "Section",
     "StatementConfig",
-    "load_statement_config",
+    "StatementFactory",
     "StatementFormatter",
+    "StatementItemType",
     "StatementManager",
+    "StatementStructure",
+    "SubtotalLineItem",
+    "load_statement_config",
 ]

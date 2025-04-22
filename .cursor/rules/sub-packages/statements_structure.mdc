@@ -1,0 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Purpose
+The `statements` layer wraps the core graph engine with **domain‑specific helpers** for
+working with financial statements (Balance Sheet, P&L, Cash‑flow, etc.).  It provides:
+* Declarative statement schemas & configs
+* Builders/factories that construct node graphs from those schemas
+* Human‑friendly formatting & presentation utilities
+* General utility functions specific to statement manipulation
+
+`statements/` may import from `fin_statement_model.core`, but **never** from `io/` or
+`forecasting/`.

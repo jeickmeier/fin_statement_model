@@ -1,0 +1,89 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project Architecture
+
+## Import Dependency Matrix
+| From \ To | core | preprocessing | statements | io | forecasting | extensions |
+|-----------|------|---------------|------------|----|-------------|------------|
+| core      | ✓    | ✗             | ✗          | ✗  | ✗           | ✗          |
+| preprocessing | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ |
+| statements | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ |
+| io         | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ |
+| forecasting | ✓ | ✓ | ✗ | ✗ | ✓ | ✗ |
+| extensions | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+## Layer Structure
+- **core/**: Graph engine, Node & CalculationNode, metric registry. *Must not import* from other layers.
+- **statements/**: Domain‑level helpers around financial statements.
+- **io/**: External data adapters (readers & writers).
+- **forecasting/**: Predictive modelling built on the core graph.
+- **preprocessing/**: Normalisation & data transforms.
+- **extensions/**: Plugin packages discovered via entry‑points.
+
+# Coding Standards
+- Python 3.9, `black`‑formatted, `ruff`‑linted; 100‑char line length.
+- Google‑style docstrings for every public **function, class and module**.
+- All functions and methods are fully type‑annotated; `mypy --strict` passes.
+- Keep modules ≤ 300 LOC; split when larger.
+
+# Naming Conventions
+- Node implementations end with `Node` (e.g. `RevenueNode`).
+- Calculation implementations end with `CalculationNode`.
+- Forecast implementations end with `ForecastNode` and expose `forecast_value()`.
+- Metric identifiers are `lowercase_with_underscores`.
+- Standard method names:
+  - Calculations: `calculate(self) -> Numeric`
+  - Forecasts   : `forecast_value(self, periods: int) -> Series`
+
+# File Naming Patterns
+- Tests: `tests/<layer>/test_<module>.py`
+- Metrics YAML: `core/metrics/builtin/<metric_name>.yaml`
+- Graph helpers: `<noun>_graph.py`
+- Each sub-package must have `__all__ = [...]` in its `__init__.py`
+
+# Registries & Extensibility
+- Register new metrics via `fin_statement_model.core.metrics.registry.register_metric`.
+- Simple metrics belong in YAML under `core/metrics/builtin/`; complex metrics can use Python classes.
+- Importers/exporters register with `io.readers.registry` / `io.writers.registry`.
+- Third‑party plugins expose entry‑points: `fin_statement_model.metrics` or `fin_statement_model.io.readers`.
+
+# Import Rules
+1. Standard library
+2. Third‑party libraries
+3. `fin_statement_model` (internal)
+4. Relative imports
+
+# Error Handling
+- All exceptions must extend `FinStatementModelError` from `core.errors`
+- Use dataclasses for immutable data containers
+- Avoid pandas DataFrames in core types; use pure/serializable types
+
+# Optional Dependencies
+- Heavy dependencies (e.g. OpenAI, torch) must be:
+  - Imported inside functions, not at module level
+  - Guarded by try/except with clear error messages
+  - Set module-level boolean (e.g. `HAS_OPENAI`)
+
+# Testing
+- Tests mirror package layout under **tests/**; filenames start with `test_`.
+- Use `pytest` + `pytest‑cov`; maintain ≥ 80 % coverage.
+
+# Cursor Quick-start
+- Use `list_dir`, `read_file`, `grep_search` before loading entire files
+- Show only changed lines with `// ... existing code ...` markers
+- One `edit_file` call per turn
+- Fix linter/mypy errors within three attempts
+
+# FAQ Cheatsheet
+| Task                              | Preferred Location / API                           |
+|-----------------------------------|-----------------------------------------------------|
+| Add metric                        | `core/metrics/builtin/*.yaml` → registry auto‑loads |
+| Add complex calculation           | `core/calculations/<name>_calculation.py`           |
+| New data reader (e.g., Excel)     | `io/readers/excel.py` + register_reader("excel")   |
+| New forecast model                | `forecasting/<name>_forecast.py`                    |
+
+---
+This rule file is auto‑included by Cursor for every prompt inside this repository to keep the codebase **consistent, maintainable, and extensible**.

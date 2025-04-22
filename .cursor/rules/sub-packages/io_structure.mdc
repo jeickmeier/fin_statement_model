@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Purpose
+`io/` handles all **external data interfaces**: reading raw data into the graph and
+exporting model results to files, databases, or APIs.  It must stay at the edge of the
+system and therefore **may import from** `fin_statement_model.core` (to build nodes) and
+`statements/` (for schema awareness) but **must never be imported by** those layers.

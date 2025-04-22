@@ -1,7 +1,18 @@
-"""
-Core components for the Financial Statement Model.
+"""Core components for the Financial Statement Model.
 
-This package contains the core components for managing financial data and calculations.
+This package forms the foundation of the library, providing the core infrastructure
+for building, calculating, and managing financial models. It includes:
+
+- Graph engine (`core.graph`): For representing financial relationships.
+- Base node hierarchy (`core.nodes`): Abstract and concrete node types.
+- Calculation engine (`calculation_engine.py`): For evaluating the graph.
+- Metric registry and definitions (`core.metrics`): For managing financial metrics.
+- Data management (`data_manager.py`): For handling financial data.
+- Calculation strategies (`core.strategies`): Reusable calculation logic.
+- Core utilities and exceptions (`errors.py`, `node_factory.py`).
+
+This `core` package is designed to be self-contained and does not depend on
+other higher-level packages like `statements`, `io`, or `forecasting`.
 """
 
 from .data_manager import DataManager
@@ -11,13 +22,19 @@ from .graph import Graph
 from .nodes import (
     Node,
     FinancialStatementItemNode,
-    CalculationNode,
-    AdditionCalculationNode,
-    SubtractionCalculationNode,
-    MultiplicationCalculationNode,
-    DivisionCalculationNode,
     MetricCalculationNode,
     StrategyCalculationNode,
+    YoYGrowthNode,
+    MultiPeriodStatNode,
+    FormulaCalculationNode,
+    CustomCalculationNode,
+    TwoPeriodAverageNode,
+)
+from .strategies import (
+    AdditionStrategy,
+    SubtractionStrategy,
+    MultiplicationStrategy,
+    DivisionStrategy,
 )
 from .errors import (
     FinancialModelError,
@@ -34,43 +51,37 @@ from .errors import (
     ExportError,
     TransformationError,
 )
-from .engine import CalculationEngine as CoreCalculationEngine
-from .metrics import METRIC_DEFINITIONS
-from .stats import YoYGrowthNode, MultiPeriodStatNode
-
-# Import this last to avoid circular imports
-from .financial_statement import FinancialStatementGraph
 
 __all__ = [
-    "DataManager",
+    "AdditionStrategy",
     "CalculationEngine",
-    "NodeFactory",
-    "Graph",
-    "Node",
-    "FinancialStatementItemNode",
-    "CalculationNode",
-    "AdditionCalculationNode",
-    "SubtractionCalculationNode",
-    "MultiplicationCalculationNode",
-    "DivisionCalculationNode",
-    "MetricCalculationNode",
-    "StrategyCalculationNode",
-    "FinancialModelError",
-    "ConfigurationError",
     "CalculationError",
-    "NodeError",
-    "GraphError",
-    "DataValidationError",
     "CircularDependencyError",
+    "ConfigurationError",
+    "CustomCalculationNode",
+    "DataManager",
+    "DataValidationError",
+    "DivisionStrategy",
+    "ExportError",
+    "FinancialModelError",
+    "FinancialStatementItemNode",
+    "FinancialStatementItemNode",
+    "FormulaCalculationNode",
+    "Graph",
+    "GraphError",
+    "ImportError",
+    "MetricCalculationNode",
+    "MultiPeriodStatNode",
+    "MultiplicationStrategy",
+    "Node",
+    "NodeError",
+    "NodeFactory",
     "PeriodError",
     "StatementError",
+    "StrategyCalculationNode",
     "StrategyError",
-    "ImportError",
-    "ExportError",
+    "SubtractionStrategy",
     "TransformationError",
-    "CoreCalculationEngine",
-    "METRIC_DEFINITIONS",
+    "TwoPeriodAverageNode",
     "YoYGrowthNode",
-    "MultiPeriodStatNode",
-    "FinancialStatementGraph",
 ]

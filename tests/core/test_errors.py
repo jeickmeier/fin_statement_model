@@ -1,276 +1,360 @@
-"""Unit tests for the errors module.
-
-This module contains test cases for all custom exceptions defined in the
-Financial Statement Model.
-"""
-
 import pytest
+
 from fin_statement_model.core.errors import (
-    FinancialModelError,
-    ConfigurationError,
     CalculationError,
-    NodeError,
-    GraphError,
-    DataValidationError,
     CircularDependencyError,
+    ConfigurationError,
+    DataValidationError,
+    ExportError,
+    FinancialModelError,
+    GraphError,
+    ImportError,
+    MetricError,
+    MissingInputError,
+    NodeError,
     PeriodError,
     StatementError,
     StrategyError,
-    ImportError,
-    ExportError,
-    TransformationError
+    TransformationError,
 )
 
 
-class TestFinancialModelError:
-    """Test cases for the base FinancialModelError class."""
-
-    def test_base_error(self):
-        """Test basic error message handling."""
-        error = FinancialModelError("Test error message")
-        assert str(error) == "Test error message"
-        assert error.message == "Test error message"
+def test_financial_model_error_instantiation():
+    """Test basic instantiation of the base error class."""
+    message = "Base error message"
+    err = FinancialModelError(message)
+    assert err.message == message
+    assert str(err) == message
 
 
-class TestConfigurationError:
-    """Test cases for ConfigurationError."""
-
-    def test_basic_error(self):
-        """Test basic configuration error."""
-        error = ConfigurationError("Invalid configuration")
-        assert str(error) == "Invalid configuration"
-
-    def test_error_with_config_path(self):
-        """Test error with config path."""
-        error = ConfigurationError("Invalid YAML", config_path="config.yaml")
-        assert str(error) == "Invalid YAML in config.yaml"
-
-    def test_error_with_errors_list(self):
-        """Test error with list of errors."""
-        errors = ["Missing required field: name", "Invalid type for field: value"]
-        error = ConfigurationError("Configuration validation failed", errors=errors)
-        assert str(error) == "Configuration validation failed: Missing required field: name; Invalid type for field: value"
-
-    def test_error_with_both_config_path_and_errors(self):
-        """Test error with both config path and errors list."""
-        errors = ["Missing required field: name"]
-        error = ConfigurationError("Invalid config", config_path="config.yaml", errors=errors)
-        assert str(error) == "Invalid config in config.yaml: Missing required field: name"
+@pytest.mark.parametrize(
+    "message, config_path, errors, expected_str",
+    [
+        ("Base msg", None, None, "Base msg"),
+        ("Base msg", "path/to/config.yaml", None, "Base msg in path/to/config.yaml"),
+        ("Base msg", None, ["err1", "err2"], "Base msg: err1; err2"),
+        (
+            "Base msg",
+            "path/to/config.yaml",
+            ["err1", "err2"],
+            "Base msg in path/to/config.yaml: err1; err2",
+        ),
+    ],
+)
+def test_configuration_error_instantiation(message, config_path, errors, expected_str):
+    """Test ConfigurationError instantiation and message formatting."""
+    err = ConfigurationError(message, config_path=config_path, errors=errors)
+    assert err.config_path == config_path
+    assert err.errors == (errors or [])
+    assert str(err) == expected_str
+    assert isinstance(err, FinancialModelError)
 
 
-class TestCalculationError:
-    """Test cases for CalculationError."""
-
-    def test_basic_error(self):
-        """Test basic calculation error."""
-        error = CalculationError("Division by zero")
-        assert str(error) == "Division by zero"
-
-    def test_error_with_node_id(self):
-        """Test error with node ID."""
-        error = CalculationError("Failed to calculate", node_id="profit")
-        assert str(error) == "Failed to calculate for node 'profit'"
-
-    def test_error_with_period(self):
-        """Test error with period."""
-        error = CalculationError("Missing data", period="2022")
-        assert str(error) == "Missing data for period '2022'"
-
-    def test_error_with_node_and_period(self):
-        """Test error with both node ID and period."""
-        error = CalculationError("Calculation failed", node_id="profit", period="2022")
-        assert str(error) == "Calculation failed for node 'profit' and period '2022'"
-
-    def test_error_with_details(self):
-        """Test error with additional details."""
-        details = {"error": "Division by zero", "context": "profit calculation"}
-        error = CalculationError("Calculation failed", details=details)
-        assert error.details == details
+@pytest.mark.parametrize(
+    "message, node_id, period, details, expected_str",
+    [
+        ("Base msg", None, None, None, "Base msg"),
+        ("Base msg", "node1", None, None, "Base msg for node 'node1'"),
+        ("Base msg", None, "2023Q1", None, "Base msg for period '2023Q1'"),
+        (
+            "Base msg",
+            "node1",
+            "2023Q1",
+            {"detail": "value"},
+            "Base msg for node 'node1' and period '2023Q1' (Details: detail=\"value\")",
+        ),
+    ],
+)
+def test_calculation_error_instantiation(message, node_id, period, details, expected_str):
+    """Test CalculationError instantiation and message formatting."""
+    err = CalculationError(message, node_id=node_id, period=period, details=details)
+    assert err.node_id == node_id
+    assert err.period == period
+    assert err.details == (details or {})
+    assert str(err) == expected_str
+    assert isinstance(err, FinancialModelError)
 
 
-class TestNodeError:
-    """Test cases for NodeError."""
-
-    def test_basic_error(self):
-        """Test basic node error."""
-        error = NodeError("Node not found")
-        assert str(error) == "Node not found"
-
-    def test_error_with_node_id(self):
-        """Test error with node ID."""
-        error = NodeError("Node not found", node_id="revenue")
-        assert str(error) == "Node not found for node 'revenue'"
-
-
-class TestGraphError:
-    """Test cases for GraphError."""
-
-    def test_basic_error(self):
-        """Test basic graph error."""
-        error = GraphError("Invalid graph structure")
-        assert str(error) == "Invalid graph structure"
-
-    def test_error_with_nodes(self):
-        """Test error with list of nodes."""
-        nodes = ["revenue", "expenses", "profit"]
-        error = GraphError("Circular dependency", nodes=nodes)
-        assert str(error) == "Circular dependency involving nodes: revenue, expenses, profit"
+@pytest.mark.parametrize(
+    "message, node_id, expected_str",
+    [
+        ("Base msg", None, "Base msg"),
+        ("Base msg", "node1", "Base msg for node 'node1'"),
+    ],
+)
+def test_node_error_instantiation(message, node_id, expected_str):
+    """Test NodeError instantiation and message formatting."""
+    err = NodeError(message, node_id=node_id)
+    assert err.node_id == node_id
+    assert str(err) == expected_str
+    assert isinstance(err, FinancialModelError)
 
 
-class TestDataValidationError:
-    """Test cases for DataValidationError."""
-
-    def test_basic_error(self):
-        """Test basic validation error."""
-        error = DataValidationError("Invalid data format")
-        assert str(error) == "Invalid data format"
-
-    def test_error_with_validation_errors(self):
-        """Test error with validation errors list."""
-        errors = ["Missing required field", "Invalid value type"]
-        error = DataValidationError("Data validation failed", validation_errors=errors)
-        assert str(error) == "Data validation failed: Missing required field; Invalid value type"
-
-
-class TestCircularDependencyError:
-    """Test cases for CircularDependencyError."""
-
-    def test_basic_error(self):
-        """Test basic circular dependency error."""
-        error = CircularDependencyError()
-        assert str(error) == "Circular dependency detected"
-
-    def test_error_with_cycle(self):
-        """Test error with cycle information."""
-        cycle = ["revenue", "profit", "margin", "revenue"]
-        error = CircularDependencyError(cycle=cycle)
-        assert str(error) == "Circular dependency detected: revenue -> profit -> margin -> revenue"
-        assert error.cycle == cycle
+@pytest.mark.parametrize(
+    "message, node_id, input_name, period, expected_str",
+    [
+        ("Base msg", None, None, None, "Base msg"),
+        ("Base msg", "node1", None, None, "Base msg for node 'node1'"),
+        ("Base msg", None, "input1", None, "Base msg for input 'input1'"),
+        ("Base msg", None, None, "2023", "Base msg for period '2023'"),
+        (
+            "Base msg",
+            "node1",
+            "input1",
+            "2023",
+            "Base msg for node 'node1' in input 'input1' in period '2023'",
+        ),
+        ("Base msg", "node1", "input1", None, "Base msg for node 'node1' in input 'input1'"),
+        ("Base msg", "node1", None, "2023", "Base msg for node 'node1' in period '2023'"),
+        ("Base msg", None, "input1", "2023", "Base msg for input 'input1' in period '2023'"),
+    ],
+)
+def test_missing_input_error_instantiation(message, node_id, input_name, period, expected_str):
+    """Test MissingInputError instantiation and message formatting."""
+    err = MissingInputError(message, node_id=node_id, input_name=input_name, period=period)
+    assert err.node_id == node_id
+    assert err.input_name == input_name
+    assert err.period == period
+    assert str(err) == expected_str
+    assert isinstance(err, FinancialModelError)
 
 
-class TestPeriodError:
-    """Test cases for PeriodError."""
-
-    def test_basic_error(self):
-        """Test basic period error."""
-        error = PeriodError("Invalid period")
-        assert str(error) == "Invalid period"
-
-    def test_error_with_period(self):
-        """Test error with specific period."""
-        error = PeriodError("Period not found", period="2023")
-        assert str(error) == "Period not found for period '2023'"
-
-    def test_error_with_available_periods(self):
-        """Test error with available periods."""
-        available = ["2021", "2022"]
-        error = PeriodError("Period not found", period="2023", available_periods=available)
-        assert str(error) == "Period not found for period '2023'. Available periods: 2021, 2022"
+@pytest.mark.parametrize(
+    "message, nodes, expected_str",
+    [
+        ("Base msg", None, "Base msg"),
+        ("Base msg", ["n1", "n2"], "Base msg involving nodes: n1, n2"),
+    ],
+)
+def test_graph_error_instantiation(message, nodes, expected_str):
+    """Test GraphError instantiation and message formatting."""
+    err = GraphError(message, nodes=nodes)
+    assert err.nodes == (nodes or [])
+    assert str(err) == expected_str
+    assert isinstance(err, FinancialModelError)
 
 
-class TestStatementError:
-    """Test cases for StatementError."""
-
-    def test_basic_error(self):
-        """Test basic statement error."""
-        error = StatementError("Invalid statement")
-        assert str(error) == "Invalid statement"
-
-    def test_error_with_statement_id(self):
-        """Test error with statement ID."""
-        error = StatementError("Statement not found", statement_id="income_statement")
-        assert str(error) == "Statement not found for statement 'income_statement'"
-
-
-class TestStrategyError:
-    """Test cases for StrategyError."""
-
-    def test_basic_error(self):
-        """Test basic strategy error."""
-        error = StrategyError("Invalid strategy")
-        assert str(error) == "Invalid strategy"
-
-    def test_error_with_strategy_type(self):
-        """Test error with strategy type."""
-        error = StrategyError("Strategy not found", strategy_type="addition")
-        assert str(error) == "Strategy not found for strategy type 'addition'"
-
-    def test_error_with_node_id(self):
-        """Test error with node ID."""
-        error = StrategyError("Strategy failed", node_id="profit")
-        assert str(error) == "Strategy failed for node 'profit'"
-
-    def test_error_with_both_strategy_type_and_node(self):
-        """Test error with both strategy type and node ID."""
-        error = StrategyError("Strategy failed", strategy_type="addition", node_id="profit")
-        assert str(error) == "Strategy failed for strategy type 'addition' in node 'profit'"
+@pytest.mark.parametrize(
+    "message, validation_errors, expected_str",
+    [
+        ("Base msg", None, "Base msg"),
+        ("Base msg", ["err1", "err2"], "Base msg: err1; err2"),
+    ],
+)
+def test_data_validation_error_instantiation(message, validation_errors, expected_str):
+    """Test DataValidationError instantiation and message formatting."""
+    err = DataValidationError(message, validation_errors=validation_errors)
+    assert err.validation_errors == (validation_errors or [])
+    assert str(err) == expected_str
+    assert isinstance(err, FinancialModelError)
 
 
-class TestImportError:
-    """Test cases for ImportError."""
-
-    def test_basic_error(self):
-        """Test basic import error."""
-        error = ImportError("Import failed")
-        assert str(error) == "Import failed"
-
-    def test_error_with_source(self):
-        """Test error with source."""
-        error = ImportError("File not found", source="data.csv")
-        assert str(error) == "File not found from source 'data.csv'"
-
-    def test_error_with_adapter(self):
-        """Test error with adapter."""
-        error = ImportError("Adapter error", adapter="csv_adapter")
-        assert str(error) == "Adapter error using adapter 'csv_adapter'"
-
-    def test_error_with_original_error(self):
-        """Test error with original error."""
-        original = ValueError("File not found")
-        error = ImportError("Import failed", original_error=original)
-        assert str(error) == "Import failed: File not found"
-
-
-class TestExportError:
-    """Test cases for ExportError."""
-
-    def test_basic_error(self):
-        """Test basic export error."""
-        error = ExportError("Export failed")
-        assert str(error) == "Export failed"
-
-    def test_error_with_target(self):
-        """Test error with target."""
-        error = ExportError("File not found", target="output.csv")
-        assert str(error) == "File not found to target 'output.csv'"
-
-    def test_error_with_format_type(self):
-        """Test error with format type."""
-        error = ExportError("Format error", format_type="csv")
-        assert str(error) == "Format error in format 'csv'"
-
-    def test_error_with_original_error(self):
-        """Test error with original error."""
-        original = ValueError("Permission denied")
-        error = ExportError("Export failed", original_error=original)
-        assert str(error) == "Export failed: Permission denied"
+@pytest.mark.parametrize(
+    "message, source, adapter, original_error, expected_str_contains",
+    [
+        ("Base msg", None, None, None, "Base msg"),
+        ("Base msg", "file.csv", None, None, "Base msg from source 'file.csv'"),
+        ("Base msg", None, "csv_reader", None, "Base msg using adapter 'csv_reader'"),
+        (
+            "Base msg",
+            "file.csv",
+            "csv_reader",
+            None,
+            "Base msg using source 'file.csv' adapter 'csv_reader'",
+        ),
+        (
+            "Base msg",
+            "api.com",
+            "api_reader",
+            ValueError("Inner error"),
+            "Base msg using source 'api.com' adapter 'api_reader': Inner error",
+        ),
+        (
+            "Base msg",
+            "file.csv",
+            None,
+            ValueError("Inner error"),
+            "Base msg from source 'file.csv': Inner error",
+        ),
+    ],
+)
+def test_import_error_instantiation(
+    message, source, adapter, original_error, expected_str_contains
+):
+    """Test ImportError instantiation and message formatting."""
+    err = ImportError(message, source=source, adapter=adapter, original_error=original_error)
+    assert err.source == source
+    assert err.adapter == adapter
+    assert err.original_error == original_error
+    assert str(err) == expected_str_contains  # Exact match due to simplified test cases
+    assert isinstance(err, FinancialModelError)
 
 
-class TestTransformationError:
-    """Test cases for TransformationError."""
+@pytest.mark.parametrize(
+    "message, target, format_type, original_error, expected_str_contains",
+    [
+        ("Base msg", None, None, None, "Base msg"),
+        ("Base msg", "out.json", None, None, "Base msg to target 'out.json'"),
+        ("Base msg", None, "json", None, "Base msg in format 'json'"),
+        ("Base msg", "out.json", "json", None, "Base msg in target 'out.json' format 'json'"),
+        (
+            "Base msg",
+            "db://...",
+            "sql",
+            RuntimeError("DB down"),
+            "Base msg in target 'db://...' format 'sql': DB down",
+        ),
+        (
+            "Base msg",
+            "out.csv",
+            None,
+            RuntimeError("Disk full"),
+            "Base msg to target 'out.csv': Disk full",
+        ),
+    ],
+)
+def test_export_error_instantiation(
+    message, target, format_type, original_error, expected_str_contains
+):
+    """Test ExportError instantiation and message formatting."""
+    err = ExportError(
+        message, target=target, format_type=format_type, original_error=original_error
+    )
+    assert err.target == target
+    assert err.format_type == format_type
+    assert err.original_error == original_error
+    # Using exact match as the test cases cover the logic branches
+    assert str(err) == expected_str_contains
+    assert isinstance(err, FinancialModelError)
 
-    def test_basic_error(self):
-        """Test basic transformation error."""
-        error = TransformationError("Transformation failed")
-        assert str(error) == "Transformation failed"
 
-    def test_error_with_transformer_type(self):
-        """Test error with transformer type."""
-        error = TransformationError("Invalid transformer", transformer_type="normalize")
-        assert str(error) == "Invalid transformer in transformer 'normalize'"
+@pytest.mark.parametrize(
+    "message, cycle, expected_str",
+    [
+        ("Default message", None, "Default message"),
+        ("Custom message", None, "Custom message"),
+        ("Default message", ["a", "b", "a"], "Default message: a -> b -> a"),
+        ("Custom message", ["x", "y", "z", "x"], "Custom message: x -> y -> z -> x"),
+    ],
+)
+def test_circular_dependency_error_instantiation(message, cycle, expected_str):
+    """Test CircularDependencyError instantiation and message formatting."""
+    # Test default message
+    if message == "Default message":
+        # The actual default message is hardcoded in the class
+        err = CircularDependencyError(cycle=cycle)
+        expected_str = (
+            f"Circular dependency detected: {' -> '.join(cycle)}"
+            if cycle
+            else "Circular dependency detected"
+        )
+    else:
+        err = CircularDependencyError(message=message, cycle=cycle)
 
-    def test_error_with_parameters(self):
-        """Test error with parameters."""
-        params = {"method": "zscore", "axis": 0}
-        error = TransformationError("Invalid parameters", transformer_type="normalize", parameters=params)
-        assert str(error) == "Invalid parameters in transformer 'normalize' with parameters: method=zscore, axis=0" 
+    assert err.cycle == (cycle or [])
+    assert str(err) == expected_str
+    assert isinstance(err, FinancialModelError)
+
+
+@pytest.mark.parametrize(
+    "message, period, available_periods, expected_str",
+    [
+        ("Base msg", None, None, "Base msg"),
+        ("Base msg", "2023Q5", None, "Base msg for period '2023Q5'"),
+        (
+            "Base msg",
+            "2024",
+            ["2023", "2022"],
+            "Base msg for period '2024'. Available periods: 2023, 2022",
+        ),
+    ],
+)
+def test_period_error_instantiation(message, period, available_periods, expected_str):
+    """Test PeriodError instantiation and message formatting."""
+    err = PeriodError(message, period=period, available_periods=available_periods)
+    assert err.period == period
+    assert err.available_periods == (available_periods or [])
+    assert str(err) == expected_str
+    assert isinstance(err, FinancialModelError)
+
+
+@pytest.mark.parametrize(
+    "message, statement_id, expected_str",
+    [
+        ("Base msg", None, "Base msg"),
+        ("Base msg", "BS_2023", "Base msg for statement 'BS_2023'"),
+    ],
+)
+def test_statement_error_instantiation(message, statement_id, expected_str):
+    """Test StatementError instantiation and message formatting."""
+    err = StatementError(message, statement_id=statement_id)
+    assert err.statement_id == statement_id
+    assert str(err) == expected_str
+    assert isinstance(err, FinancialModelError)
+
+
+@pytest.mark.parametrize(
+    "message, strategy_type, node_id, expected_str",
+    [
+        ("Base msg", None, None, "Base msg"),
+        ("Base msg", "GrowthRate", None, "Base msg for strategy type 'GrowthRate'"),
+        ("Base msg", None, "node1", "Base msg for node 'node1'"),
+        (
+            "Base msg",
+            "Summation",
+            "node1",
+            "Base msg for strategy type 'Summation' in node 'node1'",
+        ),
+    ],
+)
+def test_strategy_error_instantiation(message, strategy_type, node_id, expected_str):
+    """Test StrategyError instantiation and message formatting."""
+    err = StrategyError(message, strategy_type=strategy_type, node_id=node_id)
+    assert err.strategy_type == strategy_type
+    assert err.node_id == node_id
+    assert str(err) == expected_str
+    assert isinstance(err, FinancialModelError)
+
+
+@pytest.mark.parametrize(
+    "message, transformer_type, parameters, expected_str",
+    [
+        ("Base msg", None, None, "Base msg"),
+        ("Base msg", "LogTransform", None, "Base msg in transformer 'LogTransform'"),
+        (
+            "Base msg",
+            "Scaler",
+            {"min": 0, "max": 1},
+            "Base msg in transformer 'Scaler' with parameters: min=0, max=1",
+        ),
+    ],
+)
+def test_transformation_error_instantiation(message, transformer_type, parameters, expected_str):
+    """Test TransformationError instantiation and message formatting."""
+    err = TransformationError(message, transformer_type=transformer_type, parameters=parameters)
+    assert err.transformer_type == transformer_type
+    assert err.parameters == (parameters or {})
+    assert str(err) == expected_str
+    assert isinstance(err, FinancialModelError)
+
+
+@pytest.mark.parametrize(
+    "message, metric_name, details, expected_str",
+    [
+        ("Base msg", None, None, "Base msg"),
+        ("Base msg", "revenue_growth", None, "Base msg related to metric 'revenue_growth'"),
+        (
+            "Base msg",
+            "profit_margin",
+            {"formula": "invalid("},
+            "Base msg related to metric 'profit_margin'",  # Details not included in standard str
+        ),
+    ],
+)
+def test_metric_error_instantiation(message, metric_name, details, expected_str):
+    """Test MetricError instantiation and message formatting."""
+    err = MetricError(message, metric_name=metric_name, details=details)
+    assert err.metric_name == metric_name
+    assert err.details == (details or {})
+    assert str(err) == expected_str
+    assert isinstance(err, FinancialModelError)

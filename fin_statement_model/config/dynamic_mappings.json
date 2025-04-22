@@ -1,8 +1,0 @@
-{
-    "version": "1.0",
-    "last_updated": "2024-01-01T00:00:00Z",
-    "description": "Dynamic mappings for metric aliases that are discovered and validated at runtime",
-    "mappings": {
-        
-    }
-}

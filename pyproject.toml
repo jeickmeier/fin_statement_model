@@ -20,6 +20,7 @@ dependencies = [
     "openpyxl>=3.1.5",
     "ipykernel>=6.29.5",
     "pyyaml>=6.0.2",
+    "python-dotenv>=0.21.0",
 ]
 
 [dependency-groups]
@@ -27,7 +28,10 @@ dev = [
     "ruff>=0.11.2",
     "pytest>=8.3.5",
     "pytest-cov>=6.0.0",
-    "pytest-asyncio>=0.25.3",    
+    "pytest-asyncio>=0.25.3",
+    "mypy>=1.15.0",
+    "black>=25.1.0",  
+    "isort>=6.0.1",      
 ]
 
 [tool.coverage.run]
@@ -54,3 +58,67 @@ python_classes = ["Test*"]
 [build-system]
 requires = ["hatchling>=1.21.0"]
 build-backend = "hatchling.build"
+
+# Ruff Configuration
+[tool.ruff]
+line-length = 100
+target-version = "py39" # Ensure compatibility with Python 3.9
+
+[tool.ruff.lint]
+# Select rule sets: E/F/W (pycodestyle/pyflakes), ANN (annotations), D (pydocstyle),
+# UP (pyupgrade), S (security - bandit), SIM (simplification), T20 (print statements),
+# TID (tidy imports), TRY (try/except handling), ERA (commented-out code),
+# PL (pylint), PT (pytest), Q (quotes), RUF (ruff-specific),
+# PERF (performance), PIE (misc PIE rules), YTT (sys.version checks), EXE (executable checks)
+select = [
+    "E", "F", "W", "ANN", "D",
+    "UP", "S", "SIM", "T20", "TID",
+    "TRY", "ERA", "PL", "PT", "Q",
+    "RUF", "PERF", "PIE", "YTT", "EXE",
+]
+
+ignore = [
+    "D107",   # Missing docstring in __init__ - allow if init is simple
+    "S101",   # Use of assert - needed for tests
+    "PLR0913",# Too many arguments - sometimes necessary
+    "PLR2004",# Magic value used in comparison - sometimes needed
+    "TRY003", # Avoid specifying long messages outside the exception class - allow for context
+    "TRY301", # Abstract raise to inner function - hurts readability here
+    "UP007",  # Don't use | for Union/Optional in Python 3.9
+    "PLR0912",# Too many branches - complexity acceptable for now
+    "PLR0915",# Too many statements - complexity acceptable for now
+    "PERF203",# Allow try-except inside loops where necessary
+    "E501",   # Line too long - sometimes necessary
+    "ERA001", # Allow commented out code
+    "TRY300", # Allow try-except without message
+    "T201",   # Print statement - sometimes necessary
+]
+
+# Configuration for pydocstyle (D rules)
+[tool.ruff.lint.pydocstyle]
+convention = "google" # Enforce Google-style docstrings
+
+# Configuration for flake8-annotations (ANN rules)
+[tool.ruff.lint.flake8-annotations]
+mypy-init-return = true          # Require __init__ to have no return type annotation
+suppress-none-returning = true   # Don't require annotation for functions that don't return None explicitly
+allow-star-arg-any = true        # Allow *args and **kwargs without explicit types for now
+
+# Configuration for mypy - although mypy runs separately, ruff can integrate some checks
+# This section remains top-level as it's for the mypy tool itself
+[tool.mypy]
+python_version = "3.9"
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+# Add path if needed, assuming source is in 'fin_statement_model'
+# mypy_path = "fin_statement_model"
+# Add plugins if used
+
+# Configuration for formatting (using ruff format)
+# This section remains top-level as it configures the formatter
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "lf"

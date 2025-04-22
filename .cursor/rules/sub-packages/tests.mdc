@@ -1,0 +1,17 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# General principles
+- Use **pytest** (with the `pytest‑cov` plugin) as the **only** test runner.
+- Treat tests as **first‑class code**: they must satisfy the same formatters
+  (`black`), linters (`ruff`) and static type‑checker (`mypy --strict`).
+- Prefer **small, isolated unit tests**. Integration / end‑to‑end tests are
+  welcome but must be clearly marked (`pytest.mark.integration`) and located
+  under `tests/integration/`.
+- Maintain **≥ 80 % branch coverage** for the `fin_statement_model` package. CI
+  fails if coverage drops below the threshold configured in `pyproject.toml`.
+- Every new public API **MUST** have at least one test.
+- The suite must be **deterministic** and **idempotent**: tests can run in any
+  order and multiple times without side‑effects.

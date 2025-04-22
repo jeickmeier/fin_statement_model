@@ -1,0 +1,64 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Purpose
+`extensions/` hosts **optional plugins** that extend the core functionality without
+changing base package code.  Extensions can be developed in‑repo (first party) or shipped
+as separate PyPI packages that expose entry‑points.
+
+Typical extension types:
+* Forecasting models relying on heavy ML libraries
+* LLM‑powered helpers (chat‑based analysis, report generation)
+
+# Extension Discovery
+* Use `importlib.metadata.entry_points(group="fin_statement_model.extensions")` to load
+  external plugins.
+* Entry-point group must start with `fin_statement_model.extensions.` to avoid clashes
+* In‑repo extensions live under `fin_statement_model/extensions/` grouped by domain.
+
+# Recommended In‑repo Layout
+| Path / Module                         | Responsibility                                             |
+|---------------------------------------|------------------------------------------------------------|
+| `extensions/llm/`                     | Example extension group – LLM‑based assistants             |
+| `extensions/llm/chat_reporter.py`     | ChatGPT‑powered financial commentary                       |
+| `extensions/__init__.py`              | Expose helper `discover_extensions()`                      |
+
+## Simplification / Refactor Plan
+- Keep each extension self‑contained; it may depend on heavy libs (openai, torch) but must
+  **not** be imported by default library path.  Lazy‑load inside extension only.
+- Consider moving bulky built‑in extensions to separate repo in future; keep interface
+  stable so users can pip‑install optional extras.
+
+# Base API for Extensions
+Define `protocols` in `extensions/base.py`:
+```python
+from fin_statement_model.extensions.base import ExtensionProtocol
+
+class MyExtension(ExtensionProtocol):
+    name: str
+    def activate(self) -> None: ...
+```
+Provide helper decorator `@register_extension("llm_chat")` to register.
+
+# Import & Dependency Rules
+- Extensions may import from all fin_statement_model layers.
+- Heavy optional deps must be guarded by `try/except ImportError` with clear error message.
+- Set module-level boolean for heavy deps (e.g. `HAS_OPENAI = True`)
+
+# File & Module Guidelines
+- Keep each extension ≤300 LOC; split larger ones into sub‑modules.
+- Core package must remain usable if `extensions/` is absent (no hard imports).
+- Each extension module must have `__all__ = [...]` in its `__init__.py`
+
+# Tests
+- Tests live in `tests/extensions/`; mock external APIs (e.g., OpenAI) to avoid network.
+- Use `pytest.mark.skipif(not HAS_OPENAI, reason="OpenAI not installed")` for optional deps.
+
+# Documentation
+- Each extension README lists extra dependencies and usage example.
+- Document entry-point group name and expected interface.
+
+---
+This rule keeps extensions isolated, lazily loaded, and easy for third parties to replicate.

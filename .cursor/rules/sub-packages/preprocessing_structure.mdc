@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Purpose
+The `preprocessing` layer contains reusable **data‑cleaning and transformation** logic
+applied *before* data is loaded into the core graph or fed to forecasting models.  It
+should be completely **side‑effect‑free** (no I/O) and focus on converting raw DataFrame
+inputs into normalised, type‑safe structures understood by the rest of the library.
+
+`preprocessing/` may import from `fin_statement_model.core` (for type aliases) but **must
+not import** from `io/` or `forecasting/`.

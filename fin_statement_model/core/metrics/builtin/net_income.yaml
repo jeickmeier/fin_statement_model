@@ -1,0 +1,13 @@
+---
+# Metric definition for Net Income
+
+name: Net Income
+description: Profit after all expenses and taxes have been deducted from revenue.
+inputs:
+  - operating_income  # Assumes an Operating Income node exists
+  - interest_expense  # Assumes an Interest Expense node exists
+  - taxes             # Assumes a Taxes node exists
+# Example formula, adjust based on actual intermediate nodes available
+formula: "operating_income - interest_expense - taxes" 
+tags: [profitability, income_statement, bottom_line]
+units: currency 

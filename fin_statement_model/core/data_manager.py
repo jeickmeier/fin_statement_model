@@ -1,175 +1,281 @@
-"""
-Data management functionality for the Financial Statement Model.
+"""Data management functionality for the Financial Statement Model.
 
 This module provides the DataManager class which is responsible for managing
 financial data in the graph, including adding and updating financial statement items.
 """
 
-from typing import Dict, List
-from .graph import Graph
-from .nodes import FinancialStatementItemNode, Node
+from typing import Optional
+from .nodes import Node, FinancialStatementItemNode
 from .node_factory import NodeFactory
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class DataManager:
-    """
-    Manages financial data in the graph, including adding and updating financial statement items.
+    """Manages financial data within a shared node registry.
 
-    The DataManager is responsible for:
-    - Adding financial statement items to the graph
-    - Updating item values
-    - Validating financial data
-
-    It ensures proper data management according to financial statement conventions.
+    Responsibilities:
+        - Adding/updating financial statement item nodes to the shared registry.
+        - Managing the list of unique time periods encountered.
 
     Attributes:
-        graph (Graph): The graph to manage data for
+        nodes (Dict[str, Node]): The shared dictionary storing all nodes.
+        periods (List[str]): A sorted list of unique time periods encountered.
+
+    Example:
+        >>> shared_nodes = {}
+        >>> data_manager = DataManager(shared_nodes)
+        >>> revenue_node = data_manager.add_item(
+        ...     "Revenue", {"2023Q1": 1000, "2023Q2": 1100}
+        ... )
+        >>> print(data_manager.get_node("Revenue"))
+        FinancialStatementItemNode(name='Revenue', ...)
+        >>> print(data_manager.periods)
+        ['2023Q1', '2023Q2']
     """
 
-    def __init__(self, graph: Graph):
-        """
-        Initialize a DataManager with a reference to the graph.
+    def __init__(self, nodes_registry: dict[str, Node]):
+        """Initialize the DataManager with a shared node registry.
 
         Args:
-            graph (Graph): The graph to manage data for
+            nodes_registry: The dictionary instance shared across graph components
+                            to store all nodes. This dictionary will be mutated
+                            by the DataManager.
         """
-        self.graph = graph
+        self._node_factory = NodeFactory()
+        self._nodes = nodes_registry
+        self._periods: list[str] = []
 
-    def add_item(self, name: str, values: Dict[str, float]) -> Node:
-        """
-        Add a financial statement item node to the graph with historical values.
+    def add_periods(self, periods: list[str]) -> None:
+        """Add unique periods based on data encountered.
+
+        Maintains a sorted list of unique periods seen across all data items.
 
         Args:
-            name: The name/identifier of the financial statement item (e.g. "revenue", "expenses")
-            values: Dictionary mapping time periods to numerical values (e.g. {"2022": 1000.0})
-
-        Returns:
-            Node: The newly created node
-
-        Raises:
-            ValueError: If a node with the given name already exists in the graph
+            periods: List of period strings to add. If duplicates exist within
+                     the list or compared to existing periods, they are ignored.
 
         Example:
-            data_manager.add_item("revenue", {"2022": 1000.0, "2023": 1200.0})
+            >>> shared_nodes = {}
+            >>> data_manager = DataManager(shared_nodes)
+            >>> data_manager.add_periods(["2023Q1", "2023Q2"])
+            >>> data_manager.add_periods(["2023Q2", "2023Q3"])
+            >>> print(data_manager.periods)
+            ['2023Q1', '2023Q2', '2023Q3']
         """
-        # Check if node already exists
-        if name in self.graph.nodes:
-            raise ValueError(f"Node '{name}' already exists in the graph")
+        # Use a set to handle duplicates within the input list efficiently
+        unique_incoming = set(periods)
+        new_periods = [p for p in unique_incoming if p not in self._periods]
+        if new_periods:
+            self._periods.extend(new_periods)
+            self._periods.sort()
+            logger.debug(f"Added periods: {new_periods}. Current periods: {self._periods}")
 
-        # Use NodeFactory to create the node
-        node = NodeFactory.create_financial_statement_item(name, values)
-        self.graph.add_node(node)
+    def add_node(self, node: Node) -> Node:
+        """Add a node directly to the shared registry.
+
+        This method is for adding any type of node, including custom or
+        calculation nodes. For standard financial data items, prefer `add_item`.
+        If a node with the same name already exists, it will be overwritten,
+        and a warning will be logged.
+
+        Args:
+            node: The node instance to add.
+
+        Returns:
+            Node: The added node.
+
+        Example:
+            >>> from fin_statement_model.core.nodes import CalculationNode
+            >>> shared_nodes = {}
+            >>> data_manager = DataManager(shared_nodes)
+            >>> # Assume GrossProfitNode is a subclass of CalculationNode
+            >>> # gp_node = GrossProfitNode(name="GrossProfit", ...)
+            >>> # data_manager.add_node(gp_node)
+            >>> # print(data_manager.get_node("GrossProfit"))
+            # GrossProfitNode(name='GrossProfit', ...)
+        """
+        if node.name in self._nodes:
+            logger.warning(f"Overwriting node '{node.name}' in shared registry.")
+        self._nodes[node.name] = node
+        logger.debug(f"Added node '{node.name}' directly to shared registry.")
+        return node
+
+    def get_node(self, name: str) -> Optional[Node]:
+        """Get a node by name from the shared registry.
+
+        Args:
+            name: The name of the node to retrieve.
+
+        Returns:
+            Optional[Node]: The node instance if found, otherwise None.
+
+        Example:
+            >>> shared_nodes = {}
+            >>> data_manager = DataManager(shared_nodes)
+            >>> data_manager.add_item("COGS", {"2023": 500})
+            FinancialStatementItemNode(name='COGS', values={'2023': 500.0})
+            >>> cogs_node = data_manager.get_node("COGS")
+            >>> print(cogs_node.name if cogs_node else None)
+            COGS
+            >>> print(data_manager.get_node("NonExistent"))
+            None
+        """
+        return self._nodes.get(name)
+
+    def add_item(self, name: str, values: dict[str, float]) -> FinancialStatementItemNode:
+        """Add a financial statement item node to the shared registry.
+
+        Creates a `FinancialStatementItemNode` with the given name and values,
+        adds it to the registry, and updates the list of known periods.
+
+        Args:
+            name: Name of the financial statement item (e.g., "Revenue", "COGS").
+            values: Dictionary mapping period strings (e.g., "2023Q1") to
+                    numerical values.
+
+        Returns:
+            FinancialStatementItemNode: The created and registered node.
+
+        Raises:
+            ValueError: If a node with the same name already exists.
+
+        Example:
+            >>> shared_nodes = {}
+            >>> data_manager = DataManager(shared_nodes)
+            >>> revenue = data_manager.add_item("Revenue", {"2023": 1000, "2024": 1200})
+            >>> print(revenue.name)
+            Revenue
+            >>> print(data_manager.get_node("Revenue").values)
+            {'2023': 1000.0, '2024': 1200.0}
+            >>> print(data_manager.periods)
+            ['2023', '2024']
+        """
+        if name in self._nodes:
+            raise ValueError(f"Node with name '{name}' already exists in the registry.")
+
+        node = FinancialStatementItemNode(name=name, values=values)
+
+        self._nodes[name] = node
+        logger.info(f"Added FinancialStatementItemNode '{name}' to shared registry.")
+
+        self.add_periods(list(values.keys()))
+
         return node
 
     def update_item(
-        self, name: str, values: Dict[str, float], replace_existing: bool = False
-    ) -> Node:
-        """
-        Update values for an existing financial statement item.
+        self, name: str, values: dict[str, float], replace_existing: bool = False
+    ) -> FinancialStatementItemNode:
+        """Update values for an existing financial statement item in the shared registry.
+
+        Finds the node by name and updates its `values` dictionary. Can either
+        merge new values with existing ones or completely replace them. Also
+        updates the list of known periods.
 
         Args:
-            name: The name/identifier of the financial statement item to update
-            values: Dictionary mapping time periods to numerical values to update
-            replace_existing: If True, replace all existing values; if False, merge with existing values
+            name: Name of the financial statement item to update.
+            values: Dictionary mapping periods to new or updated values.
+            replace_existing: If True, the existing `values` dictionary is
+                              discarded and replaced with the provided `values`.
+                              If False (default), the existing `values`
+                              dictionary is updated with the new key-value pairs,
+                              overwriting values for existing periods if they
+                              overlap.
 
         Returns:
-            Node: The updated node
+            FinancialStatementItemNode: The updated node.
 
         Raises:
-            ValueError: If no node with the given name exists in the graph
+            ValueError: If the node is not found in the registry.
+            TypeError: If the found node is not a `FinancialStatementItemNode`.
+
+        Example:
+            >>> shared_nodes = {}
+            >>> data_manager = DataManager(shared_nodes)
+            >>> item_node = data_manager.add_item("Expenses", {"2023": 500})
+            >>> # Merge new/updated values
+            >>> updated_node = data_manager.update_item(
+            ...     "Expenses", {"2023": 550, "2024": 600}
+            ... )
+            >>> print(updated_node.values)
+            {'2023': 550.0, '2024': 600.0}
+            >>> # Replace all values
+            >>> replaced_node = data_manager.update_item(
+            ...     "Expenses", {"2025": 700}, replace_existing=True
+            ... )
+            >>> print(replaced_node.values)
+            {'2025': 700.0}
+            >>> print(data_manager.periods)
+            ['2023', '2024', '2025']
         """
-        node = self.graph.get_node(name)
+        node = self._nodes.get(name)
         if node is None:
-            raise ValueError(f"No node found with name '{name}'")
+            raise ValueError(f"Node '{name}' not found in registry for update.")
 
         if not isinstance(node, FinancialStatementItemNode):
-            raise ValueError(f"Node '{name}' is not a financial statement item node")
+            raise TypeError(
+                f"Cannot update item values for node '{name}', "
+                f"it is not a FinancialStatementItemNode "
+                f"(type: {type(node).__name__})"
+            )
 
         if replace_existing:
-            node.values = values
+            node.values = values.copy()
+            logger.debug(f"Replaced values for item '{name}'.")
         else:
-            # Merge new values with existing ones
-            for period, value in values.items():
-                node.values[period] = value
+            node.values.update(values)
+            logger.debug(f"Updated values for item '{name}'.")
 
-        # Refresh the node in the graph
-        self.graph.add_node(node)
+        self.add_periods(list(values.keys()))
+
         return node
 
     def delete_item(self, name: str) -> bool:
-        """
-        Delete a financial statement item from the graph.
+        """Delete a node (presumably an item) from the shared registry.
 
         Args:
-            name: The name/identifier of the financial statement item to delete
+            name: Name of the node to delete.
 
         Returns:
-            bool: True if the item was deleted, False if it didn't exist
+            bool: True if the node was found and deleted, False otherwise.
 
-        Raises:
-            ValueError: If the item is referenced by calculation nodes
+        Example:
+            >>> shared_nodes = {}
+            >>> data_manager = DataManager(shared_nodes)
+            >>> data_manager.add_item("TempData", {"2023": 1})
+            FinancialStatementItemNode(name='TempData', values={'2023': 1.0})
+            >>> deleted = data_manager.delete_item("TempData")
+            >>> print(deleted)
+            True
+            >>> print(data_manager.get_node("TempData"))
+            None
+            >>> not_deleted = data_manager.delete_item("NonExistent")
+            >>> print(not_deleted)
+            False
         """
-        # Check if the node exists
-        if name not in self.graph.nodes:
-            return False
+        if name in self._nodes:
+            del self._nodes[name]
+            logger.info(f"Deleted node '{name}' from shared registry.")
+            return True
+        logger.warning(f"Attempted to delete non-existent node '{name}'.")
+        return False
 
-        # Check if the node is referenced by calculation nodes
-        for node_name, node in self.graph.nodes.items():
-            # Skip the node we're trying to delete
-            if node_name == name:
-                continue
+    @property
+    def periods(self) -> list[str]:
+        """Get the sorted list of unique periods encountered across all items.
 
-            if hasattr(node, "inputs") and node.inputs:
-                try:
-                    # Handle both regular lists and mock objects
-                    for input_node in node.inputs:
-                        if hasattr(input_node, "name") and input_node.name == name:
-                            raise ValueError(
-                                f"Cannot delete node '{name}' because it is referenced by '{node_name}'"
-                            )
-                except (TypeError, AttributeError):
-                    # Skip if inputs is not iterable or has other issues
-                    continue  # pragma: no cover
+        Returns:
+            List[str]: A sorted list of unique period strings.
 
-        # Delete the node
-        del self.graph.nodes[name]
-        return True
-
-    def copy_forward_values(self, periods: List[str]) -> None:
+        Example:
+            >>> shared_nodes = {}
+            >>> data_manager = DataManager(shared_nodes)
+            >>> data_manager.add_item("A", {"2024": 1, "2022": 2})
+            FinancialStatementItemNode(...)
+            >>> data_manager.add_item("B", {"2023": 3, "2022": 4})
+            FinancialStatementItemNode(...)
+            >>> print(data_manager.periods)
+            ['2022', '2023', '2024']
         """
-        Copy forward the last historical value for each financial statement item
-        to fill in missing forecast periods.
-
-        Args:
-            periods: List of all periods in chronological order
-        """
-        for node_name, node in self.graph.nodes.items():
-            if isinstance(node, FinancialStatementItemNode):
-                # Find periods with values and their indices
-                periods_with_values = {}
-                for period in node.values:
-                    if period in periods:
-                        idx = periods.index(period)
-                        periods_with_values[idx] = period
-
-                if not periods_with_values:
-                    continue  # No historical data to copy
-
-                # Sort period indices
-                sorted_indices = sorted(periods_with_values.keys())
-
-                # Fill in missing periods by copying from the previous known period
-                for i, period in enumerate(periods):
-                    if period not in node.values:
-                        # Find the most recent period with a value
-                        prev_idx = None
-                        for idx in sorted_indices:
-                            if idx < i:
-                                prev_idx = idx
-                            else:
-                                break
-
-                        # Copy value from the previous period if found
-                        if prev_idx is not None:
-                            prev_period = periods_with_values[prev_idx]
-                            node.values[period] = node.values[prev_period]
+        return self._periods
