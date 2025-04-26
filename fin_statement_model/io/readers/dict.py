@@ -1,14 +1,13 @@
 """Data reader for Python dictionaries."""
 
 import logging
-from typing import Optional
+from typing import Optional, Any
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.base import DataReader
 from fin_statement_model.io.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
-from fin_statement_model.io.readers.base import MappingConfig, normalize_mapping
 from fin_statement_model.io.config.models import DictReaderConfig
 
 logger = logging.getLogger(__name__)
@@ -36,7 +35,7 @@ class DictReader(DataReader):
         """
         self.cfg = cfg
 
-    def read(self, source: dict[str, dict[str, float]], **kwargs) -> Graph:
+    def read(self, source: dict[str, dict[str, float]], **kwargs: Any) -> Graph:
         """Create a new Graph from a dictionary.
 
         Args:
@@ -107,7 +106,7 @@ class DictReader(DataReader):
             ) from e
 
         # Determine graph periods
-        graph_periods = kwargs.get('periods')
+        graph_periods = kwargs.get("periods")
         if graph_periods is None:
             graph_periods = sorted(list(all_periods))
             logger.debug(f"Inferred graph periods from data: {graph_periods}")

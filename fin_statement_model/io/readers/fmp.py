@@ -1,20 +1,18 @@
 """Data reader for the Financial Modeling Prep (FMP) API."""
 
 import logging
-import os
 import requests
 from typing import Optional, ClassVar, Any
 import numpy as np
 import yaml
-from pathlib import Path
-import backoff
+import importlib.resources
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.base import DataReader
 from fin_statement_model.io.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
-from fin_statement_model.io.readers.base import MappingConfig, normalize_mapping
+from fin_statement_model.io.readers.base import normalize_mapping
 from fin_statement_model.io.config.models import FmpReaderConfig
 
 logger = logging.getLogger(__name__)
@@ -50,9 +48,16 @@ class FmpReader(DataReader):
     def _load_default_mappings(cls) -> None:
         """Load default mapping configurations from YAML file into DEFAULT_MAPPINGS."""
         # Load mapping YAML from config directory relative to this file
-        config_path = Path(__file__).parent / "config" / "fmp_default_mappings.yaml"
-        with config_path.open("r", encoding="utf-8") as f:
-            cls.DEFAULT_MAPPINGS = yaml.safe_load(f)
+        try:
+            # Use importlib.resources for robust package data loading
+            yaml_content = importlib.resources.files("fin_statement_model.io.readers.config").joinpath("fmp_default_mappings.yaml").read_text(encoding="utf-8")
+            cls.DEFAULT_MAPPINGS = yaml.safe_load(yaml_content)
+        except FileNotFoundError:
+            logger.error("Default FMP mapping file not found.", exc_info=True)
+            # Keep DEFAULT_MAPPINGS as empty dict if file is missing
+        except Exception as e:
+            logger.error(f"Error loading default FMP mapping file: {e}", exc_info=True)
+            # Keep DEFAULT_MAPPINGS as empty dict on other errors
 
     def __init__(self, cfg: FmpReaderConfig) -> None:
         """Initialize the FmpReader with validated configuration.

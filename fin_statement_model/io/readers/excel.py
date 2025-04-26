@@ -2,7 +2,7 @@
 
 import logging
 import os
-from typing import Optional, ClassVar, Any
+from typing import Optional, Any
 
 import pandas as pd
 
@@ -11,7 +11,7 @@ from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.base import DataReader
 from fin_statement_model.io.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
-from fin_statement_model.io.readers.base import MappingConfig, normalize_mapping
+from fin_statement_model.io.readers.base import normalize_mapping
 from fin_statement_model.io.config.models import ExcelReaderConfig
 
 logger = logging.getLogger(__name__)

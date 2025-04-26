@@ -6,15 +6,16 @@ adding subtotals, applying sign conventions, and reordering line items.
 
 import pandas as pd
 import yaml
-from pathlib import Path
+import importlib.resources
 from typing import Optional, Union, ClassVar
+import logging
 
 from fin_statement_model.preprocessing.base_transformer import DataTransformer
 from fin_statement_model.preprocessing.types import StatementFormattingConfig
 from fin_statement_model.preprocessing.enums import StatementType
 
 # Configure logging
-
+logger = logging.getLogger(__name__)
 
 class StatementFormattingTransformer(DataTransformer):
     """Transformer for formatting financial statements.
@@ -32,9 +33,16 @@ class StatementFormattingTransformer(DataTransformer):
     def _load_standard_orders(cls) -> None:
         """Load standard order configurations from YAML file into DEFAULT_ORDERS."""
         # Load the YAML from the preprocessing config directory
-        config_path = Path(__file__).parent.parent / "config" / "statement_standard_orders.yaml"
-        with config_path.open("r", encoding="utf-8") as f:
-            cls.DEFAULT_ORDERS = yaml.safe_load(f)
+        try:
+            # Use importlib.resources for robust package data loading
+            yaml_content = importlib.resources.files("fin_statement_model.preprocessing.config").joinpath("statement_standard_orders.yaml").read_text(encoding="utf-8")
+            cls.DEFAULT_ORDERS = yaml.safe_load(yaml_content)
+        except FileNotFoundError:
+            logger.error("Default statement order file not found.", exc_info=True)
+            # Keep DEFAULT_ORDERS as empty dict if file is missing
+        except Exception as e:
+            logger.error(f"Error loading default statement order file: {e}", exc_info=True)
+            # Keep DEFAULT_ORDERS as empty dict on other errors
 
     def __init__(
         self,

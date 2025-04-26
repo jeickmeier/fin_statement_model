@@ -4,7 +4,7 @@ This module provides Section and StatementStructure, which organize
 LineItem and CalculatedLineItem objects into nested groups.
 """
 
-from typing import Any, Optional, Union, List
+from typing import Any, Optional, Union
 
 from fin_statement_model.core.errors import StatementError
 from fin_statement_model.statements.structure.items import (
@@ -232,7 +232,7 @@ class StatementStructure:
         collect_calculation_items(self._sections)
         return calculation_items
 
-    def get_all_items(self) -> List[StatementItem]:
+    def get_all_items(self) -> list[StatementItem]:
         """Get all StatementItem instances recursively from the structure.
 
         Traverses all sections and nested sections, collecting only objects that
@@ -242,9 +242,9 @@ class StatementStructure:
         Returns:
             List[StatementItem]: A flat list of all statement items found.
         """
-        all_statement_items: List[StatementItem] = []
+        all_statement_items: list[StatementItem] = []
 
-        def _collect_items_recursive(items_or_sections: List[Union[Section, StatementItem]]) -> None:
+        def _collect_items_recursive(items_or_sections: list[Union[Section, StatementItem]]) -> None:
             for item in items_or_sections:
                 if isinstance(item, Section):
                     _collect_items_recursive(item.items)

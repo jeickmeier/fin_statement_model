@@ -17,7 +17,6 @@ from fin_statement_model.core.errors import (
     ConfigurationError,
     MetricError,
 )
-from fin_statement_model.core.metrics import metric_registry
 from fin_statement_model.core.nodes.base import Node
 
 # === FormulaCalculationNode ===
@@ -34,6 +33,8 @@ class FormulaCalculationNode(Node):
         inputs (Dict[str, Node]): Mapping of variable names used in the formula
             to their corresponding input Node instances.
         formula (str): The mathematical expression string to evaluate (e.g., "a + b").
+        metric_name (Optional[str]): The original metric identifier from the registry, if applicable.
+        metric_description (Optional[str]): The description from the metric definition, if applicable.
         _ast (ast.Expression): The parsed Abstract Syntax Tree of the formula.
 
     Examples:
@@ -58,7 +59,14 @@ class FormulaCalculationNode(Node):
         ast.USub: operator.neg,
     }
 
-    def __init__(self, name: str, inputs: dict[str, Node], formula: str):
+    def __init__(
+        self,
+        name: str,
+        inputs: dict[str, Node],
+        formula: str,
+        metric_name: Optional[str] = None,
+        metric_description: Optional[str] = None,
+    ):
         """Initialize the FormulaCalculationNode.
 
         Args:
@@ -66,6 +74,10 @@ class FormulaCalculationNode(Node):
             inputs (Dict[str, Node]): Dictionary mapping variable names in the
                 formula to the corresponding input nodes.
             formula (str): The mathematical formula string.
+            metric_name (Optional[str]): The original metric identifier from the
+                registry, if this node represents a defined metric. Defaults to None.
+            metric_description (Optional[str]): The description from the metric
+                definition, if applicable. Defaults to None.
 
         Raises:
             ValueError: If the formula string has invalid syntax.
@@ -76,6 +88,8 @@ class FormulaCalculationNode(Node):
             raise TypeError("FormulaCalculationNode inputs must be a dict of Node instances.")
         self.inputs = inputs
         self.formula = formula
+        self.metric_name = metric_name
+        self.metric_description = metric_description
         try:
             # Parse the formula string into an AST expression
             self._ast = ast.parse(formula, mode="eval").body
@@ -383,9 +397,17 @@ class MetricCalculationNode(Node):
 
         # Load the metric definition (Pydantic model) from the registry
         try:
+            # Need access to the registry instance here. Assuming it's globally available
+            # or passed in somehow. This demonstrates a potential design issue if
+            # node instantiation requires global state access.
+            # For this example, let's assume a global `metric_registry` exists:
+            from fin_statement_model.core.metrics import metric_registry
             self.definition = metric_registry.get(metric_name)
         except KeyError:
             raise ConfigurationError(f"Metric definition '{metric_name}' not found")
+        except ImportError:
+             # Handle cases where metric_registry might not be importable if structured differently
+            raise ConfigurationError("Could not import metric registry to load definition.")
 
         # Determine required inputs from the MetricDefinition model
         required_inputs = set(self.definition.inputs)
@@ -404,8 +426,10 @@ class MetricCalculationNode(Node):
             )
 
         # Create internal formula calculation node using the formula from the MetricDefinition
+        # This node is now the primary mechanism, so we don't need an internal one.
+        # The logic here is essentially moved to Graph.add_metric
         self.calc_node = FormulaCalculationNode(
-            name=f"_{name}_formula_calc",
+            name=f"_{name}_formula_calc", # Internal name to avoid collision
             inputs=input_nodes,
             formula=self.definition.formula,
         )
@@ -452,7 +476,12 @@ class MetricCalculationNode(Node):
         Returns:
             A list of metric input node names.
         """
-        return list(self.input_nodes.keys())
+        # Dependencies are now managed by the FormulaCalculationNode logic
+        # return list(self.input_nodes.keys())
+        # Should ideally delegate to self.calc_node.get_dependencies() if calc_node was kept
+        # Since calc_node is removed, we rely on FormulaCalculationNode's own get_dependencies
+        # This class is being removed, so implementation detail is less critical here.
+        return [node.name for node in self.input_nodes.values()]
 
     def has_calculation(self) -> bool:
         """Indicate that this node performs calculation.

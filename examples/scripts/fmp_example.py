@@ -18,8 +18,13 @@ from typing import Optional
 
 # Use absolute imports based on project structure
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.statements import FinancialStatementGraph  # Import FinancialStatementGraph
-from fin_statement_model.io import read_data, ReadError, FormatNotSupportedError
+# Remove FinancialStatementGraph import - use core Graph directly
+# from fin_statement_model.statements import FinancialStatementGraph
+# Use the read_data/write_data facades
+from fin_statement_model.io import read_data, write_data, ReadError, FormatNotSupportedError # Added write_data
+from fin_statement_model.io.writers import DataFrameWriter
+from fin_statement_model.core.nodes import ForecastNode
+from fin_statement_model.io.config.models import ExcelReaderConfig, DataFrameWriterConfig # Added DataFrameWriterConfig
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -44,13 +49,12 @@ def main():
         print("Error: FMP_API_KEY environment variable not set.")
         return
 
-    core_graph: Optional[Graph] = None
-    fs_graph: Optional[FinancialStatementGraph] = None
+    graph: Optional[Graph] = None # Renamed from core_graph for simplicity
     df: Optional[pd.DataFrame] = None
 
     try:
         # 1. Read data from FMP API into a core Graph object
-        core_graph = read_data(
+        graph = read_data(
             format_type="fmp",
             source=TICKER,
             api_key=api_key,
@@ -58,21 +62,12 @@ def main():
             period_type=PERIOD_TYPE,
             limit=LIMIT,
         )
-        print(f"Successfully fetched data. Graph has {len(core_graph.nodes)} nodes.")
+        print(f"Successfully fetched data. Graph has {len(graph.nodes)} nodes.")
 
-        # 2. Convert core Graph to FinancialStatementGraph
-        print("Converting to FinancialStatementGraph...")
-        fs_graph = FinancialStatementGraph(periods=core_graph.periods)
-        for node in core_graph.nodes.values():
-            if not fs_graph.has_node(node.name):
-                fs_graph.add_node(node)
-        # Add edge logic here if needed in the future
-        # for u, v in core_graph.edges: fs_graph.add_edge(u, v)
-        print("Conversion successful.")
-
-        # 3. Convert FinancialStatementGraph to DataFrame
-        print("Converting to DataFrame...")
-        df = fs_graph.to_dataframe()
+        # 3. Convert Graph to DataFrame using the utility
+        print("Converting graph to DataFrame...")
+        # Use the write_data facade, which handles configuration
+        df = write_data(format_type="dataframe", graph=graph, target=None)
         print("Conversion successful.")
 
     except FormatNotSupportedError:
@@ -86,12 +81,17 @@ def main():
     # 4. Display results if successful
     if df is not None:
         print(f"\n--- FMP Data for {TICKER} ({STATEMENT_TYPE}, {PERIOD_TYPE}) ---")
+        # Example: Accessing specific data if needed
         if "revenue" in df.index:
             print("\nRevenue:")
-            print(df.loc[["revenue"]].applymap("{:,.0f}".format))
+            # Ensure correct formatting, applymap might error if columns aren't numeric
+            try:
+                print(df.loc[["revenue"]].applymap("{:,.0f}".format))
+            except (TypeError, ValueError):
+                 print(df.loc[["revenue"]]) # Print raw if formatting fails
 
         print("\n--- DataFrame Head ---")
-        print(df)
+        print(df.head(10)) # Print head for brevity
     else:
         print("\nCould not generate DataFrame due to previous errors.")
 

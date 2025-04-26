@@ -1,7 +1,5 @@
-import pytest
 
 from fin_statement_model.statements.config.config import StatementConfig
-from fin_statement_model.statements.errors import ConfigurationError
 
 
 def test_validate_success():
@@ -84,4 +82,4 @@ def test_validate_subtotal_invalid_ref():
     }
     cfg = StatementConfig(config_data=data)
     errors = cfg.validate_config()
-    assert any("subtotal references undefined ids: x" in e.lower() for e in errors) 
+    assert any("subtotal references undefined ids: x" in e.lower() for e in errors)

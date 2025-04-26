@@ -1,5 +1,4 @@
-"""
-Pydantic models for IO reader and writer configuration.
+"""Pydantic models for IO reader and writer configuration.
 
 This module provides declarative schemas for validating configuration passed to IO readers.
 """
@@ -21,7 +20,7 @@ class BaseReaderConfig(BaseModel):
     source: str = Field(
         ..., description="URI or path to data source (file path, ticker, etc.)"
     )
-    format_type: Literal['csv', 'excel', 'dataframe', 'dict', 'fmp'] = Field(
+    format_type: Literal["csv", "excel", "dataframe", "dict", "fmp"] = Field(
         ..., description="Type of reader (csv, excel, dataframe, dict, fmp)."
     )
 
@@ -31,7 +30,7 @@ class BaseReaderConfig(BaseModel):
 class CsvReaderConfig(BaseReaderConfig):
     """CSV reader options."""
     delimiter: str = Field(
-        ',', description="Field delimiter for CSV files."
+        ",", description="Field delimiter for CSV files."
     )
     header_row: int = Field(
         1, description="Row number containing column names (1-indexed)."
@@ -76,11 +75,11 @@ class ExcelReaderConfig(BaseReaderConfig):
 
 class FmpReaderConfig(BaseReaderConfig):
     """Financial Modeling Prep API reader options."""
-    statement_type: Literal['income_statement', 'balance_sheet', 'cash_flow'] = Field(
+    statement_type: Literal["income_statement", "balance_sheet", "cash_flow"] = Field(
         ..., description="Type of financial statement to fetch."
     )
-    period_type: Literal['FY', 'QTR'] = Field(
-        'FY', description="Period type: 'FY' or 'QTR'."
+    period_type: Literal["FY", "QTR"] = Field(
+        "FY", description="Period type: 'FY' or 'QTR'."
     )
     limit: int = Field(
         5, description="Number of periods to fetch."
@@ -92,12 +91,12 @@ class FmpReaderConfig(BaseReaderConfig):
         None, description="Optional configuration for mapping source item names."
     )
 
-    @field_validator('api_key', mode="before")
+    @field_validator("api_key", mode="before")
     def load_api_key_env(cls, value: Optional[str]) -> Optional[str]:
         """Load api_key from FMP_API_KEY env var if not provided."""
         if not value:
             import os
-            return os.getenv('FMP_API_KEY')
+            return os.getenv("FMP_API_KEY")
         return value
 
     @model_validator(mode="after")
@@ -121,18 +120,18 @@ class DataFrameReaderConfig(BaseReaderConfig):
     """
 
     source: Any = Field(..., description="In-memory pandas DataFrame source")
-    format_type: Literal['dataframe'] = "dataframe"
+    format_type: Literal["dataframe"] = "dataframe"
 
 
 class DictReaderConfig(BaseReaderConfig):
     """Configuration for DictReader.
 
-    Mirrors :class:`DataFrameReaderConfig` – no custom options yet.  The
+    Mirrors :class:`DataFrameReaderConfig` - no custom options yet.  The
     placeholder keeps the IO registry symmetric and future-proof.
     """
 
     source: dict[str, dict[str, float]] = Field(..., description="In-memory dictionary source")
-    format_type: Literal['dict'] = "dict"
+    format_type: Literal["dict"] = "dict"
 
 
 # --- Writer-side Pydantic configuration models ---
@@ -141,7 +140,7 @@ class BaseWriterConfig(BaseModel):
     target: str = Field(
         ..., description="URI or path to data target (file path, in-memory target, etc.)"
     )
-    format_type: Literal['excel', 'dataframe', 'dict'] = Field(
+    format_type: Literal["excel", "dataframe", "dict"] = Field(
         ..., description="Type of writer (excel, dataframe, dict)."
     )
 
@@ -182,4 +181,3 @@ class DictWriterConfig(BaseWriterConfig):
     target: Optional[str] = Field(
         None, description="Optional target (ignored by DictWriter)."
     )
-    pass 

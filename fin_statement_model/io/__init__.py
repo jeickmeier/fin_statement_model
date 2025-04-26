@@ -77,17 +77,15 @@ def read_data(
     config_kwargs = {**kwargs, "source": source, "format_type": format_type}
     # Keep separate kwargs for the read method itself (e.g., 'periods')
     # This assumes Pydantic configs *don't* capture read-time args.
-    read_method_kwargs = kwargs # Pass all through for now; specific readers ignore extras
+
 
     try:
         # Pass the config kwargs directly to get_reader
         reader = get_reader(**config_kwargs)
 
         # Determine the actual source object for the read method
-        if format_type in ("dict", "dataframe"):
-            actual_source = source # The object itself
-        else:
-            actual_source = config_kwargs["source"] # Usually the path/ticker string
+        actual_source = source if format_type in ("dict", "dataframe") else config_kwargs["source"]
+
         # Pass the determined source and the original kwargs (excluding config keys potentially)
         # to the read method. Specific readers handle relevant kwargs.
         return reader.read(actual_source, **kwargs)
@@ -148,7 +146,7 @@ def write_data(
 
     # Prepare kwargs for registry validation (includes target and format_type)
     config_kwargs = {**kwargs, "target": target, "format_type": format_type}
-    write_method_kwargs = kwargs # Pass all through for now
+
 
     # Pass the config kwargs directly to get_writer
     writer = get_writer(**config_kwargs)

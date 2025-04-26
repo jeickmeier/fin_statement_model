@@ -7,7 +7,7 @@ metric definitions from YAML files and associate them with calculation classes.
 
 import logging
 from pathlib import Path
-from typing import Any, ClassVar, Union, Callable
+from typing import ClassVar, Union
 
 # Use a try-except block for the YAML import
 try:
@@ -21,12 +21,8 @@ from pydantic import ValidationError
 
 from fin_statement_model.core.errors import ConfigurationError
 from fin_statement_model.core.metrics.models import MetricDefinition
-from fin_statement_model.core.nodes.metric_node import MetricCalculation
 
 logger = logging.getLogger(__name__)
-
-# Registry mapping metric type strings to MetricCalculation classes
-_registry: dict[str, type[MetricCalculation]] = {}
 
 
 class MetricRegistry:
@@ -182,25 +178,3 @@ class MetricRegistry:
             >>> 'current_ratio' in registry
         """
         return metric_id in self._metrics
-
-    @classmethod
-    def register(cls, name: str) -> Callable[[type[MetricCalculation]], type[MetricCalculation]]:
-        """Register a new metric calculation class under a given name.
-
-        Args:
-            name: The identifier for the metric calculation type.
-
-        Returns:
-            A decorator that registers the decorated class under `name`.
-
-        Examples:
-            >>> @MetricRegistry.register("custom_metric")
-            ... class CustomMetric(MetricCalculation):
-            ...     pass
-        """
-
-        def decorator(metric_class: type[MetricCalculation]) -> type[MetricCalculation]:
-            _registry[name] = metric_class
-            return metric_class
-
-        return decorator

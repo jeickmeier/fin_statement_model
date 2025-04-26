@@ -3,14 +3,13 @@
 import logging
 import pandas as pd
 import numpy as np
-from typing import Optional
+from typing import Optional, Any
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.base import DataReader
 from fin_statement_model.io.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
-from fin_statement_model.io.readers.base import MappingConfig, normalize_mapping
 from fin_statement_model.io.config.models import DataFrameReaderConfig
 
 logger = logging.getLogger(__name__)
@@ -33,7 +32,7 @@ class DataFrameReader(DataReader):
         """
         self.cfg = cfg  # For future use; currently no configuration options.
 
-    def read(self, source: pd.DataFrame, **kwargs) -> Graph:
+    def read(self, source: pd.DataFrame, **kwargs: Any) -> Graph:
         """Read data from a pandas DataFrame into a new Graph.
 
         Assumes DataFrame index = node names, columns = periods.
@@ -69,7 +68,7 @@ class DataFrameReader(DataReader):
             # For now, stick to index=nodes assumption.
 
         # Determine periods: use explicit list or infer from columns
-        graph_periods_arg = kwargs.get('periods')
+        graph_periods_arg = kwargs.get("periods")
         if graph_periods_arg:
             if not isinstance(graph_periods_arg, list):
                 raise ReadError("'periods' argument must be a list of column names.")

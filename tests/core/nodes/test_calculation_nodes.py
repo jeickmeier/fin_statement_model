@@ -2,16 +2,18 @@
 
 import pytest
 from unittest.mock import MagicMock, patch
+from typing import Callable
 
 from fin_statement_model.core.nodes.base import Node
 from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
 from fin_statement_model.core.nodes.calculation_nodes import (
     FormulaCalculationNode,
     StrategyCalculationNode,
-    MetricCalculationNode,
     CustomCalculationNode,
 )
 from fin_statement_model.core.errors import CalculationError, ConfigurationError, MetricError
+from fin_statement_model.core.metrics import MetricDefinition
+from fin_statement_model.core.metrics.registry import MetricRegistry
 
 # --- Fixtures ---
 
@@ -366,200 +368,6 @@ def test_strategy_calculate_non_numeric_return(
 
 
 # --- Add tests for Metric, Custom nodes below ---
-
-# === MetricCalculationNode Fixtures and Tests ===
-
-
-@pytest.fixture
-def mock_metric_registry() -> MagicMock:
-    """Provides a mock metric registry for testing."""
-    registry = MagicMock()
-    registry.get.return_value = {
-        "inputs": ["input_a", "input_b"],  # Corresponds to variable names in formula
-        "formula": "input_a - input_b",
-        "description": "Test metric subtracting B from A",
-    }
-    # Simulate registry raising KeyError for unknown metrics
-    registry.get.side_effect = (
-        lambda key: registry.return_value
-        if key == "test_metric"
-        else (_ for _ in ()).throw(KeyError(f"Metric '{key}' not found"))
-    )
-
-    return registry
-
-
-@pytest.fixture
-def metric_input_nodes(node_a: Node, node_b: Node) -> dict[str, Node]:
-    """Provides input nodes mapped to metric input names."""
-    # Map the logical metric input names to actual node instances
-    return {"input_a": node_a, "input_b": node_b}
-
-
-# Use patch to replace the actual registry during tests for this class
-@patch("fin_statement_model.core.nodes.calculation_nodes.metric_registry", new_callable=MagicMock)
-def test_metric_init_success(
-    mock_registry: MagicMock, metric_input_nodes: dict[str, Node], node_a: Node, node_b: Node
-):
-    """Test successful initialization of MetricCalculationNode."""
-    # Configure the mock registry for this specific test
-    mock_registry.get.return_value = {
-        "inputs": ["input_a", "input_b"],
-        "formula": "input_a - input_b",
-        "description": "Test metric",
-    }
-    mock_registry.get.side_effect = None  # Clear side effect for this test
-
-    node = MetricCalculationNode(
-        name="TestMetric", metric_name="test_metric", input_nodes=metric_input_nodes
-    )
-    assert node.name == "TestMetric"
-    assert node.metric_name == "test_metric"
-    assert node.definition == mock_registry.get.return_value
-    assert node.has_calculation() is True
-    # get_dependencies should return logical dependencies from definition
-    assert node.get_dependencies() == ["input_a", "input_b"]
-    # Check internal calc_node was created
-    assert isinstance(node.calc_node, FormulaCalculationNode)
-    assert node.calc_node.name == "_TestMetric_formula_calc"
-    assert node.calc_node.formula == "input_a - input_b"
-    # Check the internal calc_node received the correctly mapped nodes
-    assert node.calc_node.inputs == metric_input_nodes
-
-
-@patch("fin_statement_model.core.nodes.calculation_nodes.metric_registry", new_callable=MagicMock)
-def test_metric_init_metric_not_found(
-    mock_registry: MagicMock, metric_input_nodes: dict[str, Node]
-):
-    """Test ConfigurationError if metric name is not in the registry."""
-    mock_registry.get.side_effect = KeyError("Metric 'unknown_metric' not found")
-
-    with pytest.raises(ConfigurationError, match="Metric definition 'unknown_metric' not found"):
-        MetricCalculationNode(
-            name="TestMetricNotFound", metric_name="unknown_metric", input_nodes=metric_input_nodes
-        )
-
-
-@patch("fin_statement_model.core.nodes.calculation_nodes.metric_registry", new_callable=MagicMock)
-def test_metric_init_invalid_definition(
-    mock_registry: MagicMock, metric_input_nodes: dict[str, Node]
-):
-    """Test MetricError if the retrieved metric definition is invalid (missing fields)."""
-    mock_registry.get.return_value = {"inputs": ["a"]}  # Missing 'formula'
-    mock_registry.get.side_effect = None
-
-    with pytest.raises(MetricError, match="Metric definition .* is invalid. Missing fields"):
-        MetricCalculationNode(
-            name="TestInvalidMetric", metric_name="test_metric", input_nodes=metric_input_nodes
-        )
-
-
-@patch("fin_statement_model.core.nodes.calculation_nodes.metric_registry", new_callable=MagicMock)
-def test_metric_init_input_node_mismatch_missing(mock_registry: MagicMock, node_a: Node):
-    """Test MetricError if a required input node is missing."""
-    mock_registry.get.return_value = {"inputs": ["req_a", "req_b"], "formula": "req_a + req_b"}
-    mock_registry.get.side_effect = None
-
-    with pytest.raises(
-        MetricError, match="Input nodes mismatch.*missing required inputs: {'req_b'}"
-    ):
-        MetricCalculationNode(
-            name="TestMissingInput", metric_name="test_metric", input_nodes={"req_a": node_a}
-        )
-
-
-@patch("fin_statement_model.core.nodes.calculation_nodes.metric_registry", new_callable=MagicMock)
-def test_metric_init_input_node_mismatch_extra(
-    mock_registry: MagicMock, metric_input_nodes: dict[str, Node], node_c: Node
-):
-    """Test MetricError if an extra, unrequired input node is provided."""
-    mock_registry.get.return_value = {
-        "inputs": ["input_a", "input_b"],
-        "formula": "input_a - input_b",
-    }
-    mock_registry.get.side_effect = None
-    extra_input_nodes = metric_input_nodes.copy()
-    extra_input_nodes["extra_c"] = node_c
-
-    with pytest.raises(
-        MetricError, match="Input nodes mismatch.*unexpected inputs provided: {'extra_c'}"
-    ):
-        MetricCalculationNode(
-            name="TestExtraInput", metric_name="test_metric", input_nodes=extra_input_nodes
-        )
-
-
-@patch("fin_statement_model.core.nodes.calculation_nodes.metric_registry", new_callable=MagicMock)
-def test_metric_init_invalid_input_nodes_type(mock_registry: MagicMock):
-    """Test TypeError if input_nodes is not a dict of Nodes."""
-    mock_registry.get.return_value = {"inputs": ["a"], "formula": "a * 2"}
-    mock_registry.get.side_effect = None
-
-    with pytest.raises(
-        TypeError, match="MetricCalculationNode input_nodes must be a dict of Node instances"
-    ):
-        MetricCalculationNode(
-            name="TestInvalidType", metric_name="test_metric", input_nodes={"a": 123}
-        )
-
-
-@patch("fin_statement_model.core.nodes.calculation_nodes.metric_registry", new_callable=MagicMock)
-def test_metric_calculate_success(mock_registry: MagicMock, metric_input_nodes: dict[str, Node]):
-    """Test successful calculation by delegating to the internal formula node."""
-    mock_registry.get.return_value = {
-        "inputs": ["input_a", "input_b"],
-        "formula": "input_a - input_b",
-    }
-    mock_registry.get.side_effect = None
-
-    node = MetricCalculationNode(
-        name="TestMetricCalc", metric_name="test_metric", input_nodes=metric_input_nodes
-    )
-    # node_a=10, node_b=5 for 2023 -> 10 - 5 = 5
-    assert node.calculate("2023") == pytest.approx(5.0)
-    # node_a=12, node_b=4 for 2024 -> 12 - 4 = 8
-    assert node.calculate("2024") == pytest.approx(8.0)
-
-
-@patch("fin_statement_model.core.nodes.calculation_nodes.metric_registry", new_callable=MagicMock)
-def test_metric_calculate_internal_formula_error(
-    mock_registry: MagicMock, metric_input_nodes: dict[str, Node]
-):
-    """Test that CalculationError from internal formula node is re-raised correctly."""
-    # Setup a metric with a formula that will cause division by zero
-    zero_node = FinancialStatementItemNode("ZeroNode", values={"2023": 0.0})
-    mock_registry.get.return_value = {"inputs": ["input_a", "zero"], "formula": "input_a / zero"}
-    mock_registry.get.side_effect = None
-
-    # Create a dictionary with only the required nodes for this metric
-    required_nodes = {
-        "input_a": metric_input_nodes["input_a"],  # Get node_a from the fixture
-        "zero": zero_node,
-    }
-
-    node = MetricCalculationNode(
-        name="TestMetricDivZero", metric_name="div_zero_metric", input_nodes=required_nodes
-    )
-
-    with pytest.raises(CalculationError) as exc_info:
-        node.calculate("2023")
-
-    # Check that the error message includes metric context and the original error
-    assert "Error calculating metric 'div_zero_metric'" in str(exc_info.value)
-    assert f"for node '{node.name}'" in str(exc_info.value)  # Check the correct node ID
-    assert f"and period '{exc_info.value.period}'" in str(exc_info.value)  # Check period
-    # Check that the original error detail (division by zero) is present
-    original_error_str = exc_info.value.details.get("original_error", "")
-    assert (
-        "division by zero" in original_error_str.lower()
-        or "float division by zero" in original_error_str.lower()
-    )
-    assert exc_info.value.node_id == "TestMetricDivZero"  # Check attribute directly
-    assert exc_info.value.period == "2023"
-    assert exc_info.value.details["metric_name"] == "div_zero_metric"
-
-
-# --- Add tests for Custom nodes below ---
 
 # === CustomCalculationNode Fixtures and Tests ===
 

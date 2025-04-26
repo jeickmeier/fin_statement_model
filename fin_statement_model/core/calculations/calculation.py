@@ -236,7 +236,8 @@ class DivisionCalculation(Calculation):
             >>> try:
             ...     strategy.calculate(nodes_zero_denom, "2023")
             ... except ZeroDivisionError as e:
-            ...     print(e)
+            ...     # Example: logging the error instead of printing
+            ...     logger.error(e)
             Division by zero: Denominator product is zero
         """
         if len(inputs) < 2:
@@ -319,7 +320,8 @@ class WeightedAverageCalculation(Calculation):
             >>> try:
             ...     strategy_mismatch.calculate(nodes, "2023")
             ... except ValueError as e:
-            ...     print(e)
+            ...     # Example: logging the error instead of printing
+            ...     logger.error(e)
             Number of weights (2) must match number of inputs (3)
         """
         if not inputs:

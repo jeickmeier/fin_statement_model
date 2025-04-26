@@ -33,7 +33,6 @@ from .core.nodes import (
     StatisticalGrowthForecastNode,
     CustomGrowthForecastNode,
 )
-from .statements import FinancialStatementGraph
 
 # ensure our library-wide logging policy is applied immediately
 from . import logging_config  # noqa: F401

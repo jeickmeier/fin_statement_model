@@ -66,4 +66,4 @@ def test_get_writer_unknown_format_raises() -> None:
 def test_get_writer_invalid_extra_field_raises_write_error() -> None:
     """Test get_writer raises WriteError for invalid init kwargs."""
     with pytest.raises(WriteError):
-        get_writer("excel", target="x", invalid_field="value") 
+        get_writer("excel", target="x", invalid_field="value")

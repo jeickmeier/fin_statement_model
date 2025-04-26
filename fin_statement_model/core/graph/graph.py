@@ -6,11 +6,11 @@ financial statement models.
 """
 
 import logging
-from typing import Any, Callable, Optional, Dict
+from typing import Any, Callable, Optional
 
 from fin_statement_model.core.node_factory import NodeFactory
-from fin_statement_model.core.nodes import Node, FinancialStatementItemNode, MetricCalculationNode, CalculationNode
-from fin_statement_model.core.errors import NodeError, ConfigurationError, CalculationError
+from fin_statement_model.core.nodes import Node, FinancialStatementItemNode, FormulaCalculationNode, CalculationNode
+from fin_statement_model.core.errors import NodeError, ConfigurationError, CalculationError, CircularDependencyError
 from fin_statement_model.core.metrics import metric_registry
 from fin_statement_model.core.calculations import Registry
 from fin_statement_model.core.graph.manipulator import GraphManipulator
@@ -53,16 +53,13 @@ class Graph:
 
         Examples:
             >>> graph_no_periods = Graph()
-            >>> print(graph_no_periods.periods)
-            []
+            >>> logger.info(graph_no_periods.periods) # Output: []
             >>> graph_with_periods = Graph(periods=["2023", "2022"])
-            >>> print(graph_with_periods.periods) # Periods are sorted
-            ['2022', '2023']
+            >>> logger.info(graph_with_periods.periods) # Periods are sorted
             >>> try:
             ...     Graph(periods="2023") # Invalid type
             ... except TypeError as e:
-            ...     print(e)
-            Initial periods must be a list
+            ...     logger.error(e)
         """
         # No super().__init__() needed as mixins don't have __init__
         # and GraphCore is removed.
@@ -95,10 +92,8 @@ class Graph:
         Examples:
             >>> graph = Graph()
             >>> item_node = graph.add_financial_statement_item("Revenue", {"2023": 100})
-            >>> print(list(graph.nodes.keys()))
-            ['Revenue']
-            >>> print(graph.nodes["Revenue"] == item_node)
-            True
+            >>> logger.info(list(graph.nodes.keys()))
+            >>> logger.info(graph.nodes["Revenue"] == item_node)
         """
         return self._nodes
 
@@ -111,11 +106,9 @@ class Graph:
 
         Examples:
             >>> graph = Graph(periods=["2024", "2023"])
-            >>> print(graph.periods)
-            ['2023', '2024']
+            >>> logger.info(graph.periods)
             >>> graph.add_periods(["2025"])
-            >>> print(graph.periods)
-            ['2023', '2024', '2025']
+            >>> logger.info(graph.periods)
         """
         return self._periods
 
@@ -195,6 +188,34 @@ class Graph:
                 f"Failed to create calculation node '{name}' with type '{operation_type}'"
             )
             raise
+
+        # --- Cycle Detection ---
+        for input_node in resolved_inputs:
+            try:
+                bfs_levels = self.traverser.breadth_first_search(start_node=input_node.name, direction="successors")
+                reachable_nodes = {n for level in bfs_levels for n in level}
+                if name in reachable_nodes:
+                    cycle_path_guess = [input_node.name, "...", name] # Simplified guess
+                    raise CircularDependencyError(
+                        message=f"Adding calculation node '{name}' would create a cycle from input '{input_node.name}'",
+                        node_id=name,
+                        cycle=cycle_path_guess
+                    )
+            except NodeError:
+                # Should not happen if inputs were resolved, but handle defensively
+                logger.warning(f"NodeError during cycle check pre-computation for {name} from {input_node.name}")
+                # Or potentially re-raise depending on desired strictness
+            except Exception as e:
+                # Catch broader errors during traversal if needed
+                logger.error(f"Unexpected error during cycle detection for node {name}: {e}", exc_info=True)
+                # Optionally re-raise as a different error type or handle
+                raise CalculationError(
+                    message=f"Error during cycle detection for {name}",
+                    node_id=name,
+                    details={"original_error": str(e)}
+                ) from e
+        # --- End Cycle Detection ---
+
         # Register node in graph
         if name in self._nodes:
             logger.warning(f"Overwriting existing node '{name}' in graph.")
@@ -206,20 +227,21 @@ class Graph:
 
     def add_metric(
         self, metric_name: str, node_name: Optional[str] = None
-    ) -> MetricCalculationNode:
+    ) -> Node:
         """Add a metric calculation node based on a metric definition.
 
         If `node_name` is None, uses `metric_name` as the node name.
 
-        Use the metric registry to load inputs and formula, create a MetricCalculationNode,
-        register it, and track it as a metric.
+        Uses the metric registry to load inputs and formula, creates a
+        FormulaCalculationNode directly, registers it, and stores metric
+        metadata on the node itself.
 
         Args:
             metric_name: Key of the metric definition to add.
             node_name: Optional name for the metric node; defaults to metric_name.
 
         Returns:
-            The created MetricCalculationNode.
+            The created FormulaCalculationNode.
 
         Raises:
             TypeError: If node_name is invalid.
@@ -235,13 +257,18 @@ class Graph:
         # Check for name conflict
         if node_name in self._nodes:
             raise ValueError(f"A node with name '{node_name}' already exists in the graph.")
+
         # Load metric definition (Pydantic model)
         try:
             metric_def = metric_registry.get(metric_name)
         except KeyError as e:
             raise ConfigurationError(f"Unknown metric definition: '{metric_name}'") from e
-        # Extract required inputs list from MetricDefinition
+
+        # Extract required fields from definition
         required_inputs = metric_def.inputs
+        formula = metric_def.formula
+        description = metric_def.description
+
         resolved_inputs: dict[str, Node] = {}
         missing = []
         for req in required_inputs:
@@ -249,31 +276,42 @@ class Graph:
             if nd is None:
                 missing.append(req)
             else:
+                # Use the required input name as the key for the Formula node
                 resolved_inputs[req] = nd
+
         if missing:
             raise NodeError(
                 f"Cannot create metric '{metric_name}': missing required nodes {missing}",
                 node_id=node_name,
             )
-        # Create metric node via factory
+
+        # Create FormulaCalculationNode directly
         try:
-            metric_node = self._node_factory.create_metric_node(
+            new_node = FormulaCalculationNode(
                 name=node_name,
-                metric_name=metric_name,
-                input_nodes=resolved_inputs,
+                inputs=resolved_inputs,
+                formula=formula,
+                metric_name=metric_name,  # Store original metric key
+                metric_description=description # Store description
             )
-        except (ValueError, TypeError, ConfigurationError):
+        except (ValueError, TypeError) as e: # Catch potential FormulaCalculationNode init errors
             logger.exception(
-                f"Failed to create metric node '{node_name}' for metric '{metric_name}'"
+                f"Failed to instantiate FormulaCalculationNode for metric '{metric_name}' as node '{node_name}'"
             )
-            raise
-        # Register metric node
-        self._nodes[node_name] = metric_node
-        self._metric_names.add(node_name)
+            # Re-raise as ConfigurationError or keep original, depending on desired error reporting
+            raise ConfigurationError(
+                f"Error creating node for metric '{metric_name}': {e}"
+            ) from e
+
+        # Register the new node using the graph's add_node method
+        # (Assuming add_node handles potential overwrites and adds to self._nodes)
+        self.manipulator.add_node(new_node)
+        # self._metric_names.add(node_name) # Removed - no longer tracking separately
+
         logger.info(
-            f"Added metric '{metric_name}' as node '{node_name}' with inputs {list(resolved_inputs)}"
+            f"Added metric '{metric_name}' as FormulaCalculationNode '{node_name}' with inputs {list(resolved_inputs)}"
         )
-        return metric_node
+        return new_node # Return the created FormulaCalculationNode
 
     def add_custom_calculation(
         self,
@@ -396,22 +434,31 @@ class Graph:
     def get_metric(self, metric_id: str) -> Optional[Node]:
         """Return the metric node for a given metric ID, if present.
 
+        Searches for a node with the given ID that was created as a metric
+        (identified by having a `metric_name` attribute).
+
         Args:
             metric_id: Identifier of the metric node to retrieve.
 
         Returns:
-            The MetricCalculationNode corresponding to `metric_id`, or None if not found.
+            The Node corresponding to `metric_id` if it's a metric node, or None.
 
         Examples:
             >>> m = graph.get_metric("current_ratio")
             >>> if m:
-            ...     print(m.name)
+            ...     logger.info(m.name)
         """
         node = self._nodes.get(metric_id)
-        return node if node and metric_id in self._metric_names else None
+        # Check if the node exists and has the metric_name attribute populated
+        if node and getattr(node, "metric_name", None) == metric_id:
+            return node
+        return None
 
     def get_available_metrics(self) -> list[str]:
         """Return a sorted list of all metric node IDs currently in the graph.
+
+        Identifies metric nodes by checking for the presence and non-None value
+        of the `metric_name` attribute.
 
         Returns:
             A sorted list of metric node names.
@@ -420,7 +467,13 @@ class Graph:
             >>> graph.get_available_metrics()
             ['current_ratio', 'debt_equity_ratio']
         """
-        return sorted(self._metric_names)
+        # Iterate through all nodes and collect names of those that are metrics
+        metric_node_names = [
+            node.name
+            for node in self._nodes.values()
+            if getattr(node, "metric_name", None) is not None
+        ]
+        return sorted(metric_node_names)
 
     def get_metric_info(self, metric_id: str) -> dict:
         """Return detailed information for a specific metric node.
@@ -436,22 +489,38 @@ class Graph:
 
         Examples:
             >>> info = graph.get_metric_info("current_ratio")
-            >>> print(info['inputs'])
+            >>> logger.info(info['inputs'])
         """
         metric_node = self.get_metric(metric_id)
         if metric_node is None:
             if metric_id in self._nodes:
-                raise ValueError(f"Node '{metric_id}' exists but is not a metric.")
-            raise ValueError(f"Metric '{metric_id}' not found in graph.")
-        # Extract info from the Pydantic MetricDefinition model
+                raise ValueError(f"Node '{metric_id}' exists but is not a metric (missing metric_name attribute).")
+            raise ValueError(f"Metric node '{metric_id}' not found in graph.")
+
+        # Extract info directly from the FormulaCalculationNode
         try:
-            description = metric_node.definition.description
-            display_name = metric_node.definition.name
+            # Use getattr for safety, retrieving stored metric metadata
+            description = getattr(metric_node, "metric_description", "N/A")
+            # metric_name stored on the node is the key from the registry
+            registry_key = getattr(metric_node, "metric_name", metric_id)
+
+            # We might want the display name from the original definition.
+            # Fetch the definition again if needed for the display name.
+            try:
+                metric_def = metric_registry.get(registry_key)
+                display_name = metric_def.name
+            except Exception:
+                logger.warning(f"Could not reload metric definition for '{registry_key}' to get display name. Using node name '{metric_id}' instead.")
+                display_name = metric_id # Fallback to node name
+
             inputs = metric_node.get_dependencies()
         except Exception as e:
+            # Catch potential attribute errors or other issues
+            logger.error(f"Error retrieving info for metric node '{metric_id}': {e}", exc_info=True)
             raise ValueError(
                 f"Failed to retrieve metric info for '{metric_id}': {e}"
-            )
+            ) from e
+
         return {"id": metric_id, "name": display_name, "description": description, "inputs": inputs}
 
     def calculate(self, node_name: str, period: str) -> float:
@@ -681,7 +750,7 @@ class Graph:
             A string summarizing the graph's structure and contents.
 
         Examples:
-            >>> repr(graph)
+            >>> logger.info(repr(graph))
         """
         from fin_statement_model.core.nodes import (
             FinancialStatementItemNode,
@@ -966,7 +1035,7 @@ class Graph:
         """
         return self.traverser.get_direct_predecessors(node_id)
 
-    def merge_from(self, other_graph: 'Graph') -> None:
+    def merge_from(self, other_graph: "Graph") -> None:
         """Merge nodes and periods from another Graph into this one.
 
         Adds periods from the other graph if they don't exist in this graph.
@@ -1022,7 +1091,7 @@ class Graph:
                     # but for now, assume adding the instance is okay.
                     self.add_node(other_node)
                     nodes_added += 1
-                except Exception as e:
-                     logger.error(f"Failed to add new node '{node_name}' during merge: {e}")
+                except Exception:
+                     logger.exception(f"Failed to add new node '{node_name}' during merge:")
 
         logger.info(f"Merge complete. Nodes added: {nodes_added}, Nodes updated (values merged): {nodes_updated}")

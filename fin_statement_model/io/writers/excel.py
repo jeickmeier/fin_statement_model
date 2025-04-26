@@ -3,7 +3,6 @@
 import logging
 from pathlib import Path
 from typing import Any, Optional
-import pandas as pd
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.base import DataWriter

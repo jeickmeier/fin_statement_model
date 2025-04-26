@@ -26,7 +26,13 @@ Example usage:
 The script will output the calculated net profit margin and DuPont ROE for FY2022.
 """
 
-from fin_statement_model.statements import FinancialStatementGraph
+# Use core Graph
+from fin_statement_model.core.graph import Graph
+# Import Forecaster (assuming path)
+from fin_statement_model.forecasting.forecaster import StatementForecaster
+# Import write_data facade
+from fin_statement_model.io import write_data
+
 import matplotlib.pyplot as plt
 
 # Define periods
@@ -35,32 +41,37 @@ forecast_periods = ["FY2023", "FY2024", "FY2025"]
 all_periods = historical_periods + forecast_periods
 
 # Create a graph with all periods
-fsg = FinancialStatementGraph(periods=all_periods)
+graph = Graph(periods=all_periods) # Use core Graph
 
 # Add raw financial statement data
-fsg.add_financial_statement_item(
+# (Calls are the same, just use 'graph' variable)
+graph.add_financial_statement_item(
     "revenue_americas", {"FY2020": 1000.0, "FY2021": 1100.0, "FY2022": 1210.0}
 )
-fsg.add_financial_statement_item(
+graph.add_financial_statement_item(
     "revenue_europe", {"FY2020": 800.0, "FY2021": 880.0, "FY2022": 968.0}
 )
-fsg.add_financial_statement_item(
+graph.add_financial_statement_item(
     "revenue_apac", {"FY2020": 500.0, "FY2021": 575.0, "FY2022": 661.3}
 )
-fsg.add_financial_statement_item(
+graph.add_financial_statement_item(
     "cost_of_goods_sold", {"FY2020": 1800.0, "FY2021": 1950.0, "FY2022": 2145.0}
 )
-fsg.add_financial_statement_item("expenses", {"FY2020": 800.0, "FY2021": 880.0, "FY2022": 968.0})
+graph.add_financial_statement_item("expenses", {"FY2020": 800.0, "FY2021": 880.0, "FY2022": 968.0})
 
 # Add regional revenues to get total revenue
-fsg.add_calculation("revenue", ["revenue_americas", "revenue_europe", "revenue_apac"], "addition")
-fsg.recalculate_all()
+graph.add_calculation("revenue", ["revenue_americas", "revenue_europe", "revenue_apac"], "addition")
+graph.recalculate_all()
 
-fsg.add_metric("gross_profit")
+graph.add_metric("gross_profit")
 
+
+# Instantiate forecaster separately
+forecaster = StatementForecaster(graph)
 
 # Create forecasts with different methods
-fsg.forecaster.create_forecast(
+# forecaster = fsg.forecaster # Old way
+forecaster.create_forecast(
     forecast_periods,
     {
         "revenue_americas": {
@@ -90,23 +101,28 @@ fsg.forecaster.create_forecast(
 )
 
 # Recalculate all values
-fsg.recalculate_all()
+graph.recalculate_all()
 
 print("\n--- Debug: Post-Recalculation Derived Node Value ---")
-revenue_node = fsg.get_node("revenue")
+revenue_node = graph.get_node("revenue")
 print(f"Total Revenue FY2023: {revenue_node.calculate('FY2023')}")
-profit_node = fsg.get_node("gross_profit")
+profit_node = graph.get_node("gross_profit")
 print(f"Gross Profit FY2023: {profit_node.calculate('FY2023')}")
 print("--------------------------------------------------\n")
 
 print("#########################")
-print(fsg)
+print(graph) # Use graph variable
 print("#########################")
 
-# Display the results
-df = fsg.to_dataframe()
-print("Financial Statement Forecast:")
-print(df)
+# Calculate and print the graph as a DataFrame
+print("\nCalculating graph...")
+try:
+    # Use the write_data facade, which handles configuration
+    df = write_data(format_type="dataframe", graph=graph, target=None)
+    print("\nGraph Data:")
+    print(df.to_string())
+except Exception as e:
+    print(f"Error calculating graph: {e}")
 
 # Growth rates table
 growth_df = df.pct_change(axis=1)

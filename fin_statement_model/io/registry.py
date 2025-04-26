@@ -111,21 +111,21 @@ def get_reader(format_type: str, **kwargs: Any) -> DataReader:
     reader_class = _readers[format_type]
     # Validate config for known reader types
     schema_map = {
-        'csv': CsvReaderConfig,
-        'excel': ExcelReaderConfig,
-        'fmp': FmpReaderConfig,
-        'dataframe': DataFrameReaderConfig,
-        'dict': DictReaderConfig,
+        "csv": CsvReaderConfig,
+        "excel": ExcelReaderConfig,
+        "fmp": FmpReaderConfig,
+        "dataframe": DataFrameReaderConfig,
+        "dict": DictReaderConfig,
     }
     schema = schema_map.get(format_type)
     if schema:
         try:
-            cfg = schema.model_validate({**kwargs, 'format_type': format_type})
+            cfg = schema.model_validate({**kwargs, "format_type": format_type})
         except ValidationError as ve:
             # Map other pydantic errors to ReadError
             raise ReadError(
                 message="Invalid reader configuration",
-                source=kwargs.get('source'),
+                source=kwargs.get("source"),
                 reader_type=format_type,
                 original_error=ve,
             ) from ve
@@ -139,7 +139,7 @@ def get_reader(format_type: str, **kwargs: Any) -> DataReader:
             )
             raise ReadError(
                 message="Failed to initialize reader",
-                source=kwargs.get('source'),
+                source=kwargs.get("source"),
                 reader_type=format_type,
                 original_error=e,
             ) from e
@@ -153,7 +153,7 @@ def get_reader(format_type: str, **kwargs: Any) -> DataReader:
         )
         raise ReadError(
             message="Failed to initialize reader",
-            source=kwargs.get('source'),
+            source=kwargs.get("source"),
             reader_type=format_type,
             original_error=e,
         ) from e
@@ -179,20 +179,20 @@ def get_writer(format_type: str, **kwargs: Any) -> DataWriter:
     writer_class = _writers[format_type]
     # Map writer types to their config models
     writer_schema_map = {
-        'excel': ExcelWriterConfig,
-        'dataframe': DataFrameWriterConfig,
-        'dict': DictWriterConfig,
+        "excel": ExcelWriterConfig,
+        "dataframe": DataFrameWriterConfig,
+        "dict": DictWriterConfig,
     }
 
     schema_cls = writer_schema_map.get(format_type)
 
     if schema_cls:
         try:
-            cfg = schema_cls.model_validate({**kwargs, 'format_type': format_type})
+            cfg = schema_cls.model_validate({**kwargs, "format_type": format_type})
         except ValidationError as ve:
             raise WriteError(
                 message="Invalid writer configuration",
-                target=kwargs.get('target'),
+                target=kwargs.get("target"),
                 writer_type=format_type,
                 original_error=ve,
             ) from ve
@@ -205,7 +205,7 @@ def get_writer(format_type: str, **kwargs: Any) -> DataWriter:
             )
             raise WriteError(
                 message="Failed to initialize writer",
-                target=kwargs.get('target'),
+                target=kwargs.get("target"),
                 writer_type=format_type,
                 original_error=e,
             ) from e
@@ -219,7 +219,7 @@ def get_writer(format_type: str, **kwargs: Any) -> DataWriter:
         )
         raise WriteError(
             message="Failed to initialize writer",
-            target=kwargs.get('target'),
+            target=kwargs.get("target"),
             writer_type=format_type,
             original_error=e,
         ) from e
