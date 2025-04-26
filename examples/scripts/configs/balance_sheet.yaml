@@ -1,0 +1,17 @@
+
+id: balance_sheet
+name: Balance Sheet (Partial)
+description: Snapshot of assets, liabilities, equity.
+sections:
+  - id: assets
+    name: Assets
+    items:
+      - id: cash
+        name: Cash & Equivalents
+        type: line_item
+        node_id: Cash
+      - id: accounts_receivable
+        name: Accounts Receivable
+        type: line_item
+        node_id: AR
+    

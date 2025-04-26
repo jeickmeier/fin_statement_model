@@ -26,11 +26,8 @@ Example usage:
 The script will output the calculated net profit margin and DuPont ROE for FY2022.
 """
 
-# Use core Graph
 from fin_statement_model.core.graph import Graph
-# Import Forecaster (assuming path)
 from fin_statement_model.forecasting.forecaster import StatementForecaster
-# Import write_data facade
 from fin_statement_model.io import write_data
 
 import matplotlib.pyplot as plt

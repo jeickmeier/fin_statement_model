@@ -9,7 +9,6 @@ used to build the financial model graph. These include:
 - Calculation Nodes:
     - `FormulaCalculationNode`: Calculates based on mathematical string formulas.
     - `CalculationNode`: Uses a calculation object for calculation logic.
-    - `MetricCalculationNode`: Calculates based on registered metric definitions.
     - `CustomCalculationNode`: Uses arbitrary Python functions for calculation.
 
 - Statistical Nodes:
@@ -28,7 +27,6 @@ from .item_node import FinancialStatementItemNode
 from .calculation_nodes import (
     FormulaCalculationNode,
     CalculationNode,
-    MetricCalculationNode,
     CustomCalculationNode,
 )
 from .stats_nodes import (
@@ -57,7 +55,6 @@ __all__ = [
     "FixedGrowthForecastNode",
     "ForecastNode",
     "FormulaCalculationNode",
-    "MetricCalculationNode",
     "MultiPeriodStatNode",
     "Node",
     "StatisticalGrowthForecastNode",

@@ -13,7 +13,6 @@ from .nodes import (
     Node,
     FinancialStatementItemNode,
     CalculationNode,
-    MetricCalculationNode,
     CustomCalculationNode,
 )
 from .nodes.forecast_nodes import (
@@ -57,7 +56,6 @@ class NodeFactory:
     # Mapping from node type names to Node classes
     _node_types: ClassVar[dict[str, type[Node]]] = {
         "financial_statement_item": FinancialStatementItemNode,
-        "metric_calculation": MetricCalculationNode,
     }
 
     @classmethod
@@ -168,64 +166,6 @@ class NodeFactory:
             f"Creating calculation node '{name}' with '{calculation_name}' calculation."
         )
         return CalculationNode(name, inputs, calculation_instance)
-
-    @classmethod
-    def create_metric_node(
-        cls, name: str, metric_name: str, input_nodes: dict[str, Node]
-    ) -> MetricCalculationNode:
-        """Create a MetricCalculationNode based on a pre-defined metric definition.
-
-        This node encapsulates a standard financial metric lookup and
-        calculation defined externally (e.g., in metrics YAML files).
-
-        Args:
-            name: Identifier for this metric node instance.
-            metric_name: Key of the metric definition to apply.
-            input_nodes: Mapping of required input names to Node instances.
-
-        Returns:
-            A MetricCalculationNode configured with the metric definition.
-
-        Raises:
-            ValueError: If name, metric_name, or inputs are invalid.
-            TypeError: If input_nodes is not a dict of Node instances.
-
-        Examples:
-            >>> current_ratio = NodeFactory.create_metric_node(
-            ...     name="CurrentRatio",
-            ...     metric_name="current_ratio",
-            ...     input_nodes={
-            ...         "current_assets": assets,
-            ...         "current_liabilities": liabilities
-            ...     }
-            ... )
-        """
-        logger.debug(f"Attempting to create metric node '{name}' for metric '{metric_name}'")
-
-        # Basic input validation
-        if not name or not isinstance(name, str):
-            raise ValueError("Node name must be a non-empty string")
-        if not isinstance(input_nodes, dict):
-            raise TypeError("input_nodes must be a dictionary of Node objects.")
-
-        # The MetricCalculationNode constructor now handles definition loading,
-        # validation of the definition, and validation of input_nodes.
-        try:
-            node = MetricCalculationNode(
-                name=name, metric_name=metric_name, input_nodes=input_nodes
-            )
-            logger.info(
-                f"Successfully created MetricCalculationNode '{name}' for metric '{metric_name}'"
-            )
-            return node
-        except (ValueError, TypeError):
-            logger.exception(
-                f"Failed to create MetricCalculationNode '{name}' for metric '{metric_name}'"
-            )
-            # Re-raise the specific error from the constructor
-            raise
-        else:
-            return node
 
     @classmethod
     def create_forecast_node(

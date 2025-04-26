@@ -9,6 +9,7 @@ import yaml
 import logging
 import importlib.resources
 import importlib.util # Needed for checking resource type
+from pathlib import Path
 from typing import Any, Optional
 
 from fin_statement_model.io.exceptions import ReadError

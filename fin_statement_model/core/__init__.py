@@ -20,7 +20,6 @@ from .graph import Graph
 from .nodes import (
     Node,
     FinancialStatementItemNode,
-    MetricCalculationNode,
     CalculationNode,
     YoYGrowthNode,
     MultiPeriodStatNode,
@@ -62,7 +61,6 @@ __all__ = [
     "FormulaCalculationNode",
     "Graph",
     "GraphError",
-    "MetricCalculationNode",
     "MultiPeriodStatNode",
     "MultiplicationCalculation",
     "Node",

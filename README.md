@@ -29,10 +29,9 @@ The library is designed to be extensible, allowing users to add custom calculati
 *   **Flexible Nodes:**
     *   `FinancialStatementItemNode`: Stores raw historical or projected data.
     *   **Calculation Nodes:**
-        *   `FormulaCalculationNode`: Evaluates simple mathematical string formulas (e.g., "a + b").
-        *   `StrategyCalculationNode`: Delegates calculation logic to reusable strategy objects (e.g., Addition, Subtraction, Weighted Average).
-        *   `MetricCalculationNode`: Calculates standard financial metrics based on definitions loaded from YAML files.
-        *   `CustomCalculationNode`: Uses arbitrary Python functions for complex calculations.
+        *   `FormulaCalculationNode`: Uses simple string formulas (e.g., `"a + b"`).
+        *   `StrategyCalculationNode`: Delegates logic to reusable strategy classes (e.g., `AdditionStrategy`).
+        *   `CustomCalculationNode`: Wraps arbitrary Python functions.
     *   **Statistical Nodes:**
         *   `YoYGrowthNode`: Calculates year-over-year percentage growth.
         *   `MultiPeriodStatNode`: Computes statistics (mean, stddev) over multiple periods.
@@ -52,7 +51,6 @@ The library is designed to be extensible, allowing users to add custom calculati
 *   **Metric Registry:**
     *   Define standard financial metrics in simple YAML files (`MetricRegistry`).
     *   Load metrics automatically from a built-in directory or custom locations.
-    *   Use `MetricCalculationNode` to easily incorporate metrics into the graph.
 *   **Calculation Strategies:**
     *   Encapsulate calculation logic using the Strategy pattern (`Strategy` base class).
     *   Built-in strategies: Addition, Subtraction, Multiplication, Division, WeightedAverage, CustomFormula.
@@ -123,7 +121,7 @@ Nodes represent individual elements in the financial model.
 
 FinancialStatementItemNode: Holds raw numerical data for specific periods (e.g., historical revenue).
 
-Calculation Nodes (FormulaCalculationNode, StrategyCalculationNode, MetricCalculationNode, CustomCalculationNode): Compute their values based on inputs from other nodes.
+Calculation Nodes (FormulaCalculationNode, StrategyCalculationNode, CustomCalculationNode): Compute their values based on inputs from other nodes.
 
 Statistical Nodes (YoYGrowthNode, etc.): Perform time-series statistical analysis.
 
@@ -157,8 +155,6 @@ The StatementFactory provides helpers to load configurations, create managers, a
 Standard financial metrics (like Gross Margin, Current Ratio) can be defined in simple YAML files.
 
 The MetricRegistry loads these definitions.
-
-MetricCalculationNode uses a loaded definition (inputs, formula) to create a calculation node in the graph.
 
 5. Strategies (Strategy, Registry)
 

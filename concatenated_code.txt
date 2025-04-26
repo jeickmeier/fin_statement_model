@@ -12,7 +12,6 @@ __all__ = [
     "Graph",
     "LLMClient",
     "LLMConfig",
-    "MetricCalculationNode",
     "MultiPeriodStatNode",
     "Node",
     "StatisticalGrowthForecastNode",
@@ -25,7 +24,6 @@ from .core.nodes import (
     Node,
     FinancialStatementItemNode,
     CalculationNode,
-    MetricCalculationNode,
     YoYGrowthNode,
     MultiPeriodStatNode,
     ForecastNode,
@@ -90,7 +88,6 @@ from .graph import Graph
 from .nodes import (
     Node,
     FinancialStatementItemNode,
-    MetricCalculationNode,
     CalculationNode,
     YoYGrowthNode,
     MultiPeriodStatNode,
@@ -132,7 +129,6 @@ __all__ = [
     "FormulaCalculationNode",
     "Graph",
     "GraphError",
-    "MetricCalculationNode",
     "MultiPeriodStatNode",
     "MultiplicationCalculation",
     "Node",
@@ -1234,7 +1230,7 @@ import logging
 from typing import Any, Callable, Optional
 
 from fin_statement_model.core.node_factory import NodeFactory
-from fin_statement_model.core.nodes import Node, FinancialStatementItemNode, MetricCalculationNode, CalculationNode
+from fin_statement_model.core.nodes import Node, FinancialStatementItemNode, FormulaCalculationNode, CalculationNode
 from fin_statement_model.core.errors import NodeError, ConfigurationError, CalculationError, CircularDependencyError
 from fin_statement_model.core.metrics import metric_registry
 from fin_statement_model.core.calculations import Registry
@@ -1452,20 +1448,21 @@ class Graph:
 
     def add_metric(
         self, metric_name: str, node_name: Optional[str] = None
-    ) -> MetricCalculationNode:
+    ) -> Node:
         """Add a metric calculation node based on a metric definition.
 
         If `node_name` is None, uses `metric_name` as the node name.
 
-        Use the metric registry to load inputs and formula, create a MetricCalculationNode,
-        register it, and track it as a metric.
+        Uses the metric registry to load inputs and formula, creates a
+        FormulaCalculationNode directly, registers it, and stores metric
+        metadata on the node itself.
 
         Args:
             metric_name: Key of the metric definition to add.
             node_name: Optional name for the metric node; defaults to metric_name.
 
         Returns:
-            The created MetricCalculationNode.
+            The created FormulaCalculationNode.
 
         Raises:
             TypeError: If node_name is invalid.
@@ -1481,13 +1478,18 @@ class Graph:
         # Check for name conflict
         if node_name in self._nodes:
             raise ValueError(f"A node with name '{node_name}' already exists in the graph.")
+
         # Load metric definition (Pydantic model)
         try:
             metric_def = metric_registry.get(metric_name)
         except KeyError as e:
             raise ConfigurationError(f"Unknown metric definition: '{metric_name}'") from e
-        # Extract required inputs list from MetricDefinition
+
+        # Extract required fields from definition
         required_inputs = metric_def.inputs
+        formula = metric_def.formula
+        description = metric_def.description
+
         resolved_inputs: dict[str, Node] = {}
         missing = []
         for req in required_inputs:
@@ -1495,31 +1497,42 @@ class Graph:
             if nd is None:
                 missing.append(req)
             else:
+                # Use the required input name as the key for the Formula node
                 resolved_inputs[req] = nd
+
         if missing:
             raise NodeError(
                 f"Cannot create metric '{metric_name}': missing required nodes {missing}",
                 node_id=node_name,
             )
-        # Create metric node via factory
+
+        # Create FormulaCalculationNode directly
         try:
-            metric_node = self._node_factory.create_metric_node(
+            new_node = FormulaCalculationNode(
                 name=node_name,
-                metric_name=metric_name,
-                input_nodes=resolved_inputs,
+                inputs=resolved_inputs,
+                formula=formula,
+                metric_name=metric_name,  # Store original metric key
+                metric_description=description # Store description
             )
-        except (ValueError, TypeError, ConfigurationError):
+        except (ValueError, TypeError) as e: # Catch potential FormulaCalculationNode init errors
             logger.exception(
-                f"Failed to create metric node '{node_name}' for metric '{metric_name}'"
+                f"Failed to instantiate FormulaCalculationNode for metric '{metric_name}' as node '{node_name}'"
             )
-            raise
-        # Register metric node
-        self._nodes[node_name] = metric_node
-        self._metric_names.add(node_name)
+            # Re-raise as ConfigurationError or keep original, depending on desired error reporting
+            raise ConfigurationError(
+                f"Error creating node for metric '{metric_name}': {e}"
+            ) from e
+
+        # Register the new node using the graph's add_node method
+        # (Assuming add_node handles potential overwrites and adds to self._nodes)
+        self.manipulator.add_node(new_node)
+        # self._metric_names.add(node_name) # Removed - no longer tracking separately
+
         logger.info(
-            f"Added metric '{metric_name}' as node '{node_name}' with inputs {list(resolved_inputs)}"
+            f"Added metric '{metric_name}' as FormulaCalculationNode '{node_name}' with inputs {list(resolved_inputs)}"
         )
-        return metric_node
+        return new_node # Return the created FormulaCalculationNode
 
     def add_custom_calculation(
         self,
@@ -1642,11 +1655,14 @@ class Graph:
     def get_metric(self, metric_id: str) -> Optional[Node]:
         """Return the metric node for a given metric ID, if present.
 
+        Searches for a node with the given ID that was created as a metric
+        (identified by having a `metric_name` attribute).
+
         Args:
             metric_id: Identifier of the metric node to retrieve.
 
         Returns:
-            The MetricCalculationNode corresponding to `metric_id`, or None if not found.
+            The Node corresponding to `metric_id` if it's a metric node, or None.
 
         Examples:
             >>> m = graph.get_metric("current_ratio")
@@ -1654,10 +1670,16 @@ class Graph:
             ...     logger.info(m.name)
         """
         node = self._nodes.get(metric_id)
-        return node if node and metric_id in self._metric_names else None
+        # Check if the node exists and has the metric_name attribute populated
+        if node and getattr(node, "metric_name", None) == metric_id:
+            return node
+        return None
 
     def get_available_metrics(self) -> list[str]:
         """Return a sorted list of all metric node IDs currently in the graph.
+
+        Identifies metric nodes by checking for the presence and non-None value
+        of the `metric_name` attribute.
 
         Returns:
             A sorted list of metric node names.
@@ -1666,7 +1688,13 @@ class Graph:
             >>> graph.get_available_metrics()
             ['current_ratio', 'debt_equity_ratio']
         """
-        return sorted(self._metric_names)
+        # Iterate through all nodes and collect names of those that are metrics
+        metric_node_names = [
+            node.name
+            for node in self._nodes.values()
+            if getattr(node, "metric_name", None) is not None
+        ]
+        return sorted(metric_node_names)
 
     def get_metric_info(self, metric_id: str) -> dict:
         """Return detailed information for a specific metric node.
@@ -1687,17 +1715,33 @@ class Graph:
         metric_node = self.get_metric(metric_id)
         if metric_node is None:
             if metric_id in self._nodes:
-                raise ValueError(f"Node '{metric_id}' exists but is not a metric.")
-            raise ValueError(f"Metric '{metric_id}' not found in graph.")
-        # Extract info from the Pydantic MetricDefinition model
+                raise ValueError(f"Node '{metric_id}' exists but is not a metric (missing metric_name attribute).")
+            raise ValueError(f"Metric node '{metric_id}' not found in graph.")
+
+        # Extract info directly from the FormulaCalculationNode
         try:
-            description = metric_node.definition.description
-            display_name = metric_node.definition.name
+            # Use getattr for safety, retrieving stored metric metadata
+            description = getattr(metric_node, "metric_description", "N/A")
+            # metric_name stored on the node is the key from the registry
+            registry_key = getattr(metric_node, "metric_name", metric_id)
+
+            # We might want the display name from the original definition.
+            # Fetch the definition again if needed for the display name.
+            try:
+                metric_def = metric_registry.get(registry_key)
+                display_name = metric_def.name
+            except Exception:
+                logger.warning(f"Could not reload metric definition for '{registry_key}' to get display name. Using node name '{metric_id}' instead.")
+                display_name = metric_id # Fallback to node name
+
             inputs = metric_node.get_dependencies()
         except Exception as e:
+            # Catch potential attribute errors or other issues
+            logger.error(f"Error retrieving info for metric node '{metric_id}': {e}", exc_info=True)
             raise ValueError(
                 f"Failed to retrieve metric info for '{metric_id}': {e}"
-            )
+            ) from e
+
         return {"id": metric_id, "name": display_name, "description": description, "inputs": inputs}
 
     def calculate(self, node_name: str, period: str) -> float:
@@ -2863,7 +2907,7 @@ metric definitions from YAML files and associate them with calculation classes.
 
 import logging
 from pathlib import Path
-from typing import ClassVar, Union, Callable
+from typing import ClassVar, Union
 
 # Use a try-except block for the YAML import
 try:
@@ -2877,12 +2921,8 @@ from pydantic import ValidationError
 
 from fin_statement_model.core.errors import ConfigurationError
 from fin_statement_model.core.metrics.models import MetricDefinition
-from fin_statement_model.core.nodes.metric_node import MetricCalculation
 
 logger = logging.getLogger(__name__)
-
-# Registry mapping metric type strings to MetricCalculation classes
-_registry: dict[str, type[MetricCalculation]] = {}
 
 
 class MetricRegistry:
@@ -3039,28 +3079,6 @@ class MetricRegistry:
         """
         return metric_id in self._metrics
 
-    @classmethod
-    def register(cls, name: str) -> Callable[[type[MetricCalculation]], type[MetricCalculation]]:
-        """Register a new metric calculation class under a given name.
-
-        Args:
-            name: The identifier for the metric calculation type.
-
-        Returns:
-            A decorator that registers the decorated class under `name`.
-
-        Examples:
-            >>> @MetricRegistry.register("custom_metric")
-            ... class CustomMetric(MetricCalculation):
-            ...     pass
-        """
-
-        def decorator(metric_class: type[MetricCalculation]) -> type[MetricCalculation]:
-            _registry[name] = metric_class
-            return metric_class
-
-        return decorator
-
 # --- END FILE: fin_statement_model/core/metrics/registry.py ---
 
 # --- START FILE: fin_statement_model/core/node_factory.py ---
@@ -3079,7 +3097,6 @@ from .nodes import (
     Node,
     FinancialStatementItemNode,
     CalculationNode,
-    MetricCalculationNode,
     CustomCalculationNode,
 )
 from .nodes.forecast_nodes import (
@@ -3123,7 +3140,6 @@ class NodeFactory:
     # Mapping from node type names to Node classes
     _node_types: ClassVar[dict[str, type[Node]]] = {
         "financial_statement_item": FinancialStatementItemNode,
-        "metric_calculation": MetricCalculationNode,
     }
 
     @classmethod
@@ -3234,64 +3250,6 @@ class NodeFactory:
             f"Creating calculation node '{name}' with '{calculation_name}' calculation."
         )
         return CalculationNode(name, inputs, calculation_instance)
-
-    @classmethod
-    def create_metric_node(
-        cls, name: str, metric_name: str, input_nodes: dict[str, Node]
-    ) -> MetricCalculationNode:
-        """Create a MetricCalculationNode based on a pre-defined metric definition.
-
-        This node encapsulates a standard financial metric lookup and
-        calculation defined externally (e.g., in metrics YAML files).
-
-        Args:
-            name: Identifier for this metric node instance.
-            metric_name: Key of the metric definition to apply.
-            input_nodes: Mapping of required input names to Node instances.
-
-        Returns:
-            A MetricCalculationNode configured with the metric definition.
-
-        Raises:
-            ValueError: If name, metric_name, or inputs are invalid.
-            TypeError: If input_nodes is not a dict of Node instances.
-
-        Examples:
-            >>> current_ratio = NodeFactory.create_metric_node(
-            ...     name="CurrentRatio",
-            ...     metric_name="current_ratio",
-            ...     input_nodes={
-            ...         "current_assets": assets,
-            ...         "current_liabilities": liabilities
-            ...     }
-            ... )
-        """
-        logger.debug(f"Attempting to create metric node '{name}' for metric '{metric_name}'")
-
-        # Basic input validation
-        if not name or not isinstance(name, str):
-            raise ValueError("Node name must be a non-empty string")
-        if not isinstance(input_nodes, dict):
-            raise TypeError("input_nodes must be a dictionary of Node objects.")
-
-        # The MetricCalculationNode constructor now handles definition loading,
-        # validation of the definition, and validation of input_nodes.
-        try:
-            node = MetricCalculationNode(
-                name=name, metric_name=metric_name, input_nodes=input_nodes
-            )
-            logger.info(
-                f"Successfully created MetricCalculationNode '{name}' for metric '{metric_name}'"
-            )
-            return node
-        except (ValueError, TypeError):
-            logger.exception(
-                f"Failed to create MetricCalculationNode '{name}' for metric '{metric_name}'"
-            )
-            # Re-raise the specific error from the constructor
-            raise
-        else:
-            return node
 
     @classmethod
     def create_forecast_node(
@@ -3440,7 +3398,6 @@ used to build the financial model graph. These include:
 - Calculation Nodes:
     - `FormulaCalculationNode`: Calculates based on mathematical string formulas.
     - `CalculationNode`: Uses a calculation object for calculation logic.
-    - `MetricCalculationNode`: Calculates based on registered metric definitions.
     - `CustomCalculationNode`: Uses arbitrary Python functions for calculation.
 
 - Statistical Nodes:
@@ -3459,7 +3416,6 @@ from .item_node import FinancialStatementItemNode
 from .calculation_nodes import (
     FormulaCalculationNode,
     CalculationNode,
-    MetricCalculationNode,
     CustomCalculationNode,
 )
 from .stats_nodes import (
@@ -3488,7 +3444,6 @@ __all__ = [
     "FixedGrowthForecastNode",
     "ForecastNode",
     "FormulaCalculationNode",
-    "MetricCalculationNode",
     "MultiPeriodStatNode",
     "Node",
     "StatisticalGrowthForecastNode",
@@ -3671,7 +3626,6 @@ class Node(ABC):
 This module defines the different types of calculation nodes available in the system:
 - FormulaCalculationNode: Evaluates a formula expression string (e.g., "a + b / 2")
 - CalculationNode: Uses a calculation object for calculation logic
-- MetricCalculationNode: Calculates a registered financial metric
 - CustomCalculationNode: Calculates using a Python callable/function
 """
 
@@ -3685,7 +3639,6 @@ from fin_statement_model.core.errors import (
     ConfigurationError,
     MetricError,
 )
-from fin_statement_model.core.metrics import metric_registry
 from fin_statement_model.core.nodes.base import Node
 
 # === FormulaCalculationNode ===
@@ -3702,6 +3655,8 @@ class FormulaCalculationNode(Node):
         inputs (Dict[str, Node]): Mapping of variable names used in the formula
             to their corresponding input Node instances.
         formula (str): The mathematical expression string to evaluate (e.g., "a + b").
+        metric_name (Optional[str]): The original metric identifier from the registry, if applicable.
+        metric_description (Optional[str]): The description from the metric definition, if applicable.
         _ast (ast.Expression): The parsed Abstract Syntax Tree of the formula.
 
     Examples:
@@ -3726,7 +3681,14 @@ class FormulaCalculationNode(Node):
         ast.USub: operator.neg,
     }
 
-    def __init__(self, name: str, inputs: dict[str, Node], formula: str):
+    def __init__(
+        self,
+        name: str,
+        inputs: dict[str, Node],
+        formula: str,
+        metric_name: Optional[str] = None,
+        metric_description: Optional[str] = None,
+    ):
         """Initialize the FormulaCalculationNode.
 
         Args:
@@ -3734,6 +3696,10 @@ class FormulaCalculationNode(Node):
             inputs (Dict[str, Node]): Dictionary mapping variable names in the
                 formula to the corresponding input nodes.
             formula (str): The mathematical formula string.
+            metric_name (Optional[str]): The original metric identifier from the
+                registry, if this node represents a defined metric. Defaults to None.
+            metric_description (Optional[str]): The description from the metric
+                definition, if applicable. Defaults to None.
 
         Raises:
             ValueError: If the formula string has invalid syntax.
@@ -3744,6 +3710,8 @@ class FormulaCalculationNode(Node):
             raise TypeError("FormulaCalculationNode inputs must be a dict of Node instances.")
         self.inputs = inputs
         self.formula = formula
+        self.metric_name = metric_name
+        self.metric_description = metric_description
         try:
             # Parse the formula string into an AST expression
             self._ast = ast.parse(formula, mode="eval").body
@@ -3988,145 +3956,6 @@ class CalculationNode(Node):
 
         Returns:
             True, as CalculationNode performs calculations.
-        """
-        return True
-
-
-# === MetricCalculationNode (Already documented in metric_node.py, refined here) ===
-# Note: This class seems to duplicate metric_node.py. Assuming this is the consolidated version.
-
-
-class MetricCalculationNode(Node):
-    """Calculate a value based on a predefined metric definition from the registry.
-
-    Looks up a metric in `metric_registry`, resolves input nodes, and uses an
-    appropriate calculation method based on the metric definition.
-
-    Attributes:
-        name (str): Identifier for this node.
-        metric_name (str): The identifier for the metric in the registry.
-        input_nodes (Dict[str, Node]): Mapping of input variable names to Node instances.
-        _values (Dict[str, float]): Internal cache for calculated results.
-
-    Examples:
-        >>> # Assuming gross_margin metric is registered with formula "revenue - cogs"
-        >>> revenue = FinancialStatementItemNode("revenue", {"2023": 100})
-        >>> cogs = FinancialStatementItemNode("cogs", {"2023": 60})
-        >>> gross_margin = MetricCalculationNode(
-        ...     "gross_margin_calc",
-        ...     metric_name="gross_margin",
-        ...     input_nodes={"revenue": revenue, "cogs": cogs}
-        ... )
-        >>> print(gross_margin.calculate("2023"))
-        40.0
-    """
-
-    def __init__(self, name: str, metric_name: str, input_nodes: dict[str, Node]):
-        """Initialize the MetricCalculationNode.
-
-        Args:
-            name (str): The unique identifier for this node.
-            metric_name (str): The identifier for the metric in the registry.
-            input_nodes (Dict[str, Node]): Dictionary mapping variable names in the
-                metric definition to the corresponding input nodes.
-
-        Raises:
-            ConfigurationError: If the metric_name is not registered in `metric_registry`.
-            MetricError: If the metric definition is invalid or there's a mismatch between
-                input_nodes and required inputs from the metric definition.
-            TypeError: If any value in `input_nodes` is not a Node instance.
-        """
-        super().__init__(name)
-
-        # Validate input_nodes type
-        if not isinstance(input_nodes, dict):
-            raise TypeError("MetricCalculationNode input_nodes must be a dict of Node instances")
-
-        if not all(isinstance(node, Node) for node in input_nodes.values()):
-            raise TypeError("MetricCalculationNode input_nodes must be a dict of Node instances")
-
-        self.metric_name = metric_name
-        self.input_nodes = input_nodes
-        self._values: dict[str, float] = {}  # Cache for calculated results
-
-        # Load the metric definition (Pydantic model) from the registry
-        try:
-            self.definition = metric_registry.get(metric_name)
-        except KeyError:
-            raise ConfigurationError(f"Metric definition '{metric_name}' not found")
-
-        # Determine required inputs from the MetricDefinition model
-        required_inputs = set(self.definition.inputs)
-        provided_inputs = set(input_nodes.keys())
-
-        missing_inputs = required_inputs - provided_inputs
-        if missing_inputs:
-            raise MetricError(
-                f"Input nodes mismatch for metric '{metric_name}': missing required inputs: {missing_inputs}"
-            )
-
-        extra_inputs = provided_inputs - required_inputs
-        if extra_inputs:
-            raise MetricError(
-                f"Input nodes mismatch for metric '{metric_name}': unexpected inputs provided: {extra_inputs}"
-            )
-
-        # Create internal formula calculation node using the formula from the MetricDefinition
-        self.calc_node = FormulaCalculationNode(
-            name=f"_{name}_formula_calc",
-            inputs=input_nodes,
-            formula=self.definition.formula,
-        )
-
-    def calculate(self, period: str) -> float:
-        """Calculate the node's value for a period using the metric definition.
-
-        Looks up the metric in `metric_registry`, resolves input nodes, and uses an
-        appropriate calculation method based on the metric definition.
-
-        Args:
-            period (str): The time period for which to perform the calculation.
-
-        Returns:
-            float: The calculated value from the metric.
-
-        Raises:
-            CalculationError: If an error occurs during calculation, such as
-                an unknown variable, unsupported operator, or if an input node
-                fails to provide a numeric value for the period.
-        """
-        if period in self._values:
-            return self._values[period]
-
-        try:
-            # Delegate calculation to the internal formula node
-            result = self.calc_node.calculate(period)
-
-            # Cache and return the result
-            self._values[period] = float(result)
-            return self._values[period]
-        except Exception as e:
-            # Wrap potential errors from the formula node
-            raise CalculationError(
-                message=f"Error calculating metric '{self.metric_name}' for node '{self.name}' and period '{period}'",
-                node_id=self.name,
-                period=period,
-                details={"metric_name": self.metric_name, "original_error": str(e)},
-            ) from e
-
-    def get_dependencies(self) -> list[str]:
-        """Return the names of input nodes used in the metric definition.
-
-        Returns:
-            A list of metric input node names.
-        """
-        return list(self.input_nodes.keys())
-
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs calculation.
-
-        Returns:
-            True, as MetricCalculationNode performs calculations.
         """
         return True
 
@@ -4896,82 +4725,6 @@ class FinancialStatementItemNode(Node):
         return self.values.get(period, 0.0)
 
 # --- END FILE: fin_statement_model/core/nodes/item_node.py ---
-
-# --- START FILE: fin_statement_model/core/nodes/metric_node.py ---
-"""Define the MetricCalculation class for financial metrics.
-
-This module provides the base class for all metric calculations in the financial statement model.
-"""
-
-from typing import Optional
-
-from fin_statement_model.core.nodes.base import Node
-
-
-class MetricCalculation(Node):
-    """Base class for all metric calculations in the financial statement model.
-
-    This class provides the foundation for implementing specific financial metrics.
-    Subclasses should implement the calculate method to provide the specific
-    calculation logic for the metric.
-
-    Attributes:
-        name (str): The name of the metric.
-        inputs (Dict[str, Node]): Mapping of input names to their corresponding nodes.
-        description (Optional[str]): Optional description of the metric.
-    """
-
-    def __init__(
-        self,
-        name: str,
-        inputs: dict[str, Node],
-        description: Optional[str] = None,
-    ):
-        """Initialize a new metric calculation.
-
-        Args:
-            name: The name of the metric.
-            inputs: Mapping of input names to their corresponding nodes.
-            description: Optional description of the metric.
-        """
-        super().__init__(name)
-        self.inputs = inputs
-        self.description = description
-
-    def calculate(self, period: str) -> float:
-        """Calculate the metric value for the given period.
-
-        This method must be implemented by subclasses to provide the specific
-        calculation logic for the metric.
-
-        Args:
-            period: The period for which to calculate the metric.
-
-        Returns:
-            The calculated metric value.
-
-        Raises:
-            MetricError: If the calculation fails.
-        """
-        raise NotImplementedError("Subclasses must implement calculate()")
-
-    def get_dependencies(self) -> list[str]:
-        """Get the names of all input nodes this metric depends on.
-
-        Returns:
-            A list of input node names.
-        """
-        return list(self.inputs.keys())
-
-    def has_calculation(self) -> bool:
-        """Check if this node has a calculation defined.
-
-        Returns:
-            True, as metric nodes always have calculations.
-        """
-        return True
-
-# --- END FILE: fin_statement_model/core/nodes/metric_node.py ---
 
 # --- START FILE: fin_statement_model/core/nodes/stats_nodes.py ---
 """Provide nodes for statistical calculations on financial data across periods.
@@ -7387,7 +7140,7 @@ import requests
 from typing import Optional, ClassVar, Any
 import numpy as np
 import yaml
-from pathlib import Path
+import importlib.resources
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
@@ -7430,9 +7183,16 @@ class FmpReader(DataReader):
     def _load_default_mappings(cls) -> None:
         """Load default mapping configurations from YAML file into DEFAULT_MAPPINGS."""
         # Load mapping YAML from config directory relative to this file
-        config_path = Path(__file__).parent / "config" / "fmp_default_mappings.yaml"
-        with config_path.open("r", encoding="utf-8") as f:
-            cls.DEFAULT_MAPPINGS = yaml.safe_load(f)
+        try:
+            # Use importlib.resources for robust package data loading
+            yaml_content = importlib.resources.files("fin_statement_model.io.readers.config").joinpath("fmp_default_mappings.yaml").read_text(encoding="utf-8")
+            cls.DEFAULT_MAPPINGS = yaml.safe_load(yaml_content)
+        except FileNotFoundError:
+            logger.error("Default FMP mapping file not found.", exc_info=True)
+            # Keep DEFAULT_MAPPINGS as empty dict if file is missing
+        except Exception as e:
+            logger.error(f"Error loading default FMP mapping file: {e}", exc_info=True)
+            # Keep DEFAULT_MAPPINGS as empty dict on other errors
 
     def __init__(self, cfg: FmpReaderConfig) -> None:
         """Initialize the FmpReader with validated configuration.
@@ -7660,8 +7420,8 @@ into raw Python dictionaries.
 import json
 import yaml
 import logging
-import os
-from pathlib import Path
+import importlib.resources
+import importlib.util # Needed for checking resource type
 from typing import Any, Optional
 
 from fin_statement_model.io.exceptions import ReadError
@@ -7825,32 +7585,13 @@ def read_statement_configs_from_directory(directory_path: str) -> dict[str, dict
     return configs
 
 
-def _get_builtin_mapping_dir() -> Path:
-    """Return path to built-in mapping directory, using env var override if set.
+def _get_builtin_config_package() -> str:
+    """Return the package path string for built-in statement configurations.
 
-    Assumes mappings live in 'statements/config/mappings' relative to this file's
-    grandparent directory (io/). This might need adjustment depending on packaging.
-    Alternatively, use importlib.resources if mappings are package data.
+    Direct return, assuming a fixed location within the package structure.
+    Environment variable override is removed as importlib.resources relies on package structure.
     """
-    mapping_env = os.getenv("FIN_STATEMENTS_MAPPING_DIR")
-    if mapping_env:
-        return Path(mapping_env)
-
-    # Calculate path relative to this file (io/readers/statement_config_reader.py)
-    # Go up two levels (to fin_statement_model/) then down to statements/config/mappings
-    try:
-        # More robust: Use __file__ of a known module in the expected location
-        # Example: from fin_statement_model import statements
-        # mapping_dir = Path(statements.__file__).parent / "config" / "mappings"
-        # Less robust but simpler for now:
-        this_file_dir = Path(__file__).parent # io/readers
-        package_root = this_file_dir.parent.parent # fin_statement_model/
-        mapping_dir = package_root / "statements" / "config" / "mappings"
-        return mapping_dir
-    except Exception:
-        logger.exception("Could not determine built-in mapping directory:")
-        # Fallback or raise error
-        return Path("./fin_statement_model/statements/config/mappings") # Example fallback
+    return "fin_statement_model.statements.config.mappings"
 
 def list_available_builtin_configs() -> list[str]:
     """List the names of all built-in statement configuration mappings available.
@@ -7858,19 +7599,22 @@ def list_available_builtin_configs() -> list[str]:
     Returns:
         List[str]: List of mapping names (filename without extension).
     """
-    mapping_dir = _get_builtin_mapping_dir()
-    if not mapping_dir.exists() or not mapping_dir.is_dir():
-        logger.warning(f"Built-in mapping directory not found or not a directory: {mapping_dir}")
-        return []
+    package_path = _get_builtin_config_package()
     try:
+        resource_path = importlib.resources.files(package_path)
+        # Check if the resource exists and is a container (directory)
+        if not resource_path.is_dir():
+            logger.warning(f"Built-in config package path is not a directory: {package_path}")
+            return []
+
         names = [
-            p.stem
-            for p in mapping_dir.iterdir()
-            if p.is_file() and p.suffix.lower() in (".yaml", ".yml", ".json")
+            res.name.split('.')[0] # Get filename stem
+            for res in resource_path.iterdir()
+            if res.is_file() and res.suffix.lower() in (".yaml", ".yml", ".json")
         ]
         return sorted(names)
-    except OSError:
-        logger.exception(f"Error listing built-in configs in {mapping_dir}:")
+    except (ModuleNotFoundError, FileNotFoundError): # Handle case where package/path doesn't exist
+        logger.warning(f"Built-in config package path not found: {package_path}")
         return []
 
 def read_builtin_statement_config(name: str) -> dict[str, Any]:
@@ -7888,25 +7632,59 @@ def read_builtin_statement_config(name: str) -> dict[str, Any]:
     Raises:
         ReadError: If no matching configuration file is found or if reading/parsing fails.
     """
-    mapping_dir = _get_builtin_mapping_dir()
-    found_path: Optional[Path] = None
+    package_path = _get_builtin_config_package()
+    found_resource_name: Optional[str] = None
+    resource_content: Optional[str] = None
+    file_extension: Optional[str] = None
 
     for ext in (".yaml", ".yml", ".json"):
-        path_to_check = mapping_dir / f"{name}{ext}"
-        if path_to_check.exists() and path_to_check.is_file():
-            found_path = path_to_check
-            break
+        resource_name = f"{name}{ext}"
+        try:
+            resource_path = importlib.resources.files(package_path).joinpath(resource_name)
+            if resource_path.is_file():
+                resource_content = resource_path.read_text(encoding="utf-8")
+                found_resource_name = resource_name
+                file_extension = ext
+                break
+        except (FileNotFoundError, ModuleNotFoundError):
+            continue # Try next extension or handle package not found below
+        except Exception as e:
+            # Catch other potential errors during resource access
+            logger.exception(f"Error accessing resource {resource_name} in {package_path}")
+            raise ReadError(
+                message=f"Error accessing built-in config resource '{name}'",
+                target=f"{package_path}/{resource_name}",
+                original_error=e,
+            ) from e
 
-    if found_path:
-        logger.debug(f"Found built-in config '{name}' at: {found_path}")
-        # Delegate reading and parsing to the main function
-        return read_statement_config_from_path(str(found_path))
+    if resource_content is not None and found_resource_name is not None and file_extension is not None:
+        logger.debug(f"Found and read built-in config '{name}' from resource: {package_path}/{found_resource_name}")
+        try:
+            if file_extension == ".json":
+                config_data = json.loads(resource_content)
+            else: # .yaml or .yml
+                config_data = yaml.safe_load(resource_content)
+            return config_data
+        except json.JSONDecodeError as e:
+            logger.exception(f"Error parsing JSON for built-in config '{name}'")
+            raise ReadError(
+                message="Invalid JSON format in built-in configuration",
+                target=f"{package_path}/{found_resource_name}",
+                original_error=e,
+            ) from e
+        except yaml.YAMLError as e:
+            logger.exception(f"Error parsing YAML for built-in config '{name}'")
+            raise ReadError(
+                message="Invalid YAML format in built-in configuration",
+                target=f"{package_path}/{found_resource_name}",
+                original_error=e,
+            ) from e
     else:
-        logger.warning(f"Built-in statement config '{name}' not found in {mapping_dir}")
+        logger.warning(f"Built-in statement config '{name}' not found in package {package_path}")
         raise ReadError(
             message=f"Built-in statement config '{name}' not found",
-            target=str(mapping_dir),
-            details=f"No file found for '{name}' with .yaml, .yml, or .json extension.",
+            target=package_path,
+            details=f"No resource found for '{name}' with .yaml, .yml, or .json extension.",
         )
 
 # --- END FILE: fin_statement_model/io/readers/statement_config_reader.py ---
@@ -8166,8 +7944,12 @@ __all__ = [
 from . import dict  # noqa: F401
 from . import excel  # noqa: F401
 from . import dataframe  # noqa: F401
+# Only import functions from statement_writer
 from .statement_writer import write_statement_to_excel, write_statement_to_json
-from .graph_writers import write_graph_to_dataframe
+from .excel import ExcelWriter
+# from .statement_writer import StatementWriter # REMOVED THIS LINE
+from .dataframe import DataFrameWriter
+from .dict import DictWriter
 
 # Note: No CsvWriter was identified/created
 
@@ -8176,9 +7958,19 @@ __all__ = [
     # "DataFrameWriter",
     # "DictWriter",
     # "ExcelWriter",
-    "write_graph_to_dataframe",
+    # Expose functions directly
     "write_statement_to_excel",
     "write_statement_to_json",
+    # Expose classes
+    ExcelWriter,
+    # StatementWriter, # REMOVED THIS LINE
+    DataFrameWriter,
+    DictWriter,
+    # Explicit exports if using wildcard import
+    # "DictWriter",
+    # "ExcelWriter",
+    # "write_statement_to_excel",
+    # "write_statement_to_json",
 ]
 
 # --- END FILE: fin_statement_model/io/writers/__init__.py ---
@@ -8321,11 +8113,12 @@ class DataFrameWriter(DataWriter):
 
 import logging
 from typing import Any, Optional
+import numpy as np
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.nodes import (
-    FinancialStatementItemNode,
-)  # Import specific node if needed
+from fin_statement_model.core.errors import CalculationError
+# Remove specific node import, we handle all nodes now
+# from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.base import DataWriter
 from fin_statement_model.io.registry import register_writer
 from fin_statement_model.io.exceptions import WriteError
@@ -8338,7 +8131,8 @@ logger = logging.getLogger(__name__)
 class DictWriter(DataWriter):
     """Writes graph data to a Python dictionary.
 
-    Specifically extracts data from FinancialStatementItemNode instances.
+    Calculates the value for each node and period in the graph using
+    `graph.calculate()` before exporting.
 
     Initialized via `DictWriterConfig` (typically by the `write_data` facade),
     although the config currently has no options. The `.write()` method takes no
@@ -8357,52 +8151,66 @@ class DictWriter(DataWriter):
     def write(
         self, graph: Graph, target: Any = None, **kwargs: dict[str, Any]
     ) -> dict[str, dict[str, float]]:
-        """Export data from graph nodes with values to a dictionary.
+        """Export calculated data from all graph nodes to a dictionary.
 
         Args:
-            graph (Graph): The Graph instance to export data from.
+            graph (Graph): The Graph instance to export data from. It's recommended
+                           to ensure the graph is calculated beforehand if needed,
+                           as this writer calculates values per node/period.
             target (Any): Ignored by this writer; the dictionary is returned directly.
             **kwargs: Currently unused.
 
         Returns:
             Dict[str, Dict[str, float]]: Mapping node names to period-value dicts.
-                                         Only includes FinancialStatementItemNode instances
-                                         with a 'values' attribute.
+                                         Includes values for all nodes in the graph
+                                         for all defined periods. NaN represents
+                                         uncalculable values.
 
         Raises:
             WriteError: If an unexpected error occurs during export.
         """
         logger.info(f"Starting export of graph '{graph}' to dictionary format.")
         result: dict[str, dict[str, float]] = {}
+        periods = sorted(graph.periods) if graph.periods else []
+        if not periods:
+            logger.warning("Graph has no periods defined. Exported dictionary will be empty.")
+            return {}
+
         try:
-            for node_id, node in graph.nodes.items():
-                # Check if the node is a FinancialStatementItemNode and has 'values'
-                # This makes the export specific to data-holding nodes.
-                if (
-                    isinstance(node, FinancialStatementItemNode)
-                    and hasattr(node, "values")
-                    and isinstance(node.values, dict)
-                ):
-                    # Validate and copy values
-                    # Ensure values are {str: float | int}
-                    validated_values = {
-                        str(k): float(v)
-                        for k, v in node.values.items()
-                        if isinstance(k, str) and isinstance(v, (int, float))
-                    }
-                    if validated_values:
-                        result[node_id] = validated_values
-                    else:
+            for node_id in graph.nodes:
+                node_values: dict[str, float] = {}
+                for period in periods:
+                    value = np.nan
+                    try:
+                        # Use graph.calculate to get the value for the specific node and period
+                        calculated_value = graph.calculate(node_id, period=period)
+                        if isinstance(calculated_value, (int, float, np.number)) and np.isfinite(calculated_value):
+                            value = float(calculated_value)
+                        else:
+                            # Handle cases where calculation returns non-numeric or infinite results
+                            logger.debug(
+                                f"Calculation for node '{node_id}' period '{period}' "
+                                f"yielded non-finite/non-numeric result: {calculated_value}. Using NaN."
+                            )
+                    except CalculationError as calc_err:
                         logger.debug(
-                            f"Node '{node_id}' has no valid period-value data to export. Skipping."
+                            f"Calculation failed for node '{node_id}' period '{period}': {calc_err}. Using NaN."
                         )
-                # else: Not an FSI node or no valid values, skip
+                    except Exception as e:
+                        # Catch unexpected errors during calculation for a specific period
+                        logger.warning(
+                            f"Unexpected error calculating node '{node_id}' period '{period}': {e}. Using NaN.",
+                            exc_info=True
+                        )
+                    node_values[period] = value
+                result[node_id] = node_values
 
             logger.info(f"Successfully exported {len(result)} nodes to dictionary.")
         except Exception as e:
+            # Catch errors during the overall export process (e.g., iterating nodes)
             logger.error(f"Failed to export graph to dictionary: {e}", exc_info=True)
             raise WriteError(
-                message="Failed to export graph to dictionary",
+                message=f"Failed to export graph to dictionary: {e}",
                 target="dict",
                 writer_type="DictWriter",
                 original_error=e,
@@ -8514,59 +8322,6 @@ class ExcelWriter(DataWriter):
             ) from e
 
 # --- END FILE: fin_statement_model/io/writers/excel.py ---
-
-# --- START FILE: fin_statement_model/io/writers/graph_writers.py ---
-"""Writers specifically for Graph objects."""
-
-import pandas as pd
-import logging
-
-from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.errors import CalculationError, NodeError
-
-logger = logging.getLogger(__name__)
-
-__all__ = ["write_graph_to_dataframe"]
-
-def write_graph_to_dataframe(graph: Graph) -> pd.DataFrame:
-    """Extracts all node data from a Graph into a pandas DataFrame.
-
-    The DataFrame index will be the node IDs, and columns will be the periods.
-
-    Args:
-        graph: The Graph instance to extract data from.
-
-    Returns:
-        A pandas DataFrame representation of the graph data.
-    """
-    data = {}
-    periods = graph.periods
-    node_ids = sorted(graph.nodes.keys())
-
-    if not periods:
-        logger.warning("Graph has no periods; returning empty DataFrame.")
-        return pd.DataFrame(index=node_ids)
-
-    for node_id in node_ids:
-        node_values = {}
-        for period in periods:
-            try:
-                value = graph.calculate(node_id, period)
-                node_values[period] = value
-            except (CalculationError, NodeError) as e:
-                logger.warning(f"Could not calculate {node_id} for {period}: {e}. Using NaN.")
-                node_values[period] = pd.NA # Use pandas NA for missing calculable values
-            except Exception as e:
-                 logger.error(f"Unexpected error calculating {node_id} for {period}: {e}. Using NaN.", exc_info=True)
-                 node_values[period] = pd.NA
-        data[node_id] = node_values
-
-    df = pd.DataFrame.from_dict(data, orient="index", columns=periods)
-    # Ensure columns are sorted if periods weren't initially
-    df = df.reindex(columns=sorted(df.columns))
-    return df
-
-# --- END FILE: fin_statement_model/io/writers/graph_writers.py ---
 
 # --- START FILE: fin_statement_model/io/writers/statement_writer.py ---
 """Writers for exporting financial statement data (usually DataFrames)."""
@@ -9514,296 +9269,6 @@ class PeriodConversionTransformer(DataTransformer):
 
 # --- END FILE: fin_statement_model/preprocessing/transformers/period_conversion.py ---
 
-# --- START FILE: fin_statement_model/preprocessing/transformers/statement_formatting.py ---
-"""Financial data transformer for the Financial Statement Model.
-
-This module provides the StatementFormattingTransformer for formatting financial statements:
-adding subtotals, applying sign conventions, and reordering line items.
-"""
-
-import pandas as pd
-import yaml
-from pathlib import Path
-from typing import Optional, Union, ClassVar
-
-from fin_statement_model.preprocessing.base_transformer import DataTransformer
-from fin_statement_model.preprocessing.types import StatementFormattingConfig
-from fin_statement_model.preprocessing.enums import StatementType
-
-# Configure logging
-
-
-class StatementFormattingTransformer(DataTransformer):
-    """Transformer for formatting financial statements.
-
-    This transformer can:
-    - Add subtotals and totals
-    - Reorder line items according to standard formats
-    - Apply sign conventions (negative expenses, etc.)
-    """
-
-    # Load standard orderings from YAML configuration
-    DEFAULT_ORDERS: ClassVar[dict[str, list[str]]] = {}
-
-    @classmethod
-    def _load_standard_orders(cls) -> None:
-        """Load standard order configurations from YAML file into DEFAULT_ORDERS."""
-        # Load the YAML from the preprocessing config directory
-        config_path = Path(__file__).parent.parent / "config" / "statement_standard_orders.yaml"
-        with config_path.open("r", encoding="utf-8") as f:
-            cls.DEFAULT_ORDERS = yaml.safe_load(f)
-
-    def __init__(
-        self,
-        statement_type: Union[str, StatementType] = StatementType.INCOME_STATEMENT,
-        add_subtotals: bool = True,
-        apply_sign_convention: bool = True,
-        config: Optional[StatementFormattingConfig] = None,
-    ):
-        """Initialize the statement formatting transformer.
-
-        Args:
-            statement_type: Type of statement ('income_statement', 'balance_sheet', 'cash_flow')
-            add_subtotals: Whether to add standard subtotals
-            apply_sign_convention: Whether to apply standard sign conventions
-            config: Additional configuration options
-        """
-        super().__init__(config)
-        # Normalize enum to string
-        if isinstance(statement_type, StatementType):
-            stype = statement_type.value
-        else:
-            stype = statement_type
-        if stype not in [t.value for t in StatementType]:
-            raise ValueError(
-                f"Invalid statement type: {stype}. Must be one of {[t.value for t in StatementType]}"
-            )
-        self.statement_type = stype
-        self.add_subtotals = add_subtotals
-        self.apply_sign_convention = apply_sign_convention
-
-        # Define standard orderings for different statement types
-        self.item_order = self._get_standard_order()
-
-    def _get_standard_order(self) -> list[str]:
-        """Get the standard ordering of items for the current statement type."""
-        return list(self.DEFAULT_ORDERS.get(self.statement_type, []))
-
-    def transform(self, data: pd.DataFrame) -> pd.DataFrame:
-        """Format a financial statement DataFrame.
-
-        Args:
-            data: DataFrame containing financial statement data
-
-        Returns:
-            Formatted DataFrame
-        """
-        result = data.copy()
-
-        if self.apply_sign_convention:
-            result = self._apply_sign_convention(result)
-
-        if self.add_subtotals:
-            result = self._add_subtotals(result)
-
-        result = self._reorder_items(result)
-
-        return result
-
-    def _apply_sign_convention(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Apply standard sign conventions to line items."""
-        result = df.copy()
-        negative_items: list[str] = []
-
-        if self.statement_type == "income_statement":
-            negative_items = [
-                "cost_of_goods_sold",
-                "operating_expenses",
-                "interest_expense",
-                "income_tax",
-            ]
-
-        elif self.statement_type == "cash_flow":
-            negative_items = [
-                "capital_expenditures",
-                "investments",
-                "debt_repayment",
-                "dividends",
-                "share_repurchases",
-            ]
-
-        for item in negative_items:
-            if item in result.index:
-                result.loc[item] = (
-                    result.loc[item] * -1 if result.loc[item].mean() > 0 else result.loc[item]
-                )
-
-        return result
-
-    def _add_subtotals(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Add standard subtotals to the statement."""
-        result = df.copy()
-
-        if self.statement_type == "income_statement":
-            if (
-                "revenue" in result.index
-                and "cost_of_goods_sold" in result.index
-                and "gross_profit" not in result.index
-            ):
-                result.loc["gross_profit"] = (
-                    result.loc["revenue"] + result.loc["cost_of_goods_sold"]
-                )
-
-            if (
-                "gross_profit" in result.index
-                and "operating_expenses" in result.index
-                and "operating_income" not in result.index
-            ):
-                result.loc["operating_income"] = (
-                    result.loc["gross_profit"] + result.loc["operating_expenses"]
-                )
-
-            if (
-                "operating_income" in result.index
-                and "interest_expense" in result.index
-                and "income_before_taxes" not in result.index
-            ):
-                result.loc["income_before_taxes"] = (
-                    result.loc["operating_income"] + result.loc["interest_expense"]
-                )
-
-            if (
-                "income_before_taxes" in result.index
-                and "income_tax" in result.index
-                and "net_income" not in result.index
-            ):
-                result.loc["net_income"] = (
-                    result.loc["income_before_taxes"] + result.loc["income_tax"]
-                )
-
-        elif self.statement_type == "balance_sheet":
-            current_assets = [
-                "cash_and_equivalents",
-                "short_term_investments",
-                "accounts_receivable",
-                "inventory",
-            ]
-            if (
-                any(item in result.index for item in current_assets)
-                and "current_assets" not in result.index
-            ):
-                result.loc["current_assets"] = sum(
-                    result.loc[item] for item in current_assets if item in result.index
-                )
-
-            if (
-                "current_assets" in result.index
-                and "property_plant_equipment" in result.index
-                and "total_assets" not in result.index
-            ):
-                result.loc["total_assets"] = (
-                    result.loc["current_assets"] + result.loc["property_plant_equipment"]
-                )
-
-            current_liabilities = ["accounts_payable", "short_term_debt"]
-            if (
-                any(item in result.index for item in current_liabilities)
-                and "current_liabilities" not in result.index
-            ):
-                result.loc["current_liabilities"] = sum(
-                    result.loc[item] for item in current_liabilities if item in result.index
-                )
-
-            if (
-                "current_liabilities" in result.index
-                and "long_term_debt" in result.index
-                and "total_liabilities" not in result.index
-            ):
-                result.loc["total_liabilities"] = (
-                    result.loc["current_liabilities"] + result.loc["long_term_debt"]
-                )
-
-            equity_items = ["common_stock", "retained_earnings"]
-            if (
-                any(item in result.index for item in equity_items)
-                and "total_equity" not in result.index
-            ):
-                result.loc["total_equity"] = sum(
-                    result.loc[item] for item in equity_items if item in result.index
-                )  # pragma: no cover
-
-            if (
-                "total_liabilities" in result.index
-                and "total_equity" in result.index
-                and "total_liabilities_and_equity" not in result.index
-            ):
-                result.loc["total_liabilities_and_equity"] = (
-                    result.loc["total_liabilities"] + result.loc["total_equity"]
-                )  # pragma: no cover
-
-        elif self.statement_type == "cash_flow":
-            operating_items = [
-                "net_income",
-                "depreciation_amortization",
-                "changes_in_working_capital",
-            ]
-            if (
-                any(item in result.index for item in operating_items)
-                and "cash_from_operating_activities" not in result.index
-            ):
-                result.loc["cash_from_operating_activities"] = sum(
-                    result.loc[item] for item in operating_items if item in result.index
-                )
-
-            investing_items = ["capital_expenditures", "investments"]
-            if (
-                any(item in result.index for item in investing_items)
-                and "cash_from_investing_activities" not in result.index
-            ):
-                result.loc["cash_from_investing_activities"] = sum(
-                    result.loc[item] for item in investing_items if item in result.index
-                )
-
-            financing_items = [
-                "debt_issuance",
-                "debt_repayment",
-                "dividends",
-                "share_repurchases",
-            ]
-            if (
-                any(item in result.index for item in financing_items)
-                and "cash_from_financing_activities" not in result.index
-            ):
-                result.loc["cash_from_financing_activities"] = sum(
-                    result.loc[item] for item in financing_items if item in result.index
-                )
-
-            cash_flow_categories = [
-                "cash_from_operating_activities",
-                "cash_from_investing_activities",
-                "cash_from_financing_activities",
-            ]
-            if (
-                any(item in result.index for item in cash_flow_categories)
-                and "net_change_in_cash" not in result.index
-            ):
-                result.loc["net_change_in_cash"] = sum(
-                    result.loc[item] for item in cash_flow_categories if item in result.index
-                )
-
-        return result
-
-    def _reorder_items(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Reorder the DataFrame according to standard financial statement ordering."""
-        ordered_items = [item for item in self.item_order if item in df.index]
-        ordered_items.extend([item for item in df.index if item not in self.item_order])
-        return df.loc[ordered_items]
-
-# After class definition, load standard orders
-StatementFormattingTransformer._load_standard_orders()
-
-# --- END FILE: fin_statement_model/preprocessing/transformers/statement_formatting.py ---
-
 # --- START FILE: fin_statement_model/preprocessing/transformers/time_series.py ---
 """Financial data transformers for the Financial Statement Model.
 
@@ -9920,14 +9385,15 @@ class TimeSeriesTransformer(DataTransformer):
 This module provides a TabularData alias (pd.DataFrame only) and configuration TypedDicts.
 """
 
-from typing import TypedDict
+from typing import Optional
+from pydantic import BaseModel
 import pandas as pd
 
 # Alias for tabular data inputs (DataFrame-only) accepted by transformers
 TabularData = pd.DataFrame
 
 
-class NormalizationConfig(TypedDict, total=False):
+class NormalizationConfig(BaseModel):
     """Configuration for normalization transformations.
 
     Attributes:
@@ -9936,12 +9402,12 @@ class NormalizationConfig(TypedDict, total=False):
         scale_factor: factor to apply for 'scale_by' normalization
     """
 
-    normalization_type: str  # 'percent_of', 'minmax', 'standard', 'scale_by'
-    reference: str  # reference field name for percent_of
-    scale_factor: float  # factor for scale_by normalization
+    normalization_type: Optional[str] = None
+    reference: Optional[str] = None
+    scale_factor: Optional[float] = None
 
 
-class TimeSeriesConfig(TypedDict, total=False):
+class TimeSeriesConfig(BaseModel):
     """Configuration for time series transformations.
 
     Attributes:
@@ -9950,12 +9416,12 @@ class TimeSeriesConfig(TypedDict, total=False):
         window_size: window size for rolling calculations
     """
 
-    transformation_type: str  # 'growth_rate', 'moving_avg', 'cagr', 'yoy', 'qoq'
-    periods: int  # periods for pct_change or other
-    window_size: int  # window size for rolling calculations
+    transformation_type: Optional[str] = None
+    periods: Optional[int] = None
+    window_size: Optional[int] = None
 
 
-class PeriodConversionConfig(TypedDict, total=False):
+class PeriodConversionConfig(BaseModel):
     """Configuration for period conversion transformations.
 
     Attributes:
@@ -9963,11 +9429,11 @@ class PeriodConversionConfig(TypedDict, total=False):
         aggregation: aggregation method: 'sum', 'mean', 'last', etc.
     """
 
-    conversion_type: str  # 'quarterly_to_annual', 'monthly_to_quarterly', etc.
-    aggregation: str  # aggregation method: sum, mean, last, etc.
+    conversion_type: Optional[str] = None
+    aggregation: Optional[str] = None
 
 
-class StatementFormattingConfig(TypedDict, total=False):
+class StatementFormattingConfig(BaseModel):
     """Configuration for formatting statement output.
 
     Attributes:
@@ -9976,9 +9442,9 @@ class StatementFormattingConfig(TypedDict, total=False):
         apply_sign_convention: whether to apply sign rules to values
     """
 
-    statement_type: str  # 'income_statement', 'balance_sheet', 'cash_flow'
-    add_subtotals: bool  # whether to insert subtotals
-    apply_sign_convention: bool  # whether to apply sign rules
+    statement_type: Optional[str] = None
+    add_subtotals: Optional[bool] = None
+    apply_sign_convention: Optional[bool] = None
 
 # --- END FILE: fin_statement_model/preprocessing/types.py ---
 

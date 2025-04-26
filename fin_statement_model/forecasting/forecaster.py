@@ -60,10 +60,16 @@ class StatementForecaster:
             if not forecast_periods:
                 raise ValueError("No forecast periods provided")
 
+            # Ensure forecast periods exist in the graph
+            existing_periods = set(self.fsg.periods)
+            new_periods = []
             for period in forecast_periods:
-                if period not in self.fsg.periods:
-                    self.fsg.manipulator.add_periods([period])
-                    logger.debug(f"Added forecast period to graph: {period}")
+                if period not in existing_periods:
+                    new_periods.append(period)
+                    # Correct the call: add_periods is on fsg (the graph), not manipulator
+                    self.fsg.add_periods([period])
+            if new_periods:
+                logger.info(f"Added new periods to graph for forecasting: {new_periods}")
 
             if node_configs is None:
                 node_configs = {}

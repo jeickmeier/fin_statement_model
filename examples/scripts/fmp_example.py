@@ -16,15 +16,8 @@ import os
 import pandas as pd
 from typing import Optional
 
-# Use absolute imports based on project structure
 from fin_statement_model.core.graph import Graph
-# Remove FinancialStatementGraph import - use core Graph directly
-# from fin_statement_model.statements import FinancialStatementGraph
-# Use the read_data/write_data facades
-from fin_statement_model.io import read_data, write_data, ReadError, FormatNotSupportedError # Added write_data
-from fin_statement_model.io.writers import DataFrameWriter
-from fin_statement_model.core.nodes import ForecastNode
-from fin_statement_model.io.config.models import ExcelReaderConfig, DataFrameWriterConfig # Added DataFrameWriterConfig
+from fin_statement_model.io import read_data, write_data, ReadError, FormatNotSupportedError 
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -86,7 +79,7 @@ def main():
             print("\nRevenue:")
             # Ensure correct formatting, applymap might error if columns aren't numeric
             try:
-                print(df.loc[["revenue"]].applymap("{:,.0f}".format))
+                print(df.loc[["revenue"]].map("{:,.0f}".format))
             except (TypeError, ValueError):
                  print(df.loc[["revenue"]]) # Print raw if formatting fails
 

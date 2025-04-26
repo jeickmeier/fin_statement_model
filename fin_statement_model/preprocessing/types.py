@@ -3,14 +3,15 @@
 This module provides a TabularData alias (pd.DataFrame only) and configuration TypedDicts.
 """
 
-from typing import TypedDict
+from typing import Optional
+from pydantic import BaseModel
 import pandas as pd
 
 # Alias for tabular data inputs (DataFrame-only) accepted by transformers
 TabularData = pd.DataFrame
 
 
-class NormalizationConfig(TypedDict, total=False):
+class NormalizationConfig(BaseModel):
     """Configuration for normalization transformations.
 
     Attributes:
@@ -19,12 +20,12 @@ class NormalizationConfig(TypedDict, total=False):
         scale_factor: factor to apply for 'scale_by' normalization
     """
 
-    normalization_type: str  # 'percent_of', 'minmax', 'standard', 'scale_by'
-    reference: str  # reference field name for percent_of
-    scale_factor: float  # factor for scale_by normalization
+    normalization_type: Optional[str] = None
+    reference: Optional[str] = None
+    scale_factor: Optional[float] = None
 
 
-class TimeSeriesConfig(TypedDict, total=False):
+class TimeSeriesConfig(BaseModel):
     """Configuration for time series transformations.
 
     Attributes:
@@ -33,12 +34,12 @@ class TimeSeriesConfig(TypedDict, total=False):
         window_size: window size for rolling calculations
     """
 
-    transformation_type: str  # 'growth_rate', 'moving_avg', 'cagr', 'yoy', 'qoq'
-    periods: int  # periods for pct_change or other
-    window_size: int  # window size for rolling calculations
+    transformation_type: Optional[str] = None
+    periods: Optional[int] = None
+    window_size: Optional[int] = None
 
 
-class PeriodConversionConfig(TypedDict, total=False):
+class PeriodConversionConfig(BaseModel):
     """Configuration for period conversion transformations.
 
     Attributes:
@@ -46,11 +47,11 @@ class PeriodConversionConfig(TypedDict, total=False):
         aggregation: aggregation method: 'sum', 'mean', 'last', etc.
     """
 
-    conversion_type: str  # 'quarterly_to_annual', 'monthly_to_quarterly', etc.
-    aggregation: str  # aggregation method: sum, mean, last, etc.
+    conversion_type: Optional[str] = None
+    aggregation: Optional[str] = None
 
 
-class StatementFormattingConfig(TypedDict, total=False):
+class StatementFormattingConfig(BaseModel):
     """Configuration for formatting statement output.
 
     Attributes:
@@ -59,6 +60,6 @@ class StatementFormattingConfig(TypedDict, total=False):
         apply_sign_convention: whether to apply sign rules to values
     """
 
-    statement_type: str  # 'income_statement', 'balance_sheet', 'cash_flow'
-    add_subtotals: bool  # whether to insert subtotals
-    apply_sign_convention: bool  # whether to apply sign rules
+    statement_type: Optional[str] = None
+    add_subtotals: Optional[bool] = None
+    apply_sign_convention: Optional[bool] = None

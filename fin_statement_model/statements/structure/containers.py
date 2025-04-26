@@ -114,6 +114,8 @@ class Section:
                 found = child.find_item_by_id(item_id)
                 if found:
                     return found
+        if hasattr(self, 'subtotal') and self.subtotal and self.subtotal.id == item_id:
+            return self.subtotal
         return None
 
 
@@ -228,6 +230,11 @@ class StatementStructure:
                     calculation_items.append(item)
                 elif isinstance(item, Section):
                     collect_calculation_items(item.items)
+                    if hasattr(item, 'subtotal') and item.subtotal:
+                        if isinstance(item.subtotal, SubtotalLineItem):
+                            calculation_items.append(item.subtotal)
+                        else:
+                            pass
 
         collect_calculation_items(self._sections)
         return calculation_items

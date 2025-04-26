@@ -25,6 +25,7 @@ from fin_statement_model.core.errors import NodeError, CalculationError
 
 # Import the new formatting utils
 from ._formatting_utils import format_numbers
+from ._formatting_utils import apply_sign_convention as apply_sign_convention_func
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -211,7 +212,7 @@ class StatementFormatter:
     def generate_dataframe(
         self,
         graph: Graph,
-        apply_sign_convention: bool = True, # Renamed arg
+        should_apply_signs: bool = True, # Renamed arg
         include_empty_items: bool = False,
         number_format: Optional[str] = None,
         include_metadata_cols: bool = False,
@@ -223,7 +224,7 @@ class StatementFormatter:
 
         Args:
             graph: The core.graph.Graph instance containing the data.
-            apply_sign_convention: Whether to apply sign conventions after calculation.
+            should_apply_signs: Whether to apply sign conventions after calculation.
             include_empty_items: Whether to include items with no data rows.
             number_format: Optional Python format string for numbers (e.g., ',.2f').
             include_metadata_cols: If True, includes hidden metadata columns
@@ -262,9 +263,10 @@ class StatementFormatter:
 
         df = df[final_cols]
 
-        # Use imported function for sign convention
-        if apply_sign_convention:
-            df = apply_sign_convention(df, all_periods)
+        # Use imported function and renamed argument
+        if should_apply_signs: # Check the renamed argument
+            # Call the imported function
+            df = apply_sign_convention_func(df, all_periods)
 
         # Use imported function for number formatting
         df = format_numbers(
@@ -297,7 +299,7 @@ class StatementFormatter:
     def format_html(
         self,
         graph: Graph,
-        apply_sign_convention: bool = True, # Use consistent arg name
+        should_apply_signs: bool = True, # Use consistent arg name
         include_empty_items: bool = False,
         css_styles: Optional[dict[str, str]] = None,
     ) -> str:
@@ -305,7 +307,7 @@ class StatementFormatter:
 
         Args:
             graph: The core.graph.Graph instance containing the data.
-            apply_sign_convention: Whether to apply sign conventions.
+            should_apply_signs: Whether to apply sign conventions.
             include_empty_items: Whether to include items with no data.
             css_styles: Optional dict of CSS styles for the HTML.
 
@@ -314,7 +316,7 @@ class StatementFormatter:
         """
         df = self.generate_dataframe(
             graph=graph,
-            apply_sign_convention=apply_sign_convention,
+            should_apply_signs=should_apply_signs,
             include_empty_items=include_empty_items
             # number_format is applied internally by generate_dataframe
         )

@@ -1,0 +1,66 @@
+
+id: income_statement
+name: Income Statement
+description: Reports financial performance over a specific period.
+sections:
+  - id: revenue_section
+    name: Revenue
+    items:
+      - id: revenue
+        name: Total Revenue
+        type: line_item
+        node_id: Revenue # Maps to the node ID in the graph
+        sign_convention: 1
+  - id: cost_of_goods_sold
+    name: Cost of Goods Sold
+    items:
+      - id: cogs
+        name: Cost of Goods Sold
+        type: line_item
+        node_id: COGS
+        sign_convention: -1 # Often shown as negative or subtracted
+  - id: gross_profit_section
+    name: Gross Profit
+    items:
+      - id: gross_profit
+        name: Gross Profit
+        type: calculated # This item is calculated
+        calculation:
+          type: addition # GP = Revenue + (-COGS) effectively Revenue - COGS
+          inputs: [revenue, cogs] # Refers to the IDs of items above
+        sign_convention: 1
+    subtotal: # Example of section subtotal (same as the calculated item here)
+      id: gross_profit_subtotal
+      name: Gross Profit Subtotal
+      type: subtotal
+      items_to_sum: [gross_profit] # Sums items *within this section*
+      sign_convention: 1
+  - id: operating_expenses
+    name: Operating Expenses
+    items:
+      - id: r_d
+        name: Research & Development
+        type: line_item
+        node_id: R&D
+        sign_convention: -1
+      - id: sg_a
+        name: Selling, General & Administrative
+        type: line_item
+        node_id: SG&A
+        sign_convention: -1
+    subtotal:
+      id: total_operating_expenses
+      name: Total Operating Expenses
+      type: subtotal
+      items_to_sum: [r_d, sg_a] # Sums R&D and SG&A
+      sign_convention: -1
+  - id: operating_income_section
+    name: Operating Income
+    items:
+      - id: operating_income
+        name: Operating Income (EBIT)
+        type: calculated
+        calculation:
+          type: addition # OpInc = Gross Profit + Total Operating Expenses (which is negative)
+          inputs: [gross_profit, total_operating_expenses]
+        sign_convention: 1

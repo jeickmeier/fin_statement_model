@@ -9,7 +9,6 @@ from fin_statement_model.core.nodes import (
     Node,
     FinancialStatementItemNode,
     CalculationNode,
-    MetricCalculationNode,
     CustomCalculationNode,
 )
 from fin_statement_model.core.calculations import Registry, Calculation
@@ -23,15 +22,6 @@ def mock_registry_get():
     """Fixture to mock the Registry.get method."""
     with patch.object(Registry, "get", autospec=True) as mock_get:
         yield mock_get
-
-
-@pytest.fixture
-def mock_metric_calc_node():
-    """Fixture to mock the MetricCalculationNode class."""
-    with patch(
-        "fin_statement_model.core.node_factory.MetricCalculationNode", autospec=True
-    ) as mock_class:
-        yield mock_class
 
 
 @pytest.fixture
@@ -190,51 +180,6 @@ class TestCreateCalculationNode:
             NodeFactory.create_calculation_node(
                 "TestNode", [mock_node_a], calc_type
             )  # Missing weights kwarg
-
-
-# Tests for create_metric_node
-class TestCreateMetricNode:
-    def test_success_creation(self, mock_metric_calc_node, mock_node_a, mock_node_b):
-        """Test successful creation delegation to MetricCalculationNode."""
-        name = "CompanyCurrentRatio"
-        metric_name = "current_ratio"
-        input_nodes = {"current_assets": mock_node_a, "current_liabilities": mock_node_b}
-        mock_instance = MagicMock(spec=MetricCalculationNode)
-        mock_metric_calc_node.return_value = mock_instance
-
-        node = NodeFactory.create_metric_node(name, metric_name, input_nodes)
-
-        assert node == mock_instance
-        mock_metric_calc_node.assert_called_once_with(
-            name=name, metric_name=metric_name, input_nodes=input_nodes
-        )
-
-    def test_error_empty_name(self):
-        """Test creation fails with an empty name."""
-        with pytest.raises(ValueError, match="Node name must be a non-empty string"):
-            NodeFactory.create_metric_node("", "some_metric", {})
-
-    def test_error_input_nodes_not_dict(self):
-        """Test creation fails if input_nodes is not a dictionary."""
-        with pytest.raises(TypeError, match="input_nodes must be a dictionary"):
-            NodeFactory.create_metric_node("Test", "some_metric", ["not", "a", "dict"])
-
-    def test_error_propagates_from_constructor_value_error(self, mock_metric_calc_node):
-        """Test that ValueError from MetricCalculationNode constructor propagates."""
-        metric_name = "invalid_metric"
-        error_message = f"Metric definition '{metric_name}' not found."
-        mock_metric_calc_node.side_effect = ValueError(error_message)
-
-        with pytest.raises(ValueError, match=error_message):
-            NodeFactory.create_metric_node("TestNode", metric_name, {})
-
-    def test_error_propagates_from_constructor_type_error(self, mock_metric_calc_node):
-        """Test that TypeError from MetricCalculationNode constructor propagates."""
-        error_message = "Input 'asset' must be a Node instance."
-        mock_metric_calc_node.side_effect = TypeError(error_message)
-
-        with pytest.raises(TypeError, match=error_message):
-            NodeFactory.create_metric_node("TestNode", "some_metric", {"asset": "not_a_node"})
 
 
 # Tests for _create_custom_node_from_callable (treating as semi-public for testing)

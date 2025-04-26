@@ -15,8 +15,8 @@ from typing import Any, Union, Optional
 import pandas as pd
 
 # Core components
-from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.errors import FinancialModelError
+from ..core.graph import Graph
+from ..core.errors import FinancialModelError, StatementError, ConfigurationError
 
 # IO Layer components
 from fin_statement_model.io.readers import statement_config_reader
@@ -24,12 +24,13 @@ from fin_statement_model.io.writers import statement_writer
 from fin_statement_model.io.exceptions import ReadError, WriteError
 
 # Statements layer components
-from fin_statement_model.statements.config import StatementConfig
+from .structure import StatementStructure, Section, StatementItem, SubtotalLineItem, CalculatedLineItem
+from .config.models import StatementModel # Import the Pydantic model
+from .config.config import StatementConfig
 from fin_statement_model.statements.registry import StatementRegistry
 from fin_statement_model.statements.builder import StatementStructureBuilder
 from fin_statement_model.statements.populator import populate_graph_from_statement
 from fin_statement_model.statements.formatter import StatementFormatter
-from fin_statement_model.statements.errors import ConfigurationError, StatementError
 
 logger = logging.getLogger(__name__)
 
