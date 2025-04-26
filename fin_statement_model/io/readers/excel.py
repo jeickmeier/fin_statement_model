@@ -12,6 +12,7 @@ from fin_statement_model.io.base import DataReader
 from fin_statement_model.io.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
 from fin_statement_model.io.readers.base import MappingConfig, normalize_mapping
+from fin_statement_model.io.config.models import ExcelReaderConfig
 
 logger = logging.getLogger(__name__)
 
@@ -24,103 +25,53 @@ class ExcelReader(DataReader):
     and columns represent periods, or vice-versa.
     Requires specifying sheet name, period identification, and item identification.
 
-    Note:
-        When using the `read_data` facade, pass `mapping_config` via init,
-        and reader-specific options (`sheet_name`, `periods_row`, `items_col`,
-        `statement_type`, `header_row`, `nrows`, `skiprows`) to the `read()` method.
-        Direct instantiation and use of `ExcelReader` is also supported.
+    Configuration (sheet_name, items_col, periods_row, mapping_config) is passed
+    via an `ExcelReaderConfig` object during initialization (typically by the `read_data` facade).
+    Method-specific options (`statement_type`, `header_row`, `nrows`, `skiprows`)
+    are passed as keyword arguments to the `read()` method.
     """
 
-    # Default field mappings (can be overridden in __init__)
-    DEFAULT_INCOME_STATEMENT_MAPPING: ClassVar[dict[str, str]] = {
-        "Revenue": "revenue",
-        "Cost of Revenue": "cost_of_goods_sold",
-        "Gross Profit": "gross_profit",
-        # ... (Add other defaults as needed)
-    }
-    DEFAULT_BALANCE_SHEET_MAPPING: ClassVar[dict[str, str]] = {
-        "Cash & Cash Equivalents": "cash_and_cash_equivalents",
-        # ... (Add other defaults as needed)
-    }
-    DEFAULT_CASH_FLOW_MAPPING: ClassVar[dict[str, str]] = {
-        "Net Income": "net_income",
-        # ... (Add other defaults as needed)
-    }
-
-    # Default mappings from expected columns to potential Excel column names
-    _REQUIRED_COLUMNS: ClassVar[dict[str, list[str]]] = {
-        "item": ["Item", "Metric", "Account", "Financial Statement Line Item"],
-    }
-    # Optional config: mapping periods in file to standard internal names
-    _OPTIONAL_COLUMNS: ClassVar[dict[str, list[str]]] = {
-        "description": ["Description"],
-    }
-    # Default item name mapping
-    _DEFAULT_MAPPING: ClassVar[dict[str, str]] = {}
-
-    def __init__(self, mapping_config: MappingConfig = None, **kwargs: Any) -> None:
-        """Initialize the ExcelReader.
+    def __init__(self, cfg: ExcelReaderConfig) -> None:
+        """Initialize the ExcelReader with validated configuration.
 
         Args:
-            mapping_config (MappingConfig): Optional mapping configuration to
-                map Excel item names to canonical node names. Can be either:
-                  - Dict[str, str] for a flat mapping applied to all statement types.
-                  - Dict[Optional[str], Dict[str, str]] for scoped mappings
-                    keyed by statement type (or None for default).
-            **kwargs: Not used by ExcelReader init; reserved for API consistency.
+            cfg: A validated `ExcelReaderConfig` instance containing parameters like
+                 `source`, `sheet_name`, `items_col`, `periods_row`, and `mapping_config`.
         """
-        super().__init__(**kwargs)
-        # Store raw mapping_config for later resolution
-        self.mapping_config = mapping_config or {}
+        self.cfg = cfg
 
     def _get_mapping(
         self,
         statement_type: Optional[str],
-        mapping_config: MappingConfig = None
     ) -> dict[str, str]:
-        """Get the appropriate mapping based on statement type and optional override config."""
-        # Start with defaults based on statement type
-        if statement_type == "income_statement":
-            mapping = dict(self.DEFAULT_INCOME_STATEMENT_MAPPING)
-        elif statement_type == "balance_sheet":
-            mapping = dict(self.DEFAULT_BALANCE_SHEET_MAPPING)
-        elif statement_type == "cash_flow":
-            mapping = dict(self.DEFAULT_CASH_FLOW_MAPPING)
-        else:
-            mapping = {}
-
-        # Determine which config to use: override if provided, else instance config
-        config = mapping_config if mapping_config is not None else self.mapping_config
+        """Get the appropriate mapping based on statement type and the stored config."""
+        # Use the mapping config stored in the validated Pydantic config object
+        config = self.cfg.mapping_config
         # Normalize and overlay user-provided mappings
-        user_map = normalize_mapping(config, context_key=statement_type)
-        mapping.update(user_map)
+        mapping = normalize_mapping(config, context_key=statement_type)
         return mapping
 
     def read(self, source: str, **kwargs: dict[str, Any]) -> Graph:
-        """Read data from an Excel file sheet into a new Graph.
+        """Read data from an Excel file sheet into a new Graph based on instance config.
 
         Args:
             source (str): Path to the Excel file.
-            **kwargs: Required keyword arguments:
-                sheet_name (str): Name of the sheet containing the data.
-                periods_row (int): 1-based index of the row containing period headers.
-                items_col (int): 1-based index of the column containing item names.
-            Optional keyword arguments:
-                statement_type (str): Type of statement ('income_statement', 'balance_sheet', 'cash_flow'),
-                    used to select default mappings if the provided mapping config is scoped.
-                header_row (int): 1-based index for pandas header reading (defaults to periods_row).
-                    Use if data headers differ from period headers.
-                nrows (int): Number of rows to read from the sheet.
-                skiprows (int): Number of rows to skip at the beginning.
-                mapping_config (MappingConfig): Overrides the mapping configuration provided at initialization.
-                    Accepts either a flat `Dict[str, str]` or a scoped `Dict[Optional[str], Dict[str, str]]`.
+            **kwargs: Optional runtime keyword arguments:
+                statement_type (str, optional): Type of statement ('income_statement', 'balance_sheet', 'cash_flow').
+                    Used to select a scope within the `mapping_config` provided during initialization.
+                header_row (int, optional): 1-based index for pandas header reading.
+                    Defaults to `self.cfg.periods_row` if not provided.
+                nrows (int, optional): Number of rows to read from the sheet.
+                skiprows (int, optional): Number of rows to skip at the beginning.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
 
         Raises:
-            ReadError: If the file cannot be read, sheet/row/col are invalid, or required kwargs missing.
+            ReadError: If the file cannot be read or the configuration is invalid.
+            AssertionError: If the reader was not initialized with a configuration.
         """
+        assert self.cfg is not None, "ExcelReader must be initialized with a valid configuration."
         file_path = source
         logger.info(f"Starting import from Excel file: {file_path}")
 
@@ -138,32 +89,33 @@ class ExcelReader(DataReader):
                 reader_type="ExcelReader",
             )
 
-        sheet_name = kwargs.get("sheet_name")
-        periods_row_0idx = (
-            kwargs.get("periods_row") - 1 if kwargs.get("periods_row") else None
-        )  # 0-based for pandas
-        items_col_0idx = (
-            kwargs.get("items_col") - 1 if kwargs.get("items_col") else None
-        )  # 0-based for pandas
-        header_row_0idx = (
-            kwargs.get("header_row") - 1 if kwargs.get("header_row") else periods_row_0idx
-        )
+        # Use configuration directly from self.cfg
+        sheet_name = self.cfg.sheet_name
+        periods_row = self.cfg.periods_row
+        items_col = self.cfg.items_col
+
+        # Convert to 0-based indices for pandas
+        periods_row_0idx = periods_row - 1 if periods_row else None
+        items_col_0idx = items_col - 1 if items_col else None
+        # Get header_row from kwargs, default to configured periods_row
+        header_row = kwargs.get("header_row", self.cfg.periods_row)
+        header_row_0idx = header_row - 1 if header_row else periods_row_0idx
 
         if sheet_name is None or periods_row_0idx is None or items_col_0idx is None:
             raise ReadError(
-                "Missing required arguments: 'sheet_name', 'periods_row', 'items_col' must be provided.",
+                "Configuration is missing required arguments: 'sheet_name', 'periods_row', 'items_col'.",
                 source=file_path,
                 reader_type="ExcelReader",
             )
 
+        # Runtime options from kwargs
         statement_type = kwargs.get("statement_type")
         nrows = kwargs.get("nrows")
         skiprows = kwargs.get("skiprows")
 
-        # Determine mapping for this operation, allowing override via kwargs
-        current_mapping_config = kwargs.get("mapping_config")
+        # Determine mapping based on config and runtime statement_type
         try:
-            mapping = self._get_mapping(statement_type, mapping_config=current_mapping_config)
+            mapping = self._get_mapping(statement_type)
         except TypeError as te:
             raise ReadError(
                 "Invalid mapping_config provided.",

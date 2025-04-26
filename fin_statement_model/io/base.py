@@ -15,11 +15,12 @@ class DataReader(ABC):
     """
 
     @abstractmethod
-    def read(self, source: str, **kwargs: dict[str, Any]) -> Graph:
+    def read(self, source: Any, **kwargs: dict[str, Any]) -> Graph:
         """Read data from the specified source and return a Graph.
 
         Args:
-            source: The data source (e.g., file path, API endpoint, dict).
+            source: The data source. Type depends on the reader implementation
+                (e.g., file path `str`, ticker `str`, `pd.DataFrame`, `dict`).
             **kwargs: Additional format-specific options for reading.
 
         Returns:
@@ -39,12 +40,13 @@ class DataWriter(ABC):
     """
 
     @abstractmethod
-    def write(self, graph: Graph, target: object, **kwargs: dict[str, Any]) -> object:
+    def write(self, graph: Graph, target: Any, **kwargs: dict[str, Any]) -> object:
         """Write data from the Graph object to the specified target.
 
         Args:
             graph: The Graph object containing the data to write.
-            target: The destination target (e.g., file path, database connection).
+            target: The destination target. Type depends on the writer implementation
+                (e.g., file path `str`, or ignored if the writer returns an object).
             **kwargs: Additional format-specific options for writing.
 
         Raises:

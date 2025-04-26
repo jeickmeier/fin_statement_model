@@ -132,13 +132,23 @@ All nodes inherit from the base Node class and typically implement a calculate(p
 
 3. Statements (StatementStructure, StatementManager, Config)
 
-While the graph holds the data and calculations, the StatementStructure defines the presentation layout of a financial statement (like an Income Statement).
+While the graph holds the data and calculations, the `StatementStructure` defines the presentation layout of a financial statement (like an Income Statement).
 
 It's defined hierarchically using Section, LineItem, CalculatedLineItem, and SubtotalLineItem.
 
-These structures are typically loaded from YAML or JSON configuration files using StatementConfig.
+**Configuration Validation (Pydantic)**
+* The `StatementConfig` loader now leverages Pydantic v2 for schema validation.
+  - Configuration models live in `fin_statement_model.statements.config.models`.
+  - Errors are reported from Pydantic validators, ensuring required fields, unique IDs, and cross-field checks.
+  - Legacy manual validation methods have been removed in favor of declarative model schemas.
+* Example minimal config:
+```yaml
+id: example_statement
+name: Example Statement
+sections: []
+```
 
-The StatementManager links a StatementStructure to the Graph, creates necessary calculation nodes based on the structure, and formats the output.
+The `StatementManager` links a `StatementStructure` to the Graph, creates necessary calculation nodes based on the structure, and formats the output.
 
 The StatementFactory provides helpers to load configurations, create managers, and export formatted statements (e.g., to DataFrame, Excel).
 
@@ -164,7 +174,47 @@ The IO system provides a consistent way to read data into the graph and write da
 
 Uses a registry to manage available readers and writers based on a format_type string (e.g., 'excel', 'fmp').
 
-The read_data and write_data functions act as easy-to-use facades.
+The `read_data` and `write_data` functions act as easy-to-use facades, automatically splitting initialization parameters (such as `api_key` or `mapping_config`) from read/write options.
+
+Under the hood, both readers and writers use Pydantic v2 for configuration validation.  For writers, the following options can be passed to `write_data`:
+  * **excel**: `sheet_name` (str), `recalculate` (bool), `include_nodes` (list[str]), `excel_writer_kwargs` (dict)
+  * **dataframe**: `recalculate` (bool), `include_nodes` (list[str])
+  * **dict**: no additional options
+
+Examples:
+```python
+# Simple write to Excel
+write_data(
+    'excel',
+    graph,
+    'output.xlsx',
+    sheet_name='MySheet',
+    recalculate=False,
+    include_nodes=['Revenue', 'COGS'],
+    excel_writer_kwargs={'engine': 'openpyxl'}
+)
+
+# Write to DataFrame
+df = write_data(
+    'dataframe',
+    graph,
+    None,  # DataFrameWriter ignores target
+    include_nodes=['TotalRevenue']
+)
+
+# Write to dict
+data_dict = write_data('dict', graph, None)
+```
+
+For advanced uses, you can instantiate writers directly via Pydantic config models:
+```python
+from fin_statement_model.io.registry import get_writer
+from fin_statement_model.io.config.models import ExcelWriterConfig
+
+cfg = ExcelWriterConfig(target='output.xlsx', sheet_name='Results')
+writer = get_writer('excel', **cfg.model_dump())
+writer.write(graph, cfg.target)
+```
 
 7. Preprocessing (DataTransformer, TransformationService)
 

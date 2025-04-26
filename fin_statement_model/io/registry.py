@@ -1,14 +1,27 @@
 """Registry for readers and writers."""
 
 import logging
-from typing import TypeVar, Callable, Any
+from typing import Any, Callable, TypeVar
 
 from .base import DataReader, DataWriter
-from .exceptions import FormatNotSupportedError
+from .exceptions import FormatNotSupportedError, ReadError, WriteError
+from pydantic import ValidationError
+from fin_statement_model.io.config.models import (
+    CsvReaderConfig,
+    ExcelReaderConfig,
+    FmpReaderConfig,
+    DataFrameReaderConfig,
+    DictReaderConfig,
+    ExcelWriterConfig,
+    DataFrameWriterConfig,
+    DictWriterConfig,
+)
 
 logger = logging.getLogger(__name__)
 
-# Type variables for generic functions
+# --- Registry Dicts and Decorators ---
+
+# Type variables for generic registration decorators
 R = TypeVar("R", bound=DataReader)
 W = TypeVar("W", bound=DataWriter)
 
@@ -76,6 +89,8 @@ def register_writer(format_type: str) -> Callable[[type[W]], type[W]]:
     return decorator
 
 
+# --- Registry Access Functions ---
+
 def get_reader(format_type: str, **kwargs: Any) -> DataReader:
     """Get an instance of the registered DataReader for the given format type.
 
@@ -88,12 +103,47 @@ def get_reader(format_type: str, **kwargs: Any) -> DataReader:
 
     Raises:
         FormatNotSupportedError: If no reader is registered for the format type.
-        Exception: Any exception raised during the reader's __init__.
+        ReadError: If validation fails for known reader types.
     """
     if format_type not in _readers:
         raise FormatNotSupportedError(format_type=format_type, operation="read")
 
     reader_class = _readers[format_type]
+    # Validate config for known reader types
+    schema_map = {
+        'csv': CsvReaderConfig,
+        'excel': ExcelReaderConfig,
+        'fmp': FmpReaderConfig,
+        'dataframe': DataFrameReaderConfig,
+        'dict': DictReaderConfig,
+    }
+    schema = schema_map.get(format_type)
+    if schema:
+        try:
+            cfg = schema.model_validate({**kwargs, 'format_type': format_type})
+        except ValidationError as ve:
+            # Map other pydantic errors to ReadError
+            raise ReadError(
+                message="Invalid reader configuration",
+                source=kwargs.get('source'),
+                reader_type=format_type,
+                original_error=ve,
+            ) from ve
+        # Instantiate reader with config object
+        try:
+            return reader_class(cfg)
+        except Exception as e:
+            logger.error(
+                f"Failed to instantiate reader for format '{format_type}' ({reader_class.__name__}): {e}",
+                exc_info=True,
+            )
+            raise ReadError(
+                message="Failed to initialize reader",
+                source=kwargs.get('source'),
+                reader_type=format_type,
+                original_error=e,
+            ) from e
+    # Fallback for legacy readers without config schema
     try:
         return reader_class(**kwargs)
     except Exception as e:
@@ -101,8 +151,12 @@ def get_reader(format_type: str, **kwargs: Any) -> DataReader:
             f"Failed to instantiate reader for format '{format_type}' ({reader_class.__name__}): {e}",
             exc_info=True,
         )
-        # Re-raise to allow specific handling upstream, but provide context
-        raise RuntimeError(f"Failed to initialize reader {reader_class.__name__}: {e}") from e
+        raise ReadError(
+            message="Failed to initialize reader",
+            source=kwargs.get('source'),
+            reader_type=format_type,
+            original_error=e,
+        ) from e
 
 
 def get_writer(format_type: str, **kwargs: Any) -> DataWriter:
@@ -117,21 +171,58 @@ def get_writer(format_type: str, **kwargs: Any) -> DataWriter:
 
     Raises:
         FormatNotSupportedError: If no writer is registered for the format type.
-        Exception: Any exception raised during the writer's __init__.
+        WriteError: If validation fails for known writer types.
     """
     if format_type not in _writers:
         raise FormatNotSupportedError(format_type=format_type, operation="write")
 
     writer_class = _writers[format_type]
+    # Map writer types to their config models
+    writer_schema_map = {
+        'excel': ExcelWriterConfig,
+        'dataframe': DataFrameWriterConfig,
+        'dict': DictWriterConfig,
+    }
+
+    schema_cls = writer_schema_map.get(format_type)
+
+    if schema_cls:
+        try:
+            cfg = schema_cls.model_validate({**kwargs, 'format_type': format_type})
+        except ValidationError as ve:
+            raise WriteError(
+                message="Invalid writer configuration",
+                target=kwargs.get('target'),
+                writer_type=format_type,
+                original_error=ve,
+            ) from ve
+        try:
+            return writer_class(cfg)
+        except Exception as e:
+            logger.error(
+                f"Failed to instantiate writer for format '{format_type}': {e}",
+                exc_info=True,
+            )
+            raise WriteError(
+                message="Failed to initialize writer",
+                target=kwargs.get('target'),
+                writer_type=format_type,
+                original_error=e,
+            ) from e
+    # Fallback if no schema defined
     try:
         return writer_class(**kwargs)
     except Exception as e:
         logger.error(
-            f"Failed to instantiate writer for format '{format_type}' ({writer_class.__name__}): {e}",
+            f"Failed to instantiate writer for format '{format_type}': {e}",
             exc_info=True,
         )
-        # Re-raise
-        raise RuntimeError(f"Failed to initialize writer {writer_class.__name__}: {e}") from e
+        raise WriteError(
+            message="Failed to initialize writer",
+            target=kwargs.get('target'),
+            writer_type=format_type,
+            original_error=e,
+        ) from e
 
 
 def list_readers() -> dict[str, type[DataReader]]:
@@ -142,3 +233,12 @@ def list_readers() -> dict[str, type[DataReader]]:
 def list_writers() -> dict[str, type[DataWriter]]:
     """Return a copy of the registered writer classes."""
     return _writers.copy()
+
+__all__ = [
+    "get_reader",
+    "get_writer",
+    "list_readers",
+    "list_writers",
+    "register_reader",
+    "register_writer",
+]

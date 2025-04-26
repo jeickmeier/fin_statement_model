@@ -10,6 +10,8 @@ from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.base import DataReader
 from fin_statement_model.io.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
+from fin_statement_model.io.readers.base import MappingConfig, normalize_mapping
+from fin_statement_model.io.config.models import DataFrameReaderConfig
 
 logger = logging.getLogger(__name__)
 
@@ -22,19 +24,25 @@ class DataFrameReader(DataReader):
     Values should be numeric.
     """
 
-    def __init__(self) -> None:
-        """Initialize the DataFrameReader."""
-        # No mapping configuration is supported.
+    def __init__(self, cfg: Optional[DataFrameReaderConfig] = None) -> None:
+        """Initialize the DataFrameReader.
 
-    def read(self, source: pd.DataFrame, periods: Optional[list[str]] = None) -> Graph:
+        Args:
+            cfg: Optional validated `DataFrameReaderConfig` instance.
+                 Currently unused but kept for registry symmetry and future options.
+        """
+        self.cfg = cfg  # For future use; currently no configuration options.
+
+    def read(self, source: pd.DataFrame, **kwargs) -> Graph:
         """Read data from a pandas DataFrame into a new Graph.
 
         Assumes DataFrame index = node names, columns = periods.
 
         Args:
             source (pd.DataFrame): The DataFrame to read data from.
-            periods (list[str], optional): Explicit list of periods (columns) to include.
-                If None, all columns are assumed to be periods.
+            **kwargs: Read-time keyword arguments:
+                periods (list[str], optional): Explicit list of periods (columns) to include.
+                    If None, all columns are assumed to be periods.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -61,7 +69,7 @@ class DataFrameReader(DataReader):
             # For now, stick to index=nodes assumption.
 
         # Determine periods: use explicit list or infer from columns
-        graph_periods_arg = periods
+        graph_periods_arg = kwargs.get('periods')
         if graph_periods_arg:
             if not isinstance(graph_periods_arg, list):
                 raise ReadError("'periods' argument must be a list of column names.")

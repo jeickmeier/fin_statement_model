@@ -4,7 +4,7 @@ This module provides Section and StatementStructure, which organize
 LineItem and CalculatedLineItem objects into nested groups.
 """
 
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, List
 
 from fin_statement_model.core.errors import StatementError
 from fin_statement_model.statements.structure.items import (
@@ -232,14 +232,25 @@ class StatementStructure:
         collect_calculation_items(self._sections)
         return calculation_items
 
-    def get_all_items(self) -> list[Union[Section, StatementItem]]:
-        """Get all items in the statement structure recursively.
+    def get_all_items(self) -> List[StatementItem]:
+        """Get all StatementItem instances recursively from the structure.
+
+        Traverses all sections and nested sections, collecting only objects that
+        are subclasses of StatementItem (e.g., LineItem, CalculatedLineItem),
+        excluding Section objects themselves.
 
         Returns:
-            List[Union[Section, StatementItem]]: List of all items in the statement.
+            List[StatementItem]: A flat list of all statement items found.
         """
-        items = []
-        for section in self._sections:
-            items.append(section)
-            items.extend(section._items)
-        return items
+        all_statement_items: List[StatementItem] = []
+
+        def _collect_items_recursive(items_or_sections: List[Union[Section, StatementItem]]) -> None:
+            for item in items_or_sections:
+                if isinstance(item, Section):
+                    _collect_items_recursive(item.items)
+                elif isinstance(item, StatementItem):
+                    all_statement_items.append(item)
+
+        _collect_items_recursive(self._sections)
+
+        return all_statement_items

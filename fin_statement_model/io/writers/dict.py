@@ -1,7 +1,8 @@
 """Data writer for Python dictionaries."""
 
 import logging
-from typing import Any
+from typing import Any, Optional
+import numpy as np
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import (
@@ -10,6 +11,7 @@ from fin_statement_model.core.nodes import (
 from fin_statement_model.io.base import DataWriter
 from fin_statement_model.io.registry import register_writer
 from fin_statement_model.io.exceptions import WriteError
+from fin_statement_model.io.config.models import DictWriterConfig
 
 logger = logging.getLogger(__name__)
 
@@ -20,21 +22,29 @@ class DictWriter(DataWriter):
 
     Specifically extracts data from FinancialStatementItemNode instances.
 
-    Note:
-        When using the `write_data` facade, writer initialization has no specific kwargs,
-        and no writer-specific options are supported for DictWriter. Direct instantiation
-        of `DictWriter` is also supported.
+    Initialized via `DictWriterConfig` (typically by the `write_data` facade),
+    although the config currently has no options. The `.write()` method takes no
+    specific keyword arguments.
     """
 
+    def __init__(self, cfg: Optional[DictWriterConfig] = None) -> None:
+        """Initialize the DictWriter.
+
+        Args:
+            cfg: Optional validated `DictWriterConfig` instance.
+                 Currently unused but kept for registry symmetry.
+        """
+        self.cfg = cfg
+
     def write(
-        self, graph: Graph, target: object = None, **kwargs: dict[str, Any]
+        self, graph: Graph, target: Any = None, **kwargs: dict[str, Any]
     ) -> dict[str, dict[str, float]]:
         """Export data from graph nodes with values to a dictionary.
 
         Args:
             graph (Graph): The Graph instance to export data from.
-            target (object): Ignored for DictWriter; returns the dictionary directly.
-            **kwargs: Writer-specific keyword arguments (none supported by DictWriter).
+            target (Any): Ignored by this writer; the dictionary is returned directly.
+            **kwargs: Currently unused.
 
         Returns:
             Dict[str, Dict[str, float]]: Mapping node names to period-value dicts.

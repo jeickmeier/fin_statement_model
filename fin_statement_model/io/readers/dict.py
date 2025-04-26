@@ -8,6 +8,8 @@ from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.base import DataReader
 from fin_statement_model.io.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
+from fin_statement_model.io.readers.base import MappingConfig, normalize_mapping
+from fin_statement_model.io.config.models import DictReaderConfig
 
 logger = logging.getLogger(__name__)
 
@@ -20,18 +22,29 @@ class DictReader(DataReader):
     Creates FinancialStatementItemNode instances for each entry.
 
     Note:
-        When using the `read_data` facade, pass dictionary data via `source` and
-        reader-specific options (`periods`) to `read()`.
+        Configuration is handled via `DictReaderConfig` during initialization.
+        The `read()` method takes the source dictionary directly and an optional
+        `periods` keyword argument.
     """
 
-    def read(self, source: dict[str, dict[str, float]], periods: Optional[list[str]] = None) -> Graph:
+    def __init__(self, cfg: Optional[DictReaderConfig] = None) -> None:
+        """Initialize the DictReader.
+
+        Args:
+            cfg: Optional validated `DictReaderConfig` instance.
+                 Currently unused but kept for registry symmetry and future options.
+        """
+        self.cfg = cfg
+
+    def read(self, source: dict[str, dict[str, float]], **kwargs) -> Graph:
         """Create a new Graph from a dictionary.
 
         Args:
             source: Dictionary mapping node names to period-value dictionaries.
                     Format: {node_name: {period: value, ...}, ...}
-            periods (list[str], optional): Explicit list of periods for the new graph.
-                If None, inferred from data keys.
+            **kwargs: Read-time keyword arguments:
+                periods (list[str], optional): Explicit list of periods for the new graph.
+                    If None, inferred from data keys.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -94,7 +107,7 @@ class DictReader(DataReader):
             ) from e
 
         # Determine graph periods
-        graph_periods = periods
+        graph_periods = kwargs.get('periods')
         if graph_periods is None:
             graph_periods = sorted(list(all_periods))
             logger.debug(f"Inferred graph periods from data: {graph_periods}")

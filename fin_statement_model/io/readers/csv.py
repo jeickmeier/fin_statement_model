@@ -12,6 +12,7 @@ from fin_statement_model.io.base import DataReader
 from fin_statement_model.io.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
 from fin_statement_model.io.readers.base import MappingConfig, normalize_mapping
+from fin_statement_model.io.config.models import CsvReaderConfig
 
 logger = logging.getLogger(__name__)
 
@@ -28,39 +29,33 @@ class CsvReader(DataReader):
     Supports a `mapping_config` constructor parameter for name mapping,
     accepting either a flat mapping or a statement-type scoped mapping.
 
-    Note:
-        When using the `read_data` facade, pass `mapping_config` via init,
-        and reader-specific options (`item_col`, `period_col`, `value_col`,
-        `pandas_read_csv_kwargs`) to `read()`. Direct instantiation is also supported.
+    Configuration (delimiter, header_row, index_col, mapping_config) is passed
+    via a `CsvReaderConfig` object during initialization (typically by the `read_data` facade).
+    Method-specific options (`item_col`, `period_col`, `value_col`, `pandas_read_csv_kwargs`)
+    are passed as keyword arguments to the `read()` method.
     """
 
-    def __init__(self, mapping_config: MappingConfig = None, **kwargs: Any) -> None:
-        """Initialize the CsvReader.
+    def __init__(self, cfg: CsvReaderConfig) -> None:
+        """Initialize the CsvReader with validated configuration.
 
         Args:
-            mapping_config (MappingConfig): Optional mapping configuration to
-                map CSV item names to canonical node names. Can be either:
-                  - Dict[str, str] for a flat mapping.
-                  - Dict[Optional[str], Dict[str, str]] for scoped mappings
-                    keyed by statement type (or None for default).
-            **kwargs: Not used by CsvReader init; reserved for API consistency.
+            cfg: A validated `CsvReaderConfig` instance containing parameters like
+                 `source`, `delimiter`, `header_row`, `index_col`, and `mapping_config`.
         """
-        # Store a normalized flat mapping for default use
-        self.mapping = normalize_mapping(mapping_config)
+        self.cfg = cfg
 
     def read(self, source: str, **kwargs: dict[str, Any]) -> Graph:
         """Read data from a CSV file into a new Graph.
 
         Args:
             source (str): Path to the CSV file.
-            **kwargs: Keyword arguments supported by this reader:
+            **kwargs: Read-time keyword arguments:
                 item_col (str): Name of the column containing item identifiers.
                 period_col (str): Name of the column containing period identifiers.
                 value_col (str): Name of the column containing numeric values.
-                mapping_config (MappingConfig): Overrides the mapping config
-                    provided at initialization.
                 pandas_read_csv_kwargs (dict): Additional arguments passed
-                    directly to `pandas.read_csv()`.
+                    directly to `pandas.read_csv()`. These can override settings
+                    from the `CsvReaderConfig` (e.g., `delimiter`).
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -91,22 +86,18 @@ class CsvReader(DataReader):
                 reader_type="CsvReader",
             )
 
-        # Normalize mapping config for this read operation
-        current_mapping_config = kwargs.get("mapping_config", self.mapping)
-        try:
-            mapping = normalize_mapping(current_mapping_config)
-        except TypeError as te:
-            raise ReadError(
-                "Invalid mapping_config provided.",
-                source=file_path,
-                reader_type="CsvReader",
-                original_error=te,
-            )
-        logger.debug(f"Using mapping: {mapping}")
-
         # --- Read CSV Data ---
         try:
-            df = pd.read_csv(file_path, **read_csv_options)
+            # Use configuration from self.cfg, allow overrides via read_csv_options
+            read_options = {
+                "delimiter": self.cfg.delimiter,
+                "header": self.cfg.header_row - 1 if self.cfg.header_row else 0, # pandas is 0-indexed header
+                "index_col": self.cfg.index_col - 1 if self.cfg.index_col else None, # pandas is 0-indexed index
+            }
+            # Merge user-provided kwargs, allowing them to override config
+            read_options.update(read_csv_options)
+
+            df = pd.read_csv(file_path, **read_options)
 
             # Validate required columns exist
             required_cols = {item_col, period_col, value_col}
@@ -143,7 +134,7 @@ class CsvReader(DataReader):
                     continue
 
                 item_name_csv_str = str(item_name_csv).strip()
-                node_name = mapping.get(item_name_csv_str, item_name_csv_str)
+                node_name = self.cfg.mapping_config.get(item_name_csv_str, item_name_csv_str)
 
                 period_values: dict[str, float] = {}
                 for _, row in group.iterrows():

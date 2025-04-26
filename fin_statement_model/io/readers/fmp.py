@@ -7,6 +7,7 @@ from typing import Optional, ClassVar, Any
 import numpy as np
 import yaml
 from pathlib import Path
+import backoff
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
@@ -14,6 +15,7 @@ from fin_statement_model.io.base import DataReader
 from fin_statement_model.io.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
 from fin_statement_model.io.readers.base import MappingConfig, normalize_mapping
+from fin_statement_model.io.config.models import FmpReaderConfig
 
 logger = logging.getLogger(__name__)
 
@@ -28,10 +30,10 @@ class FmpReader(DataReader):
     Supports a `mapping_config` constructor parameter for mapping API field names to canonical node names,
     accepting either a flat mapping or a statement-type keyed mapping.
 
-    Note:
-        When using the `read_data` facade, pass `api_key` and `mapping_config` via init,
-        and reader-specific options (`statement_type`, `period_type`, `limit`) to the `read()` method.
-        Direct instantiation of `FmpReader` is also supported.
+    Configuration (api_key, statement_type, period_type, limit, mapping_config)
+    is passed via an `FmpReaderConfig` object during initialization (typically by
+    the `read_data` facade). The `.read()` method currently takes no specific
+    keyword arguments beyond the `source` (ticker).
 
     Stateful Use:
         For advanced use cases involving repeated API calls, consider instantiating
@@ -52,56 +54,26 @@ class FmpReader(DataReader):
         with config_path.open("r", encoding="utf-8") as f:
             cls.DEFAULT_MAPPINGS = yaml.safe_load(f)
 
-    # Default statement types requested from FMP API
-    _STATEMENT_TYPES: ClassVar[dict[str, str]] = {
-        "income_statement": "income-statement",
-        "balance_sheet": "balance-sheet-statement",
-        "cash_flow": "cash-flow-statement",
-    }
-    # Mapping from API field names to standard node names
-    _API_ENDPOINTS: ClassVar[dict[str, str]] = {
-        "income_statement": "income-statement",
-        "balance_sheet": "balance-sheet-statement",
-        "cash_flow": "cash-flow-statement",
-    }
-    # Default required parameters for the API
-    _REQUIRED_PARAMS: ClassVar[list[str]] = ["apikey"]
-
-    def __init__(
-        self,
-        api_key: Optional[str] = None,
-        mapping_config: MappingConfig = None,
-    ) -> None:
-        """Initialize the FmpReader.
+    def __init__(self, cfg: FmpReaderConfig) -> None:
+        """Initialize the FmpReader with validated configuration.
 
         Args:
-            api_key: FMP API key. If None, attempts to use FMP_API_KEY env var.
-            mapping_config (MappingConfig): Optional mapping configuration to
-                override default API field mappings. Can be either:
-                  - Dict[str, str] for a flat mapping.
-                  - Dict[Optional[str], Dict[str, str]] for scoped mappings
-                    keyed by statement type (or None for default).
+            cfg: A validated `FmpReaderConfig` instance containing parameters like
+                 `source` (ticker), `api_key`, `statement_type`, `period_type`,
+                 `limit`, and `mapping_config`.
         """
-        self.api_key = api_key or os.environ.get("FMP_API_KEY")
-        if not self.api_key:
-            logger.warning(
-                "FMP API key not provided via init or FMP_API_KEY env var."
-            )
-
-        # Store raw mapping_config for later resolution
-        self.mapping_config = mapping_config
+        self.cfg = cfg
 
     def _get_mapping(
         self,
         statement_type: Optional[str],
-        mapping_config: MappingConfig = None,
     ) -> dict[str, str]:
-        """Get the appropriate mapping based on statement type and optional override config."""
+        """Get the appropriate mapping based on statement type and the stored config."""
         # Start with defaults based on statement type loaded from config
         mapping = dict(self.DEFAULT_MAPPINGS.get(statement_type, {}))
 
-        # Choose override config if provided, else use instance config
-        config = mapping_config if mapping_config is not None else self.mapping_config
+        # Use mapping config from the validated Pydantic config object
+        config = self.cfg.mapping_config
         # Normalize and overlay user-provided mappings
         user_map = normalize_mapping(config, context_key=statement_type)
         mapping.update(user_map)
@@ -109,7 +81,9 @@ class FmpReader(DataReader):
 
     def _validate_api_key(self):
         """Perform a simple check if the API key seems valid."""
-        if not self.api_key:
+        # API key is now guaranteed by FmpReaderConfig validation
+        api_key = self.cfg.api_key
+        if not api_key: # Should not happen if validation passed, but defensive check
             raise ReadError(
                 "FMP API key is required for reading.",
                 source="FMP API",
@@ -117,7 +91,7 @@ class FmpReader(DataReader):
             )
         try:
             # Use a cheap endpoint for validation
-            test_url = f"{self.BASE_URL}/profile/AAPL?apikey={self.api_key}"  # Example
+            test_url = f"{self.BASE_URL}/profile/AAPL?apikey={api_key}"  # Example
             response = requests.get(test_url, timeout=10)
             response.raise_for_status()  # Raises HTTPError for bad responses (4xx or 5xx)
             # Basic check on response content if needed
@@ -142,14 +116,8 @@ class FmpReader(DataReader):
 
         Args:
             source (str): The stock ticker symbol (e.g., "AAPL").
-            **kwargs: Required keyword arguments:
-                statement_type (str): Type of statement ('income_statement', 'balance_sheet', 'cash_flow').
-            Optional keyword arguments:
-                period_type (str): 'FY' for annual (default) or 'QTR' for quarterly.
-                limit (int): Number of past periods to fetch (default: 50).
-                mapping_config (MappingConfig): Overrides the mapping configuration provided at init.
-                    Accepts either a flat `Dict[str, str]` or a scoped `Dict[Optional[str], Dict[str, str]]`.
-                api_key (str): Overrides the API key provided at init.
+            **kwargs: Currently unused. Configuration is handled by the `FmpReaderConfig`
+                      object passed during initialization.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -158,10 +126,11 @@ class FmpReader(DataReader):
             ReadError: If API key is missing/invalid, API request fails, or data format is unexpected.
         """
         ticker = source
-        statement_type = kwargs.get("statement_type")
-        period_type_arg = kwargs.get("period_type", "FY")
-        limit = kwargs.get("limit", 50)
-        self.api_key = kwargs.get("api_key", self.api_key)
+        # Parameters now come directly from the validated config
+        statement_type = self.cfg.statement_type
+        period_type_arg = self.cfg.period_type
+        limit = self.cfg.limit
+        api_key = self.cfg.api_key
 
         # --- Validate Inputs ---
         if not ticker or not isinstance(ticker, str):
@@ -170,28 +139,14 @@ class FmpReader(DataReader):
                 source=ticker,
                 reader_type="FmpReader",
             )
-        if statement_type not in ["income_statement", "balance_sheet", "cash_flow"]:
-            raise ReadError(
-                "Missing or invalid required argument: 'statement_type'. Must be one of: income_statement, balance_sheet, cash_flow.",
-                source=ticker,
-                reader_type="FmpReader",
-            )
-        if period_type_arg not in ["FY", "QTR"]:
-            raise ReadError(
-                "Invalid 'period_type'. Must be 'FY' or 'QTR'.",
-                source=ticker,
-                reader_type="FmpReader",
-            )
+        # statement_type and period_type are validated by FmpReaderConfig
 
         self._validate_api_key()  # Ensure API key is usable
 
         # Determine mapping for this operation, allowing override via kwargs
-        current_mapping_config = kwargs.get("mapping_config")
+        # Mapping is now determined solely by the config passed during __init__
         try:
-            mapping = self._get_mapping(
-                statement_type,
-                mapping_config=current_mapping_config,
-            )
+            mapping = self._get_mapping(statement_type)
         except TypeError as te:
             raise ReadError(
                 "Invalid mapping_config provided.",
@@ -206,7 +161,7 @@ class FmpReader(DataReader):
         # e.g., /income-statement/AAPL, not /income_statement-statement/AAPL
         endpoint_path = statement_type.replace("_", "-")
         endpoint = f"{self.BASE_URL}/{endpoint_path}/{ticker}"
-        params = {"apikey": self.api_key, "limit": limit}
+        params = {"apikey": api_key, "limit": limit}
         if period_type_arg == "QTR":
             params["period"] = "quarter"
 

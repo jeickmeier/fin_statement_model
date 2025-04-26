@@ -6,7 +6,7 @@ financial statement models.
 """
 
 import logging
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Dict
 
 from fin_statement_model.core.node_factory import NodeFactory
 from fin_statement_model.core.nodes import Node, FinancialStatementItemNode, MetricCalculationNode, CalculationNode
@@ -235,22 +235,13 @@ class Graph:
         # Check for name conflict
         if node_name in self._nodes:
             raise ValueError(f"A node with name '{node_name}' already exists in the graph.")
-        # Load metric definition
+        # Load metric definition (Pydantic model)
         try:
             metric_def = metric_registry.get(metric_name)
         except KeyError as e:
             raise ConfigurationError(f"Unknown metric definition: '{metric_name}'") from e
-        # Validate definition fields
-        required_inputs = metric_def.get("inputs")
-        if not isinstance(required_inputs, list):
-            raise ConfigurationError(
-                f"Metric definition for '{metric_name}' is invalid: 'inputs' must be a list."
-            )
-        if "formula" not in metric_def:
-            raise ConfigurationError(
-                f"Metric definition for '{metric_name}' is invalid: missing 'formula'."
-            )
-        # Resolve input nodes
+        # Extract required inputs list from MetricDefinition
+        required_inputs = metric_def.inputs
         resolved_inputs: dict[str, Node] = {}
         missing = []
         for req in required_inputs:
@@ -452,16 +443,16 @@ class Graph:
             if metric_id in self._nodes:
                 raise ValueError(f"Node '{metric_id}' exists but is not a metric.")
             raise ValueError(f"Metric '{metric_id}' not found in graph.")
-        # Extract info from the MetricCalculationNode
+        # Extract info from the Pydantic MetricDefinition model
         try:
-            description = metric_node.definition.get("description")  # type: ignore
-            name = metric_node.definition.get("name")  # type: ignore
+            description = metric_node.definition.description
+            display_name = metric_node.definition.name
             inputs = metric_node.get_dependencies()
         except Exception as e:
             raise ValueError(
                 f"Failed to retrieve metric info for '{metric_id}': {e}"
             )
-        return {"id": metric_id, "name": name, "description": description, "inputs": inputs}
+        return {"id": metric_id, "name": display_name, "description": description, "inputs": inputs}
 
     def calculate(self, node_name: str, period: str) -> float:
         """Calculate and return the value of a specific node for a given period.
@@ -974,3 +965,64 @@ class Graph:
             >>> graph.get_direct_predecessors("GrossProfit")
         """
         return self.traverser.get_direct_predecessors(node_id)
+
+    def merge_from(self, other_graph: 'Graph') -> None:
+        """Merge nodes and periods from another Graph into this one.
+
+        Adds periods from the other graph if they don't exist in this graph.
+        Adds nodes from the other graph if they don't exist.
+        If a node exists in both graphs, attempts to merge the 'values' dictionary
+        from the other graph's node into this graph's node.
+
+        Args:
+            other_graph: The Graph instance to merge data from.
+
+        Raises:
+            TypeError: If other_graph is not a Graph instance.
+        """
+        if not isinstance(other_graph, Graph):
+            raise TypeError("Can only merge from another Graph instance.")
+
+        logger.info(f"Starting merge from graph {other_graph!r} into {self!r}")
+
+        # 1. Update periods
+        new_periods = [p for p in other_graph.periods if p not in self.periods]
+        if new_periods:
+            self.add_periods(new_periods)
+            logger.debug(f"Merged periods: {new_periods}")
+
+        # 2. Merge nodes
+        nodes_added = 0
+        nodes_updated = 0
+        for node_name, other_node in other_graph.nodes.items():
+            existing_node = self.get_node(node_name)
+            if existing_node is not None:
+                # Node exists, merge values if applicable
+                if hasattr(existing_node, "values") and hasattr(other_node, "values") and \
+                   isinstance(getattr(existing_node, "values", None), dict) and \
+                   isinstance(getattr(other_node, "values", None), dict):
+                    try:
+                        # Perform the update
+                        existing_node.values.update(other_node.values) # type: ignore
+                        nodes_updated += 1
+                        logger.debug(f"Merged values into existing node '{node_name}'")
+                        # No need to call self.add_node(existing_node) as it's already there
+                    except AttributeError:
+                         # Should not happen due to hasattr checks, but defensive
+                         logger.warning(f"Could not merge values for node '{node_name}' due to missing 'values' attribute despite hasattr check.")
+                    except Exception as e:
+                         logger.warning(f"Could not merge values for node '{node_name}': {e}")
+                else:
+                    # Nodes exist but cannot merge values (e.g., calculation nodes without stored values)
+                    logger.debug(f"Node '{node_name}' exists in both graphs, but values not merged (missing/incompatible 'values' attribute). Keeping target graph's node.")
+            else:
+                # Node doesn't exist in target graph, add it
+                try:
+                    # Ensure we add a copy if nodes might be shared or mutable in complex ways,
+                    # but for now, assume adding the instance is okay.
+                    self.add_node(other_node)
+                    nodes_added += 1
+                except Exception as e:
+                     logger.error(f"Failed to add new node '{node_name}' during merge: {e}")
+
+        logger.info(f"Merge complete. Nodes added: {nodes_added}, Nodes updated (values merged): {nodes_updated}")

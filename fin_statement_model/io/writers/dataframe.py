@@ -1,6 +1,7 @@
 """Data writer for pandas DataFrames."""
 
 import logging
+from typing import Optional, Any
 
 import pandas as pd
 import numpy as np
@@ -9,6 +10,7 @@ from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.base import DataWriter
 from fin_statement_model.io.registry import register_writer
 from fin_statement_model.io.exceptions import WriteError
+from fin_statement_model.io.config.models import DataFrameWriterConfig
 
 logger = logging.getLogger(__name__)
 
@@ -19,32 +21,42 @@ class DataFrameWriter(DataWriter):
 
     Converts the graph to a DataFrame with node names as index and periods as columns.
 
-    Note:
-        When using the `write_data` facade, writer initialization has no specific kwargs,
-        and writer-specific options (`recalculate`, `include_nodes`) should be passed to `write()`.
-        Direct instantiation of `DataFrameWriter` is also supported.
+    Configuration options `recalculate` and `include_nodes` are controlled *exclusively*
+    by the `DataFrameWriterConfig` object passed during initialization (typically
+    via the `write_data` facade). The `.write()` method does not accept keyword
+    arguments to override these settings.
     """
 
+    def __init__(self, cfg: Optional[DataFrameWriterConfig] = None) -> None:
+        """Initialize the DataFrameWriter.
+
+        Args:
+            cfg: Optional validated `DataFrameWriterConfig` instance.
+        """
+        self.cfg = cfg
+
     def write(
-        self, graph: Graph, target: object = None, **kwargs: dict[str, object]
+        self, graph: Graph, target: Any = None, **kwargs: dict[str, object]
     ) -> pd.DataFrame:
-        """Convert the graph data to a pandas DataFrame.
+        """Convert the graph data to a pandas DataFrame based on instance configuration.
 
         Args:
             graph (Graph): The Graph instance to export.
-            target (object): Ignored for DataFrameWriter; returns the DataFrame.
-            **kwargs: Writer-specific keyword arguments:
-                recalculate (bool): Recalculate graph before export (default: True).
-                include_nodes (list[str]): Optional list of node names to include.
+            target (Any): Ignored by this writer; the DataFrame is returned directly.
+            **kwargs: Currently unused by this method.
 
         Returns:
             pd.DataFrame: DataFrame with node names as index and periods as columns.
 
         Raises:
             WriteError: If an error occurs during conversion.
+            AssertionError: If the writer was not initialized with a configuration.
         """
-        recalculate = kwargs.get("recalculate", True)
-        include_nodes = kwargs.get("include_nodes")
+        assert self.cfg is not None, "DataFrameWriter must be initialized with a valid configuration."
+        # Use configuration directly from self.cfg
+        recalculate = self.cfg.recalculate
+        include_nodes = self.cfg.include_nodes
+
         logger.info("Exporting graph to DataFrame format.")
 
         try:

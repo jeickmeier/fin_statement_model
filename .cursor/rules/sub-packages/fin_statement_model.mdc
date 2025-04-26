@@ -3,87 +3,115 @@ description:
 globs: 
 alwaysApply: true
 ---
-# Project Architecture
+# Project Architecture: fin_statement_model
+
+## Layer Structure & Responsibilities
+
+The library is organized into distinct layers, each with a specific responsibility:
+
+-   **`core/`**: The foundational layer. Contains the graph engine, all base node classes (`Node`, `CalculationNode`, `ForecastNode`) and their implementations, the calculation engine, metric registry, and core utilities. **Crucially, `core` must not import from any other `fin_statement_model` sub-package.**
+-   **`preprocessing/`**: Handles data cleaning, normalization, and transformation logic *before* data enters the core graph or forecasting models. It's side-effect-free (no I/O).
+-   **`statements/`**: Provides domain-specific helpers for financial statements (Balance Sheet, P&L, etc.), including schemas, builders, and formatting utilities.
+-   **`io/`**: Manages all external data interfaces – reading data into the graph and exporting results. Sits at the edge of the system.
+-   **`extensions/`**: Hosts optional, lazily-loaded plugins that extend functionality without altering core packages. Discovered via entry points.
 
 ## Import Dependency Matrix
-| From \ To | core | preprocessing | statements | io | forecasting | extensions |
-|-----------|------|---------------|------------|----|-------------|------------|
-| core      | ✓    | ✗             | ✗          | ✗  | ✗           | ✗          |
-| preprocessing | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ |
-| statements | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ |
-| io         | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ |
-| forecasting | ✓ | ✓ | ✗ | ✗ | ✓ | ✗ |
-| extensions | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
-## Layer Structure
-- **core/**: Graph engine, **all node types (data, calculation, forecast)**, metric registry. *Must not import* from other layers.
-- **statements/**: Domain‑level helpers around financial statements.
-- **io/**: External data adapters (readers & writers).
-- **forecasting/**: Predictive modelling built on the core graph.
-- **preprocessing/**: Normalisation & data transforms.
-- **extensions/**: Plugin packages discovered via entry‑points.
+This matrix defines the allowed import directions between layers. A '✓' means the 'From' layer *can* import the 'To' layer.
 
-# Coding Standards
-- Python 3.9, `black`‑formatted, `ruff`‑linted; 100‑char line length.
-- Google‑style docstrings for every public **function, class and module**.
-- All functions and methods are fully type‑annotated; `mypy --strict` passes.
-- Keep modules ≤ 300 LOC; split when larger.
+| From \ To         | core | preprocessing | statements | io | extensions |
+|---------------    |:----:|:-------------:|:----------:|:--:|:----------:|
+| **core**          | ✓    | ✗             | ✗          | ✗  | ✗          |
+| **preprocessing** | ✓    | ✓             | ✗          | ✗  | ✗          |
+| **statements**    | ✓    | ✓             | ✓          | ✗  | ✗          |
+| **io**            | ✓    | ✓             | ✓          | ✓  | ✗          |
+| **extensions**    | ✓    | ✓             | ✓          | ✓  | ✓          |
 
-# Naming Conventions
-- Node implementations end with `Node` (e.g. `RevenueNode`).
-- Calculation implementations end with `CalculationNode`.
-- Forecast implementations end with `ForecastNode` and expose `forecast_value()`.
-- Metric identifiers are `lowercase_with_underscores`.
-- Standard method names:
-  - Calculations: `calculate(self) -> Numeric`
-  - Forecasts   : `forecast_value(self, periods: int) -> Series`
+# Coding Standards & Conventions
 
-# File Naming Patterns
-- Tests: `tests/<layer>/test_<module>.py`
-- Metrics YAML: `core/metrics/builtin/<metric_name>.yaml`
-- Graph helpers: `<noun>_graph.py`
-- Each sub-package must have `__all__ = [...]` in its `__init__.py`
+-   **Python Version**: 3.9+
+-   **Formatting**: `black` (100-char line length)
+-   **Linting**: `ruff`
+-   **Type Checking**: `mypy --strict`
+-   **Docstrings**: Google-style for all public modules, classes, functions. Mandatory.
+-   **Module Size**: Keep modules ≤ 300 LOC; split larger ones.
+-   **Naming**:
+    -   Nodes: `*Node` (e.g., `RevenueNode`, `COGSNode`)
+    -   Calculations: `*CalculationNode`
+    -   Forecasts: `*ForecastNode` (implement `forecast_value`)
+    -   Metrics: `lowercase_with_underscores`
+    -   Test files: `test_*.py`
+-   **Standard Methods**:
+    -   Calculations: `calculate(self) -> Numeric`
+    -   Forecasts: `forecast_value(self, periods: int) -> pd.Series` (*Adjust return type if needed*)
+-   **Imports**: Standard library -> Third-party -> `fin_statement_model` internal -> Relative. Use `__all__` in `__init__.py`.
+-   **Error Handling**: All exceptions must inherit from `core.errors.FinStatementModelError`.
+-   **Dependencies**:
+    -   Core requires `numpy` and `pandas`.
+    -   Heavy optional dependencies (e.g., `openai`, `torch` in `extensions/`) must be guarded by `try/except ImportError` and imported locally within functions/methods.
 
 # Registries & Extensibility
-- Register new metrics via `fin_statement_model.core.metrics.registry.register_metric`.
-- Simple metrics belong in YAML under `core/metrics/builtin/`; complex metrics can use Python classes.
-- Importers/exporters register with `io.readers.registry` / `io.writers.registry`.
-- Third‑party plugins expose entry‑points: `fin_statement_model.metrics` or `fin_statement_model.io.readers`.
 
-# Import Rules
-1. Standard library
-2. Third‑party libraries
-3. `fin_statement_model` (internal)
-4. Relative imports
-
-# Error Handling
-- All exceptions must extend `FinStatementModelError` from `core.errors`
-- Use dataclasses for immutable data containers
-- Core may embed numpy/pandas structures where they provide clear advantages. Prefer plain types for lightweight data, but DataFrame/Series usage is now allowed.
-
-# Optional Dependencies
-- Heavy dependencies (e.g. OpenAI, torch) must be:
-  - Imported inside functions, not at module level
-  - Guarded by try/except with clear error messages
-  - Set module-level boolean (e.g. `HAS_OPENAI`)
+-   **Metrics**: Register via `core.metrics.registry.register_metric`. Simple metrics in `core/metrics/builtin/*.yaml`; complex ones as Python classes.
+-   **I/O**: Readers/writers register with `io.readers.registry` / `io.writers.registry`.
+-   **Extensions**: Use `importlib.metadata` entry points (`fin_statement_model.extensions.*`).
 
 # Testing
-- Tests mirror package layout under **tests/**; filenames start with `test_`.
-- Use `pytest` + `pytest‑cov`; maintain ≥ 80 % coverage.
 
-# Cursor Quick-start
-- Use `list_dir`, `read_file`, `grep_search` before loading entire files
-- Show only changed lines with `// ... existing code ...` markers
-- One `edit_file` call per turn
-- Fix linter/mypy errors within three attempts
+-   Framework: `pytest` with `pytest-cov`.
+-   Location: Tests mirror package structure under `tests/`.
+-   Coverage: Maintain ≥ 80% branch coverage (enforced by CI).
+-   Requirements: Tests must pass `black`, `ruff`, `mypy --strict`. New public APIs require tests.
 
 # FAQ Cheatsheet
-| Task                              | Preferred Location / API                           |
-|-----------------------------------|-----------------------------------------------------|
-| Add metric                        | `core/metrics/builtin/*.yaml` → registry auto‑loads |
-| Add complex calculation           | `core/calculations/<name>_calculation.py`           |
-| New data reader (e.g., Excel)     | `io/readers/excel.py` + register_reader("excel")   |
-| New forecast model                | `forecasting/<name>_forecast.py`                    |
+
+| Task                              | Preferred Location / API                               |
+|-----------------------------------|--------------------------------------------------------|
+| Add simple metric                 | `core/metrics/builtin/<metric_name>.yaml`             |
+| Add complex metric/calculation    | `core/nodes/<name>_node.py` (if stateful), or strategy in `core/strategies/` |
+| Add new data reader (e.g., CSV)   | `io/readers/csv.py` + `register_reader("csv")`         |
+| Add new data writer               | `io/writers/<format>.py` + `register_writer("<format>")`|
+| Add data cleaning step            | `preprocessing/cleaning.py` (or similar module)        |
+| Define statement structure        | `statements/definitions/<statement_type>.py` (or YAML) |
+| Add optional ML feature           | `extensions/<feature_name>/...`                        |
 
 ---
-This rule file is auto‑included by Cursor for every prompt inside this repository to keep the codebase **consistent, maintainable, and extensible**.
+This rule file provides a comprehensive overview of the `fin_statement_model` library's structure and conventions, ensuring consistency and maintainability.
+
+# Purpose
+`fin_statement_model.core` is the **foundation** of the library. It provides the graph engine, base node hierarchy (including data, calculation, and forecast nodes), calculation engine, metric registry, and core utilities. **Crucially, `core` must not import from any other `fin_statement_model` sub-package** (`statements/`, `io/`, `preprocessing/`, `extensions/`). Everything else depends **on** `core`.
+
+# Exception Hierarchy
+All exceptions must extend from `FinStatementModelError`:
+```python
+class FinStatementModelError(Exception):
+    """Base exception for all fin_statement_model errors."""
+    pass
+
+class GraphError(FinStatementModelError):
+    """Errors related to graph operations."""
+    pass
+
+class CalculationError(FinStatementModelError):
+    """Errors during calculation execution."""
+    pass
+
+class MetricError(FinStatementModelError):
+    """Errors related to metric definitions or registry."""
+    pass
+```
+
+# Type System
+- Core may use numpy arrays and pandas Series/DataFrames where beneficial for performance or API clarity. Prefer plain Python types for simple data structures, but numpy / pandas are core dependencies.
+
+# Directory Responsibilities
+| Sub‑package / module                 | Responsibility                                                              |
+|--------------------------------------|-----------------------------------------------------------------------------|
+| `core/graph/`                        | Pure graph algorithms: traversal, manipulation, cycle detection, IO         |
+| `core/metrics/`                      | Metric definitions (YAML/Python), `registry.py`, and validation             |
+| `core/nodes/`                        | Base classes (`Node`, `CalculationNode`, `ForecastNode`) and implementations for **all** node types. |
+| `core/strategies/`                   | Calculation strategies (e.g., `Addition`, `Subtraction`, custom logic)      |
+| `calculation_engine.py`              | Orchestrates evaluation of the graph based on node dependencies.            |
+| `node_factory.py`                    | Dynamic node instantiation from configurations (e.g., YAML/JSON).           |
+| `data_manager.py`                    | Potential in‑memory store / caching layer for node values (if implemented). |
+| `errors.py`                          | Core‑level exceptions. Extend `FinStatementModelError`.                     |

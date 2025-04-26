@@ -17,7 +17,10 @@ try:
 except ImportError:
     HAS_YAML = False
 
+from pydantic import ValidationError
+
 from fin_statement_model.core.errors import ConfigurationError
+from fin_statement_model.core.metrics.models import MetricDefinition
 from fin_statement_model.core.nodes.metric_node import MetricCalculation
 
 logger = logging.getLogger(__name__)
@@ -43,7 +46,7 @@ class MetricRegistry:
             >>> len(registry)
             0
         """
-        self._metrics: dict[str, dict[str, Any]] = {}
+        self._metrics: dict[str, MetricDefinition] = {}
         logger.info("MetricRegistry initialized.")
 
     def load_metrics_from_directory(self, directory_path: Union[str, Path]) -> int:
@@ -86,30 +89,19 @@ class MetricRegistry:
                 with open(filepath, encoding="utf-8") as f:
                     data = yaml.safe_load(f)
 
-                if not isinstance(data, dict):
-                    raise TypeError("YAML content must be a dictionary.")
+                try:
+                    model = MetricDefinition.parse_obj(data)
+                except ValidationError as e:
+                    raise ConfigurationError(
+                        f"Invalid metric '{filepath.name}': {e}",
+                        config_path=str(filepath),
+                    ) from e
 
-                # Validate required fields
-                missing_fields = [field for field in self._REQUIRED_FIELDS if field not in data]
-                if missing_fields:
-                    raise ValueError(f"Missing required fields: {missing_fields}")
-
-                # Basic type validation for key fields
-                if not isinstance(data["name"], str):
-                    raise TypeError("'name' field must be a string.")
-                if not isinstance(data["description"], str):
-                    raise TypeError("'description' field must be a string.")
-                if not isinstance(data["inputs"], list):
-                    raise TypeError("'inputs' field must be a list.")
-                if not isinstance(data["formula"], str):
-                    raise TypeError("'formula' field must be a string.")
-
-                # Store the validated metric definition
                 if metric_id in self._metrics:
                     logger.warning(
                         f"Overwriting existing metric definition for '{metric_id}' from {filepath}"
                     )
-                self._metrics[metric_id] = data
+                self._metrics[metric_id] = model
                 logger.debug(f"Successfully loaded and validated metric '{metric_id}'")
                 loaded_count += 1
 
@@ -117,12 +109,6 @@ class MetricRegistry:
                 logger.exception(f"Error parsing YAML file {filepath}")
                 raise ConfigurationError(
                     f"Invalid YAML syntax in {filepath}", config_path=str(filepath)
-                ) from e
-            except (TypeError, ValueError) as e:
-                logger.exception(f"Invalid metric definition structure in {filepath}")
-                raise ConfigurationError(
-                    f"Invalid metric structure in {filepath}: {e}",
-                    config_path=str(filepath),
                 ) from e
             except Exception as e:
                 logger.error(
@@ -137,14 +123,14 @@ class MetricRegistry:
         logger.info(f"Successfully loaded {loaded_count} metrics from {dir_path}.")
         return loaded_count
 
-    def get(self, metric_id: str) -> dict[str, Any]:
+    def get(self, metric_id: str) -> MetricDefinition:
         """Retrieve a loaded metric definition by its ID.
 
         Args:
             metric_id: Identifier of the metric (filename stem).
 
         Returns:
-            The dictionary containing the metric definition.
+            A MetricDefinition object containing the metric definition.
 
         Raises:
             KeyError: If the metric_id is not found in the registry.

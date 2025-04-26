@@ -381,24 +381,14 @@ class MetricCalculationNode(Node):
         self.input_nodes = input_nodes
         self._values: dict[str, float] = {}  # Cache for calculated results
 
-        # Try to get the metric definition from the registry
+        # Load the metric definition (Pydantic model) from the registry
         try:
             self.definition = metric_registry.get(metric_name)
-            if self.definition is None:
-                raise KeyError(f"Metric '{metric_name}' not found")
         except KeyError:
             raise ConfigurationError(f"Metric definition '{metric_name}' not found")
 
-        # Validate the metric definition
-        required_fields = ["inputs", "formula"]
-        missing_fields = [field for field in required_fields if field not in self.definition]
-        if missing_fields:
-            raise MetricError(
-                f"Metric definition '{metric_name}' is invalid. Missing fields: {missing_fields}"
-            )
-
-        # Validate the input_nodes match what's required in the definition
-        required_inputs = set(self.definition["inputs"])
+        # Determine required inputs from the MetricDefinition model
+        required_inputs = set(self.definition.inputs)
         provided_inputs = set(input_nodes.keys())
 
         missing_inputs = required_inputs - provided_inputs
@@ -413,11 +403,11 @@ class MetricCalculationNode(Node):
                 f"Input nodes mismatch for metric '{metric_name}': unexpected inputs provided: {extra_inputs}"
             )
 
-        # Create internal formula calculation node
+        # Create internal formula calculation node using the formula from the MetricDefinition
         self.calc_node = FormulaCalculationNode(
             name=f"_{name}_formula_calc",
             inputs=input_nodes,
-            formula=self.definition["formula"],
+            formula=self.definition.formula,
         )
 
     def calculate(self, period: str) -> float:

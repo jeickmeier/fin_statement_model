@@ -6,13 +6,15 @@ and applying sign conventions.
 """
 
 import pandas as pd
-from typing import Optional, Any
+import numpy as np # Added numpy for NaN handling
+from typing import Optional, Any, Dict, List, Union # Updated imports
 from pandas.api.types import is_numeric_dtype
 import logging
 
 from fin_statement_model.statements.structure import StatementStructure
 from fin_statement_model.statements.structure import (
     Section,
+    LineItem, # Added LineItem
     CalculatedLineItem,
     SubtotalLineItem,
     StatementItem,
@@ -51,94 +53,125 @@ class StatementFormatter:
 
     def generate_dataframe(
         self,
-        data: dict[str, dict[str, float]],
+        data: Dict[str, Dict[str, float]], # Use Dict
         apply_sign_convention: bool = True,
         include_empty_items: bool = False,
         number_format: Optional[str] = None,
+        include_metadata_cols: bool = False, # Option to include metadata
     ) -> pd.DataFrame:
-        """Generate a formatted DataFrame of the statement.
+        """Generate a formatted DataFrame of the statement including subtotals.
 
-        Combines the statement structure with period data.
+        Combines the statement structure with period data, calculating subtotals
+        across multiple periods.
 
         Args:
             data: Mapping of node IDs to period-value dicts.
-            apply_sign_convention: Whether to apply sign conventions.
-            include_empty_items: Whether to include items with no data.
-            number_format: Optional format string for numbers
+            apply_sign_convention: Whether to apply sign conventions after calculation.
+            include_empty_items: Whether to include items with no data rows.
+            number_format: Optional Python format string for numbers (e.g., ',.2f').
+            include_metadata_cols: If True, includes hidden metadata columns
+                                   (like sign_convention, node_id) in the output.
 
         Returns:
-            pd.DataFrame: Formatted statement DataFrame
+            pd.DataFrame: Formatted statement DataFrame with subtotals.
         """
-        # Convert structure to base DataFrame
-        # This needs modification to incorporate period data
-        # Placeholder: Creates structure, but needs data merge
-        rows = []
+        rows: List[Dict[str, Any]] = [] # Use List
+        # Determine all periods present in the data, sorted
         all_periods = sorted(list(set(p for node_data in data.values() for p in node_data))) if data else []
 
-        # Helper to recursively build rows including data
-        def _process_item_with_data(
-            item: StatementItem, depth: int, rows_list: list[dict[str, Any]]
+        # --- Recursive Helper Function --- #
+        def _process_structure_recursive(
+            items_or_sections: List[Union[Section, StatementItem]],
+            current_depth: int,
+            rows_list: List[Dict[str, Any]],
+            all_data: Dict[str, Dict[str, float]],
+            periods: List[str],
         ) -> None:
-            item_data = data.get(getattr(item, "node_id", None), {})
-            row = {
-                "Line Item": "  " * depth + item.name, # Indentation
-                "ID": item.id, # Added ID for clarity
-                # Add periods as columns
-                **{period: item_data.get(period) for period in all_periods},
-                # Metadata (could be added later or made optional)
-                "line_type": self._get_item_type(item),
-                "node_id": getattr(item, "node_id", None),
-                "sign_convention": getattr(item, "sign_convention", 1),
-                "is_subtotal": isinstance(item, SubtotalLineItem),
-                "is_calculated": isinstance(item, CalculatedLineItem),
-            }
-            if include_empty_items or any(row[p] is not None for p in all_periods):
-                 rows_list.append(row)
+            """Recursively processes structure, calculates, and appends rows."""
+            for item in items_or_sections:
+                # --- Handle Sections --- #
+                if isinstance(item, Section):
+                    # Append section header row (optional, decide if needed)
+                    # section_header_row = {
+                    #     "Line Item": "  " * current_depth + item.name,
+                    #     "ID": item.id,
+                    #     **{p: np.nan for p in periods}, # Use NaN for headers
+                    #     "line_type": "section_header",
+                    #     # ... other metadata if needed ...
+                    # }
+                    # rows_list.append(section_header_row)
 
-            if hasattr(item, "children"):
-                for child in item.children:
-                    _process_item_with_data(child, depth + 1, rows_list)
-            elif isinstance(item, Section):
-                for child_item in item.items:
-                    _process_item_with_data(child_item, depth + 1, rows_list)
+                    # Recurse into the section's items
+                    _process_structure_recursive(item.items, current_depth + 1, rows_list, all_data, periods)
 
-        # Process sections and their items recursively
-        for section in self.statement.sections:
-            # Section Header (optional, depends on desired format)
-            # rows.append({"Line Item": section.name, "ID": section.id, **{p: None for p in all_periods}})
-             _process_item_with_data(section, 0, rows)
+                    # After processing items, add the section's subtotal if it exists
+                    if hasattr(item, 'subtotal') and item.subtotal:
+                        self._calculate_and_append_subtotal(
+                            item.subtotal, all_data, periods, rows_list, current_depth + 1
+                        )
+                # --- Handle Standalone Subtotals --- #
+                elif isinstance(item, SubtotalLineItem):
+                     # This handles subtotals defined directly within items list
+                     self._calculate_and_append_subtotal(
+                         item, all_data, periods, rows_list, current_depth
+                     )
+                # --- Handle Line Items (Basic & Calculated) --- #
+                elif isinstance(item, (LineItem, CalculatedLineItem)):
+                    node_id = getattr(item, "node_id", item.id) # Calculated uses item.id as node_id
+                    item_data = all_data.get(node_id, {})
+                    row_values = {period: item_data.get(period, np.nan) for period in periods} # Use NaN
 
+                    # Include row only if requested or if it has any non-NaN data
+                    if include_empty_items or any(pd.notna(v) for v in row_values.values()):
+                        row = {
+                            "Line Item": "  " * current_depth + item.name,
+                            "ID": item.id,
+                            **row_values,
+                            # Metadata
+                            "line_type": self._get_item_type(item),
+                            "node_id": node_id,
+                            "sign_convention": getattr(item, "sign_convention", 1),
+                            "is_subtotal": isinstance(item, SubtotalLineItem),
+                            "is_calculated": isinstance(item, CalculatedLineItem),
+                        }
+                        rows_list.append(row)
+                # --- End Item Type Handling ---
+            # --- End Loop --- #
+        # --- End Helper Function --- #
 
+        # Start the recursive processing with top-level sections
+        _process_structure_recursive(self.statement.sections, 0, rows, data, all_periods)
+
+        # --- DataFrame Creation and Final Formatting --- #
         if not rows:
+            # Return empty DataFrame with correct columns if no rows generated
             return pd.DataFrame(columns=["Line Item", "ID", *all_periods])
 
         df = pd.DataFrame(rows)
-        # Reorder columns: Line Item, ID, then sorted periods
-        cols = ["Line Item", "ID", *all_periods]
-        df = df[cols + [c for c in df.columns if c not in cols]] # Keep metadata at end
 
-        # Apply formatting
+        # Define columns: standard first, then periods, then metadata (conditionally)
+        base_cols = ["Line Item", "ID"]
+        metadata_cols = ["line_type", "node_id", "sign_convention", "is_subtotal", "is_calculated"]
+        final_cols = base_cols + all_periods
+        if include_metadata_cols:
+             final_cols += metadata_cols
+
+        # Ensure all expected columns exist, add if missing (e.g., empty data case)
+        for col in final_cols:
+             if col not in df.columns:
+                 df[col] = np.nan if col in all_periods else ("" if col == "Line Item" else None)
+
+        # Reorder columns
+        df = df[final_cols]
+
+        # Apply sign convention AFTER all raw values (including subtotals) are in place
         if apply_sign_convention:
             df = self._apply_sign_convention_to_data(df, all_periods)
 
-        # Format numbers (apply to period columns only)
+        # Format numbers as the final step
         df = self._format_numbers(df, number_format, period_columns=all_periods)
 
-        # TODO: Add subtotals (requires rework for multi-period data)
-        # df = self._add_subtotals(df)
-
-        # Remove metadata if not requested - keeping for now
-        # if not include_metadata:
-        #     metadata_cols = [col for col in df.columns if col.startswith("meta_")]
-        #     if metadata_cols:
-        #         df = df.drop(columns=metadata_cols)
-
         return df
-
-    def _process_item(self, item: StatementItem, depth: int, rows: list[dict[str, Any]]) -> None:
-        # This method seems less relevant now with _process_item_with_data
-        # Keep it for now or remove if fully replaced
-        pass
 
     def _get_item_type(self, item: StatementItem) -> str:
         """Get the type of a statement item.
@@ -158,12 +191,6 @@ class StatementFormatter:
         else:
             return "item"
 
-    def _apply_sign_convention(self, df: pd.DataFrame) -> pd.DataFrame:
-        # This method needs adjustment for multi-period data
-        # The logic assumed a single 'value' column
-        # Keep for reference, replace with _apply_sign_convention_to_data
-        pass
-
     def _apply_sign_convention_to_data(self, df: pd.DataFrame, period_columns: list[str]) -> pd.DataFrame:
         """Apply sign conventions to the statement values across periods."""
         result = df.copy()
@@ -178,15 +205,52 @@ class StatementFormatter:
                     )
         return result
 
-    def _add_subtotals(self, df: pd.DataFrame) -> pd.DataFrame:
-        # This needs significant rework for multi-period data
-        # Placeholder - current logic is single-value based
-        logger.warning("Subtotal calculation needs rework for multi-period data.")
-        return df
+    def _calculate_and_append_subtotal(
+        self,
+        subtotal_item: SubtotalLineItem,
+        all_data: Dict[str, Dict[str, float]],
+        periods: List[str],
+        rows_list: List[Dict[str, Any]],
+        depth: int,
+    ) -> None:
+        """Calculate subtotal values across periods and append the row."""
+        subtotal_values: Dict[str, float] = {}
 
-    def _calculate_section_subtotal(self, items: list[dict[str, Any]]) -> float:
-        # This needs rework for multi-period data
-        pass
+        # item_ids_to_sum = subtotal_item.item_ids # Use item_ids property
+        # OR use input_ids if calculation spec is preferred:
+        item_ids_to_sum = subtotal_item.input_ids # From CalculatedLineItem base
+
+        if not item_ids_to_sum:
+             logger.warning(f"Subtotal item '{subtotal_item.id}' has no item IDs to sum.")
+             return
+
+        for period in periods:
+            period_sum = 0.0
+            sum_contributors = 0
+            for item_id in item_ids_to_sum:
+                # Default to NaN if item or period data is missing
+                value = all_data.get(item_id, {}).get(period, np.nan)
+                if pd.notna(value):
+                     period_sum += value
+                     sum_contributors += 1
+
+            # Store sum only if at least one contributor was found, otherwise NaN
+            subtotal_values[period] = period_sum if sum_contributors > 0 else np.nan
+
+        # Construct the subtotal row
+        subtotal_row = {
+            "Line Item": "  " * depth + subtotal_item.name,
+            "ID": subtotal_item.id,
+            **subtotal_values,
+            # Metadata
+            "line_type": "subtotal",
+            "node_id": subtotal_item.id, # Subtotal acts as its own node
+            "sign_convention": subtotal_item.sign_convention,
+            "is_subtotal": True,
+            "is_calculated": True,
+        }
+        rows_list.append(subtotal_row)
+        logger.debug(f"Appended subtotal row for ID: {subtotal_item.id}")
 
     def _format_numbers(
         self, df: pd.DataFrame, number_format: Optional[str] = None, period_columns: Optional[list[str]] = None
