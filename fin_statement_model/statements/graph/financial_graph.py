@@ -9,22 +9,13 @@ from fin_statement_model.core.graph import Graph
 from fin_statement_model.preprocessing.transformation_service import (
     TransformationService,
 )
-from fin_statement_model.statements.mixins.analysis_mixin import AnalysisOperationsMixin
-from fin_statement_model.statements.mixins.merge_mixin import MergeOperationsMixin
-from fin_statement_model.statements.mixins.metrics_mixin import MetricsOperationsMixin
-from fin_statement_model.statements.mixins.forecast_mixin import ForecastOperationsMixin
+from fin_statement_model.statements.forecasting.forecaster import StatementForecaster
+from fin_statement_model.statements.merging.merger import StatementMerger
 from fin_statement_model.io import write_data
 import pandas as pd
 
 
-class FinancialStatementGraph(
-    Graph,
-    TransformationService,
-    AnalysisOperationsMixin,
-    MergeOperationsMixin,
-    MetricsOperationsMixin,
-    ForecastOperationsMixin,
-):
+class FinancialStatementGraph(Graph):
     """Main class for managing financial statement data and calculations.
 
     This class combines functionality from multiple mixins to provide a complete
@@ -38,11 +29,10 @@ class FinancialStatementGraph(
             periods: Optional list of time periods to initialize the graph with.
         """
         super().__init__(periods=periods)
-
-    @property
-    def graph(self) -> Graph:
-        """Alias to self for compatibility with importer expecting a graph attribute."""
-        return self
+        # Facade services for statement-specific operations
+        self.transformer: TransformationService = TransformationService()
+        self.forecaster: StatementForecaster = StatementForecaster(self)
+        self.merger: StatementMerger = StatementMerger(self)
 
     def to_dataframe(self) -> pd.DataFrame:
         """Exports the financial statement graph data to a pandas DataFrame.

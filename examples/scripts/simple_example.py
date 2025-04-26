@@ -60,7 +60,7 @@ fsg.add_metric("gross_profit")
 
 
 # Create forecasts with different methods
-fsg.create_forecast(
+fsg.forecaster.create_forecast(
     forecast_periods,
     {
         "revenue_americas": {

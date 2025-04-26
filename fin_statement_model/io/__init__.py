@@ -40,6 +40,11 @@ def read_data(
 ) -> Graph:
     """Reads data from a source using the specified format.
 
+    Keyword arguments passed to this function are divided between reader initialization
+    (e.g., 'api_key', 'mapping_config') and the reader's `read()` method
+    (e.g., 'sheet_name', 'statement_type'), based on predefined keys. Consult the
+    specific reader's documentation for the exact parameters handled by each.
+
     Args:
         format_type (str): The format identifier (e.g., 'excel', 'csv', 'fmp', 'dict').
         source (str): The data source (e.g., file path, ticker symbol, dict, DataFrame).
@@ -88,6 +93,10 @@ def write_data(
     **kwargs: dict[str, Union[str, int, float, bool]],
 ) -> object:
     """Writes graph data to a target using the specified format.
+
+    Keyword arguments passed to this function are divided between writer initialization
+    options and the writer's `write()` method, based on predefined keys. Consult the
+    specific writer's documentation for the exact parameters handled by each.
 
     Args:
         format_type (str): The format identifier (e.g., 'excel', 'dataframe', 'dict').

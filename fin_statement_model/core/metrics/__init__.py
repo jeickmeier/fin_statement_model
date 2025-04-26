@@ -44,11 +44,3 @@ __all__ = [
     "MetricRegistry",
     "metric_registry",  # Expose the singleton instance
 ]
-
-# --- Deprecation Warning for METRIC_DEFINITIONS ---
-# Provide a way to access the old dictionary format for compatibility,
-# but issue a warning.
-
-# Optional: Remove this completely if breaking change is acceptable
-# from .definitions_basic import METRIC_DEFINITIONS as _OLD_METRIC_DEFINITIONS
-_OLD_METRIC_DEFINITIONS = {}  # Start empty, populate if needed

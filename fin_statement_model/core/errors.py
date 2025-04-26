@@ -1,4 +1,4 @@
-"""Custom exceptions for the Financial Statement Model.
+"""Define custom exceptions for the Financial Statement Model.
 
 This module defines exception classes for specific error cases in the
 Financial Statement Model, allowing for more precise error handling
@@ -9,7 +9,7 @@ from typing import Optional, Any
 
 
 class FinancialModelError(Exception):
-    """Base exception class for all Financial Statement Model errors.
+    """Define the base exception class for all Financial Statement Model errors.
 
     All custom exceptions raised within the library should inherit from this class.
 
@@ -24,7 +24,7 @@ class FinancialModelError(Exception):
 
 
 class ConfigurationError(FinancialModelError):
-    """Exception raised for errors in configuration files or objects.
+    """Raise an error for invalid configuration files or objects.
 
     This typically occurs when parsing or validating configuration data,
     such as YAML files defining metrics or statement structures.
@@ -66,7 +66,7 @@ class ConfigurationError(FinancialModelError):
 
 
 class CalculationError(FinancialModelError):
-    """Exception raised for errors during calculation operations.
+    """Raise an error during calculation operations.
 
     This indicates a problem while computing the value of a node, often due
     to issues with the calculation logic, input data, or strategy used.
@@ -120,7 +120,7 @@ class CalculationError(FinancialModelError):
 
 
 class NodeError(FinancialModelError):
-    """Exception raised for errors related to graph nodes.
+    """Raise an error for issues related to graph nodes.
 
     This covers issues like trying to access a non-existent node,
     invalid node configurations, or type mismatches related to nodes.
@@ -144,7 +144,7 @@ class NodeError(FinancialModelError):
 
 
 class MissingInputError(FinancialModelError):
-    """Exception raised when a required input for a calculation is missing.
+    """Raise an error when a required calculation input is missing.
 
     This occurs when a calculation node needs data from another node for a
     specific period, but that data is unavailable.
@@ -190,7 +190,7 @@ class MissingInputError(FinancialModelError):
 
 
 class GraphError(FinancialModelError):
-    """Exception raised for errors in the graph structure or operations.
+    """Raise an error for invalid graph structure or operations.
 
     This covers issues like inconsistencies in the graph (e.g., orphaned nodes),
     problems during graph traversal, or invalid modifications to the graph.
@@ -214,7 +214,7 @@ class GraphError(FinancialModelError):
 
 
 class DataValidationError(FinancialModelError):
-    """Exception raised for data validation errors.
+    """Raise an error for data validation failures.
 
     This typically occurs during data import or preprocessing when data
     does not conform to expected formats, types, or constraints.
@@ -242,115 +242,8 @@ class DataValidationError(FinancialModelError):
         super().__init__(full_message)
 
 
-class ImportError(FinancialModelError):
-    """Exception raised for errors during data import operations.
-
-    This signals a problem while reading data from an external source,
-    such as a file or an API.
-
-    Args:
-        message: The base error message.
-        source: Optional identifier for the data source (e.g., file path, URL).
-        adapter: Optional name of the adapter or reader used for importing.
-        original_error: Optional underlying exception that caused the import failure.
-
-    Examples:
-        >>> raise ImportError("File not found", source="data.csv", adapter="csv_reader")
-        >>> try:
-        ...     # some_api_call()
-        ...     pass
-        ... except requests.exceptions.RequestException as e:
-        ...     raise ImportError("API request failed", source="api.example.com/data", original_error=e)
-    """
-
-    def __init__(
-        self,
-        message: str,
-        source: Optional[str] = None,
-        adapter: Optional[str] = None,
-        original_error: Optional[Exception] = None,
-    ):
-        """Initializes the ImportError."""
-        self.source = source
-        self.adapter = adapter
-        self.original_error = original_error
-
-        context = []
-        if source:
-            context.append(f"source '{source}'")
-        if adapter:
-            context.append(f"adapter '{adapter}'")
-
-        if context:
-            if adapter:
-                full_message = f"{message} using {' '.join(context)}"
-            else:
-                full_message = f"{message} from {' '.join(context)}"
-        else:
-            full_message = message
-
-        if original_error:
-            full_message = f"{full_message}: {original_error!s}"
-
-        super().__init__(full_message)
-
-
-class ExportError(FinancialModelError):
-    """Exception raised for errors during data export operations.
-
-    This signals a problem while writing data to an external target,
-    such as a file or database.
-
-    Args:
-        message: The base error message.
-        target: Optional identifier for the export destination (e.g., file path).
-        format_type: Optional name of the format being exported to (e.g., 'json', 'xlsx').
-        original_error: Optional underlying exception that caused the export failure.
-
-    Examples:
-        >>> raise ExportError("Permission denied", target="/path/to/output.xlsx", format_type="excel")
-        >>> try:
-        ...     # write_to_database()
-        ...     pass
-        ... except DatabaseError as e:
-        ...     raise ExportError("Database write failed", target="db://...", original_error=e)
-
-    """
-
-    def __init__(
-        self,
-        message: str,
-        target: Optional[str] = None,
-        format_type: Optional[str] = None,
-        original_error: Optional[Exception] = None,
-    ):
-        """Initializes the ExportError."""
-        self.target = target
-        self.format_type = format_type
-        self.original_error = original_error
-
-        context = []
-        if target:
-            context.append(f"target '{target}'")
-        if format_type:
-            context.append(f"format '{format_type}'")
-
-        if context:
-            if format_type:
-                full_message = f"{message} in {' '.join(context)}"
-            else:
-                full_message = f"{message} to {' '.join(context)}"
-        else:
-            full_message = message
-
-        if original_error:
-            full_message = f"{full_message}: {original_error!s}"
-
-        super().__init__(full_message)
-
-
 class CircularDependencyError(FinancialModelError):
-    """Exception raised when a circular dependency is detected in calculations.
+    """Raise an error when a circular dependency is detected in calculations.
 
     This occurs if the calculation graph contains cycles, meaning a node
     directly or indirectly depends on itself.
@@ -381,7 +274,7 @@ class CircularDependencyError(FinancialModelError):
 
 
 class PeriodError(FinancialModelError):
-    """Exception raised for errors related to periods.
+    """Raise an error for invalid or missing periods.
 
     This covers issues like requesting data for a non-existent period or
     using invalid period formats.
@@ -417,7 +310,7 @@ class PeriodError(FinancialModelError):
 
 
 class StatementError(FinancialModelError):
-    """Exception raised for errors related to financial statements.
+    """Raise an error for issues related to financial statements.
 
     This is used for errors specific to the structure, definition, or
     processing of financial statements (e.g., Balance Sheet, P&L).
@@ -441,7 +334,7 @@ class StatementError(FinancialModelError):
 
 
 class StrategyError(FinancialModelError):
-    """Exception raised for errors related to calculation strategies.
+    """Raise an error for issues related to calculation strategies.
 
     This indicates a problem with the configuration or execution of a
     specific calculation strategy (e.g., Summation, GrowthRate).
@@ -478,7 +371,7 @@ class StrategyError(FinancialModelError):
 
 
 class TransformationError(FinancialModelError):
-    """Exception raised for errors during data transformation.
+    """Raise an error during data transformation.
 
     This occurs during preprocessing steps when a specific transformation
     (e.g., normalization, scaling) fails.
@@ -519,7 +412,7 @@ class TransformationError(FinancialModelError):
 
 
 class MetricError(FinancialModelError):
-    """Exception raised for errors related to metric definitions or registry.
+    """Raise an error for issues related to metric definitions or registry.
 
     This covers issues with loading, validating, or accessing financial metrics,
     whether defined in YAML or Python code.

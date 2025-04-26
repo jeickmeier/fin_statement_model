@@ -16,10 +16,10 @@ from .structure import (
     StatementStructure,
     LineItem,
 )
-from .config.config import load_statement_config
+from .config.loader import load_statement_config
 from .services.calculation_service import CalculationService
 from .services.export_service import ExportService
-from .services.format_service import FormatService
+from fin_statement_model.statements.formatter import StatementFormatter
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -42,7 +42,6 @@ class StatementManager:
         self.statements: dict[str, StatementStructure] = {}
         self.calculation_service = CalculationService(self.graph)
         self.export_service = ExportService(self)
-        self.format_service = FormatService(self)
 
     def load_statement(self, config_path: str) -> StatementStructure:
         """Load a statement configuration and register it with the manager.
@@ -189,12 +188,22 @@ class StatementManager:
             StatementError: If the statement ID is not registered
             ValueError: If the format type is not supported
         """
+        # Retrieve the structure
         statement = self.get_statement(statement_id)
         if statement is None:
-            raise StatementError(message="Statement not found", statement_id=statement_id)
+            raise StatementError(f"Statement {statement_id!r} not found")
 
-        # Delegate to the format service
-        return self.format_service.format(statement_id, format_type, **fmt_kwargs)
+        # Build raw data
+        data_dict = self.build_data_dictionary(statement_id)
+
+        # Format using the core StatementFormatter
+        formatter = StatementFormatter(statement)
+        if format_type == "dataframe":
+            return formatter.generate_dataframe(data_dict, **fmt_kwargs)
+        elif format_type == "html":
+            return formatter.format_html(data_dict, **fmt_kwargs)
+        else:
+            raise ValueError(f"Unsupported format type: {format_type}")
 
     def export_to_excel(self, statement_id: str, file_path: str, **kwargs: dict[str, Any]) -> None:
         """Export a statement to an Excel file.
@@ -206,7 +215,7 @@ class StatementManager:
 
         Raises:
             StatementError: If the statement ID is not registered
-            ExportError: If the export fails
+            WriteError: If the export fails
         """
         return self.export_service.to_excel(statement_id, file_path, **kwargs)
 
@@ -227,7 +236,7 @@ class StatementManager:
 
         Raises:
             StatementError: If the statement ID is not registered
-            ExportError: If the export fails
+            WriteError: If the export fails
         """
         return self.export_service.to_json(statement_id, file_path, orient=orient, **kwargs)
 

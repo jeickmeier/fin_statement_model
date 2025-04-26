@@ -19,6 +19,11 @@ class DictWriter(DataWriter):
     """Writes graph data to a Python dictionary.
 
     Specifically extracts data from FinancialStatementItemNode instances.
+
+    Note:
+        When using the `write_data` facade, writer initialization has no specific kwargs,
+        and no writer-specific options are supported for DictWriter. Direct instantiation
+        of `DictWriter` is also supported.
     """
 
     def write(
@@ -27,9 +32,9 @@ class DictWriter(DataWriter):
         """Export data from graph nodes with values to a dictionary.
 
         Args:
-            graph: The Graph instance to export data from.
-            target: Ignored for DictWriter, as it returns the dictionary directly.
-            **kwargs: Ignored for DictWriter.
+            graph (Graph): The Graph instance to export data from.
+            target (object): Ignored for DictWriter; returns the dictionary directly.
+            **kwargs: Writer-specific keyword arguments (none supported by DictWriter).
 
         Returns:
             Dict[str, Dict[str, float]]: Mapping node names to period-value dicts.

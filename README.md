@@ -176,14 +176,19 @@ DataTransformer defines the interface for transformation steps.
 
 TransformationService orchestrates applying individual transformers or pipelines.
 
-8. Forecasting (ForecastNode, Mixin)
+8. Forecasting (ForecastNode, StatementForecaster)
 
 Allows projecting future values for data nodes.
 
 Various ForecastNode subclasses implement different growth logic.
 
-The ForecastOperationsMixin adds create_forecast methods to the FinancialStatementGraph, which internally use ForecastNodes to calculate future values and update the original data nodes.
+A `StatementForecaster` is provided on the `FinancialStatementGraph` instance via the `forecaster` attribute. Use:
 
+    fsg.forecaster.create_forecast(
+        forecast_periods=[...],
+        node_configs={...}
+    )
+   
 Usage Examples
 import pandas as pd
 from fin_statement_model import (
@@ -291,7 +296,7 @@ forecast_periods = ["2024", "2025"]
 fsg.add_periods(forecast_periods)
 
 try:
-    fsg.create_forecast(
+    fsg.forecaster.create_forecast(
         forecast_periods=forecast_periods,
         node_configs={
             "Revenue": {"method": "simple", "config": 0.10},  # 10% fixed growth

@@ -4,6 +4,7 @@ This module provides the DataTransformer abstract base class and CompositeTransf
 """
 
 from abc import ABC, abstractmethod
+import pandas as pd
 from typing import Optional
 import logging
 
@@ -42,14 +43,17 @@ class DataTransformer(ABC):
         """
 
     def validate_input(self, data: object) -> bool:
-        """Validate that the input data is acceptable for this transformer.
+        """Validate that the input data is a pandas DataFrame by default.
 
-        This method must be overridden by subclasses with custom validation logic.
+        This performs a basic DataFrame type check and can be overridden by subclasses with more specific validation logic.
 
-        Raises:
-            NotImplementedError: if not implemented in subclass
+        Args:
+            data (object): The input data to validate.
+
+        Returns:
+            bool: True if data is a pandas.DataFrame, False otherwise.
         """
-        raise NotImplementedError(f"{self.__class__.__name__} must implement validate_input()")
+        return isinstance(data, pd.DataFrame)
 
     def _pre_transform_hook(self, data: object) -> object:
         """Hook method called before transformation.
@@ -159,5 +163,16 @@ class CompositeTransformer(DataTransformer):
         return None
 
     def validate_input(self, data: object) -> bool:
-        """CompositeTransformer always accepts data; individual transformers validate."""
-        return True
+        """Validate input for the composite transformer.
+
+        If the pipeline is empty, accepts any data; otherwise, delegates validation to the first transformer.
+
+        Args:
+            data (object): Input data to validate.
+
+        Returns:
+            bool: True if input is valid for the pipeline.
+        """
+        if not hasattr(self, "transformers") or not self.transformers:
+            return True
+        return self.transformers[0].validate_input(data)

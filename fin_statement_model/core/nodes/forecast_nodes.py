@@ -1,4 +1,4 @@
-"""Forecast nodes for projecting future values based on historical data.
+"""Provide forecast nodes to project future values from historical data.
 
 This module defines the base `ForecastNode` class and its subclasses,
 implementing various forecasting strategies (fixed, curve, statistical,
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class ForecastNode(Node):
-    """Base class for forecast nodes that project future values based on historical data.
+    """Define base class for forecast nodes to project future values from historical data.
 
     A forecast node takes an input node (typically a financial statement item) and projects its
     future values using various growth methods. The node caches calculated values to avoid
@@ -31,12 +31,11 @@ class ForecastNode(Node):
 
     Methods:
         calculate(period): Get value for a specific period (historical or forecast)
-        forecast_value(period): Alias for calculate() to meet project standards
         _calculate_value(period): Core calculation logic for a period
         _get_previous_period(period): Helper to get chronologically previous period
         _get_growth_factor_for_period(): Abstract method for growth rate calculation
 
-    Example:
+    Examples:
         # Create 5% fixed growth forecast for revenue
         base = "FY2022"
         forecasts = ["FY2023", "FY2024", "FY2025"]
@@ -82,7 +81,7 @@ class ForecastNode(Node):
         Raises:
             ValueError: If the requested period is not in base_period or forecast_periods
 
-        Example:
+        Examples:
             # Get historical value
             base_value = node.calculate("FY2022")  # Returns actual historical value
 
@@ -93,28 +92,21 @@ class ForecastNode(Node):
             self._cache[period] = self._calculate_value(period)
         return self._cache[period]
 
-    def forecast_value(self, period: str) -> float:
-        """Alias for calculate() method to meet project standards.
-
-        Args:
-            period (str): The period to calculate the value for (e.g. "FY2023")
-
-        Returns:
-            float: The calculated value for the specified period
-        """
-        return self.calculate(period)
-
     def clear_cache(self):
         """Clear the calculation cache.
 
         This method clears any cached calculation results, forcing future calls to
         calculate() to recompute values rather than using cached results.
 
-        Example:
+        Examples:
             # Clear cached calculations
             node.clear_cache()  # Future calculate() calls will recompute values
         """
         self._cache.clear()
+
+    def has_calculation(self) -> bool:
+        """Indicate that this node performs a calculation."""
+        return True
 
     def _calculate_value(self, period: str) -> float:
         """Calculate the value for a specific period.
@@ -173,7 +165,7 @@ class FixedGrowthForecastNode(ForecastNode):
         forecast_periods (List[str]): List of future periods to forecast
         growth_rate (float): The fixed growth rate to apply (e.g. 0.05 for 5% growth)
 
-    Example:
+    Examples:
         # Create node forecasting 5% annual revenue growth
         forecast = FixedGrowthForecastNode(
             revenue_node,
@@ -232,7 +224,7 @@ class CurveGrowthForecastNode(ForecastNode):
     Raises:
         ValueError: If length of growth_rates doesn't match forecast_periods
 
-    Example:
+    Examples:
         # Create node with declining growth rates
         forecast = CurveGrowthForecastNode(
             revenue_node,
@@ -298,7 +290,7 @@ class StatisticalGrowthForecastNode(ForecastNode):
         distribution_callable (Callable[[], float]): Function that returns random growth rates
                                                    from a statistical distribution
 
-    Example:
+    Examples:
         # Create node with normally distributed growth rates
         from numpy.random import normal
         forecast = StatisticalGrowthForecastNode(
@@ -357,7 +349,7 @@ class CustomGrowthForecastNode(ForecastNode):
         - prev_value (float): The value from the previous period
     And return a float representing the growth rate for that period.
 
-    Example:
+    Examples:
         def custom_growth(period, prev_period, prev_value):
             # Growth rate increases by 1% each year, starting at 5%
             year_diff = int(period[-4:]) - int(prev_period[-4:])
@@ -401,26 +393,6 @@ class AverageValueForecastNode(ForecastNode):
     This node calculates the average of historical values and returns that constant value
     for all forecast periods. It's useful when you want to project future values based
     on the historical average, without any growth.
-
-    Args:
-        input_node (Node): The node containing historical/base values
-        base_period (str): The last historical period (e.g. "FY2022")
-        forecast_periods (List[str]): List of future periods to forecast
-        average_value (float): The pre-calculated average value to use
-
-    Example:
-        # Create node using historical average
-        avg_value = sum(historical_values) / len(historical_values)
-        forecast = AverageValueForecastNode(
-            revenue_node,
-            "FY2022",
-            ["FY2023", "FY2024", "FY2025"],
-            avg_value
-        )
-
-        # Get forecasted value
-        fy2024_revenue = forecast.calculate("FY2024")
-        # Returns: avg_value
     """
 
     def __init__(
@@ -428,27 +400,42 @@ class AverageValueForecastNode(ForecastNode):
         input_node: Node,
         base_period: str,
         forecast_periods: list[str],
-        average_value: float,
     ):
-        """Initialize AverageValueForecastNode with a constant average value.
+        """Initialize AverageValueForecastNode by computing historical average.
 
         Args:
             input_node: Node containing historical data.
             base_period: The last historical period.
             forecast_periods: List of future periods to forecast.
-            average_value: Constant average value to apply for forecasts.
+
         """
         super().__init__(input_node, base_period, forecast_periods)
-        self.average_value = float(average_value)  # Ensure it's a float
-        logger.debug(f"Created AverageValueForecastNode with average value: {self.average_value}")
+        self.average_value = self._calculate_average_value()
+        logger.debug(
+            f"Created AverageValueForecastNode with average value: {self.average_value}"
+        )
+
+    def _calculate_average_value(self) -> float:
+        """Calculate the average historical value up to the base period.
+
+        Returns:
+            float: The average of historical values or 0.0 if none.
+        """
+        values = [value for period, value in self.values.items() if period <= self.base_period]
+        if not values:
+            logger.warning(
+                f"No historical values found for {self.name}, using 0.0 as average"
+            )
+            return 0.0
+        return sum(values) / len(values)
 
     def _calculate_value(self, period: str) -> float:
-        """Calculate the value for a specific period."""
+        """Calculate the value for a specific period using the computed average value."""
         # For historical periods, return the actual value
         if period <= self.base_period:
             return self.values.get(period, 0.0)
 
-        # For forecast periods, return the average value
+        # For forecast periods, return the constant average value
         if period not in self.forecast_periods:
             raise ValueError(f"Period '{period}' not in forecast periods for {self.name}")
 
@@ -472,19 +459,6 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
         input_node (Node): The node containing historical/base values
         base_period (str): The last historical period (e.g. "FY2022")
         forecast_periods (List[str]): List of future periods to forecast
-        growth_params (float): Ignored parameter for compatibility with NodeFactory
-
-    Example:
-        # Create node using average historical growth
-        forecast = AverageHistoricalGrowthForecastNode(
-            revenue_node,
-            "FY2022",
-            ["FY2023", "FY2024", "FY2025"]
-        )
-
-        # Get forecasted value
-        fy2024_revenue = forecast.calculate("FY2024")
-        # Returns: base_value * (1 + avg_growth_rate)^2
     """
 
     def __init__(
@@ -492,15 +466,13 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
         input_node: Node,
         base_period: str,
         forecast_periods: list[str],
-        growth_params: float = 0.0,
     ):
-        """Initialize AverageHistoricalGrowthForecastNode with initial growth parameters.
+        """Initialize AverageHistoricalGrowthForecastNode by computing average growth.
 
         Args:
             input_node: Node containing historical data.
             base_period: The last historical period.
             forecast_periods: List of future periods to forecast.
-            growth_params: Initial parameter used to calculate average growth.
         """
         super().__init__(input_node, base_period, forecast_periods)
         self.avg_growth_rate = self._calculate_average_growth_rate()

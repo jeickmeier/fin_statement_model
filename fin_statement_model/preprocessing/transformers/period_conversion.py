@@ -4,8 +4,6 @@ This module provides the PeriodConversionTransformer for converting between peri
 quarterly_to_annual, monthly_to_quarterly, monthly_to_annual, and annual_to_ttm.
 """
 
-from __future__ import annotations
-
 import pandas as pd
 from typing import Optional, Union, ClassVar
 

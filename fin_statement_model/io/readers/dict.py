@@ -1,13 +1,13 @@
 """Data reader for Python dictionaries."""
 
 import logging
-from typing import Any
+from typing import Optional
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.base import DataReader
 from fin_statement_model.io.registry import register_reader
-from fin_statement_model.io.exceptions import ReadError  # Removed DataValidationError
+from fin_statement_model.io.exceptions import ReadError
 
 logger = logging.getLogger(__name__)
 
@@ -18,17 +18,20 @@ class DictReader(DataReader):
 
     Expects a dictionary format: {node_name: {period: value, ...}, ...}
     Creates FinancialStatementItemNode instances for each entry.
+
+    Note:
+        When using the `read_data` facade, pass dictionary data via `source` and
+        reader-specific options (`periods`) to `read()`.
     """
 
-    def read(self, source: dict[str, dict[str, float]], **kwargs: dict[str, Any]) -> Graph:
+    def read(self, source: dict[str, dict[str, float]], periods: Optional[list[str]] = None) -> Graph:
         """Create a new Graph from a dictionary.
 
         Args:
             source: Dictionary mapping node names to period-value dictionaries.
                     Format: {node_name: {period: value, ...}, ...}
-            **kwargs: Optional arguments:
-                periods (list[str]): Explicit list of periods for the new graph.
-                                     If None, inferred from data keys.
+            periods (list[str], optional): Explicit list of periods for the new graph.
+                If None, inferred from data keys.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -91,7 +94,7 @@ class DictReader(DataReader):
             ) from e
 
         # Determine graph periods
-        graph_periods = kwargs.get("periods")
+        graph_periods = periods
         if graph_periods is None:
             graph_periods = sorted(list(all_periods))
             logger.debug(f"Inferred graph periods from data: {graph_periods}")

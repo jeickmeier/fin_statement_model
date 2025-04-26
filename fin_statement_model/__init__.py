@@ -1,6 +1,7 @@
 """finlib - A Python library for financial statement analysis and forecasting."""
 
 __all__ = [
+    "CalculationNode",
     "CurveGrowthForecastNode",
     "CustomGrowthForecastNode",
     "FinancialStatementGraph",
@@ -14,9 +15,7 @@ __all__ = [
     "MultiPeriodStatNode",
     "Node",
     "StatisticalGrowthForecastNode",
-    "StrategyCalculationNode",
     "YoYGrowthNode",
-    "create_financial_statement",
 ]
 
 from .extensions.llm.llm_client import LLMClient, LLMConfig
@@ -24,7 +23,7 @@ from .core.graph import Graph
 from .core.nodes import (
     Node,
     FinancialStatementItemNode,
-    StrategyCalculationNode,
+    CalculationNode,
     MetricCalculationNode,
     YoYGrowthNode,
     MultiPeriodStatNode,
@@ -35,9 +34,6 @@ from .core.nodes import (
     CustomGrowthForecastNode,
 )
 from .statements import FinancialStatementGraph
-from .statements.importer.cell_importer import (
-    import_from_cells as create_financial_statement,
-)
 
 # ensure our library-wide logging policy is applied immediately
 from . import logging_config  # noqa: F401

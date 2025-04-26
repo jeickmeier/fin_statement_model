@@ -1,13 +1,9 @@
-"""Graph core components package.
+"""Graph module for the financial statement model.
 
-This package contains the core `Graph` class along with mixins for
-graph manipulation and traversal operations. It defines the fundamental
-structure and operations for the financial model's dependency graph.
+This module provides the core graph functionality for building and evaluating
+financial statement models.
 """
 
-from __future__ import annotations
-from .graph import Graph
-from .manipulation import GraphManipulationMixin
-from .traversal import GraphTraversalMixin
+from fin_statement_model.core.graph.graph import Graph
 
-__all__ = ["Graph", "GraphManipulationMixin", "GraphTraversalMixin"]
+__all__ = ["Graph"]

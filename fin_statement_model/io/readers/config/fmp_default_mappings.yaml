@@ -1,0 +1,23 @@
+income_statement:
+  revenue: revenue
+  costOfRevenue: cost_of_goods_sold
+  grossProfit: gross_profit
+  incomeTaxExpense: tax_expense
+  netIncome: net_income
+  depreciationAndAmortization: depreciation_and_amortization
+  ebitda: ebitda
+  eps: eps
+  epsDiluted: eps_diluted
+
+balance_sheet:
+  cashAndCashEquity: cash_and_equivalents
+  totalLiabilitiesAndStockholdersEquity: total_liabilities_and_stockholders_equity
+  inventory: inventory
+  accountPayables: account_payables
+
+cash_flow:
+  netIncome: net_income
+  depreciationAndAmortization: depreciation_and_amortization
+  netCashProvidedByOperatingActivities: operating_cash_flow
+  capitalExpenditure: capital_expenditure
+  freeCashFlow: free_cash_flow 

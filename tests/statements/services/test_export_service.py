@@ -5,7 +5,7 @@ import pandas as pd
 from fin_statement_model.core.graph.graph import Graph
 from fin_statement_model.statements.manager import StatementManager
 from fin_statement_model.statements.structure import StatementStructure, Section, LineItem
-from fin_statement_model.core.errors import ExportError
+from fin_statement_model.io.exceptions import WriteError
 
 
 def make_manager_with_simple_statement():
@@ -63,8 +63,8 @@ def test_to_json_creates_file(tmp_path):
 def test_export_invalid_statement_raises_statement_error(tmp_path):
     manager = make_manager_with_simple_statement()
     bad_path = tmp_path / "dummy.xlsx"
-    # Expect ExportError because the service wraps the StatementError
-    with pytest.raises(ExportError):
+    # Expect WriteError because the service wraps the StatementError
+    with pytest.raises(WriteError):
         manager.export_to_excel("invalid_id", str(bad_path))
 
 
@@ -72,12 +72,12 @@ def test_export_to_excel_bad_path_raises_export_error(tmp_path):
     manager = make_manager_with_simple_statement()
     # Path in non-existent directory
     bad_path = tmp_path / "no_dir" / "file.xlsx"
-    with pytest.raises(ExportError):
+    with pytest.raises(WriteError):
         manager.export_to_excel("s1", str(bad_path))
 
 
 def test_export_to_json_bad_path_raises_export_error(tmp_path):
     manager = make_manager_with_simple_statement()
     bad_path = tmp_path / "no_dir" / "file.json"
-    with pytest.raises(ExportError):
+    with pytest.raises(WriteError):
         manager.export_to_json("s1", str(bad_path))

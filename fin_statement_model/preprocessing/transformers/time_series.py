@@ -7,7 +7,7 @@ moving averages, CAGR, year-over-year, and quarter-over-quarter conversions.
 import pandas as pd
 from typing import Union, Optional, ClassVar
 
-from fin_statement_model.preprocessing.types import TabularData, TimeSeriesConfig
+from fin_statement_model.preprocessing.types import TimeSeriesConfig
 from fin_statement_model.preprocessing.enums import TransformationType
 from fin_statement_model.preprocessing.base_transformer import DataTransformer
 
@@ -59,22 +59,18 @@ class TimeSeriesTransformer(DataTransformer):
         self.periods = periods
         self.window_size = window_size
 
-    def transform(self, data: TabularData) -> TabularData:  # type: ignore
+    def transform(self, data: pd.DataFrame) -> pd.DataFrame:
         """Transform time series data based on the configured transformation type.
 
         Args:
-            data: DataFrame or dictionary containing time series financial data
+            data: pd.DataFrame containing time series financial data
 
         Returns:
-            Transformed data in the same format as input
+            pd.DataFrame: Transformed DataFrame
         """
-        if isinstance(data, pd.DataFrame):
-            return self._transform_dataframe(data)
-        elif isinstance(data, dict):
-            # For dictionaries, we assume the keys are time periods in chronological order
-            return self._transform_dict(data)
-        else:
-            raise TypeError(f"Unsupported data type: {type(data)}")
+        if not isinstance(data, pd.DataFrame):
+            raise TypeError(f"Unsupported data type: {type(data)}. Expected pandas.DataFrame")
+        return self._transform_dataframe(data)
 
     def _transform_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
         """Transform a DataFrame with time series data."""
@@ -106,51 +102,5 @@ class TimeSeriesTransformer(DataTransformer):
         elif self.transformation_type == "qoq":
             for col in df.columns:
                 result[f"{col}_qoq"] = df[col].pct_change(periods=3) * 100
-
-        return result
-
-    def _transform_dict(self, data: dict) -> dict:
-        """Transform a dict of time series data."""
-        result = {}
-        values = list(data.values())
-
-        if self.transformation_type == "growth_rate":
-            for i, (key, value) in enumerate(data.items()):
-                if i == 0:
-                    result[key] = None
-                else:
-                    prev = values[i - 1]
-                    result[key] = (value - prev) / prev * 100 if prev != 0 else None
-
-        elif self.transformation_type == "moving_avg":
-            from collections import deque
-
-            window = deque(maxlen=self.window_size)
-            for key, value in data.items():
-                window.append(value)
-                result[key] = sum(window) / len(window) if len(window) == self.window_size else None
-
-        elif self.transformation_type == "cagr":
-            start = values[0]
-            end = values[-1]
-            n = len(values) - 1
-            for key in data:
-                result[key] = ((end / start) ** (1 / n) - 1) * 100 if start > 0 else None
-
-        elif self.transformation_type == "yoy":
-            for i, (key, value) in enumerate(data.items()):
-                if i < 12:
-                    result[key] = None
-                else:
-                    prev = values[i - 12]
-                    result[key] = (value - prev) / prev * 100 if prev else None
-
-        elif self.transformation_type == "qoq":
-            for i, (key, value) in enumerate(data.items()):
-                if i < 3:
-                    result[key] = None
-                else:
-                    prev = values[i - 3]
-                    result[key] = (value - prev) / prev * 100 if prev else None
 
         return result

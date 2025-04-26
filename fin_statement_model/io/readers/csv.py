@@ -2,7 +2,7 @@
 
 import logging
 import os
-from typing import Optional, Any
+from typing import Any
 
 import pandas as pd
 
@@ -11,6 +11,7 @@ from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.base import DataReader
 from fin_statement_model.io.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
+from fin_statement_model.io.readers.base import MappingConfig, normalize_mapping
 
 logger = logging.getLogger(__name__)
 
@@ -23,31 +24,43 @@ class CsvReader(DataReader):
     (item, period, value).
     Requires specifying the columns containing item names, period identifiers,
     and values.
+
+    Supports a `mapping_config` constructor parameter for name mapping,
+    accepting either a flat mapping or a statement-type scoped mapping.
+
+    Note:
+        When using the `read_data` facade, pass `mapping_config` via init,
+        and reader-specific options (`item_col`, `period_col`, `value_col`,
+        `pandas_read_csv_kwargs`) to `read()`. Direct instantiation is also supported.
     """
 
-    def __init__(self, mapping_config: Optional[dict[str, str]] = None):
+    def __init__(self, mapping_config: MappingConfig = None, **kwargs: Any) -> None:
         """Initialize the CsvReader.
 
         Args:
-            mapping_config: Optional dictionary to map item names from the
-                CSV file to canonical node names. Format: {'CSV Name': 'canonical_name'}
+            mapping_config (MappingConfig): Optional mapping configuration to
+                map CSV item names to canonical node names. Can be either:
+                  - Dict[str, str] for a flat mapping.
+                  - Dict[Optional[str], Dict[str, str]] for scoped mappings
+                    keyed by statement type (or None for default).
+            **kwargs: Not used by CsvReader init; reserved for API consistency.
         """
-        # Simple 1-level mapping {csv_item_name: canonical_node_name}
-        self.mapping = mapping_config or {}
+        # Store a normalized flat mapping for default use
+        self.mapping = normalize_mapping(mapping_config)
 
     def read(self, source: str, **kwargs: dict[str, Any]) -> Graph:
         """Read data from a CSV file into a new Graph.
 
         Args:
             source (str): Path to the CSV file.
-            **kwargs: Required keyword arguments:
+            **kwargs: Keyword arguments supported by this reader:
                 item_col (str): Name of the column containing item identifiers.
                 period_col (str): Name of the column containing period identifiers.
                 value_col (str): Name of the column containing numeric values.
-            Optional keyword arguments:
-                mapping_config (dict): Overrides the mapping config provided at init.
-                pandas_read_csv_kwargs (dict): Additional kwargs passed directly to
-                                                pandas.read_csv().
+                mapping_config (MappingConfig): Overrides the mapping config
+                    provided at initialization.
+                pandas_read_csv_kwargs (dict): Additional arguments passed
+                    directly to `pandas.read_csv()`.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -78,16 +91,18 @@ class CsvReader(DataReader):
                 reader_type="CsvReader",
             )
 
-        # Override mapping config if provided in kwargs
+        # Normalize mapping config for this read operation
         current_mapping_config = kwargs.get("mapping_config", self.mapping)
-        if not isinstance(current_mapping_config, dict):
+        try:
+            mapping = normalize_mapping(current_mapping_config)
+        except TypeError as te:
             raise ReadError(
                 "Invalid mapping_config provided.",
                 source=file_path,
                 reader_type="CsvReader",
+                original_error=te,
             )
-        self.mapping = current_mapping_config
-        logger.debug(f"Using mapping: {self.mapping}")
+        logger.debug(f"Using mapping: {mapping}")
 
         # --- Read CSV Data ---
         try:
@@ -128,7 +143,7 @@ class CsvReader(DataReader):
                     continue
 
                 item_name_csv_str = str(item_name_csv).strip()
-                node_name = self.mapping.get(item_name_csv_str, item_name_csv_str)
+                node_name = mapping.get(item_name_csv_str, item_name_csv_str)
 
                 period_values: dict[str, float] = {}
                 for _, row in group.iterrows():

@@ -1,10 +1,9 @@
 """Tests specifically designed to hit uncovered lines in graph/manipulation.py."""
 
-import pytest
 from unittest.mock import patch, MagicMock
 
 # Import the module to test
-from fin_statement_model.core.graph.manipulation import GraphManipulationMixin
+from fin_statement_model.core.graph.manipulator import GraphManipulator
 
 
 # Force coverage of line 123-124 (AttributeError handler)
@@ -12,7 +11,7 @@ def test_update_calculation_nodes_attribute_error():
     """Directly test the AttributeError handler in _update_calculation_nodes."""
 
     # Create a concrete implementation of the mixin to test with
-    class TestGraph(GraphManipulationMixin):
+    class TestGraph(GraphManipulator):
         def __init__(self):
             self._nodes = {}
             self._periods = []
@@ -50,9 +49,9 @@ def test_update_calculation_nodes_attribute_error():
     graph._nodes = {"test": failing_node, "input": input_node}
 
     # Patch the logger to verify the warning
-    with patch("fin_statement_model.core.graph.manipulation.logger.warning") as mock_warning:
-        # Call the method directly
-        GraphManipulationMixin._update_calculation_nodes(graph)
+    with patch("fin_statement_model.core.graph.manipulator.logger.warning") as mock_warning:
+        # Call the method via GraphManipulator
+        GraphManipulator(graph)._update_calculation_nodes()
 
         # Verify the warning was logged with exact message
         mock_warning.assert_called_once_with(
@@ -83,8 +82,8 @@ def test_replace_node_type_name_in_log():
     graph._nodes = {"test": old_node}
 
     # Mock the logger to verify its call
-    with patch("fin_statement_model.core.graph.manipulation.logger.debug") as mock_debug:
-        # Call the method directly
-        GraphManipulationMixin.replace_node(graph, "test", new_node)
+    with patch("fin_statement_model.core.graph.manipulator.logger.debug") as mock_debug:
+        # Call the method via GraphManipulator
+        GraphManipulator(graph).replace_node("test", new_node)
         # No debug log expected in replace_node itself
         # mock_debug.assert_called() # Remove or comment out

@@ -1,7 +1,7 @@
-"""Node Factory for the Financial Statement Model.
+"""Provide a factory for creating nodes in the financial statement model.
 
-This module provides a factory for creating different types of nodes used in the financial statement model.
-It centralizes node creation logic and ensures consistent node initialization.
+This module centralizes node creation logic and ensures consistent initialization
+for different types of nodes used in the financial statement model.
 """
 
 import logging
@@ -12,7 +12,7 @@ from typing import Callable, Any, Union, Optional, ClassVar
 from .nodes import (
     Node,
     FinancialStatementItemNode,
-    StrategyCalculationNode,
+    CalculationNode,
     MetricCalculationNode,
     CustomCalculationNode,
 )
@@ -24,37 +24,34 @@ from .nodes.forecast_nodes import (
     AverageHistoricalGrowthForecastNode,
 )
 
-# Use absolute import for Registry to ensure consistency
-# from .strategies import Registry, Strategy
-from fin_statement_model.core.strategies import Registry, Strategy
+# Force import of calculations package to ensure registration happens
+from fin_statement_model.core.calculations import Registry, Calculation
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
 
 class NodeFactory:
-    """Factory class for creating nodes in the financial statement model.
+    """Provide a factory for creating nodes in the financial statement model.
 
-    This class centralizes the creation of all types of nodes, ensuring consistent
-    initialization and simplifying the creation process. It provides methods
-    for creating financial statement items, calculation nodes (via strategies,
-    metrics, or custom functions).
+    This class centralizes node creation for financial statement items,
+    calculations, metrics, forecasts, and custom logic.
 
     Attributes:
-        _calculation_strategies: Maps simple string keys (e.g., 'addition') to
-            the class names of Strategy implementations registered in the
-            `Registry`. This allows creating StrategyCalculationNodes without
-            directly importing Strategy classes.
+        _calculation_methods: Maps simple string keys (e.g., 'addition') to
+            the class names of Calculation implementations registered in the
+            `Registry`. This allows creating CalculationNodes without
+            directly importing Calculation classes.
     """
 
-    # Mapping of calculation type strings to strategy names (keys in the Registry)
-    _calculation_strategies: ClassVar[dict[str, str]] = {
-        "addition": "AdditionStrategy",
-        "subtraction": "SubtractionStrategy",
-        "multiplication": "MultiplicationStrategy",
-        "division": "DivisionStrategy",
-        "weighted_average": "WeightedAverageStrategy",
-        "custom_formula": "CustomFormulaStrategy",
+    # Mapping of calculation type strings to Calculation class names (keys in the Registry)
+    _calculation_methods: ClassVar[dict[str, str]] = {
+        "addition": "AdditionCalculation",
+        "subtraction": "SubtractionCalculation",
+        "multiplication": "MultiplicationCalculation",
+        "division": "DivisionCalculation",
+        "weighted_average": "WeightedAverageCalculation",
+        "custom_formula": "CustomFormulaCalculation",
     }
 
     # Mapping from node type names to Node classes
@@ -67,29 +64,26 @@ class NodeFactory:
     def create_financial_statement_item(
         cls, name: str, values: dict[str, float]
     ) -> FinancialStatementItemNode:
-        """Creates a FinancialStatementItemNode representing a base financial item.
+        """Create a FinancialStatementItemNode representing a base financial item.
 
-        This node typically holds historical or projected values for a specific
+        This node holds historical or projected values for a specific
         line item (e.g., Revenue, COGS) over different periods.
 
         Args:
-            name: The unique identifier for the node (e.g., "Revenue").
-            values: A dictionary where keys are period identifiers (e.g., "2023Q1")
-                and values are the corresponding numerical values for that period.
+            name: Identifier for the node (e.g., "Revenue").
+            values: Mapping of period identifiers to numerical values.
 
         Returns:
-            An initialized FinancialStatementItemNode.
+            A FinancialStatementItemNode initialized with the provided values.
 
         Raises:
             ValueError: If the provided name is empty or not a string.
 
-        Example:
+        Examples:
             >>> revenue_node = NodeFactory.create_financial_statement_item(
             ...     name="Revenue",
             ...     values={"2023": 1000.0, "2024": 1100.0}
             ... )
-            >>> revenue_node.name
-            'Revenue'
             >>> revenue_node.get_value("2023")
             1000.0
         """
@@ -105,57 +99,33 @@ class NodeFactory:
         name: str,
         inputs: list[Node],
         calculation_type: str,
-        **strategy_kwargs: Any,
-    ) -> StrategyCalculationNode:
-        """Creates a StrategyCalculationNode using a pre-defined calculation strategy.
+        **calculation_kwargs: Any,
+    ) -> CalculationNode:
+        """Create a CalculationNode using a pre-defined calculation.
 
-        This method looks up the calculation strategy based on the `calculation_type`
-        string (e.g., 'addition', 'division') in the `_calculation_strategies`
-        map, retrieves the corresponding Strategy class from the `Registry`,
-        instantiates it (passing `strategy_kwargs`), and creates the node.
+        This method resolves a calculation class from a calculation_type key,
+        instantiates it with optional parameters, and wraps it in
+        a CalculationNode.
 
         Args:
-            name: The unique identifier for the calculation node (e.g., "GrossProfit").
-            inputs: A list of Node objects that serve as inputs to the calculation.
-            calculation_type: A string key representing the desired calculation
-                (e.g., 'addition', 'subtraction', 'custom_formula'). Must match a
-                key in `_calculation_strategies`.
-            **strategy_kwargs: Additional keyword arguments required by the specific
-                Strategy's constructor. For example, 'CustomFormulaStrategy' might
-                require a 'formula_string' kwarg.
+            name: Identifier for the calculation node instance.
+            inputs: List of Node instances serving as inputs to the calculation.
+            calculation_type: Key for the desired calculation in the registry.
+            **calculation_kwargs: Additional parameters for the calculation constructor.
 
         Returns:
-            An initialized StrategyCalculationNode configured with the specified strategy.
+            A CalculationNode configured with the selected calculation.
 
         Raises:
-            ValueError: If `name` is invalid, `inputs` is empty, `calculation_type`
-                is not found in `_calculation_strategies`, or the corresponding
-                strategy name is not registered in the `Registry`.
-            TypeError: If the resolved strategy class cannot be instantiated with
-                the provided `strategy_kwargs`.
+            ValueError: If name is invalid, inputs list is empty, or the
+                calculation_type is unrecognized.
+            TypeError: If the calculation cannot be instantiated with given kwargs.
 
-        Example:
-            Assuming 'revenue_node' and 'cogs_node' exist:
-            >>> gross_profit_node = NodeFactory.create_calculation_node(
+        Examples:
+            >>> gross_profit = NodeFactory.create_calculation_node(
             ...     name="GrossProfit",
-            ...     inputs=[revenue_node, cogs_node],
+            ...     inputs=[revenue, cogs],
             ...     calculation_type="subtraction"
-            ... )
-
-            Using a strategy that requires extra arguments:
-            >>> weighted_cost_node = NodeFactory.create_calculation_node(
-            ...     name="WeightedCost",
-            ...     inputs=[cost_node1, cost_node2],
-            ...     calculation_type="weighted_average",
-            ...     weights=[0.6, 0.4] # Passed as strategy_kwargs
-            ... )
-
-            Using a custom formula string (assuming 'CustomFormulaStrategy' exists):
-            >>> ratio_node = NodeFactory.create_calculation_node(
-            ...     name="DebtEquityRatio",
-            ...     inputs=[debt_node, equity_node],
-            ...     calculation_type="custom_formula",
-            ...     formula_string="debt / equity" # Passed as strategy_kwargs
             ... )
         """
         # Validate inputs
@@ -165,83 +135,68 @@ class NodeFactory:
         if not inputs:
             raise ValueError("Calculation node must have at least one input")
 
-        # Check if the calculation type maps to a known strategy name
-        if calculation_type not in cls._calculation_strategies:
-            valid_types = list(cls._calculation_strategies.keys())
+        # Check if the calculation type maps to a known calculation name
+        if calculation_type not in cls._calculation_methods:
+            valid_types = list(cls._calculation_methods.keys())
             raise ValueError(
                 f"Invalid calculation type: '{calculation_type}'. Valid types are: {valid_types}"
             )
 
-        # Get the strategy name and resolve the strategy class from the registry
-        strategy_name = cls._calculation_strategies[calculation_type]
+        # Get the calculation name and resolve the calculation class from the registry
+        calculation_name = cls._calculation_methods[calculation_type]
         try:
-            # Assuming Registry.get returns the strategy class
-            strategy_cls: type[Strategy] = Registry.get(strategy_name)
+            calculation_cls: type[Calculation] = Registry.get(calculation_name)
         except KeyError:
             raise ValueError(
-                f"Strategy '{strategy_name}' not found in Registry for type '{calculation_type}'"
+                f"Calculation '{calculation_name}' not found in Registry for type '{calculation_type}'"
             )
 
-        # Instantiate the strategy, passing any extra kwargs
+        # Instantiate the calculation, passing any extra kwargs
         try:
-            strategy_instance = strategy_cls(**strategy_kwargs)
+            calculation_instance = calculation_cls(**calculation_kwargs)
         except TypeError as e:
             logger.exception(
-                f"Failed to instantiate strategy '{strategy_name}' with kwargs {strategy_kwargs}"
+                f"Failed to instantiate calculation '{calculation_name}' with kwargs {calculation_kwargs}"
             )
             raise TypeError(
-                f"Could not instantiate strategy '{strategy_name}' for node '{name}'. "
-                f"Check required arguments for {strategy_cls.__name__}. Provided kwargs: {strategy_kwargs}"
+                f"Could not instantiate calculation '{calculation_name}' for node '{name}'. "
+                f"Check required arguments for {calculation_cls.__name__}. Provided kwargs: {calculation_kwargs}"
             ) from e
 
-        # Create and return a StrategyCalculationNode with the instantiated strategy
+        # Create and return a CalculationNode with the instantiated calculation
         logger.debug(
-            f"Creating strategy calculation node '{name}' with '{strategy_name}' strategy."
+            f"Creating calculation node '{name}' with '{calculation_name}' calculation."
         )
-        return StrategyCalculationNode(name, inputs, strategy_instance)
+        return CalculationNode(name, inputs, calculation_instance)
 
     @classmethod
     def create_metric_node(
         cls, name: str, metric_name: str, input_nodes: dict[str, Node]
     ) -> MetricCalculationNode:
-        """Creates a MetricCalculationNode based on a pre-defined metric definition.
+        """Create a MetricCalculationNode based on a pre-defined metric definition.
 
-        This node represents a standard financial metric (e.g., "current_ratio")
-        whose calculation logic (inputs, formula) is defined elsewhere, typically
-        loaded from configuration (like YAML files) and managed by the
-        `MetricCalculationNode` itself or a metric registry.
+        This node encapsulates a standard financial metric lookup and
+        calculation defined externally (e.g., in metrics YAML files).
 
         Args:
-            name: The unique identifier for this specific instance of the metric node
-                (e.g., "CompanyCurrentRatio").
-            metric_name: The key identifying the metric definition (e.g.,
-                "current_ratio"). This key is used by `MetricCalculationNode`
-                to look up the definition (inputs, formula, description).
-            input_nodes: A dictionary mapping the *required input names* defined
-                in the metric definition (e.g., "total_current_assets") to the
-                actual `Node` objects providing those values (e.g.,
-                `{"total_current_assets": assets_node, "total_current_liabilities": liab_node}`).
+            name: Identifier for this metric node instance.
+            metric_name: Key of the metric definition to apply.
+            input_nodes: Mapping of required input names to Node instances.
 
         Returns:
-            An initialized MetricCalculationNode instance, ready to calculate the metric.
+            A MetricCalculationNode configured with the metric definition.
 
         Raises:
-            ValueError: If `name` is invalid, `metric_name` does not correspond to a
-                valid metric definition, the definition is incomplete, or the
-                provided `input_nodes` do not match the required inputs specified
-                in the metric definition (missing keys, extra keys, wrong types).
-            TypeError: If `input_nodes` is not a dictionary.
+            ValueError: If name, metric_name, or inputs are invalid.
+            TypeError: If input_nodes is not a dict of Node instances.
 
-        Example:
-            Assuming 'assets_node' and 'liabilities_node' exist, and a metric
-            definition for "current_ratio" exists requiring inputs named
-            "current_assets" and "current_liabilities":
-            >>> current_ratio_node = NodeFactory.create_metric_node(
-            ...     name="CompanyCurrentRatio",
+        Examples:
+            >>> current_ratio = NodeFactory.create_metric_node(
+            ...     name="CurrentRatio",
             ...     metric_name="current_ratio",
             ...     input_nodes={
-            ...         "current_assets": assets_node,
-            ...         "current_liabilities": liabilities_node
+            ...         "current_assets": assets,
+            ...         "current_liabilities": liabilities
             ...     }
             ... )
         """
@@ -282,23 +237,52 @@ class NodeFactory:
         forecast_type: str,
         growth_params: Union[float, list[float], Callable[[], float]],
     ) -> Node:
-        """Create a forecast node of the specified type using core forecast classes."""
+        """Create a forecast node of the specified type using core forecast classes.
+
+        Args:
+            name: Custom name for the forecast node.
+            base_node: The Node instance to base projections on.
+            base_period: Period identifier providing the base value.
+            forecast_periods: List of periods for which to forecast.
+            forecast_type: Forecast method ('fixed', 'curve', 'statistical',
+                'average', 'historical_growth').
+            growth_params: Parameters controlling forecast behavior (float,
+                list of floats, or callable). Ignored for 'average' and 'historical_growth'.
+
+        Returns:
+            A Node instance implementing the chosen forecast.
+
+        Raises:
+            ValueError: If an unsupported forecast_type is provided.
+
+        Examples:
+            >>> forecast = NodeFactory.create_forecast_node(
+            ...     name="RevForecast",
+            ...     base_node=revenue,
+            ...     base_period="2023",
+            ...     forecast_periods=["2024", "2025"],
+            ...     forecast_type="fixed",
+            ...     growth_params=0.05
+            ... )
+        """
+        # Instantiate the appropriate forecast node
         if forecast_type == "fixed":
-            return FixedGrowthForecastNode(base_node, base_period, forecast_periods, growth_params)
+            node = FixedGrowthForecastNode(base_node, base_period, forecast_periods, growth_params)
         elif forecast_type == "curve":
-            return CurveGrowthForecastNode(base_node, base_period, forecast_periods, growth_params)
+            node = CurveGrowthForecastNode(base_node, base_period, forecast_periods, growth_params)
         elif forecast_type == "statistical":
-            return StatisticalGrowthForecastNode(
-                base_node, base_period, forecast_periods, growth_params
-            )
+            node = StatisticalGrowthForecastNode(base_node, base_period, forecast_periods, growth_params)
         elif forecast_type == "average":
-            return AverageValueForecastNode(base_node, base_period, forecast_periods, growth_params)
+            node = AverageValueForecastNode(base_node, base_period, forecast_periods)
         elif forecast_type == "historical_growth":
-            return AverageHistoricalGrowthForecastNode(
-                base_node, base_period, forecast_periods, growth_params
-            )
+            node = AverageHistoricalGrowthForecastNode(base_node, base_period, forecast_periods)
         else:
             raise ValueError(f"Invalid forecast type: {forecast_type}")
+
+        # Override forecast node's name to match factory 'name' argument
+        node.name = name
+        logger.debug(f"Forecast node created with custom name: {name} (original: {base_node.name})")
+        return node
 
     @classmethod
     def _create_custom_node_from_callable(
@@ -308,43 +292,34 @@ class NodeFactory:
         formula: Callable,
         description: Optional[str] = None,
     ) -> CustomCalculationNode:
-        """Creates a CustomCalculationNode using a Python callable for the calculation logic.
+        """Create a CustomCalculationNode using a Python callable for the calculation logic.
 
-        This is suitable for ad-hoc or complex calculations that are not covered by
-        standard strategies or pre-defined metrics. The provided `formula` function
-        will be executed during the calculation phase.
+        This supports ad-hoc or complex calculations not covered by standard
+        strategies or metrics. The `formula` callable will be invoked with
+        input node values at calculation time.
 
         Note:
-            Previously named `create_metric_node`, renamed to avoid confusion with
-            `MetricCalculationNode` which relies on defined metric specifications.
+            Renamed from `create_metric_node` to avoid confusion with metric-based nodes.
 
         Args:
-            name: The unique identifier for the custom calculation node.
-            inputs: A list of Node objects whose values will be passed as arguments
-                to the `formula` function during calculation. The order matters if
-                the formula expects positional arguments.
-            formula: A Python callable (function, lambda, method) that performs the
-                calculation. It should accept arguments corresponding to the values
-                of the `inputs` nodes for a given period and return the calculated value.
-            description: An optional string describing the purpose of the calculation.
+            name: Identifier for the custom calculation node.
+            inputs: List of Node instances providing values to the formula.
+            formula: Callable that computes a value from input node values.
+            description: Optional description of the calculation logic.
 
         Returns:
-            An initialized CustomCalculationNode.
+            A CustomCalculationNode configured with the provided formula.
 
         Raises:
-            ValueError: If `name` is invalid.
-            TypeError: If `formula` is not a callable or if any item in `inputs`
-                is not a `Node` instance.
+            ValueError: If name is empty or not a string.
+            TypeError: If formula is not callable or inputs contain non-Node items.
 
-        Example:
+        Examples:
             >>> def complex_tax_logic(revenue, expenses, tax_rate_node):
             ...     profit = revenue - expenses
             ...     if profit <= 0:
             ...         return 0.0
-            ...     # Assume tax_rate_node.get_value(period) returns the rate
-            ...     # (Actual implementation details depend on how CalculationEngine passes values)
-            ...     # This example assumes values are passed directly
-            ...     tax_rate = tax_rate_node # Or the value extracted by the engine
+            ...     tax_rate = tax_rate_node
             ...     return profit * tax_rate
             ...
             >>> tax_node = NodeFactory._create_custom_node_from_callable(

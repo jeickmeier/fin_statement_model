@@ -1,58 +1,47 @@
-"""Graph module for core graph operations.
+"""Provide graph operations for the financial statement model.
 
 This module provides the `Graph` class that combines manipulation, traversal,
-forecasting, and calculation capabilities for building and evaluating financial
-statement models.
+forecasting, and calculation capabilities for building and evaluating
+financial statement models.
 """
 
-from __future__ import annotations
 import logging
-from typing import Any
+from typing import Any, Callable, Optional
 
-from .manipulation import GraphManipulationMixin
-from .traversal import GraphTraversalMixin
-from .forecast_mixin import ForecastOperationsMixin
-from fin_statement_model.core.data_manager import DataManager
-from fin_statement_model.core.calculation_engine import CalculationEngine
-from fin_statement_model.core.nodes import Node
+from fin_statement_model.core.node_factory import NodeFactory
+from fin_statement_model.core.nodes import Node, FinancialStatementItemNode, MetricCalculationNode, CalculationNode
+from fin_statement_model.core.errors import NodeError, ConfigurationError, CalculationError
+from fin_statement_model.core.metrics import metric_registry
+from fin_statement_model.core.calculations import Registry
+from fin_statement_model.core.graph.manipulator import GraphManipulator
+from fin_statement_model.core.graph.traverser import GraphTraverser
+
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
+__all__ = ["Graph"]
 
-class Graph(
-    GraphManipulationMixin,
-    GraphTraversalMixin,
-    ForecastOperationsMixin,
-):
-    """Represents the financial statement model as a directed graph.
+class Graph:
+    """Represent the financial statement model as a directed graph.
 
-    This class integrates graph manipulation (adding/removing nodes and edges)
-    and traversal capabilities. It serves as the central orchestrator, owning
-    the shared registry of nodes and managing core components like the
-    `DataManager` and `CalculationEngine`.
-
-    Nodes in the graph represent financial items or calculations, and edges
-    represent dependencies between them. The `DataManager` handles the storage
-    and retrieval of time-series data associated with nodes, while the
-    `CalculationEngine` manages the execution of calculations defined by
-    calculation nodes.
+    This class integrates graph manipulation, traversal, forecasting, and
+    calculation capabilities. It serves as the central orchestrator for nodes,
+    periods, caching, and calculation workflows.
 
     Attributes:
-        _nodes: A dictionary storing all nodes in the graph, keyed by node name.
-                This serves as the single source of truth shared with managers.
-        _data_manager: An instance of `DataManager` responsible for handling
-                       time-series data (items and periods).
-        _calculation_engine: An instance of `CalculationEngine` responsible for
-                             managing and executing calculations.
+        _nodes: A dict mapping node names (str) to Node objects.
+        _periods: A list of time period identifiers (str) managed by the graph.
+        _cache: A nested dict caching calculated values per node per period.
+        _metric_names: A set of node names (str) corresponding to metric nodes.
+        _node_factory: An instance of NodeFactory for creating new nodes.
     """
 
-    def __init__(self, periods: list[str] | None = None):
-        """Initializes the Graph instance.
+    def __init__(self, periods: Optional[list[str]] = None):
+        """Initialize the Graph instance.
 
-        Sets up the core components: the node registry, `DataManager`, and
-        `CalculationEngine`. Optionally initializes the graph with a list of
-        time periods.
+        Set up core components: node registry, `DataManager`, and `CalculationEngine`.
+        Optionally initialize the graph with a list of time periods.
 
         Args:
             periods: An optional list of strings representing the initial time
@@ -62,7 +51,7 @@ class Graph(
         Raises:
             TypeError: If `periods` is provided but is not a list.
 
-        Example:
+        Examples:
             >>> graph_no_periods = Graph()
             >>> print(graph_no_periods.periods)
             []
@@ -78,31 +67,32 @@ class Graph(
         # No super().__init__() needed as mixins don't have __init__
         # and GraphCore is removed.
 
-        # Create the single source of truth for nodes
         self._nodes: dict[str, Node] = {}
 
-        # Instantiate managers, passing the shared node registry
-        # These managers handle their own initialization logic.
-        self._data_manager = DataManager(nodes_registry=self._nodes)
-        self._calculation_engine = CalculationEngine(nodes_registry=self._nodes)
+        # Initialize core attributes for periods, cache, metrics, and node factory
+        self._periods: list[str] = []
+        self._cache: dict[str, dict[str, float]] = {}
+        self._metric_names: set[str] = set()
+        self._node_factory: NodeFactory = NodeFactory()
 
-        # Handle initial periods by adding them via the DataManager
+        # Handle initial periods directly
         if periods:
-            # Basic validation before passing to manager
             if not isinstance(periods, list):
                 raise TypeError("Initial periods must be a list")
-            # DataManager.add_periods handles sorting and uniqueness
-            self._data_manager.add_periods(periods)
+            self.add_periods(periods)
+
+        self.manipulator = GraphManipulator(self)
+        self.traverser = GraphTraverser(self)
 
     @property
     def nodes(self) -> dict[str, Node]:
-        """Provides access to the dictionary of all nodes in the graph.
+        """Provide access to the dictionary of all nodes in the graph.
 
         Returns:
             A dictionary where keys are node names (str) and values are
             `Node` objects. This dictionary represents the shared node registry.
 
-        Example:
+        Examples:
             >>> graph = Graph()
             >>> item_node = graph.add_financial_statement_item("Revenue", {"2023": 100})
             >>> print(list(graph.nodes.keys()))
@@ -114,14 +104,12 @@ class Graph(
 
     @property
     def periods(self) -> list[str]:
-        """Retrieves the list of time periods currently managed by the graph.
-
-        Delegates to the `DataManager` to get the sorted list of unique periods.
+        """Retrieve the list of time periods currently managed by the graph.
 
         Returns:
-            A list of strings representing the time periods in the model.
+            A sorted list of unique time period strings managed by the graph.
 
-        Example:
+        Examples:
             >>> graph = Graph(periods=["2024", "2023"])
             >>> print(graph.periods)
             ['2023', '2024']
@@ -129,32 +117,25 @@ class Graph(
             >>> print(graph.periods)
             ['2023', '2024', '2025']
         """
-        return self._data_manager.periods
+        return self._periods
 
     def add_periods(self, periods: list[str]) -> None:
-        """Adds new time periods to the graph's `DataManager`.
+        """Add new time periods to the graph.
 
-        The `DataManager` ensures that periods are sorted and unique.
+        Update the internal period list, ensuring uniqueness and sorting.
 
         Args:
             periods: A list of strings representing the time periods to add.
 
         Raises:
             TypeError: If `periods` is not a list.
-            ValueError: If any period format is invalid (handled by DataManager).
-
-        Example:
-            >>> graph = Graph(periods=["2022"])
-            >>> graph.add_periods(["2023", "2022", "2024"])
-            >>> print(graph.periods)
-            ['2022', '2023', '2024']
-            >>> try:
-            ...     graph.add_periods("2025") # Must be a list
-            ... except TypeError as e:
-            ...     print(e)
-            Periods must be provided as a list.
         """
-        self._data_manager.add_periods(periods)
+        if not isinstance(periods, list):
+            raise TypeError("Periods must be provided as a list.")
+        # Ensure unique and sorted periods
+        combined = set(self._periods).union(periods)
+        self._periods = sorted(combined)
+        logger.debug(f"Added periods {periods}; current periods: {self._periods}")
 
     def add_calculation(
         self,
@@ -163,244 +144,532 @@ class Graph(
         operation_type: str,
         **kwargs: dict[str, Any],
     ) -> Node:
-        """Adds a new calculation node to the graph via the `CalculationEngine`.
+        """Add a new calculation node to the graph using the node factory.
 
-        The `CalculationEngine` creates the appropriate `CalculationNode` subclass
-        based on `operation_type`, resolves input nodes using the shared registry,
-        adds the new node to the registry, and establishes dependencies.
+        Resolve input node names to Node objects, create a CalculationNode,
+        register it in the graph, and return it.
 
         Args:
-            name: The unique name for the new calculation node.
-            input_names: A list of names of the nodes that serve as inputs to
-                         this calculation.
-            operation_type: A string identifying the type of calculation
-                            (e.g., "addition", "percentage_growth"). This maps
-                            to a specific calculation strategy.
-            **kwargs: Additional keyword arguments required by the specific
-                      calculation strategy identified by `operation_type`.
+            name: Unique name for the calculation node.
+            input_names: List of node names to use as inputs.
+            operation_type: Calculation type key (e.g., 'addition').
+            **kwargs: Additional parameters for the calculation.
 
         Returns:
-            The newly created `Node` object representing the calculation.
+            The created calculation node.
 
         Raises:
-            NodeNotFoundError: If any node specified in `input_names` does not
-                              exist in the graph's node registry.
-            ValueError: If the `name` is invalid, already exists, or if the
-                        `operation_type` is not recognized or fails validation.
-            TypeError: If the provided `kwargs` do not match the signature
-                       required by the chosen calculation strategy.
-            CalculationError: For issues during calculation node setup within
-                              the engine.
-
-        Example (assuming 'addition' strategy is registered):
-            >>> graph = Graph(periods=["2023"])
-            >>> rev_node = graph.add_financial_statement_item("Revenue", {"2023": 100})
-            >>> cost_node = graph.add_financial_statement_item("Costs", {"2023": 60})
-            >>> # Note: The default CalculationEngine uses FormulaCalculationNode for simple ops
-            >>> # This example assumes a more sophisticated engine or pre-registration
-            >>> # gross_profit = graph.add_calculation(
-            >>> #    "GrossProfit", ["Revenue", "Costs"], "subtraction"
-            >>> # )
-            >>> # Let's assume a simple formula node is created instead for demonstration
-            >>> from fin_statement_model.core.nodes import FormulaCalculationNode
-            >>> gp_node = FormulaCalculationNode("GrossProfit", {"r": rev_node, "c": cost_node}, "r - c")
-            >>> graph.add_node(gp_node) # Add directly for this example
-            >>> print("GrossProfit" in graph.nodes)
-            True
-            >>> print(graph.calculate("GrossProfit", "2023")) # Calculation depends on engine
-            40.0
+            NodeError: If any input node name does not exist.
+            ValueError: If the name is invalid or creation fails.
+            TypeError: If inputs are invalid.
         """
-        node = self._calculation_engine.add_calculation(name, input_names, operation_type, **kwargs)
+        # Validate name
+        if not name or not isinstance(name, str):
+            raise ValueError("Calculation node name must be a non-empty string.")
+        # Resolve input node names
+        if not isinstance(input_names, list):
+            raise TypeError("input_names must be a list of node names.")
+        resolved_inputs: list[Node] = []
+        missing = []
+        for nm in input_names:
+            nd = self._nodes.get(nm)
+            if nd is None:
+                missing.append(nm)
+            else:
+                resolved_inputs.append(nd)
+        if missing:
+            raise NodeError(
+                f"Cannot create calculation node '{name}': missing input nodes {missing}",
+                node_id=name,
+            )
+        # Create the node via factory
+        try:
+            node = self._node_factory.create_calculation_node(
+                name=name,
+                inputs=resolved_inputs,
+                calculation_type=operation_type,
+                **kwargs,
+            )
+        except (ValueError, TypeError):
+            logger.exception(
+                f"Failed to create calculation node '{name}' with type '{operation_type}'"
+            )
+            raise
+        # Register node in graph
+        if name in self._nodes:
+            logger.warning(f"Overwriting existing node '{name}' in graph.")
+        self._nodes[name] = node
+        logger.info(
+            f"Added calculation node '{name}' of type '{operation_type}' with inputs {input_names}"
+        )
         return node
 
-    def calculate(self, node_name: str, period: str) -> float:
-        """Calculates the value of a specific node for a given period.
+    def add_metric(
+        self, metric_name: str, node_name: Optional[str] = None
+    ) -> MetricCalculationNode:
+        """Add a metric calculation node based on a metric definition.
 
-        Delegates the calculation request to the `CalculationEngine`, which
-        handles dependency resolution, execution, and caching.
+        If `node_name` is None, uses `metric_name` as the node name.
+
+        Use the metric registry to load inputs and formula, create a MetricCalculationNode,
+        register it, and track it as a metric.
 
         Args:
-            node_name: The name of the node whose value is to be calculated.
-            period: The specific time period for which to calculate the value.
+            metric_name: Key of the metric definition to add.
+            node_name: Optional name for the metric node; defaults to metric_name.
 
         Returns:
-            The calculated float value of the node for the specified period.
+            The created MetricCalculationNode.
 
         Raises:
-            NodeNotFoundError: If the node `node_name` does not exist.
-            PeriodNotFoundError: If the `period` does not exist in the `DataManager`.
-            CalculationError: If the calculation fails due to missing inputs,
-                              cyclic dependencies, or errors within the node's
-                              calculation logic.
-
-        Example:
-            >>> graph = Graph(periods=["2023"])
-            >>> rev_node = graph.add_financial_statement_item("Revenue", {"2023": 100})
-            >>> print(graph.calculate("Revenue", "2023"))
-            100.0
-            >>> cost_node = graph.add_financial_statement_item("Costs", {"2023": 60})
-            >>> from fin_statement_model.core.nodes import FormulaCalculationNode
-            >>> gp_node = FormulaCalculationNode("GrossProfit", {"r": rev_node, "c": cost_node}, "r - c")
-            >>> graph.add_node(gp_node)
-            >>> print(graph.calculate("GrossProfit", "2023"))
-            40.0
-            >>> try:
-            ...     graph.calculate("NonExistent", "2023")
-            ... except Exception as e: # Actual exception type depends on engine
-            ...     print(f"Error: {e}") # Example: Node 'NonExistent' not found
-            Error: Node 'NonExistent' not found in registry.
-            >>> try:
-            ...     graph.calculate("Revenue", "2024")
-            ... except Exception as e:
-            ...     print(f"Error: {e}") # Example: Period '2024' not found
-            Error: Period '2024' not found.
+            TypeError: If node_name is invalid.
+            ValueError: If node_name already exists.
+            ConfigurationError: If metric definition is missing or invalid.
+            NodeError: If required input nodes are missing.
         """
-        return self._calculation_engine.calculate(node_name, period)
+        # Default node_name to metric_name if not provided
+        if node_name is None:
+            node_name = metric_name
+        if not node_name or not isinstance(node_name, str):
+            raise TypeError("Metric node name must be a non-empty string.")
+        # Check for name conflict
+        if node_name in self._nodes:
+            raise ValueError(f"A node with name '{node_name}' already exists in the graph.")
+        # Load metric definition
+        try:
+            metric_def = metric_registry.get(metric_name)
+        except KeyError as e:
+            raise ConfigurationError(f"Unknown metric definition: '{metric_name}'") from e
+        # Validate definition fields
+        required_inputs = metric_def.get("inputs")
+        if not isinstance(required_inputs, list):
+            raise ConfigurationError(
+                f"Metric definition for '{metric_name}' is invalid: 'inputs' must be a list."
+            )
+        if "formula" not in metric_def:
+            raise ConfigurationError(
+                f"Metric definition for '{metric_name}' is invalid: missing 'formula'."
+            )
+        # Resolve input nodes
+        resolved_inputs: dict[str, Node] = {}
+        missing = []
+        for req in required_inputs:
+            nd = self._nodes.get(req)
+            if nd is None:
+                missing.append(req)
+            else:
+                resolved_inputs[req] = nd
+        if missing:
+            raise NodeError(
+                f"Cannot create metric '{metric_name}': missing required nodes {missing}",
+                node_id=node_name,
+            )
+        # Create metric node via factory
+        try:
+            metric_node = self._node_factory.create_metric_node(
+                name=node_name,
+                metric_name=metric_name,
+                input_nodes=resolved_inputs,
+            )
+        except (ValueError, TypeError, ConfigurationError):
+            logger.exception(
+                f"Failed to create metric node '{node_name}' for metric '{metric_name}'"
+            )
+            raise
+        # Register metric node
+        self._nodes[node_name] = metric_node
+        self._metric_names.add(node_name)
+        logger.info(
+            f"Added metric '{metric_name}' as node '{node_name}' with inputs {list(resolved_inputs)}"
+        )
+        return metric_node
 
-    def recalculate_all(self, periods: list[str] | None = None) -> None:
-        """Triggers a recalculation of all calculation nodes for specified periods.
-
-        Clears existing calculation caches and then instructs the
-        `CalculationEngine` to re-evaluate all calculation nodes for the given
-        periods (or all managed periods if none are specified). This is useful
-        after data updates or changes to the graph structure.
+    def add_custom_calculation(
+        self,
+        name: str,
+        calculation_func: Callable[..., float],
+        inputs: Optional[list[str]] = None,
+        description: str = "",
+    ) -> Node:
+        """Add a custom calculation node using a Python callable.
 
         Args:
-            periods: An optional list of periods to recalculate. If None,
-                     recalculates for all periods managed by the `DataManager`.
-                     Can also be a single period string.
+            name: Unique name for the custom calculation node.
+            calculation_func: A callable that accepts (period, **inputs) and returns float.
+            inputs: Optional list of node names to use as inputs.
+            description: Optional description of the calculation.
 
-        Example:
-            >>> graph = Graph(periods=["2023"])
-            >>> rev = graph.add_financial_statement_item("Revenue", {"2023": 100})
-            >>> costs = graph.add_financial_statement_item("Costs", {"2023": 50})
-            >>> from fin_statement_model.core.nodes import FormulaCalculationNode
-            >>> gp = FormulaCalculationNode("GP", {"r": rev, "c": costs}, "r - c")
-            >>> graph.add_node(gp)
-            >>> # First calculation might populate cache
-            >>> val1 = graph.calculate("GP", "2023")
-            >>> print(val1)
-            50.0
-            >>> # Simulate data change
-            >>> graph.set_value("Costs", "2023", 60)
-            >>> # Value might be stale if cached
-            >>> # Recalculate to ensure freshness
-            >>> graph.recalculate_all("2023")
-            >>> val2 = graph.calculate("GP", "2023")
-            >>> print(val2)
-            40.0
-            >>> # Recalculate all periods (only 2023 here)
-            >>> graph.set_value("Revenue", "2023", 110)
-            >>> graph.recalculate_all()
-            >>> print(graph.calculate("GP", "2023"))
-            50.0
+        Returns:
+            The created custom calculation node.
+
+        Raises:
+            NodeError: If any specified input nodes are missing.
+            TypeError: If calculation_func is not callable.
         """
-        periods_to_use = periods
-        if periods_to_use is None:
-            periods_to_use = self.periods
-        elif isinstance(periods_to_use, str):
-            periods_to_use = [periods_to_use]
-        elif not isinstance(periods_to_use, list):
-            raise TypeError("Periods must be a list of strings, a single string, or None.")
+        # Validate inputs list
+        resolved_inputs: list[Node] = []
+        if inputs is not None:
+            if not isinstance(inputs, list):
+                raise TypeError("inputs must be a list of node names.")
+            missing = []
+            for nm in inputs:
+                nd = self._nodes.get(nm)
+                if nd is None:
+                    missing.append(nm)
+                else:
+                    resolved_inputs.append(nd)
+            if missing:
+                raise NodeError(
+                    f"Cannot create custom calculation '{name}': missing input nodes {missing}",
+                    node_id=name,
+                )
+        # Validate callable
+        if not callable(calculation_func):
+            raise TypeError("calculation_func must be callable.")
+        # Create custom node via factory
+        try:
+            custom_node = self._node_factory._create_custom_node_from_callable(
+                name=name,
+                inputs=resolved_inputs,
+                formula=calculation_func,
+                description=description,
+            )
+        except (ValueError, TypeError):
+            logger.exception(f"Failed to create custom calculation node '{name}'")
+            raise
+        # Register custom node
+        if name in self._nodes:
+            logger.warning(f"Overwriting existing node '{name}' in graph.")
+        self._nodes[name] = custom_node
+        logger.info(f"Added custom calculation node '{name}' with inputs {inputs}")
+        return custom_node
 
+    def change_calculation_method(
+        self,
+        node_name: str,
+        new_method_key: str,
+        **kwargs: dict[str, Any],
+    ) -> None:
+        """Change the calculation method for an existing calculation-based node.
+
+        Args:
+            node_name: Name of the existing calculation node.
+            new_method_key: Key of the new calculation method to apply.
+            **kwargs: Additional parameters required by the new calculation.
+
+        Returns:
+            None
+
+        Raises:
+            NodeError: If the target node does not exist or is not a CalculationNode.
+            ValueError: If `new_method_key` is not a recognized calculation key.
+            TypeError: If the new calculation cannot be instantiated with the provided arguments.
+
+        Examples:
+            >>> graph.change_calculation_method("GrossProfit", "addition")
+        """
+        node = self.manipulator.get_node(node_name)
+        if node is None:
+            raise NodeError("Node not found for calculation change", node_id=node_name)
+        if not isinstance(node, CalculationNode):
+            raise NodeError(
+                f"Node '{node_name}' is not a CalculationNode", node_id=node_name
+            )
+        # Map method key to registry name
+        if new_method_key not in self._node_factory._calculation_methods:
+            raise ValueError(
+                f"Calculation '{new_method_key}' is not recognized."
+            )
+        calculation_class_name = self._node_factory._calculation_methods[new_method_key]
+        try:
+            calculation_cls = Registry.get(calculation_class_name)
+        except KeyError as e:
+            raise ValueError(
+                f"Calculation class '{calculation_class_name}' not found in registry."
+            ) from e
+        try:
+            calculation_instance = calculation_cls(**kwargs)
+        except TypeError as e:
+            raise TypeError(
+                f"Failed to instantiate calculation '{new_method_key}': {e}"
+            )
+        # Apply new calculation
+        node.set_calculation(calculation_instance)
+        # Clear cached calculations for this node
+        if node_name in self._cache:
+            del self._cache[node_name]
+        logger.info(
+            f"Changed calculation for node '{node_name}' to '{new_method_key}'"
+        )
+
+    def get_metric(self, metric_id: str) -> Optional[Node]:
+        """Return the metric node for a given metric ID, if present.
+
+        Args:
+            metric_id: Identifier of the metric node to retrieve.
+
+        Returns:
+            The MetricCalculationNode corresponding to `metric_id`, or None if not found.
+
+        Examples:
+            >>> m = graph.get_metric("current_ratio")
+            >>> if m:
+            ...     print(m.name)
+        """
+        node = self._nodes.get(metric_id)
+        return node if node and metric_id in self._metric_names else None
+
+    def get_available_metrics(self) -> list[str]:
+        """Return a sorted list of all metric node IDs currently in the graph.
+
+        Returns:
+            A sorted list of metric node names.
+
+        Examples:
+            >>> graph.get_available_metrics()
+            ['current_ratio', 'debt_equity_ratio']
+        """
+        return sorted(self._metric_names)
+
+    def get_metric_info(self, metric_id: str) -> dict:
+        """Return detailed information for a specific metric node.
+
+        Args:
+            metric_id: Identifier of the metric node to inspect.
+
+        Returns:
+            A dict containing 'id', 'name', 'description', and 'inputs' for the metric.
+
+        Raises:
+            ValueError: If `metric_id` does not correspond to a metric node.
+
+        Examples:
+            >>> info = graph.get_metric_info("current_ratio")
+            >>> print(info['inputs'])
+        """
+        metric_node = self.get_metric(metric_id)
+        if metric_node is None:
+            if metric_id in self._nodes:
+                raise ValueError(f"Node '{metric_id}' exists but is not a metric.")
+            raise ValueError(f"Metric '{metric_id}' not found in graph.")
+        # Extract info from the MetricCalculationNode
+        try:
+            description = metric_node.definition.get("description")  # type: ignore
+            name = metric_node.definition.get("name")  # type: ignore
+            inputs = metric_node.get_dependencies()
+        except Exception as e:
+            raise ValueError(
+                f"Failed to retrieve metric info for '{metric_id}': {e}"
+            )
+        return {"id": metric_id, "name": name, "description": description, "inputs": inputs}
+
+    def calculate(self, node_name: str, period: str) -> float:
+        """Calculate and return the value of a specific node for a given period.
+
+        This method uses internal caching to speed repeated calls, and wraps
+        underlying errors in CalculationError for clarity.
+
+        Args:
+            node_name: Name of the node to calculate.
+            period: Time period identifier for the calculation.
+
+        Returns:
+            The calculated float value for the node and period.
+
+        Raises:
+            NodeError: If the specified node does not exist.
+            TypeError: If the node has no callable `calculate` method.
+            CalculationError: If an error occurs during the node's calculation.
+
+        Examples:
+            >>> value = graph.calculate("Revenue", "2023")
+        """
+        # Return cached value if present
+        if node_name in self._cache and period in self._cache[node_name]:
+            logger.debug(f"Cache hit for node '{node_name}', period '{period}'")
+            return self._cache[node_name][period]
+        # Resolve node
+        node = self.manipulator.get_node(node_name)
+        if node is None:
+            raise NodeError(f"Node '{node_name}' not found", node_id=node_name)
+        # Validate calculate method
+        if not hasattr(node, "calculate") or not callable(node.calculate):
+            raise TypeError(f"Node '{node_name}' has no callable calculate method.")
+        # Perform calculation with error handling
+        try:
+            value = node.calculate(period)
+        except (NodeError, ConfigurationError, CalculationError, ValueError, KeyError, ZeroDivisionError) as e:
+            logger.error(f"Error calculating node '{node_name}' for period '{period}': {e}", exc_info=True)
+            raise CalculationError(
+                message=f"Failed to calculate node '{node_name}'",
+                node_id=node_name,
+                period=period,
+                details={"original_error": str(e)},
+            ) from e
+        # Cache and return
+        self._cache.setdefault(node_name, {})[period] = value
+        logger.debug(f"Cached value for node '{node_name}', period '{period}': {value}")
+        return value
+
+    def recalculate_all(self, periods: Optional[list[str]] = None) -> None:
+        """Recalculate all nodes for given periods, clearing all caches first.
+
+        Args:
+            periods: List of period strings, a single string, or None to use all periods.
+
+        Returns:
+            None
+
+        Raises:
+            TypeError: If `periods` is not a list, string, or None.
+
+        Examples:
+            >>> graph.recalculate_all(["2023", "2024"])
+        """
+        # Normalize periods input
+        if periods is None:
+            periods_to_use = self.periods
+        elif isinstance(periods, str):
+            periods_to_use = [periods]
+        elif isinstance(periods, list):
+            periods_to_use = periods
+        else:
+            raise TypeError("Periods must be a list of strings, a single string, or None.")
+        # Clear all caches (node-level and central) to force full recalculation
         self.clear_all_caches()
-        self._calculation_engine.recalculate_all(periods_to_use)
+        if not periods_to_use:
+            return
+        # Recalculate each node for each period
+        for node_name in list(self._nodes.keys()):
+            for period in periods_to_use:
+                try:
+                    self.calculate(node_name, period)
+                except Exception as e:
+                    logger.warning(f"Error recalculating node '{node_name}' for period '{period}': {e}")
 
     def clear_all_caches(self) -> None:
-        """Clears all calculation-related caches within the graph.
+        """Clear all node-level and central calculation caches.
 
-        This includes clearing caches possibly held by individual nodes
-        (like `StrategyCalculationNode`) and the central cache within the
-        `CalculationEngine`. This ensures subsequent calculations start fresh.
-        Logs warnings if clearing fails for specific nodes or the engine.
+        Returns:
+            None
 
-        Example:
-            >>> graph = Graph(periods=["2023"])
-            >>> # ... add nodes and perform calculations ...
-            >>> # Assume some caches might be populated in nodes or engine
+        Examples:
             >>> graph.clear_all_caches()
-            >>> # Subsequent calls to graph.calculate will recompute from scratch
         """
-        logger.debug(f"Clearing caches for {len(self.nodes)} nodes.")
+        logger.debug(f"Clearing node-level caches for {len(self.nodes)} nodes.")
         for node in self.nodes.values():
             if hasattr(node, "clear_cache"):
                 try:
                     node.clear_cache()
                 except Exception as e:
                     logger.warning(f"Failed to clear cache for node '{node.name}': {e}")
+        # Clear central calculation cache
+        self.clear_calculation_cache()
+        logger.debug("Cleared central calculation cache.")
 
-        logger.debug("Clearing calculation engine cache.")
-        if hasattr(self._calculation_engine, "clear_cache"):
-            try:
-                self._calculation_engine.clear_cache()
-            except Exception as e:
-                logger.warning(f"Could not clear calculation engine cache: {e}", exc_info=True)
-
-    def add_financial_statement_item(self, name: str, values: dict[str, float]) -> Node:
-        """Adds a basic financial statement item (data node) to the graph.
-
-        Delegates the creation and storage of the `FinancialStatementItemNode`
-        and its associated time-series data to the `DataManager`.
-
-        Args:
-            name: The unique name for the financial statement item node.
-            values: A dictionary where keys are period strings and values are
-                    the corresponding float values for this item.
+    def clear_calculation_cache(self) -> None:
+        """Clear the graph's internal calculation cache.
 
         Returns:
-            The newly created `FinancialStatementItemNode` object.
+            None
+
+        Examples:
+            >>> graph.clear_calculation_cache()
+        """
+        self._cache.clear()
+        logger.debug("Cleared graph calculation cache.")
+
+    def clear(self) -> None:
+        """Reset the graph by clearing nodes, periods, metrics, and caches.
+
+        Returns:
+            None
+
+        Examples:
+            >>> graph.clear()
+        """
+        self._nodes = {}
+        self._periods = []
+        self._cache = {}
+        self._metric_names = set()
+        logger.info("Graph cleared: nodes, periods, metrics, and caches reset.")
+
+    def add_financial_statement_item(self, name: str, values: dict[str, float]) -> FinancialStatementItemNode:
+        """Add a basic financial statement item (data node) to the graph.
+
+        Args:
+            name: Unique name for the financial statement item node.
+            values: Mapping of period strings to float values for this item.
+
+        Returns:
+            The newly created `FinancialStatementItemNode`.
 
         Raises:
             NodeError: If a node with the same name already exists.
-            PeriodNotFoundError: If any period key in `values` is not recognized
-                                by the `DataManager`.
-            TypeError: If `values` is not a dictionary or contains invalid types.
+            TypeError: If `values` is not a dict or contains invalid types.
 
-        Example:
-            >>> graph = Graph(periods=["2023", "2024"])
+        Examples:
             >>> item_node = graph.add_financial_statement_item("SG&A", {"2023": 50.0})
-            >>> print(item_node.name)
-            SG&A
-            >>> print(item_node.get_value("2023"))
+            >>> item_node.get_value("2023")
             50.0
-            >>> print("SG&A" in graph.nodes)
-            True
-            >>> # Add data for another period later
-            >>> graph.set_value("SG&A", "2024", 55.0)
-            >>> print(item_node.get_value("2024"))
-            55.0
-            >>> try:
-            ...     graph.add_financial_statement_item("Existing", {"2023": 10})
-            ...     graph.add_financial_statement_item("Existing", {"2023": 20})
-            ... except Exception as e: # Actual exception type depends on DataManager
-            ...     print(f"Error: {e}") # Example: Node 'Existing' already exists
-            Error: Node 'Existing' already exists.
         """
-        node = self._data_manager.add_item(name, values)
+        if name in self._nodes:
+            raise NodeError("Node with name already exists", node_id=name)
+        if not isinstance(values, dict):
+            raise TypeError("Values must be provided as a dict[str, float]")
+        # Create a new financial statement item node
+        new_node = self._node_factory.create_financial_statement_item(
+            name=name, values=values.copy()
+        )
+        self._nodes[name] = new_node
+        # Update periods from node values
+        self.add_periods(list(values.keys()))
+        logger.info(f"Added FinancialStatementItemNode '{name}' with periods {list(values.keys())}")
+        return new_node
+
+    def update_financial_statement_item(
+        self, name: str, values: dict[str, float], replace_existing: bool = False
+    ) -> FinancialStatementItemNode:
+        """Update values for an existing financial statement item node.
+
+        Args:
+            name: Name of the existing financial statement item node.
+            values: Mapping of new period strings to float values.
+            replace_existing: If True, replace existing values entirely; otherwise merge.
+
+        Returns:
+            The updated `FinancialStatementItemNode`.
+
+        Raises:
+            NodeError: If the node does not exist.
+            TypeError: If the node is not a `FinancialStatementItemNode` or `values` is not a dict.
+
+        Examples:
+            >>> graph.update_financial_statement_item("SG&A", {"2024": 60.0})
+        """
+        node = self.manipulator.get_node(name)
+        if node is None:
+            raise NodeError("Node not found", node_id=name)
+        if not isinstance(node, FinancialStatementItemNode):
+            raise TypeError(f"Node '{name}' is not a FinancialStatementItemNode")
+        if not isinstance(values, dict):
+            raise TypeError("Values must be provided as a dict[str, float]")
+        if replace_existing:
+            node.values = values.copy()
+        else:
+            node.values.update(values)
+        self.add_periods(list(values.keys()))
+        logger.info(f"Updated FinancialStatementItemNode '{name}' with periods {list(values.keys())}; replace_existing={replace_existing}")
         return node
 
     def get_financial_statement_items(self) -> list[Node]:
-        """Retrieves all nodes that represent basic financial statement items.
-
-        Filters the main node registry to return only instances of
-        `FinancialStatementItemNode`.
+        """Retrieve all financial statement item nodes from the graph.
 
         Returns:
-            A list containing all `FinancialStatementItemNode` objects
-            currently in the graph.
+            A list of `FinancialStatementItemNode` objects currently in the graph.
 
-        Example:
-            >>> graph = Graph(periods=["2023"])
-            >>> item1 = graph.add_financial_statement_item("Item1", {"2023": 1})
-            >>> item2 = graph.add_financial_statement_item("Item2", {"2023": 2})
-            >>> # Add a non-item node (example)
-            >>> from fin_statement_model.core.nodes import Node
-            >>> graph.add_node(Node("CalcNode"))
-            >>> fs_items = graph.get_financial_statement_items()
-            >>> print(len(fs_items))
-            2
-            >>> print(sorted([item.name for item in fs_items]))
-            ['Item1', 'Item2']
+        Examples:
+            >>> items = graph.get_financial_statement_items()
         """
         from fin_statement_model.core.nodes import (
             FinancialStatementItemNode,
@@ -413,28 +682,15 @@ class Graph(
         ]
 
     def __repr__(self) -> str:
-        """Provides a concise, developer-friendly string representation of the graph.
+        """Provide a concise, developer-friendly string representation of the graph.
 
-        Summarizes key statistics like the total number of nodes, counts of
-        different node types (Financial Statement Items, Calculations), the
-        number of dependencies (edges), and the list of managed periods.
+        Summarize total nodes, FS items, calculations, dependencies, and periods.
 
         Returns:
             A string summarizing the graph's structure and contents.
 
-        Example:
-            >>> graph = Graph(periods=["2023"])
-            >>> graph.add_financial_statement_item("Revenue", {"2023": 100})
-            >>> graph.add_financial_statement_item("COGS", {"2023": 60})
-            >>> # Assume a calculation node 'GP' depends on Revenue, COGS
-            >>> from fin_statement_model.core.nodes import FormulaCalculationNode
-            >>> gp_node = FormulaCalculationNode("GP", {"r": graph.nodes['Revenue'], "c": graph.nodes['COGS']}, "r - c")
-            >>> graph.add_node(gp_node)
-            >>> print(repr(graph))
-            <Graph(Total Nodes: 3, FS Items: 2, Calculations: 1, Dependencies: 2, Periods: ['2023'])>
-            >>> graph_empty = Graph()
-            >>> print(repr(graph_empty))
-            <Graph(Total Nodes: 0, FS Items: 0, Calculations: 0, Dependencies: 0, Periods: [None])>
+        Examples:
+            >>> repr(graph)
         """
         from fin_statement_model.core.nodes import (
             FinancialStatementItemNode,
@@ -488,45 +744,233 @@ class Graph(
         return f"<{type(self).__name__}({', '.join(repr_parts)})>"
 
     def has_cycle(self, source_node: Node, target_node: Node) -> bool:
-        """Checks if there is a cycle in the graph starting from a given source node to a target node.
+        """Check if a cycle exists from a source node to a target node.
 
-        This method uses Depth-First Search (DFS) to detect cycles in the graph.
+        This method delegates to GraphTraverser.breadth_first_search to determine
+        if `target_node` is reachable from `source_node` via dependencies, indicating
+        that adding an edge from `target_node` to `source_node` would create a cycle.
 
         Args:
-            source_node: The starting node of the cycle detection.
-            target_node: The target node to which the cycle detection is performed.
+            source_node: The starting node for cycle detection.
+            target_node: The node to detect return path to.
 
         Returns:
-            True if there is a cycle in the graph from the source node to the target node, False otherwise.
+            True if a cycle exists, False otherwise.
+        """
+        if source_node.name not in self._nodes or target_node.name not in self._nodes:
+            return False
+
+        # Use BFS to check reachability via predecessors (dependencies)
+        bfs_levels = self.traverser.breadth_first_search(source_node.name, direction="predecessors")
+        reachable_nodes = {n for level in bfs_levels for n in level}
+        return target_node.name in reachable_nodes
+
+    def get_node(self, name: str) -> Optional[Node]:
+        """Retrieve a node from the graph by its name.
+
+        Args:
+            name: The unique name of the node to retrieve.
+
+        Returns:
+            The `Node` instance if found, else None.
+
+        Examples:
+            >>> node = graph.get_node("Revenue")
+        """
+        return self.manipulator.get_node(name)
+
+    def add_node(self, node: Node) -> None:
+        """Add a node to the graph, replacing any existing node with the same name.
+
+        Args:
+            node: The `Node` instance to add.
+
+        Returns:
+            None
+
+        Examples:
+            >>> graph.add_node(custom_node)
+        """
+        return self.manipulator.add_node(node)
+
+    def remove_node(self, node_name: str) -> None:
+        """Remove a node from the graph by name, updating dependencies.
+
+        Args:
+            node_name: The name of the node to remove.
+
+        Returns:
+            None
+
+        Examples:
+            >>> graph.remove_node("OldItem")
+        """
+        return self.manipulator.remove_node(node_name)
+
+    def replace_node(self, node_name: str, new_node: Node) -> None:
+        """Replace an existing node with a new node instance.
+
+        Args:
+            node_name: Name of the node to replace.
+            new_node: The new `Node` instance to substitute.
+
+        Returns:
+            None
+
+        Examples:
+            >>> graph.replace_node("Item", updated_node)
+        """
+        return self.manipulator.replace_node(node_name, new_node)
+
+    def has_node(self, node_id: str) -> bool:
+        """Check if a node with the given ID exists in the graph.
+
+        Args:
+            node_id: The name of the node to check.
+
+        Returns:
+            True if the node exists, False otherwise.
+
+        Examples:
+            >>> graph.has_node("Revenue")
+        """
+        return self.manipulator.has_node(node_id)
+
+    def set_value(self, node_id: str, period: str, value: float) -> None:
+        """Set or update the value for a node in a specific period.
+
+        Args:
+            node_id: The name of the node.
+            period: The period identifier to set the value for.
+            value: The float value to assign.
+
+        Returns:
+            None
 
         Raises:
-            NodeNotFoundError: If the source_node or target_node does not exist in the graph.
+            ValueError: If the period is not recognized by the graph.
+            NodeError: If the node does not exist.
+            TypeError: If the node does not support setting a value.
+
+        Examples:
+            >>> graph.set_value("SG&A", "2024", 55.0)
         """
-        if source_node not in self._nodes or target_node not in self._nodes:
-            return False  # Or raise error?
+        return self.manipulator.set_value(node_id, period, value)
 
-        # Simple DFS to detect cycles
-        path = {source_node}
-        stack = [source_node]
-        while stack:
-            curr = stack[-1]
-            if curr not in path:
-                path.add(curr)
+    def topological_sort(self) -> list[str]:
+        """Perform a topological sort of all graph nodes.
 
-            # Add neighbors to stack
-            pushed = False
-            neighbors = self.get_direct_predecessors(curr)
-            # Use list comprehension for PERF401
-            unvisited_neighbors = [n for n in neighbors if n not in path]
+        Returns:
+            A list of node IDs in topological order.
 
-            for neighbor in unvisited_neighbors:
-                if neighbor == target_node:
-                    return True
-                stack.append(neighbor)
-                pushed = True
-                break
+        Raises:
+            ValueError: If a cycle is detected in the graph.
 
-            if not pushed:
-                stack.pop()
+        Examples:
+            >>> order = graph.topological_sort()
+        """
+        return self.traverser.topological_sort()
 
-        return False
+    def get_calculation_nodes(self) -> list[str]:
+        """Get all calculation node IDs in the graph.
+
+        Returns:
+            A list of node names that have associated calculations.
+
+        Examples:
+            >>> graph.get_calculation_nodes()
+        """
+        return self.traverser.get_calculation_nodes()
+
+    def get_dependencies(self, node_id: str) -> list[str]:
+        """Get the direct predecessor node IDs (dependencies) for a given node.
+
+        Args:
+            node_id: The name of the node to inspect.
+
+        Returns:
+            A list of node IDs that the given node depends on.
+
+        Examples:
+            >>> graph.get_dependencies("GrossProfit")
+        """
+        return self.traverser.get_dependencies(node_id)
+
+    def get_dependency_graph(self) -> dict[str, list[str]]:
+        """Get the full dependency graph mapping of node IDs to their inputs.
+
+        Returns:
+            A dict mapping each node ID to a list of its dependency node IDs.
+
+        Examples:
+            >>> graph.get_dependency_graph()
+        """
+        return self.traverser.get_dependency_graph()
+
+    def detect_cycles(self) -> list[list[str]]:
+        """Detect all cycles in the graph's dependency structure.
+
+        Returns:
+            A list of cycles, each represented as a list of node IDs.
+
+        Examples:
+            >>> graph.detect_cycles()
+        """
+        return self.traverser.detect_cycles()
+
+    def validate(self) -> list[str]:
+        """Validate the graph structure for errors such as cycles or missing nodes.
+
+        Returns:
+            A list of validation error messages, empty if valid.
+
+        Examples:
+            >>> graph.validate()
+        """
+        return self.traverser.validate()
+
+    def breadth_first_search(self, start_node: str, direction: str = "successors") -> list[str]:
+        """Perform a breadth-first search (BFS) traversal of the graph.
+
+        Args:
+            start_node: The starting node ID for BFS.
+            direction: Either 'successors' or 'predecessors' to traverse.
+
+        Returns:
+            A nested list of node IDs per BFS level.
+
+        Raises:
+            ValueError: If `direction` is not 'successors' or 'predecessors'.
+
+        Examples:
+            >>> graph.breadth_first_search("Revenue", "successors")
+        """
+        return self.traverser.breadth_first_search(start_node, direction)
+
+    def get_direct_successors(self, node_id: str) -> list[str]:
+        """Get immediate successor node IDs for a given node.
+
+        Args:
+            node_id: The name of the node to inspect.
+
+        Returns:
+            A list of node IDs that directly follow the given node.
+
+        Examples:
+            >>> graph.get_direct_successors("Revenue")
+        """
+        return self.traverser.get_direct_successors(node_id)
+
+    def get_direct_predecessors(self, node_id: str) -> list[str]:
+        """Get immediate predecessor node IDs (inputs) for a given node.
+
+        Args:
+            node_id: The name of the node to inspect.
+
+        Returns:
+            A list of node IDs that the given node directly depends on.
+
+        Examples:
+            >>> graph.get_direct_predecessors("GrossProfit")
+        """
+        return self.traverser.get_direct_predecessors(node_id)

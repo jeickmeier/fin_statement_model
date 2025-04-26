@@ -5,7 +5,8 @@ import pandas as pd
 from fin_statement_model.core.graph.graph import Graph
 from fin_statement_model.statements.manager import StatementManager
 from fin_statement_model.statements.structure import StatementStructure, Section, LineItem
-from fin_statement_model.core.errors import ExportError, StatementError
+from fin_statement_model.io.exceptions import WriteError
+from fin_statement_model.core.errors import StatementError
 
 
 def make_manager_and_statement():
@@ -83,9 +84,9 @@ def test_export_and_invalid_errors(tmp_path):
 
     # Bad path
     bad_excel = tmp_path / "no_dir" / "f.xlsx"
-    with pytest.raises(ExportError):
+    with pytest.raises(WriteError):
         manager.export_to_excel("s1", str(bad_excel))
 
     bad_json = tmp_path / "no_dir" / "f.json"
-    with pytest.raises(ExportError):
+    with pytest.raises(WriteError):
         manager.export_to_json("s1", str(bad_json))

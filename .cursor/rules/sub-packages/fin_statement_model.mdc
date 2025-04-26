@@ -16,7 +16,7 @@ alwaysApply: true
 | extensions | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ## Layer Structure
-- **core/**: Graph engine, Node & CalculationNode, metric registry. *Must not import* from other layers.
+- **core/**: Graph engine, **all node types (data, calculation, forecast)**, metric registry. *Must not import* from other layers.
 - **statements/**: Domain‑level helpers around financial statements.
 - **io/**: External data adapters (readers & writers).
 - **forecasting/**: Predictive modelling built on the core graph.
@@ -59,7 +59,7 @@ alwaysApply: true
 # Error Handling
 - All exceptions must extend `FinStatementModelError` from `core.errors`
 - Use dataclasses for immutable data containers
-- Avoid pandas DataFrames in core types; use pure/serializable types
+- Core may embed numpy/pandas structures where they provide clear advantages. Prefer plain types for lightweight data, but DataFrame/Series usage is now allowed.
 
 # Optional Dependencies
 - Heavy dependencies (e.g. OpenAI, torch) must be:

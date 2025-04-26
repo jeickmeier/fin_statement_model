@@ -1,4 +1,4 @@
-"""Defines a node representing a basic financial statement item."""
+"""Define a node representing a basic financial statement item."""
 
 import logging
 
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class FinancialStatementItemNode(Node):
-    """Represents a leaf node containing raw financial statement data.
+    """Define a leaf node containing raw financial statement data.
 
     This node type typically stores actual reported values (e.g., Revenue,
     COGS) for different time periods.
@@ -19,7 +19,7 @@ class FinancialStatementItemNode(Node):
         values (Dict[str, float]): A dictionary mapping time periods (str)
             to their corresponding numerical values (float).
 
-    Example:
+    Examples:
         >>> revenue_data = {"2022": 1000.0, "2023": 1200.0}
         >>> revenue_node = FinancialStatementItemNode("Revenue", revenue_data)
         >>> print(revenue_node.name)
@@ -46,7 +46,6 @@ class FinancialStatementItemNode(Node):
         # super().__init__(name)  # Assuming base Node init takes name
         self.name = name
         self.values = values
-        self._cache = {}  # Note: _cache seems unused here
 
     def calculate(self, period: str) -> float:
         """Retrieve the value for the specified period.
@@ -71,7 +70,6 @@ class FinancialStatementItemNode(Node):
             value (float): The numerical value to store for the period.
         """
         self.values[period] = value
-        # self.clear_cache() # Clear cache if it were used
 
     def has_value(self, period: str) -> bool:
         """Check if a value exists for the specified period.

@@ -16,7 +16,7 @@ from fin_statement_model.statements.structure import (
     CalculatedLineItem,
     SubtotalLineItem,
 )
-from fin_statement_model.core.calculation_engine import CalculationEngine
+from fin_statement_model.core.graph import Graph
 
 __all__ = ["CalculationService"]
 
@@ -26,11 +26,11 @@ logger = logging.getLogger(__name__)
 class CalculationService:
     """Service to create calculation nodes in the graph for a given statement."""
 
-    def __init__(self, engine: CalculationEngine):
-        """Initialize the CalculationService.
+    def __init__(self, engine: Graph):
+        """Initialize the CalculationService with a Graph instance for calculations.
 
         Args:
-            engine: The CalculationEngine instance used for adding calculations.
+            engine: The Graph instance used for adding and evaluating calculation nodes.
         """
         self.engine = engine
         self._input_values: dict[str, Any] = {}  # Track input values for dependency resolution

@@ -1,13 +1,13 @@
 """Define types and TypedDicts for preprocessing transformers.
 
-This module provides TabularData alias and configuration TypedDicts.
+This module provides a TabularData alias (pd.DataFrame only) and configuration TypedDicts.
 """
 
-from typing import TypeAlias, TypedDict, Union
+from typing import TypedDict
 import pandas as pd
 
-# Alias for tabular data inputs accepted by transformers
-TabularData: TypeAlias = Union[pd.DataFrame, dict[str, float]]
+# Alias for tabular data inputs (DataFrame-only) accepted by transformers
+TabularData = pd.DataFrame
 
 
 class NormalizationConfig(TypedDict, total=False):

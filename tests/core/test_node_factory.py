@@ -8,11 +8,11 @@ from fin_statement_model.core.node_factory import NodeFactory
 from fin_statement_model.core.nodes import (
     Node,
     FinancialStatementItemNode,
-    StrategyCalculationNode,
+    CalculationNode,
     MetricCalculationNode,
     CustomCalculationNode,
 )
-from fin_statement_model.core.strategies import Registry, Strategy
+from fin_statement_model.core.calculations import Registry, Calculation
 
 
 # --- Fixtures ---
@@ -54,11 +54,11 @@ def mock_node_b():
 def mock_strategy_class():
     """Fixture for a generic mock Strategy class."""
     # Create a spec for the Strategy class itself, including __init__
-    MockStrategy = create_autospec(Strategy)
+    MockStrategy = create_autospec(Calculation)
     # Add __name__ needed for error message formatting
     MockStrategy.__name__ = "MockStrategyClass"
     # Create an instance mock that __init__ would return
-    mock_instance = MagicMock(spec=Strategy)
+    mock_instance = MagicMock(spec=Calculation)
     MockStrategy.return_value = mock_instance  # Mocking the instance returned by __init__
     return MockStrategy
 
@@ -125,12 +125,12 @@ class TestCreateCalculationNode:
 
         node = NodeFactory.create_calculation_node(name, inputs, calc_type)
 
-        assert isinstance(node, StrategyCalculationNode)
+        assert isinstance(node, CalculationNode)
         assert node.name == name
         assert node.inputs == inputs
-        mock_registry_get.assert_called_once_with(NodeFactory._calculation_strategies[calc_type])
+        mock_registry_get.assert_called_once_with(NodeFactory._calculation_methods[calc_type])
         mock_strategy_class.assert_called_once_with()  # No extra kwargs
-        assert node.strategy == mock_strategy_class.return_value  # Check instance was passed
+        assert node.calculation == mock_strategy_class.return_value  # Check instance was passed
 
     def test_success_with_strategy_kwargs(
         self, mock_registry_get, mock_strategy_class, mock_node_a, mock_node_b
@@ -144,12 +144,12 @@ class TestCreateCalculationNode:
 
         node = NodeFactory.create_calculation_node(name, inputs, calc_type, **kwargs)
 
-        assert isinstance(node, StrategyCalculationNode)
+        assert isinstance(node, CalculationNode)
         assert node.name == name
         assert node.inputs == inputs
-        mock_registry_get.assert_called_once_with(NodeFactory._calculation_strategies[calc_type])
+        mock_registry_get.assert_called_once_with(NodeFactory._calculation_methods[calc_type])
         mock_strategy_class.assert_called_once_with(**kwargs)
-        assert node.strategy == mock_strategy_class.return_value
+        assert node.calculation == mock_strategy_class.return_value
 
     def test_error_empty_name(self, mock_node_a):
         """Test creation fails with an empty name."""
@@ -170,10 +170,10 @@ class TestCreateCalculationNode:
     def test_error_strategy_not_in_registry(self, mock_registry_get, mock_node_a):
         """Test creation fails if the strategy is not found in the Registry."""
         calc_type = "addition"
-        strategy_name = NodeFactory._calculation_strategies[calc_type]
-        mock_registry_get.side_effect = KeyError(f"Strategy '{strategy_name}' not found")
+        calculation_name = NodeFactory._calculation_methods[calc_type]
+        mock_registry_get.side_effect = KeyError(f"Strategy '{calculation_name}' not found")
 
-        with pytest.raises(ValueError, match=f"Strategy '{strategy_name}' not found in Registry"):
+        with pytest.raises(ValueError, match=f"Strategy '{calculation_name}' not found in Registry"):
             NodeFactory.create_calculation_node("TestNode", [mock_node_a], calc_type)
 
     def test_error_strategy_instantiation_fails(
@@ -184,9 +184,9 @@ class TestCreateCalculationNode:
         # Simulate TypeError during __init__
         mock_strategy_class.side_effect = TypeError("Missing required argument 'weights'")
         calc_type = "weighted_average"  # Assume this requires 'weights'
-        strategy_name = NodeFactory._calculation_strategies[calc_type]
+        calculation_name = NodeFactory._calculation_methods[calc_type]
 
-        with pytest.raises(TypeError, match=f"Could not instantiate strategy '{strategy_name}'"):
+        with pytest.raises(TypeError, match=f"Could not instantiate strategy '{calculation_name}'"):
             NodeFactory.create_calculation_node(
                 "TestNode", [mock_node_a], calc_type
             )  # Missing weights kwarg

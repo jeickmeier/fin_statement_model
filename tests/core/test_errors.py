@@ -5,10 +5,8 @@ from fin_statement_model.core.errors import (
     CircularDependencyError,
     ConfigurationError,
     DataValidationError,
-    ExportError,
     FinancialModelError,
     GraphError,
-    ImportError,
     MetricError,
     MissingInputError,
     NodeError,
@@ -146,85 +144,6 @@ def test_data_validation_error_instantiation(message, validation_errors, expecte
     err = DataValidationError(message, validation_errors=validation_errors)
     assert err.validation_errors == (validation_errors or [])
     assert str(err) == expected_str
-    assert isinstance(err, FinancialModelError)
-
-
-@pytest.mark.parametrize(
-    "message, source, adapter, original_error, expected_str_contains",
-    [
-        ("Base msg", None, None, None, "Base msg"),
-        ("Base msg", "file.csv", None, None, "Base msg from source 'file.csv'"),
-        ("Base msg", None, "csv_reader", None, "Base msg using adapter 'csv_reader'"),
-        (
-            "Base msg",
-            "file.csv",
-            "csv_reader",
-            None,
-            "Base msg using source 'file.csv' adapter 'csv_reader'",
-        ),
-        (
-            "Base msg",
-            "api.com",
-            "api_reader",
-            ValueError("Inner error"),
-            "Base msg using source 'api.com' adapter 'api_reader': Inner error",
-        ),
-        (
-            "Base msg",
-            "file.csv",
-            None,
-            ValueError("Inner error"),
-            "Base msg from source 'file.csv': Inner error",
-        ),
-    ],
-)
-def test_import_error_instantiation(
-    message, source, adapter, original_error, expected_str_contains
-):
-    """Test ImportError instantiation and message formatting."""
-    err = ImportError(message, source=source, adapter=adapter, original_error=original_error)
-    assert err.source == source
-    assert err.adapter == adapter
-    assert err.original_error == original_error
-    assert str(err) == expected_str_contains  # Exact match due to simplified test cases
-    assert isinstance(err, FinancialModelError)
-
-
-@pytest.mark.parametrize(
-    "message, target, format_type, original_error, expected_str_contains",
-    [
-        ("Base msg", None, None, None, "Base msg"),
-        ("Base msg", "out.json", None, None, "Base msg to target 'out.json'"),
-        ("Base msg", None, "json", None, "Base msg in format 'json'"),
-        ("Base msg", "out.json", "json", None, "Base msg in target 'out.json' format 'json'"),
-        (
-            "Base msg",
-            "db://...",
-            "sql",
-            RuntimeError("DB down"),
-            "Base msg in target 'db://...' format 'sql': DB down",
-        ),
-        (
-            "Base msg",
-            "out.csv",
-            None,
-            RuntimeError("Disk full"),
-            "Base msg to target 'out.csv': Disk full",
-        ),
-    ],
-)
-def test_export_error_instantiation(
-    message, target, format_type, original_error, expected_str_contains
-):
-    """Test ExportError instantiation and message formatting."""
-    err = ExportError(
-        message, target=target, format_type=format_type, original_error=original_error
-    )
-    assert err.target == target
-    assert err.format_type == format_type
-    assert err.original_error == original_error
-    # Using exact match as the test cases cover the logic branches
-    assert str(err) == expected_str_contains
     assert isinstance(err, FinancialModelError)
 
 

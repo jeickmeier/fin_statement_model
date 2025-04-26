@@ -3,9 +3,8 @@
 This module implements a factory for registering and instantiating transformers.
 """
 
-from __future__ import annotations
-
 import importlib
+import re
 import inspect
 import pkgutil
 import logging
@@ -123,6 +122,12 @@ class TransformerFactory:
                     ):
                         # Register the transformer with its class name
                         cls.register_transformer(name, obj)
+                        # Register snake_case alias without '_transformer'
+                        snake = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", name)
+                        snake = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", snake).lower()
+                        alias = snake.replace("_transformer", "")
+                        if alias not in cls._transformers:
+                            cls.register_transformer(alias, obj)
 
             logger.info(f"Discovered transformers from package '{package_name}'")
 

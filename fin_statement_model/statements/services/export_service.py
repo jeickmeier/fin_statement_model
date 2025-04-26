@@ -3,14 +3,10 @@
 Encapsulates export of formatted statements to various file formats.
 """
 
-from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Any
 
-if TYPE_CHECKING:
-    from fin_statement_model.statements.manager import StatementManager
-
+from fin_statement_model.io.exceptions import WriteError
 from fin_statement_model.statements.errors import StatementError
-from fin_statement_model.core.errors import ExportError
 
 __all__ = ["ExportService"]
 
@@ -18,7 +14,7 @@ __all__ = ["ExportService"]
 class ExportService:
     """Service to export formatted statements to files."""
 
-    def __init__(self, manager: StatementManager) -> None:
+    def __init__(self, manager: Any) -> None:
         """Initialize the ExportService.
 
         Args:
@@ -36,16 +32,21 @@ class ExportService:
 
         Raises:
             StatementError: If the statement ID is invalid.
-            ExportError: If writing the file fails.
+            WriteError: If writing the file fails.
         """
         try:
             df = self.manager.format_statement(statement_id, format_type="dataframe", **fmt_kwargs)
             df.to_excel(file_path, index=False)
-        except StatementError:
-            # Propagate statement lookup issues
-            raise
+        except StatementError as e:
+            # Wrap statement lookup issues in WriteError for consistency
+            raise WriteError(
+                message="Failed to export statement",
+                target=file_path,
+                writer_type="excel",
+                original_error=e,
+            ) from e
         except Exception as e:
-            raise ExportError(
+            raise WriteError(
                 message="Failed to export statement to Excel",
                 target=file_path,
                 format_type="excel",
@@ -69,15 +70,21 @@ class ExportService:
 
         Raises:
             StatementError: If the statement ID is invalid.
-            ExportError: If writing the file fails.
+            WriteError: If writing the file fails.
         """
         try:
             df = self.manager.format_statement(statement_id, format_type="dataframe", **fmt_kwargs)
             df.to_json(file_path, orient=orient)
-        except StatementError:
-            raise
+        except StatementError as e:
+            # Wrap statement lookup issues in WriteError for consistency
+            raise WriteError(
+                message="Failed to export statement",
+                target=file_path,
+                writer_type="json",
+                original_error=e,
+            ) from e
         except Exception as e:
-            raise ExportError(
+            raise WriteError(
                 message="Failed to export statement to JSON",
                 target=file_path,
                 format_type="json",

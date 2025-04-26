@@ -15,26 +15,24 @@ This `core` package is designed to be self-contained and does not depend on
 other higher-level packages like `statements`, `io`, or `forecasting`.
 """
 
-from .data_manager import DataManager
-from .calculation_engine import CalculationEngine
 from .node_factory import NodeFactory
 from .graph import Graph
 from .nodes import (
     Node,
     FinancialStatementItemNode,
     MetricCalculationNode,
-    StrategyCalculationNode,
+    CalculationNode,
     YoYGrowthNode,
     MultiPeriodStatNode,
     FormulaCalculationNode,
     CustomCalculationNode,
     TwoPeriodAverageNode,
 )
-from .strategies import (
-    AdditionStrategy,
-    SubtractionStrategy,
-    MultiplicationStrategy,
-    DivisionStrategy,
+from .calculations import (
+    AdditionCalculation,
+    SubtractionCalculation,
+    MultiplicationCalculation,
+    DivisionCalculation,
 )
 from .errors import (
     FinancialModelError,
@@ -47,40 +45,33 @@ from .errors import (
     PeriodError,
     StatementError,
     StrategyError,
-    ImportError,
-    ExportError,
     TransformationError,
 )
 
 __all__ = [
-    "AdditionStrategy",
-    "CalculationEngine",
+    "AdditionCalculation",
     "CalculationError",
+    "CalculationNode",
     "CircularDependencyError",
     "ConfigurationError",
     "CustomCalculationNode",
-    "DataManager",
     "DataValidationError",
-    "DivisionStrategy",
-    "ExportError",
+    "DivisionCalculation",
     "FinancialModelError",
-    "FinancialStatementItemNode",
     "FinancialStatementItemNode",
     "FormulaCalculationNode",
     "Graph",
     "GraphError",
-    "ImportError",
     "MetricCalculationNode",
     "MultiPeriodStatNode",
-    "MultiplicationStrategy",
+    "MultiplicationCalculation",
     "Node",
     "NodeError",
     "NodeFactory",
     "PeriodError",
     "StatementError",
-    "StrategyCalculationNode",
     "StrategyError",
-    "SubtractionStrategy",
+    "SubtractionCalculation",
     "TransformationError",
     "TwoPeriodAverageNode",
     "YoYGrowthNode",

@@ -11,6 +11,7 @@ from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.base import DataReader
 from fin_statement_model.io.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
+from fin_statement_model.io.readers.base import MappingConfig, normalize_mapping
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,12 @@ class ExcelReader(DataReader):
     Expects data in a tabular format where rows typically represent items
     and columns represent periods, or vice-versa.
     Requires specifying sheet name, period identification, and item identification.
+
+    Note:
+        When using the `read_data` facade, pass `mapping_config` via init,
+        and reader-specific options (`sheet_name`, `periods_row`, `items_col`,
+        `statement_type`, `header_row`, `nrows`, `skiprows`) to the `read()` method.
+        Direct instantiation and use of `ExcelReader` is also supported.
     """
 
     # Default field mappings (can be overridden in __init__)
@@ -51,41 +58,42 @@ class ExcelReader(DataReader):
     # Default item name mapping
     _DEFAULT_MAPPING: ClassVar[dict[str, str]] = {}
 
-    def __init__(self, column_mapping: Optional[dict[str, str]] = None, **kwargs: dict[str, Any]):
+    def __init__(self, mapping_config: MappingConfig = None, **kwargs: Any) -> None:
         """Initialize the ExcelReader.
 
         Args:
-            column_mapping: Optional dictionary to map item names from the
-                Excel file to canonical node names within the graph.
-                Format: {'statement_type': {'Excel Name': 'canonical_name', ...}}
-                Example: {'income_statement': {'Total Revenue': 'revenue'}}
-                If None, default mappings might be applied based on statement_type
-                kwarg in read().
-            **kwargs: Additional keyword arguments forwarded to the base
-                `DataReader` initializer. These may include reader-specific
-                configuration options or metadata required by parent classes.
+            mapping_config (MappingConfig): Optional mapping configuration to
+                map Excel item names to canonical node names. Can be either:
+                  - Dict[str, str] for a flat mapping applied to all statement types.
+                  - Dict[Optional[str], Dict[str, str]] for scoped mappings
+                    keyed by statement type (or None for default).
+            **kwargs: Not used by ExcelReader init; reserved for API consistency.
         """
         super().__init__(**kwargs)
-        self.mapping_config = column_mapping or {}
-        # Combine provided config with defaults if needed, or handle defaults in read()
+        # Store raw mapping_config for later resolution
+        self.mapping_config = mapping_config or {}
 
-    def _get_mapping(self, statement_type: Optional[str]) -> dict[str, str]:
-        """Get the appropriate mapping based on statement type."""
-        mapping = {}
-        # Start with defaults based on type
+    def _get_mapping(
+        self,
+        statement_type: Optional[str],
+        mapping_config: MappingConfig = None
+    ) -> dict[str, str]:
+        """Get the appropriate mapping based on statement type and optional override config."""
+        # Start with defaults based on statement type
         if statement_type == "income_statement":
-            mapping.update(self.DEFAULT_INCOME_STATEMENT_MAPPING)
+            mapping = dict(self.DEFAULT_INCOME_STATEMENT_MAPPING)
         elif statement_type == "balance_sheet":
-            mapping.update(self.DEFAULT_BALANCE_SHEET_MAPPING)
+            mapping = dict(self.DEFAULT_BALANCE_SHEET_MAPPING)
         elif statement_type == "cash_flow":
-            mapping.update(self.DEFAULT_CASH_FLOW_MAPPING)
+            mapping = dict(self.DEFAULT_CASH_FLOW_MAPPING)
+        else:
+            mapping = {}
 
-        # Layer user-provided config on top
-        if statement_type and statement_type in self.mapping_config:
-            mapping.update(self.mapping_config[statement_type])
-        elif None in self.mapping_config:  # Allow a default user mapping
-            mapping.update(self.mapping_config[None])
-
+        # Determine which config to use: override if provided, else instance config
+        config = mapping_config if mapping_config is not None else self.mapping_config
+        # Normalize and overlay user-provided mappings
+        user_map = normalize_mapping(config, context_key=statement_type)
+        mapping.update(user_map)
         return mapping
 
     def read(self, source: str, **kwargs: dict[str, Any]) -> Graph:
@@ -98,13 +106,14 @@ class ExcelReader(DataReader):
                 periods_row (int): 1-based index of the row containing period headers.
                 items_col (int): 1-based index of the column containing item names.
             Optional keyword arguments:
-                statement_type (str): Type of statement ('income_statement', 'balance_sheet', 'cash_flow')
-                                     Used to select default mappings if mapping_config is not exhaustive.
+                statement_type (str): Type of statement ('income_statement', 'balance_sheet', 'cash_flow'),
+                    used to select default mappings if the provided mapping config is scoped.
                 header_row (int): 1-based index for pandas header reading (defaults to periods_row).
-                                  Use if data headers differ from period headers.
+                    Use if data headers differ from period headers.
                 nrows (int): Number of rows to read from the sheet.
                 skiprows (int): Number of rows to skip at the beginning.
-                mapping_config (dict): Overrides the mapping config provided at init.
+                mapping_config (MappingConfig): Overrides the mapping configuration provided at initialization.
+                    Accepts either a flat `Dict[str, str]` or a scoped `Dict[Optional[str], Dict[str, str]]`.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -151,16 +160,17 @@ class ExcelReader(DataReader):
         nrows = kwargs.get("nrows")
         skiprows = kwargs.get("skiprows")
 
-        # Override mapping config if provided in kwargs
-        current_mapping_config = kwargs.get("mapping_config", self.mapping_config)
-        if not isinstance(current_mapping_config, dict):
+        # Determine mapping for this operation, allowing override via kwargs
+        current_mapping_config = kwargs.get("mapping_config")
+        try:
+            mapping = self._get_mapping(statement_type, mapping_config=current_mapping_config)
+        except TypeError as te:
             raise ReadError(
                 "Invalid mapping_config provided.",
                 source=file_path,
                 reader_type="ExcelReader",
+                original_error=te,
             )
-        self.mapping_config = current_mapping_config  # Update instance mapping if overridden
-        mapping = self._get_mapping(statement_type)
         logger.debug(f"Using mapping for statement type '{statement_type}': {mapping}")
 
         # --- Read Excel Data ---

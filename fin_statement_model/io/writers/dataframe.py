@@ -17,7 +17,12 @@ logger = logging.getLogger(__name__)
 class DataFrameWriter(DataWriter):
     """Writes graph data to a pandas DataFrame.
 
-    The DataFrame index will be node names, columns will be periods.
+    Converts the graph to a DataFrame with node names as index and periods as columns.
+
+    Note:
+        When using the `write_data` facade, writer initialization has no specific kwargs,
+        and writer-specific options (`recalculate`, `include_nodes`) should be passed to `write()`.
+        Direct instantiation of `DataFrameWriter` is also supported.
     """
 
     def write(
@@ -26,9 +31,9 @@ class DataFrameWriter(DataWriter):
         """Convert the graph data to a pandas DataFrame.
 
         Args:
-            graph: The Graph instance to export.
-            target: Ignored for DataFrameWriter, as it returns the DataFrame.
-            **kwargs: Optional keyword arguments:
+            graph (Graph): The Graph instance to export.
+            target (object): Ignored for DataFrameWriter; returns the DataFrame.
+            **kwargs: Writer-specific keyword arguments:
                 recalculate (bool): Recalculate graph before export (default: True).
                 include_nodes (list[str]): Optional list of node names to include.
 

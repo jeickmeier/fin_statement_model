@@ -4,7 +4,7 @@ This module provides Section and StatementStructure, which organize
 LineItem and CalculatedLineItem objects into nested groups.
 """
 
-from typing import Any, Optional, Union, TYPE_CHECKING
+from typing import Any, Optional, Union
 
 from fin_statement_model.core.errors import StatementError
 from fin_statement_model.statements.structure.items import (
@@ -14,10 +14,8 @@ from fin_statement_model.statements.structure.items import (
     SubtotalLineItem,
 )
 
-__all__ = ["Section", "StatementStructure"]
 
-if TYPE_CHECKING:
-    from fin_statement_model.statements.structure.items import StatementItem
+__all__ = ["Section", "StatementStructure"]
 
 
 class Section:

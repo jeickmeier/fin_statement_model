@@ -14,7 +14,8 @@ from .structure import (
     SubtotalLineItem,
     StatementItemType,
 )
-from .config.config import StatementConfig, load_statement_config
+from .config.config import StatementConfig
+from .config.loader import load_statement_config
 from .formatter import StatementFormatter
 from .manager import StatementManager
 from .factory import StatementFactory

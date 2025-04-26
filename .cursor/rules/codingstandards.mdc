@@ -88,6 +88,7 @@ package_manager = uv
 # Package dependencies
 [dependencies]
 # See [project.dependencies] and [dependency-groups] in pyproject.toml
+# numpy and pandas are now core‑level dependencies (needed for forecast nodes)
 runtime_packages = numpy, pandas, matplotlib, requests, plotly, nbformat, playwright, openai, backoff, openpyxl, ipykernel, pyyaml
 dev_packages = ruff, pytest, pytest-cov, pytest-asyncio
 

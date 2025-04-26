@@ -5,7 +5,9 @@ adding subtotals, applying sign conventions, and reordering line items.
 """
 
 import pandas as pd
-from typing import Optional, Union
+import yaml
+from pathlib import Path
+from typing import Optional, Union, ClassVar
 
 from fin_statement_model.preprocessing.base_transformer import DataTransformer
 from fin_statement_model.preprocessing.types import StatementFormattingConfig
@@ -22,6 +24,17 @@ class StatementFormattingTransformer(DataTransformer):
     - Reorder line items according to standard formats
     - Apply sign conventions (negative expenses, etc.)
     """
+
+    # Load standard orderings from YAML configuration
+    DEFAULT_ORDERS: ClassVar[dict[str, list[str]]] = {}
+
+    @classmethod
+    def _load_standard_orders(cls) -> None:
+        """Load standard order configurations from YAML file into DEFAULT_ORDERS."""
+        # Load the YAML from the preprocessing config directory
+        config_path = Path(__file__).parent.parent / "config" / "statement_standard_orders.yaml"
+        with config_path.open("r", encoding="utf-8") as f:
+            cls.DEFAULT_ORDERS = yaml.safe_load(f)
 
     def __init__(
         self,
@@ -57,65 +70,7 @@ class StatementFormattingTransformer(DataTransformer):
 
     def _get_standard_order(self) -> list[str]:
         """Get the standard ordering of items for the current statement type."""
-        if self.statement_type == "income_statement":
-            return [
-                "revenue",
-                "total_revenue",
-                "cost_of_goods_sold",
-                "gross_profit",
-                "operating_expenses",
-                "operating_income",
-                "other_income",
-                "interest_expense",
-                "interest_income",
-                "income_before_taxes",
-                "income_tax",
-                "net_income",
-            ]
-
-        elif self.statement_type == "balance_sheet":
-            return [
-                # Assets
-                "cash_and_equivalents",
-                "short_term_investments",
-                "accounts_receivable",
-                "inventory",
-                "current_assets",
-                "property_plant_equipment",
-                "long_term_investments",
-                "intangible_assets",
-                "total_assets",
-                # Liabilities
-                "accounts_payable",
-                "short_term_debt",
-                "current_liabilities",
-                "long_term_debt",
-                "total_liabilities",
-                # Equity
-                "common_stock",
-                "retained_earnings",
-                "total_equity",
-                "total_liabilities_and_equity",
-            ]
-
-        elif self.statement_type == "cash_flow":
-            return [
-                "net_income",
-                "depreciation_amortization",
-                "changes_in_working_capital",
-                "cash_from_operating_activities",
-                "capital_expenditures",
-                "investments",
-                "cash_from_investing_activities",
-                "debt_issuance",
-                "debt_repayment",
-                "dividends",
-                "share_repurchases",
-                "cash_from_financing_activities",
-                "net_change_in_cash",
-            ]
-
-        return []  # pragma: no cover
+        return list(self.DEFAULT_ORDERS.get(self.statement_type, []))
 
     def transform(self, data: pd.DataFrame) -> pd.DataFrame:
         """Format a financial statement DataFrame.
@@ -326,3 +281,6 @@ class StatementFormattingTransformer(DataTransformer):
         ordered_items = [item for item in self.item_order if item in df.index]
         ordered_items.extend([item for item in df.index if item not in self.item_order])
         return df.loc[ordered_items]
+
+# After class definition, load standard orders
+StatementFormattingTransformer._load_standard_orders()

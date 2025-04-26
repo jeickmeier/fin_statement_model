@@ -6,9 +6,9 @@ def test_import_from_cells_empty():
     # Empty input yields an empty graph (no nodes, no periods)
     g = import_from_cells([])
     assert isinstance(g, object)
-    assert hasattr(g, "graph")
-    assert g.graph.periods == []
-    assert g.graph.nodes == {}
+    assert hasattr(g, "periods")
+    assert g.periods == []
+    assert g.nodes == {}
 
 
 def test_import_from_cells_single():
@@ -16,9 +16,9 @@ def test_import_from_cells_single():
     cells = [{"row_name": "Revenue", "column_name": "2020", "value": 100}]
     g = import_from_cells(cells)
     # Periods sorted
-    assert g.graph.periods == ["2020"]
+    assert g.periods == ["2020"]
     # Node exists
-    node = g.graph.nodes.get("Revenue")
+    node = g.nodes.get("Revenue")
     assert isinstance(node, FinancialStatementItemNode)
     assert node.values == {"2020": 100}
 
@@ -30,8 +30,8 @@ def test_import_from_cells_multiple_same_item():
         {"row_name": "Costs", "column_name": "2021", "value": 75},
     ]
     g = import_from_cells(cells)
-    assert g.graph.periods == ["2020", "2021"]
-    node = g.graph.nodes.get("Costs")
+    assert g.periods == ["2020", "2021"]
+    node = g.nodes.get("Costs")
     assert node.values == {"2020": 50, "2021": 75}
 
 
@@ -42,7 +42,7 @@ def test_import_from_cells_multiple_items():
         {"row_name": "B", "column_name": "P2", "value": 2},
     ]
     g = import_from_cells(cells)
-    assert sorted(g.graph.periods) == ["P1", "P2"]
-    assert "A" in g.graph.nodes and "B" in g.graph.nodes
-    assert g.graph.nodes["A"].values == {"P1": 1}
-    assert g.graph.nodes["B"].values == {"P2": 2}
+    assert sorted(g.periods) == ["P1", "P2"]
+    assert "A" in g.nodes and "B" in g.nodes
+    assert g.nodes["A"].values == {"P1": 1}
+    assert g.nodes["B"].values == {"P2": 2}

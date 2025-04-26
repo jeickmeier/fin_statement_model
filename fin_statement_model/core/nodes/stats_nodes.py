@@ -1,4 +1,4 @@
-"""Nodes for statistical calculations on financial data across periods.
+"""Provide nodes for statistical calculations on financial data across periods.
 
 This module provides nodes for common time-series statistical analyses:
 - `YoYGrowthNode`: Calculates year-over-year percentage growth.
@@ -26,7 +26,7 @@ StatFunc = Callable[[Sequence[Numeric]], Numeric]
 
 
 class YoYGrowthNode(Node):
-    """Calculates year-over-year (YoY) percentage growth.
+    """Calculate year-over-year (YoY) percentage growth.
 
     Compares the value of an input node between two specified periods
     (prior and current) and calculates the relative change.
@@ -39,7 +39,7 @@ class YoYGrowthNode(Node):
         prior_period (str): Identifier for the earlier time period.
         current_period (str): Identifier for the later time period.
 
-    Example:
+    Examples:
         >>> # Assume revenue_node holds {"2022": 100, "2023": 120}
         >>> revenue_node = FinancialStatementItemNode("revenue", {"2022": 100.0, "2023": 120.0})
         >>> yoy_growth = YoYGrowthNode(
@@ -139,7 +139,7 @@ class YoYGrowthNode(Node):
 
 
 class MultiPeriodStatNode(Node):
-    """Calculates a statistical measure across multiple periods.
+    """Calculate a statistical measure across multiple periods.
 
     Applies a specified statistical function (e.g., mean, standard deviation)
     to the values of an input node over a list of periods.
@@ -152,7 +152,7 @@ class MultiPeriodStatNode(Node):
             `statistics.mean`, `statistics.stdev`). Must accept a sequence
             of numbers and return a single number.
 
-    Example:
+    Examples:
         >>> # Assume sales_node holds {"Q1": 10, "Q2": 12, "Q3": 11, "Q4": 13}
         >>> sales_node = FinancialStatementItemNode("sales", {"Q1": 10, "Q2": 12, "Q3": 11, "Q4": 13})
         >>> mean_sales = MultiPeriodStatNode(
@@ -295,7 +295,7 @@ class MultiPeriodStatNode(Node):
 
 
 class TwoPeriodAverageNode(Node):
-    """Computes the simple average of an input node's value over two periods.
+    """Compute the simple average of an input node's value over two periods.
 
     Calculates (Value at Period 1 + Value at Period 2) / 2.
 
@@ -305,7 +305,7 @@ class TwoPeriodAverageNode(Node):
         period1 (str): Identifier for the first period.
         period2 (str): Identifier for the second period.
 
-    Example:
+    Examples:
         >>> # Assume price_node holds {"Jan": 10.0, "Feb": 11.0}
         >>> price_node = FinancialStatementItemNode("price", {"Jan": 10.0, "Feb": 11.0})
         >>> avg_price = TwoPeriodAverageNode(

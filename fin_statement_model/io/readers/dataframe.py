@@ -1,10 +1,9 @@
 """Data reader for pandas DataFrames."""
 
 import logging
-from typing import Optional, Any
-
 import pandas as pd
 import numpy as np
+from typing import Optional
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
@@ -23,31 +22,19 @@ class DataFrameReader(DataReader):
     Values should be numeric.
     """
 
-    def __init__(self, mapping_config: Optional[dict[str, str]] = None):
-        """Initialize the DataFrameReader.
+    def __init__(self) -> None:
+        """Initialize the DataFrameReader."""
+        # No mapping configuration is supported.
 
-        Args:
-            mapping_config: Optional dictionary to map index names from the
-                DataFrame to canonical node names. Format: {'DF Index Name': 'canonical_name'}
-                Currently not implemented, index names are used directly.
-        """
-        # Mapping config is not used in this implementation, index names are used directly
-        # Could be added later for renaming nodes during import
-        self.mapping = mapping_config or {}
-        if self.mapping:
-            logger.warning("mapping_config is not currently used by DataFrameReader.")
-
-    def read(self, source: pd.DataFrame, **kwargs: dict[str, Any]) -> Graph:
+    def read(self, source: pd.DataFrame, periods: Optional[list[str]] = None) -> Graph:
         """Read data from a pandas DataFrame into a new Graph.
 
         Assumes DataFrame index = node names, columns = periods.
 
         Args:
             source (pd.DataFrame): The DataFrame to read data from.
-            **kwargs: Optional keyword arguments:
-                 periods (list[str]): Explicit list of periods (columns) to include.
-                                      If None, all columns are assumed to be periods.
-                 mapping_config (dict): Overrides the mapping config (currently unused).
+            periods (list[str], optional): Explicit list of periods (columns) to include.
+                If None, all columns are assumed to be periods.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -74,7 +61,7 @@ class DataFrameReader(DataReader):
             # For now, stick to index=nodes assumption.
 
         # Determine periods: use explicit list or infer from columns
-        graph_periods_arg = kwargs.get("periods")
+        graph_periods_arg = periods
         if graph_periods_arg:
             if not isinstance(graph_periods_arg, list):
                 raise ReadError("'periods' argument must be a list of column names.")
@@ -109,8 +96,6 @@ class DataFrameReader(DataReader):
                 continue
 
             node_name = str(node_name_df).strip()
-            # Apply mapping here if implemented: node_name = self.mapping.get(node_name, node_name)
-
             period_values: dict[str, float] = {}
             for period in graph_periods:
                 value = row[period]

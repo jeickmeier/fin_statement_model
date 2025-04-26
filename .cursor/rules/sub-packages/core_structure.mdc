@@ -30,14 +30,14 @@ class MetricError(FinStatementModelError):
 ```
 
 # Type System
-- Use pure Python types in core (avoid pandas/numpy types)
+- Core may use numpy arrays and pandas Series/DataFrames where beneficial.  Prefer plain Python types for simple data structures, but numpy / pandas are now first‑class dependencies.
 
 # Directory Responsibilities
 | Sub‑package / module                 | Responsibility                                                         |
 |--------------------------------------|------------------------------------------------------------------------|
 | `core/graph/`                        | Pure graph algorithms: traversal, manipulation, IO                     |
 | `core/metrics/`                      | Metric YAML, Python classes & `registry.py`                            |
-| `core/nodes/`                        | Core node code for various node types                                  |                 
+| `core/nodes/`                        | Core node code for all node types, including forecast nodes            |
 | `core/strategies`                    | Calculation strategies like Addition, Subtraction                      |
 | `calculation_engine.py`              | Orchestrates evaluation of the graph                                   |
 | `node_factory.py`                    | Dynamic node instantiation from YAML/JSON                              |

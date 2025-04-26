@@ -26,26 +26,7 @@ class TransformationService:
 
     def __init__(self):
         """Initialize the transformation service."""
-        # Register built-in transformers
-        self._register_builtin_transformers()
         logger.info("TransformationService initialized")
-
-    def _register_builtin_transformers(self):
-        """Automatically discover and register all transformers."""
-        # Discover all DataTransformer subclasses in the transformers package
-        TransformerFactory.discover_transformers("fin_statement_model.preprocessing.transformers")
-        # Register snake_case aliases (e.g., 'normalization') for each discovered transformer
-        import re
-
-        existing = TransformerFactory.list_transformers()
-        for class_name in existing:
-            # Convert CamelCase to snake_case and strip '_transformer'
-            snake = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", class_name)
-            snake = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", snake).lower()
-            alias = snake.replace("_transformer", "")
-            if alias not in existing:
-                cls = TransformerFactory.get_transformer_class(class_name)
-                TransformerFactory.register_transformer(alias, cls)
 
     def normalize_data(
         self,

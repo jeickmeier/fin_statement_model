@@ -534,32 +534,3 @@ class StatementConfig:
                 message="Failed to build subtotal",
                 errors=[f"Error in subtotal '{subtotal_id}': {e!s}"],
             ) from e
-
-
-def load_statement_config(config_path: str) -> StatementStructure:
-    """Load and build a statement structure from a configuration file.
-
-    Args:
-        config_path: Path to the configuration file (JSON or YAML)
-
-    Returns:
-        StatementStructure: The constructed statement structure
-
-    Raises:
-        ConfigurationError: If the configuration file cannot be loaded or is invalid
-    """
-    try:
-        config = StatementConfig(config_path=config_path)
-        return config.build_statement_structure()
-    except Exception as e:
-        if isinstance(e, ConfigurationError):
-            # Re-raise ConfigurationError
-            raise
-        else:
-            # Wrap other exceptions
-            logger.exception("Unexpected error loading statement configuration")
-            raise ConfigurationError(
-                message="Failed to load statement configuration",
-                config_path=config_path,
-                errors=[str(e)],
-            ) from e

@@ -1,43 +1,30 @@
-"""Contains node implementations for performing calculations in the financial model.
+"""Provide node implementations for performing calculations in the financial statement model.
 
 This module defines the different types of calculation nodes available in the system:
 - FormulaCalculationNode: Evaluates a formula expression string (e.g., "a + b / 2")
-- StrategyCalculationNode: Uses the Strategy pattern for calculation logic
+- CalculationNode: Uses a calculation object for calculation logic
 - MetricCalculationNode: Calculates a registered financial metric
 - CustomCalculationNode: Calculates using a Python callable/function
 """
 
-from __future__ import annotations
-
 import ast
 import operator
-from typing import (
-    Callable,
-    Optional,
-    TYPE_CHECKING,
-)  # Add TYPE_CHECKING
-from typing import ClassVar
+from typing import Callable, Optional, ClassVar
 
-# Use absolute imports
-from fin_statement_model.core.nodes.base import Node
-from fin_statement_model.core.metrics import metric_registry
+from fin_statement_model.core.calculations.calculation import Calculation
 from fin_statement_model.core.errors import (
     CalculationError,
     ConfigurationError,
     MetricError,
 )
-
-if TYPE_CHECKING:
-    from fin_statement_model.core.nodes.base import (
-        Node,
-    )  # Keep forward reference absolute
-    from fin_statement_model.core.strategies.strategy import Strategy
+from fin_statement_model.core.metrics import metric_registry
+from fin_statement_model.core.nodes.base import Node
 
 # === FormulaCalculationNode ===
 
 
 class FormulaCalculationNode(Node):
-    """Calculates a value based on a mathematical formula string.
+    """Calculate a value based on a mathematical formula string.
 
     Parses and evaluates simple mathematical expressions involving input nodes.
     Supports basic arithmetic operators (+, -, *, /) and unary negation.
@@ -49,7 +36,7 @@ class FormulaCalculationNode(Node):
         formula (str): The mathematical expression string to evaluate (e.g., "a + b").
         _ast (ast.Expression): The parsed Abstract Syntax Tree of the formula.
 
-    Example:
+    Examples:
         >>> # Assume revenue and cogs are Node instances
         >>> revenue = FinancialStatementItemNode("revenue", {"2023": 100})
         >>> cogs = FinancialStatementItemNode("cogs", {"2023": 60})
@@ -72,7 +59,7 @@ class FormulaCalculationNode(Node):
     }
 
     def __init__(self, name: str, inputs: dict[str, Node], formula: str):
-        """Initializes the formula calculation node.
+        """Initialize the FormulaCalculationNode.
 
         Args:
             name (str): The unique identifier for this node.
@@ -96,7 +83,7 @@ class FormulaCalculationNode(Node):
             raise ValueError(f"Invalid formula syntax for node '{name}': {formula}") from e
 
     def calculate(self, period: str) -> float:
-        """Calculate the node's value for the period by evaluating the formula.
+        """Calculate the node's value for a period by evaluating the formula.
 
         Args:
             period (str): The time period for which to perform the calculation.
@@ -189,131 +176,151 @@ class FormulaCalculationNode(Node):
             )
 
     def get_dependencies(self) -> list[str]:
-        """Return the names of the input nodes used in the formula."""
+        """Return the names of input nodes used in the formula.
+
+        Returns:
+            A list of variable names corresponding to the formula inputs.
+        """
         return [node.name for node in self.inputs.values()]
 
     def has_calculation(self) -> bool:
-        """Indicate that this node performs a calculation."""
+        """Indicate that this node performs calculation.
+
+        Returns:
+            True, as FormulaCalculationNode performs calculations.
+        """
         return True
 
 
-# === StrategyCalculationNode ===
+# === CalculationNode ===
 
 
-class StrategyCalculationNode(Node):
-    """Delegates calculation logic to a separate strategy object.
+class CalculationNode(Node):
+    """Delegate calculation logic to a separate calculation object.
 
-    Uses the Strategy design pattern. The actual calculation algorithm is
-    encapsulated in a 'strategy' object provided during initialization.
+    Uses a calculation object. The actual calculation algorithm is
+    encapsulated in a `calculation` object provided during initialization.
     This allows for flexible and interchangeable calculation logic.
 
     Attributes:
         name (str): Identifier for this node.
-        inputs (List[Node]): A list of input nodes required by the strategy.
-        strategy (Any): An object possessing a `calculate(inputs: List[Node], period: str) -> float` method.
+        inputs (List[Node]): A list of input nodes required by the calculation.
+        calculation (Any): An object possessing a `calculate(inputs: List[Node], period: str) -> float` method.
         _values (Dict[str, float]): Internal cache for calculated results.
 
-    Example:
-        >>> class SumStrategy:
+    Examples:
+        >>> class SumCalculation:
         ...     def calculate(self, inputs: List[Node], period: str) -> float:
         ...         return sum(node.calculate(period) for node in inputs)
         >>> node_a = FinancialStatementItemNode("a", {"2023": 10})
         >>> node_b = FinancialStatementItemNode("b", {"2023": 20})
-        >>> sum_node = StrategyCalculationNode(
+        >>> sum_node = CalculationNode(
         ...     "sum_ab",
         ...     inputs=[node_a, node_b],
-        ...     strategy=SumStrategy()
+        ...     calculation=SumCalculation()
         ... )
         >>> print(sum_node.calculate("2023"))
         30.0
     """
 
-    def __init__(self, name: str, inputs: list[Node], strategy: Strategy):
-        """Initialize the strategy calculation node.
+    def __init__(self, name: str, inputs: list[Node], calculation: Calculation):
+        """Initialize the CalculationNode.
 
         Args:
             name (str): The unique identifier for this node.
-            inputs (List[Node]): List of input nodes needed by the strategy.
-            strategy (Any): The strategy object implementing the calculation.
+            inputs (List[Node]): List of input nodes needed by the calculation.
+            calculation (Any): The calculation object implementing the calculation.
                 Must have a `calculate` method.
 
         Raises:
-            TypeError: If `inputs` is not a list of Nodes, or if `strategy`
+            TypeError: If `inputs` is not a list of Nodes, or if `calculation`
                 does not have a callable `calculate` method.
         """
         super().__init__(name)
         if not isinstance(inputs, list) or not all(isinstance(n, Node) for n in inputs):
-            raise TypeError("StrategyCalculationNode inputs must be a list of Node instances.")
-        if not hasattr(strategy, "calculate") or not callable(getattr(strategy, "calculate")):
-            raise TypeError("Strategy object must have a callable 'calculate' method.")
+            raise TypeError("CalculationNode inputs must be a list of Node instances.")
+        if not hasattr(calculation, "calculate") or not callable(getattr(calculation, "calculate")):
+            raise TypeError("Calculation object must have a callable 'calculate' method.")
 
         self.inputs = inputs
-        self.strategy = strategy
+        self.calculation = calculation
         self._values: dict[str, float] = {}  # Cache for calculated values
 
     def calculate(self, period: str) -> float:
-        """Calculate the value for the period using the assigned strategy.
+        """Calculate the value for a period using the assigned calculation.
 
-        Checks the cache first. If not found, delegates to the strategy's
+        Checks the cache first. If not found, delegates to the calculation's
         `calculate` method and stores the result.
 
         Args:
             period (str): The time period for the calculation.
 
         Returns:
-            float: The calculated value from the strategy.
+            float: The calculated value from the calculation.
 
         Raises:
-            CalculationError: If the strategy's calculation fails or returns
+            CalculationError: If the calculation fails or returns
                 a non-numeric value.
         """
         if period in self._values:
             return self._values[period]
 
         try:
-            # Delegate to the strategy object's calculate method
-            result = self.strategy.calculate(self.inputs, period)
+            # Delegate to the calculation object's calculate method
+            result = self.calculation.calculate(self.inputs, period)
             if not isinstance(result, (int, float)):
                 raise TypeError(
-                    f"Strategy for node '{self.name}' did not return a numeric value (got {type(result).__name__})."
+                    f"Calculation for node '{self.name}' did not return a numeric value (got {type(self.calculation).__name__})."
                 )
             # Cache and return the result
             self._values[period] = float(result)
             return self._values[period]
         except Exception as e:
-            # Wrap potential errors from the strategy
+            # Wrap potential errors from the calculation
             raise CalculationError(
-                message=f"Error during strategy calculation for node '{self.name}'",
+                message=f"Error during calculation for node '{self.name}'",
                 node_id=self.name,
                 period=period,
-                details={"strategy": type(self.strategy).__name__, "error": str(e)},
+                details={"calculation": type(self.calculation).__name__, "error": str(e)},
             ) from e
 
-    def set_strategy(self, strategy: Strategy) -> None:
-        """Change the calculation strategy at runtime.
+    def set_calculation(self, calculation: Calculation) -> None:
+        """Change the calculation object for the node.
 
         Args:
-            strategy (Any): The new strategy object. Must have a callable
+            calculation (Any): The new calculation object. Must have a callable
                 `calculate` method.
 
         Raises:
-            TypeError: If the new strategy is invalid.
+            TypeError: If the new calculation is invalid.
         """
-        if not hasattr(strategy, "calculate") or not callable(getattr(strategy, "calculate")):
-            raise TypeError("New strategy object must have a callable 'calculate' method.")
-        self.strategy = strategy
+        if not hasattr(calculation, "calculate") or not callable(getattr(calculation, "calculate")):
+            raise TypeError("New calculation object must have a callable 'calculate' method.")
+        self.calculation = calculation
         self.clear_cache()  # Clear cache as logic has changed
 
     def clear_cache(self) -> None:
-        """Clear the internal cache of calculated values."""
+        """Clear the internal cache of calculated values.
+
+        Returns:
+            None
+        """
         self._values.clear()
 
     def get_dependencies(self) -> list[str]:
-        """Return the names of the input nodes used by the strategy."""
+        """Return the names of input nodes used by the calculation.
+
+        Returns:
+            A list of input node names.
+        """
         return [node.name for node in self.inputs]
 
     def has_calculation(self) -> bool:
-        """Indicate that this node performs a calculation."""
+        """Indicate that this node performs calculation.
+
+        Returns:
+            True, as CalculationNode performs calculations.
+        """
         return True
 
 
@@ -322,7 +329,7 @@ class StrategyCalculationNode(Node):
 
 
 class MetricCalculationNode(Node):
-    """Calculates a value based on a predefined metric definition from the registry.
+    """Calculate a value based on a predefined metric definition from the registry.
 
     Looks up a metric in `metric_registry`, resolves input nodes, and uses an
     appropriate calculation method based on the metric definition.
@@ -333,7 +340,7 @@ class MetricCalculationNode(Node):
         input_nodes (Dict[str, Node]): Mapping of input variable names to Node instances.
         _values (Dict[str, float]): Internal cache for calculated results.
 
-    Example:
+    Examples:
         >>> # Assuming gross_margin metric is registered with formula "revenue - cogs"
         >>> revenue = FinancialStatementItemNode("revenue", {"2023": 100})
         >>> cogs = FinancialStatementItemNode("cogs", {"2023": 60})
@@ -347,7 +354,7 @@ class MetricCalculationNode(Node):
     """
 
     def __init__(self, name: str, metric_name: str, input_nodes: dict[str, Node]):
-        """Initializes the metric calculation node.
+        """Initialize the MetricCalculationNode.
 
         Args:
             name (str): The unique identifier for this node.
@@ -414,7 +421,7 @@ class MetricCalculationNode(Node):
         )
 
     def calculate(self, period: str) -> float:
-        """Calculate the node's value for the period using the metric definition.
+        """Calculate the node's value for a period using the metric definition.
 
         Looks up the metric in `metric_registry`, resolves input nodes, and uses an
         appropriate calculation method based on the metric definition.
@@ -450,11 +457,19 @@ class MetricCalculationNode(Node):
             ) from e
 
     def get_dependencies(self) -> list[str]:
-        """Return the names of the input nodes used in the metric definition."""
+        """Return the names of input nodes used in the metric definition.
+
+        Returns:
+            A list of metric input node names.
+        """
         return list(self.input_nodes.keys())
 
     def has_calculation(self) -> bool:
-        """Indicate that this node performs a calculation."""
+        """Indicate that this node performs calculation.
+
+        Returns:
+            True, as MetricCalculationNode performs calculations.
+        """
         return True
 
 
@@ -462,7 +477,7 @@ class MetricCalculationNode(Node):
 
 
 class CustomCalculationNode(Node):
-    """Calculates a value using a Python callable/function.
+    """Calculate a value using a Python callable/function.
 
     Uses a Python callable/function to calculate the value for a node.
     The function is provided during initialization.
@@ -470,11 +485,11 @@ class CustomCalculationNode(Node):
     Attributes:
         name (str): Identifier for this node.
         inputs (List[Node]): List of input nodes needed for calculation.
-        formula_func (Callable): The Python callable/function to use for calculation.
+        formula_func (Callable): The Python callable function to use for calculation.
         description (str, optional): Description of what this calculation does.
         _values (Dict[str, float]): Internal cache for calculated results.
 
-    Example:
+    Examples:
         >>> def custom_calculation(a, b):
         ...     return a + b
         >>> node_a = FinancialStatementItemNode("NodeA", values={"2023": 10.0})
@@ -495,12 +510,12 @@ class CustomCalculationNode(Node):
         formula_func: Callable,
         description: Optional[str] = None,
     ):
-        """Initializes the custom calculation node.
+        """Initialize the CustomCalculationNode.
 
         Args:
             name (str): The unique identifier for this node.
             inputs (List[Node]): The input nodes whose values will be passed to formula_func.
-            formula_func (Callable): The Python callable/function to use for calculation.
+            formula_func (Callable): The Python callable function to use for calculation.
             description (str, optional): Description of what this calculation does.
 
         Raises:
@@ -518,7 +533,7 @@ class CustomCalculationNode(Node):
         self._values: dict[str, float] = {}  # Cache for calculated results
 
     def calculate(self, period: str) -> float:
-        """Calculate the node's value for the period using the provided function.
+        """Calculate the node's value for a period using the provided function.
 
         Args:
             period (str): The time period for which to perform the calculation.
@@ -564,9 +579,17 @@ class CustomCalculationNode(Node):
             ) from e
 
     def get_dependencies(self) -> list[str]:
-        """Return the names of the input nodes used in the function."""
+        """Return the names of input nodes used in the function.
+
+        Returns:
+            A list of input node names.
+        """
         return [node.name for node in self.inputs]
 
     def has_calculation(self) -> bool:
-        """Indicate that this node performs a calculation."""
+        """Indicate that this node performs calculation.
+
+        Returns:
+            True, as CustomCalculationNode performs calculations.
+        """
         return True

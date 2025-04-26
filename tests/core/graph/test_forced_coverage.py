@@ -4,7 +4,6 @@ These tests use a more aggressive approach to ensure specific lines are covered
 that are difficult to hit with conventional testing.
 """
 
-import pytest
 from unittest.mock import patch, MagicMock
 
 from fin_statement_model.core.graph.manipulation import GraphManipulationMixin

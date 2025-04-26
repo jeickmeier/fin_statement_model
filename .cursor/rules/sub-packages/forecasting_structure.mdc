@@ -4,9 +4,13 @@ globs:
 alwaysApply: true
 ---
 # Purpose
-The `forecasting` layer provides predictive models that build on the **core graph**.  It
-may import from `fin_statement_model.core` and `preprocessing` for cleaned data, but **must
-not** be imported by those layers.
+The `forecasting` package is now a **compatibility façade** that re‑exports forecast‑related
+classes from `fin_statement_model.core`.  New code should import forecast nodes directly
+from `fin_statement_model.core.nodes`.  This shim exists to avoid breaking older user code
+and will remain until the next major version.
+
+The package **must contain no domain logic** – only lightweight wrappers and helpers that
+delegate to core – therefore core never imports from this layer.
 
 # Allowed Dependencies
 - Core scientific stack:
@@ -23,6 +27,10 @@ not** be imported by those layers.
 - Optional heavy deps:
   - torch (PyTorch)
   - tensorflow
+
+There is no standalone implementation here; any heavy computation lives in `core`.  The
+dependencies listed below remain available for user code that still chooses to extend the
+façade:
 
 Typical responsibilities:
 * Time‑series forecasting of node values (e.g. revenue growth, cash‑flow projections)
