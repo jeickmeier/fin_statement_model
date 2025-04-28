@@ -8,13 +8,12 @@ This module defines the different types of calculation nodes available in the sy
 
 import ast
 import operator
-from typing import Callable, Optional, ClassVar
+from typing import Optional, ClassVar
+from collections.abc import Callable
 
 from fin_statement_model.core.calculations.calculation import Calculation
 from fin_statement_model.core.errors import (
     CalculationError,
-    ConfigurationError,
-    MetricError,
 )
 from fin_statement_model.core.nodes.base import Node
 
@@ -136,7 +135,7 @@ class FormulaCalculationNode(Node):
         """
         # Numeric literal (Constant in Python 3.8+, Num in earlier versions)
         if isinstance(node, ast.Constant):
-            if isinstance(node.value, (int, float)):
+            if isinstance(node.value, int | float):
                 return float(node.value)
             else:
                 raise TypeError(
@@ -153,7 +152,7 @@ class FormulaCalculationNode(Node):
             input_node = self.inputs[var_name]
             # Recursively calculate the value of the input node
             value = input_node.calculate(period)
-            if not isinstance(value, (int, float)):
+            if not isinstance(value, int | float):
                 raise TypeError(
                     f"Input node '{input_node.name}' (variable '{var_name}') did not return a numeric value for period '{period}'"
                 )
@@ -281,7 +280,7 @@ class CalculationNode(Node):
         try:
             # Delegate to the calculation object's calculate method
             result = self.calculation.calculate(self.inputs, period)
-            if not isinstance(result, (int, float)):
+            if not isinstance(result, int | float):
                 raise TypeError(
                     f"Calculation for node '{self.name}' did not return a numeric value (got {type(self.calculation).__name__})."
                 )
@@ -417,7 +416,7 @@ class CustomCalculationNode(Node):
             input_values = []
             for node in self.inputs:
                 value = node.calculate(period)
-                if not isinstance(value, (int, float)):
+                if not isinstance(value, int | float):
                     raise TypeError(
                         f"Input node '{node.name}' did not return a numeric value for period '{period}'. Got {type(value).__name__}."
                     )
@@ -425,7 +424,7 @@ class CustomCalculationNode(Node):
 
             # Calculate the value using the provided function
             result = self.formula_func(*input_values)
-            if not isinstance(result, (int, float)):
+            if not isinstance(result, int | float):
                 raise TypeError(
                     f"Formula did not return a numeric value. Got {type(result).__name__}."
                 )

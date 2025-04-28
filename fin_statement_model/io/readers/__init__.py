@@ -11,7 +11,7 @@ from . import csv
 from . import dataframe
 from . import dict
 from . import excel
-from . import fmp # Ensure FMP reader module is imported
+from . import fmp  # Ensure FMP reader module is imported
 from . import statement_config_reader
 
 # --- Public API Exports --- #

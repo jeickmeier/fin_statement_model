@@ -1,0 +1,8 @@
+name: "Retained Earnings"
+description: "Calculates the ending retained earnings based on prior balance, net income, and dividends."
+inputs:
+  - prior_retained_earnings
+  - net_income
+  - dividends
+formula: "prior_retained_earnings + net_income + dividends"
+tags: ["equity", "balance_sheet"] 

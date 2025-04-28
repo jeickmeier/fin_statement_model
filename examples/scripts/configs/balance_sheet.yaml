@@ -1,17 +1,113 @@
 
 id: balance_sheet
-name: Balance Sheet (Partial)
+name: Balance Sheet (Complete)
 description: Snapshot of assets, liabilities, equity.
 sections:
-  - id: assets
-    name: Assets
+  - id: current_assets
+    name: Current Assets
     items:
       - id: cash
         name: Cash & Equivalents
         type: line_item
-        node_id: Cash
-      - id: accounts_receivable
+        node_id: core.cash # Use core prefix
+        sign_convention: 1
+      - id: ar
         name: Accounts Receivable
         type: line_item
-        node_id: AR
-    
+        node_id: core.accounts_receivable # Use core prefix
+        sign_convention: 1
+    subtotal:
+      id: current_assets_subtotal
+      name: Total Current Assets
+      type: subtotal
+      items_to_sum: [cash, ar]
+      sign_convention: 1
+
+  - id: non_current_assets
+    name: Non-Current Assets
+    items:
+      - id: ppe
+        name: Property, Plant & Equipment
+        type: line_item
+        node_id: core.ppe # Use core prefix
+        sign_convention: 1
+    # Add subtotal if there were more items
+
+  - id: total_assets_section # Section for the final total
+    name: Total Assets
+    items:
+      - id: total_assets
+        name: Total Assets
+        type: calculated
+        calculation:
+          type: addition
+          inputs: [current_assets_subtotal, ppe]
+        sign_convention: 1
+
+  - id: current_liabilities
+    name: Current Liabilities
+    items:
+      - id: ap
+        name: Accounts Payable
+        type: line_item
+        node_id: core.accounts_payable # Use core prefix
+        sign_convention: 1 # Liabilities shown positive
+    # Add subtotal if there were more items
+
+  - id: non_current_liabilities
+    name: Non-Current Liabilities
+    items:
+      - id: debt
+        name: Long-Term Debt
+        type: line_item
+        node_id: core.debt # Use core prefix
+        sign_convention: 1 # Liabilities shown positive
+
+  - id: total_liabilities_section # Section for total liabilities
+    name: Total Liabilities
+    items:
+      - id: total_liabilities
+        name: Total Liabilities
+        type: calculated
+        calculation:
+          type: addition
+          inputs: [ap, debt]
+        sign_convention: 1
+
+  - id: equity
+    name: Equity
+    items:
+      - id: common_stock
+        name: Common Stock
+        type: line_item
+        node_id: core.common_stock # Use core prefix
+        sign_convention: 1
+      - id: retained_earnings # Metric item
+        name: Retained Earnings
+        type: metric
+        metric_id: retained_earnings # Use the built-in metric
+        inputs:
+          # Map metric inputs to statement item IDs or node IDs
+          # Need core.prior_retained_earnings, core.net_income, core.dividends
+          # Assume net_income from income statement can be used
+          prior_retained_earnings: core.prior_retained_earnings
+          net_income: net_income # Reference IS net income (if available in graph)
+          dividends: core.dividends
+        sign_convention: 1
+    subtotal:
+      id: total_equity
+      name: Total Equity
+      type: subtotal
+      items_to_sum: [common_stock, retained_earnings]
+      sign_convention: 1
+
+  - id: total_liabilities_equity_section # Section for balancing check
+    name: Total Liabilities & Equity
+    items:
+      - id: total_liabs_equity
+        name: Total Liabilities & Equity
+        type: calculated
+        calculation:
+          type: addition
+          inputs: [total_liabilities, total_equity]
+        sign_convention: 1

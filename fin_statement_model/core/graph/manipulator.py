@@ -10,6 +10,7 @@ from fin_statement_model.core.nodes import Node
 
 logger = logging.getLogger(__name__)
 
+
 class GraphManipulator:
     """Encapsulate node-level mutation helpers for Graph.
 

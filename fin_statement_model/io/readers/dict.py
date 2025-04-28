@@ -77,7 +77,7 @@ class DictReader(DataReader):
                         validation_errors.append(
                             f"Node '{node_name}': Invalid period format '{period}' - expected string."
                         )
-                    if not isinstance(value, (int, float)):
+                    if not isinstance(value, int | float):
                         validation_errors.append(
                             f"Node '{node_name}' period '{period}': Invalid value type {type(value).__name__} - expected number."
                         )

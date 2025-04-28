@@ -1,5 +1,8 @@
 # tests/io/test_registry_writers.py
+"""Tests for the writer registry in fin_statement_model.io.registry_writers."""
+
 import pytest
+from pathlib import Path
 
 from fin_statement_model.io.registry import get_writer, list_writers
 from fin_statement_model.io.exceptions import FormatNotSupportedError, WriteError
@@ -19,7 +22,7 @@ def test_list_writers_contains_expected_formats() -> None:
 
 
 @pytest.mark.parametrize(
-    "format_type,config_class,extra_kwargs",
+    ("format_type", "config_class", "extra_kwargs"),
     [
         (
             "excel",
@@ -39,12 +42,11 @@ def test_list_writers_contains_expected_formats() -> None:
         ("dict", DictWriterConfig, {}),
     ],
 )
-
 def test_get_writer_success(
     format_type: str,
     config_class: type,
     extra_kwargs: dict,
-    tmp_path,
+    tmp_path: Path,
 ) -> None:
     """Test get_writer returns correct writer instance and config."""
     target = str(tmp_path / f"output.{format_type}")

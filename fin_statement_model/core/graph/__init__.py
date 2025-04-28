@@ -5,5 +5,7 @@ financial statement models.
 """
 
 from fin_statement_model.core.graph.graph import Graph
+from fin_statement_model.core.graph.manipulator import GraphManipulator
+from fin_statement_model.core.graph.traverser import GraphTraverser
 
-__all__ = ["Graph"]
+__all__ = ["Graph", "GraphManipulator", "GraphTraverser"]

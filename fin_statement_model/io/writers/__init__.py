@@ -4,31 +4,19 @@
 from . import dict  # noqa: F401
 from . import excel  # noqa: F401
 from . import dataframe  # noqa: F401
+from . import markdown_writer  # noqa: F401 # Added import for markdown writer
+
 # Only import functions from statement_writer
-from .statement_writer import write_statement_to_excel, write_statement_to_json
-from .excel import ExcelWriter
-# from .statement_writer import StatementWriter # REMOVED THIS LINE
-from .dataframe import DataFrameWriter
-from .dict import DictWriter
+# from .statement_writer import write_statement_to_excel, write_statement_to_json # Remove unused
+# from .excel import ExcelWriter # Remove unused
+# from .dataframe import DataFrameWriter # Remove unused
+# from .dict import DictWriter # Remove unused
+# from .markdown_writer import MarkdownWriter # Remove unused
 
 # Note: No CsvWriter was identified/created
 
 __all__ = [
-    # Expose writer classes if needed directly
-    # "DataFrameWriter",
-    # "DictWriter",
-    # "ExcelWriter",
-    # Expose functions directly
-    "write_statement_to_excel",
-    "write_statement_to_json",
-    # Expose classes
-    ExcelWriter,
-    # StatementWriter, # REMOVED THIS LINE
-    DataFrameWriter,
-    DictWriter,
-    # Explicit exports if using wildcard import
-    # "DictWriter",
-    # "ExcelWriter",
-    # "write_statement_to_excel",
-    # "write_statement_to_json",
+    # Expose registry functions:
+    "get_writer",
+    "list_writers",
 ]

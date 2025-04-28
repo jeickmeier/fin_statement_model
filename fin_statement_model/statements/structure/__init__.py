@@ -8,6 +8,7 @@ from .items import (
     StatementItemType,
     LineItem,
     CalculatedLineItem,
+    MetricLineItem,
     SubtotalLineItem,
 )
 from .containers import Section, StatementStructure
@@ -15,6 +16,7 @@ from .containers import Section, StatementStructure
 __all__ = [
     "CalculatedLineItem",
     "LineItem",
+    "MetricLineItem",
     "Section",
     "StatementItem",
     "StatementItemType",

@@ -11,7 +11,8 @@ import math
 import statistics
 
 # Use lowercase built-in types for annotations
-from typing import Optional, Callable, Union
+from typing import Optional, Union
+from collections.abc import Callable
 from collections.abc import Sequence
 
 # Use absolute imports
@@ -99,9 +100,9 @@ class YoYGrowthNode(Node):
             current_value = self.input_node.calculate(self.current_period)
 
             # Validate input types
-            if not isinstance(prior_value, (int, float)):
+            if not isinstance(prior_value, int | float):
                 raise TypeError(f"Prior period ('{self.prior_period}') value is non-numeric.")
-            if not isinstance(current_value, (int, float)):
+            if not isinstance(current_value, int | float):
                 raise TypeError(f"Current period ('{self.current_period}') value is non-numeric.")
 
             # Handle division by zero or non-finite prior value
@@ -235,7 +236,7 @@ class MultiPeriodStatNode(Node):
             for p in self.periods:
                 try:
                     value = self.input_node.calculate(p)
-                    if isinstance(value, (int, float)) and math.isfinite(value):
+                    if isinstance(value, int | float) and math.isfinite(value):
                         values.append(float(value))
                     else:
                         # Log non-numeric/non-finite values but continue if possible
@@ -363,12 +364,12 @@ class TwoPeriodAverageNode(Node):
             val2 = self.input_node.calculate(self.period2)
 
             # Ensure values are numeric and finite
-            if not isinstance(val1, (int, float)) or not math.isfinite(val1):
+            if not isinstance(val1, int | float) or not math.isfinite(val1):
                 logger.warning(
                     f"TwoPeriodAverageNode '{self.name}': Value for period '{self.period1}' is non-numeric/non-finite ({val1}). Returning NaN."
                 )
                 return float("nan")
-            if not isinstance(val2, (int, float)) or not math.isfinite(val2):
+            if not isinstance(val2, int | float) or not math.isfinite(val2):
                 logger.warning(
                     f"TwoPeriodAverageNode '{self.name}': Value for period '{self.period2}' is non-numeric/non-finite ({val2}). Returning NaN."
                 )

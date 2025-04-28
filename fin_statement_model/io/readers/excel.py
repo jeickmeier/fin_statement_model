@@ -203,7 +203,7 @@ class ExcelReader(DataReader):
                                 # Keep NaN or skip? For now, skip. Could represent as None or NaN later.
                                 # logger.debug(f"NaN value for {node_name} period {period}")
                                 continue
-                            elif isinstance(value, (int, float)):
+                            elif isinstance(value, int | float):
                                 period_values[period] = float(value)
                             else:
                                 # Attempt conversion, log warning if fails

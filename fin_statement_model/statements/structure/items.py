@@ -9,6 +9,7 @@ from fin_statement_model.core.errors import StatementError
 __all__ = [
     "CalculatedLineItem",
     "LineItem",
+    "MetricLineItem",
     "StatementItem",
     "StatementItemType",
     "SubtotalLineItem",
@@ -23,12 +24,14 @@ class StatementItemType(Enum):
       LINE_ITEM: Basic financial line item
       SUBTOTAL: Subtotal of multiple items
       CALCULATED: Derived calculation item
+      METRIC: Derived metric item from registry
     """
 
     SECTION = "section"
     LINE_ITEM = "line_item"
     SUBTOTAL = "subtotal"
     CALCULATED = "calculated"
+    METRIC = "metric"
 
 
 class StatementItem(ABC):
@@ -141,6 +144,84 @@ class LineItem(StatementItem):
     def item_type(self) -> StatementItemType:
         """Get the type of this item (LINE_ITEM)."""
         return StatementItemType.LINE_ITEM
+
+
+class MetricLineItem(LineItem):
+    """Represents a line item whose calculation is defined by a core metric.
+
+    Args:
+      id: Unique ID (also used as node_id)
+      name: Display name
+      metric_id: ID of the metric in the core.metrics.registry
+      inputs: Dict mapping metric input names to statement item IDs
+      description: Optional description
+      sign_convention: 1 or -1
+      metadata: Optional metadata
+
+    Raises:
+      StatementError: If metric_id or inputs are invalid
+    """
+
+    def __init__(
+        self,
+        id: str,
+        name: str,
+        metric_id: str,
+        inputs: dict[str, str],
+        description: str = "",
+        sign_convention: int = 1,
+        metadata: Optional[dict[str, Any]] = None,
+    ):
+        """Initialize a MetricLineItem referencing a registered metric.
+
+        Args:
+            id: Unique ID (also used as node_id).
+            name: Display name.
+            metric_id: ID of the metric in the core.metrics.registry.
+            inputs: Dict mapping metric input names to statement item IDs.
+            description: Optional description.
+            sign_convention: Sign convention (1 or -1).
+            metadata: Optional metadata.
+
+        Raises:
+            StatementError: If metric_id or inputs are invalid.
+        """
+        super().__init__(
+            id=id,
+            name=name,
+            node_id=id,
+            description=description,
+            sign_convention=sign_convention,
+            metadata=metadata,
+        )
+        if not metric_id or not isinstance(metric_id, str):
+            raise StatementError(message=f"Invalid metric_id '{metric_id}' for item: {id}")
+        if not isinstance(inputs, dict) or not inputs:
+            raise StatementError(
+                message=f"Metric inputs must be a non-empty dictionary for item: {id}"
+            )
+        if not all(isinstance(k, str) and isinstance(v, str) for k, v in inputs.items()):
+            raise StatementError(
+                message=f"Metric input keys and values must be strings for item: {id}"
+            )
+
+        self._metric_id = metric_id
+        self._inputs = inputs
+
+    @property
+    def metric_id(self) -> str:
+        """Get the ID of the metric referenced from the core registry."""
+        return self._metric_id
+
+    @property
+    def inputs(self) -> dict[str, str]:
+        """Get the mapping from metric input names to statement item IDs."""
+        return self._inputs
+
+    @property
+    def item_type(self) -> StatementItemType:
+        """Get the type of this item (METRIC)."""
+        return StatementItemType.METRIC
 
 
 class CalculatedLineItem(LineItem):

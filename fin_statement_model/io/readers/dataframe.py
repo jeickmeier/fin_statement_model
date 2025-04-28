@@ -109,7 +109,7 @@ class DataFrameReader(DataReader):
                 if pd.isna(value):
                     continue  # Skip NaN values
 
-                if not isinstance(value, (int, float, np.number)):
+                if not isinstance(value, int | float | np.number):
                     try:
                         value = float(value)
                         logger.warning(

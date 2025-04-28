@@ -6,7 +6,7 @@ authors = [
     {name = "Jon Eickmeier", email = "me@jeickmeier.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 dependencies = [
     "numpy>=1.26.4",
     "pandas>=2.1.4",
@@ -34,6 +34,7 @@ dev = [
     "black>=25.1.0",
     "isort>=6.0.1",
     "vulture>=2.14",
+    "pytest-mock>=3.14.0",
 ]
 
 [tool.coverage.run]
@@ -56,6 +57,11 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
 python_classes = ["Test*"]
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = [
+    # Ignore the specific DeprecationWarning from pydantic about utcnow()
+    "ignore:datetime.datetime.utcnow.. is deprecated:DeprecationWarning:pydantic.main",
+]
 
 [build-system]
 requires = ["hatchling>=1.21.0"]
@@ -64,7 +70,12 @@ build-backend = "hatchling.build"
 # Ruff Configuration
 [tool.ruff]
 line-length = 100
-target-version = "py39" # Ensure compatibility with Python 3.9
+target-version = "py312" # Ensure compatibility with Python 3.12
+exclude = [
+    "*.ipynb",
+]
+
+
 
 [tool.ruff.lint]
 # Select rule sets: E/F/W (pycodestyle/pyflakes), ANN (annotations), D (pydocstyle),

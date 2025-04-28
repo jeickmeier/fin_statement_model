@@ -78,7 +78,6 @@ def read_data(
     # Keep separate kwargs for the read method itself (e.g., 'periods')
     # This assumes Pydantic configs *don't* capture read-time args.
 
-
     try:
         # Pass the config kwargs directly to get_reader
         reader = get_reader(**config_kwargs)
@@ -147,13 +146,33 @@ def write_data(
     # Prepare kwargs for registry validation (includes target and format_type)
     config_kwargs = {**kwargs, "target": target, "format_type": format_type}
 
-
     # Pass the config kwargs directly to get_writer
     writer = get_writer(**config_kwargs)
     # Now call write with all writer-specific kwargs
     try:
         # Pass original graph, target, and non-config kwargs to write()
-        return writer.write(graph, target, **kwargs)
+        result = writer.write(graph, target, **kwargs)
+
+        # If the writer returns a string and target is a path, write it to the file.
+        if isinstance(result, str) and isinstance(target, str):
+            try:
+                logger.debug(
+                    f"Writing string result from writer '{type(writer).__name__}' to file: {target}"
+                )
+                with open(target, "w", encoding="utf-8") as f:
+                    f.write(result)
+                return None  # Consistent return for file writers
+            except OSError as e:
+                logger.exception(f"Failed to write writer output to target file: {target}")
+                raise WriteError(
+                    f"Failed to write writer output to file: {target}",
+                    target=target,
+                    writer_type=format_type,
+                    original_error=e,
+                ) from e
+        else:
+            # Otherwise, return the original result (e.g., DataFrame, dict)
+            return result
     except (IOError, FormatNotSupportedError):
         logger.exception("IO Error writing data")
         raise  # Re-raise specific IO errors

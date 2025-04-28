@@ -35,28 +35,34 @@ from .structure import (
     CalculatedLineItem,
     SubtotalLineItem,
     StatementItemType,
-    StatementItem, # Added base item type if needed
+    StatementItem,  # Added base item type if needed
 )
+
 # Configuration related classes
 from .config.config import StatementConfig
+
 # Building
 from .builder import StatementStructureBuilder
+
 # Registry
 from .registry import StatementRegistry
+
 # Populator
 from .populator import populate_graph_from_statement
+
 # Formatting
 # Ensure formatter is imported correctly if it's in a sub-package
 try:
-    from .formatter import StatementFormatter # If __init__.py exists in formatter
+    from .formatter import StatementFormatter  # If __init__.py exists in formatter
 except ImportError:
-    from .formatter.formatter import StatementFormatter # Direct import
+    from .formatter.formatter import StatementFormatter  # Direct import
 # High-level Orchestration functions (previously Factory)
 from .factory import (
     create_statement_dataframe,
     export_statements_to_excel,
     export_statements_to_json,
 )
+
 # Errors specific to statements
 from .errors import StatementError, ConfigurationError
 

@@ -38,7 +38,7 @@ forecast_periods = ["FY2023", "FY2024", "FY2025"]
 all_periods = historical_periods + forecast_periods
 
 # Create a graph with all periods
-graph = Graph(periods=all_periods) # Use core Graph
+graph = Graph(periods=all_periods)  # Use core Graph
 
 # Add raw financial statement data
 # (Calls are the same, just use 'graph' variable)
@@ -108,7 +108,7 @@ print(f"Gross Profit FY2023: {profit_node.calculate('FY2023')}")
 print("--------------------------------------------------\n")
 
 print("#########################")
-print(graph) # Use graph variable
+print(graph)  # Use graph variable
 print("#########################")
 
 # Calculate and print the graph as a DataFrame

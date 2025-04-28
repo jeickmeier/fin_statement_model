@@ -1,7 +1,8 @@
 """Registry for readers and writers."""
 
 import logging
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
+from collections.abc import Callable
 
 from .base import DataReader, DataWriter
 from .exceptions import FormatNotSupportedError, ReadError, WriteError
@@ -15,6 +16,7 @@ from fin_statement_model.io.config.models import (
     ExcelWriterConfig,
     DataFrameWriterConfig,
     DictWriterConfig,
+    MarkdownWriterConfig,
 )
 
 logger = logging.getLogger(__name__)
@@ -90,6 +92,7 @@ def register_writer(format_type: str) -> Callable[[type[W]], type[W]]:
 
 
 # --- Registry Access Functions ---
+
 
 def get_reader(format_type: str, **kwargs: Any) -> DataReader:
     """Get an instance of the registered DataReader for the given format type.
@@ -182,6 +185,7 @@ def get_writer(format_type: str, **kwargs: Any) -> DataWriter:
         "excel": ExcelWriterConfig,
         "dataframe": DataFrameWriterConfig,
         "dict": DictWriterConfig,
+        "markdown": MarkdownWriterConfig,
     }
 
     schema_cls = writer_schema_map.get(format_type)
@@ -233,6 +237,7 @@ def list_readers() -> dict[str, type[DataReader]]:
 def list_writers() -> dict[str, type[DataWriter]]:
     """Return a copy of the registered writer classes."""
     return _writers.copy()
+
 
 __all__ = [
     "get_reader",

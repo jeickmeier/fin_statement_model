@@ -1,19 +1,16 @@
 """Tests for various CalculationNode implementations."""
 
 import pytest
-from unittest.mock import MagicMock, patch
-from typing import Callable
+from unittest.mock import MagicMock
 
 from fin_statement_model.core.nodes.base import Node
 from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
 from fin_statement_model.core.nodes.calculation_nodes import (
     FormulaCalculationNode,
-    StrategyCalculationNode,
+    CalculationNode,
     CustomCalculationNode,
 )
-from fin_statement_model.core.errors import CalculationError, ConfigurationError, MetricError
-from fin_statement_model.core.metrics import MetricDefinition
-from fin_statement_model.core.metrics.registry import MetricRegistry
+from fin_statement_model.core.errors import CalculationError
 
 # --- Fixtures ---
 
@@ -79,7 +76,7 @@ def test_formula_init_invalid_formula_syntax(node_a: Node):
 
 
 @pytest.mark.parametrize(
-    "formula, period, expected",
+    ("formula", "period", "expected"),
     [
         ("a + b", "2023", 15.0),  # Addition
         ("a - b", "2023", 5.0),  # Subtraction
@@ -169,6 +166,7 @@ class MockSumStrategy:
     """A simple strategy for testing that sums inputs."""
 
     def calculate(self, inputs: list[Node], period: str) -> float:
+        """Calculates the sum of input node values for the period."""
         return sum(node.calculate(period) for node in inputs)
 
 
@@ -176,6 +174,7 @@ class MockProductStrategy:
     """A simple strategy for testing that multiplies inputs."""
 
     def calculate(self, inputs: list[Node], period: str) -> float:
+        """Calculates the product of input node values for the period."""
         result = 1.0
         for node in inputs:
             result *= node.calculate(period)
@@ -186,6 +185,7 @@ class MockErrorStrategy:
     """A strategy that always raises an error."""
 
     def calculate(self, inputs: list[Node], period: str) -> float:
+        """Raises a ValueError to simulate strategy failure."""
         raise ValueError("Strategy failed!")
 
 
@@ -193,72 +193,81 @@ class MockNonNumericStrategy:
     """A strategy that returns a non-numeric value."""
 
     def calculate(self, inputs: list[Node], period: str) -> str:
+        """Returns a string, violating the expected numeric return type."""
         return "not a number"
 
 
 @pytest.fixture
 def sum_strategy() -> MockSumStrategy:
+    """Provides an instance of MockSumStrategy."""
     return MockSumStrategy()
 
 
 @pytest.fixture
 def product_strategy() -> MockProductStrategy:
+    """Provides an instance of MockProductStrategy."""
     return MockProductStrategy()
 
 
 @pytest.fixture
 def error_strategy() -> MockErrorStrategy:
+    """Provides an instance of MockErrorStrategy."""
     return MockErrorStrategy()
 
 
 @pytest.fixture
 def non_numeric_strategy() -> MockNonNumericStrategy:
+    """Provides an instance of MockNonNumericStrategy."""
     return MockNonNumericStrategy()
 
 
 def test_strategy_init_success(node_a: Node, node_b: Node, sum_strategy: MockSumStrategy):
-    """Test successful initialization of StrategyCalculationNode."""
+    """Test successful initialization of CalculationNode with a strategy."""
     inputs = [node_a, node_b]
-    node = StrategyCalculationNode(name="TestStrategy", inputs=inputs, strategy=sum_strategy)
+    node = CalculationNode(name="TestStrategy", inputs=inputs, calculation=sum_strategy)
     assert node.name == "TestStrategy"
     assert node.inputs == inputs
-    assert node.strategy == sum_strategy
+    assert node.calculation == sum_strategy
     assert node.has_calculation() is True
     assert node.get_dependencies() == ["NodeA", "NodeB"]
 
 
 def test_strategy_init_invalid_inputs_type(node_a: Node, sum_strategy: MockSumStrategy):
     """Test TypeError if inputs is not a list."""
-    with pytest.raises(TypeError, match="inputs must be a list of Node instances"):
-        StrategyCalculationNode(name="TestStrategy", inputs={"a": node_a}, strategy=sum_strategy)
+    with pytest.raises(TypeError, match="CalculationNode inputs must be a list of Node instances"):
+        CalculationNode(name="TestStrategy", inputs={"a": node_a}, calculation=sum_strategy)
 
 
 def test_strategy_init_invalid_input_value_type(sum_strategy: MockSumStrategy):
     """Test TypeError if inputs list contains non-Node values."""
-    with pytest.raises(TypeError, match="inputs must be a list of Node instances"):
-        StrategyCalculationNode(name="TestStrategy", inputs=[123], strategy=sum_strategy)
+    with pytest.raises(TypeError, match="CalculationNode inputs must be a list of Node instances"):
+        CalculationNode(name="TestStrategy", inputs=[123], calculation=sum_strategy)
 
 
 def test_strategy_init_invalid_strategy_no_calculate():
-    """Test TypeError if strategy object lacks a calculate method."""
-    invalid_strategy = object()  # Plain object lacks calculate
-    with pytest.raises(TypeError, match="Strategy object must have a callable 'calculate' method"):
-        StrategyCalculationNode(name="TestStrategy", inputs=[], strategy=invalid_strategy)
+    """Test TypeError if calculation object lacks a calculate method."""
+    invalid_calculation = object()  # Plain object lacks calculate
+    with pytest.raises(
+        TypeError, match="Calculation object must have a callable 'calculate' method"
+    ):
+        CalculationNode(name="TestStrategy", inputs=[], calculation=invalid_calculation)
 
 
 def test_strategy_init_invalid_strategy_non_callable_calculate():
-    """Test TypeError if strategy's calculate attribute is not callable."""
+    """Test TypeError if calculation's calculate attribute is not callable."""
 
-    class InvalidStrategy:
+    class InvalidCalculation:
         calculate = 123  # Not callable
 
-    with pytest.raises(TypeError, match="Strategy object must have a callable 'calculate' method"):
-        StrategyCalculationNode(name="TestStrategy", inputs=[], strategy=InvalidStrategy())
+    with pytest.raises(
+        TypeError, match="Calculation object must have a callable 'calculate' method"
+    ):
+        CalculationNode(name="TestStrategy", inputs=[], calculation=InvalidCalculation())
 
 
 def test_strategy_calculate_success(node_a: Node, node_b: Node, sum_strategy: MockSumStrategy):
-    """Test successful calculation using the strategy."""
-    node = StrategyCalculationNode(name="TestSum", inputs=[node_a, node_b], strategy=sum_strategy)
+    """Test successful calculation using the strategy via CalculationNode."""
+    node = CalculationNode(name="TestSum", inputs=[node_a, node_b], calculation=sum_strategy)
     assert node.calculate("2023") == pytest.approx(15.0)  # 10.0 + 5.0
     assert node.calculate("2024") == pytest.approx(16.0)  # 12.0 + 4.0
 
@@ -266,9 +275,7 @@ def test_strategy_calculate_success(node_a: Node, node_b: Node, sum_strategy: Mo
 def test_strategy_calculate_caching(node_a: Node, node_b: Node, sum_strategy: MockSumStrategy):
     """Test that results are cached after the first calculation."""
     mock_strategy = MagicMock(wraps=sum_strategy)
-    node = StrategyCalculationNode(
-        name="TestCache", inputs=[node_a, node_b], strategy=mock_strategy
-    )
+    node = CalculationNode(name="TestCache", inputs=[node_a, node_b], calculation=mock_strategy)
 
     # First call - should call strategy
     assert node.calculate("2023") == pytest.approx(15.0)
@@ -283,8 +290,8 @@ def test_strategy_calculate_caching(node_a: Node, node_b: Node, sum_strategy: Mo
 def test_strategy_clear_cache(node_a: Node, node_b: Node, sum_strategy: MockSumStrategy):
     """Test that clear_cache empties the cache."""
     mock_strategy = MagicMock(wraps=sum_strategy)
-    node = StrategyCalculationNode(
-        name="TestClearCache", inputs=[node_a, node_b], strategy=mock_strategy
+    node = CalculationNode(
+        name="TestClearCache", inputs=[node_a, node_b], calculation=mock_strategy
     )
 
     # Calculate to populate cache
@@ -301,12 +308,12 @@ def test_strategy_clear_cache(node_a: Node, node_b: Node, sum_strategy: MockSumS
 def test_strategy_set_strategy(
     node_a: Node, node_b: Node, sum_strategy: MockSumStrategy, product_strategy: MockProductStrategy
 ):
-    """Test changing the strategy and recalculating."""
+    """Test changing the calculation object and recalculating."""
     mock_sum_strategy = MagicMock(wraps=sum_strategy)
     mock_product_strategy = MagicMock(wraps=product_strategy)
 
-    node = StrategyCalculationNode(
-        name="TestSetStrategy", inputs=[node_a, node_b], strategy=mock_sum_strategy
+    node = CalculationNode(
+        name="TestSetStrategy", inputs=[node_a, node_b], calculation=mock_sum_strategy
     )
 
     # Calculate with sum strategy
@@ -315,8 +322,8 @@ def test_strategy_set_strategy(
     mock_product_strategy.calculate.assert_not_called()
 
     # Change strategy to product
-    node.set_strategy(mock_product_strategy)
-    assert node.strategy == mock_product_strategy
+    node.set_calculation(mock_product_strategy)
+    assert node.calculation == mock_product_strategy
 
     # Recalculate - should use product strategy (cache was cleared)
     mock_sum_strategy.calculate.reset_mock()
@@ -326,27 +333,25 @@ def test_strategy_set_strategy(
 
 
 def test_strategy_set_invalid_strategy(node_a: Node, node_b: Node, sum_strategy: MockSumStrategy):
-    """Test TypeError when setting an invalid strategy."""
-    node = StrategyCalculationNode(
-        name="TestSetInvalid", inputs=[node_a, node_b], strategy=sum_strategy
-    )
-    invalid_strategy = object()
+    """Test TypeError when setting an invalid calculation object."""
+    node = CalculationNode(name="TestSetInvalid", inputs=[node_a, node_b], calculation=sum_strategy)
+    invalid_calculation = object()
     with pytest.raises(
-        TypeError, match="New strategy object must have a callable 'calculate' method"
+        TypeError, match="New calculation object must have a callable 'calculate' method"
     ):
-        node.set_strategy(invalid_strategy)
+        node.set_calculation(invalid_calculation)
 
 
 def test_strategy_calculate_error_in_strategy(
     node_a: Node, node_b: Node, error_strategy: MockErrorStrategy
 ):
-    """Test CalculationError when the strategy raises an exception."""
-    node = StrategyCalculationNode(
-        name="TestErrorStrategy", inputs=[node_a, node_b], strategy=error_strategy
+    """Test CalculationError when the calculation object raises an exception."""
+    node = CalculationNode(
+        name="TestErrorStrategy", inputs=[node_a, node_b], calculation=error_strategy
     )
     with pytest.raises(CalculationError) as exc_info:
         node.calculate("2023")
-    assert "Error during strategy calculation" in str(exc_info.value)
+    assert "Error during calculation for node" in str(exc_info.value)
     assert "Strategy failed!" in str(exc_info.value)
     assert exc_info.value.node_id == "TestErrorStrategy"
     assert exc_info.value.period == "2023"
@@ -355,14 +360,14 @@ def test_strategy_calculate_error_in_strategy(
 def test_strategy_calculate_non_numeric_return(
     node_a: Node, node_b: Node, non_numeric_strategy: MockNonNumericStrategy
 ):
-    """Test CalculationError when the strategy returns a non-numeric value."""
-    node = StrategyCalculationNode(
-        name="TestNonNumericStrategy", inputs=[node_a, node_b], strategy=non_numeric_strategy
+    """Test CalculationError when the calculation object returns a non-numeric value."""
+    node = CalculationNode(
+        name="TestNonNumericStrategy", inputs=[node_a, node_b], calculation=non_numeric_strategy
     )
     with pytest.raises(CalculationError) as exc_info:
         node.calculate("2023")
     assert "did not return a numeric value" in str(exc_info.value)
-    assert "got str" in str(exc_info.value)
+    assert "got MockNonNumericStrategy" in str(exc_info.value)
     assert exc_info.value.node_id == "TestNonNumericStrategy"
     assert exc_info.value.period == "2023"
 

@@ -18,7 +18,7 @@ except ImportError:
     # For now, assume it's available via relative import
     from fin_statement_model.statements.structure import StatementStructure
 
-from .errors import StatementError # Assuming StatementError is in statements/errors.py
+from .errors import StatementError  # Assuming StatementError is in statements/errors.py
 
 logger = logging.getLogger(__name__)
 
@@ -59,11 +59,11 @@ class StatementRegistry:
                 already registered.
         """
         if not isinstance(statement, StatementStructure):
-             raise TypeError("Only StatementStructure objects can be registered.")
+            raise TypeError("Only StatementStructure objects can be registered.")
 
         statement_id = statement.id
         if not statement_id:
-             raise ValueError("StatementStructure must have a valid non-empty id to be registered.")
+            raise ValueError("StatementStructure must have a valid non-empty id to be registered.")
 
         if statement_id in self._statements:
             # Policy: Raise error on conflict

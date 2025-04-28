@@ -4,6 +4,8 @@ import pytest
 import statistics
 import math
 from unittest.mock import MagicMock
+from typing import Optional
+import pandas as pd
 
 from fin_statement_model.core.nodes.base import Node
 from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
@@ -294,7 +296,7 @@ def test_multi_calculate_input_error_partial(input_node_multi: Node):
     # Store the original calculate method before mocking
     original_calculate = input_node_multi.calculate
 
-    def side_effect_func(period):
+    def side_effect_func(period: str) -> Optional[float]:
         if period == "Q2":
             raise CalculationError("Failed Q2", node_id=input_node_multi.name, period=period)
         # Call the original method for other periods
@@ -320,7 +322,7 @@ def test_multi_calculate_input_error_partial(input_node_multi: Node):
 def test_multi_calculate_stat_func_error(input_node_multi: Node):
     """Test returns NaN if the stat function itself raises an error."""
 
-    def error_stat_func(data):
+    def error_stat_func(data: pd.Series) -> float:
         raise ValueError("Stat func failed!")
 
     node = MultiPeriodStatNode(

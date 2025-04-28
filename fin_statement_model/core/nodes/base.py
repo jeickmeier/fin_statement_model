@@ -35,8 +35,15 @@ class Node(ABC):
             >>> dn.name
             'Revenue'
         """
+        # Check if name is a non-empty string
         if not isinstance(name, str) or not name:
             raise ValueError("Node name must be a non-empty string.")
+        # Check for invalid characters (including newline, tab)
+        if "\n" in name or "\t" in name:
+            raise ValueError(f"Invalid node name: '{name}'. Contains invalid characters.")
+        # Check for leading/trailing whitespace
+        if name != name.strip():
+            raise ValueError(f"Invalid node name: '{name}'. Cannot have leading/trailing whitespace.")
         self.name = name
 
     @abstractmethod

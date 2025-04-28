@@ -10,14 +10,13 @@ Requires:
 
 """
 
-
 import logging
 import os
 import pandas as pd
 from typing import Optional
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.io import read_data, write_data, ReadError, FormatNotSupportedError 
+from fin_statement_model.io import read_data, write_data, ReadError, FormatNotSupportedError
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -42,7 +41,7 @@ def main():
         print("Error: FMP_API_KEY environment variable not set.")
         return
 
-    graph: Optional[Graph] = None # Renamed from core_graph for simplicity
+    graph: Optional[Graph] = None  # Renamed from core_graph for simplicity
     df: Optional[pd.DataFrame] = None
 
     try:
@@ -81,10 +80,10 @@ def main():
             try:
                 print(df.loc[["revenue"]].map("{:,.0f}".format))
             except (TypeError, ValueError):
-                 print(df.loc[["revenue"]]) # Print raw if formatting fails
+                print(df.loc[["revenue"]])  # Print raw if formatting fails
 
         print("\n--- DataFrame Head ---")
-        print(df.head(10)) # Print head for brevity
+        print(df.head(10))  # Print head for brevity
     else:
         print("\nCould not generate DataFrame due to previous errors.")
 

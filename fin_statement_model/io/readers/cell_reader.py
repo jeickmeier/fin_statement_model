@@ -1,6 +1,7 @@
 """Importer module for reading cell-based financial statement data into a Graph."""
 
 from typing import Any
+
 # from fin_statement_model.statements.graph.financial_graph import FinancialStatementGraph # Removed
 from fin_statement_model.core.graph import Graph  # Added
 
@@ -45,8 +46,7 @@ def import_from_cells(cells_info: list[dict[str, Any]]) -> Graph:  # Changed ret
 
     # Add each financial statement item as a data node to the graph
     for name, values in items.items():
-        # Assuming Graph has an add_data_node method or similar
-        # This might need adjustment based on the actual core.Graph API
-        graph.add_data_node(name, values) # Changed from fsg.add_financial_statement_item
+        # Use add_financial_statement_item based on Graph API
+        graph.add_financial_statement_item(name, values)
 
-    return graph # Changed from fsg
+    return graph

@@ -6,7 +6,7 @@ custom, average, and historical growth).
 """
 
 import logging
-from typing import Callable
+from collections.abc import Callable
 
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node
@@ -411,9 +411,7 @@ class AverageValueForecastNode(ForecastNode):
         """
         super().__init__(input_node, base_period, forecast_periods)
         self.average_value = self._calculate_average_value()
-        logger.debug(
-            f"Created AverageValueForecastNode with average value: {self.average_value}"
-        )
+        logger.debug(f"Created AverageValueForecastNode with average value: {self.average_value}")
 
     def _calculate_average_value(self) -> float:
         """Calculate the average historical value up to the base period.
@@ -423,9 +421,7 @@ class AverageValueForecastNode(ForecastNode):
         """
         values = [value for period, value in self.values.items() if period <= self.base_period]
         if not values:
-            logger.warning(
-                f"No historical values found for {self.name}, using 0.0 as average"
-            )
+            logger.warning(f"No historical values found for {self.name}, using 0.0 as average")
             return 0.0
         return sum(values) / len(values)
 

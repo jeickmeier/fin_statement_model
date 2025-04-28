@@ -6,21 +6,42 @@ financial statement models.
 """
 
 import logging
-from typing import Any, Callable, Optional
+from typing import Any, Optional
+from collections.abc import Callable
+from uuid import UUID
 
 from fin_statement_model.core.node_factory import NodeFactory
-from fin_statement_model.core.nodes import Node, FinancialStatementItemNode, FormulaCalculationNode, CalculationNode
-from fin_statement_model.core.errors import NodeError, ConfigurationError, CalculationError, CircularDependencyError
+from fin_statement_model.core.nodes import (
+    Node,
+    FinancialStatementItemNode,
+    FormulaCalculationNode,
+    CalculationNode,
+)
+from fin_statement_model.core.errors import (
+    NodeError,
+    ConfigurationError,
+    CalculationError,
+    CircularDependencyError,
+)
 from fin_statement_model.core.metrics import metric_registry
 from fin_statement_model.core.calculations import Registry
 from fin_statement_model.core.graph.manipulator import GraphManipulator
 from fin_statement_model.core.graph.traverser import GraphTraverser
+from fin_statement_model.core.adjustments.models import (
+    Adjustment,
+    AdjustmentType,
+    AdjustmentTag,
+    DEFAULT_SCENARIO,
+    AdjustmentFilterInput,
+)
+from fin_statement_model.core.adjustments.manager import AdjustmentManager
 
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
 __all__ = ["Graph"]
+
 
 class Graph:
     """Represent the financial statement model as a directed graph.
@@ -81,6 +102,10 @@ class Graph:
         self.manipulator = GraphManipulator(self)
         self.traverser = GraphTraverser(self)
 
+        # --- Adjustment Manager Integration ---
+        self.adjustment_manager = AdjustmentManager()
+        # --- End Adjustment Manager Integration ---
+
     @property
     def nodes(self) -> dict[str, Node]:
         """Provide access to the dictionary of all nodes in the graph.
@@ -135,7 +160,8 @@ class Graph:
         name: str,
         input_names: list[str],
         operation_type: str,
-        **kwargs: dict[str, Any],
+        formula_variable_names: Optional[list[str]] = None,
+        **calculation_kwargs: Any,
     ) -> Node:
         """Add a new calculation node to the graph using the node factory.
 
@@ -146,7 +172,9 @@ class Graph:
             name: Unique name for the calculation node.
             input_names: List of node names to use as inputs.
             operation_type: Calculation type key (e.g., 'addition').
-            **kwargs: Additional parameters for the calculation.
+            formula_variable_names: Optional list of variable names used in the formula
+                string, required if creating a FormulaCalculationNode via this method.
+            **calculation_kwargs: Additional parameters for the calculation constructor.
 
         Returns:
             The created calculation node.
@@ -173,7 +201,6 @@ class Graph:
         if missing:
             raise NodeError(
                 f"Cannot create calculation node '{name}': missing input nodes {missing}",
-                node_id=name,
             )
         # Create the node via factory
         try:
@@ -181,7 +208,8 @@ class Graph:
                 name=name,
                 inputs=resolved_inputs,
                 calculation_type=operation_type,
-                **kwargs,
+                formula_variable_names=formula_variable_names,
+                **calculation_kwargs,
             )
         except (ValueError, TypeError):
             logger.exception(
@@ -192,27 +220,33 @@ class Graph:
         # --- Cycle Detection ---
         for input_node in resolved_inputs:
             try:
-                bfs_levels = self.traverser.breadth_first_search(start_node=input_node.name, direction="successors")
+                bfs_levels = self.traverser.breadth_first_search(
+                    start_node=input_node.name, direction="successors"
+                )
                 reachable_nodes = {n for level in bfs_levels for n in level}
                 if name in reachable_nodes:
-                    cycle_path_guess = [input_node.name, "...", name] # Simplified guess
+                    cycle_path_guess = [input_node.name, "...", name]  # Simplified guess
                     raise CircularDependencyError(
                         message=f"Adding calculation node '{name}' would create a cycle from input '{input_node.name}'",
                         node_id=name,
-                        cycle=cycle_path_guess
+                        cycle=cycle_path_guess,
                     )
             except NodeError:
                 # Should not happen if inputs were resolved, but handle defensively
-                logger.warning(f"NodeError during cycle check pre-computation for {name} from {input_node.name}")
+                logger.warning(
+                    f"NodeError during cycle check pre-computation for {name} from {input_node.name}"
+                )
                 # Or potentially re-raise depending on desired strictness
             except Exception as e:
                 # Catch broader errors during traversal if needed
-                logger.error(f"Unexpected error during cycle detection for node {name}: {e}", exc_info=True)
+                logger.error(
+                    f"Unexpected error during cycle detection for node {name}: {e}", exc_info=True
+                )
                 # Optionally re-raise as a different error type or handle
                 raise CalculationError(
                     message=f"Error during cycle detection for {name}",
                     node_id=name,
-                    details={"original_error": str(e)}
+                    details={"original_error": str(e)},
                 ) from e
         # --- End Cycle Detection ---
 
@@ -226,7 +260,7 @@ class Graph:
         return node
 
     def add_metric(
-        self, metric_name: str, node_name: Optional[str] = None
+        self, metric_name: str, node_name: Optional[str] = None, *, input_node_map: Optional[dict[str, str]] = None
     ) -> Node:
         """Add a metric calculation node based on a metric definition.
 
@@ -239,6 +273,9 @@ class Graph:
         Args:
             metric_name: Key of the metric definition to add.
             node_name: Optional name for the metric node; defaults to metric_name.
+            input_node_map: Optional dictionary mapping metric input variable names
+                (from metric definition) to the actual node names present in the graph.
+                If None, assumes graph node names match metric input variable names.
 
         Returns:
             The created FormulaCalculationNode.
@@ -247,7 +284,7 @@ class Graph:
             TypeError: If node_name is invalid.
             ValueError: If node_name already exists.
             ConfigurationError: If metric definition is missing or invalid.
-            NodeError: If required input nodes are missing.
+            NodeError: If required input nodes (after mapping) are missing.
         """
         # Default node_name to metric_name if not provided
         if node_name is None:
@@ -271,13 +308,23 @@ class Graph:
 
         resolved_inputs: dict[str, Node] = {}
         missing = []
-        for req in required_inputs:
-            nd = self._nodes.get(req)
+        for req_input_name in required_inputs:
+            # Determine the actual graph node name to look for
+            target_node_name = req_input_name # Default case
+            if input_node_map and req_input_name in input_node_map:
+                target_node_name = input_node_map[req_input_name]
+            elif input_node_map:
+                 # If map provided but doesn't contain the required input, it's an error in the map
+                 missing.append(f"{req_input_name} (mapping missing in input_node_map)")
+                 continue # Skip trying to find the node
+
+            # Find the node in the graph using the target name
+            nd = self._nodes.get(target_node_name)
             if nd is None:
-                missing.append(req)
+                missing.append(target_node_name) # Report the name we looked for
             else:
-                # Use the required input name as the key for the Formula node
-                resolved_inputs[req] = nd
+                # Use the required metric input name as the key for the Formula node inputs
+                resolved_inputs[req_input_name] = nd
 
         if missing:
             raise NodeError(
@@ -292,16 +339,14 @@ class Graph:
                 inputs=resolved_inputs,
                 formula=formula,
                 metric_name=metric_name,  # Store original metric key
-                metric_description=description # Store description
+                metric_description=description,  # Store description
             )
-        except (ValueError, TypeError) as e: # Catch potential FormulaCalculationNode init errors
+        except (ValueError, TypeError) as e:  # Catch potential FormulaCalculationNode init errors
             logger.exception(
                 f"Failed to instantiate FormulaCalculationNode for metric '{metric_name}' as node '{node_name}'"
             )
             # Re-raise as ConfigurationError or keep original, depending on desired error reporting
-            raise ConfigurationError(
-                f"Error creating node for metric '{metric_name}': {e}"
-            ) from e
+            raise ConfigurationError(f"Error creating node for metric '{metric_name}': {e}") from e
 
         # Register the new node using the graph's add_node method
         # (Assuming add_node handles potential overwrites and adds to self._nodes)
@@ -311,7 +356,7 @@ class Graph:
         logger.info(
             f"Added metric '{metric_name}' as FormulaCalculationNode '{node_name}' with inputs {list(resolved_inputs)}"
         )
-        return new_node # Return the created FormulaCalculationNode
+        return new_node  # Return the created FormulaCalculationNode
 
     def add_custom_calculation(
         self,
@@ -401,14 +446,10 @@ class Graph:
         if node is None:
             raise NodeError("Node not found for calculation change", node_id=node_name)
         if not isinstance(node, CalculationNode):
-            raise NodeError(
-                f"Node '{node_name}' is not a CalculationNode", node_id=node_name
-            )
+            raise NodeError(f"Node '{node_name}' is not a CalculationNode", node_id=node_name)
         # Map method key to registry name
         if new_method_key not in self._node_factory._calculation_methods:
-            raise ValueError(
-                f"Calculation '{new_method_key}' is not recognized."
-            )
+            raise ValueError(f"Calculation '{new_method_key}' is not recognized.")
         calculation_class_name = self._node_factory._calculation_methods[new_method_key]
         try:
             calculation_cls = Registry.get(calculation_class_name)
@@ -419,17 +460,13 @@ class Graph:
         try:
             calculation_instance = calculation_cls(**kwargs)
         except TypeError as e:
-            raise TypeError(
-                f"Failed to instantiate calculation '{new_method_key}': {e}"
-            )
+            raise TypeError(f"Failed to instantiate calculation '{new_method_key}': {e}")
         # Apply new calculation
         node.set_calculation(calculation_instance)
         # Clear cached calculations for this node
         if node_name in self._cache:
             del self._cache[node_name]
-        logger.info(
-            f"Changed calculation for node '{node_name}' to '{new_method_key}'"
-        )
+        logger.info(f"Changed calculation for node '{node_name}' to '{new_method_key}'")
 
     def get_metric(self, metric_id: str) -> Optional[Node]:
         """Return the metric node for a given metric ID, if present.
@@ -494,7 +531,9 @@ class Graph:
         metric_node = self.get_metric(metric_id)
         if metric_node is None:
             if metric_id in self._nodes:
-                raise ValueError(f"Node '{metric_id}' exists but is not a metric (missing metric_name attribute).")
+                raise ValueError(
+                    f"Node '{metric_id}' exists but is not a metric (missing metric_name attribute)."
+                )
             raise ValueError(f"Metric node '{metric_id}' not found in graph.")
 
         # Extract info directly from the FormulaCalculationNode
@@ -510,16 +549,16 @@ class Graph:
                 metric_def = metric_registry.get(registry_key)
                 display_name = metric_def.name
             except Exception:
-                logger.warning(f"Could not reload metric definition for '{registry_key}' to get display name. Using node name '{metric_id}' instead.")
-                display_name = metric_id # Fallback to node name
+                logger.warning(
+                    f"Could not reload metric definition for '{registry_key}' to get display name. Using node name '{metric_id}' instead."
+                )
+                display_name = metric_id  # Fallback to node name
 
             inputs = metric_node.get_dependencies()
         except Exception as e:
             # Catch potential attribute errors or other issues
             logger.error(f"Error retrieving info for metric node '{metric_id}': {e}", exc_info=True)
-            raise ValueError(
-                f"Failed to retrieve metric info for '{metric_id}': {e}"
-            ) from e
+            raise ValueError(f"Failed to retrieve metric info for '{metric_id}': {e}") from e
 
         return {"id": metric_id, "name": display_name, "description": description, "inputs": inputs}
 
@@ -558,8 +597,17 @@ class Graph:
         # Perform calculation with error handling
         try:
             value = node.calculate(period)
-        except (NodeError, ConfigurationError, CalculationError, ValueError, KeyError, ZeroDivisionError) as e:
-            logger.error(f"Error calculating node '{node_name}' for period '{period}': {e}", exc_info=True)
+        except (
+            NodeError,
+            ConfigurationError,
+            CalculationError,
+            ValueError,
+            KeyError,
+            ZeroDivisionError,
+        ) as e:
+            logger.error(
+                f"Error calculating node '{node_name}' for period '{period}': {e}", exc_info=True
+            )
             raise CalculationError(
                 message=f"Failed to calculate node '{node_name}'",
                 node_id=node_name,
@@ -605,7 +653,9 @@ class Graph:
                 try:
                     self.calculate(node_name, period)
                 except Exception as e:
-                    logger.warning(f"Error recalculating node '{node_name}' for period '{period}': {e}")
+                    logger.warning(
+                        f"Error recalculating node '{node_name}' for period '{period}': {e}"
+                    )
 
     def clear_all_caches(self) -> None:
         """Clear all node-level and central calculation caches.
@@ -640,21 +690,21 @@ class Graph:
         logger.debug("Cleared graph calculation cache.")
 
     def clear(self) -> None:
-        """Reset the graph by clearing nodes, periods, metrics, and caches.
-
-        Returns:
-            None
-
-        Examples:
-            >>> graph.clear()
-        """
+        """Reset the graph by clearing nodes, periods, metrics, adjustments, and caches."""
         self._nodes = {}
         self._periods = []
         self._cache = {}
-        self._metric_names = set()
-        logger.info("Graph cleared: nodes, periods, metrics, and caches reset.")
+        self._metric_names = set()  # This seems redundant now, metrics identified by attribute
 
-    def add_financial_statement_item(self, name: str, values: dict[str, float]) -> FinancialStatementItemNode:
+        # --- Adjustment Manager Integration ---
+        self.adjustment_manager.clear_all()
+        # --- End Adjustment Manager Integration ---
+
+        logger.info("Graph cleared: nodes, periods, metrics, adjustments, and caches reset.")
+
+    def add_financial_statement_item(
+        self, name: str, values: dict[str, float]
+    ) -> FinancialStatementItemNode:
         """Add a basic financial statement item (data node) to the graph.
 
         Args:
@@ -719,7 +769,9 @@ class Graph:
         else:
             node.values.update(values)
         self.add_periods(list(values.keys()))
-        logger.info(f"Updated FinancialStatementItemNode '{name}' with periods {list(values.keys())}; replace_existing={replace_existing}")
+        logger.info(
+            f"Updated FinancialStatementItemNode '{name}' with periods {list(values.keys())}; replace_existing={replace_existing}"
+        )
         return node
 
     def get_financial_statement_items(self) -> list[Node]:
@@ -736,9 +788,7 @@ class Graph:
         )  # Keep import local as it's specific
 
         return [
-            node
-            for node in self.nodes.values()
-            if isinstance(node, FinancialStatementItemNode)
+            node for node in self.nodes.values() if isinstance(node, FinancialStatementItemNode)
         ]
 
     def __repr__(self) -> str:
@@ -1067,23 +1117,30 @@ class Graph:
             existing_node = self.get_node(node_name)
             if existing_node is not None:
                 # Node exists, merge values if applicable
-                if hasattr(existing_node, "values") and hasattr(other_node, "values") and \
-                   isinstance(getattr(existing_node, "values", None), dict) and \
-                   isinstance(getattr(other_node, "values", None), dict):
+                if (
+                    hasattr(existing_node, "values")
+                    and hasattr(other_node, "values")
+                    and isinstance(getattr(existing_node, "values", None), dict)
+                    and isinstance(getattr(other_node, "values", None), dict)
+                ):
                     try:
                         # Perform the update
-                        existing_node.values.update(other_node.values) # type: ignore
+                        existing_node.values.update(other_node.values)  # type: ignore
                         nodes_updated += 1
                         logger.debug(f"Merged values into existing node '{node_name}'")
                         # No need to call self.add_node(existing_node) as it's already there
                     except AttributeError:
-                         # Should not happen due to hasattr checks, but defensive
-                         logger.warning(f"Could not merge values for node '{node_name}' due to missing 'values' attribute despite hasattr check.")
+                        # Should not happen due to hasattr checks, but defensive
+                        logger.warning(
+                            f"Could not merge values for node '{node_name}' due to missing 'values' attribute despite hasattr check."
+                        )
                     except Exception as e:
-                         logger.warning(f"Could not merge values for node '{node_name}': {e}")
+                        logger.warning(f"Could not merge values for node '{node_name}': {e}")
                 else:
                     # Nodes exist but cannot merge values (e.g., calculation nodes without stored values)
-                    logger.debug(f"Node '{node_name}' exists in both graphs, but values not merged (missing/incompatible 'values' attribute). Keeping target graph's node.")
+                    logger.debug(
+                        f"Node '{node_name}' exists in both graphs, but values not merged (missing/incompatible 'values' attribute). Keeping target graph's node."
+                    )
             else:
                 # Node doesn't exist in target graph, add it
                 try:
@@ -1092,6 +1149,231 @@ class Graph:
                     self.add_node(other_node)
                     nodes_added += 1
                 except Exception:
-                     logger.exception(f"Failed to add new node '{node_name}' during merge:")
+                    logger.exception(f"Failed to add new node '{node_name}' during merge:")
 
-        logger.info(f"Merge complete. Nodes added: {nodes_added}, Nodes updated (values merged): {nodes_updated}")
+        logger.info(
+            f"Merge complete. Nodes added: {nodes_added}, Nodes updated (values merged): {nodes_updated}"
+        )
+
+    # --- Adjustment Management API ---
+
+    def add_adjustment(
+        self,
+        node_name: str,
+        period: str,
+        value: float,
+        reason: str,
+        adj_type: AdjustmentType = AdjustmentType.ADDITIVE,
+        scale: float = 1.0,
+        priority: int = 0,
+        tags: Optional[set[AdjustmentTag]] = None,
+        scenario: Optional[str] = None,
+        user: Optional[str] = None,
+        start_period: Optional[str] = None,  # Phase 2
+        end_period: Optional[str] = None,  # Phase 2
+        adj_id: Optional[UUID] = None,  # Allow specifying ID, e.g., for re-creation
+    ) -> UUID:
+        """Adds a discretionary adjustment to a specific node and period.
+
+        Creates an Adjustment object and delegates storage to the AdjustmentManager.
+
+        Args:
+            node_name: The name of the target node.
+            period: The primary period the adjustment applies to.
+            value: The numeric value of the adjustment.
+            reason: Text description of why the adjustment was made.
+            adj_type: How the adjustment combines with the base value.
+            scale: Attenuation factor for the adjustment (0.0 to 1.0, Phase 2).
+            priority: Tie-breaker for applying multiple adjustments (lower number applied first).
+            tags: Set of descriptive tags for filtering and analysis.
+            scenario: The named scenario this adjustment belongs to. Defaults to DEFAULT_SCENARIO if None.
+            user: Identifier for the user who created the adjustment.
+            start_period: The first period the adjustment is effective (inclusive, Phase 2).
+            end_period: The last period the adjustment is effective (inclusive, Phase 2).
+            adj_id: Optional specific UUID to use for the adjustment.
+
+        Returns:
+            The UUID of the created or updated adjustment.
+
+        Raises:
+            NodeError: If the target node_name does not exist in the graph.
+            ValidationError: If adjustment parameters are invalid (e.g., scale out of bounds).
+        """
+        if not self.has_node(node_name):
+            raise NodeError(
+                f"Cannot add adjustment: Node '{node_name}' not found.", node_id=node_name
+            )
+
+        # Need Pydantic's ValidationError and uuid4
+        from pydantic import ValidationError
+        from uuid import uuid4
+
+        # Need Adjustment model details
+        from fin_statement_model.core.adjustments.models import Adjustment
+
+        # Assign default scenario if None was passed
+        actual_scenario = scenario if scenario is not None else DEFAULT_SCENARIO
+
+        # Create the adjustment object - Pydantic handles validation (e.g., scale)
+        try:
+            adj = Adjustment(
+                id=adj_id or uuid4(),  # Generate new ID if not provided
+                node_name=node_name,
+                period=period,
+                start_period=start_period,
+                end_period=end_period,
+                value=value,
+                type=adj_type,
+                scale=scale,
+                priority=priority,
+                tags=tags or set(),
+                scenario=actual_scenario,  # Use the actual scenario
+                reason=reason,
+                user=user,
+                # timestamp is added automatically by the model
+            )
+        except ValidationError:
+            logger.exception(f"Failed to create adjustment for node '{node_name}'")
+            raise  # Re-raise Pydantic's validation error
+
+        self.adjustment_manager.add_adjustment(adj)
+        logger.info(
+            f"Added adjustment {adj.id} for node '{node_name}', period '{period}', scenario '{scenario}'."
+        )
+        return adj.id
+
+    def remove_adjustment(self, adj_id: UUID) -> bool:
+        """Removes an adjustment by its unique ID.
+
+        Args:
+            adj_id: The UUID of the adjustment to remove.
+
+        Returns:
+            True if an adjustment was found and removed, False otherwise.
+        """
+        removed = self.adjustment_manager.remove_adjustment(adj_id)
+        if removed:
+            logger.info(f"Removed adjustment {adj_id}.")
+        else:
+            logger.warning(f"Attempted to remove non-existent adjustment {adj_id}.")
+        return removed
+
+    def get_adjustments(
+        self, node_name: str, period: str, *, scenario: Optional[str] = None
+    ) -> list[Adjustment]:
+        """Retrieves all adjustments for a specific node, period, and scenario.
+
+        Args:
+            node_name: The name of the target node.
+            period: The target period.
+            scenario: The scenario to retrieve adjustments for. Defaults to DEFAULT_SCENARIO if None.
+
+        Returns:
+            A list of Adjustment objects matching the criteria, sorted by application order.
+        """
+        if not self.has_node(node_name):
+            # Or return empty list? Returning empty seems safer.
+            logger.warning(f"Node '{node_name}' not found when getting adjustments.")
+            return []
+        # Assign default scenario if None was passed
+        actual_scenario = scenario if scenario is not None else DEFAULT_SCENARIO
+        return self.adjustment_manager.get_adjustments(node_name, period, scenario=actual_scenario)
+
+    def list_all_adjustments(self) -> list[Adjustment]:
+        """Returns a list of all adjustments currently managed by the graph.
+
+        Returns:
+            A list containing all Adjustment objects across all nodes, periods, and scenarios.
+        """
+        return self.adjustment_manager.get_all_adjustments()
+
+    def get_adjusted_value(
+        self,
+        node_name: str,
+        period: str,
+        filter_input: "AdjustmentFilterInput" = None,
+        *,
+        return_flag: bool = False,
+    ) -> float | tuple[float, bool]:
+        """Calculates the value of a node for a period, applying selected adjustments.
+
+        Fetches the base calculated value, retrieves adjustments matching the filter,
+        applies them in order, and returns the result.
+
+        Args:
+            node_name: The name of the node to calculate.
+            period: The time period identifier.
+            filter_input: Criteria for selecting which adjustments to apply.
+                          Can be an AdjustmentFilter instance, a set of tags (for include_tags),
+                          a callable predicate `fn(adj: Adjustment) -> bool`, or None
+                          (applies all adjustments in the default scenario).
+            return_flag: If True, return a tuple (adjusted_value, was_adjusted_flag).
+                         If False (default), return only the adjusted_value.
+
+        Returns:
+            The adjusted float value, or a tuple (value, flag) if return_flag is True.
+
+        Raises:
+            NodeError: If the specified node does not exist.
+            CalculationError: If an error occurs during the base calculation or adjustment application.
+            TypeError: If filter_input is an invalid type.
+        """
+        # 1. Get the base value (result of underlying node calculation)
+        try:
+            base_value = self.calculate(node_name, period)
+        except (NodeError, CalculationError, TypeError):
+            # Propagate errors from base calculation
+            logger.exception(f"Error getting base value for '{node_name}' in period '{period}'")
+            raise
+
+        # 2. Get filtered adjustments from the manager
+        # The manager handles filter normalization and matching logic.
+        # It needs the period context for effective window checks.
+        try:
+            adjustments_to_apply = self.adjustment_manager.get_filtered_adjustments(
+                node_name=node_name, period=period, filter_input=filter_input
+            )
+        except TypeError:
+            logger.exception("Invalid filter type provided for get_adjusted_value")
+            raise
+
+        # 3. Apply the adjustments
+        adjusted_value, was_adjusted = self.adjustment_manager.apply_adjustments(
+            base_value, adjustments_to_apply
+        )
+
+        # 4. Return result based on flag
+        if return_flag:
+            return adjusted_value, was_adjusted
+        else:
+            return adjusted_value
+
+    def was_adjusted(
+        self, node_name: str, period: str, filter_input: "AdjustmentFilterInput" = None
+    ) -> bool:
+        """Checks if a node's value for a given period was affected by any selected adjustments.
+
+        Args:
+            node_name: The name of the node to check.
+            period: The time period identifier.
+            filter_input: Criteria for selecting which adjustments to consider (same as get_adjusted_value).
+
+        Returns:
+            True if any adjustment matching the filter was applied to the base value, False otherwise.
+
+        Raises:
+            NodeError: If the specified node does not exist.
+            CalculationError: If an error occurs during the underlying calculation.
+            TypeError: If filter_input is an invalid type.
+        """
+        try:
+            _, was_adjusted_flag = self.get_adjusted_value(
+                node_name, period, filter_input, return_flag=True
+            )
+            return was_adjusted_flag
+        except (NodeError, CalculationError, TypeError):
+            # Propagate errors consistently
+            logger.exception(f"Error checking if node '{node_name}' was adjusted")
+            raise
+
+    # --- End Adjustment Management API ---

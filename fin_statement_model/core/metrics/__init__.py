@@ -7,6 +7,7 @@ import logging
 from pathlib import Path
 
 from .registry import MetricRegistry, HAS_YAML
+from .models import MetricDefinition
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ else:
 
 # --- Public API ---
 __all__ = [
+    "MetricDefinition",
     "MetricRegistry",
     "metric_registry",  # Expose the singleton instance
 ]

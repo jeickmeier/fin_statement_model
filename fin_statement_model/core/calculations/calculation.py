@@ -6,7 +6,8 @@ allowing different calculation types to be encapsulated in calculation classes.
 
 from abc import ABC, abstractmethod
 import logging
-from typing import Callable, Optional
+from typing import Optional
+from collections.abc import Callable
 
 from fin_statement_model.core.nodes.base import Node  # Absolute
 
@@ -402,7 +403,9 @@ class CustomFormulaCalculation(Calculation):
         if not callable(formula_function):
             raise TypeError("formula_function must be callable")
         self.formula_function = formula_function
-        logger.info(f"Initialized CustomFormulaCalculation with function: {formula_function.__name__}")
+        logger.info(
+            f"Initialized CustomFormulaCalculation with function: {formula_function.__name__}"
+        )
 
     def calculate(self, inputs: list[Node], period: str) -> float:
         """Applies the custom formula function to the calculated input values.
@@ -453,7 +456,7 @@ class CustomFormulaCalculation(Calculation):
         try:
             # Execute the user-provided function
             result = self.formula_function(input_values)
-            if not isinstance(result, (int, float)):
+            if not isinstance(result, int | float):
                 logger.warning(
                     f"Custom formula function {self.formula_function.__name__} "
                     f"returned non-numeric type: {type(result)}. Attempting cast."

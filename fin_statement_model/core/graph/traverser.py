@@ -12,6 +12,7 @@ from fin_statement_model.core.nodes import Node
 
 logger = logging.getLogger(__name__)
 
+
 class GraphTraverser:
     """Encapsulate traversal and validation helpers for Graph.
 
@@ -81,8 +82,15 @@ class GraphTraverser:
         """
         successors: list[str] = []
         for other_id, node in self.nodes.items():
-            if hasattr(node, "inputs") and any(inp.name == node_id for inp in node.inputs):
-                successors.append(other_id)
+            if hasattr(node, "inputs"):
+                input_nodes: list[Node] = []
+                if isinstance(node.inputs, list):
+                    input_nodes = node.inputs
+                elif isinstance(node.inputs, dict):
+                    input_nodes = list(node.inputs.values())
+
+                if any(inp.name == node_id for inp in input_nodes if hasattr(inp, "name")):
+                    successors.append(other_id)
         return successors
 
     def get_direct_predecessors(self, node_id: str) -> list[str]:
@@ -239,8 +247,7 @@ class GraphTraverser:
             >>> traverser.validate()
         """
         errors: list[str] = [
-            f"Circular dependency detected: {' -> '.join(cycle)}"
-            for cycle in self.detect_cycles()
+            f"Circular dependency detected: {' -> '.join(cycle)}" for cycle in self.detect_cycles()
         ]
         errors.extend(
             f"Node '{node_id}' depends on non-existent node '{inp.name}'"

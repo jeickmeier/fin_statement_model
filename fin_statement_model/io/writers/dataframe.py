@@ -35,9 +35,7 @@ class DataFrameWriter(DataWriter):
         """
         self.cfg = cfg
 
-    def write(
-        self, graph: Graph, target: Any = None, **kwargs: dict[str, object]
-    ) -> pd.DataFrame:
+    def write(self, graph: Graph, target: Any = None, **kwargs: dict[str, object]) -> pd.DataFrame:
         """Convert the graph data to a pandas DataFrame based on instance configuration.
 
         Args:
@@ -52,7 +50,9 @@ class DataFrameWriter(DataWriter):
             WriteError: If an error occurs during conversion.
             AssertionError: If the writer was not initialized with a configuration.
         """
-        assert self.cfg is not None, "DataFrameWriter must be initialized with a valid configuration."
+        assert self.cfg is not None, (
+            "DataFrameWriter must be initialized with a valid configuration."
+        )
         # Use configuration directly from self.cfg
         recalculate = self.cfg.recalculate
         include_nodes = self.cfg.include_nodes
@@ -103,7 +103,7 @@ class DataFrameWriter(DataWriter):
                         ):
                             value = node.values.get(period, np.nan)
 
-                        if not isinstance(value, (int, float, np.number)) or not np.isfinite(value):
+                        if not isinstance(value, int | float | np.number) or not np.isfinite(value):
                             value = np.nan
                     except Exception as e:
                         logger.debug(

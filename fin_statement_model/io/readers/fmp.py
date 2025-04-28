@@ -50,7 +50,11 @@ class FmpReader(DataReader):
         # Load mapping YAML from config directory relative to this file
         try:
             # Use importlib.resources for robust package data loading
-            yaml_content = importlib.resources.files("fin_statement_model.io.readers.config").joinpath("fmp_default_mappings.yaml").read_text(encoding="utf-8")
+            yaml_content = (
+                importlib.resources.files("fin_statement_model.io.readers.config")
+                .joinpath("fmp_default_mappings.yaml")
+                .read_text(encoding="utf-8")
+            )
             cls.DEFAULT_MAPPINGS = yaml.safe_load(yaml_content)
         except FileNotFoundError:
             logger.error("Default FMP mapping file not found.", exc_info=True)
@@ -88,7 +92,7 @@ class FmpReader(DataReader):
         """Perform a simple check if the API key seems valid."""
         # API key is now guaranteed by FmpReaderConfig validation
         api_key = self.cfg.api_key
-        if not api_key: # Should not happen if validation passed, but defensive check
+        if not api_key:  # Should not happen if validation passed, but defensive check
             raise ReadError(
                 "FMP API key is required for reading.",
                 source="FMP API",
@@ -241,7 +245,7 @@ class FmpReader(DataReader):
                         all_item_data[node_name] = {p: np.nan for p in periods}  # Pre-fill with NaN
 
                     # Store value for this period
-                    if isinstance(value, (int, float)):
+                    if isinstance(value, int | float):
                         all_item_data[node_name][period] = float(value)
 
             # Create nodes from collected data
@@ -269,6 +273,7 @@ class FmpReader(DataReader):
                 reader_type="FmpReader",
                 original_error=e,
             ) from e
+
 
 # After class definition, load default mappings
 FmpReader._load_default_mappings()

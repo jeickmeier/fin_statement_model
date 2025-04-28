@@ -10,6 +10,7 @@ from fin_statement_model.core.errors import FinancialModelError
 
 __all__ = ["ConfigurationError", "StatementError"]
 
+
 class StatementError(FinancialModelError):
     """Base exception for errors specific to the statements package.
 

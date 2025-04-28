@@ -11,6 +11,7 @@ from fin_statement_model.statements.structure.items import (
     StatementItem,
     StatementItemType,
     CalculatedLineItem,
+    MetricLineItem,
     SubtotalLineItem,
 )
 
@@ -114,7 +115,7 @@ class Section:
                 found = child.find_item_by_id(item_id)
                 if found:
                     return found
-        if hasattr(self, 'subtotal') and self.subtotal and self.subtotal.id == item_id:
+        if hasattr(self, "subtotal") and self.subtotal and self.subtotal.id == item_id:
             return self.subtotal
         return None
 
@@ -226,11 +227,11 @@ class StatementStructure:
 
         def collect_calculation_items(items: list[Union["Section", "StatementItem"]]):
             for item in items:
-                if isinstance(item, (CalculatedLineItem, SubtotalLineItem)):
+                if isinstance(item, CalculatedLineItem | SubtotalLineItem):
                     calculation_items.append(item)
                 elif isinstance(item, Section):
                     collect_calculation_items(item.items)
-                    if hasattr(item, 'subtotal') and item.subtotal:
+                    if hasattr(item, "subtotal") and item.subtotal:
                         if isinstance(item.subtotal, SubtotalLineItem):
                             calculation_items.append(item.subtotal)
                         else:
@@ -238,6 +239,25 @@ class StatementStructure:
 
         collect_calculation_items(self._sections)
         return calculation_items
+
+    def get_metric_items(self) -> list[MetricLineItem]:
+        """Get all metric items from the statement structure.
+
+        Returns:
+            List[MetricLineItem]: List of metric items.
+        """
+        metric_items = []
+
+        def collect_metric_items(items: list[Union["Section", "StatementItem"]]):
+            for item in items:
+                if isinstance(item, MetricLineItem):
+                    metric_items.append(item)
+                elif isinstance(item, Section):
+                    collect_metric_items(item.items)
+                    # Subtotals are handled by get_calculation_items, not relevant here
+
+        collect_metric_items(self._sections)
+        return metric_items
 
     def get_all_items(self) -> list[StatementItem]:
         """Get all StatementItem instances recursively from the structure.
@@ -251,10 +271,15 @@ class StatementStructure:
         """
         all_statement_items: list[StatementItem] = []
 
-        def _collect_items_recursive(items_or_sections: list[Union[Section, StatementItem]]) -> None:
+        def _collect_items_recursive(
+            items_or_sections: list[Union[Section, StatementItem]],
+        ) -> None:
             for item in items_or_sections:
                 if isinstance(item, Section):
                     _collect_items_recursive(item.items)
+                    # Also collect the section's subtotal if it exists and is a StatementItem
+                    if hasattr(item, "subtotal") and isinstance(item.subtotal, StatementItem):
+                        all_statement_items.append(item.subtotal)
                 elif isinstance(item, StatementItem):
                     all_statement_items.append(item)
 

@@ -8,18 +8,17 @@ from __future__ import annotations
 from typing import Optional, Literal, Any, Union
 from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
 
+# Import the type used in MarkdownWriterConfig
+from fin_statement_model.core.adjustments.models import AdjustmentFilterInput
+
 # Define MappingConfig locally to avoid circular import
-MappingConfig = Union[
-    dict[str, str],
-    dict[Optional[str], dict[str, str]]
-]
+MappingConfig = Union[dict[str, str], dict[Optional[str], dict[str, str]]]
 
 
 class BaseReaderConfig(BaseModel):
     """Base configuration for IO readers."""
-    source: str = Field(
-        ..., description="URI or path to data source (file path, ticker, etc.)"
-    )
+
+    source: str = Field(..., description="URI or path to data source (file path, ticker, etc.)")
     format_type: Literal["csv", "excel", "dataframe", "dict", "fmp"] = Field(
         ..., description="Type of reader (csv, excel, dataframe, dict, fmp)."
     )
@@ -29,15 +28,10 @@ class BaseReaderConfig(BaseModel):
 
 class CsvReaderConfig(BaseReaderConfig):
     """CSV reader options."""
-    delimiter: str = Field(
-        ",", description="Field delimiter for CSV files."
-    )
-    header_row: int = Field(
-        1, description="Row number containing column names (1-indexed)."
-    )
-    index_col: Optional[int] = Field(
-        None, description="1-indexed column for row labels."
-    )
+
+    delimiter: str = Field(",", description="Field delimiter for CSV files.")
+    header_row: int = Field(1, description="Row number containing column names (1-indexed).")
+    index_col: Optional[int] = Field(None, description="1-indexed column for row labels.")
     mapping_config: Optional[MappingConfig] = Field(
         None, description="Optional configuration for mapping source item names."
     )
@@ -52,15 +46,10 @@ class CsvReaderConfig(BaseReaderConfig):
 
 class ExcelReaderConfig(BaseReaderConfig):
     """Excel reader options."""
-    sheet_name: Optional[str] = Field(
-        None, description="Worksheet name or index."
-    )
-    items_col: int = Field(
-        1, description="1-indexed column where item names reside."
-    )
-    periods_row: int = Field(
-        1, description="1-indexed row where periods reside."
-    )
+
+    sheet_name: Optional[str] = Field(None, description="Worksheet name or index.")
+    items_col: int = Field(1, description="1-indexed column where item names reside.")
+    periods_row: int = Field(1, description="1-indexed row where periods reside.")
     mapping_config: Optional[MappingConfig] = Field(
         None, description="Optional configuration for mapping source item names."
     )
@@ -75,18 +64,13 @@ class ExcelReaderConfig(BaseReaderConfig):
 
 class FmpReaderConfig(BaseReaderConfig):
     """Financial Modeling Prep API reader options."""
+
     statement_type: Literal["income_statement", "balance_sheet", "cash_flow"] = Field(
         ..., description="Type of financial statement to fetch."
     )
-    period_type: Literal["FY", "QTR"] = Field(
-        "FY", description="Period type: 'FY' or 'QTR'."
-    )
-    limit: int = Field(
-        5, description="Number of periods to fetch."
-    )
-    api_key: Optional[str] = Field(
-        None, description="Financial Modeling Prep API key."
-    )
+    period_type: Literal["FY", "QTR"] = Field("FY", description="Period type: 'FY' or 'QTR'.")
+    limit: int = Field(5, description="Number of periods to fetch.")
+    api_key: Optional[str] = Field(None, description="Financial Modeling Prep API key.")
     mapping_config: Optional[MappingConfig] = Field(
         None, description="Optional configuration for mapping source item names."
     )
@@ -96,6 +80,7 @@ class FmpReaderConfig(BaseReaderConfig):
         """Load api_key from FMP_API_KEY env var if not provided."""
         if not value:
             import os
+
             return os.getenv("FMP_API_KEY")
         return value
 
@@ -137,11 +122,12 @@ class DictReaderConfig(BaseReaderConfig):
 # --- Writer-side Pydantic configuration models ---
 class BaseWriterConfig(BaseModel):
     """Base configuration for IO writers."""
-    target: str = Field(
-        ..., description="URI or path to data target (file path, in-memory target, etc.)"
+
+    target: Optional[str] = Field(
+        None, description="URI or path to data target (file path, in-memory target, etc.)"
     )
-    format_type: Literal["excel", "dataframe", "dict"] = Field(
-        ..., description="Type of writer (excel, dataframe, dict)."
+    format_type: Literal["excel", "dataframe", "dict", "markdown"] = Field(
+        ..., description="Type of writer (excel, dataframe, dict, markdown)."
     )
 
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -149,12 +135,9 @@ class BaseWriterConfig(BaseModel):
 
 class ExcelWriterConfig(BaseWriterConfig):
     """Excel writer options."""
-    sheet_name: str = Field(
-        "Sheet1", description="Name of the sheet to write to."
-    )
-    recalculate: bool = Field(
-        True, description="Whether to recalculate graph before export."
-    )
+
+    sheet_name: str = Field("Sheet1", description="Name of the sheet to write to.")
+    recalculate: bool = Field(True, description="Whether to recalculate graph before export.")
     include_nodes: Optional[list[str]] = Field(
         None, description="Optional list of node names to include in export."
     )
@@ -165,12 +148,11 @@ class ExcelWriterConfig(BaseWriterConfig):
 
 class DataFrameWriterConfig(BaseWriterConfig):
     """DataFrame writer options."""
+
     target: Optional[str] = Field(
         None, description="Optional target path (ignored by DataFrameWriter)."
     )
-    recalculate: bool = Field(
-        True, description="Whether to recalculate graph before export."
-    )
+    recalculate: bool = Field(True, description="Whether to recalculate graph before export.")
     include_nodes: Optional[list[str]] = Field(
         None, description="Optional list of node names to include in export."
     )
@@ -178,6 +160,19 @@ class DataFrameWriterConfig(BaseWriterConfig):
 
 class DictWriterConfig(BaseWriterConfig):
     """Dict writer has no additional options."""
+
+    target: Optional[str] = Field(None, description="Optional target (ignored by DictWriter).")
+
+
+class MarkdownWriterConfig(BaseWriterConfig):
+    """Markdown writer options."""
+
+    statement_config_path: str = Field(..., description="Path to the statement definition YAML file.")
+    historical_periods: Optional[list[str]] = Field(None, description="List of historical period names.")
+    forecast_periods: Optional[list[str]] = Field(None, description="List of forecast period names.")
+    adjustment_filter: Optional[AdjustmentFilterInput] = Field(None, description="Adjustment filter to apply.")
+    forecast_configs: Optional[dict] = Field(None, description="Dictionary mapping node IDs to forecast configurations for notes.")
+    indent_spaces: int = Field(4, description="Number of spaces per indentation level.")
     target: Optional[str] = Field(
-        None, description="Optional target (ignored by DictWriter)."
+        None, description="Optional target path (ignored by MarkdownWriter)."
     )

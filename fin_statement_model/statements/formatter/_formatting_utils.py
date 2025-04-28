@@ -1,8 +1,9 @@
 """Utility functions for formatting statement DataFrames."""
 
 import pandas as pd
-from typing import Optional, Any # Keep necessary imports
+from typing import Optional, Any  # Keep necessary imports
 from pandas.api.types import is_numeric_dtype
+
 
 def apply_sign_convention(df: pd.DataFrame, period_columns: list[str]) -> pd.DataFrame:
     """Apply sign conventions to the statement values across periods."""
@@ -12,17 +13,18 @@ def apply_sign_convention(df: pd.DataFrame, period_columns: list[str]) -> pd.Dat
             if col in result.columns and is_numeric_dtype(result[col]):
                 mask = result[col].notna()
                 # Ensure sign_convention is treated as numeric if needed
-                sign_col = pd.to_numeric(result.loc[mask, "sign_convention"], errors="coerce").fillna(1)
-                result.loc[mask, col] = (
-                    result.loc[mask, col] * sign_col
-                )
+                sign_col = pd.to_numeric(
+                    result.loc[mask, "sign_convention"], errors="coerce"
+                ).fillna(1)
+                result.loc[mask, col] = result.loc[mask, col] * sign_col
     return result
+
 
 def format_numbers(
     df: pd.DataFrame,
-    default_formats: dict[str, Any], # Pass defaults needed
+    default_formats: dict[str, Any],  # Pass defaults needed
     number_format: Optional[str] = None,
-    period_columns: Optional[list[str]] = None
+    period_columns: Optional[list[str]] = None,
 ) -> pd.DataFrame:
     """Format numeric values in the statement.
 
@@ -41,20 +43,22 @@ def format_numbers(
     result = df.copy()
 
     if period_columns:
-        numeric_cols = [col for col in period_columns if col in result.columns and is_numeric_dtype(result[col])]
+        numeric_cols = [
+            col for col in period_columns if col in result.columns and is_numeric_dtype(result[col])
+        ]
     else:
-         # Original logic if period_columns not specified
+        # Original logic if period_columns not specified
         numeric_cols = [
             col
             for col in result.columns
             if is_numeric_dtype(result[col])
-            and col not in ("sign_convention", "depth", "ID") # Added ID
+            and col not in ("sign_convention", "depth", "ID")  # Added ID
             and not col.startswith("meta_")
-            and col != "Line Item" # Ensure Line Item name is not formatted
+            and col != "Line Item"  # Ensure Line Item name is not formatted
         ]
 
     # Get defaults from the passed dictionary
-    precision = default_formats.get("precision", 2) # Provide fallback default
+    precision = default_formats.get("precision", 2)  # Provide fallback default
     use_thousands = default_formats.get("use_thousands_separator", True)
 
     if number_format:
@@ -68,7 +72,7 @@ def format_numbers(
     else:
         # Use default formatting based on passed defaults
         for col in numeric_cols:
-             # Check if column exists before applying format
+            # Check if column exists before applying format
             if col in result.columns:
                 result[col] = result[col].apply(
                     lambda x: (

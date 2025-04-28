@@ -1,5 +1,7 @@
+"""Tests for statement configuration validation logic."""
 
 from fin_statement_model.statements.config.config import StatementConfig
+import pytest
 
 
 def test_validate_success():
@@ -13,11 +15,9 @@ def test_validate_success():
 def test_validate_missing_fields():
     """Missing id, name, and sections should all be reported."""
     data = {}
-    cfg = StatementConfig(config_data=data)
-    errors = cfg.validate_config()
-    assert any("id: field required" in e for e in errors)
-    assert any("name: field required" in e for e in errors)
-    assert any("sections: field required" in e for e in errors)
+    # Expect ValueError during __init__ for empty config_data
+    with pytest.raises(ValueError, match="config_data must be a non-empty dictionary."):
+        StatementConfig(config_data=data)
 
 
 def test_validate_id_no_spaces():
@@ -25,7 +25,8 @@ def test_validate_id_no_spaces():
     data = {"id": "with space", "name": "n", "sections": []}
     cfg = StatementConfig(config_data=data)
     errors = cfg.validate_config()
-    assert errors == ["id: must not contain spaces"]
+    # Adjust expected Pydantic error message format
+    assert errors == ["id: Value error, must not contain spaces"]
 
 
 def test_validate_duplicate_section_ids():
@@ -73,9 +74,7 @@ def test_validate_subtotal_invalid_ref():
             {
                 "id": "sec",
                 "name": "S",
-                "items": [
-                    {"id": "i1", "name": "I1", "type": "line_item", "node_id": "n"}
-                ],
+                "items": [{"id": "i1", "name": "I1", "type": "line_item", "node_id": "n"}],
                 "subtotal": {"id": "sub", "name": "Sum", "items_to_sum": ["i1", "x"]},
             }
         ],

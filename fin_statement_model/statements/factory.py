@@ -15,8 +15,8 @@ from typing import Any, Union, Optional
 import pandas as pd
 
 # Core components
-from ..core.graph import Graph
-from ..core.errors import FinancialModelError, StatementError, ConfigurationError
+from fin_statement_model.core.graph import Graph
+from fin_statement_model.core.errors import FinancialModelError, StatementError, ConfigurationError
 
 # IO Layer components
 from fin_statement_model.io.readers import statement_config_reader
@@ -24,8 +24,6 @@ from fin_statement_model.io.writers import statement_writer
 from fin_statement_model.io.exceptions import ReadError, WriteError
 
 # Statements layer components
-from .structure import StatementStructure, Section, StatementItem, SubtotalLineItem, CalculatedLineItem
-from .config.models import StatementModel # Import the Pydantic model
 from .config.config import StatementConfig
 from fin_statement_model.statements.registry import StatementRegistry
 from fin_statement_model.statements.builder import StatementStructureBuilder
@@ -43,9 +41,7 @@ __all__ = [
 
 
 def _load_build_register_statements(
-    config_path_or_dir: str,
-    registry: StatementRegistry,
-    builder: StatementStructureBuilder
+    config_path_or_dir: str, registry: StatementRegistry, builder: StatementStructureBuilder
 ) -> list[str]:
     """Load, validate, build, and register statement structures from configs.
 
@@ -75,18 +71,24 @@ def _load_build_register_statements(
 
     try:
         if Path(config_path_or_dir).is_dir():
-            raw_configs = statement_config_reader.read_statement_configs_from_directory(config_path_or_dir)
+            raw_configs = statement_config_reader.read_statement_configs_from_directory(
+                config_path_or_dir
+            )
         elif Path(config_path_or_dir).is_file():
             stmt_id = Path(config_path_or_dir).stem
             raw_config = statement_config_reader.read_statement_config_from_path(config_path_or_dir)
             raw_configs = {stmt_id: raw_config}
         else:
-            raise FileNotFoundError(f"Config path is not a valid file or directory: {config_path_or_dir}")
+            raise FileNotFoundError(
+                f"Config path is not a valid file or directory: {config_path_or_dir}"
+            )
 
     except (ReadError, FileNotFoundError) as e:
         logger.exception(f"Failed to read configuration from {config_path_or_dir}:")
         # Re-raise as a ConfigurationError maybe?
-        raise ConfigurationError(message=f"Failed to read config: {e}", config_path=config_path_or_dir) from e
+        raise ConfigurationError(
+            message=f"Failed to read config: {e}", config_path=config_path_or_dir
+        ) from e
 
     if not raw_configs:
         logger.warning(f"No statement configurations found at {config_path_or_dir}")
@@ -99,19 +101,21 @@ def _load_build_register_statements(
             if validation_errors:
                 raise ConfigurationError(
                     f"Invalid configuration for statement '{stmt_id}'",
-                    config_path=f"{config_path_or_dir}/{stmt_id}.ext", # Placeholder path
-                    errors=validation_errors
+                    config_path=f"{config_path_or_dir}/{stmt_id}.ext",  # Placeholder path
+                    errors=validation_errors,
                 )
 
             statement = builder.build(config)
-            registry.register(statement) # Raises StatementError on conflict
+            registry.register(statement)  # Raises StatementError on conflict
             loaded_statement_ids.append(statement.id)
 
         except (ConfigurationError, StatementError, ValueError) as e:
             logger.exception(f"Failed to process/register statement '{stmt_id}':")
             errors.append((stmt_id, str(e)))
         except Exception as e:
-            logger.exception(f"Unexpected error processing statement '{stmt_id}' from {config_path_or_dir}")
+            logger.exception(
+                f"Unexpected error processing statement '{stmt_id}' from {config_path_or_dir}"
+            )
             errors.append((stmt_id, f"Unexpected error: {e!s}"))
 
     # Handle errors - maybe raise an aggregate error if any occurred?
@@ -153,13 +157,17 @@ def _populate_graph(registry: StatementRegistry, graph: Graph) -> list[tuple[str
     for statement in statements:
         populator_errors = populate_graph_from_statement(statement, graph)
         if populator_errors:
-            all_populator_errors.extend([(statement.id, item_id, msg) for item_id, msg in populator_errors])
+            all_populator_errors.extend(
+                [(statement.id, item_id, msg) for item_id, msg in populator_errors]
+            )
 
     if all_populator_errors:
         logger.warning(f"Encountered {len(all_populator_errors)} errors during graph population.")
         # Log details if needed: logger.warning(f"Population errors: {all_populator_errors}")
 
-    return [(item_id, msg) for stmt_id, item_id, msg in all_populator_errors] # Return simplified list
+    return [
+        (item_id, msg) for stmt_id, item_id, msg in all_populator_errors
+    ]  # Return simplified list
 
 
 def create_statement_dataframe(
@@ -266,9 +274,11 @@ def create_statement_dataframe(
     for stmt_id in loaded_ids:
         statement = registry.get(stmt_id)
         if not statement:
-             logger.error(f"Internal error: Statement '{stmt_id}' was loaded but not found in registry.")
-             formatting_errors.append((stmt_id, "Statement not found in registry after loading"))
-             continue
+            logger.error(
+                f"Internal error: Statement '{stmt_id}' was loaded but not found in registry."
+            )
+            formatting_errors.append((stmt_id, "Statement not found in registry after loading"))
+            continue
         try:
             formatter = StatementFormatter(statement)
             df = formatter.generate_dataframe(graph, **format_kwargs)
@@ -287,7 +297,9 @@ def create_statement_dataframe(
     if is_single_file and len(results) == 1:
         return next(iter(results.values()))
     elif is_single_file and not results:
-         raise StatementError(f"Failed to generate DataFrame for statement from file: {config_path_or_dir}")
+        raise StatementError(
+            f"Failed to generate DataFrame for statement from file: {config_path_or_dir}"
+        )
     else:
         # Return dict for directory input, or if multiple results came from single file (unexpected)
         return results
@@ -298,9 +310,9 @@ def _export_statements(
     config_path_or_dir: str,
     output_dir: str,
     format_kwargs: Optional[dict[str, Any]],
-    writer_func: callable, # Function to call for writing (e.g., write_to_excel)
+    writer_func: callable,  # Function to call for writing (e.g., write_to_excel)
     writer_kwargs: Optional[dict[str, Any]],
-    file_suffix: str, # e.g., ".xlsx" or ".json"
+    file_suffix: str,  # e.g., ".xlsx" or ".json"
 ) -> None:
     """Generate and export statement DataFrames using a specific writer function.
 
@@ -329,8 +341,8 @@ def _export_statements(
     try:
         dfs = create_statement_dataframe(graph, config_path_or_dir, format_kwargs)
     except FinancialModelError:
-         logger.exception("Failed to generate statement dataframes for export:")
-         raise # Re-raise critical errors from generation step
+        logger.exception("Failed to generate statement dataframes for export:")
+        raise  # Re-raise critical errors from generation step
 
     if not dfs:
         logger.warning(f"No DataFrames generated, nothing to export to {file_suffix} files.")
@@ -339,7 +351,9 @@ def _export_statements(
     # Standardize to dictionary format
     if isinstance(dfs, pd.DataFrame):
         # Try to get a meaningful name if it was a single file
-        stmt_id = Path(config_path_or_dir).stem if Path(config_path_or_dir).is_file() else "statement"
+        stmt_id = (
+            Path(config_path_or_dir).stem if Path(config_path_or_dir).is_file() else "statement"
+        )
         dfs_dict = {stmt_id: dfs}
     else:
         dfs_dict = dfs
@@ -356,12 +370,14 @@ def _export_statements(
             logger.exception(f"Failed to write {file_suffix} file for statement '{stmt_id}':")
             export_errors.append((stmt_id, str(e)))
         except Exception as e:
-             logger.exception(f"Unexpected error exporting statement '{stmt_id}' to {file_suffix}.")
-             export_errors.append((stmt_id, f"Unexpected export error: {e!s}"))
+            logger.exception(f"Unexpected error exporting statement '{stmt_id}' to {file_suffix}.")
+            export_errors.append((stmt_id, f"Unexpected export error: {e!s}"))
 
     if export_errors:
         error_summary = "; ".join([f"{sid}: {err}" for sid, err in export_errors])
-        raise WriteError(f"Encountered {len(export_errors)} errors during {file_suffix} export: {error_summary}")
+        raise WriteError(
+            f"Encountered {len(export_errors)} errors during {file_suffix} export: {error_summary}"
+        )
 
 
 def export_statements_to_excel(
@@ -490,6 +506,7 @@ def export_statements_to_json(
         writer_kwargs=final_writer_kwargs,
         file_suffix=".json",
     )
+
 
 # Removed create_statement_json as DataFrame approach is used for consistency now.
 # If direct dict export is needed, add a separate function.

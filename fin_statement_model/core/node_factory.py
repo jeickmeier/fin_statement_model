@@ -5,7 +5,8 @@ for different types of nodes used in the financial statement model.
 """
 
 import logging
-from typing import Callable, Any, Union, Optional, ClassVar
+from typing import Any, Union, Optional, ClassVar
+from collections.abc import Callable
 
 # Force import of strategies package to ensure registration happens
 
@@ -25,6 +26,7 @@ from .nodes.forecast_nodes import (
 
 # Force import of calculations package to ensure registration happens
 from fin_statement_model.core.calculations import Registry, Calculation
+from fin_statement_model.core.errors import ConfigurationError
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -47,7 +49,7 @@ class NodeFactory:
     _calculation_methods: ClassVar[dict[str, str]] = {
         "addition": "AdditionCalculation",
         "subtraction": "SubtractionCalculation",
-        "multiplication": "MultiplicationCalculation",
+        "formula": "FormulaCalculationNode",
         "division": "DivisionCalculation",
         "weighted_average": "WeightedAverageCalculation",
         "custom_formula": "CustomFormulaCalculation",
@@ -97,6 +99,7 @@ class NodeFactory:
         name: str,
         inputs: list[Node],
         calculation_type: str,
+        formula_variable_names: Optional[list[str]] = None,
         **calculation_kwargs: Any,
     ) -> CalculationNode:
         """Create a CalculationNode using a pre-defined calculation.
@@ -109,6 +112,9 @@ class NodeFactory:
             name: Identifier for the calculation node instance.
             inputs: List of Node instances serving as inputs to the calculation.
             calculation_type: Key for the desired calculation in the registry.
+            formula_variable_names: Optional list of variable names used in the formula
+                string. Required & used only if creating a FormulaCalculationNode
+                via the 'custom_formula' type with a 'formula' kwarg.
             **calculation_kwargs: Additional parameters for the calculation constructor.
 
         Returns:
@@ -140,14 +146,71 @@ class NodeFactory:
                 f"Invalid calculation type: '{calculation_type}'. Valid types are: {valid_types}"
             )
 
-        # Get the calculation name and resolve the calculation class from the registry
+        # Get the calculation name
         calculation_name = cls._calculation_methods[calculation_type]
+
+        # --- SPECIAL HANDLING for formula strings (type: 'formula') --- #
+        # If the type is 'formula', create a FormulaCalculationNode directly.
+        if calculation_type == "formula":
+            try:
+                # We actually want a FormulaCalculationNode in this case.
+                # Note: FormulaCalculationNode expects inputs as a dict {var_name: Node}
+                #       but we only have a list[Node]. We need to adapt.
+                #       For simplicity, we'll map input_0, input_1 etc. to nodes.
+                #       A more robust solution might involve passing var names from metric.
+                logger.debug(
+                    f"Intercepted 'formula' with string. Creating FormulaCalculationNode for '{name}'"
+                )
+                # Create input map: Use formula_variable_names if provided, else generate defaults
+                if formula_variable_names and len(formula_variable_names) == len(inputs):
+                    input_map = {
+                        var_name: node for var_name, node in zip(formula_variable_names, inputs)
+                    }
+                elif not formula_variable_names:
+                    # Generate default names like var_0, var_1, ...
+                    input_map = {f"var_{i}": node for i, node in enumerate(inputs)}
+                    logger.warning(
+                        f"No formula_variable_names provided for formula node '{name}'. Using defaults: {list(input_map.keys())}"
+                    )
+                else:
+                    # Mismatch between provided names and number of inputs
+                    raise ConfigurationError(
+                        f"Mismatch between formula_variable_names ({len(formula_variable_names)}) and number of inputs ({len(inputs)}) for node '{name}'"
+                    )
+
+                # Import FormulaCalculationNode locally to avoid circular dependency at module level
+                from .nodes.calculation_nodes import FormulaCalculationNode
+
+                formula_str = calculation_kwargs["formula"]
+                # Optional: Extract metric details if passed in kwargs
+                metric_name = calculation_kwargs.get("metric_name")
+                metric_desc = calculation_kwargs.get("metric_description")
+
+                return FormulaCalculationNode(
+                    name=name,
+                    inputs=input_map,
+                    formula=formula_str,
+                    metric_name=metric_name,
+                    metric_description=metric_desc,
+                )
+            except Exception as e:
+                # Catch potential errors during FormulaCalculationNode creation
+                logger.exception(
+                    f"Error creating FormulaCalculationNode for metric-like node '{name}'"
+                )
+                raise ConfigurationError(
+                    f"Failed to create FormulaCalculationNode for '{name}' from metric definition: {e}"
+                ) from e
+        # --- END SPECIAL HANDLING for type: 'formula' --- #
+
+        # For other types, resolve the Calculation class from the registry
         try:
             calculation_cls: type[Calculation] = Registry.get(calculation_name)
         except KeyError:
+            # This should ideally not happen if _calculation_methods is synced with registry
             raise ValueError(
-                f"Calculation '{calculation_name}' not found in Registry for type '{calculation_type}'"
-            )
+                f"Calculation class '{calculation_name}' (for type '{calculation_type}') not found in Registry."
+            ) from None # Prevent chaining the KeyError
 
         # Instantiate the calculation, passing any extra kwargs
         try:
@@ -162,9 +225,7 @@ class NodeFactory:
             ) from e
 
         # Create and return a CalculationNode with the instantiated calculation
-        logger.debug(
-            f"Creating calculation node '{name}' with '{calculation_name}' calculation."
-        )
+        logger.debug(f"Creating calculation node '{name}' with '{calculation_name}' calculation.")
         return CalculationNode(name, inputs, calculation_instance)
 
     @classmethod
@@ -211,7 +272,9 @@ class NodeFactory:
         elif forecast_type == "curve":
             node = CurveGrowthForecastNode(base_node, base_period, forecast_periods, growth_params)
         elif forecast_type == "statistical":
-            node = StatisticalGrowthForecastNode(base_node, base_period, forecast_periods, growth_params)
+            node = StatisticalGrowthForecastNode(
+                base_node, base_period, forecast_periods, growth_params
+            )
         elif forecast_type == "average":
             node = AverageValueForecastNode(base_node, base_period, forecast_periods)
         elif forecast_type == "historical_growth":

@@ -32,7 +32,7 @@ def write_statement_to_excel(
         raise WriteError(
             message="Failed to export statement DataFrame to Excel",
             target=file_path,
-            format_type="excel", # Corrected parameter name
+            format_type="excel",  # Corrected parameter name
             original_error=e,
         ) from e
 
@@ -62,6 +62,6 @@ def write_statement_to_json(
         raise WriteError(
             message="Failed to export statement DataFrame to JSON",
             target=file_path,
-            format_type="json", # Corrected parameter name
+            format_type="json",  # Corrected parameter name
             original_error=e,
         ) from e

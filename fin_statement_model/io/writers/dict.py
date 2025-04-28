@@ -6,6 +6,7 @@ import numpy as np
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.errors import CalculationError
+
 # Remove specific node import, we handle all nodes now
 # from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.base import DataWriter
@@ -73,7 +74,9 @@ class DictWriter(DataWriter):
                     try:
                         # Use graph.calculate to get the value for the specific node and period
                         calculated_value = graph.calculate(node_id, period=period)
-                        if isinstance(calculated_value, (int, float, np.number)) and np.isfinite(calculated_value):
+                        if isinstance(calculated_value, int | float | np.number) and np.isfinite(
+                            calculated_value
+                        ):
                             value = float(calculated_value)
                         else:
                             # Handle cases where calculation returns non-numeric or infinite results
@@ -89,7 +92,7 @@ class DictWriter(DataWriter):
                         # Catch unexpected errors during calculation for a specific period
                         logger.warning(
                             f"Unexpected error calculating node '{node_id}' period '{period}': {e}. Using NaN.",
-                            exc_info=True
+                            exc_info=True,
                         )
                     node_values[period] = value
                 result[node_id] = node_values

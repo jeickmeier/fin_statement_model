@@ -13,7 +13,7 @@ from typing import Any, Optional
 from fin_statement_model.statements.config.models import (
     StatementModel,
 )
-from pydantic import ValidationError # Import directly
+from pydantic import ValidationError  # Import directly
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -37,11 +37,11 @@ class StatementConfig:
             ValueError: If config_data is not a non-empty dictionary.
         """
         if not config_data or not isinstance(config_data, dict):
-             raise ValueError("config_data must be a non-empty dictionary.")
+            raise ValueError("config_data must be a non-empty dictionary.")
         self.config_data = config_data
         # Remove config_path attribute
         # self.config_path = None # No longer needed
-        self.model: Optional[StatementModel] = None # Store validated model
+        self.model: Optional[StatementModel] = None  # Store validated model
 
     # Removed load_config method
     # def load_config(self, config_path: str) -> None:
@@ -66,7 +66,7 @@ class StatementConfig:
                 loc = ".".join(str(x) for x in err.get("loc", []))
                 msg = err.get("msg", "")
                 errors.append(f"{loc}: {msg}")
-            self.model = None # Ensure model is not set on validation error
+            self.model = None  # Ensure model is not set on validation error
             return errors
         except Exception as e:
             # Catch other potential validation issues

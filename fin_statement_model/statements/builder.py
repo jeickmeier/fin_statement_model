@@ -17,12 +17,14 @@ from .config.models import (
     BaseItemModel,
     LineItemModel,
     CalculatedItemModel,
+    MetricItemModel,
     SubtotalModel,
 )
 from .structure import (
     StatementStructure,
     Section,
     LineItem,
+    MetricLineItem,
     CalculatedLineItem,
     SubtotalLineItem,
 )
@@ -65,15 +67,15 @@ class StatementStructureBuilder:
                 initial Pydantic validation or an internal inconsistency.
         """
         if config.model is None:
-             # Ensure validation has run successfully before building
-             raise ValueError(
-                 "StatementConfig must be validated (config.model must be set) "
-                 "before building the structure."
-             )
+            # Ensure validation has run successfully before building
+            raise ValueError(
+                "StatementConfig must be validated (config.model must be set) "
+                "before building the structure."
+            )
 
         # Build from the validated Pydantic model stored in config.model
         try:
-            stmt_model = config.model # Use validated model from config
+            stmt_model = config.model  # Use validated model from config
             statement = StatementStructure(
                 id=stmt_model.id,
                 name=stmt_model.name,
@@ -86,12 +88,14 @@ class StatementStructureBuilder:
             logger.info(f"Successfully built StatementStructure for ID '{statement.id}'")
             return statement
         except Exception as e:
-             # Catch potential errors during the building process itself
-             logger.exception(f"Error building statement structure from validated model for ID '{config.model.id}'")
-             raise ConfigurationError(
-                 message=f"Failed to build statement structure from validated config: {e}",
-                 errors=[str(e)]
-             ) from e
+            # Catch potential errors during the building process itself
+            logger.exception(
+                f"Error building statement structure from validated model for ID '{config.model.id}'"
+            )
+            raise ConfigurationError(
+                message=f"Failed to build statement structure from validated config: {e}",
+                errors=[str(e)],
+            ) from e
 
     def _build_section_model(self, section_model: SectionModel) -> Section:
         """Build a `Section` object from a `SectionModel`.
@@ -121,20 +125,20 @@ class StatementStructureBuilder:
 
     def _build_item_model(
         self, item_model: BaseItemModel
-    ) -> Union[LineItem, CalculatedLineItem, SubtotalLineItem, Section]:
+    ) -> Union[LineItem, CalculatedLineItem, MetricLineItem, SubtotalLineItem, Section]:
         """Build a statement item object from its corresponding Pydantic model.
 
         Dispatches the building process based on the specific type of the input
-        model (`LineItemModel`, `CalculatedItemModel`, `SubtotalModel`, or
-        `SectionModel` for nested sections).
+        model (`LineItemModel`, `CalculatedItemModel`, `MetricItemModel`,
+        `SubtotalModel`, or `SectionModel` for nested sections).
 
         Args:
             item_model: The Pydantic model representing a line item, calculated
-                item, subtotal, or nested section.
+                item, metric item, subtotal, or nested section.
 
         Returns:
             The corresponding `StatementStructure` component (`LineItem`,
-            `CalculatedLineItem`, `SubtotalLineItem`, or `Section`).
+            `CalculatedLineItem`, `MetricLineItem`, `SubtotalLineItem`, or `Section`).
 
         Raises:
             ConfigurationError: If an unknown or unexpected model type is
@@ -159,7 +163,17 @@ class StatementStructureBuilder:
                 id=item_model.id,
                 name=item_model.name,
                 # Pass the nested Pydantic model if structure expects it, else dump
-                calculation=item_model.calculation.model_dump(), # Assuming structure expects dict
+                calculation=item_model.calculation.model_dump(),  # Assuming structure expects dict
+                description=item_model.description,
+                sign_convention=item_model.sign_convention,
+                metadata=item_model.metadata,
+            )
+        if isinstance(item_model, MetricItemModel):
+            return MetricLineItem(
+                id=item_model.id,
+                name=item_model.name,
+                metric_id=item_model.metric_id,
+                inputs=item_model.inputs,
                 description=item_model.description,
                 sign_convention=item_model.sign_convention,
                 metadata=item_model.metadata,
@@ -168,7 +182,9 @@ class StatementStructureBuilder:
             return self._build_subtotal_model(item_model)
 
         # Should be unreachable if Pydantic validation works
-        logger.error(f"Encountered unknown item model type during build: {type(item_model).__name__}")
+        logger.error(
+            f"Encountered unknown item model type during build: {type(item_model).__name__}"
+        )
         raise ConfigurationError(
             message=f"Unknown item model type: {type(item_model).__name__}",
             errors=[f"Item '{getattr(item_model, 'id', '<unknown>')}' has invalid model type."],
@@ -193,14 +209,16 @@ class StatementStructureBuilder:
             else subtotal_model.items_to_sum
         )
         if not item_ids:
-             logger.warning(f"Subtotal '{subtotal_model.id}' has no items_to_sum or calculation inputs defined.")
-             # Decide handling: error or allow empty subtotal?
-             # Allowing for now, may need adjustment based on desired behavior.
+            logger.warning(
+                f"Subtotal '{subtotal_model.id}' has no items_to_sum or calculation inputs defined."
+            )
+            # Decide handling: error or allow empty subtotal?
+            # Allowing for now, may need adjustment based on desired behavior.
 
         return SubtotalLineItem(
             id=subtotal_model.id,
             name=subtotal_model.name,
-            item_ids=item_ids or [], # Ensure it's a list
+            item_ids=item_ids or [],  # Ensure it's a list
             description=subtotal_model.description,
             sign_convention=subtotal_model.sign_convention,
             metadata=subtotal_model.metadata,

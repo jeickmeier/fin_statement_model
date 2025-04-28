@@ -8,7 +8,7 @@ import json
 import yaml
 import logging
 import importlib.resources
-import importlib.util # Needed for checking resource type
+import importlib.util  # Needed for checking resource type
 from pathlib import Path
 from typing import Any, Optional
 
@@ -22,6 +22,7 @@ __all__ = [
     "read_statement_config_from_path",
     "read_statement_configs_from_directory",
 ]
+
 
 def read_statement_config_from_path(config_path: str) -> dict[str, Any]:
     """Reads and parses a statement configuration file from a given path.
@@ -43,7 +44,7 @@ def read_statement_config_from_path(config_path: str) -> dict[str, Any]:
     if not path.exists() or not path.is_file():
         raise ReadError(
             message="Configuration file not found or is not a file",
-            target=config_path,
+            source=config_path,
         )
 
     extension = path.suffix.lower()
@@ -58,7 +59,7 @@ def read_statement_config_from_path(config_path: str) -> dict[str, Any]:
             else:
                 raise ReadError(
                     message="Unsupported file extension for statement config",
-                    target=config_path,
+                    source=config_path,
                     details=f"Use .json, .yaml, or .yml instead of {extension}",
                 )
         logger.debug(f"Successfully read and parsed config file: {config_path}")
@@ -68,38 +69,37 @@ def read_statement_config_from_path(config_path: str) -> dict[str, Any]:
         logger.exception(f"Error parsing JSON configuration file {config_path}")
         raise ReadError(
             message="Invalid JSON format in configuration file",
-            target=config_path,
+            source=config_path,
             original_error=e,
             details=f"JSON decode error at line {e.lineno}, column {e.colno}: {e.msg}",
         ) from e
     except yaml.YAMLError as e:
         logger.exception(f"Error parsing YAML configuration file {config_path}")
-        details = str(e)
-        if hasattr(e, "problem_mark"):
+        str(e)
+        if hasattr(e, "problem_mark") and getattr(e, "problem_mark", None) is not None:
             mark = e.problem_mark
             if mark:
-                details = (
+                (
                     f"YAML parse error near line {mark.line + 1}, column {mark.column + 1}: "
                     f"{getattr(e, 'problem', '')}"
                 )
         raise ReadError(
             message="Invalid YAML format in configuration file",
-            target=config_path,
+            source=config_path,
             original_error=e,
-            details=details,
         ) from e
     except OSError as e:
         logger.exception(f"IO Error reading configuration file {config_path}")
         raise ReadError(
             message="Failed to read configuration file",
-            target=config_path,
+            source=config_path,
             original_error=e,
         ) from e
     except Exception as e:
         logger.exception(f"Unexpected error loading configuration from {config_path}")
         raise ReadError(
             message="Unexpected error loading configuration file",
-            target=config_path,
+            source=config_path,
             original_error=e,
         ) from e
 
@@ -126,7 +126,7 @@ def read_statement_configs_from_directory(directory_path: str) -> dict[str, dict
     if not path.is_dir():
         raise ReadError(
             message="Provided path is not a directory",
-            target=directory_path,
+            source=directory_path,
         )
 
     configs: dict[str, dict[str, Any]] = {}
@@ -142,13 +142,15 @@ def read_statement_configs_from_directory(directory_path: str) -> dict[str, dict
         file_path_str = str(file_path)
         try:
             config_data = read_statement_config_from_path(file_path_str)
-            statement_id = file_path.stem # Use filename without extension as ID
+            statement_id = file_path.stem  # Use filename without extension as ID
             if statement_id in configs:
                 logger.warning(
                     f"Duplicate statement ID '{statement_id}' found. Overwriting config from {file_path_str}."
                 )
             configs[statement_id] = config_data
-            logger.debug(f"Successfully loaded statement config '{statement_id}' from {file_path.name}")
+            logger.debug(
+                f"Successfully loaded statement config '{statement_id}' from {file_path.name}"
+            )
         except ReadError as e:
             logger.exception(f"Failed to read/parse config file {file_path.name}:")
             errors.append(f"{file_path.name}: {e.message}")
@@ -163,12 +165,14 @@ def read_statement_configs_from_directory(directory_path: str) -> dict[str, dict
     if not configs and errors:
         raise ReadError(
             message=f"Failed to load any valid configurations from directory {directory_path}",
-            target=directory_path,
-            details="\n".join(errors)
+            source=directory_path,
+            details="\n".join(errors),
         )
     elif errors:
         # Log that some files failed if others succeeded
-        logger.warning(f"Encountered errors while loading configs from {directory_path}: {len(errors)} file(s) failed.")
+        logger.warning(
+            f"Encountered errors while loading configs from {directory_path}: {len(errors)} file(s) failed."
+        )
 
     return configs
 
@@ -180,6 +184,7 @@ def _get_builtin_config_package() -> str:
     Environment variable override is removed as importlib.resources relies on package structure.
     """
     return "fin_statement_model.statements.config.mappings"
+
 
 def list_available_builtin_configs() -> list[str]:
     """List the names of all built-in statement configuration mappings available.
@@ -196,14 +201,15 @@ def list_available_builtin_configs() -> list[str]:
             return []
 
         names = [
-            res.name.split('.')[0] # Get filename stem
+            res.name.split(".")[0]  # Get filename stem
             for res in resource_path.iterdir()
             if res.is_file() and res.suffix.lower() in (".yaml", ".yml", ".json")
         ]
         return sorted(names)
-    except (ModuleNotFoundError, FileNotFoundError): # Handle case where package/path doesn't exist
+    except (ModuleNotFoundError, FileNotFoundError):  # Handle case where package/path doesn't exist
         logger.warning(f"Built-in config package path not found: {package_path}")
         return []
+
 
 def read_builtin_statement_config(name: str) -> dict[str, Any]:
     """Reads and parses a built-in statement configuration by name.
@@ -235,42 +241,47 @@ def read_builtin_statement_config(name: str) -> dict[str, Any]:
                 file_extension = ext
                 break
         except (FileNotFoundError, ModuleNotFoundError):
-            continue # Try next extension or handle package not found below
+            continue  # Try next extension or handle package not found below
         except Exception as e:
             # Catch other potential errors during resource access
             logger.exception(f"Error accessing resource {resource_name} in {package_path}")
             raise ReadError(
                 message=f"Error accessing built-in config resource '{name}'",
-                target=f"{package_path}/{resource_name}",
+                source=f"{package_path}/{resource_name}",
                 original_error=e,
             ) from e
 
-    if resource_content is not None and found_resource_name is not None and file_extension is not None:
-        logger.debug(f"Found and read built-in config '{name}' from resource: {package_path}/{found_resource_name}")
+    if (
+        resource_content is not None
+        and found_resource_name is not None
+        and file_extension is not None
+    ):
+        logger.debug(
+            f"Found and read built-in config '{name}' from resource: {package_path}/{found_resource_name}"
+        )
         try:
             if file_extension == ".json":
                 config_data = json.loads(resource_content)
-            else: # .yaml or .yml
+            else:  # .yaml or .yml
                 config_data = yaml.safe_load(resource_content)
             return config_data
         except json.JSONDecodeError as e:
             logger.exception(f"Error parsing JSON for built-in config '{name}'")
             raise ReadError(
                 message="Invalid JSON format in built-in configuration",
-                target=f"{package_path}/{found_resource_name}",
+                source=f"{package_path}/{found_resource_name}",
                 original_error=e,
             ) from e
         except yaml.YAMLError as e:
             logger.exception(f"Error parsing YAML for built-in config '{name}'")
             raise ReadError(
                 message="Invalid YAML format in built-in configuration",
-                target=f"{package_path}/{found_resource_name}",
+                source=f"{package_path}/{found_resource_name}",
                 original_error=e,
             ) from e
     else:
         logger.warning(f"Built-in statement config '{name}' not found in package {package_path}")
         raise ReadError(
-            message=f"Built-in statement config '{name}' not found",
-            target=package_path,
-            details=f"No resource found for '{name}' with .yaml, .yml, or .json extension.",
+            message=f"Built-in statement config '{name}' not found in package {package_path}",
+            source=package_path,
         )

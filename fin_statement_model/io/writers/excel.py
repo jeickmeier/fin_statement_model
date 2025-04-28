@@ -58,9 +58,7 @@ class ExcelWriter(DataWriter):
             sheet_name = kwargs.get("sheet_name", self.cfg.sheet_name)
             recalculate = kwargs.get("recalculate", self.cfg.recalculate)
             include_nodes = kwargs.get("include_nodes", self.cfg.include_nodes)
-            excel_writer_options = kwargs.get(
-                "excel_writer_kwargs", self.cfg.excel_writer_kwargs
-            )
+            excel_writer_options = kwargs.get("excel_writer_kwargs", self.cfg.excel_writer_kwargs)
         else:
             sheet_name = kwargs.get("sheet_name", "Sheet1")
             recalculate = kwargs.get("recalculate", True)
@@ -72,7 +70,9 @@ class ExcelWriter(DataWriter):
         try:
             # 1. Convert graph to DataFrame using DataFrameWriter
             df_writer = DataFrameWriter()
-            df = df_writer.write(graph=graph, target=None, recalculate=recalculate, include_nodes=include_nodes)
+            df = df_writer.write(
+                graph=graph, target=None, recalculate=recalculate, include_nodes=include_nodes
+            )
 
             # 2. Write DataFrame to Excel
             output_path = Path(file_path)
