@@ -1,0 +1,38 @@
+---
+# Market Data
+# Standard node definitions for market prices and per-share data
+
+market_price:
+  category: market_data
+  subcategory: price
+  description: Current stock price
+  alternate_names: [stock_price, share_price]
+  sign_convention: positive
+
+market_cap:
+  category: market_data
+  subcategory: valuation
+  description: Market capitalization
+  alternate_names: [market_capitalization]
+  sign_convention: positive
+
+dividends_per_share:
+  category: market_data
+  subcategory: per_share
+  description: Dividends per share
+  alternate_names: [dps]
+  sign_convention: positive
+
+earnings_per_share:
+  category: market_data
+  subcategory: per_share
+  description: Basic EPS
+  alternate_names: [eps, basic_eps]
+  sign_convention: positive
+
+book_value_per_share:
+  category: market_data
+  subcategory: per_share
+  description: Book value per share
+  alternate_names: [bvps]
+  sign_convention: positive 

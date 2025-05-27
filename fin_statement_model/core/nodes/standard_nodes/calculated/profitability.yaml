@@ -1,0 +1,24 @@
+---
+# Calculated Items - Profitability
+# Standard node definitions for calculated profitability measures
+
+ebitda:
+  category: calculated
+  subcategory: profit_measure
+  description: EBITDA (operating_income + depreciation_and_amortization)
+  alternate_names: []
+  sign_convention: positive
+
+ebit:
+  category: calculated
+  subcategory: profit_measure
+  description: EBIT (operating_income)
+  alternate_names: [operating_income]
+  sign_convention: positive
+
+nopat:
+  category: calculated
+  subcategory: profit_measure
+  description: Net operating profit after tax
+  alternate_names: [noplat]
+  sign_convention: positive 

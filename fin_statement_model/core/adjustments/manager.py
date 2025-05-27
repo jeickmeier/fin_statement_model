@@ -135,7 +135,9 @@ class AdjustmentManager:
             # Assume shorthand applies only to DEFAULT_SCENARIO unless specified otherwise?
             # Let's keep it simple: Shorthand applies to DEFAULT_SCENARIO only.
             return AdjustmentFilter(
-                include_tags=filter_input, include_scenarios={DEFAULT_SCENARIO}, period=period
+                include_tags=filter_input,
+                include_scenarios={DEFAULT_SCENARIO},
+                period=period,
             )
         elif callable(filter_input):
             # This case is complex as the callable doesn't inherently know the period.

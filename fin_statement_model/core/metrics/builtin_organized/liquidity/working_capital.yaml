@@ -1,0 +1,124 @@
+---
+# Liquidity - Working Capital
+# Liquidity metrics: working_capital
+
+# Metric definition for Days Sales Outstanding
+
+name: Days Sales Outstanding
+description: Measures average collection period for accounts receivable. Shows efficiency of credit and collection policies.
+inputs:
+  - accounts_receivable
+  - revenue
+formula: "(accounts_receivable / revenue) * 365"
+tags: [working_capital, receivables_management, collection_efficiency, cash_conversion]
+units: days
+category: efficiency
+related_metrics: [days_inventory_outstanding, days_payables_outstanding, cash_conversion_cycle]
+interpretation:
+  good_range: [30, 60]
+  warning_above: 90
+  excellent_above: null
+  poor_below: null
+  warning_below: null
+  notes: |
+    - Below 30 days: Very efficient collections, strong credit management
+    - 30-60 days: Good collection efficiency for most industries
+    - 60-90 days: Adequate but could be improved, monitor trends
+    - 90-120 days: Slow collections, potential credit issues
+    - Above 120 days: Very slow collections, significant working capital tie-up
+    - Highly industry-dependent - B2B typically higher than B2C
+    - Compare to stated payment terms (e.g., Net 30, Net 60)
+    - Rising DSO may indicate credit quality deterioration
+    - Consider seasonality and customer concentration
+    - Use average receivables for more accurate calculation when possible 
+# Metric definition for Days Inventory Outstanding
+
+name: Days Inventory Outstanding
+description: Measures average inventory holding period. Shows efficiency of inventory management and working capital utilization.
+inputs:
+  - inventory
+  - cost_of_goods_sold
+formula: "(inventory / cost_of_goods_sold) * 365"
+tags: [working_capital, inventory_management, operational_efficiency, cash_conversion]
+units: days
+category: efficiency
+related_metrics: [days_sales_outstanding, days_payables_outstanding, cash_conversion_cycle, inventory_turnover]
+interpretation:
+  good_range: [30, 90]
+  warning_above: 180
+  excellent_above: null
+  poor_below: null
+  warning_below: null
+  notes: |
+    - Below 30 days: Very efficient inventory management, lean operations
+    - 30-90 days: Good inventory efficiency for most industries
+    - 90-180 days: Adequate but monitor for improvement opportunities
+    - 180-365 days: Slow inventory turnover, significant working capital tie-up
+    - Above 365 days: Very slow turnover, potential obsolescence risk
+    - Highly industry-dependent - manufacturing typically higher than retail
+    - Consider product lifecycle and seasonality patterns
+    - Rising DIO may indicate demand weakness or poor inventory planning
+    - Balance efficiency with stockout risk and customer service
+    - Use average inventory for more accurate calculation when possible 
+# Metric definition for Days Payables Outstanding
+
+name: Days Payables Outstanding
+description: Measures average payment period for accounts payable. Shows efficiency of supplier payment management and cash flow optimization.
+inputs:
+  - accounts_payable
+  - cost_of_goods_sold
+formula: "(accounts_payable / cost_of_goods_sold) * 365"
+tags: [working_capital, payables_management, cash_flow_optimization, supplier_relations]
+units: days
+category: efficiency
+related_metrics: [days_sales_outstanding, days_inventory_outstanding, cash_conversion_cycle]
+interpretation:
+  good_range: [30, 60]
+  warning_below: 15
+  warning_above: 120
+  excellent_above: null
+  poor_below: null
+  notes: |
+    - Below 15 days: Very fast payments, may miss cash flow optimization opportunities
+    - 15-30 days: Fast payments, good supplier relations but limited cash benefit
+    - 30-60 days: Balanced approach, good cash flow management
+    - 60-120 days: Extended payment terms, maximize cash flow benefit
+    - Above 120 days: Very extended terms, potential supplier relationship strain
+    - Higher DPO generally better for cash flow (within reason)
+    - Must balance cash flow benefits with supplier relationships
+    - Consider payment terms negotiated with suppliers
+    - Sudden increases may indicate cash flow stress
+    - Industry practices and supplier power affect optimal levels 
+# Metric definition for Cash Conversion Cycle
+
+name: Cash Conversion Cycle
+description: Measures time to convert investments in inventory and receivables into cash. Key working capital efficiency metric.
+inputs:
+  - accounts_receivable
+  - revenue
+  - inventory
+  - cost_of_goods_sold
+  - accounts_payable
+# Formula combines the three component metrics
+formula: "((accounts_receivable / revenue) * 365) + ((inventory / cost_of_goods_sold) * 365) - ((accounts_payable / cost_of_goods_sold) * 365)"
+tags: [working_capital, cash_conversion, operational_efficiency, liquidity_management]
+units: days
+category: efficiency
+related_metrics: [days_sales_outstanding, days_inventory_outstanding, days_payables_outstanding]
+interpretation:
+  good_range: [30, 90]
+  warning_above: 150
+  excellent_above: null
+  poor_below: null
+  warning_below: null
+  notes: |
+    - Below 30 days: Excellent working capital efficiency, strong cash generation
+    - 30-90 days: Good working capital management for most industries
+    - 90-150 days: Adequate but opportunities for improvement
+    - 150-250 days: Slow cash conversion, significant working capital tie-up
+    - Above 250 days: Very slow conversion, potential cash flow stress
+    - Negative values indicate suppliers finance working capital (very favorable)
+    - Lower is generally better for cash flow and liquidity
+    - Highly industry-dependent - compare to sector benchmarks
+    - Monitor trends - deteriorating cycle may signal operational issues
+    - Balance efficiency with customer service and supplier relationships 

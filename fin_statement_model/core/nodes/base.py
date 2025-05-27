@@ -43,7 +43,9 @@ class Node(ABC):
             raise ValueError(f"Invalid node name: '{name}'. Contains invalid characters.")
         # Check for leading/trailing whitespace
         if name != name.strip():
-            raise ValueError(f"Invalid node name: '{name}'. Cannot have leading/trailing whitespace.")
+            raise ValueError(
+                f"Invalid node name: '{name}'. Cannot have leading/trailing whitespace."
+            )
         self.name = name
 
     @abstractmethod

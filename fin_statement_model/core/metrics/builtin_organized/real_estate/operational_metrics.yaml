@@ -1,0 +1,144 @@
+---
+# Real Estate - Operational Metrics
+# Real estate metrics: operational performance
+
+# Metric definition for Net Operating Income
+
+name: Net Operating Income
+description: Property income after operating expenses but before financing costs, taxes, depreciation, and capital expenditures. Core measure of property performance.
+inputs:
+  - rental_income
+  - other_property_income
+  - property_operating_expenses
+formula: "rental_income + other_property_income - property_operating_expenses"
+tags: [real_estate, operational_performance, property_income, noi]
+units: currency
+category: real_estate_operational
+related_metrics: [funds_from_operations, adjusted_funds_from_operations, cap_rate]
+interpretation:
+  good_range: null
+  warning_below: null
+  warning_above: null
+  excellent_above: null
+  poor_below: 0
+  notes: |
+    - Negative NOI indicates property operating expenses exceed income
+    - NOI should be positive and growing over time for healthy properties
+    - Used as basis for property valuation (NOI / Cap Rate = Property Value)
+    - Compare to previous periods and market benchmarks
+    - Excludes financing, taxes, depreciation, and capex for pure operational view
+    - Key metric for REIT analysis and property investment decisions
+    - Industry standard for measuring property-level performance
+    - Should be analyzed alongside occupancy rates and rent growth 
+# Metric definition for Funds From Operations
+
+name: Funds From Operations
+description: REIT earnings metric that adds back depreciation and amortization to net income. Standard measure of REIT operating performance.
+inputs:
+  - net_income
+  - depreciation_and_amortization
+  - gains_on_property_sales
+formula: "net_income + depreciation_and_amortization - gains_on_property_sales"
+tags: [real_estate, reit_performance, cash_flow, ffo]
+units: currency
+category: real_estate_operational
+related_metrics: [adjusted_funds_from_operations, net_operating_income, affo_per_share]
+interpretation:
+  good_range: null
+  warning_below: null
+  warning_above: null
+  excellent_above: null
+  poor_below: 0
+  notes: |
+    - Negative FFO indicates poor operating performance
+    - FFO should be positive and growing for healthy REITs
+    - Standard metric defined by NAREIT (National Association of REITs)
+    - Adds back depreciation as real estate typically appreciates over time
+    - Subtracts gains on sales as these are non-recurring items
+    - More relevant than net income for REIT analysis
+    - Used for dividend coverage analysis and peer comparisons
+    - Should be compared to AFFO for complete cash flow picture 
+# Metric definition for Adjusted Funds From Operations
+
+name: Adjusted Funds From Operations
+description: FFO adjusted for recurring capital expenditures and other non-cash items. Shows cash available for dividends and growth.
+inputs:
+  - funds_from_operations
+  - recurring_capital_expenditures
+  - straight_line_rent_adjustments
+  - stock_compensation_expense
+formula: "funds_from_operations - recurring_capital_expenditures - straight_line_rent_adjustments + stock_compensation_expense"
+tags: [real_estate, reit_performance, cash_flow, affo, dividend_coverage]
+units: currency
+category: real_estate_operational
+related_metrics: [funds_from_operations, net_operating_income, dividend_payout_ratio]
+interpretation:
+  good_range: null
+  warning_below: null
+  warning_above: null
+  excellent_above: null
+  poor_below: 0
+  notes: |
+    - Negative AFFO indicates insufficient cash for dividends
+    - AFFO should exceed dividend payments for sustainable distributions
+    - More conservative than FFO as it accounts for necessary capex
+    - Adjusts for timing differences in rent recognition
+    - Key metric for assessing dividend sustainability
+    - Used by analysts for REIT valuation and comparison
+    - Should grow over time for healthy REIT performance
+    - Critical for understanding true cash generation capability 
+# Metric definition for Occupancy Rate
+
+name: Occupancy Rate
+description: Percentage of rentable space that is currently occupied by paying tenants. Key indicator of property performance and market demand.
+inputs:
+  - occupied_square_feet
+  - total_rentable_square_feet
+formula: "occupied_square_feet / total_rentable_square_feet * 100"
+tags: [real_estate, occupancy, property_performance, leasing]
+units: percentage
+category: real_estate_operational
+related_metrics: [net_operating_income, rent_per_square_foot, lease_rollover_rate]
+interpretation:
+  good_range: [90.0, 98.0]
+  warning_below: 85.0
+  warning_above: null
+  excellent_above: 95.0
+  poor_below: 80.0
+  notes: |
+    - Below 80%: Very poor occupancy, potential market or property issues
+    - 80-85%: Low occupancy, requires attention to leasing and retention
+    - 85-90%: Adequate occupancy for most property types
+    - 90-98%: Good to excellent occupancy, strong property performance
+    - Above 98%: Exceptional occupancy, may indicate underpricing
+    - Industry benchmarks vary by property type and market
+    - Should be analyzed alongside rent levels and market conditions
+    - Declining occupancy may signal market weakness or property issues 
+# Metric definition for Same Store NOI Growth
+
+name: Same Store NOI Growth
+description: Year-over-year growth in NOI for properties owned for the full comparison periods. Measures organic growth excluding acquisitions.
+inputs:
+  - same_store_noi_current
+  - same_store_noi_prior
+formula: "(same_store_noi_current - same_store_noi_prior) / same_store_noi_prior * 100"
+tags: [real_estate, growth, same_store, organic_growth, noi_growth]
+units: percentage
+category: real_estate_operational
+related_metrics: [net_operating_income, occupancy_rate, rent_growth_rate]
+interpretation:
+  good_range: [2.0, 8.0]
+  warning_below: 0.0
+  warning_above: 15.0
+  excellent_above: 6.0
+  poor_below: -2.0
+  notes: |
+    - Below -2%: Declining same-store performance, concerning trend
+    - -2% to 0%: Flat to declining growth, market or operational challenges
+    - 0-2%: Slow growth, may lag inflation
+    - 2-8%: Healthy same-store growth, good operational performance
+    - Above 15%: Very high growth, may be unsustainable or market-driven
+    - Excludes impact of acquisitions and dispositions
+    - Key metric for REIT operational performance assessment
+    - Should be compared to inflation and market rent growth
+    - Consistent positive growth indicates strong property management 

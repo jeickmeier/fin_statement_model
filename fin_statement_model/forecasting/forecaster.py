@@ -396,7 +396,8 @@ class StatementForecaster:
             )
         except Exception as e:
             logger.error(
-                f"Failed to create temporary forecast node for '{node_name}': {e}", exc_info=True
+                f"Failed to create temporary forecast node for '{node_name}': {e}",
+                exc_info=True,
             )
             raise ValueError(f"Could not create temporary forecast node: {e}") from e
 

@@ -210,7 +210,7 @@ class NodeFactory:
             # This should ideally not happen if _calculation_methods is synced with registry
             raise ValueError(
                 f"Calculation class '{calculation_name}' (for type '{calculation_type}') not found in Registry."
-            ) from None # Prevent chaining the KeyError
+            ) from None  # Prevent chaining the KeyError
 
         # Instantiate the calculation, passing any extra kwargs
         try:

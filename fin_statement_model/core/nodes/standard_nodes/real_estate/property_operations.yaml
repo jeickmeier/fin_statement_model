@@ -1,0 +1,122 @@
+---
+# Real Estate - Property Operations
+# Standard node definitions for property-level income and expenses
+
+rental_income:
+  category: real_estate_operations
+  subcategory: property_income
+  description: Total rental income from properties
+  alternate_names: [rent_income, property_rental_income, base_rent]
+  sign_convention: positive
+
+other_property_income:
+  category: real_estate_operations
+  subcategory: property_income
+  description: Non-rental property income (parking, fees, etc.)
+  alternate_names: [ancillary_income, other_income, property_fees]
+  sign_convention: positive
+
+total_property_revenue:
+  category: real_estate_operations
+  subcategory: property_income
+  description: Total property revenue (rental + other income)
+  alternate_names: [property_revenue, total_rental_revenue]
+  sign_convention: positive
+
+property_operating_expenses:
+  category: real_estate_operations
+  subcategory: property_expenses
+  description: Total property operating expenses
+  alternate_names: [property_expenses, operating_expenses]
+  sign_convention: positive
+
+property_management_fees:
+  category: real_estate_operations
+  subcategory: property_expenses
+  description: Property management and leasing fees
+  alternate_names: [management_fees, leasing_costs]
+  sign_convention: positive
+
+property_taxes:
+  category: real_estate_operations
+  subcategory: property_expenses
+  description: Real estate taxes and assessments
+  alternate_names: [real_estate_taxes, property_tax]
+  sign_convention: positive
+
+utilities:
+  category: real_estate_operations
+  subcategory: property_expenses
+  description: Utilities expenses for properties
+  alternate_names: [utility_expenses, utilities_expense]
+  sign_convention: positive
+
+maintenance_and_repairs:
+  category: real_estate_operations
+  subcategory: property_expenses
+  description: Property maintenance and repair costs
+  alternate_names: [maintenance_expenses, repairs, property_maintenance]
+  sign_convention: positive
+
+insurance:
+  category: real_estate_operations
+  subcategory: property_expenses
+  description: Property insurance expenses
+  alternate_names: [property_insurance, insurance_expense]
+  sign_convention: positive
+
+net_operating_income:
+  category: real_estate_operations
+  subcategory: calculated
+  description: Net operating income (property revenue - operating expenses)
+  alternate_names: [noi]
+  sign_convention: positive
+
+occupied_square_feet:
+  category: real_estate_operations
+  subcategory: property_metrics
+  description: Total occupied square footage
+  alternate_names: [occupied_sf, leased_square_feet]
+  sign_convention: positive
+
+total_rentable_square_feet:
+  category: real_estate_operations
+  subcategory: property_metrics
+  description: Total rentable square footage
+  alternate_names: [rentable_sf, total_square_feet, gla]
+  sign_convention: positive
+
+total_square_feet:
+  category: real_estate_operations
+  subcategory: property_metrics
+  description: Total building square footage
+  alternate_names: [total_sf, gross_square_feet]
+  sign_convention: positive
+
+number_of_units:
+  category: real_estate_operations
+  subcategory: property_metrics
+  description: Total number of rental units
+  alternate_names: [unit_count, total_units]
+  sign_convention: positive
+
+occupied_units:
+  category: real_estate_operations
+  subcategory: property_metrics
+  description: Number of occupied rental units
+  alternate_names: [leased_units]
+  sign_convention: positive
+
+property_value:
+  category: real_estate_operations
+  subcategory: valuation
+  description: Estimated or appraised property value
+  alternate_names: [appraised_value, market_value]
+  sign_convention: positive
+
+total_property_value:
+  category: real_estate_operations
+  subcategory: valuation
+  description: Total value of all properties in portfolio
+  alternate_names: [portfolio_value, total_asset_value]
+  sign_convention: positive 

@@ -72,13 +72,15 @@ class GraphDefinitionReader(DataReader):
                                 formula_variable_names=node_def.get("formula_variable_names"),
                                 formula=formula_str,
                                 metric_name=node_def.get("metric_name"),
-                                metric_description=node_def.get("metric_description")
+                                metric_description=node_def.get("metric_description"),
                             )
                         elif node_type == "calculation":
                             # Reconstruct generic CalculationNode using the saved type key
                             calc_type_key = node_def.get("calculation_type")
                             if not calc_type_key:
-                                logger.error(f"Missing 'calculation_type' key for node '{node_name}'. Skipping.")
+                                logger.error(
+                                    f"Missing 'calculation_type' key for node '{node_name}'. Skipping."
+                                )
                                 continue
 
                             # TODO: Deserialize calculation_args if they were saved
@@ -91,7 +93,7 @@ class GraphDefinitionReader(DataReader):
                                 name=node_name,
                                 input_names=dependency_names,
                                 operation_type=calc_type_key,
-                                **calculation_args
+                                **calculation_args,
                             )
                         # TODO: Add elif for "forecast" type
                         else:

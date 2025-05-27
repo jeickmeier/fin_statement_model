@@ -1,0 +1,24 @@
+---
+# Income Statement - Revenue and Direct Costs
+# Standard node definitions for top-line revenue and direct cost items
+
+revenue:
+  category: income_statement
+  subcategory: top_line
+  description: Total revenue/sales
+  alternate_names: [sales, total_revenue, revenues]
+  sign_convention: positive
+
+cost_of_goods_sold:
+  category: income_statement
+  subcategory: direct_costs
+  description: Cost of goods sold
+  alternate_names: [cogs, cost_of_sales, cos]
+  sign_convention: negative
+
+gross_profit:
+  category: income_statement
+  subcategory: profit_measure
+  description: Gross profit
+  alternate_names: [gp, gross_margin_dollars]
+  sign_convention: positive 

@@ -1,0 +1,52 @@
+---
+# Balance Sheet - Liabilities
+# Standard node definitions for balance sheet liability items
+
+accounts_payable:
+  category: balance_sheet_liabilities
+  subcategory: current_liabilities
+  description: Trade payables
+  alternate_names: [ap, payables]
+  sign_convention: positive
+
+accrued_expenses:
+  category: balance_sheet_liabilities
+  subcategory: current_liabilities
+  description: Accrued expenses
+  alternate_names: [accruals, accrued_liabilities]
+  sign_convention: positive
+
+short_term_debt:
+  category: balance_sheet_liabilities
+  subcategory: current_liabilities
+  description: Short-term debt and current portion of long-term debt
+  alternate_names: [st_debt, current_debt]
+  sign_convention: positive
+
+current_liabilities:
+  category: balance_sheet_liabilities
+  subcategory: subtotal
+  description: Total current liabilities
+  alternate_names: [cl, current_liabilities_total]
+  sign_convention: positive
+
+long_term_debt:
+  category: balance_sheet_liabilities
+  subcategory: non_current_liabilities
+  description: Long-term debt excluding current portion
+  alternate_names: [lt_debt, ltb]
+  sign_convention: positive
+
+total_debt:
+  category: balance_sheet_liabilities
+  subcategory: calculated
+  description: Total debt (short_term_debt + long_term_debt)
+  alternate_names: [debt]
+  sign_convention: positive
+
+total_liabilities:
+  category: balance_sheet_liabilities
+  subcategory: total
+  description: Total liabilities
+  alternate_names: [tl, liabilities]
+  sign_convention: positive 

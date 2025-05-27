@@ -15,7 +15,9 @@ from fin_statement_model.io.base import DataWriter
 from fin_statement_model.io.registry import register_writer
 from fin_statement_model.io.exceptions import WriteError
 from fin_statement_model.core.node_factory import NodeFactory
-from fin_statement_model.io.config.models import BaseWriterConfig  # Use base config for now
+from fin_statement_model.io.config.models import (
+    BaseWriterConfig,
+)  # Use base config for now
 
 logger = logging.getLogger(__name__)
 
@@ -47,10 +49,10 @@ class GraphDefinitionWriter(DataWriter):
         elif isinstance(node, FormulaCalculationNode):
             node_def["type"] = "formula_calculation"
             # Store the *actual* dependency node names
-            node_def["inputs"] = node.get_dependencies() # Store actual dependency names
+            node_def["inputs"] = node.get_dependencies()  # Store actual dependency names
             # Store the variable names used in the formula
             node_def["formula_variable_names"] = list(
-                node.inputs.keys() # These are the variable names used in the formula
+                node.inputs.keys()  # These are the variable names used in the formula
             )  # Store input names (which are keys in formula node)
             node_def["formula"] = node.formula
             # Include metric info if it's a metric node
@@ -72,9 +74,11 @@ class GraphDefinitionWriter(DataWriter):
                 inv_map = {v: k for k, v in NodeFactory._calculation_methods.items()}
                 type_key = inv_map.get(type(calc_instance).__name__)
                 if type_key:
-                    node_def["calculation_type"] = type_key # Save the type key
+                    node_def["calculation_type"] = type_key  # Save the type key
                 else:
-                    logger.warning(f"Could not find type key in NodeFactory._calculation_methods for calculation class {type(calc_instance).__name__}")
+                    logger.warning(
+                        f"Could not find type key in NodeFactory._calculation_methods for calculation class {type(calc_instance).__name__}"
+                    )
             else:
                 logger.warning(
                     f"CalculationNode '{node.name}' has no internal calculation instance to serialize type."

@@ -225,7 +225,11 @@ class Graph:
                 )
                 reachable_nodes = {n for level in bfs_levels for n in level}
                 if name in reachable_nodes:
-                    cycle_path_guess = [input_node.name, "...", name]  # Simplified guess
+                    cycle_path_guess = [
+                        input_node.name,
+                        "...",
+                        name,
+                    ]  # Simplified guess
                     raise CircularDependencyError(
                         message=f"Adding calculation node '{name}' would create a cycle from input '{input_node.name}'",
                         node_id=name,
@@ -240,7 +244,8 @@ class Graph:
             except Exception as e:
                 # Catch broader errors during traversal if needed
                 logger.error(
-                    f"Unexpected error during cycle detection for node {name}: {e}", exc_info=True
+                    f"Unexpected error during cycle detection for node {name}: {e}",
+                    exc_info=True,
                 )
                 # Optionally re-raise as a different error type or handle
                 raise CalculationError(
@@ -260,7 +265,11 @@ class Graph:
         return node
 
     def add_metric(
-        self, metric_name: str, node_name: Optional[str] = None, *, input_node_map: Optional[dict[str, str]] = None
+        self,
+        metric_name: str,
+        node_name: Optional[str] = None,
+        *,
+        input_node_map: Optional[dict[str, str]] = None,
     ) -> Node:
         """Add a metric calculation node based on a metric definition.
 
@@ -310,18 +319,18 @@ class Graph:
         missing = []
         for req_input_name in required_inputs:
             # Determine the actual graph node name to look for
-            target_node_name = req_input_name # Default case
+            target_node_name = req_input_name  # Default case
             if input_node_map and req_input_name in input_node_map:
                 target_node_name = input_node_map[req_input_name]
             elif input_node_map:
-                 # If map provided but doesn't contain the required input, it's an error in the map
-                 missing.append(f"{req_input_name} (mapping missing in input_node_map)")
-                 continue # Skip trying to find the node
+                # If map provided but doesn't contain the required input, it's an error in the map
+                missing.append(f"{req_input_name} (mapping missing in input_node_map)")
+                continue  # Skip trying to find the node
 
             # Find the node in the graph using the target name
             nd = self._nodes.get(target_node_name)
             if nd is None:
-                missing.append(target_node_name) # Report the name we looked for
+                missing.append(target_node_name)  # Report the name we looked for
             else:
                 # Use the required metric input name as the key for the Formula node inputs
                 resolved_inputs[req_input_name] = nd
@@ -341,7 +350,10 @@ class Graph:
                 metric_name=metric_name,  # Store original metric key
                 metric_description=description,  # Store description
             )
-        except (ValueError, TypeError) as e:  # Catch potential FormulaCalculationNode init errors
+        except (
+            ValueError,
+            TypeError,
+        ) as e:  # Catch potential FormulaCalculationNode init errors
             logger.exception(
                 f"Failed to instantiate FormulaCalculationNode for metric '{metric_name}' as node '{node_name}'"
             )
@@ -557,10 +569,18 @@ class Graph:
             inputs = metric_node.get_dependencies()
         except Exception as e:
             # Catch potential attribute errors or other issues
-            logger.error(f"Error retrieving info for metric node '{metric_id}': {e}", exc_info=True)
+            logger.error(
+                f"Error retrieving info for metric node '{metric_id}': {e}",
+                exc_info=True,
+            )
             raise ValueError(f"Failed to retrieve metric info for '{metric_id}': {e}") from e
 
-        return {"id": metric_id, "name": display_name, "description": description, "inputs": inputs}
+        return {
+            "id": metric_id,
+            "name": display_name,
+            "description": description,
+            "inputs": inputs,
+        }
 
     def calculate(self, node_name: str, period: str) -> float:
         """Calculate and return the value of a specific node for a given period.
@@ -606,7 +626,8 @@ class Graph:
             ZeroDivisionError,
         ) as e:
             logger.error(
-                f"Error calculating node '{node_name}' for period '{period}': {e}", exc_info=True
+                f"Error calculating node '{node_name}' for period '{period}': {e}",
+                exc_info=True,
             )
             raise CalculationError(
                 message=f"Failed to calculate node '{node_name}'",
@@ -1201,7 +1222,8 @@ class Graph:
         """
         if not self.has_node(node_name):
             raise NodeError(
-                f"Cannot add adjustment: Node '{node_name}' not found.", node_id=node_name
+                f"Cannot add adjustment: Node '{node_name}' not found.",
+                node_id=node_name,
             )
 
         # Need Pydantic's ValidationError and uuid4

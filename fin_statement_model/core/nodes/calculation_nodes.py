@@ -293,7 +293,10 @@ class CalculationNode(Node):
                 message=f"Error during calculation for node '{self.name}'",
                 node_id=self.name,
                 period=period,
-                details={"calculation": type(self.calculation).__name__, "error": str(e)},
+                details={
+                    "calculation": type(self.calculation).__name__,
+                    "error": str(e),
+                },
             ) from e
 
     def set_calculation(self, calculation: Calculation) -> None:

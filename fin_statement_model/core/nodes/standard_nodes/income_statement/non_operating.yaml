@@ -1,0 +1,52 @@
+---
+# Income Statement - Non-Operating Items
+# Standard node definitions for interest, other income, taxes, and net income
+
+interest_expense:
+  category: income_statement
+  subcategory: non_operating
+  description: Interest expense
+  alternate_names: [int_expense, interest_exp]
+  sign_convention: negative
+
+interest_income:
+  category: income_statement
+  subcategory: non_operating
+  description: Interest income
+  alternate_names: [int_income]
+  sign_convention: positive
+
+other_income:
+  category: income_statement
+  subcategory: non_operating
+  description: Other non-operating income
+  alternate_names: [other_income_expense, non_operating_income]
+  sign_convention: positive
+
+income_before_tax:
+  category: income_statement
+  subcategory: profit_measure
+  description: Pre-tax income
+  alternate_names: [ebt, pretax_income, pbt]
+  sign_convention: positive
+
+income_tax:
+  category: income_statement
+  subcategory: tax
+  description: Income tax expense
+  alternate_names: [taxes, tax_expense, income_taxes]
+  sign_convention: negative
+
+net_income:
+  category: income_statement
+  subcategory: bottom_line
+  description: Net income
+  alternate_names: [ni, net_profit, earnings]
+  sign_convention: positive
+
+dividends:
+  category: income_statement
+  subcategory: distributions
+  description: Common dividends paid
+  alternate_names: [dividends_paid, common_dividends]
+  sign_convention: negative 

@@ -18,13 +18,9 @@ except ImportError:
 
 from pydantic import ValidationError
 
-from fin_statement_model.core.errors import ConfigurationError
 from fin_statement_model.core.metrics.models import MetricDefinition
 
 logger = logging.getLogger(__name__)
-
-# Define the path to the built-in metrics directory relative to this file
-BUILTIN_METRICS_DIR = Path(__file__).parent / "builtin"
 
 
 class MetricRegistry:
@@ -36,7 +32,7 @@ class MetricRegistry:
 
     _REQUIRED_FIELDS: ClassVar[list[str]] = ["inputs", "formula", "description", "name"]
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the MetricRegistry with an empty metrics store.
 
         Examples:
@@ -46,24 +42,13 @@ class MetricRegistry:
         """
         self._metrics: dict[str, MetricDefinition] = {}
         logger.info("MetricRegistry initialized.")
-        # Automatically load built-in metrics on initialization
-        if BUILTIN_METRICS_DIR.is_dir():
-            try:
-                logger.info(f"Attempting to load built-in metrics from: {BUILTIN_METRICS_DIR}")
-                count = self.load_metrics_from_directory(BUILTIN_METRICS_DIR)
-                logger.info(f"Successfully loaded {count} built-in metrics.")
-            except (ImportError, FileNotFoundError, ConfigurationError) as e:
-                logger.error(f"Failed to load built-in metrics: {e}", exc_info=True)
-            except Exception as e:  # Catch any other unexpected errors during load
-                logger.error(f"Unexpected error loading built-in metrics: {e}", exc_info=True)
-        else:
-            logger.warning(f"Built-in metrics directory not found: {BUILTIN_METRICS_DIR}")
 
     def load_metrics_from_directory(self, directory_path: Union[str, Path]) -> int:
         """Load all metric definitions from a directory.
 
         This method searches for '*.yaml' files, validates their content,
-        and stores them in the registry.
+        and stores them in the registry. Each YAML file can contain multiple
+        metric definitions.
 
         Args:
             directory_path: Path to the directory containing metric YAML files.
@@ -92,40 +77,63 @@ class MetricRegistry:
 
         logger.info(f"Loading metrics from directory: {dir_path}")
         loaded_count = 0
+
         for filepath in dir_path.glob("*.yaml"):
-            metric_id = filepath.stem  # Use filename without extension as ID (e.g., "gross_profit")
-            logger.debug(f"Attempting to load metric '{metric_id}' from {filepath}")
+            logger.debug(f"Processing file: {filepath}")
             try:
                 with open(filepath, encoding="utf-8") as f:
-                    config_data = yaml.safe_load(f)
-            except yaml.YAMLError as e:
-                logger.exception(f"Failed to parse YAML metric file {filepath}")
-                raise ConfigurationError(
-                    f"Invalid YAML in {filepath}", config_path=str(filepath), errors=[str(e)]
-                ) from e
+                    content = f.read()
 
-            # Use Pydantic model for validation (Pydantic V2 uses model_validate)
-            try:
-                model = MetricDefinition.model_validate(config_data)
-                self.register_definition(model)
-            except ValidationError as ve:
-                logger.exception(f"Invalid metric definition in {filepath}")
-                errors = [
-                    f"{err['loc'][0]}: {err['msg']}" for err in ve.errors()
-                ]  # Convert Pydantic errors to list of strings
-                raise ConfigurationError(
-                    f"Invalid metric definition in {filepath}",
-                    config_path=str(filepath),
-                    errors=errors,
-                ) from ve
+                # Split content by metric definitions (look for "name:" at start of line)
+                # This handles files with multiple metric definitions
+                metric_sections = []
+                current_section = []
 
-            if metric_id in self._metrics:
-                logger.warning(
-                    f"Overwriting existing metric definition for '{metric_id}' from {filepath}"
-                )
-            self._metrics[metric_id] = model
-            logger.debug(f"Successfully loaded and validated metric '{metric_id}'")
-            loaded_count += 1
+                for line in content.split("\n"):
+                    # Check if this line starts a new metric definition
+                    if line.strip().startswith("name:") and current_section:
+                        # Save the previous section
+                        if current_section:
+                            metric_sections.append("\n".join(current_section))
+                        current_section = [line]
+                    else:
+                        current_section.append(line)
+
+                # Don't forget the last section
+                if current_section:
+                    metric_sections.append("\n".join(current_section))
+
+                # Process each metric section
+                for i, section in enumerate(metric_sections):
+                    # Skip empty sections or sections that are just comments
+                    if not section.strip() or not any(
+                        line.strip().startswith("name:") for line in section.split("\n")
+                    ):
+                        continue
+
+                    try:
+                        config_data = yaml.safe_load(section)
+                        if not config_data or not isinstance(config_data, dict):
+                            continue
+
+                        # Validate and register the metric
+                        model = MetricDefinition.model_validate(config_data)
+                        self.register_definition(model)
+                        loaded_count += 1
+                        logger.debug(f"Successfully loaded metric '{model.name}' from {filepath}")
+
+                    except yaml.YAMLError as e:
+                        logger.warning(f"Failed to parse metric section {i + 1} in {filepath}: {e}")
+                        continue
+                    except ValidationError as ve:
+                        logger.warning(
+                            f"Invalid metric definition in section {i + 1} of {filepath}: {ve}"
+                        )
+                        continue
+
+            except Exception:
+                logger.exception(f"Failed to process file {filepath}")
+                continue
 
         logger.info(f"Successfully loaded {loaded_count} metrics from {dir_path}.")
         return loaded_count
@@ -191,5 +199,17 @@ class MetricRegistry:
         return metric_id in self._metrics
 
     def register_definition(self, definition: MetricDefinition) -> None:
-        """Register a single metric definition."""
-        # Implementation of register_definition method
+        """Register a single metric definition.
+
+        Args:
+            definition: The metric definition to register.
+        """
+        metric_id = definition.name.lower().replace(" ", "_").replace("-", "_")
+        if metric_id in self._metrics:
+            logger.debug(f"Overwriting existing metric definition for '{metric_id}'")
+        self._metrics[metric_id] = definition
+        logger.debug(f"Registered metric definition: {metric_id}")
+
+
+# Create the singleton instance (without auto-loading to prevent duplicates)
+metric_registry = MetricRegistry()

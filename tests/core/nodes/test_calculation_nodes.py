@@ -112,7 +112,9 @@ def test_formula_calculate_unknown_variable(node_a: Node):
 def test_formula_calculate_non_numeric_input(node_a: Node, non_numeric_node: MagicMock):
     """Test CalculationError if an input node returns non-numeric."""
     calc_node = FormulaCalculationNode(
-        name="TestCalc", inputs={"a": node_a, "non_num": non_numeric_node}, formula="a + non_num"
+        name="TestCalc",
+        inputs={"a": node_a, "non_num": non_numeric_node},
+        formula="a + non_num",
     )
     with pytest.raises(CalculationError) as exc_info:
         calc_node.calculate("2023")
@@ -306,7 +308,10 @@ def test_strategy_clear_cache(node_a: Node, node_b: Node, sum_strategy: MockSumS
 
 
 def test_strategy_set_strategy(
-    node_a: Node, node_b: Node, sum_strategy: MockSumStrategy, product_strategy: MockProductStrategy
+    node_a: Node,
+    node_b: Node,
+    sum_strategy: MockSumStrategy,
+    product_strategy: MockProductStrategy,
 ):
     """Test changing the calculation object and recalculating."""
     mock_sum_strategy = MagicMock(wraps=sum_strategy)
@@ -337,7 +342,8 @@ def test_strategy_set_invalid_strategy(node_a: Node, node_b: Node, sum_strategy:
     node = CalculationNode(name="TestSetInvalid", inputs=[node_a, node_b], calculation=sum_strategy)
     invalid_calculation = object()
     with pytest.raises(
-        TypeError, match="New calculation object must have a callable 'calculate' method"
+        TypeError,
+        match="New calculation object must have a callable 'calculate' method",
     ):
         node.set_calculation(invalid_calculation)
 
@@ -362,7 +368,9 @@ def test_strategy_calculate_non_numeric_return(
 ):
     """Test CalculationError when the calculation object returns a non-numeric value."""
     node = CalculationNode(
-        name="TestNonNumericStrategy", inputs=[node_a, node_b], calculation=non_numeric_strategy
+        name="TestNonNumericStrategy",
+        inputs=[node_a, node_b],
+        calculation=non_numeric_strategy,
     )
     with pytest.raises(CalculationError) as exc_info:
         node.calculate("2023")
@@ -401,7 +409,10 @@ def test_custom_init_success(node_a: Node, node_b: Node):
     """Test successful initialization of CustomCalculationNode."""
     inputs = [node_a, node_b]
     node = CustomCalculationNode(
-        name="TestCustom", inputs=inputs, formula_func=custom_sum_func, description="Adds A and B"
+        name="TestCustom",
+        inputs=inputs,
+        formula_func=custom_sum_func,
+        description="Adds A and B",
     )
     assert node.name == "TestCustom"
     assert node.inputs == inputs
@@ -430,7 +441,8 @@ def test_custom_init_invalid_input_value_type():
 def test_custom_init_invalid_formula_func_type(node_a: Node):
     """Test TypeError if formula_func is not callable."""
     with pytest.raises(
-        TypeError, match="CustomCalculationNode formula_func must be a callable function"
+        TypeError,
+        match="CustomCalculationNode formula_func must be a callable function",
     ):
         CustomCalculationNode(name="TestCustom", inputs=[node_a], formula_func=123)
 
@@ -441,7 +453,9 @@ def test_custom_calculate_success(node_a: Node, node_b: Node, node_c: Node):
         name="TestSumCustom", inputs=[node_a, node_b], formula_func=custom_sum_func
     )
     logic_node = CustomCalculationNode(
-        name="TestLogicCustom", inputs=[node_a, node_b, node_c], formula_func=custom_logic_func
+        name="TestLogicCustom",
+        inputs=[node_a, node_b, node_c],
+        formula_func=custom_logic_func,
     )
 
     # Test sum_node
@@ -470,7 +484,9 @@ def test_custom_calculate_error_in_function(node_a: Node, node_b: Node):
 def test_custom_calculate_non_numeric_return(node_a: Node, node_b: Node):
     """Test CalculationError when the custom function returns a non-numeric value."""
     node = CustomCalculationNode(
-        name="TestNonNumericFunc", inputs=[node_a, node_b], formula_func=custom_non_numeric_func
+        name="TestNonNumericFunc",
+        inputs=[node_a, node_b],
+        formula_func=custom_non_numeric_func,
     )
     with pytest.raises(CalculationError) as exc_info:
         node.calculate("2023")
@@ -485,7 +501,9 @@ def test_custom_calculate_input_node_error(non_numeric_node: MagicMock, node_b: 
     """Test CalculationError when an input node fails calculation or returns non-numeric."""
     # Use the non_numeric_node fixture which returns a string
     node = CustomCalculationNode(
-        name="TestInputError", inputs=[non_numeric_node, node_b], formula_func=custom_sum_func
+        name="TestInputError",
+        inputs=[non_numeric_node, node_b],
+        formula_func=custom_sum_func,
     )
 
     with pytest.raises(CalculationError) as exc_info:

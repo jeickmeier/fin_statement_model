@@ -16,7 +16,12 @@ import pandas as pd
 from typing import Optional
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.io import read_data, write_data, ReadError, FormatNotSupportedError
+from fin_statement_model.io import (
+    read_data,
+    write_data,
+    ReadError,
+    FormatNotSupportedError,
+)
 from dotenv import load_dotenv
 
 # Load environment variables from .env file

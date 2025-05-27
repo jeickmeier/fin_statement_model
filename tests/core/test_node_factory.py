@@ -13,6 +13,7 @@ from fin_statement_model.core.nodes import (
     CustomCalculationNode,
 )
 from fin_statement_model.core.calculations import Registry, Calculation
+
 # Import calculation classes to ensure registration
 
 
@@ -180,12 +181,18 @@ class TestCreateCalculationNode:
         mock_registry_get.side_effect = KeyError(f"Strategy '{calculation_name}' not found")
 
         with pytest.raises(
-            ValueError, match=re.escape(f"Calculation class '{calculation_name}' (for type '{calc_type}') not found in Registry.")
+            ValueError,
+            match=re.escape(
+                f"Calculation class '{calculation_name}' (for type '{calc_type}') not found in Registry."
+            ),
         ):
             NodeFactory.create_calculation_node("TestNode", [mock_node_a], calc_type)
 
     def test_error_strategy_instantiation_fails(
-        self, mock_registry_get: MagicMock, mock_strategy_class: MagicMock, mock_node_a: Node
+        self,
+        mock_registry_get: MagicMock,
+        mock_strategy_class: MagicMock,
+        mock_node_a: Node,
     ) -> None:
         """Test creation fails if strategy instantiation fails (e.g., missing kwargs)."""
         mock_registry_get.return_value = mock_strategy_class

@@ -187,5 +187,5 @@ class AdjustmentFilter(BaseModel):
 
 # Type alias for flexible filter input
 AdjustmentFilterInput = Optional[
-    AdjustmentFilter | set[AdjustmentTag] | Callable[["Adjustment"], bool]
+    AdjustmentFilter | set[AdjustmentTag] | Callable[[Adjustment], bool]
 ]

@@ -1,0 +1,265 @@
+---
+# Real Estate - Debt Metrics
+# Real estate metrics: debt and financing analysis
+
+# Metric definition for Loan-to-Value Ratio
+
+name: Loan-to-Value Ratio
+description: Total debt as a percentage of property value. Key metric for assessing leverage and loan risk in real estate.
+inputs:
+  - total_debt
+  - total_property_value
+formula: "total_debt / total_property_value * 100"
+tags: [real_estate, debt_analysis, leverage, ltv, loan_risk]
+units: percentage
+category: real_estate_debt
+related_metrics: [debt_service_coverage_ratio, debt_to_equity_ratio, unencumbered_asset_ratio]
+interpretation:
+  good_range: [50.0, 75.0]
+  warning_below: null
+  warning_above: 85.0
+  excellent_above: null
+  poor_below: null
+  notes: |
+    - Below 50%: Conservative leverage, strong equity cushion
+    - 50-75%: Typical leverage range for stabilized properties
+    - 75-85%: Higher leverage, requires strong cash flows and property quality
+    - Above 85%: Very high leverage, significant refinancing and market risk
+    - Varies by property type - stabilized assets can support higher LTV
+    - Development projects typically require lower LTV due to higher risk
+    - Lenders typically cap LTV at 70-80% for permanent financing
+    - Consider property quality, location, and cash flow stability
+    - Monitor trends - rising LTV may indicate declining property values 
+# Metric definition for Debt Service Coverage Ratio (Real Estate)
+
+name: Debt Service Coverage Ratio (Real Estate)
+description: Net Operating Income divided by total debt service payments. Critical metric for real estate debt capacity and loan approval.
+inputs:
+  - net_operating_income
+  - mortgage_payments
+formula: "net_operating_income / mortgage_payments"
+tags: [real_estate, debt_coverage, cash_flow_coverage, loan_qualification, dscr]
+units: times
+category: real_estate_debt
+related_metrics: [net_operating_income, loan_to_value_ratio, interest_coverage_ratio]
+interpretation:
+  good_range: [1.25, 2.0]
+  warning_below: 1.15
+  warning_above: null
+  excellent_above: 1.5
+  poor_below: 1.0
+  notes: |
+    - Below 1.0x: NOI insufficient to cover debt service, default risk
+    - 1.0-1.15x: Tight coverage, vulnerable to income volatility
+    - 1.15-1.25x: Minimum acceptable coverage for most lenders
+    - 1.25-2.0x: Good to strong coverage, comfortable debt service
+    - Above 2.0x: Very strong coverage, significant debt capacity
+    - Most lenders require minimum DSCR of 1.20-1.25x for approval
+    - Higher DSCR requirements for riskier property types
+    - Consider NOI volatility and lease rollover risk
+    - Key metric for refinancing and additional borrowing capacity
+    - Should be calculated using stabilized NOI for development projects 
+# Metric definition for Interest Coverage Ratio (Real Estate)
+
+name: Interest Coverage Ratio (Real Estate)
+description: Net Operating Income divided by interest payments. Shows ability to service interest obligations from property cash flow.
+inputs:
+  - net_operating_income
+  - interest_payments
+formula: "net_operating_income / interest_payments"
+tags: [real_estate, interest_coverage, debt_service, cash_flow_analysis]
+units: times
+category: real_estate_debt
+related_metrics: [debt_service_coverage_ratio, net_operating_income, times_interest_earned]
+interpretation:
+  good_range: [2.0, 4.0]
+  warning_below: 1.5
+  warning_above: null
+  excellent_above: 3.0
+  poor_below: 1.2
+  notes: |
+    - Below 1.2x: Very poor interest coverage, high default risk
+    - 1.2-1.5x: Weak coverage, vulnerable to income decline
+    - 1.5-2.0x: Adequate coverage for stable properties
+    - 2.0-4.0x: Good to strong interest coverage
+    - Above 4.0x: Excellent coverage, low financial risk
+    - More lenient than full debt service coverage as it excludes principal
+    - Important for interest-only loans and development financing
+    - Consider alongside DSCR for complete debt analysis
+    - Monitor trends - declining coverage indicates increasing risk
+    - Critical during lease rollover periods and market downturns 
+# Metric definition for Unencumbered Asset Ratio
+
+name: Unencumbered Asset Ratio
+description: Value of unencumbered properties as percentage of total property value. Shows financial flexibility and additional borrowing capacity.
+inputs:
+  - unencumbered_assets
+  - total_property_value
+formula: "unencumbered_assets / total_property_value * 100"
+tags: [real_estate, financial_flexibility, debt_capacity, unencumbered_assets]
+units: percentage
+category: real_estate_debt
+related_metrics: [loan_to_value_ratio, debt_to_equity_ratio, available_credit]
+interpretation:
+  good_range: [20.0, 50.0]
+  warning_below: 10.0
+  warning_above: null
+  excellent_above: 40.0
+  poor_below: 5.0
+  notes: |
+    - Below 5%: Very limited unencumbered assets, constrained flexibility
+    - 5-10%: Low unencumbered ratio, limited additional debt capacity
+    - 10-20%: Adequate unencumbered assets for most REITs
+    - 20-50%: Good to strong unencumbered asset base
+    - Above 50%: Very conservative leverage, significant debt capacity
+    - Higher ratios provide more financial flexibility and growth options
+    - Important for accessing unsecured debt markets
+    - Critical during market stress for refinancing flexibility
+    - Consider quality and location of unencumbered properties
+    - Key metric for credit rating agencies and unsecured lenders 
+# Metric definition for Fixed Rate Debt Percentage
+
+name: Fixed Rate Debt Percentage
+description: Percentage of total debt with fixed interest rates. Shows protection against rising interest rate risk.
+inputs:
+  - fixed_rate_debt
+  - total_debt
+formula: "fixed_rate_debt / total_debt * 100"
+tags: [real_estate, interest_rate_risk, debt_composition, fixed_rate]
+units: percentage
+category: real_estate_debt
+related_metrics: [variable_rate_debt_percentage, weighted_average_interest_rate, debt_maturity_profile]
+interpretation:
+  good_range: [70.0, 90.0]
+  warning_below: 50.0
+  warning_above: null
+  excellent_above: 85.0
+  poor_below: 30.0
+  notes: |
+    - Below 30%: High exposure to interest rate increases
+    - 30-50%: Moderate interest rate risk, some protection
+    - 50-70%: Balanced approach to interest rate management
+    - 70-90%: Good protection against rising rates
+    - Above 90%: Very conservative, may miss benefits of rate declines
+    - Higher percentages provide more predictable debt service costs
+    - Consider interest rate environment and outlook when evaluating
+    - Balance with cost of fixed vs. floating rate debt
+    - Important during periods of rising interest rates
+    - May vary by property type and investment strategy 
+# Metric definition for Weighted Average Interest Rate
+
+name: Weighted Average Interest Rate
+description: Weighted average interest rate across all debt. Shows overall cost of debt financing for real estate portfolio.
+inputs:
+  - interest_payments
+  - total_debt
+formula: "interest_payments / total_debt * 100"
+tags: [real_estate, cost_of_debt, interest_rate, debt_efficiency]
+units: percentage
+category: real_estate_debt
+related_metrics: [debt_service_coverage_ratio, fixed_rate_debt_percentage, refinancing_opportunities]
+interpretation:
+  good_range: null
+  warning_below: null
+  warning_above: null
+  excellent_above: null
+  poor_below: null
+  notes: |
+    - Compare to current market rates to assess refinancing opportunities
+    - Lower rates indicate efficient debt management or favorable timing
+    - Higher rates may indicate older debt or credit quality issues
+    - Consider alongside debt maturity schedule for refinancing planning
+    - Monitor trends relative to market interest rate movements
+    - Factor in loan fees and other costs for true cost of debt
+    - Compare to cap rates to assess leverage efficiency
+    - Important for evaluating acquisition financing and refinancing decisions
+    - Consider impact of interest rate hedging strategies 
+# Metric definition for Debt Maturity Profile
+
+name: Debt Maturity Profile
+description: Percentage of debt maturing within specific time periods. Shows refinancing risk and capital planning needs.
+inputs:
+  - debt_maturities_1_year
+  - total_debt
+formula: "debt_maturities_1_year / total_debt * 100"
+tags: [real_estate, refinancing_risk, debt_maturity, capital_planning]
+units: percentage
+category: real_estate_debt
+related_metrics: [available_credit, unencumbered_asset_ratio, weighted_average_maturity]
+interpretation:
+  good_range: [5.0, 15.0]
+  warning_below: null
+  warning_above: 25.0
+  excellent_above: null
+  poor_below: null
+  notes: |
+    - Below 5%: Very low near-term refinancing risk
+    - 5-15%: Manageable near-term maturities for most portfolios
+    - 15-25%: Elevated refinancing risk, requires active management
+    - Above 25%: High concentration of near-term maturities, significant risk
+    - Consider market conditions and credit availability when evaluating
+    - Higher percentages increase refinancing and market timing risk
+    - Important to maintain staggered maturity schedule
+    - Factor in extension options and prepayment flexibility
+    - Critical during periods of credit market stress or rising rates
+    - Should be analyzed alongside debt service coverage and LTV ratios 
+# Metric definition for Construction Loan to Cost Ratio
+
+name: Construction Loan to Cost Ratio
+description: Construction loan amount as percentage of total development cost. Key metric for development project financing and risk assessment.
+inputs:
+  - construction_loans
+  - development_costs_to_date
+  - remaining_development_budget
+formula: "construction_loans / (development_costs_to_date + remaining_development_budget) * 100"
+tags: [real_estate, development_financing, construction_risk, loan_to_cost]
+units: percentage
+category: real_estate_debt
+related_metrics: [development_yield, construction_completion_risk, cost_overrun_risk]
+interpretation:
+  good_range: [70.0, 85.0]
+  warning_below: null
+  warning_above: 90.0
+  excellent_above: null
+  poor_below: null
+  notes: |
+    - Below 70%: Conservative financing, significant equity contribution
+    - 70-85%: Typical construction loan-to-cost range
+    - 85-90%: Higher leverage, requires strong sponsor and project quality
+    - Above 90%: Very high leverage, limited equity cushion for cost overruns
+    - Lower ratios provide more protection against cost overruns
+    - Consider project complexity and sponsor experience
+    - Factor in contingency reserves and cost escalation risk
+    - Important for assessing development project viability
+    - Monitor against actual costs during construction phase
+    - Critical for lender approval and pricing of construction financing 
+# Metric definition for Debt Yield
+
+name: Debt Yield
+description: Net Operating Income divided by total debt amount. Shows cash flow return on debt investment, key metric for lenders.
+inputs:
+  - net_operating_income
+  - total_debt
+formula: "net_operating_income / total_debt * 100"
+tags: [real_estate, debt_yield, lender_metric, cash_flow_return, loan_underwriting]
+units: percentage
+category: real_estate_debt
+related_metrics: [loan_to_value_ratio, debt_service_coverage_ratio, capitalization_rate]
+interpretation:
+  good_range: [8.0, 15.0]
+  warning_below: 6.0
+  warning_above: null
+  excellent_above: 12.0
+  poor_below: 4.0
+  notes: |
+    - Below 4%: Very low debt yield, high risk for lenders
+    - 4-6%: Low debt yield, may indicate overleveraged property
+    - 6-8%: Adequate debt yield for stable properties
+    - 8-15%: Good to strong debt yield, attractive for lenders
+    - Above 15%: Excellent debt yield, conservative leverage
+    - Independent of interest rates, unlike DSCR
+    - Minimum debt yield requirements typically 7-10% for most lenders
+    - Higher debt yields indicate lower leverage relative to income
+    - Important complement to LTV analysis for loan underwriting
+    - Provides lender protection against declining property values
+    - Consider alongside property quality and market fundamentals 

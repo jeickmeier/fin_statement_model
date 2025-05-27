@@ -4,7 +4,11 @@ import pytest
 from uuid import uuid4
 import pandas as pd
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.adjustments import Adjustment, AdjustmentFilter, AdjustmentType
+from fin_statement_model.core.adjustments import (
+    Adjustment,
+    AdjustmentFilter,
+    AdjustmentType,
+)
 from fin_statement_model.core.errors import NodeError
 from pytest_mock import MockerFixture
 from unittest.mock import MagicMock

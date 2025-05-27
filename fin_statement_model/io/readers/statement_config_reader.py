@@ -104,7 +104,9 @@ def read_statement_config_from_path(config_path: str) -> dict[str, Any]:
         ) from e
 
 
-def read_statement_configs_from_directory(directory_path: str) -> dict[str, dict[str, Any]]:
+def read_statement_configs_from_directory(
+    directory_path: str,
+) -> dict[str, dict[str, Any]]:
     """Reads all statement configs (JSON/YAML) from a directory.
 
     Args:
@@ -206,7 +208,10 @@ def list_available_builtin_configs() -> list[str]:
             if res.is_file() and res.suffix.lower() in (".yaml", ".yml", ".json")
         ]
         return sorted(names)
-    except (ModuleNotFoundError, FileNotFoundError):  # Handle case where package/path doesn't exist
+    except (
+        ModuleNotFoundError,
+        FileNotFoundError,
+    ):  # Handle case where package/path doesn't exist
         logger.warning(f"Built-in config package path not found: {package_path}")
         return []
 

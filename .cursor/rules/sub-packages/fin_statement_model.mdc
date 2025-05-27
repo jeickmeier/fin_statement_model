@@ -52,7 +52,7 @@ This matrix defines the allowed import directions between layers. A '✓' means 
 
 # Registries & Extensibility
 
--   **Metrics**: Register via `core.metrics.registry.register_metric`. Simple metrics in `core/metrics/builtin/*.yaml`; complex ones as Python classes.
+-   **Metrics**: Register via `core.metrics.registry.register_metric`. Simple metrics in `core/metrics/builtin_organized/*.yaml`; complex ones as Python classes.
 -   **I/O**: Readers/writers register with `io.readers.registry` / `io.writers.registry`.
 -   **Extensions**: Use `importlib.metadata` entry points (`fin_statement_model.extensions.*`).
 
@@ -67,7 +67,7 @@ This matrix defines the allowed import directions between layers. A '✓' means 
 
 | Task                              | Preferred Location / API                               |
 |-----------------------------------|--------------------------------------------------------|
-| Add simple metric                 | `core/metrics/builtin/<metric_name>.yaml`             |
+| Add simple metric                 | `core/metrics/builtin_organized/<category>/<metric_name>.yaml`             |
 | Add complex metric/calculation    | `core/nodes/<name>_node.py` (if stateful), or strategy in `core/strategies/` |
 | Add new data reader (e.g., CSV)   | `io/readers/csv.py` + `register_reader("csv")`         |
 | Add new data writer               | `io/writers/<format>.py` + `register_writer("<format>")`|

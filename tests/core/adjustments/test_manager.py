@@ -64,8 +64,20 @@ def test_add_and_get_adjustment(manager: AdjustmentManager) -> None:
 def test_add_multiple_adjustments_same_location(manager: AdjustmentManager) -> None:
     """Test adding multiple adjustments to the same location respects priority/time."""
     now = datetime.now(UTC)
-    adj1 = create_adj(node_name="N", period="P", value=1, priority=1, timestamp=now - timedelta(seconds=10))
-    adj2 = create_adj(node_name="N", period="P", value=2, priority=0, timestamp=now - timedelta(seconds=5))
+    adj1 = create_adj(
+        node_name="N",
+        period="P",
+        value=1,
+        priority=1,
+        timestamp=now - timedelta(seconds=10),
+    )
+    adj2 = create_adj(
+        node_name="N",
+        period="P",
+        value=2,
+        priority=0,
+        timestamp=now - timedelta(seconds=5),
+    )
     adj3 = create_adj(node_name="N", period="P", value=3, priority=1, timestamp=now)
 
     manager.add_adjustment(adj1)
@@ -279,4 +291,7 @@ def test_load_adjustments(manager: AdjustmentManager) -> None:
     assert len(manager.get_all_adjustments()) == 2
     assert manager.get_adjustments("OldNode", "P1") == []
     # Order might vary, check content
-    assert set(adj.id for adj in manager.get_all_adjustments()) == {adj_new1.id, adj_new2.id}
+    assert set(adj.id for adj in manager.get_all_adjustments()) == {
+        adj_new1.id,
+        adj_new2.id,
+    }

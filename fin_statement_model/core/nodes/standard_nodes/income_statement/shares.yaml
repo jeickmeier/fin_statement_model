@@ -1,0 +1,17 @@
+---
+# Income Statement - Share-Related Items
+# Standard node definitions for share counts and per-share metrics
+
+shares_outstanding:
+  category: income_statement
+  subcategory: shares
+  description: Weighted average shares outstanding
+  alternate_names: [shares, common_shares_outstanding]
+  sign_convention: positive
+
+diluted_shares_outstanding:
+  category: income_statement
+  subcategory: shares
+  description: Diluted shares outstanding
+  alternate_names: [diluted_shares]
+  sign_convention: positive 

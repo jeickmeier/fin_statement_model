@@ -68,7 +68,7 @@ adj_id_2 = graph.add_adjustment(
     reason="Revised COGS estimate based on new supplier quote.",
     tags={"estimate", "supplier"},
     user="Analyst2",
-    priority=-10, # Higher priority (lower number)
+    priority=-10,  # Higher priority (lower number)
 )
 logger.info(f"Added replacement adjustment {adj_id_2} for COGS 2024.")
 
@@ -85,7 +85,9 @@ logger.info("\n--- Listing All Adjustments in the Graph ---")
 all_adjustments = graph.list_all_adjustments()
 logger.info(f"Total adjustments found: {len(all_adjustments)}")
 for adj in all_adjustments:
-    logger.info(f"  - {adj.id}: Node='{adj.node_name}', Period='{adj.period}', Type='{adj.type.name}', Value={adj.value}, Reason='{adj.reason}'")
+    logger.info(
+        f"  - {adj.id}: Node='{adj.node_name}', Period='{adj.period}', Type='{adj.type.name}', Value={adj.value}, Reason='{adj.reason}'"
+    )
 
 # --- 5. Removing an Adjustment ---
 logger.info("\n--- Removing an Adjustment ---")

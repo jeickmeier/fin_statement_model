@@ -90,12 +90,12 @@ class CsvReader(DataReader):
             # Use configuration from self.cfg, allow overrides via read_csv_options
             read_options = {
                 "delimiter": self.cfg.delimiter,
-                "header": self.cfg.header_row - 1
-                if self.cfg.header_row
-                else 0,  # pandas is 0-indexed header
-                "index_col": self.cfg.index_col - 1
-                if self.cfg.index_col
-                else None,  # pandas is 0-indexed index
+                "header": (
+                    self.cfg.header_row - 1 if self.cfg.header_row else 0
+                ),  # pandas is 0-indexed header
+                "index_col": (
+                    self.cfg.index_col - 1 if self.cfg.index_col else None
+                ),  # pandas is 0-indexed index
             }
             # Merge user-provided kwargs, allowing them to override config
             read_options.update(read_csv_options)

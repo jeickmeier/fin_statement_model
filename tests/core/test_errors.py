@@ -203,8 +203,16 @@ def test_data_validation_error_instantiation(
             ["X", "Y", "X"],
             "Custom message: X -> Y -> X",
         ),
-        ("No cycle provided", None, "No cycle provided"),  # Should format without cycle info
-        ("Empty cycle provided", [], "Empty cycle provided"),  # Should format without cycle info
+        (
+            "No cycle provided",
+            None,
+            "No cycle provided",
+        ),  # Should format without cycle info
+        (
+            "Empty cycle provided",
+            [],
+            "Empty cycle provided",
+        ),  # Should format without cycle info
     ],
 )
 def test_circular_dependency_error_instantiation(
@@ -237,7 +245,12 @@ def test_circular_dependency_error_instantiation(
             None,
             "Period format incorrect: 'Q5-2023'",
         ),
-        ("Period not found", "2022", [], "Period not found: '2022'. Available periods: []"),
+        (
+            "Period not found",
+            "2022",
+            [],
+            "Period not found: '2022'. Available periods: []",
+        ),
         ("General period error", None, None, "General period error"),
     ],
 )
@@ -290,7 +303,12 @@ def test_statement_error_instantiation(
             None,
             "Invalid configuration for strategy 'WeightedAverage'",
         ),
-        ("Strategy execution error", None, "NodeB", "Strategy execution error for node 'NodeB'"),
+        (
+            "Strategy execution error",
+            None,
+            "NodeB",
+            "Strategy execution error for node 'NodeB'",
+        ),
         ("General strategy problem", None, None, "General strategy problem"),
     ],
 )

@@ -1,0 +1,10 @@
+---
+# Cash Flow Statement - Operating Activities
+# Standard node definitions for operating cash flow items
+
+operating_cash_flow:
+  category: cash_flow_statement
+  subcategory: operating_activities
+  description: Cash flow from operations
+  alternate_names: [cfo, ocf, cffo]
+  sign_convention: positive 

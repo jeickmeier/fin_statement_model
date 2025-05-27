@@ -1,0 +1,91 @@
+---
+# Valuation - Yields
+# Valuation metrics: yields
+
+# Metric definition for Dividend Yield
+
+name: Dividend Yield
+description: Measures annual dividend return relative to stock price. Shows income component of total return.
+inputs:
+  - dividends_per_share
+  - market_price
+formula: "dividends_per_share / market_price * 100"
+tags: [valuation, dividend_return, income_investing, yield]
+units: percentage
+category: valuation
+related_metrics: [price_to_earnings_ratio, dividend_payout_ratio, free_cash_flow_yield]
+interpretation:
+  good_range: [2.0, 6.0]
+  warning_below: 0.0
+  warning_above: 10.0
+  excellent_above: null
+  poor_below: null
+  notes: |
+    - 0%: No dividend, growth company or financial stress
+    - 0-2%: Low yield, growth-oriented or expensive stock
+    - 2-6%: Attractive yield for income investors
+    - 6-10%: High yield, mature company or potential dividend risk
+    - Above 10%: Very high yield, potential dividend cut risk or distress
+    - Higher yields may indicate market concerns about dividend sustainability
+    - Consider dividend coverage ratio and payout sustainability
+    - Compare to risk-free rate and sector averages
+    - Dividend growth history important for income investors
+    - Zero yield common for growth companies reinvesting profits 
+# Metric definition for Earnings Yield
+
+name: Earnings Yield
+description: Inverse of P/E ratio, showing earnings return relative to stock price. Useful for comparing to bond yields.
+inputs:
+  - earnings_per_share
+  - market_price
+formula: "earnings_per_share / market_price * 100"
+tags: [valuation, earnings_return, yield_comparison, value_investing]
+units: percentage
+category: valuation
+related_metrics: [price_to_earnings_ratio, dividend_yield, free_cash_flow_yield]
+interpretation:
+  good_range: [4.0, 12.0]
+  warning_below: 2.0
+  warning_above: 20.0
+  excellent_above: 10.0
+  poor_below: 1.0
+  notes: |
+    - Below 1%: Very low earnings yield, expensive valuation
+    - 1-2%: Low yield, growth premium or overvaluation
+    - 2-4%: Below average yield, moderate valuation
+    - 4-12%: Attractive earnings yield, reasonable valuation
+    - Above 20%: Very high yield, potential value trap or distress
+    - Inverse of P/E ratio - higher earnings yield indicates cheaper valuation
+    - Compare to risk-free rate and corporate bond yields
+    - High earnings yield may indicate market skepticism about earnings quality
+    - Consider earnings sustainability and growth prospects
+    - Useful for value investing screens and relative valuation 
+# Metric definition for Free Cash Flow Yield
+
+name: Free Cash Flow Yield
+description: Measures free cash flow return relative to market capitalization. Shows cash-based return to equity holders.
+inputs:
+  - free_cash_flow
+  - market_cap
+formula: "free_cash_flow / market_cap * 100"
+tags: [valuation, cash_flow_return, yield_analysis, cash_based_valuation]
+units: percentage
+category: valuation
+related_metrics: [earnings_yield, dividend_yield, free_cash_flow_margin]
+interpretation:
+  good_range: [5.0, 15.0]
+  warning_below: 2.0
+  warning_above: 25.0
+  excellent_above: 12.0
+  poor_below: 0.0
+  notes: |
+    - Below 0%: Negative FCF, cash outflow after capex
+    - 0-2%: Very low cash yield, expensive on cash flow basis
+    - 2-5%: Low but positive cash yield, growth premium
+    - 5-15%: Attractive cash yield, reasonable valuation
+    - Above 25%: Very high yield, potential value opportunity or distress
+    - More conservative than earnings yield as it accounts for capex
+    - Shows actual cash available to equity holders
+    - Particularly relevant for capital-intensive businesses
+    - Negative FCF may be acceptable for high-growth companies
+    - Compare to cost of equity and alternative investment yields 

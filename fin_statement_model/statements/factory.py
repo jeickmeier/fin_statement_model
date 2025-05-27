@@ -16,7 +16,11 @@ import pandas as pd
 
 # Core components
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.errors import FinancialModelError, StatementError, ConfigurationError
+from fin_statement_model.core.errors import (
+    FinancialModelError,
+    StatementError,
+    ConfigurationError,
+)
 
 # IO Layer components
 from fin_statement_model.io.readers import statement_config_reader
@@ -41,7 +45,9 @@ __all__ = [
 
 
 def _load_build_register_statements(
-    config_path_or_dir: str, registry: StatementRegistry, builder: StatementStructureBuilder
+    config_path_or_dir: str,
+    registry: StatementRegistry,
+    builder: StatementStructureBuilder,
 ) -> list[str]:
     """Load, validate, build, and register statement structures from configs.
 

@@ -20,7 +20,9 @@ from fin_statement_model.core.errors import (
 )
 
 # Import the MetricRegistry CLASS, not an instance
-from fin_statement_model.core.metrics.registry import MetricRegistry
+from fin_statement_model.core.metrics import (
+    metric_registry,
+)  # Import the global instance
 from fin_statement_model.statements.structure import (
     StatementStructure,
     CalculatedLineItem,
@@ -97,23 +99,13 @@ def populate_graph_from_statement(
     errors_encountered: list[tuple[str, str]] = []
     nodes_added_count = 0
 
-    # Instantiate the registry here
-    try:
-        metric_registry = MetricRegistry()  # Instantiate the class
-        # TODO: Consider where/how to load metric definitions into this instance.
-        # For now, it assumes metrics are loaded elsewhere or not needed immediately.
-        # A better approach might be to pass a pre-loaded registry instance
-        # into populate_graph_from_statement.
-    except Exception as e:
-        logger.exception("Failed to initialize MetricRegistry.")
-        raise ConfigurationError(f"MetricRegistry initialization failed: {e}") from e
-
     logger.info(
         f"Starting graph population for statement '{statement.id}'. Processing {len(all_items_to_process)} calculation/metric items."
     )
 
     def _process_item(
-        item: Union[CalculatedLineItem, SubtotalLineItem, MetricLineItem], is_retry: bool = False
+        item: Union[CalculatedLineItem, SubtotalLineItem, MetricLineItem],
+        is_retry: bool = False,
     ) -> bool:  # Update Union
         """Process a single calculation/subtotal/metric item. Return True if successful, False otherwise."""
         nonlocal nodes_added_count  # Allow modification of outer scope variable
@@ -214,9 +206,11 @@ def populate_graph_from_statement(
 
                         if missing_metric_input_details:
                             missing_summary = [
-                                f"statement item '{i_id}' needs node '{n_id}'"
-                                if n_id
-                                else f"statement item '{i_id}' not found/mappable"
+                                (
+                                    f"statement item '{i_id}' needs node '{n_id}'"
+                                    if n_id
+                                    else f"statement item '{i_id}' not found/mappable"
+                                )
                                 for i_id, n_id in missing_metric_input_details
                             ]
                             if is_retry:
@@ -235,8 +229,8 @@ def populate_graph_from_statement(
                             # Add the metric node using graph.add_metric
                             graph.add_metric(
                                 metric_name=item.metric_id,
-                                node_name=item_id, # Use the statement item ID as the node name
-                                input_node_map=resolved_node_ids_map # Pass the resolved map
+                                node_name=item_id,  # Use the statement item ID as the node name
+                                input_node_map=resolved_node_ids_map,  # Pass the resolved map
                             )
                             nodes_added_count += 1
                             success = True  # Node added successfully
@@ -278,9 +272,11 @@ def populate_graph_from_statement(
 
                 if missing_input_details:
                     missing_summary = [
-                        f"item '{i_id}' needs node '{n_id}'"
-                        if n_id
-                        else f"item '{i_id}' not found/mappable"
+                        (
+                            f"item '{i_id}' needs node '{n_id}'"
+                            if n_id
+                            else f"item '{i_id}' not found/mappable"
+                        )
                         for i_id, n_id in missing_input_details
                     ]
                     # Don't log error immediately on first pass, just fail processing
@@ -345,9 +341,11 @@ def populate_graph_from_statement(
 
                     if missing_input_details_sub:
                         missing_summary_sub = [
-                            f"item '{i_id}' needs node '{n_id}'"
-                            if n_id
-                            else f"item '{i_id}' not found/mappable"
+                            (
+                                f"item '{i_id}' needs node '{n_id}'"
+                                if n_id
+                                else f"item '{i_id}' not found/mappable"
+                            )
                             for i_id, n_id in missing_input_details_sub
                         ]
                         # Log only if it fails on retry
@@ -380,7 +378,8 @@ def populate_graph_from_statement(
             if not action_taken and not processed_item:
                 # Check if it's a type we *expect* to skip (like a basic LineItem without calculation)
                 if not isinstance(
-                    item, LineItem | CalculatedLineItem | SubtotalLineItem | MetricLineItem
+                    item,
+                    LineItem | CalculatedLineItem | SubtotalLineItem | MetricLineItem,
                 ):
                     # Log unexpected types
                     logger.warning(
@@ -389,7 +388,12 @@ def populate_graph_from_statement(
                 # If it's an expected non-calculated type or already exists, it's not an error
                 success = True
 
-        except (NodeError, CircularDependencyError, CalculationError, ConfigurationError) as e:
+        except (
+            NodeError,
+            CircularDependencyError,
+            CalculationError,
+            ConfigurationError,
+        ) as e:
             # Catch errors from graph.add_calculation or item definition issues
             error_msg = f"Failed to add node '{item_id}': {e!s}"
             # Check if it's a missing input error *not* during retry phase

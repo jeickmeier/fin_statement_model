@@ -1,0 +1,149 @@
+---
+# Growth - Growth Rates
+# Growth metrics: growth_rates
+
+# Metric definition for Revenue Growth Rate
+
+name: Revenue Growth Rate
+description: Measures year-over-year revenue growth. Shows top-line expansion and business momentum.
+inputs:
+  - revenue
+  - revenue_prior_year
+formula: "(revenue - revenue_prior_year) / revenue_prior_year * 100"
+tags: [growth, revenue_analysis, business_expansion, top_line_growth]
+units: percentage
+category: growth
+related_metrics: [ebitda_growth_rate, eps_growth_rate, asset_growth_rate]
+interpretation:
+  good_range: [5.0, 20.0]
+  warning_below: 0.0
+  warning_above: 50.0
+  excellent_above: 15.0
+  poor_below: -5.0
+  notes: |
+    - Below -5%: Declining revenue, potential business challenges
+    - -5% to 0%: Flat to declining growth, concerning trend
+    - 0-5%: Slow growth, may lag inflation and market expansion
+    - 5-20%: Healthy growth for most mature businesses
+    - Above 50%: Very high growth, may be unsustainable or one-time factors
+    - Consider industry context and economic conditions
+    - Organic vs. acquisition-driven growth distinction important
+    - Consistent growth more valuable than volatile growth
+    - Compare to industry peers and market growth rates
+    - Quality of growth matters - profitable vs. unprofitable expansion 
+# Metric definition for EBITDA Growth Rate
+
+name: EBITDA Growth Rate
+description: Measures year-over-year EBITDA growth. Shows cash earnings expansion and operational leverage.
+inputs:
+  - ebitda
+  - ebitda_prior_year
+formula: "(ebitda - ebitda_prior_year) / ebitda_prior_year * 100"
+tags: [growth, profitability_growth, operational_leverage, cash_earnings]
+units: percentage
+category: growth
+related_metrics: [revenue_growth_rate, eps_growth_rate, operating_income_growth]
+interpretation:
+  good_range: [8.0, 25.0]
+  warning_below: 0.0
+  warning_above: 100.0
+  excellent_above: 20.0
+  poor_below: -10.0
+  notes: |
+    - Below -10%: Declining cash earnings, operational challenges
+    - -10% to 0%: Flat to declining EBITDA, margin pressure
+    - 0-8%: Slow earnings growth, limited operational leverage
+    - 8-25%: Strong earnings growth, good operational performance
+    - Above 100%: Exceptional growth, may be unsustainable or recovery
+    - EBITDA growth should ideally exceed revenue growth (margin expansion)
+    - Shows operational leverage and cost control effectiveness
+    - Consider one-time items and accounting changes
+    - Sustainable growth more important than volatile spikes
+    - Compare to revenue growth to assess margin trends 
+# Metric definition for EPS Growth Rate
+
+name: EPS Growth Rate
+description: Measures year-over-year earnings per share growth. Shows bottom-line performance improvement on a per-share basis.
+inputs:
+  - earnings_per_share
+  - earnings_per_share_prior_year
+formula: "(earnings_per_share - earnings_per_share_prior_year) / earnings_per_share_prior_year * 100"
+tags: [growth, earnings_growth, per_share_performance, shareholder_value]
+units: percentage
+category: growth
+related_metrics: [revenue_growth_rate, ebitda_growth_rate, return_on_equity]
+interpretation:
+  good_range: [10.0, 30.0]
+  warning_below: 0.0
+  warning_above: 100.0
+  excellent_above: 25.0
+  poor_below: -15.0
+  notes: |
+    - Below -15%: Significant earnings decline, fundamental issues
+    - -15% to 0%: Declining earnings, concerning trend
+    - 0-10%: Slow earnings growth, limited value creation
+    - 10-30%: Strong earnings growth, good shareholder value creation
+    - Above 100%: Exceptional growth, may be unsustainable or recovery
+    - EPS growth can be driven by earnings growth or share buybacks
+    - Quality of earnings growth important - sustainable vs. one-time
+    - Compare to revenue and EBITDA growth for consistency
+    - Consider dilution from stock options and convertibles
+    - Consistent growth more valuable than volatile performance 
+# Metric definition for Asset Growth Rate
+
+name: Asset Growth Rate
+description: Measures year-over-year total asset growth. Shows balance sheet expansion and capital deployment.
+inputs:
+  - total_assets
+  - total_assets_prior_year
+formula: "(total_assets - total_assets_prior_year) / total_assets_prior_year * 100"
+tags: [growth, balance_sheet_expansion, capital_deployment, asset_accumulation]
+units: percentage
+category: growth
+related_metrics: [revenue_growth_rate, asset_turnover, return_on_assets]
+interpretation:
+  good_range: [3.0, 15.0]
+  warning_below: 0.0
+  warning_above: 30.0
+  excellent_above: null
+  poor_below: -5.0
+  notes: |
+    - Below -5%: Asset contraction, potential business decline
+    - -5% to 0%: Flat asset base, limited growth investment
+    - 0-3%: Slow asset growth, conservative expansion
+    - 3-15%: Healthy asset growth, balanced expansion
+    - Above 30%: Rapid asset growth, potential overexpansion or acquisitions
+    - Asset growth should support revenue growth and returns
+    - Consider quality of asset additions - productive vs. speculative
+    - Compare to revenue growth - asset growth without revenue growth concerning
+    - Acquisitions can distort organic asset growth trends
+    - Monitor asset turnover to ensure efficient asset utilization 
+# Metric definition for Sustainable Growth Rate
+
+name: Sustainable Growth Rate
+description: Measures maximum growth rate sustainable from retained earnings without external financing. Shows internal growth capacity.
+inputs:
+  - return_on_equity
+  - dividend_payout_ratio
+formula: "return_on_equity * (1 - dividend_payout_ratio)"
+tags: [growth, sustainability, internal_financing, capital_allocation]
+units: percentage
+category: growth
+related_metrics: [return_on_equity, dividend_payout_ratio, asset_growth_rate]
+interpretation:
+  good_range: [8.0, 20.0]
+  warning_below: 3.0
+  warning_above: 30.0
+  excellent_above: 15.0
+  poor_below: 1.0
+  notes: |
+    - Below 1%: Very limited internal growth capacity
+    - 1-3%: Low sustainable growth, may need external financing
+    - 3-8%: Moderate sustainable growth for mature businesses
+    - 8-20%: Strong sustainable growth capacity
+    - Above 30%: Very high sustainable growth, exceptional performance
+    - Shows growth achievable without issuing debt or equity
+    - Higher ROE and lower payout ratios increase sustainable growth
+    - Actual growth above sustainable rate requires external financing
+    - Useful for assessing dividend policy and growth trade-offs
+    - Consider reinvestment opportunities and capital allocation efficiency 

@@ -1,0 +1,113 @@
+---
+# Real Estate - Per Share Metrics
+# Real estate metrics: per_share_metrics
+
+# Metric definition for FFO Per Share
+
+name: FFO Per Share
+description: Funds From Operations divided by weighted average shares outstanding. Key per-share metric for REIT analysis and comparison.
+inputs:
+  - funds_from_operations
+  - shares_outstanding
+formula: "funds_from_operations / shares_outstanding"
+tags: [real_estate, per_share, ffo_per_share, reit_performance]
+units: currency
+category: real_estate_per_share
+related_metrics: [funds_from_operations, affo_per_share, earnings_per_share]
+interpretation:
+  good_range: null
+  warning_below: null
+  warning_above: null
+  excellent_above: null
+  poor_below: 0.0
+  notes: |
+    - Positive FFO per share indicates profitable REIT operations
+    - More relevant than EPS for REIT analysis due to depreciation add-back
+    - Should grow over time for healthy REIT performance
+    - Compare to dividend per share for payout ratio analysis
+    - Used for FFO multiple calculations and peer comparisons
+    - Focus on growth trends rather than absolute levels
+    - Consider alongside AFFO per share for complete cash flow picture
+    - Standard metric for REIT earnings guidance and reporting 
+# Metric definition for AFFO Per Share
+
+name: AFFO Per Share
+description: Adjusted Funds From Operations divided by weighted average shares outstanding. Conservative per-share cash flow metric.
+inputs:
+  - adjusted_funds_from_operations
+  - shares_outstanding
+formula: "adjusted_funds_from_operations / shares_outstanding"
+tags: [real_estate, per_share, affo_per_share, cash_flow, dividend_coverage]
+units: currency
+category: real_estate_per_share
+related_metrics: [adjusted_funds_from_operations, ffo_per_share, dividends_per_share]
+interpretation:
+  good_range: null
+  warning_below: null
+  warning_above: null
+  excellent_above: null
+  poor_below: 0.0
+  notes: |
+    - Positive AFFO per share indicates cash generation after necessary capex
+    - More conservative than FFO per share as it accounts for recurring capex
+    - Should exceed dividend per share for sustainable distributions
+    - Critical metric for assessing dividend coverage and sustainability
+    - Used for AFFO multiple calculations and valuation analysis
+    - Focus on growth trends and dividend coverage ratios
+    - Key metric for REIT cash flow analysis and investment decisions
+    - Should grow over time to support dividend growth 
+# Metric definition for Dividend Coverage Ratio (AFFO)
+
+name: Dividend Coverage Ratio (AFFO)
+description: AFFO per share divided by dividends per share. Shows how well AFFO covers dividend payments.
+inputs:
+  - affo_per_share
+  - dividends_per_share
+formula: "affo_per_share / dividends_per_share"
+tags: [real_estate, dividend_coverage, affo_coverage, dividend_sustainability]
+units: times
+category: real_estate_per_share
+related_metrics: [affo_per_share, dividends_per_share, dividend_payout_ratio]
+interpretation:
+  good_range: [1.1, 2.0]
+  warning_below: 1.0
+  warning_above: null
+  excellent_above: 1.3
+  poor_below: 0.8
+  notes: |
+    - Below 0.8x: Poor coverage, dividend likely unsustainable
+    - 0.8-1.0x: Tight coverage, vulnerable to cash flow volatility
+    - 1.0-1.1x: Adequate coverage but limited cushion
+    - 1.1-2.0x: Good to strong coverage, sustainable dividend
+    - Above 2.0x: Very strong coverage, potential for dividend growth
+    - Ratio above 1.0x indicates AFFO exceeds dividend payments
+    - Higher ratios provide more cushion for dividend sustainability
+    - Consider alongside growth prospects and capital needs
+    - Key metric for dividend safety and REIT quality assessment 
+# Metric definition for Property Revenue Per Share
+
+name: Property Revenue Per Share
+description: Total property revenue divided by shares outstanding. Shows revenue generation efficiency on a per-share basis.
+inputs:
+  - total_property_revenue
+  - shares_outstanding
+formula: "total_property_revenue / shares_outstanding"
+tags: [real_estate, per_share, revenue_per_share, property_performance]
+units: currency
+category: real_estate_per_share
+related_metrics: [ffo_per_share, net_operating_income, occupancy_rate]
+interpretation:
+  good_range: null
+  warning_below: null
+  warning_above: null
+  excellent_above: null
+  poor_below: null
+  notes: |
+    - Absolute value depends on property portfolio size and share count
+    - Focus on growth trends rather than absolute levels
+    - Rising revenue per share indicates portfolio growth or improved performance
+    - Should be analyzed alongside occupancy and rent growth metrics
+    - Compare to peer REITs with similar property types
+    - Consider impact of acquisitions and dispositions on trends
+    - Useful for tracking top-line performance on per-share basis
+    - Should support FFO and AFFO per share growth over time 

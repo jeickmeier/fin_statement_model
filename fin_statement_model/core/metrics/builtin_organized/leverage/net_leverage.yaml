@@ -1,0 +1,120 @@
+---
+# Leverage - Net Leverage
+# Leverage metrics: net_leverage
+
+# Metric definition for Net Debt-to-Equity Ratio
+
+name: Net Debt-to-Equity Ratio
+description: Measures leverage adjusted for cash position. More accurate representation of financial risk than gross debt ratios.
+inputs:
+  - net_debt
+  - total_equity
+formula: "net_debt / total_equity"
+tags: [leverage, solvency, capital_structure, net_leverage, credit_risk]
+units: ratio
+category: leverage
+related_metrics: [debt_to_equity_ratio, net_debt_to_ebitda, debt_to_assets_ratio]
+interpretation:
+  good_range: [0.2, 0.5]
+  warning_above: 1.0
+  excellent_above: null
+  poor_below: null
+  warning_below: null
+  notes: |
+    - Below 0.2: Very conservative net leverage, strong cash position
+    - 0.2-0.5: Moderate net leverage, balanced capital structure
+    - 0.5-1.0: Higher net leverage, acceptable for stable cash flow businesses
+    - 1.0-2.0: High net leverage, requires strong cash generation
+    - Above 2.0: Very high net leverage, significant financial risk
+    - More accurate than gross debt ratios as it considers cash offset
+    - Negative values indicate net cash position (cash > debt)
+    - Particularly relevant for companies with significant cash holdings
+    - Better reflects actual financial risk and debt capacity
+    - Consider cash accessibility and restrictions when interpreting 
+# Metric definition for Net Debt-to-EBITDA
+
+name: Net Debt-to-EBITDA
+description: Measures years required to pay off net debt from EBITDA generation. Key credit metric for assessing debt capacity and repayment ability.
+inputs:
+  - net_debt
+  - ebitda
+formula: "net_debt / ebitda"
+tags: [leverage, credit_analysis, debt_capacity, cash_earnings, repayment_ability]
+units: times
+category: leverage
+related_metrics: [total_debt_to_ebitda, net_debt_to_equity_ratio, ebitda_interest_coverage]
+interpretation:
+  good_range: [1.0, 3.0]
+  warning_above: 4.0
+  excellent_above: null
+  poor_below: null
+  warning_below: null
+  notes: |
+    - Below 1.0: Very conservative leverage, strong debt capacity
+    - 1.0-3.0: Moderate leverage, acceptable for most businesses
+    - 3.0-4.0: Higher leverage, requires stable cash flows
+    - 4.0-6.0: High leverage, limited additional debt capacity
+    - Above 6.0: Very high leverage, potential financial distress
+    - Widely used by credit rating agencies and lenders
+    - Shows theoretical years to repay debt from cash earnings
+    - Negative values indicate net cash position
+    - Consider EBITDA quality and sustainability
+    - Industry-dependent - stable industries can support higher ratios 
+# Metric definition for Total Debt-to-EBITDA
+
+name: Total Debt-to-EBITDA
+description: Measures years required to pay off total debt from EBITDA generation. Conservative debt capacity metric that ignores cash position.
+inputs:
+  - total_debt
+  - ebitda
+formula: "total_debt / ebitda"
+tags: [leverage, credit_analysis, debt_capacity, gross_leverage, cash_earnings]
+units: times
+category: leverage
+related_metrics: [net_debt_to_ebitda, debt_to_equity_ratio, ebitda_interest_coverage]
+interpretation:
+  good_range: [1.5, 4.0]
+  warning_above: 5.0
+  excellent_above: null
+  poor_below: null
+  warning_below: null
+  notes: |
+    - Below 1.5: Very conservative gross leverage, strong debt capacity
+    - 1.5-4.0: Moderate gross leverage, acceptable for most businesses
+    - 4.0-5.0: Higher gross leverage, requires stable cash flows
+    - 5.0-7.0: High gross leverage, limited additional debt capacity
+    - Above 7.0: Very high gross leverage, potential financial distress
+    - More conservative than net debt-to-EBITDA as it ignores cash
+    - Useful when cash accessibility is uncertain
+    - Standard metric in loan covenants and credit agreements
+    - Consider alongside net debt ratio for complete picture
+    - Industry context crucial - regulated utilities can support higher ratios 
+# Metric definition for EBITDA-to-Assets
+
+name: EBITDA-to-Assets
+description: Measures EBITDA generation efficiency relative to asset base. Shows cash earnings productivity of assets.
+inputs:
+  - ebitda
+  - total_assets
+formula: "ebitda / total_assets"
+tags: [efficiency, asset_productivity, cash_generation, operational_efficiency]
+units: ratio
+category: efficiency
+related_metrics: [return_on_assets, asset_turnover, ebitda_margin]
+interpretation:
+  good_range: [0.10, 0.25]
+  warning_below: 0.05
+  warning_above: null
+  excellent_above: 0.20
+  poor_below: 0.02
+  notes: |
+    - Below 2%: Very poor cash generation from assets
+    - 2-5%: Low cash productivity, potential operational issues
+    - 5-10%: Adequate cash generation for many capital-intensive industries
+    - 10-25%: Good to strong cash productivity from assets
+    - Above 25%: Excellent cash generation efficiency
+    - More relevant than ROA for capital-intensive businesses
+    - Shows cash earnings before capital allocation decisions
+    - Useful for comparing companies with different capital structures
+    - Consider alongside asset turnover for complete efficiency picture
+    - Industry-dependent - asset-light businesses typically higher 

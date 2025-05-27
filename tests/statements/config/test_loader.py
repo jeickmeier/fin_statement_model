@@ -26,7 +26,7 @@ def test_list_built_in_statements_empty(tmp_path: Path, monkeypatch: pytest.Monk
     # Instead, let's mock importlib.resources.files to simulate empty/missing dir
     with patch("importlib.resources.files") as mock_files:
         mock_path = MagicMock(spec=Path)
-        mock_path.is_dir.return_value = False # Simulate non-existent/non-dir path
+        mock_path.is_dir.return_value = False  # Simulate non-existent/non-dir path
         mock_files.return_value = mock_path
 
         names = list_available_builtin_configs()

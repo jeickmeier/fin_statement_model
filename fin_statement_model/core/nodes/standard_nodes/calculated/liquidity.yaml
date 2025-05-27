@@ -1,0 +1,17 @@
+---
+# Calculated Items - Liquidity
+# Standard node definitions for calculated liquidity measures
+
+working_capital:
+  category: calculated
+  subcategory: liquidity_measure
+  description: Working capital (current_assets - current_liabilities)
+  alternate_names: [wc]
+  sign_convention: positive
+
+net_working_capital:
+  category: calculated
+  subcategory: liquidity_measure
+  description: Operating working capital (excluding cash and debt)
+  alternate_names: [nwc, operating_working_capital]
+  sign_convention: positive 

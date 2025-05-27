@@ -58,14 +58,23 @@ def populated_manager() -> AdjustmentManager:
     )
     manager.add_adjustment(
         create_adj(
-            node_name="COGS", period="P1", value=5, scenario="Budget", tags={"Budget", "Region/NA"}
+            node_name="COGS",
+            period="P1",
+            value=5,
+            scenario="Budget",
+            tags={"Budget", "Region/NA"},
         )
     )  # Budget scenario
     manager.add_adjustment(
         create_adj(node_name="Opex", period="P1", value=-20, tags={"Actual", "Type/Recurring"})
     )
     manager.add_adjustment(
-        create_adj(node_name="Opex", period="P1", value=-5, tags={"Actual", "Type/NonRecurring"})
+        create_adj(
+            node_name="Opex",
+            period="P1",
+            value=-5,
+            tags={"Actual", "Type/NonRecurring"},
+        )
     )  # NonRecurring tag
     manager.add_adjustment(
         create_adj(
@@ -143,7 +152,9 @@ def test_summary_with_filter_tags(populated_manager: AdjustmentManager) -> None:
     assert summary_df["count"].sum() == 5  # 5 adjustments have 'Actual' tag
 
 
-def test_summary_with_filter_adjustment_filter(populated_manager: AdjustmentManager) -> None:
+def test_summary_with_filter_adjustment_filter(
+    populated_manager: AdjustmentManager,
+) -> None:
     """Test summary applying an AdjustmentFilter object."""
     # Filter for default scenario and Opex node
     # Update filter: AdjustmentFilter doesn't support node_names directly in .matches()
@@ -153,7 +164,10 @@ def test_summary_with_filter_adjustment_filter(populated_manager: AdjustmentMana
     summary_df = summary(populated_manager, filter_input=test_filter)
     # Expected result: One group (P1, Opex)
     assert len(summary_df) == 1
-    assert summary_df.index[0] == ("P1", "Opex") # Default grouping is (period, node_name)
+    assert summary_df.index[0] == (
+        "P1",
+        "Opex",
+    )  # Default grouping is (period, node_name)
     assert summary_df.iloc[0]["count"] == 1
     assert summary_df.iloc[0]["sum_value"] == -20.0
 
@@ -192,7 +206,9 @@ def test_list_by_tag_no_match(populated_manager: AdjustmentManager) -> None:
     assert len(results) == 0
 
 
-def test_list_by_tag_with_additional_filter(populated_manager: AdjustmentManager) -> None:
+def test_list_by_tag_with_additional_filter(
+    populated_manager: AdjustmentManager,
+) -> None:
     """Test listing by tag prefix combined with another filter."""
     # List by Region/ prefix, but only include Budget scenario
     test_filter = AdjustmentFilter(include_scenarios={"Budget"})
@@ -209,7 +225,11 @@ def test_list_by_tag_sorting(populated_manager: AdjustmentManager) -> None:
     results = list_by_tag(populated_manager, "Actual")
     # The high priority one (-1) does *not* have the "Actual" tag in the fixture.
     # Let's check the priority 0 "Actual" Revenue adjustment vs others.
-    actual_rev_p1 = next(a for a in results if a.node_name == "Revenue" and a.period == "P1" and a.scenario == "default")
+    actual_rev_p1 = next(
+        a
+        for a in results
+        if a.node_name == "Revenue" and a.period == "P1" and a.scenario == "default"
+    )
     # Find COGS adjustments
     cogs_actual = next(a for a in results if a.node_name == "COGS" and a.scenario == "default")
     # cogs_budget does not have "Actual" tag

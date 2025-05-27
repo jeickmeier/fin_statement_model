@@ -1,0 +1,105 @@
+---
+# Credit_Risk - Altman Scores
+# Credit_Risk metrics: altman_scores
+
+# Metric definition for Altman Z-Score (Manufacturing)
+
+name: Altman Z-Score (Manufacturing)
+description: Bankruptcy prediction model for manufacturing companies. Combines five financial ratios to assess default risk.
+inputs:
+  - working_capital
+  - total_assets
+  - retained_earnings
+  - ebit
+  - market_cap
+  - total_liabilities
+  - revenue
+formula: "1.2 * (working_capital / total_assets) + 1.4 * (retained_earnings / total_assets) + 3.3 * (ebit / total_assets) + 0.6 * (market_cap / total_liabilities) + 1.0 * (revenue / total_assets)"
+tags: [credit_risk, bankruptcy_prediction, default_risk, financial_distress, altman_model]
+units: score
+category: credit_risk
+related_metrics: [altman_z_score_private, altman_z_score_non_manufacturing, piotroski_f_score]
+interpretation:
+  good_range: [2.99, 10.0]
+  warning_below: 1.81
+  warning_above: null
+  excellent_above: 3.5
+  poor_below: 1.23
+  notes: |
+    - Below 1.23: High bankruptcy risk (distress zone)
+    - 1.23-1.81: Moderate bankruptcy risk (grey zone)
+    - 1.81-2.99: Low bankruptcy risk but monitor closely
+    - Above 2.99: Safe zone, low bankruptcy probability
+    - Above 3.5: Very strong financial position
+    - Original model developed for publicly traded manufacturing companies
+    - Five components: Working Capital/TA, Retained Earnings/TA, EBIT/TA, Market Value Equity/Total Liabilities, Sales/TA
+    - Model accuracy approximately 80-90% for predicting bankruptcy within 2 years
+    - Less reliable for service companies or private companies
+    - Consider industry context and economic conditions when interpreting 
+# Metric definition for Altman Z'-Score (Private Companies)
+
+name: Altman Z'-Score (Private Companies)
+description: Modified Altman Z-Score for private companies using book value instead of market value. Bankruptcy prediction model.
+inputs:
+  - working_capital
+  - total_assets
+  - retained_earnings
+  - ebit
+  - total_equity
+  - total_liabilities
+  - revenue
+formula: "0.717 * (working_capital / total_assets) + 0.847 * (retained_earnings / total_assets) + 3.107 * (ebit / total_assets) + 0.420 * (total_equity / total_liabilities) + 0.998 * (revenue / total_assets)"
+tags: [credit_risk, bankruptcy_prediction, private_companies, default_risk, altman_model]
+units: score
+category: credit_risk
+related_metrics: [altman_z_score_manufacturing, altman_z_score_non_manufacturing, piotroski_f_score]
+interpretation:
+  good_range: [2.90, 10.0]
+  warning_below: 1.23
+  warning_above: null
+  excellent_above: 3.5
+  poor_below: 1.23
+  notes: |
+    - Below 1.23: High bankruptcy risk (distress zone)
+    - 1.23-2.90: Grey zone, moderate bankruptcy risk
+    - Above 2.90: Safe zone, low bankruptcy probability
+    - Above 3.5: Very strong financial position
+    - Modified for private companies by substituting book value for market value
+    - Uses book value of equity instead of market capitalization
+    - More appropriate for private companies without market pricing
+    - Coefficients adjusted based on private company data
+    - Still primarily designed for manufacturing companies
+    - Consider alongside other financial health indicators 
+# Metric definition for Altman Z"-Score (Non-Manufacturing)
+
+name: Altman Z"-Score (Non-Manufacturing)
+description: Altman Z-Score variant for service and non-manufacturing companies. Excludes sales/assets ratio.
+inputs:
+  - working_capital
+  - total_assets
+  - retained_earnings
+  - ebit
+  - total_equity
+  - total_liabilities
+formula: "6.56 * (working_capital / total_assets) + 3.26 * (retained_earnings / total_assets) + 6.72 * (ebit / total_assets) + 1.05 * (total_equity / total_liabilities)"
+tags: [credit_risk, bankruptcy_prediction, service_companies, non_manufacturing, altman_model]
+units: score
+category: credit_risk
+related_metrics: [altman_z_score_manufacturing, altman_z_score_private, piotroski_f_score]
+interpretation:
+  good_range: [2.60, 10.0]
+  warning_below: 1.10
+  warning_above: null
+  excellent_above: 3.0
+  poor_below: 1.10
+  notes: |
+    - Below 1.10: High bankruptcy risk (distress zone)
+    - 1.10-2.60: Grey zone, moderate bankruptcy risk
+    - Above 2.60: Safe zone, low bankruptcy probability
+    - Above 3.0: Very strong financial position
+    - Designed for service companies and non-manufacturing businesses
+    - Excludes sales/total assets ratio due to lower asset intensity in services
+    - Four-factor model with adjusted coefficients
+    - More appropriate for companies with low asset turnover
+    - Consider industry-specific factors and business model
+    - Use alongside other service industry metrics 

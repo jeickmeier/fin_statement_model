@@ -1,0 +1,45 @@
+---
+# Cash Flow Statement - Financing Activities
+# Standard node definitions for financing cash flow items
+
+debt_issuance:
+  category: cash_flow_statement
+  subcategory: financing_activities
+  description: Proceeds from debt issuance
+  alternate_names: [debt_proceeds, new_debt]
+  sign_convention: positive
+
+debt_repayment:
+  category: cash_flow_statement
+  subcategory: financing_activities
+  description: Debt repayments (negative value)
+  alternate_names: [debt_payments]
+  sign_convention: negative
+
+equity_issuance:
+  category: cash_flow_statement
+  subcategory: financing_activities
+  description: Proceeds from equity issuance
+  alternate_names: [stock_issuance, equity_proceeds]
+  sign_convention: positive
+
+share_repurchases:
+  category: cash_flow_statement
+  subcategory: financing_activities
+  description: Share buybacks (negative value)
+  alternate_names: [buybacks, stock_repurchases]
+  sign_convention: negative
+
+financing_cash_flow:
+  category: cash_flow_statement
+  subcategory: financing_activities
+  description: Cash flow from financing
+  alternate_names: [cff, cfff]
+  sign_convention: negative
+
+free_cash_flow:
+  category: cash_flow_statement
+  subcategory: calculated
+  description: Free cash flow (operating_cash_flow + capital_expenditures)
+  alternate_names: [fcf]
+  sign_convention: positive 

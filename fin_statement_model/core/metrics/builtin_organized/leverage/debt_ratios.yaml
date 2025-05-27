@@ -1,0 +1,115 @@
+---
+# Leverage - Debt Ratios
+# Leverage metrics: debt_ratios
+
+# Metric definition for Debt-to-Equity Ratio
+
+name: Debt-to-Equity Ratio
+description: Measures the relative proportion of debt and equity financing. Higher ratios indicate greater financial leverage and risk.
+inputs:
+  - total_debt
+  - total_equity
+formula: "total_debt / total_equity"
+tags: [leverage, solvency, capital_structure, credit_risk]
+units: ratio
+category: leverage
+related_metrics: [debt_ratio, equity_ratio, times_interest_earned, debt_service_coverage]
+interpretation:
+  good_range: [0.3, 0.6]
+  warning_above: 1.0
+  excellent_above: null
+  poor_below: null
+  warning_below: null
+  notes: |
+    - Below 0.3: Conservative capital structure, may be underleveraged
+    - 0.3-0.6: Balanced capital structure with moderate leverage
+    - 0.6-1.0: Higher leverage, acceptable for stable cash flow businesses
+    - 1.0-2.0: High leverage, requires strong cash flows and stable operations
+    - Above 2.0: Very high leverage, significant financial risk
+    - Industry and business model significantly impact acceptable levels
+    - Consider debt maturity profile and interest coverage alongside this ratio 
+# Metric definition for Debt-to-Assets Ratio
+
+name: Debt-to-Assets Ratio
+description: Measures the percentage of assets financed by debt. Lower ratios indicate more conservative capital structure and lower financial risk.
+inputs:
+  - total_debt
+  - total_assets
+formula: "total_debt / total_assets"
+tags: [leverage, solvency, capital_structure, asset_financing]
+units: ratio
+category: leverage
+related_metrics: [debt_to_equity_ratio, debt_to_capital_ratio, financial_leverage_ratio]
+interpretation:
+  good_range: [0.2, 0.4]
+  warning_above: 0.6
+  excellent_above: null
+  poor_below: null
+  warning_below: null
+  notes: |
+    - Below 0.2: Very conservative capital structure, may be underleveraged
+    - 0.2-0.4: Balanced capital structure with moderate debt financing
+    - 0.4-0.6: Higher leverage, acceptable for stable cash flow businesses
+    - 0.6-0.8: High leverage, requires strong asset base and cash flows
+    - Above 0.8: Very high leverage, significant financial risk
+    - Shows what percentage of assets are financed through borrowing
+    - More intuitive than debt-to-equity for understanding asset financing
+    - Industry context is crucial - capital-intensive industries typically higher 
+# Metric definition for Debt-to-Capital Ratio
+
+name: Debt-to-Capital Ratio
+description: Measures the proportion of total capital that comes from debt financing. Shows capital structure composition.
+inputs:
+  - total_debt
+  - total_equity
+formula: "total_debt / (total_debt + total_equity)"
+tags: [leverage, capital_structure, debt_financing, solvency]
+units: ratio
+category: leverage
+related_metrics: [debt_to_equity_ratio, debt_to_assets_ratio, financial_leverage_ratio]
+interpretation:
+  good_range: [0.2, 0.4]
+  warning_above: 0.6
+  excellent_above: null
+  poor_below: null
+  warning_below: null
+  notes: |
+    - Below 0.2: Very conservative capital structure, minimal debt financing
+    - 0.2-0.4: Balanced capital structure with moderate debt component
+    - 0.4-0.6: Higher debt financing, acceptable for stable businesses
+    - 0.6-0.8: High debt component, requires strong cash flows
+    - Above 0.8: Very high debt financing, significant financial risk
+    - Shows what percentage of total capital comes from debt
+    - Always between 0 and 1, making it intuitive to interpret
+    - Useful for comparing capital structures across companies
+    - Consider alongside coverage ratios for complete risk assessment
+ 
+# Metric definition for Financial Leverage Ratio
+
+name: Financial Leverage Ratio
+description: Measures assets per dollar of equity, indicating the degree of financial leverage. Component of ROE analysis via DuPont framework.
+inputs:
+  - total_assets
+  - total_equity
+formula: "total_assets / total_equity"
+tags: [leverage, capital_structure, dupont_analysis, financial_risk]
+units: times
+category: leverage
+related_metrics: [debt_to_equity_ratio, debt_to_assets_ratio, return_on_equity]
+interpretation:
+  good_range: [1.5, 3.0]
+  warning_above: 5.0
+  excellent_above: null
+  poor_below: null
+  warning_below: null
+  notes: |
+    - Below 1.5: Very conservative capital structure, minimal leverage
+    - 1.5-3.0: Moderate leverage, balanced capital structure
+    - 3.0-5.0: Higher leverage, requires strong cash flows
+    - Above 5.0: High leverage, significant financial risk
+    - Shows how many dollars of assets per dollar of equity
+    - Component of DuPont ROE analysis (ROE = Net Margin × Asset Turnover × Financial Leverage)
+    - Higher leverage amplifies both returns and risks
+    - Industry context important - regulated industries often higher
+    - Consider alongside debt ratios for complete leverage picture
+    - Minimum value is 1.0 (when debt = 0) 

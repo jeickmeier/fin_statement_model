@@ -20,7 +20,10 @@ from fin_statement_model.core.errors import (
 
 from fin_statement_model.io.exceptions import WriteError
 from fin_statement_model.io import read_data, write_data
-from fin_statement_model.statements import create_statement_dataframe, export_statements_to_excel
+from fin_statement_model.statements import (
+    create_statement_dataframe,
+    export_statements_to_excel,
+)
 from fin_statement_model.forecasting.forecaster import StatementForecaster
 
 # --- 1. Setup ---
@@ -420,14 +423,14 @@ sections:
 
     # Define some simple forecast logic for the new BS items
     bs_forecasts = {
-        "core.cash": 0.10, # 10% growth
-        "core.accounts_receivable": 0.12, # 12% growth
-        "core.ppe": 0.05, # 5% growth
-        "core.accounts_payable": 0.08, # 8% growth
-        "core.debt": 0.02, # 2% growth (increase)
-        "core.common_stock": 0.0, # No change
-        "core.prior_retained_earnings": 0.0, # This will be calculated by metric usually
-        "core.dividends": 0.05, # Increase dividends by 5%
+        "core.cash": 0.10,  # 10% growth
+        "core.accounts_receivable": 0.12,  # 12% growth
+        "core.ppe": 0.05,  # 5% growth
+        "core.accounts_payable": 0.08,  # 8% growth
+        "core.debt": 0.02,  # 2% growth (increase)
+        "core.common_stock": 0.0,  # No change
+        "core.prior_retained_earnings": 0.0,  # This will be calculated by metric usually
+        "core.dividends": 0.05,  # Increase dividends by 5%
     }
 
     # Function to generate data across all periods with simple growth
@@ -436,35 +439,32 @@ sections:
         data: dict[str, float] = {}
         current_val = start_val
         for i, period in enumerate(all_periods_list):
-            if i > 1: # Apply growth after first two historical periods
-                current_val *= (1 + growth_rate)
+            if i > 1:  # Apply growth after first two historical periods
+                current_val *= 1 + growth_rate
             data[period] = current_val
         return data
 
     # Add data ensuring all periods exist
     graph.add_financial_statement_item(
-        "core.cash",
-        generate_data("core.cash", 50.0, bs_forecasts["core.cash"])
+        "core.cash", generate_data("core.cash", 50.0, bs_forecasts["core.cash"])
     )
     graph.add_financial_statement_item(
         "core.accounts_receivable",
-        generate_data("core.accounts_receivable", 100.0, bs_forecasts["core.accounts_receivable"])
+        generate_data("core.accounts_receivable", 100.0, bs_forecasts["core.accounts_receivable"]),
     )
     graph.add_financial_statement_item(
-        "core.ppe",
-        generate_data("core.ppe", 300.0, bs_forecasts["core.ppe"])
+        "core.ppe", generate_data("core.ppe", 300.0, bs_forecasts["core.ppe"])
     )
     graph.add_financial_statement_item(
         "core.accounts_payable",
-        generate_data("core.accounts_payable", 80.0, bs_forecasts["core.accounts_payable"])
+        generate_data("core.accounts_payable", 80.0, bs_forecasts["core.accounts_payable"]),
     )
     graph.add_financial_statement_item(
-        "core.debt",
-        generate_data("core.debt", 150.0, bs_forecasts["core.debt"])
+        "core.debt", generate_data("core.debt", 150.0, bs_forecasts["core.debt"])
     )
     graph.add_financial_statement_item(
         "core.common_stock",
-        generate_data("core.common_stock", 100.0, bs_forecasts["core.common_stock"])
+        generate_data("core.common_stock", 100.0, bs_forecasts["core.common_stock"]),
     )
     # Need prior RE and dividends for the Retained Earnings metric
     # Let's assume prior RE grows with net income (simple approximation for example)
@@ -474,15 +474,15 @@ sections:
     # The metric expects 'net_income' as an input node ID. We have 'net_income' as a calculated item ID.
     # We might need to ensure 'net_income' node exists or map differently. For now, assume graph.calculate works.
     # Add dummy prior RE - usually this links period to period
-    prior_re = {"2022": 100.0, "2023": 100.0 + 945} # Start + Previous NI
+    prior_re = {"2022": 100.0, "2023": 100.0 + 945}  # Start + Previous NI
     prior_re["2024"] = prior_re["2023"] + 1145
-    prior_re["2025"] = prior_re["2024"] + 1354 # Use NI values from previous run
-    prior_re["2026"] = prior_re["2025"] + 1628 # Use NI values from previous run
+    prior_re["2025"] = prior_re["2024"] + 1354  # Use NI values from previous run
+    prior_re["2026"] = prior_re["2025"] + 1628  # Use NI values from previous run
     graph.add_financial_statement_item("core.prior_retained_earnings", prior_re)
 
     graph.add_financial_statement_item(
         "core.dividends",
-        generate_data("core.dividends", -10.0, bs_forecasts["core.dividends"]) # Negative value
+        generate_data("core.dividends", -10.0, bs_forecasts["core.dividends"]),  # Negative value
     )
 
     # Use the high-level export function

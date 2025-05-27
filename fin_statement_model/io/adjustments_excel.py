@@ -92,7 +92,9 @@ def read_excel(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
     except Exception as e:
         # Catch other potential pandas read errors (e.g., bad format, permissions)
         raise ReadError(
-            f"Failed to read Excel file {file_path}: {e}", source=str(file_path), original_error=e
+            f"Failed to read Excel file {file_path}: {e}",
+            source=str(file_path),
+            original_error=e,
         )
 
     # Normalize column names to lowercase for case-insensitive matching
@@ -261,7 +263,9 @@ def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:
     except Exception as e:
         logger.error(f"Failed to write adjustments to Excel file {file_path}: {e}", exc_info=True)
         raise WriteError(
-            f"Failed to write adjustments to Excel: {e}", target=str(file_path), original_error=e
+            f"Failed to write adjustments to Excel: {e}",
+            target=str(file_path),
+            original_error=e,
         )
 
 

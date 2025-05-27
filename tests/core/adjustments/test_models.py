@@ -13,6 +13,7 @@ from fin_statement_model.core.adjustments.models import (
     AdjustmentFilter,
     DEFAULT_SCENARIO,
 )
+
 # Assuming helpers is importable for tag matching tests
 
 # --- Adjustment Model Tests ---
@@ -36,7 +37,9 @@ def test_adjustment_creation_defaults():
     assert adj.user is None
     assert isinstance(adj.timestamp, datetime)
     # Make naive timestamp aware for comparison
-    assert now - timedelta(seconds=5) < adj.timestamp.replace(tzinfo=UTC) < now + timedelta(seconds=5)
+    assert (
+        now - timedelta(seconds=5) < adj.timestamp.replace(tzinfo=UTC) < now + timedelta(seconds=5)
+    )
     assert adj.start_period is None
     assert adj.end_period is None
     assert adj.model_config.get("frozen") is True
@@ -152,21 +155,45 @@ def create_test_adj(**kwargs: Any) -> Adjustment:
             False,
         ),  # Exclude wins
         # Type Matching
-        ({"include_types": {AdjustmentType.ADDITIVE}}, {"type": AdjustmentType.ADDITIVE}, True),
-        ({"include_types": {AdjustmentType.ADDITIVE}}, {"type": AdjustmentType.REPLACEMENT}, False),
+        (
+            {"include_types": {AdjustmentType.ADDITIVE}},
+            {"type": AdjustmentType.ADDITIVE},
+            True,
+        ),
+        (
+            {"include_types": {AdjustmentType.ADDITIVE}},
+            {"type": AdjustmentType.REPLACEMENT},
+            False,
+        ),
         (
             {"exclude_types": {AdjustmentType.REPLACEMENT}},
             {"type": AdjustmentType.REPLACEMENT},
             False,
         ),
-        ({"exclude_types": {AdjustmentType.REPLACEMENT}}, {"type": AdjustmentType.ADDITIVE}, True),
+        (
+            {"exclude_types": {AdjustmentType.REPLACEMENT}},
+            {"type": AdjustmentType.ADDITIVE},
+            True,
+        ),
         # Tag Matching (relies on tag_matches helper)
         ({"include_tags": {"A"}}, {"tags": {"A/B"}}, True),  # Prefix match
         ({"include_tags": {"A"}}, {"tags": {"B/C"}}, False),
-        ({"exclude_tags": {"Internal"}}, {"tags": {"Internal/Audit"}}, False),  # Exclude prefix
+        (
+            {"exclude_tags": {"Internal"}},
+            {"tags": {"Internal/Audit"}},
+            False,
+        ),  # Exclude prefix
         ({"exclude_tags": {"Internal"}}, {"tags": {"External"}}, True),
-        ({"require_all_tags": {"A", "B"}}, {"tags": {"A", "B", "C"}}, True),  # Subset exact match
-        ({"require_all_tags": {"A", "B"}}, {"tags": {"A", "C"}}, False),  # Missing required
+        (
+            {"require_all_tags": {"A", "B"}},
+            {"tags": {"A", "B", "C"}},
+            True,
+        ),  # Subset exact match
+        (
+            {"require_all_tags": {"A", "B"}},
+            {"tags": {"A", "C"}},
+            False,
+        ),  # Missing required
         (
             {"include_tags": {"A"}, "exclude_tags": {"A/Internal"}},
             {"tags": {"A/B"}},
@@ -180,10 +207,16 @@ def create_test_adj(**kwargs: Any) -> Adjustment:
         # Period Matching (Effective Window) - Use sortable strings like PXX
         pytest.param({"period": "P06"}, {}, True, id="period_match_no_adj_limits"),
         pytest.param(
-            {"period": "P06"}, {"start_period": "P01"}, True, id="period_match_after_start"
+            {"period": "P06"},
+            {"start_period": "P01"},
+            True,
+            id="period_match_after_start",
         ),
         pytest.param(
-            {"period": "P06"}, {"start_period": "P07"}, False, id="period_match_before_start"
+            {"period": "P06"},
+            {"start_period": "P07"},
+            False,
+            id="period_match_before_start",
         ),
         pytest.param({"period": "P06"}, {"end_period": "P12"}, True, id="period_match_before_end"),
         pytest.param({"period": "P06"}, {"end_period": "P05"}, False, id="period_match_after_end"),

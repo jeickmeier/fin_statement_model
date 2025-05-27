@@ -68,13 +68,31 @@ INVALID_ADJ_DATA_LIST = [
     # Missing required 'value'
     {"node_name": "Revenue", "period": "P1", "reason": "Missing Val"},
     # Invalid type enum
-    {"node_name": "COGS", "period": "P1", "value": -5, "reason": "Bad Type", "type": "subtraction"},
+    {
+        "node_name": "COGS",
+        "period": "P1",
+        "value": -5,
+        "reason": "Bad Type",
+        "type": "subtraction",
+    },
     # Invalid scale
-    {"node_name": "Opex", "period": "P2", "value": -2.0, "reason": "Bad Scale", "scale": 1.5},
+    {
+        "node_name": "Opex",
+        "period": "P2",
+        "value": -2.0,
+        "reason": "Bad Scale",
+        "scale": 1.5,
+    },
     # Invalid number format for value
     {"node_name": "Tax", "period": "P1", "value": "abc", "reason": "Bad Value"},
     # Invalid priority
-    {"node_name": "Depr", "period": "P1", "value": -1, "reason": "Bad Prio", "priority": "high"},
+    {
+        "node_name": "Depr",
+        "period": "P1",
+        "value": -1,
+        "reason": "Bad Prio",
+        "priority": "high",
+    },
 ]
 
 # --- Test read_excel ---
@@ -145,7 +163,11 @@ def mock_read_excel_invalid(mocker: MockerFixture):
         {"node_name": "Interest", "period": "P1", "value": 1.0, "reason": "R4"},
     ]
     raw_invalid = [
-        {"node_name": "Revenue", "period": "P1", "reason": "Missing Val"},  # Missing value
+        {
+            "node_name": "Revenue",
+            "period": "P1",
+            "reason": "Missing Val",
+        },  # Missing value
         {
             "node_name": "COGS",
             "period": "P1",
@@ -373,7 +395,10 @@ def test_write_excel_error(tmp_path: Path, mocker: MockerFixture):
     mocker.patch("pandas.ExcelWriter", return_value=mock_writer_instance)
 
     # A more direct way might be to mock df.to_excel
-    mocker.patch("pandas.DataFrame.to_excel", side_effect=OSError("Permission denied during save"))
+    mocker.patch(
+        "pandas.DataFrame.to_excel",
+        side_effect=OSError("Permission denied during save"),
+    )
 
     with pytest.raises(WriteError, match="Failed to write adjustments to Excel.*Permission denied"):
         write_excel(adj_list, output_file)

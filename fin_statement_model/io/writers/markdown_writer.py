@@ -104,25 +104,32 @@ class MarkdownWriter(DataWriter):
                     # section_name = config_item.get("name", "Unnamed Section")
                     # yield StatementItem(name=f"**{section_name}**", values={p: "" for p in periods}, level=level, is_subtotal=True) # Treat as subtotal for bolding?
 
-                    yield from process_level(inner_items, level + 1) # Process items within the section
+                    yield from process_level(
+                        inner_items, level + 1
+                    )  # Process items within the section
 
                     # Also process any nested subsections
                     subsections = config_item.get("subsections")
                     if isinstance(subsections, list):
-                         yield from process_level(subsections, level + 1)
+                        yield from process_level(subsections, level + 1)
 
                     # Process subtotal for this section if it exists
                     section_subtotal_config = config_item.get("subtotal")
                     if section_subtotal_config:
-                         # Ensure subtotal has correct type and id before processing
-                         if section_subtotal_config.get("id") and section_subtotal_config.get("type"):
-                             subtotal_item = process_item(
-                                 section_subtotal_config, level + 1 # Indent subtotal
-                             )
-                             if subtotal_item:
-                                 yield subtotal_item
-                         else:
-                             logger.warning(f"Skipping section subtotal due to missing 'id' or 'type': {section_subtotal_config}")
+                        # Ensure subtotal has correct type and id before processing
+                        if section_subtotal_config.get("id") and section_subtotal_config.get(
+                            "type"
+                        ):
+                            subtotal_item = process_item(
+                                section_subtotal_config,
+                                level + 1,  # Indent subtotal
+                            )
+                            if subtotal_item:
+                                yield subtotal_item
+                        else:
+                            logger.warning(
+                                f"Skipping section subtotal due to missing 'id' or 'type': {section_subtotal_config}"
+                            )
 
                 else:
                     # This is likely a direct item (line_item, metric, etc.)
@@ -130,10 +137,10 @@ class MarkdownWriter(DataWriter):
                     item_id = config_item.get("id")
                     item_type = config_item.get("type")
                     if not item_id or not item_type:
-                         logger.warning(
+                        logger.warning(
                             f"Skipping item due to missing 'id' or 'type' in config: {config_item}"
-                         )
-                         continue # Skip this malformed item
+                        )
+                        continue  # Skip this malformed item
 
                     # Process the item using the existing function
                     item_data = process_item(config_item, level)
@@ -325,7 +332,11 @@ class MarkdownWriter(DataWriter):
                     )
 
                 formatted_lines.append(
-                    {"name": name, "values": values_formatted, "is_subtotal": is_subtotal}
+                    {
+                        "name": name,
+                        "values": values_formatted,
+                        "is_subtotal": is_subtotal,
+                    }
                 )
 
             # Add some spacing between columns
@@ -402,23 +413,30 @@ class MarkdownWriter(DataWriter):
                 # Create a filter instance based on the input
                 filt: AdjustmentFilter
                 if isinstance(adj_filter_input, AdjustmentFilter):
-                    filt = adj_filter_input.model_copy(update={"period": None}) # Ignore period context
+                    filt = adj_filter_input.model_copy(
+                        update={"period": None}
+                    )  # Ignore period context
                 elif isinstance(adj_filter_input, set):
                     filt = AdjustmentFilter(
                         include_tags=adj_filter_input,
-                        include_scenarios={DEFAULT_SCENARIO}, # Assume default scenario for tag shorthand
-                        period=None
+                        include_scenarios={
+                            DEFAULT_SCENARIO
+                        },  # Assume default scenario for tag shorthand
+                        period=None,
                     )
-                else: # Includes None or other types
+                else:  # Includes None or other types
                     filt = AdjustmentFilter(include_scenarios={DEFAULT_SCENARIO}, period=None)
 
                 # Apply the filter
                 filtered_adjustments = [adj for adj in all_adjustments if filt.matches(adj)]
 
             if filtered_adjustments:
-                output_lines.append("") # Blank line
+                output_lines.append("")  # Blank line
                 output_lines.append("## Adjustment Notes (Matching Filter)")
-                for adj in sorted(filtered_adjustments, key=lambda x: (x.node_name, x.period, x.priority, x.timestamp)):
+                for adj in sorted(
+                    filtered_adjustments,
+                    key=lambda x: (x.node_name, x.period, x.priority, x.timestamp),
+                ):
                     tags_str = ", ".join(sorted(adj.tags)) if adj.tags else "None"
                     details = (
                         f"- **{adj.node_name}** ({adj.period}, Scenario: {adj.scenario}, Prio: {adj.priority}): "

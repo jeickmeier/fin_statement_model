@@ -1,0 +1,122 @@
+---
+# Real Estate - REIT Specific
+# Standard node definitions for REIT-specific financial items
+
+funds_from_operations:
+  category: real_estate_reit
+  subcategory: reit_metrics
+  description: Funds from operations (FFO) - REIT earnings metric
+  alternate_names: [ffo]
+  sign_convention: positive
+
+adjusted_funds_from_operations:
+  category: real_estate_reit
+  subcategory: reit_metrics
+  description: Adjusted funds from operations (AFFO) - FFO adjusted for capex
+  alternate_names: [affo, normalized_ffo]
+  sign_convention: positive
+
+gains_on_property_sales:
+  category: real_estate_reit
+  subcategory: non_recurring
+  description: Gains or losses on property dispositions
+  alternate_names: [disposition_gains, property_sale_gains]
+  sign_convention: positive
+
+recurring_capital_expenditures:
+  category: real_estate_reit
+  subcategory: capex
+  description: Recurring capital expenditures for property maintenance
+  alternate_names: [recurring_capex, maintenance_capex]
+  sign_convention: positive
+
+straight_line_rent_adjustments:
+  category: real_estate_reit
+  subcategory: accounting_adjustments
+  description: Straight-line rent accounting adjustments
+  alternate_names: [straight_line_rent, rent_adjustments]
+  sign_convention: positive
+
+stock_compensation_expense:
+  category: real_estate_reit
+  subcategory: non_cash_expenses
+  description: Stock-based compensation expense
+  alternate_names: [equity_compensation, stock_comp]
+  sign_convention: positive
+
+acquisition_costs:
+  category: real_estate_reit
+  subcategory: transaction_costs
+  description: Costs related to property acquisitions
+  alternate_names: [transaction_costs, acquisition_expenses]
+  sign_convention: positive
+
+development_costs:
+  category: real_estate_reit
+  subcategory: development
+  description: Costs for property development and redevelopment
+  alternate_names: [development_expenses, redevelopment_costs]
+  sign_convention: positive
+
+lease_termination_fees:
+  category: real_estate_reit
+  subcategory: leasing
+  description: Fees received from lease terminations
+  alternate_names: [termination_income, lease_breakage]
+  sign_convention: positive
+
+tenant_improvements:
+  category: real_estate_reit
+  subcategory: capex
+  description: Capital expenditures for tenant improvements
+  alternate_names: [ti, tenant_improvement_allowances]
+  sign_convention: positive
+
+leasing_commissions:
+  category: real_estate_reit
+  subcategory: leasing
+  description: Commissions paid for leasing activities
+  alternate_names: [leasing_costs, broker_commissions]
+  sign_convention: positive
+
+same_store_noi_current:
+  category: real_estate_reit
+  subcategory: same_store
+  description: Current period same-store NOI
+  alternate_names: [ss_noi_current, same_store_noi]
+  sign_convention: positive
+
+same_store_noi_prior:
+  category: real_estate_reit
+  subcategory: same_store
+  description: Prior period same-store NOI for comparison
+  alternate_names: [ss_noi_prior, prior_same_store_noi]
+  sign_convention: positive
+
+annual_rental_income:
+  category: real_estate_reit
+  subcategory: income_metrics
+  description: Annualized rental income
+  alternate_names: [annualized_rent, annual_rent]
+  sign_convention: positive
+
+ffo_per_share:
+  category: real_estate_reit
+  subcategory: per_share
+  description: FFO per share
+  alternate_names: [ffo_ps]
+  sign_convention: positive
+
+affo_per_share:
+  category: real_estate_reit
+  subcategory: per_share
+  description: AFFO per share
+  alternate_names: [affo_ps]
+  sign_convention: positive
+
+nav_per_share:
+  category: real_estate_reit
+  subcategory: per_share
+  description: Net asset value per share
+  alternate_names: [nav_ps, book_nav_per_share]
+  sign_convention: positive 

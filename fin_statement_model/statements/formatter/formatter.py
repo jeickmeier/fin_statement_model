@@ -180,7 +180,9 @@ class StatementFormatter:
                 if isinstance(item, Section):
                     process_recursive(item.items, current_depth + 1)
                     if hasattr(item, "subtotal") and item.subtotal:
-                        process_recursive([item.subtotal], current_depth + 1) # Process subtotal like other items
+                        process_recursive(
+                            [item.subtotal], current_depth + 1
+                        )  # Process subtotal like other items
                 elif isinstance(item, StatementItem):
                     node_id = getattr(item, "node_id", item.id)
                     item_data = data.get(node_id, {})
@@ -209,7 +211,13 @@ class StatementFormatter:
         df = pd.DataFrame(rows)
 
         base_cols = ["Line Item", "ID"]
-        metadata_cols = ["line_type", "node_id", "sign_convention", "is_subtotal", "is_calculated"]
+        metadata_cols = [
+            "line_type",
+            "node_id",
+            "sign_convention",
+            "is_subtotal",
+            "is_calculated",
+        ]
 
         # --- Adjustment Integration: Add 'is_adjusted' column if requested ---
         if add_is_adjusted_column:

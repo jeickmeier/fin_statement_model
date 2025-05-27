@@ -71,7 +71,10 @@ class ExcelWriter(DataWriter):
             # 1. Convert graph to DataFrame using DataFrameWriter
             df_writer = DataFrameWriter()
             df = df_writer.write(
-                graph=graph, target=None, recalculate=recalculate, include_nodes=include_nodes
+                graph=graph,
+                target=None,
+                recalculate=recalculate,
+                include_nodes=include_nodes,
             )
 
             # 2. Write DataFrame to Excel

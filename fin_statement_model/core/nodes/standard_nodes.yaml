@@ -1,0 +1,459 @@
+# Standard Node Definitions
+# This file defines the standardized node names that should be used across all financial models
+# to ensure consistency and enable metrics to work properly.
+
+---
+# Balance Sheet - Assets
+cash_and_equivalents:
+  category: balance_sheet_assets
+  subcategory: current_assets
+  description: Cash and cash equivalents
+  alternate_names: [cash, cash_equivalents, c_and_e]
+  sign_convention: positive
+
+short_term_investments:
+  category: balance_sheet_assets
+  subcategory: current_assets
+  description: Short-term marketable securities
+  alternate_names: [st_investments, marketable_securities]
+  sign_convention: positive
+
+accounts_receivable:
+  category: balance_sheet_assets
+  subcategory: current_assets
+  description: Trade receivables
+  alternate_names: [ar, receivables, trade_receivables]
+  sign_convention: positive
+
+inventory:
+  category: balance_sheet_assets
+  subcategory: current_assets
+  description: Total inventory
+  alternate_names: [inventories, inv]
+  sign_convention: positive
+
+prepaid_expenses:
+  category: balance_sheet_assets
+  subcategory: current_assets
+  description: Prepaid expenses and other current assets
+  alternate_names: [prepaids]
+  sign_convention: positive
+
+current_assets:
+  category: balance_sheet_assets
+  subcategory: subtotal
+  description: Total current assets
+  alternate_names: [ca, current_assets_total]
+  sign_convention: positive
+
+property_plant_equipment:
+  category: balance_sheet_assets
+  subcategory: non_current_assets
+  description: Net property, plant and equipment
+  alternate_names: [ppe, fixed_assets, pp_and_e]
+  sign_convention: positive
+
+intangible_assets:
+  category: balance_sheet_assets
+  subcategory: non_current_assets
+  description: Intangible assets including goodwill
+  alternate_names: [intangibles]
+  sign_convention: positive
+
+long_term_investments:
+  category: balance_sheet_assets
+  subcategory: non_current_assets
+  description: Long-term investments
+  alternate_names: [lt_investments, long_term_marketable_securities]
+  sign_convention: positive
+
+total_assets:
+  category: balance_sheet_assets
+  subcategory: total
+  description: Total assets
+  alternate_names: [ta, assets]
+  sign_convention: positive
+
+# Balance Sheet - Liabilities
+accounts_payable:
+  category: balance_sheet_liabilities
+  subcategory: current_liabilities
+  description: Trade payables
+  alternate_names: [ap, payables]
+  sign_convention: positive
+
+accrued_expenses:
+  category: balance_sheet_liabilities
+  subcategory: current_liabilities
+  description: Accrued expenses
+  alternate_names: [accruals, accrued_liabilities]
+  sign_convention: positive
+
+short_term_debt:
+  category: balance_sheet_liabilities
+  subcategory: current_liabilities
+  description: Short-term debt and current portion of long-term debt
+  alternate_names: [st_debt, current_debt]
+  sign_convention: positive
+
+current_liabilities:
+  category: balance_sheet_liabilities
+  subcategory: subtotal
+  description: Total current liabilities
+  alternate_names: [cl, current_liabilities_total]
+  sign_convention: positive
+
+long_term_debt:
+  category: balance_sheet_liabilities
+  subcategory: non_current_liabilities
+  description: Long-term debt excluding current portion
+  alternate_names: [lt_debt, ltb]
+  sign_convention: positive
+
+total_debt:
+  category: balance_sheet_liabilities
+  subcategory: calculated
+  description: Total debt (short_term_debt + long_term_debt)
+  alternate_names: [debt]
+  sign_convention: positive
+
+total_liabilities:
+  category: balance_sheet_liabilities
+  subcategory: total
+  description: Total liabilities
+  alternate_names: [tl, liabilities]
+  sign_convention: positive
+
+# Balance Sheet - Equity
+common_stock:
+  category: balance_sheet_equity
+  subcategory: equity_component
+  description: Common stock
+  alternate_names: [cs, common_shares]
+  sign_convention: positive
+
+retained_earnings:
+  category: balance_sheet_equity
+  subcategory: equity_component
+  description: Retained earnings
+  alternate_names: [re]
+  sign_convention: positive
+
+treasury_stock:
+  category: balance_sheet_equity
+  subcategory: equity_component
+  description: Treasury stock (negative value)
+  alternate_names: [ts]
+  sign_convention: negative
+
+total_equity:
+  category: balance_sheet_equity
+  subcategory: total
+  description: Total shareholders' equity
+  alternate_names: [te, shareholders_equity, stockholders_equity]
+  sign_convention: positive
+
+minority_interest:
+  category: balance_sheet_equity
+  subcategory: equity_component
+  description: Non-controlling interests
+  alternate_names: [nci, non_controlling_interest]
+  sign_convention: positive
+
+# Income Statement
+revenue:
+  category: income_statement
+  subcategory: top_line
+  description: Total revenue/sales
+  alternate_names: [sales, total_revenue, revenues]
+  sign_convention: positive
+
+cost_of_goods_sold:
+  category: income_statement
+  subcategory: direct_costs
+  description: Cost of goods sold
+  alternate_names: [cogs, cost_of_sales, cos]
+  sign_convention: negative
+
+gross_profit:
+  category: income_statement
+  subcategory: profit_measure
+  description: Gross profit
+  alternate_names: [gp, gross_margin_dollars]
+  sign_convention: positive
+
+operating_expenses:
+  category: income_statement
+  subcategory: operating_costs
+  description: Total operating expenses
+  alternate_names: [opex, operating_costs]
+  sign_convention: negative
+
+sg_and_a:
+  category: income_statement
+  subcategory: operating_costs
+  description: Selling, general & administrative expenses
+  alternate_names: [sga, selling_general_admin]
+  sign_convention: negative
+
+r_and_d:
+  category: income_statement
+  subcategory: operating_costs
+  description: Research & development expenses
+  alternate_names: [rd, research_development, research_and_development]
+  sign_convention: negative
+
+depreciation_and_amortization:
+  category: income_statement
+  subcategory: operating_costs
+  description: D&A expense
+  alternate_names: [d_and_a, da, depreciation_amortization]
+  sign_convention: negative
+
+operating_income:
+  category: income_statement
+  subcategory: profit_measure
+  description: Operating income/EBIT
+  alternate_names: [ebit, operating_profit, oi]
+  sign_convention: positive
+
+interest_expense:
+  category: income_statement
+  subcategory: non_operating
+  description: Interest expense
+  alternate_names: [int_expense, interest_exp]
+  sign_convention: negative
+
+interest_income:
+  category: income_statement
+  subcategory: non_operating
+  description: Interest income
+  alternate_names: [int_income]
+  sign_convention: positive
+
+other_income:
+  category: income_statement
+  subcategory: non_operating
+  description: Other non-operating income
+  alternate_names: [other_income_expense, non_operating_income]
+  sign_convention: positive
+
+income_before_tax:
+  category: income_statement
+  subcategory: profit_measure
+  description: Pre-tax income
+  alternate_names: [ebt, pretax_income, pbt]
+  sign_convention: positive
+
+income_tax:
+  category: income_statement
+  subcategory: tax
+  description: Income tax expense
+  alternate_names: [taxes, tax_expense, income_taxes]
+  sign_convention: negative
+
+net_income:
+  category: income_statement
+  subcategory: bottom_line
+  description: Net income
+  alternate_names: [ni, net_profit, earnings]
+  sign_convention: positive
+
+dividends:
+  category: income_statement
+  subcategory: distributions
+  description: Common dividends paid
+  alternate_names: [dividends_paid, common_dividends]
+  sign_convention: negative
+
+shares_outstanding:
+  category: income_statement
+  subcategory: shares
+  description: Weighted average shares outstanding
+  alternate_names: [shares, common_shares_outstanding]
+  sign_convention: positive
+
+diluted_shares_outstanding:
+  category: income_statement
+  subcategory: shares
+  description: Diluted shares outstanding
+  alternate_names: [diluted_shares]
+  sign_convention: positive
+
+# Cash Flow Statement
+operating_cash_flow:
+  category: cash_flow_statement
+  subcategory: operating_activities
+  description: Cash flow from operations
+  alternate_names: [cfo, ocf, cffo]
+  sign_convention: positive
+
+capital_expenditures:
+  category: cash_flow_statement
+  subcategory: investing_activities
+  description: Capital expenditures (negative value)
+  alternate_names: [capex, ppe_purchases]
+  sign_convention: negative
+
+acquisitions:
+  category: cash_flow_statement
+  subcategory: investing_activities
+  description: Cash used for acquisitions
+  alternate_names: [m_and_a, business_acquisitions]
+  sign_convention: negative
+
+asset_sales:
+  category: cash_flow_statement
+  subcategory: investing_activities
+  description: Proceeds from asset sales
+  alternate_names: [ppe_sales, asset_disposals]
+  sign_convention: positive
+
+investing_cash_flow:
+  category: cash_flow_statement
+  subcategory: investing_activities
+  description: Cash flow from investing
+  alternate_names: [cfi, cffi]
+  sign_convention: negative
+
+debt_issuance:
+  category: cash_flow_statement
+  subcategory: financing_activities
+  description: Proceeds from debt issuance
+  alternate_names: [debt_proceeds, new_debt]
+  sign_convention: positive
+
+debt_repayment:
+  category: cash_flow_statement
+  subcategory: financing_activities
+  description: Debt repayments (negative value)
+  alternate_names: [debt_payments]
+  sign_convention: negative
+
+equity_issuance:
+  category: cash_flow_statement
+  subcategory: financing_activities
+  description: Proceeds from equity issuance
+  alternate_names: [stock_issuance, equity_proceeds]
+  sign_convention: positive
+
+share_repurchases:
+  category: cash_flow_statement
+  subcategory: financing_activities
+  description: Share buybacks (negative value)
+  alternate_names: [buybacks, stock_repurchases]
+  sign_convention: negative
+
+financing_cash_flow:
+  category: cash_flow_statement
+  subcategory: financing_activities
+  description: Cash flow from financing
+  alternate_names: [cff, cfff]
+  sign_convention: negative
+
+free_cash_flow:
+  category: cash_flow_statement
+  subcategory: calculated
+  description: Free cash flow (operating_cash_flow + capital_expenditures)
+  alternate_names: [fcf]
+  sign_convention: positive
+
+# Calculated Items
+ebitda:
+  category: calculated
+  subcategory: profit_measure
+  description: EBITDA (operating_income + depreciation_and_amortization)
+  alternate_names: []
+  sign_convention: positive
+
+ebit:
+  category: calculated
+  subcategory: profit_measure
+  description: EBIT (operating_income)
+  alternate_names: [operating_income]
+  sign_convention: positive
+
+nopat:
+  category: calculated
+  subcategory: profit_measure
+  description: Net operating profit after tax
+  alternate_names: [noplat]
+  sign_convention: positive
+
+working_capital:
+  category: calculated
+  subcategory: liquidity_measure
+  description: Working capital (current_assets - current_liabilities)
+  alternate_names: [wc]
+  sign_convention: positive
+
+net_working_capital:
+  category: calculated
+  subcategory: liquidity_measure
+  description: Operating working capital (excluding cash and debt)
+  alternate_names: [nwc, operating_working_capital]
+  sign_convention: positive
+
+net_debt:
+  category: calculated
+  subcategory: leverage_measure
+  description: Net debt (total_debt - cash_and_equivalents)
+  alternate_names: []
+  sign_convention: positive
+
+enterprise_value:
+  category: calculated
+  subcategory: valuation_measure
+  description: Enterprise value (market_cap + net_debt + minority_interest)
+  alternate_names: [ev]
+  sign_convention: positive
+
+invested_capital:
+  category: calculated
+  subcategory: capital_measure
+  description: Total invested capital
+  alternate_names: [ic]
+  sign_convention: positive
+
+tangible_book_value:
+  category: calculated
+  subcategory: equity_measure
+  description: Book value excluding intangibles
+  alternate_names: [tbv]
+  sign_convention: positive
+
+# Market Data
+market_price:
+  category: market_data
+  subcategory: price
+  description: Current stock price
+  alternate_names: [stock_price, share_price]
+  sign_convention: positive
+
+market_cap:
+  category: market_data
+  subcategory: valuation
+  description: Market capitalization
+  alternate_names: [market_capitalization]
+  sign_convention: positive
+
+dividends_per_share:
+  category: market_data
+  subcategory: per_share
+  description: Dividends per share
+  alternate_names: [dps]
+  sign_convention: positive
+
+earnings_per_share:
+  category: market_data
+  subcategory: per_share
+  description: Basic EPS
+  alternate_names: [eps, basic_eps]
+  sign_convention: positive
+
+book_value_per_share:
+  category: market_data
+  subcategory: per_share
+  description: Book value per share
+  alternate_names: [bvps]
+  sign_convention: positive

@@ -1,0 +1,114 @@
+---
+# Liquidity - Ratios
+# Liquidity metrics: ratios
+
+# Metric definition for Current Ratio
+
+name: Current Ratio
+description: Measures a company's ability to pay short-term obligations. Values above 1.0 indicate sufficient current assets to cover current liabilities.
+inputs:
+  - current_assets        # Standard node name from registry
+  - current_liabilities   # Standard node name from registry
+formula: "current_assets / current_liabilities"
+tags: [liquidity, credit_analysis, short_term_solvency]
+units: ratio
+category: liquidity
+related_metrics: [quick_ratio, cash_ratio, working_capital]
+interpretation:
+  good_range: [1.5, 3.0]
+  warning_below: 1.0
+  warning_above: 4.0
+  excellent_above: 2.0
+  poor_below: 0.8
+  notes: |
+    - Below 0.8: Serious liquidity concerns, may struggle to meet obligations
+    - 0.8-1.0: Tight liquidity, requires careful monitoring
+    - 1.0-1.5: Adequate but could be stronger, acceptable for stable industries
+    - 1.5-3.0: Generally healthy liquidity position
+    - Above 4.0: May indicate inefficient use of assets or excess cash
+    - Industry context matters: utilities can operate with lower ratios than retailers 
+# Metric definition for Quick Ratio (Acid Test)
+
+name: Quick Ratio
+description: More conservative liquidity measure that excludes inventory and prepaid expenses. Values above 1.0 indicate sufficient liquid assets to cover current liabilities.
+inputs:
+  - current_assets
+  - inventory
+  - prepaid_expenses
+  - current_liabilities
+formula: "(current_assets - inventory - prepaid_expenses) / current_liabilities"
+tags: [liquidity, credit_analysis, short_term_solvency, acid_test]
+units: ratio
+category: liquidity
+related_metrics: [current_ratio, cash_ratio, working_capital]
+interpretation:
+  good_range: [1.0, 2.0]
+  warning_below: 0.8
+  warning_above: 3.0
+  excellent_above: 1.5
+  poor_below: 0.6
+  notes: |
+    - Below 0.6: Serious liquidity concerns, may struggle to meet short-term obligations
+    - 0.6-0.8: Tight liquidity, requires careful monitoring of cash flows
+    - 0.8-1.0: Adequate but could be stronger, acceptable for stable cash flow businesses
+    - 1.0-2.0: Generally healthy liquidity position with good liquid asset coverage
+    - Above 3.0: May indicate inefficient use of assets or excess liquid assets
+    - More conservative than current ratio as it excludes less liquid current assets
+    - Particularly important for businesses with slow-moving inventory 
+# Metric definition for Cash Ratio
+
+name: Cash Ratio
+description: Most conservative liquidity measure using only cash and short-term investments. Shows ability to pay current liabilities with most liquid assets.
+inputs:
+  - cash_and_equivalents
+  - short_term_investments
+  - current_liabilities
+formula: "(cash_and_equivalents + short_term_investments) / current_liabilities"
+tags: [liquidity, credit_analysis, cash_management, conservative_liquidity]
+units: ratio
+category: liquidity
+related_metrics: [current_ratio, quick_ratio, operating_cash_flow_ratio]
+interpretation:
+  good_range: [0.2, 0.5]
+  warning_below: 0.1
+  warning_above: 1.0
+  excellent_above: 0.4
+  poor_below: 0.05
+  notes: |
+    - Below 0.05: Very low cash position, potential liquidity crisis
+    - 0.05-0.1: Low cash reserves, vulnerable to cash flow disruptions
+    - 0.1-0.2: Adequate cash position for most stable businesses
+    - 0.2-0.5: Strong cash position, good liquidity buffer
+    - Above 1.0: Excessive cash holdings, may indicate poor capital allocation
+    - Most conservative liquidity measure, focuses only on immediately available funds
+    - Lower acceptable levels than current/quick ratios due to cash-only focus
+    - Important for businesses with volatile cash flows or seasonal patterns 
+# Metric definition for Operating Cash Flow Ratio
+
+name: Operating Cash Flow Ratio
+description: Measures ability to pay current liabilities with cash from operations. Shows liquidity based on actual cash generation.
+inputs:
+  - operating_cash_flow
+  - current_liabilities
+formula: "operating_cash_flow / current_liabilities"
+tags: [liquidity, cash_flow, debt_service, operational_liquidity]
+units: ratio
+category: liquidity
+related_metrics: [current_ratio, quick_ratio, cash_ratio]
+interpretation:
+  good_range: [0.4, 1.0]
+  warning_below: 0.2
+  warning_above: null
+  excellent_above: 0.8
+  poor_below: 0.1
+  notes: |
+    - Below 0.1: Very poor cash generation relative to obligations
+    - 0.1-0.2: Low cash coverage, potential liquidity stress
+    - 0.2-0.4: Adequate cash generation for most businesses
+    - 0.4-1.0: Good to strong cash-based liquidity
+    - Above 1.0: Excellent cash generation, very strong liquidity
+    - More reliable than balance sheet ratios as it uses actual cash flows
+    - Shows company's ability to generate cash to meet obligations
+    - Consider seasonality and timing of cash flows
+    - Particularly important for cash-intensive businesses
+    - Use trailing twelve months OCF for better representation 

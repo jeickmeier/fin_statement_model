@@ -1,0 +1,10 @@
+---
+# Calculated Items - Valuation
+# Standard node definitions for calculated valuation measures
+
+enterprise_value:
+  category: calculated
+  subcategory: valuation_measure
+  description: Enterprise value (market_cap + net_debt + minority_interest)
+  alternate_names: [ev]
+  sign_convention: positive 

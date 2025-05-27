@@ -102,7 +102,9 @@ def summary(
 
     # Perform aggregation
     summary_df = df.groupby(group_by).agg(
-        count=("value", "size"), sum_value=("value", "sum"), mean_abs_value=("abs_value", "mean")
+        count=("value", "size"),
+        sum_value=("value", "sum"),
+        mean_abs_value=("abs_value", "mean"),
     )
 
     logger.info(f"Generated adjustment summary with {len(summary_df)} groups.")
@@ -110,7 +112,9 @@ def summary(
 
 
 def list_by_tag(
-    manager: AdjustmentManager, tag_prefix: str, filter_input: AdjustmentFilterInput = None
+    manager: AdjustmentManager,
+    tag_prefix: str,
+    filter_input: AdjustmentFilterInput = None,
 ) -> list[Adjustment]:
     """List all adjustments matching a tag prefix, optionally applying further filters.
 

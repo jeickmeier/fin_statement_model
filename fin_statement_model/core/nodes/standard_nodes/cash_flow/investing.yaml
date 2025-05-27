@@ -1,0 +1,31 @@
+---
+# Cash Flow Statement - Investing Activities
+# Standard node definitions for investing cash flow items
+
+capital_expenditures:
+  category: cash_flow_statement
+  subcategory: investing_activities
+  description: Capital expenditures (negative value)
+  alternate_names: [capex, ppe_purchases]
+  sign_convention: negative
+
+acquisitions:
+  category: cash_flow_statement
+  subcategory: investing_activities
+  description: Cash used for acquisitions
+  alternate_names: [m_and_a, business_acquisitions]
+  sign_convention: negative
+
+asset_sales:
+  category: cash_flow_statement
+  subcategory: investing_activities
+  description: Proceeds from asset sales
+  alternate_names: [ppe_sales, asset_disposals]
+  sign_convention: positive
+
+investing_cash_flow:
+  category: cash_flow_statement
+  subcategory: investing_activities
+  description: Cash flow from investing
+  alternate_names: [cfi, cffi]
+  sign_convention: negative 

@@ -1,0 +1,38 @@
+---
+# Balance Sheet - Equity
+# Standard node definitions for balance sheet equity items
+
+common_stock:
+  category: balance_sheet_equity
+  subcategory: equity_component
+  description: Common stock
+  alternate_names: [cs, common_shares]
+  sign_convention: positive
+
+retained_earnings:
+  category: balance_sheet_equity
+  subcategory: equity_component
+  description: Retained earnings
+  alternate_names: [re]
+  sign_convention: positive
+
+treasury_stock:
+  category: balance_sheet_equity
+  subcategory: equity_component
+  description: Treasury stock (negative value)
+  alternate_names: [ts]
+  sign_convention: negative
+
+total_equity:
+  category: balance_sheet_equity
+  subcategory: total
+  description: Total shareholders' equity
+  alternate_names: [te, shareholders_equity, stockholders_equity]
+  sign_convention: positive
+
+minority_interest:
+  category: balance_sheet_equity
+  subcategory: equity_component
+  description: Non-controlling interests
+  alternate_names: [nci, non_controlling_interest]
+  sign_convention: positive 

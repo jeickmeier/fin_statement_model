@@ -1,0 +1,193 @@
+---
+# Real Estate - Debt and Financing
+# Standard node definitions for real estate debt and financing items
+
+# Mortgage and Property Debt
+mortgage_debt:
+  category: real_estate_debt
+  subcategory: property_debt
+  description: Total mortgage debt on properties
+  alternate_names: [property_mortgages, mortgage_loans]
+  sign_convention: positive
+
+construction_loans:
+  category: real_estate_debt
+  subcategory: development_debt
+  description: Construction and development loans
+  alternate_names: [construction_debt, development_loans]
+  sign_convention: positive
+
+bridge_loans:
+  category: real_estate_debt
+  subcategory: short_term_debt
+  description: Bridge financing for property acquisitions
+  alternate_names: [bridge_financing, transitional_loans]
+  sign_convention: positive
+
+mezzanine_debt:
+  category: real_estate_debt
+  subcategory: hybrid_financing
+  description: Mezzanine financing (debt/equity hybrid)
+  alternate_names: [mezz_debt, subordinated_debt]
+  sign_convention: positive
+
+preferred_equity:
+  category: real_estate_debt
+  subcategory: hybrid_financing
+  description: Preferred equity investments
+  alternate_names: [pref_equity, preferred_shares]
+  sign_convention: positive
+
+# Debt Service and Payments
+mortgage_payments:
+  category: real_estate_debt
+  subcategory: debt_service
+  description: Total mortgage principal and interest payments
+  alternate_names: [mortgage_debt_service, loan_payments]
+  sign_convention: positive
+
+interest_payments:
+  category: real_estate_debt
+  subcategory: debt_service
+  description: Interest payments on real estate debt
+  alternate_names: [debt_interest, mortgage_interest]
+  sign_convention: positive
+
+principal_payments:
+  category: real_estate_debt
+  subcategory: debt_service
+  description: Principal payments on real estate debt
+  alternate_names: [debt_principal, mortgage_principal]
+  sign_convention: positive
+
+# Loan Terms and Metrics
+loan_to_value_ratio:
+  category: real_estate_debt
+  subcategory: loan_metrics
+  description: Loan-to-value ratio (debt / property value)
+  alternate_names: [ltv, ltv_ratio]
+  sign_convention: positive
+
+debt_service_coverage_ratio:
+  category: real_estate_debt
+  subcategory: coverage_metrics
+  description: NOI divided by debt service payments
+  alternate_names: [dscr, debt_coverage_ratio]
+  sign_convention: positive
+
+weighted_average_interest_rate:
+  category: real_estate_debt
+  subcategory: loan_metrics
+  description: Weighted average interest rate on debt portfolio
+  alternate_names: [avg_interest_rate, blended_rate]
+  sign_convention: positive
+
+weighted_average_maturity:
+  category: real_estate_debt
+  subcategory: loan_metrics
+  description: Weighted average years to maturity
+  alternate_names: [avg_maturity, wam]
+  sign_convention: positive
+
+# Debt Capacity and Availability
+available_credit:
+  category: real_estate_debt
+  subcategory: credit_facilities
+  description: Available credit under existing facilities
+  alternate_names: [unused_credit, credit_availability]
+  sign_convention: positive
+
+credit_facility_total:
+  category: real_estate_debt
+  subcategory: credit_facilities
+  description: Total committed credit facilities
+  alternate_names: [total_credit_lines, committed_facilities]
+  sign_convention: positive
+
+unencumbered_assets:
+  category: real_estate_debt
+  subcategory: collateral
+  description: Value of unencumbered properties
+  alternate_names: [unencumbered_properties, free_assets]
+  sign_convention: positive
+
+# Refinancing and Maturities
+debt_maturities_1_year:
+  category: real_estate_debt
+  subcategory: maturity_schedule
+  description: Debt maturing within 1 year
+  alternate_names: [near_term_maturities, current_maturities]
+  sign_convention: positive
+
+debt_maturities_2_to_5_years:
+  category: real_estate_debt
+  subcategory: maturity_schedule
+  description: Debt maturing in 2-5 years
+  alternate_names: [medium_term_maturities]
+  sign_convention: positive
+
+debt_maturities_over_5_years:
+  category: real_estate_debt
+  subcategory: maturity_schedule
+  description: Debt maturing beyond 5 years
+  alternate_names: [long_term_maturities]
+  sign_convention: positive
+
+refinancing_proceeds:
+  category: real_estate_debt
+  subcategory: refinancing
+  description: Proceeds from debt refinancing
+  alternate_names: [refi_proceeds, refinancing_cash]
+  sign_convention: positive
+
+# Fixed vs Variable Rate Debt
+fixed_rate_debt:
+  category: real_estate_debt
+  subcategory: rate_type
+  description: Fixed rate debt outstanding
+  alternate_names: [fixed_debt]
+  sign_convention: positive
+
+variable_rate_debt:
+  category: real_estate_debt
+  subcategory: rate_type
+  description: Variable/floating rate debt outstanding
+  alternate_names: [floating_debt, variable_debt]
+  sign_convention: positive
+
+# Secured vs Unsecured Debt
+secured_debt:
+  category: real_estate_debt
+  subcategory: security_type
+  description: Secured debt (mortgages, asset-backed)
+  alternate_names: [secured_loans, mortgage_debt]
+  sign_convention: positive
+
+unsecured_debt:
+  category: real_estate_debt
+  subcategory: security_type
+  description: Unsecured debt (corporate bonds, credit lines)
+  alternate_names: [unsecured_loans, corporate_debt]
+  sign_convention: positive
+
+# Development and Construction Financing
+development_costs_to_date:
+  category: real_estate_debt
+  subcategory: development_metrics
+  description: Cumulative development costs incurred
+  alternate_names: [costs_to_date, development_spend]
+  sign_convention: positive
+
+remaining_development_budget:
+  category: real_estate_debt
+  subcategory: development_metrics
+  description: Remaining budget for development completion
+  alternate_names: [budget_remaining, costs_to_complete]
+  sign_convention: positive
+
+construction_loan_availability:
+  category: real_estate_debt
+  subcategory: development_metrics
+  description: Available funds under construction loans
+  alternate_names: [construction_availability, unfunded_commitment]
+  sign_convention: positive 

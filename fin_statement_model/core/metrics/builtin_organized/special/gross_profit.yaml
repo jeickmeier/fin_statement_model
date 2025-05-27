@@ -1,0 +1,29 @@
+---
+# Special - Calculated Items
+# Special metrics: calculated items
+
+# Metric definition for Gross Profit
+
+name: Gross Profit
+description: Revenue less Cost of Goods Sold. Represents profit after direct costs.
+inputs:
+  - revenue
+  - cost_of_goods_sold
+formula: "revenue - cost_of_goods_sold"
+tags: [profitability, income_statement, calculated_item]
+units: currency
+category: special
+related_metrics: [gross_profit_margin, net_income, operating_income, revenue]
+interpretation:
+  good_range: null
+  warning_below: null
+  warning_above: null
+  excellent_above: null
+  poor_below: 0
+  notes: |
+    - Negative gross profit indicates that direct costs exceed revenue, a serious concern
+    - Gross profit should be positive and growing over time
+    - Compare to industry benchmarks and historical performance
+    - Consider gross profit margin (gross profit / revenue) for better comparability
+    - Declining gross profit may indicate pricing pressure or rising input costs
+    - Absolute values depend on company size; focus on trends and margins 

@@ -9,7 +9,9 @@ from typing import Optional, Literal, Any, Union
 from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
 
 # Import the type used in MarkdownWriterConfig
-from fin_statement_model.core.adjustments.models import AdjustmentFilterInput
+from fin_statement_model.core.adjustments.models import (
+    AdjustmentFilterInput,
+)
 
 # Define MappingConfig locally to avoid circular import
 MappingConfig = Union[dict[str, str], dict[Optional[str], dict[str, str]]]
@@ -124,7 +126,8 @@ class BaseWriterConfig(BaseModel):
     """Base configuration for IO writers."""
 
     target: Optional[str] = Field(
-        None, description="URI or path to data target (file path, in-memory target, etc.)"
+        None,
+        description="URI or path to data target (file path, in-memory target, etc.)",
     )
     format_type: Literal["excel", "dataframe", "dict", "markdown"] = Field(
         ..., description="Type of writer (excel, dataframe, dict, markdown)."
@@ -142,7 +145,8 @@ class ExcelWriterConfig(BaseWriterConfig):
         None, description="Optional list of node names to include in export."
     )
     excel_writer_kwargs: dict[str, Any] = Field(
-        default_factory=dict, description="Additional kwargs for pandas.DataFrame.to_excel."
+        default_factory=dict,
+        description="Additional kwargs for pandas.DataFrame.to_excel.",
     )
 
 
@@ -167,11 +171,22 @@ class DictWriterConfig(BaseWriterConfig):
 class MarkdownWriterConfig(BaseWriterConfig):
     """Markdown writer options."""
 
-    statement_config_path: str = Field(..., description="Path to the statement definition YAML file.")
-    historical_periods: Optional[list[str]] = Field(None, description="List of historical period names.")
-    forecast_periods: Optional[list[str]] = Field(None, description="List of forecast period names.")
-    adjustment_filter: Optional[AdjustmentFilterInput] = Field(None, description="Adjustment filter to apply.")
-    forecast_configs: Optional[dict] = Field(None, description="Dictionary mapping node IDs to forecast configurations for notes.")
+    statement_config_path: str = Field(
+        ..., description="Path to the statement definition YAML file."
+    )
+    historical_periods: Optional[list[str]] = Field(
+        None, description="List of historical period names."
+    )
+    forecast_periods: Optional[list[str]] = Field(
+        None, description="List of forecast period names."
+    )
+    adjustment_filter: Optional[AdjustmentFilterInput] = Field(
+        None, description="Adjustment filter to apply."
+    )
+    forecast_configs: Optional[dict] = Field(
+        None,
+        description="Dictionary mapping node IDs to forecast configurations for notes.",
+    )
     indent_spaces: int = Field(4, description="Number of spaces per indentation level.")
     target: Optional[str] = Field(
         None, description="Optional target path (ignored by MarkdownWriter)."
