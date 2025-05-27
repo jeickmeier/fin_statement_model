@@ -70,6 +70,11 @@ def load_organized_metrics(base_path: Optional[Path] = None) -> int:
         "real_estate/valuation_metrics.yaml",
         "real_estate/per_share_metrics.yaml",
         "real_estate/debt_metrics.yaml",
+        # Banking metrics
+        "banking/asset_quality.yaml",
+        "banking/capital_adequacy.yaml",
+        "banking/profitability.yaml",
+        "banking/liquidity.yaml",
     ]
 
     for file_path in metric_files:

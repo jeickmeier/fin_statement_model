@@ -361,9 +361,12 @@ class ContextAwareNodeValidator:
             std_lower = std_name.lower().replace("_", "")
 
             # Only suggest if it's similar but not the same
-            if (std_name != name and
-                (std_lower in name_lower or name_lower in std_lower) and
-                len(name_lower) > 3 and len(std_lower) > 3):
+            if (
+                std_name != name
+                and (std_lower in name_lower or name_lower in std_lower)
+                and len(name_lower) > 3
+                and len(std_lower) > 3
+            ):
                 # Additional check to avoid suggesting very different names
                 # Only suggest if there's substantial overlap
                 overlap = len(set(name_lower) & set(std_lower))
@@ -390,9 +393,15 @@ class ContextAwareNodeValidator:
         # If no specific suggestions and it's not recognized, suggest general guidance
         if not suggestions and not standard_node_registry.is_recognized_name(name):
             # Check if it might be a formula pattern
-            if any(suffix in name for suffix in ["_margin", "_ratio", "_growth", "_change", "_pct"]):
-                suggestions.append("Formula node detected - ensure base name follows standard conventions")
+            if any(
+                suffix in name for suffix in ["_margin", "_ratio", "_growth", "_change", "_pct"]
+            ):
+                suggestions.append(
+                    "Formula node detected - ensure base name follows standard conventions"
+                )
             else:
-                suggestions.append("Consider using a standard node name for better metric compatibility")
+                suggestions.append(
+                    "Consider using a standard node name for better metric compatibility"
+                )
 
         return suggestions

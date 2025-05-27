@@ -36,8 +36,12 @@ from fin_statement_model.io.context_aware_validator import ContextAwareNodeValid
 # --- 1. Setup ---
 
 # Hardcoded paths (as modified by user)
-md_output_path = "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/output/test_statement.md"
-TEST_CONFIG_PATH = "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/configs/test_statement.yaml"
+md_output_path = (
+    "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/output/test_statement.md"
+)
+TEST_CONFIG_PATH = (
+    "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/configs/test_statement.yaml"
+)
 
 # --- 2. Sample Data ---
 
@@ -107,12 +111,10 @@ for demo_name in demo_names:
     print(f"  Basic: '{demo_name}' -> '{std_name}' ({message})")
 
     # Also try context-aware validation
-    ctx_std_name, ctx_is_valid, ctx_message, ctx_category = (
-        context_validator.validate_node(demo_name)
+    ctx_std_name, ctx_is_valid, ctx_message, ctx_category = context_validator.validate_node(
+        demo_name
     )
-    print(
-        f"  Context: '{demo_name}' -> '{ctx_std_name}' [{ctx_category}] ({ctx_message})"
-    )
+    print(f"  Context: '{demo_name}' -> '{ctx_std_name}' [{ctx_category}] ({ctx_message})")
 
     # Get suggestions for improvement
     suggestions = context_validator.suggest_naming_improvements(demo_name)
@@ -190,9 +192,7 @@ for original_name, config in {
         "method": "curve",
         "config": [0.10, 0.09, 0.08, 0.07, 0.06],
     },  # Declining revenue growth
-    "cost_of_goods_sold": {
-        "method": "historical_growth"
-    },  # COGS based on historical growth
+    "cost_of_goods_sold": {"method": "historical_growth"},  # COGS based on historical growth
     "operating_expenses": {
         "method": "statistical",
         "config": {
@@ -206,9 +206,7 @@ for original_name, config in {
     "interest_expense": {
         "method": "historical_growth"
     },  # Interest expense based on historical growth
-    "income_tax": {
-        "method": "historical_growth"
-    },  # Tax expense based on historical growth
+    "income_tax": {"method": "historical_growth"},  # Tax expense based on historical growth
 }.items():
     # Validate and normalize forecast config keys
     standardized_name, _, _ = basic_validator.validate_and_standardize(original_name)
@@ -281,9 +279,7 @@ print(f"Forecast periods: {forecast_periods}")
 
 # Use the StatementForecaster
 # Restore try-except block
-forecaster = StatementForecaster(
-    fsg=graph
-)  # fsg likely stands for financial statement graph
+forecaster = StatementForecaster(fsg=graph)  # fsg likely stands for financial statement graph
 print(f"Applying forecasts for periods: {forecast_periods}")
 
 # Apply the forecasts using the defined configs

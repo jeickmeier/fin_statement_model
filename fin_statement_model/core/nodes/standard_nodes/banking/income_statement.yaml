@@ -1,0 +1,242 @@
+---
+# Banking - Income Statement
+# Standard node definitions for banking income statement items
+
+# Interest Income
+interest_income_loans:
+  category: banking_income
+  subcategory: interest_income
+  description: Interest income on loans
+  alternate_names: [loan_interest_income, interest_on_loans]
+  sign_convention: positive
+
+interest_income_securities:
+  category: banking_income
+  subcategory: interest_income
+  description: Interest income on securities
+  alternate_names: [securities_interest_income, investment_income]
+  sign_convention: positive
+
+interest_income_fed_funds:
+  category: banking_income
+  subcategory: interest_income
+  description: Interest income on federal funds sold
+  alternate_names: [fed_funds_interest_income]
+  sign_convention: positive
+
+other_interest_income:
+  category: banking_income
+  subcategory: interest_income
+  description: Other interest income
+  alternate_names: [misc_interest_income]
+  sign_convention: positive
+
+total_interest_income:
+  category: banking_income
+  subcategory: interest_income
+  description: Total interest income
+  alternate_names: [interest_income]
+  sign_convention: positive
+
+# Interest Expense
+interest_expense_deposits:
+  category: banking_income
+  subcategory: interest_expense
+  description: Interest expense on deposits
+  alternate_names: [deposit_interest_expense, cost_of_deposits]
+  sign_convention: negative
+
+interest_expense_borrowings:
+  category: banking_income
+  subcategory: interest_expense
+  description: Interest expense on borrowings
+  alternate_names: [borrowing_interest_expense, cost_of_borrowings]
+  sign_convention: negative
+
+total_interest_expense:
+  category: banking_income
+  subcategory: interest_expense
+  description: Total interest expense
+  alternate_names: [interest_expense]
+  sign_convention: negative
+
+# Net Interest Income
+net_interest_income:
+  category: banking_income
+  subcategory: net_interest
+  description: Net interest income
+  alternate_names: [nii, net_interest_revenue]
+  sign_convention: positive
+
+# Provision for Credit Losses
+provision_for_credit_losses:
+  category: banking_income
+  subcategory: credit_provisions
+  description: Provision for credit losses
+  alternate_names: [pcl, loan_loss_provision, credit_loss_provision]
+  sign_convention: negative
+
+net_interest_income_after_provision:
+  category: banking_income
+  subcategory: net_interest
+  description: Net interest income after provision for credit losses
+  alternate_names: [nii_after_provision]
+  sign_convention: positive
+
+# Non-Interest Income
+service_charges_deposits:
+  category: banking_income
+  subcategory: fee_income
+  description: Service charges on deposit accounts
+  alternate_names: [deposit_fees, account_fees]
+  sign_convention: positive
+
+trust_and_investment_fees:
+  category: banking_income
+  subcategory: fee_income
+  description: Trust and investment management fees
+  alternate_names: [wealth_management_fees, trust_fees]
+  sign_convention: positive
+
+mortgage_banking_income:
+  category: banking_income
+  subcategory: fee_income
+  description: Mortgage banking income
+  alternate_names: [mortgage_fees, loan_origination_fees]
+  sign_convention: positive
+
+trading_income:
+  category: banking_income
+  subcategory: trading_income
+  description: Trading income
+  alternate_names: [trading_revenue, market_making_income]
+  sign_convention: positive
+
+securities_gains_losses:
+  category: banking_income
+  subcategory: investment_income
+  description: Securities gains and losses
+  alternate_names: [investment_gains_losses, securities_trading_gains]
+  sign_convention: positive
+
+other_non_interest_income:
+  category: banking_income
+  subcategory: fee_income
+  description: Other non-interest income
+  alternate_names: [misc_fee_income, other_fees]
+  sign_convention: positive
+
+total_non_interest_income:
+  category: banking_income
+  subcategory: fee_income
+  description: Total non-interest income
+  alternate_names: [non_interest_income, fee_income]
+  sign_convention: positive
+
+# Non-Interest Expense
+salaries_and_benefits:
+  category: banking_expenses
+  subcategory: personnel_costs
+  description: Salaries and employee benefits
+  alternate_names: [personnel_expenses, compensation_benefits]
+  sign_convention: negative
+
+occupancy_expense:
+  category: banking_expenses
+  subcategory: operating_expenses
+  description: Occupancy and equipment expense
+  alternate_names: [premises_equipment_expense, facility_costs]
+  sign_convention: negative
+
+data_processing:
+  category: banking_expenses
+  subcategory: operating_expenses
+  description: Data processing and technology expenses
+  alternate_names: [technology_expenses, it_costs]
+  sign_convention: negative
+
+professional_services:
+  category: banking_expenses
+  subcategory: operating_expenses
+  description: Professional and legal services
+  alternate_names: [legal_professional_fees, consulting_fees]
+  sign_convention: negative
+
+marketing_and_advertising:
+  category: banking_expenses
+  subcategory: operating_expenses
+  description: Marketing and advertising expenses
+  alternate_names: [advertising_expense, marketing_costs]
+  sign_convention: negative
+
+fdic_insurance:
+  category: banking_expenses
+  subcategory: regulatory_expenses
+  description: FDIC insurance premiums
+  alternate_names: [deposit_insurance, fdic_premiums]
+  sign_convention: negative
+
+other_non_interest_expense:
+  category: banking_expenses
+  subcategory: operating_expenses
+  description: Other non-interest expenses
+  alternate_names: [misc_operating_expenses, other_expenses]
+  sign_convention: negative
+
+total_non_interest_expense:
+  category: banking_expenses
+  subcategory: operating_expenses
+  description: Total non-interest expense
+  alternate_names: [non_interest_expense, operating_expenses]
+  sign_convention: negative
+
+# Income Measures
+income_before_taxes:
+  category: banking_income
+  subcategory: pretax_income
+  description: Income before income taxes
+  alternate_names: [pretax_income, ebt]
+  sign_convention: positive
+
+income_tax_expense:
+  category: banking_expenses
+  subcategory: taxes
+  description: Income tax expense
+  alternate_names: [tax_expense, income_taxes]
+  sign_convention: negative
+
+net_income:
+  category: banking_income
+  subcategory: net_income
+  description: Net income
+  alternate_names: [ni, net_profit, earnings]
+  sign_convention: positive
+
+# Per Share Data
+earnings_per_share:
+  category: banking_income
+  subcategory: per_share
+  description: Basic earnings per share
+  alternate_names: [eps, basic_eps]
+  sign_convention: positive
+
+diluted_earnings_per_share:
+  category: banking_income
+  subcategory: per_share
+  description: Diluted earnings per share
+  alternate_names: [diluted_eps]
+  sign_convention: positive
+
+dividends_per_share:
+  category: banking_income
+  subcategory: per_share
+  description: Dividends per share
+  alternate_names: [dps]
+  sign_convention: positive
+
+shares_outstanding:
+  category: banking_income
+  subcategory: shares
+  description: Weighted average shares outstanding
+  alternate_names: [shares, common_shares_outstanding]
+  sign_convention: positive 

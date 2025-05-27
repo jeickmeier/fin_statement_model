@@ -53,6 +53,12 @@ def load_all_standard_nodes(base_path: Optional[Path] = None) -> int:
         "real_estate/property_operations.yaml",
         "real_estate/reit_specific.yaml",
         "real_estate/debt_financing.yaml",
+        # Banking nodes
+        "banking/assets.yaml",
+        "banking/liabilities.yaml",
+        "banking/income_statement.yaml",
+        "banking/regulatory_capital.yaml",
+        "banking/off_balance_sheet.yaml",
     ]
 
     for file_path in node_files:

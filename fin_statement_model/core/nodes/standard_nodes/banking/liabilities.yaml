@@ -1,0 +1,140 @@
+---
+# Banking - Liabilities
+# Standard node definitions for banking liability items
+
+# Deposits
+demand_deposits:
+  category: banking_liabilities
+  subcategory: deposits
+  description: Non-interest bearing demand deposits
+  alternate_names: [checking_deposits, demand_dda]
+  sign_convention: positive
+
+interest_bearing_deposits:
+  category: banking_liabilities
+  subcategory: deposits
+  description: Interest bearing deposits
+  alternate_names: [savings_deposits, interest_deposits]
+  sign_convention: positive
+
+time_deposits:
+  category: banking_liabilities
+  subcategory: deposits
+  description: Time deposits and certificates of deposit
+  alternate_names: [cds, certificates_of_deposit, time_cds]
+  sign_convention: positive
+
+total_deposits:
+  category: banking_liabilities
+  subcategory: deposits
+  description: Total deposits
+  alternate_names: [deposits]
+  sign_convention: positive
+
+# Borrowings
+federal_funds_purchased:
+  category: banking_liabilities
+  subcategory: borrowings
+  description: Federal funds purchased and securities sold under repurchase agreements
+  alternate_names: [fed_funds_purchased, repos]
+  sign_convention: positive
+
+fhlb_advances:
+  category: banking_liabilities
+  subcategory: borrowings
+  description: Federal Home Loan Bank advances
+  alternate_names: [fhlb_borrowings, home_loan_bank_advances]
+  sign_convention: positive
+
+subordinated_debt:
+  category: banking_liabilities
+  subcategory: borrowings
+  description: Subordinated debt and debentures
+  alternate_names: [sub_debt, subordinated_debentures]
+  sign_convention: positive
+
+other_borrowings:
+  category: banking_liabilities
+  subcategory: borrowings
+  description: Other borrowings
+  alternate_names: [misc_borrowings]
+  sign_convention: positive
+
+total_borrowings:
+  category: banking_liabilities
+  subcategory: borrowings
+  description: Total borrowings
+  alternate_names: [borrowings]
+  sign_convention: positive
+
+# Other Liabilities
+accrued_interest_payable:
+  category: banking_liabilities
+  subcategory: accruals
+  description: Accrued interest payable
+  alternate_names: [interest_payable, accrued_interest_expense]
+  sign_convention: positive
+
+other_liabilities:
+  category: banking_liabilities
+  subcategory: other
+  description: Other liabilities
+  alternate_names: [miscellaneous_liabilities]
+  sign_convention: positive
+
+total_liabilities:
+  category: banking_liabilities
+  subcategory: total
+  description: Total liabilities
+  alternate_names: [tl, liabilities]
+  sign_convention: positive
+
+# Equity
+common_stock:
+  category: banking_equity
+  subcategory: equity_component
+  description: Common stock
+  alternate_names: [cs, common_shares]
+  sign_convention: positive
+
+preferred_stock:
+  category: banking_equity
+  subcategory: equity_component
+  description: Preferred stock
+  alternate_names: [ps, preferred_shares]
+  sign_convention: positive
+
+additional_paid_in_capital:
+  category: banking_equity
+  subcategory: equity_component
+  description: Additional paid-in capital
+  alternate_names: [apic, surplus]
+  sign_convention: positive
+
+retained_earnings:
+  category: banking_equity
+  subcategory: equity_component
+  description: Retained earnings
+  alternate_names: [re]
+  sign_convention: positive
+
+accumulated_other_comprehensive_income:
+  category: banking_equity
+  subcategory: equity_component
+  description: Accumulated other comprehensive income
+  alternate_names: [aoci, other_comprehensive_income]
+  sign_convention: positive
+
+treasury_stock:
+  category: banking_equity
+  subcategory: equity_component
+  description: Treasury stock (negative value)
+  alternate_names: [ts]
+  sign_convention: negative
+
+total_shareholders_equity:
+  category: banking_equity
+  subcategory: total
+  description: Total shareholders' equity
+  alternate_names: [te, shareholders_equity, stockholders_equity]
+  sign_convention: positive 
