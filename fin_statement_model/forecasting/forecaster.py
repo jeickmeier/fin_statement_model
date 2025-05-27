@@ -1,4 +1,10 @@
-"""Forecasting operations dedicated to statement-level financial graphs."""
+"""Forecasting operations dedicated to statement-level financial graphs.
+
+This module provides the StatementForecaster class, which handles forecasting
+operations for financial statement graphs. It offers both mutating operations
+(that modify the graph) and non-mutating operations (that return forecast values
+without changing the graph state).
+"""
 
 import logging
 from typing import Any, Optional, Union
@@ -13,7 +19,25 @@ logger = logging.getLogger(__name__)
 
 
 class StatementForecaster:
-    """Handles forecasting operations specifically for a FinancialStatementGraph."""
+    """Handles forecasting operations specifically for a FinancialStatementGraph.
+
+    This class provides two main approaches to forecasting:
+
+    1. **Mutating operations** (`create_forecast`): Modifies the graph by adding
+       forecast periods and updating node values directly. This is useful when
+       you want to extend the graph with forecast data for further analysis.
+
+    2. **Non-mutating operations** (`forecast_value`): Returns forecast values
+       without modifying the graph state. This is useful for what-if scenarios
+       or when you need forecast values without altering the original data.
+
+    The forecaster supports multiple forecasting methods:
+    - simple: Fixed growth rate
+    - curve: Variable growth rates per period
+    - statistical: Random sampling from distributions
+    - average: Average of historical values
+    - historical_growth: Based on historical growth patterns
+    """
 
     def __init__(self, fsg: Any) -> None:
         """Initialize the forecaster.
@@ -32,14 +56,41 @@ class StatementForecaster:
     ) -> None:
         """Create forecasts for financial statement items on the graph.
 
+        **IMPORTANT**: This method MUTATES the graph by:
+        - Adding new periods to the graph if they don't exist
+        - Updating node values with forecast data
+        - Clearing node caches after updates
+
+        Use `forecast_value` instead if you need forecast values without
+        modifying the graph.
+
         Args:
             forecast_periods: List of future periods to forecast.
             node_configs: Mapping of node names to their forecast configurations.
+                Each config should contain:
+                - 'method': Forecasting method ('simple', 'curve', 'statistical',
+                           'average', 'historical_growth')
+                - 'config': Method-specific parameters (growth rate, distribution, etc.)
             historical_periods: Optional list of historical periods to use as base.
+                If not provided, will be inferred from the graph's existing periods.
             **kwargs: Additional arguments passed to the forecasting logic.
 
         Returns:
-            None
+            None (modifies the graph in-place)
+
+        Raises:
+            ValueError: If no historical periods found, no forecast periods provided,
+                       or invalid forecasting method/configuration.
+
+        Example:
+            >>> forecaster = StatementForecaster(graph)
+            >>> forecaster.create_forecast(
+            ...     forecast_periods=['2024', '2025'],
+            ...     node_configs={
+            ...         'revenue': {'method': 'simple', 'config': 0.05},  # 5% growth
+            ...         'costs': {'method': 'curve', 'config': [0.03, 0.04]}  # Variable growth
+            ...     }
+            ... )
         """
         logger.info(f"StatementForecaster: Creating forecast for periods {forecast_periods}")
         try:
@@ -130,16 +181,31 @@ class StatementForecaster:
     ) -> None:
         """Calculate forecast values and update the original node.
 
+        **IMPORTANT**: This is an internal MUTATING method that:
+        - Creates a temporary forecast node for calculations
+        - Updates the original node's values dictionary with forecast results
+        - Clears the original node's cache after updates
+
+        This method should not be called directly. Use `create_forecast` for
+        mutating operations or `forecast_value` for non-mutating operations.
+
         Args:
-            node: The graph node to forecast.
+            node: The graph node to forecast. Must have a 'values' dictionary.
             historical_periods: List of historical periods for base values.
             forecast_periods: List of periods for which to calculate forecasts.
-            growth_config: Growth parameter(s) (rate, list, or generator).
-            method: Forecasting method name.
+            growth_config: Growth parameter(s) (rate, list, or generator function).
+            method: Forecasting method name ('simple', 'curve', etc.).
             **kwargs: Additional arguments passed to growth logic.
 
         Returns:
-            None
+            None (modifies the node in-place)
+
+        Raises:
+            ValueError: If no historical periods provided or invalid method.
+
+        Side Effects:
+            - Modifies node.values dictionary with forecast data
+            - Clears node cache if clear_cache method exists
         """
         logger.debug(f"StatementForecaster: Forecasting node {node.name} using method {method}")
         if not historical_periods:
@@ -268,15 +334,48 @@ class StatementForecaster:
     ) -> dict[str, float]:
         """Forecast and return values for a node without mutating the graph.
 
+        **IMPORTANT**: This is a NON-MUTATING method that:
+        - Does NOT add periods to the graph
+        - Does NOT modify any node values
+        - Does NOT affect the graph state in any way
+        - Returns forecast values as a separate dictionary
+
+        This method is ideal for:
+        - What-if analysis
+        - Comparing different forecast scenarios
+        - Getting forecast values without committing them to the graph
+        - API responses where you don't want to modify server state
+
         Args:
             node_name: Name of the node to forecast.
             forecast_periods: List of future periods to forecast.
-            base_period: Optional base period to use for forecasting. If omitted, inferred from graph.
-            forecast_config: Forecast configuration dict mapping 'method' and 'config'.
+            base_period: Optional base period to use for forecasting.
+                        If omitted, will be inferred from the node's historical data.
+            forecast_config: Forecast configuration dict with:
+                - 'method': Forecasting method ('simple', 'curve', 'statistical',
+                           'average', 'historical_growth')
+                - 'config': Method-specific parameters
+                If not provided, defaults to simple method with 0% growth.
             **kwargs: Additional arguments passed to the internal forecasting logic.
 
         Returns:
-            A mapping from forecast period to its forecasted float value.
+            A dictionary mapping forecast periods to their calculated values.
+            Example: {'2024': 1050.0, '2025': 1102.5}
+
+        Raises:
+            ValueError: If node not found, no historical periods available,
+                       or invalid forecast configuration.
+
+        Example:
+            >>> forecaster = StatementForecaster(graph)
+            >>> # Get forecast without modifying the graph
+            >>> values = forecaster.forecast_value(
+            ...     'revenue',
+            ...     forecast_periods=['2024', '2025'],
+            ...     forecast_config={'method': 'simple', 'config': 0.05}
+            ... )
+            >>> print(values)  # {'2024': 1050.0, '2025': 1102.5}
+            >>> # Original graph remains unchanged
         """
         # Locate the node
         node = self.fsg.get_node(node_name)

@@ -22,9 +22,7 @@ from fin_statement_model.core.metrics import (
 )
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -127,17 +125,13 @@ def main():
 
             # Format the value
             if "ratio" in metric_name or "margin" in metric_name:
-                value_str = (
-                    f"{value:.2f}%" if "margin" in metric_name else f"{value:.2f}"
-                )
+                value_str = f"{value:.2f}%" if "margin" in metric_name else f"{value:.2f}"
             else:
                 value_str = f"{value:,.2f}"
 
             # Get rating emoji
             rating = interpretation["rating"].upper()
-            status = {"EXCELLENT": "🟢", "GOOD": "🟢", "FAIR": "🟡", "POOR": "🔴"}.get(
-                rating, "⚪"
-            )
+            status = {"EXCELLENT": "🟢", "GOOD": "🟢", "FAIR": "🟡", "POOR": "🔴"}.get(rating, "⚪")
 
             print(f"{status} {metric_def.name}: {value_str} ({rating})")
 

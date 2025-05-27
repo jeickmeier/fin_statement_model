@@ -1,153 +1,228 @@
----
-# Banking - Liquidity
-# Banking metrics: liquidity and funding
-
-# Metric definition for Liquidity Coverage Ratio
-
-name: Liquidity Coverage Ratio
-description: High-quality liquid assets as a percentage of net cash outflows over 30 days. Regulatory liquidity requirement.
-inputs:
+- name: Liquidity Coverage Ratio
+  description: High-quality liquid assets as a percentage of net cash outflows over 30 days. Regulatory liquidity requirement.
+  inputs:
   - high_quality_liquid_assets
   - net_cash_outflows_30_days
-formula: "high_quality_liquid_assets / net_cash_outflows_30_days * 100"
-tags: [banking, liquidity, lcr, regulatory_liquidity]
-units: percentage
-category: banking_liquidity
-related_metrics: [net_stable_funding_ratio, deposits_to_loans_ratio, liquid_assets_ratio]
-interpretation:
-  good_range: [110.0, 150.0]
-  warning_below: 100.0
-  warning_above: null
-  excellent_above: 130.0
-  poor_below: 90.0
-  notes: |
-    - Below 90%: Below regulatory minimum, potential enforcement action
-    - 90-100%: Minimum regulatory requirement, limited flexibility
-    - 100-110%: Above minimum but limited buffer
-    - 110-150%: Strong liquidity position, good regulatory standing
-    - Above 150%: Very strong liquidity, significant buffer
-    - Regulatory minimum is 100% (fully phased in)
-    - Measures ability to survive 30-day stress scenario
-    - HQLA must be unencumbered and readily convertible to cash
-    - Consider composition and quality of liquid assets
-    - Monitor trends and stress test assumptions
+  formula: high_quality_liquid_assets / net_cash_outflows_30_days * 100
+  tags:
+  - banking
+  - liquidity
+  - lcr
+  - regulatory_liquidity
+  units: percentage
+  category: banking_liquidity
+  related_metrics:
+  - net_stable_funding_ratio
+  - deposits_to_loans_ratio
+  - liquid_assets_ratio
+  interpretation:
+    good_range:
+    - 110.0
+    - 150.0
+    warning_below: 100.0
+    warning_above: null
+    excellent_above: 130.0
+    poor_below: 90.0
+    notes: '- Below 90%: Below regulatory minimum, potential enforcement action
 
-# Metric definition for Net Stable Funding Ratio
+      - 90-100%: Minimum regulatory requirement, limited flexibility
 
-name: Net Stable Funding Ratio
-description: Available stable funding as a percentage of required stable funding. Long-term structural liquidity measure.
-inputs:
+      - 100-110%: Above minimum but limited buffer
+
+      - 110-150%: Strong liquidity position, good regulatory standing
+
+      - Above 150%: Very strong liquidity, significant buffer
+
+      - Regulatory minimum is 100% (fully phased in)
+
+      - Measures ability to survive 30-day stress scenario
+
+      - HQLA must be unencumbered and readily convertible to cash
+
+      - Consider composition and quality of liquid assets
+
+      - Monitor trends and stress test assumptions
+
+      '
+- name: Net Stable Funding Ratio
+  description: Available stable funding as a percentage of required stable funding. Long-term structural liquidity measure.
+  inputs:
   - available_stable_funding
   - required_stable_funding
-formula: "available_stable_funding / required_stable_funding * 100"
-tags: [banking, liquidity, nsfr, structural_liquidity]
-units: percentage
-category: banking_liquidity
-related_metrics: [liquidity_coverage_ratio, deposits_to_loans_ratio, funding_stability_ratio]
-interpretation:
-  good_range: [105.0, 130.0]
-  warning_below: 100.0
-  warning_above: null
-  excellent_above: 115.0
-  poor_below: 95.0
-  notes: |
-    - Below 95%: Below regulatory minimum, potential enforcement action
-    - 95-100%: Minimum regulatory requirement, limited flexibility
-    - 100-105%: Above minimum but limited buffer
-    - 105-130%: Strong structural liquidity, good regulatory standing
-    - Above 130%: Very strong structural liquidity position
-    - Regulatory minimum is 100%
-    - Measures structural liquidity over one-year horizon
-    - Encourages stable funding of assets and activities
-    - Consider funding mix and maturity transformation
-    - Balance with profitability and business model
+  formula: available_stable_funding / required_stable_funding * 100
+  tags:
+  - banking
+  - liquidity
+  - nsfr
+  - structural_liquidity
+  units: percentage
+  category: banking_liquidity
+  related_metrics:
+  - liquidity_coverage_ratio
+  - deposits_to_loans_ratio
+  - funding_stability_ratio
+  interpretation:
+    good_range:
+    - 105.0
+    - 130.0
+    warning_below: 100.0
+    warning_above: null
+    excellent_above: 115.0
+    poor_below: 95.0
+    notes: '- Below 95%: Below regulatory minimum, potential enforcement action
 
-# Metric definition for Deposits to Loans Ratio
+      - 95-100%: Minimum regulatory requirement, limited flexibility
 
-name: Deposits to Loans Ratio
-description: Total deposits as a percentage of total loans. Shows funding stability and deposit franchise strength.
-inputs:
+      - 100-105%: Above minimum but limited buffer
+
+      - 105-130%: Strong structural liquidity, good regulatory standing
+
+      - Above 130%: Very strong structural liquidity position
+
+      - Regulatory minimum is 100%
+
+      - Measures structural liquidity over one-year horizon
+
+      - Encourages stable funding of assets and activities
+
+      - Consider funding mix and maturity transformation
+
+      - Balance with profitability and business model
+
+      '
+- name: Deposits to Loans Ratio
+  description: Total deposits as a percentage of total loans. Shows funding stability and deposit franchise strength.
+  inputs:
   - total_deposits
   - total_loans
-formula: "total_deposits / total_loans * 100"
-tags: [banking, liquidity, deposit_funding, funding_stability]
-units: percentage
-category: banking_liquidity
-related_metrics: [loan_to_deposit_ratio, core_deposits_ratio, funding_cost_ratio]
-interpretation:
-  good_range: [90.0, 120.0]
-  warning_below: 80.0
-  warning_above: 150.0
-  excellent_above: 100.0
-  poor_below: 70.0
-  notes: |
-    - Below 70%: Heavy reliance on wholesale funding, liquidity risk
-    - 70-80%: Below average deposit funding, monitor funding sources
-    - 80-90%: Adequate deposit funding for most banks
-    - 90-120%: Strong deposit franchise, stable funding base
-    - Above 150%: Very high deposits, may indicate excess liquidity
-    - Higher ratios indicate less reliance on wholesale funding
-    - Consider deposit composition and stability
-    - Core deposits typically more stable than brokered deposits
-    - Balance with loan growth and profitability objectives
-    - Monitor deposit costs and competitive position
+  formula: total_deposits / total_loans * 100
+  tags:
+  - banking
+  - liquidity
+  - deposit_funding
+  - funding_stability
+  units: percentage
+  category: banking_liquidity
+  related_metrics:
+  - loan_to_deposit_ratio
+  - core_deposits_ratio
+  - funding_cost_ratio
+  interpretation:
+    good_range:
+    - 90.0
+    - 120.0
+    warning_below: 80.0
+    warning_above: 150.0
+    excellent_above: 100.0
+    poor_below: 70.0
+    notes: '- Below 70%: Heavy reliance on wholesale funding, liquidity risk
 
-# Metric definition for Loan to Deposit Ratio
+      - 70-80%: Below average deposit funding, monitor funding sources
 
-name: Loan to Deposit Ratio
-description: Total loans as a percentage of total deposits. Shows lending intensity relative to deposit base.
-inputs:
+      - 80-90%: Adequate deposit funding for most banks
+
+      - 90-120%: Strong deposit franchise, stable funding base
+
+      - Above 150%: Very high deposits, may indicate excess liquidity
+
+      - Higher ratios indicate less reliance on wholesale funding
+
+      - Consider deposit composition and stability
+
+      - Core deposits typically more stable than brokered deposits
+
+      - Balance with loan growth and profitability objectives
+
+      - Monitor deposit costs and competitive position
+
+      '
+- name: Loan to Deposit Ratio
+  description: Total loans as a percentage of total deposits. Shows lending intensity relative to deposit base.
+  inputs:
   - total_loans
   - total_deposits
-formula: "total_loans / total_deposits * 100"
-tags: [banking, liquidity, lending_intensity, deposit_utilization]
-units: percentage
-category: banking_liquidity
-related_metrics: [deposits_to_loans_ratio, core_deposits_ratio, liquid_assets_ratio]
-interpretation:
-  good_range: [80.0, 100.0]
-  warning_below: 60.0
-  warning_above: 110.0
-  excellent_above: null
-  poor_below: 50.0
-  notes: |
-    - Below 50%: Very low lending intensity, excess liquidity
-    - 50-60%: Low lending intensity, may indicate weak loan demand
-    - 60-80%: Moderate lending intensity, conservative approach
-    - 80-100%: Good lending intensity, efficient deposit utilization
-    - Above 110%: High lending intensity, may need wholesale funding
-    - Lower ratios indicate more conservative liquidity management
-    - Higher ratios may indicate greater reliance on wholesale funding
-    - Consider loan growth strategy and market conditions
-    - Balance with liquidity requirements and funding costs
-    - Monitor in context of deposit growth and retention
+  formula: total_loans / total_deposits * 100
+  tags:
+  - banking
+  - liquidity
+  - lending_intensity
+  - deposit_utilization
+  units: percentage
+  category: banking_liquidity
+  related_metrics:
+  - deposits_to_loans_ratio
+  - core_deposits_ratio
+  - liquid_assets_ratio
+  interpretation:
+    good_range:
+    - 80.0
+    - 100.0
+    warning_below: 60.0
+    warning_above: 110.0
+    excellent_above: null
+    poor_below: 50.0
+    notes: '- Below 50%: Very low lending intensity, excess liquidity
 
-# Metric definition for Liquid Assets Ratio
+      - 50-60%: Low lending intensity, may indicate weak loan demand
 
-name: Liquid Assets Ratio
-description: Liquid assets as a percentage of total assets. Shows overall liquidity buffer and asset composition.
-inputs:
+      - 60-80%: Moderate lending intensity, conservative approach
+
+      - 80-100%: Good lending intensity, efficient deposit utilization
+
+      - Above 110%: High lending intensity, may need wholesale funding
+
+      - Lower ratios indicate more conservative liquidity management
+
+      - Higher ratios may indicate greater reliance on wholesale funding
+
+      - Consider loan growth strategy and market conditions
+
+      - Balance with liquidity requirements and funding costs
+
+      - Monitor in context of deposit growth and retention
+
+      '
+- name: Liquid Assets Ratio
+  description: Liquid assets as a percentage of total assets. Shows overall liquidity buffer and asset composition.
+  inputs:
   - liquid_assets
   - total_assets
-formula: "liquid_assets / total_assets * 100"
-tags: [banking, liquidity, liquid_assets, asset_composition]
-units: percentage
-category: banking_liquidity
-related_metrics: [securities_to_assets_ratio, cash_to_assets_ratio, liquidity_coverage_ratio]
-interpretation:
-  good_range: [15.0, 30.0]
-  warning_below: 10.0
-  warning_above: 40.0
-  excellent_above: 20.0
-  poor_below: 5.0
-  notes: |
-    - Below 5%: Very low liquidity buffer, potential liquidity stress
-    - 5-10%: Low liquidity buffer, monitor funding and cash flows
-    - 10-15%: Adequate liquidity buffer for most banks
-    - 15-30%: Strong liquidity buffer, good asset composition
-    - Above 40%: Very high liquidity, may indicate excess cash
-    - Liquid assets typically include cash, government securities
-    - Higher ratios provide greater liquidity flexibility
-    - Consider yield impact of holding liquid assets
-    - Balance with profitability and lending objectives
-    - Monitor in context of business model and strategy 
+  formula: liquid_assets / total_assets * 100
+  tags:
+  - banking
+  - liquidity
+  - liquid_assets
+  - asset_composition
+  units: percentage
+  category: banking_liquidity
+  related_metrics:
+  - securities_to_assets_ratio
+  - cash_to_assets_ratio
+  - liquidity_coverage_ratio
+  interpretation:
+    good_range:
+    - 15.0
+    - 30.0
+    warning_below: 10.0
+    warning_above: 40.0
+    excellent_above: 20.0
+    poor_below: 5.0
+    notes: '- Below 5%: Very low liquidity buffer, potential liquidity stress
+
+      - 5-10%: Low liquidity buffer, monitor funding and cash flows
+
+      - 10-15%: Adequate liquidity buffer for most banks
+
+      - 15-30%: Strong liquidity buffer, good asset composition
+
+      - Above 40%: Very high liquidity, may indicate excess cash
+
+      - Liquid assets typically include cash, government securities
+
+      - Higher ratios provide greater liquidity flexibility
+
+      - Consider yield impact of holding liquid assets
+
+      - Balance with profitability and lending objectives
+
+      - Monitor in context of business model and strategy '

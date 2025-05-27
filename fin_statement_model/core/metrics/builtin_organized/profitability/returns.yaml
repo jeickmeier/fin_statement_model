@@ -1,148 +1,159 @@
----
-# Profitability - Returns
-# Profitability metrics: returns
-
-# Metric definition for Return on Assets
-
-name: Return on Assets
-description: Measures how effectively a company uses its assets to generate profits. Key indicator of asset utilization efficiency.
-inputs:
+- name: Return on Assets
+  description: Measures how effectively a company uses its assets to generate profits. Key indicator of asset utilization
+    efficiency.
+  inputs:
   - net_income
   - total_assets
-formula: "net_income / total_assets * 100"
-tags: [profitability, asset_efficiency, returns, performance]
-units: percentage
-category: profitability
-related_metrics: [return_on_equity, return_on_invested_capital, asset_turnover]
-interpretation:
-  good_range: [5.0, 15.0]
-  warning_below: 2.0
-  warning_above: null
-  excellent_above: 12.0
-  poor_below: 1.0
-  notes: |
-    - Below 1%: Poor asset utilization, potential operational issues
-    - 1-2%: Low returns, may indicate asset-heavy business or inefficiency
-    - 2-5%: Adequate returns for many industries, room for improvement
-    - 5-15%: Good to strong asset utilization, efficient operations
-    - Above 15%: Excellent returns, very efficient asset use
-    - Shows profit generated per dollar of assets
-    - Lower for capital-intensive industries (utilities, manufacturing)
-    - Higher for asset-light businesses (services, technology)
-    - Consider alongside asset turnover for complete efficiency picture
-    - Use average assets for more accurate calculation when possible 
-# Metric definition for Return on Equity
-
-name: Return on Equity
-description: Measures how effectively a company uses shareholders' equity to generate profits. Key profitability metric for equity investors.
-inputs:
+  formula: net_income / total_assets * 100
+  tags:
+  - profitability
+  - asset_efficiency
+  - returns
+  - performance
+  units: percentage
+  category: profitability
+  related_metrics:
+  - return_on_equity
+  - return_on_invested_capital
+  - asset_turnover
+  interpretation:
+    good_range:
+    - 5.0
+    - 15.0
+    warning_below: 2.0
+    warning_above: null
+    excellent_above: 12.0
+    poor_below: 1.0
+    notes: "- Below 1%: Poor asset utilization, potential operational issues\n- 1-2%: Low returns, may indicate asset-heavy\
+      \ business or inefficiency\n- 2-5%: Adequate returns for many industries, room for improvement\n- 5-15%: Good to strong\
+      \ asset utilization, efficient operations\n- Above 15%: Excellent returns, very efficient asset use\n- Shows profit\
+      \ generated per dollar of assets\n- Lower for capital-intensive industries (utilities, manufacturing)\n- Higher for\
+      \ asset-light businesses (services, technology)\n- Consider alongside asset turnover for complete efficiency picture\n\
+      - Use average assets for more accurate calculation when possible \n"
+- name: Return on Equity
+  description: Measures how effectively a company uses shareholders' equity to generate profits. Key profitability metric
+    for equity investors.
+  inputs:
   - net_income
   - total_equity
-formula: "net_income / total_equity * 100"
-tags: [profitability, returns, equity_analysis, performance]
-units: percentage
-category: profitability
-related_metrics: [return_on_assets, return_on_invested_capital, net_profit_margin, equity_multiplier]
-interpretation:
-  good_range: [15.0, 25.0]
-  warning_below: 8.0
-  warning_above: 30.0
-  excellent_above: 20.0
-  poor_below: 5.0
-  notes: |
-    - Below 5%: Poor performance, may indicate operational issues or overleveraging
-    - 5-8%: Below average, needs improvement
-    - 8-15%: Average performance, acceptable for stable industries
-    - 15-25%: Good to excellent performance, efficient use of equity
-    - Above 25%: Exceptional performance, but verify sustainability
-    - Very high ROE (>30%) may indicate high leverage rather than operational excellence
-    - Consider ROE trend over multiple years, not just absolute level
-    - Use DuPont analysis to understand drivers (margin, turnover, leverage) 
-# Metric definition for Return on Invested Capital
-
-name: Return on Invested Capital
-description: Measures return on all invested capital (debt and equity). Shows efficiency of capital allocation across all funding sources.
-inputs:
+  formula: net_income / total_equity * 100
+  tags:
+  - profitability
+  - returns
+  - equity_analysis
+  - performance
+  units: percentage
+  category: profitability
+  related_metrics:
+  - return_on_assets
+  - return_on_invested_capital
+  - net_profit_margin
+  - equity_multiplier
+  interpretation:
+    good_range:
+    - 15.0
+    - 25.0
+    warning_below: 8.0
+    warning_above: 30.0
+    excellent_above: 20.0
+    poor_below: 5.0
+    notes: "- Below 5%: Poor performance, may indicate operational issues or overleveraging\n- 5-8%: Below average, needs\
+      \ improvement\n- 8-15%: Average performance, acceptable for stable industries\n- 15-25%: Good to excellent performance,\
+      \ efficient use of equity\n- Above 25%: Exceptional performance, but verify sustainability\n- Very high ROE (>30%) may\
+      \ indicate high leverage rather than operational excellence\n- Consider ROE trend over multiple years, not just absolute\
+      \ level\n- Use DuPont analysis to understand drivers (margin, turnover, leverage) \n"
+- name: Return on Invested Capital
+  description: Measures return on all invested capital (debt and equity). Shows efficiency of capital allocation across all
+    funding sources.
+  inputs:
   - nopat
   - invested_capital
-formula: "nopat / invested_capital * 100"
-tags: [profitability, capital_efficiency, returns, value_creation]
-units: percentage
-category: profitability
-related_metrics: [return_on_equity, return_on_assets, return_on_capital_employed]
-interpretation:
-  good_range: [10.0, 20.0]
-  warning_below: 5.0
-  warning_above: null
-  excellent_above: 15.0
-  poor_below: 3.0
-  notes: |
-    - Below 3%: Very poor capital efficiency, destroying value
-    - 3-5%: Low returns, may not cover cost of capital
-    - 5-10%: Adequate returns for many industries
-    - 10-20%: Good to strong capital efficiency, value creation
-    - Above 20%: Excellent returns, superior capital allocation
-    - Should exceed weighted average cost of capital (WACC) for value creation
-    - Capital structure neutral - includes both debt and equity
-    - More comprehensive than ROE as it includes all invested capital
-    - Key metric for evaluating management's capital allocation decisions
-    - Consider industry context and capital intensity when interpreting 
-# Metric definition for Return on Capital Employed
-
-name: Return on Capital Employed
-description: Measures return on capital employed in operations. Shows efficiency of capital used in business operations.
-inputs:
+  formula: nopat / invested_capital * 100
+  tags:
+  - profitability
+  - capital_efficiency
+  - returns
+  - value_creation
+  units: percentage
+  category: profitability
+  related_metrics:
+  - return_on_equity
+  - return_on_assets
+  - return_on_capital_employed
+  interpretation:
+    good_range:
+    - 10.0
+    - 20.0
+    warning_below: 5.0
+    warning_above: null
+    excellent_above: 15.0
+    poor_below: 3.0
+    notes: "- Below 3%: Very poor capital efficiency, destroying value\n- 3-5%: Low returns, may not cover cost of capital\n\
+      - 5-10%: Adequate returns for many industries\n- 10-20%: Good to strong capital efficiency, value creation\n- Above\
+      \ 20%: Excellent returns, superior capital allocation\n- Should exceed weighted average cost of capital (WACC) for value\
+      \ creation\n- Capital structure neutral - includes both debt and equity\n- More comprehensive than ROE as it includes\
+      \ all invested capital\n- Key metric for evaluating management's capital allocation decisions\n- Consider industry context\
+      \ and capital intensity when interpreting \n"
+- name: Return on Capital Employed
+  description: Measures return on capital employed in operations. Shows efficiency of capital used in business operations.
+  inputs:
   - ebit
   - total_assets
   - current_liabilities
-formula: "ebit / (total_assets - current_liabilities) * 100"
-tags: [profitability, capital_efficiency, operational_returns, employed_capital]
-units: percentage
-category: profitability
-related_metrics: [return_on_invested_capital, return_on_assets, operating_profit_margin]
-interpretation:
-  good_range: [12.0, 25.0]
-  warning_below: 6.0
-  warning_above: null
-  excellent_above: 20.0
-  poor_below: 4.0
-  notes: |
-    - Below 4%: Very poor capital employment efficiency
-    - 4-6%: Low returns on employed capital
-    - 6-12%: Adequate returns for many industries
-    - 12-25%: Good to strong capital employment efficiency
-    - Above 25%: Excellent returns on employed capital
-    - Capital employed = Total Assets - Current Liabilities
-    - Focuses on long-term capital employed in operations
-    - Excludes short-term financing from capital base
-    - Useful for comparing companies with different working capital structures
-    - Should exceed cost of capital for value creation 
-# Metric definition for Pre-tax Return on Assets
-
-name: Pre-tax Return on Assets
-description: Measures pre-tax return on assets. Shows asset efficiency before tax effects, useful for comparing across tax jurisdictions.
-inputs:
+  formula: ebit / (total_assets - current_liabilities) * 100
+  tags:
+  - profitability
+  - capital_efficiency
+  - operational_returns
+  - employed_capital
+  units: percentage
+  category: profitability
+  related_metrics:
+  - return_on_invested_capital
+  - return_on_assets
+  - operating_profit_margin
+  interpretation:
+    good_range:
+    - 12.0
+    - 25.0
+    warning_below: 6.0
+    warning_above: null
+    excellent_above: 20.0
+    poor_below: 4.0
+    notes: "- Below 4%: Very poor capital employment efficiency\n- 4-6%: Low returns on employed capital\n- 6-12%: Adequate\
+      \ returns for many industries\n- 12-25%: Good to strong capital employment efficiency\n- Above 25%: Excellent returns\
+      \ on employed capital\n- Capital employed = Total Assets - Current Liabilities\n- Focuses on long-term capital employed\
+      \ in operations\n- Excludes short-term financing from capital base\n- Useful for comparing companies with different\
+      \ working capital structures\n- Should exceed cost of capital for value creation \n"
+- name: Pre-tax Return on Assets
+  description: Measures pre-tax return on assets. Shows asset efficiency before tax effects, useful for comparing across tax
+    jurisdictions.
+  inputs:
   - income_before_tax
   - total_assets
-formula: "income_before_tax / total_assets * 100"
-tags: [profitability, asset_efficiency, pretax_returns, tax_neutral]
-units: percentage
-category: profitability
-related_metrics: [return_on_assets, return_on_invested_capital, operating_profit_margin]
-interpretation:
-  good_range: [8.0, 20.0]
-  warning_below: 3.0
-  warning_above: null
-  excellent_above: 15.0
-  poor_below: 1.0
-  notes: |
-    - Below 1%: Very poor pre-tax asset utilization
-    - 1-3%: Low pre-tax returns, potential operational issues
-    - 3-8%: Adequate pre-tax returns for many industries
-    - 8-20%: Good to strong pre-tax asset efficiency
-    - Above 20%: Excellent pre-tax returns, very efficient asset use
-    - Eliminates tax rate differences for better comparability
-    - Useful for comparing companies in different tax jurisdictions
-    - Shows operational efficiency before financing and tax decisions
-    - Higher than after-tax ROA due to tax burden exclusion
-    - Consider alongside effective tax rate for complete picture 
+  formula: income_before_tax / total_assets * 100
+  tags:
+  - profitability
+  - asset_efficiency
+  - pretax_returns
+  - tax_neutral
+  units: percentage
+  category: profitability
+  related_metrics:
+  - return_on_assets
+  - return_on_invested_capital
+  - operating_profit_margin
+  interpretation:
+    good_range:
+    - 8.0
+    - 20.0
+    warning_below: 3.0
+    warning_above: null
+    excellent_above: 15.0
+    poor_below: 1.0
+    notes: "- Below 1%: Very poor pre-tax asset utilization\n- 1-3%: Low pre-tax returns, potential operational issues\n-\
+      \ 3-8%: Adequate pre-tax returns for many industries\n- 8-20%: Good to strong pre-tax asset efficiency\n- Above 20%:\
+      \ Excellent pre-tax returns, very efficient asset use\n- Eliminates tax rate differences for better comparability\n\
+      - Useful for comparing companies in different tax jurisdictions\n- Shows operational efficiency before financing and\
+      \ tax decisions\n- Higher than after-tax ROA due to tax burden exclusion\n- Consider alongside effective tax rate for\
+      \ complete picture \n"

@@ -1,112 +1,113 @@
----
-# Per_Share - Per Share Metrics
-# Per_Share metrics: per_share_metrics
-
-# Metric definition for Revenue Per Share
-
-name: Revenue Per Share
-description: Measures revenue generated per outstanding share. Shows top-line performance on a per-share basis.
-inputs:
+- name: Revenue Per Share
+  description: Measures revenue generated per outstanding share. Shows top-line performance on a per-share basis.
+  inputs:
   - revenue
   - shares_outstanding
-formula: "revenue / shares_outstanding"
-tags: [per_share, revenue_analysis, top_line_performance, share_metrics]
-units: currency
-category: per_share
-related_metrics: [earnings_per_share, book_value_per_share, cash_per_share]
-interpretation:
-  good_range: null
-  warning_below: null
-  warning_above: null
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Absolute value depends on company size and share count
-    - Focus on growth trends rather than absolute levels
-    - Compare to industry peers with similar business models
-    - Rising revenue per share indicates top-line growth or share buybacks
-    - Declining revenue per share may indicate business challenges or dilution
-    - Consider alongside profit margins for complete per-share analysis
-    - Useful for tracking operational performance independent of share count changes
-    - Should grow over time for healthy, expanding businesses 
-# Metric definition for Cash Per Share
-
-name: Cash Per Share
-description: Measures cash and equivalents per outstanding share. Shows liquidity position on a per-share basis.
-inputs:
+  formula: revenue / shares_outstanding
+  tags:
+  - per_share
+  - revenue_analysis
+  - top_line_performance
+  - share_metrics
+  units: currency
+  category: per_share
+  related_metrics:
+  - earnings_per_share
+  - book_value_per_share
+  - cash_per_share
+  interpretation:
+    good_range: null
+    warning_below: null
+    warning_above: null
+    excellent_above: null
+    poor_below: null
+    notes: "- Absolute value depends on company size and share count\n- Focus on growth trends rather than absolute levels\n\
+      - Compare to industry peers with similar business models\n- Rising revenue per share indicates top-line growth or share\
+      \ buybacks\n- Declining revenue per share may indicate business challenges or dilution\n- Consider alongside profit\
+      \ margins for complete per-share analysis\n- Useful for tracking operational performance independent of share count\
+      \ changes\n- Should grow over time for healthy, expanding businesses \n"
+- name: Cash Per Share
+  description: Measures cash and equivalents per outstanding share. Shows liquidity position on a per-share basis.
+  inputs:
   - cash_and_equivalents
   - shares_outstanding
-formula: "cash_and_equivalents / shares_outstanding"
-tags: [per_share, liquidity, cash_position, financial_strength]
-units: currency
-category: per_share
-related_metrics: [book_value_per_share, working_capital_per_share, cash_ratio]
-interpretation:
-  good_range: null
-  warning_below: null
-  warning_above: null
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Higher cash per share indicates stronger liquidity position
-    - Provides downside protection during economic stress
-    - Excessive cash may indicate poor capital allocation
-    - Compare to stock price to assess cash as percentage of market value
-    - Consider debt levels - net cash per share may be more relevant
-    - Important for dividend sustainability and financial flexibility
-    - Rising cash per share shows improving financial strength
-    - Useful for assessing takeover premium and liquidation value 
-# Metric definition for Free Cash Flow Per Share
-
-name: Free Cash Flow Per Share
-description: Measures free cash flow generated per outstanding share. Shows cash generation capability on a per-share basis.
-inputs:
+  formula: cash_and_equivalents / shares_outstanding
+  tags:
+  - per_share
+  - liquidity
+  - cash_position
+  - financial_strength
+  units: currency
+  category: per_share
+  related_metrics:
+  - book_value_per_share
+  - working_capital_per_share
+  - cash_ratio
+  interpretation:
+    good_range: null
+    warning_below: null
+    warning_above: null
+    excellent_above: null
+    poor_below: null
+    notes: "- Higher cash per share indicates stronger liquidity position\n- Provides downside protection during economic\
+      \ stress\n- Excessive cash may indicate poor capital allocation\n- Compare to stock price to assess cash as percentage\
+      \ of market value\n- Consider debt levels - net cash per share may be more relevant\n- Important for dividend sustainability\
+      \ and financial flexibility\n- Rising cash per share shows improving financial strength\n- Useful for assessing takeover\
+      \ premium and liquidation value \n"
+- name: Free Cash Flow Per Share
+  description: Measures free cash flow generated per outstanding share. Shows cash generation capability on a per-share basis.
+  inputs:
   - free_cash_flow
   - shares_outstanding
-formula: "free_cash_flow / shares_outstanding"
-tags: [per_share, cash_flow, cash_generation, financial_performance]
-units: currency
-category: per_share
-related_metrics: [earnings_per_share, cash_per_share, free_cash_flow_yield]
-interpretation:
-  good_range: null
-  warning_below: null
-  warning_above: null
-  excellent_above: null
-  poor_below: 0.0
-  notes: |
-    - Positive FCF per share indicates cash generation after capex
-    - More conservative than EPS as it accounts for capital investments
-    - Critical for dividend sustainability and share buyback capacity
-    - Compare to dividends per share to assess payout sustainability
-    - Rising FCF per share indicates improving cash generation
-    - Negative FCF per share may be acceptable for high-growth companies
-    - Focus on trends and growth rather than absolute levels
-    - Useful for valuation using FCF yield and DCF models 
-# Metric definition for Tangible Book Value Per Share
-
-name: Tangible Book Value Per Share
-description: Measures tangible book value per outstanding share, excluding intangible assets. Shows hard asset backing per share.
-inputs:
+  formula: free_cash_flow / shares_outstanding
+  tags:
+  - per_share
+  - cash_flow
+  - cash_generation
+  - financial_performance
+  units: currency
+  category: per_share
+  related_metrics:
+  - earnings_per_share
+  - cash_per_share
+  - free_cash_flow_yield
+  interpretation:
+    good_range: null
+    warning_below: null
+    warning_above: null
+    excellent_above: null
+    poor_below: 0.0
+    notes: "- Positive FCF per share indicates cash generation after capex\n- More conservative than EPS as it accounts for\
+      \ capital investments\n- Critical for dividend sustainability and share buyback capacity\n- Compare to dividends per\
+      \ share to assess payout sustainability\n- Rising FCF per share indicates improving cash generation\n- Negative FCF\
+      \ per share may be acceptable for high-growth companies\n- Focus on trends and growth rather than absolute levels\n\
+      - Useful for valuation using FCF yield and DCF models \n"
+- name: Tangible Book Value Per Share
+  description: Measures tangible book value per outstanding share, excluding intangible assets. Shows hard asset backing per
+    share.
+  inputs:
   - tangible_book_value
   - shares_outstanding
-formula: "tangible_book_value / shares_outstanding"
-tags: [per_share, tangible_assets, asset_backing, liquidation_value]
-units: currency
-category: per_share
-related_metrics: [book_value_per_share, price_to_book_ratio, cash_per_share]
-interpretation:
-  good_range: null
-  warning_below: null
-  warning_above: null
-  excellent_above: null
-  poor_below: 0.0
-  notes: |
-    - Shows hard asset backing per share, excluding goodwill and intangibles
-    - More conservative than book value per share for asset-heavy businesses
-    - Important for liquidation analysis and asset-based valuation
-    - Negative values indicate intangibles exceed total equity
-    - Compare to stock price for price-to-tangible-book analysis
-    - More relevant for traditional industries with substantial fixed assets
-    - Less meaningful for asset-light businesses with significant intangibles
-    - Rising tangible book value per share indicates asset accumulation 
+  formula: tangible_book_value / shares_outstanding
+  tags:
+  - per_share
+  - tangible_assets
+  - asset_backing
+  - liquidation_value
+  units: currency
+  category: per_share
+  related_metrics:
+  - book_value_per_share
+  - price_to_book_ratio
+  - cash_per_share
+  interpretation:
+    good_range: null
+    warning_below: null
+    warning_above: null
+    excellent_above: null
+    poor_below: 0.0
+    notes: "- Shows hard asset backing per share, excluding goodwill and intangibles\n- More conservative than book value\
+      \ per share for asset-heavy businesses\n- Important for liquidation analysis and asset-based valuation\n- Negative values\
+      \ indicate intangibles exceed total equity\n- Compare to stock price for price-to-tangible-book analysis\n- More relevant\
+      \ for traditional industries with substantial fixed assets\n- Less meaningful for asset-light businesses with significant\
+      \ intangibles\n- Rising tangible book value per share indicates asset accumulation \n"

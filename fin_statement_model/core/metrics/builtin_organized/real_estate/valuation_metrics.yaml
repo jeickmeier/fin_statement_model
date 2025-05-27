@@ -1,198 +1,228 @@
----
-# Real Estate - Valuation Metrics
-# Real estate metrics: valuation and pricing
-
-# Metric definition for Capitalization Rate
-
-name: Capitalization Rate
-description: Net operating income as a percentage of property value. Key valuation metric showing expected return on real estate investment.
-inputs:
+- name: Capitalization Rate
+  description: Net operating income as a percentage of property value. Key valuation metric showing expected return on real
+    estate investment.
+  inputs:
   - net_operating_income
   - property_value
-formula: "net_operating_income / property_value * 100"
-tags: [real_estate, valuation, cap_rate, investment_return, property_pricing]
-units: percentage
-category: real_estate_valuation
-related_metrics: [net_operating_income, price_per_square_foot, funds_from_operations]
-interpretation:
-  good_range: [4.0, 10.0]
-  warning_below: 2.0
-  warning_above: 15.0
-  excellent_above: null
-  poor_below: 1.0
-  notes: |
-    - Below 1%: Very low cap rate, potentially overvalued property
-    - 1-2%: Low cap rate, premium pricing or low-risk market
-    - 2-4%: Below average cap rate, stable markets or prime properties
-    - 4-10%: Typical cap rate range for most property types and markets
-    - Above 15%: High cap rate, may indicate higher risk or distressed property
-    - Lower cap rates indicate higher property values relative to income
-    - Varies significantly by property type, location, and market conditions
-    - Used for property valuation: Property Value = NOI / Cap Rate
-    - Compare to market cap rates and required returns for investment decisions 
-# Metric definition for Price Per Square Foot
-
-name: Price Per Square Foot
-description: Property value divided by total square footage. Common metric for comparing property values across different sizes.
-inputs:
+  formula: net_operating_income / property_value * 100
+  tags:
+  - real_estate
+  - valuation
+  - cap_rate
+  - investment_return
+  - property_pricing
+  units: percentage
+  category: real_estate_valuation
+  related_metrics:
+  - net_operating_income
+  - price_per_square_foot
+  - funds_from_operations
+  interpretation:
+    good_range:
+    - 4.0
+    - 10.0
+    warning_below: 2.0
+    warning_above: 15.0
+    excellent_above: null
+    poor_below: 1.0
+    notes: "- Below 1%: Very low cap rate, potentially overvalued property\n- 1-2%: Low cap rate, premium pricing or low-risk\
+      \ market\n- 2-4%: Below average cap rate, stable markets or prime properties\n- 4-10%: Typical cap rate range for most\
+      \ property types and markets\n- Above 15%: High cap rate, may indicate higher risk or distressed property\n- Lower cap\
+      \ rates indicate higher property values relative to income\n- Varies significantly by property type, location, and market\
+      \ conditions\n- Used for property valuation: Property Value = NOI / Cap Rate\n- Compare to market cap rates and required\
+      \ returns for investment decisions \n"
+- name: Price Per Square Foot
+  description: Property value divided by total square footage. Common metric for comparing property values across different
+    sizes.
+  inputs:
   - property_value
   - total_square_feet
-formula: "property_value / total_square_feet"
-tags: [real_estate, valuation, price_per_sf, property_comparison, unit_pricing]
-units: currency_per_unit
-category: real_estate_valuation
-related_metrics: [capitalization_rate, rent_per_square_foot, net_operating_income]
-interpretation:
-  good_range: null
-  warning_below: null
-  warning_above: null
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Absolute values vary dramatically by location and property type
-    - Focus on trends and comparisons to similar properties
-    - Higher price per SF may indicate premium location or quality
-    - Should be analyzed alongside cap rates and rent levels
-    - Useful for initial property screening and market analysis
-    - Consider building age, condition, and amenities when comparing
-    - Market-dependent metric requiring local knowledge for interpretation
-    - Often used in conjunction with price per unit for multifamily properties 
-# Metric definition for Rent Per Square Foot
-
-name: Rent Per Square Foot
-description: Annual rental income divided by total rentable square footage. Measures rental rate efficiency and market positioning.
-inputs:
+  formula: property_value / total_square_feet
+  tags:
+  - real_estate
+  - valuation
+  - price_per_sf
+  - property_comparison
+  - unit_pricing
+  units: currency_per_unit
+  category: real_estate_valuation
+  related_metrics:
+  - capitalization_rate
+  - rent_per_square_foot
+  - net_operating_income
+  interpretation:
+    good_range: null
+    warning_below: null
+    warning_above: null
+    excellent_above: null
+    poor_below: null
+    notes: "- Absolute values vary dramatically by location and property type\n- Focus on trends and comparisons to similar\
+      \ properties\n- Higher price per SF may indicate premium location or quality\n- Should be analyzed alongside cap rates\
+      \ and rent levels\n- Useful for initial property screening and market analysis\n- Consider building age, condition,\
+      \ and amenities when comparing\n- Market-dependent metric requiring local knowledge for interpretation\n- Often used\
+      \ in conjunction with price per unit for multifamily properties \n"
+- name: Rent Per Square Foot
+  description: Annual rental income divided by total rentable square footage. Measures rental rate efficiency and market positioning.
+  inputs:
   - annual_rental_income
   - total_rentable_square_feet
-formula: "annual_rental_income / total_rentable_square_feet"
-tags: [real_estate, rental_rates, income_efficiency, market_positioning]
-units: currency_per_unit
-category: real_estate_valuation
-related_metrics: [price_per_square_foot, occupancy_rate, net_operating_income]
-interpretation:
-  good_range: null
-  warning_below: null
-  warning_above: null
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Absolute values vary by location, property type, and market conditions
-    - Compare to market rates and similar properties for context
-    - Higher rent per SF may indicate premium location or amenities
-    - Should be analyzed alongside occupancy rates for complete picture
-    - Declining rent per SF may signal market weakness or property issues
-    - Key input for NOI and property valuation calculations
-    - Monitor trends over time and compare to market rent growth
-    - Consider lease terms and tenant quality when interpreting 
-# Metric definition for FFO Multiple
-
-name: FFO Multiple
-description: Market capitalization divided by Funds From Operations. REIT valuation multiple similar to P/E ratio for traditional companies.
-inputs:
+  formula: annual_rental_income / total_rentable_square_feet
+  tags:
+  - real_estate
+  - rental_rates
+  - income_efficiency
+  - market_positioning
+  units: currency_per_unit
+  category: real_estate_valuation
+  related_metrics:
+  - price_per_square_foot
+  - occupancy_rate
+  - net_operating_income
+  interpretation:
+    good_range: null
+    warning_below: null
+    warning_above: null
+    excellent_above: null
+    poor_below: null
+    notes: "- Absolute values vary by location, property type, and market conditions\n- Compare to market rates and similar\
+      \ properties for context\n- Higher rent per SF may indicate premium location or amenities\n- Should be analyzed alongside\
+      \ occupancy rates for complete picture\n- Declining rent per SF may signal market weakness or property issues\n- Key\
+      \ input for NOI and property valuation calculations\n- Monitor trends over time and compare to market rent growth\n\
+      - Consider lease terms and tenant quality when interpreting \n"
+- name: FFO Multiple
+  description: Market capitalization divided by Funds From Operations. REIT valuation multiple similar to P/E ratio for traditional
+    companies.
+  inputs:
   - market_cap
   - funds_from_operations
-formula: "market_cap / funds_from_operations"
-tags: [real_estate, reit_valuation, ffo_multiple, market_multiple]
-units: times
-category: real_estate_valuation
-related_metrics: [funds_from_operations, affo_multiple, price_to_book_ratio]
-interpretation:
-  good_range: [10.0, 20.0]
-  warning_below: 5.0
-  warning_above: 30.0
-  excellent_above: null
-  poor_below: 3.0
-  notes: |
-    - Below 3x: Very low multiple, potential distress or undervaluation
-    - 3-5x: Low multiple, value opportunity or fundamental concerns
-    - 5-10x: Below average multiple, may indicate value or sector issues
-    - 10-20x: Typical range for most REITs in normal markets
-    - Above 30x: High multiple, growth expectations or market premium
-    - REIT equivalent of P/E ratio for operating companies
-    - Compare to sector averages and historical ranges
-    - Consider growth prospects and dividend yield when interpreting
-    - Lower multiples may indicate value opportunities or risks 
-# Metric definition for AFFO Multiple
-
-name: AFFO Multiple
-description: Market capitalization divided by Adjusted Funds From Operations. Conservative REIT valuation multiple accounting for capex.
-inputs:
+  formula: market_cap / funds_from_operations
+  tags:
+  - real_estate
+  - reit_valuation
+  - ffo_multiple
+  - market_multiple
+  units: times
+  category: real_estate_valuation
+  related_metrics:
+  - funds_from_operations
+  - affo_multiple
+  - price_to_book_ratio
+  interpretation:
+    good_range:
+    - 10.0
+    - 20.0
+    warning_below: 5.0
+    warning_above: 30.0
+    excellent_above: null
+    poor_below: 3.0
+    notes: "- Below 3x: Very low multiple, potential distress or undervaluation\n- 3-5x: Low multiple, value opportunity or\
+      \ fundamental concerns\n- 5-10x: Below average multiple, may indicate value or sector issues\n- 10-20x: Typical range\
+      \ for most REITs in normal markets\n- Above 30x: High multiple, growth expectations or market premium\n- REIT equivalent\
+      \ of P/E ratio for operating companies\n- Compare to sector averages and historical ranges\n- Consider growth prospects\
+      \ and dividend yield when interpreting\n- Lower multiples may indicate value opportunities or risks \n"
+- name: AFFO Multiple
+  description: Market capitalization divided by Adjusted Funds From Operations. Conservative REIT valuation multiple accounting
+    for capex.
+  inputs:
   - market_cap
   - adjusted_funds_from_operations
-formula: "market_cap / adjusted_funds_from_operations"
-tags: [real_estate, reit_valuation, affo_multiple, conservative_valuation]
-units: times
-category: real_estate_valuation
-related_metrics: [adjusted_funds_from_operations, ffo_multiple, dividend_yield]
-interpretation:
-  good_range: [12.0, 25.0]
-  warning_below: 6.0
-  warning_above: 35.0
-  excellent_above: null
-  poor_below: 4.0
-  notes: |
-    - Below 4x: Very low multiple, potential distress or deep value
-    - 4-6x: Low multiple, value opportunity or fundamental issues
-    - 6-12x: Below average multiple, may indicate value or concerns
-    - 12-25x: Typical range for most REITs in normal markets
-    - Above 35x: High multiple, strong growth expectations or premium
-    - More conservative than FFO multiple as it accounts for capex
-    - Better reflects true cash available for dividends
-    - Compare to FFO multiple to assess capex intensity
-    - Key metric for dividend sustainability analysis 
-# Metric definition for NAV Per Share
-
-name: NAV Per Share
-description: Net Asset Value per share based on estimated property values. Shows underlying asset value relative to market price.
-inputs:
+  formula: market_cap / adjusted_funds_from_operations
+  tags:
+  - real_estate
+  - reit_valuation
+  - affo_multiple
+  - conservative_valuation
+  units: times
+  category: real_estate_valuation
+  related_metrics:
+  - adjusted_funds_from_operations
+  - ffo_multiple
+  - dividend_yield
+  interpretation:
+    good_range:
+    - 12.0
+    - 25.0
+    warning_below: 6.0
+    warning_above: 35.0
+    excellent_above: null
+    poor_below: 4.0
+    notes: "- Below 4x: Very low multiple, potential distress or deep value\n- 4-6x: Low multiple, value opportunity or fundamental\
+      \ issues\n- 6-12x: Below average multiple, may indicate value or concerns\n- 12-25x: Typical range for most REITs in\
+      \ normal markets\n- Above 35x: High multiple, strong growth expectations or premium\n- More conservative than FFO multiple\
+      \ as it accounts for capex\n- Better reflects true cash available for dividends\n- Compare to FFO multiple to assess\
+      \ capex intensity\n- Key metric for dividend sustainability analysis \n"
+- name: NAV Per Share
+  description: Net Asset Value per share based on estimated property values. Shows underlying asset value relative to market
+    price.
+  inputs:
   - total_property_value
   - total_debt
   - shares_outstanding
-formula: "(total_property_value - total_debt) / shares_outstanding"
-tags: [real_estate, nav, asset_value, intrinsic_value, reit_analysis]
-units: currency
-category: real_estate_valuation
-related_metrics: [market_price, price_to_nav_ratio, book_value_per_share]
-interpretation:
-  good_range: null
-  warning_below: null
-  warning_above: null
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - NAV represents estimated liquidation value of underlying properties
-    - Compare to market price to assess premium or discount to NAV
-    - NAV calculations require property appraisals or cap rate estimates
-    - Market price below NAV may indicate value opportunity
-    - Market price above NAV may indicate growth premium or market optimism
-    - Quality of NAV estimate depends on property valuation accuracy
-    - Consider market conditions and property type when interpreting
-    - Useful for identifying potential takeover targets or value plays 
-# Metric definition for Price to NAV Ratio
-
-name: Price to NAV Ratio
-description: Market price per share divided by Net Asset Value per share. Shows market premium or discount to underlying asset value.
-inputs:
+  formula: (total_property_value - total_debt) / shares_outstanding
+  tags:
+  - real_estate
+  - nav
+  - asset_value
+  - intrinsic_value
+  - reit_analysis
+  units: currency
+  category: real_estate_valuation
+  related_metrics:
+  - market_price
+  - price_to_nav_ratio
+  - book_value_per_share
+  interpretation:
+    good_range: null
+    warning_below: null
+    warning_above: null
+    excellent_above: null
+    poor_below: null
+    notes: "- NAV represents estimated liquidation value of underlying properties\n- Compare to market price to assess premium\
+      \ or discount to NAV\n- NAV calculations require property appraisals or cap rate estimates\n- Market price below NAV\
+      \ may indicate value opportunity\n- Market price above NAV may indicate growth premium or market optimism\n- Quality\
+      \ of NAV estimate depends on property valuation accuracy\n- Consider market conditions and property type when interpreting\n\
+      - Useful for identifying potential takeover targets or value plays \n"
+- name: Price to NAV Ratio
+  description: Market price per share divided by Net Asset Value per share. Shows market premium or discount to underlying
+    asset value.
+  inputs:
   - market_price
   - nav_per_share
-formula: "market_price / nav_per_share"
-tags: [real_estate, price_to_nav, market_premium, asset_valuation, reit_analysis]
-units: ratio
-category: real_estate_valuation
-related_metrics: [nav_per_share, market_price, price_to_book_ratio]
-interpretation:
-  good_range: [0.8, 1.2]
-  warning_below: 0.6
-  warning_above: 1.5
-  excellent_above: null
-  poor_below: 0.5
-  notes: |
-    - Below 0.5: Significant discount to NAV, potential distress or deep value
-    - 0.5-0.6: Large discount, value opportunity or fundamental concerns
-    - 0.6-0.8: Moderate discount, may indicate value or market pessimism
-    - 0.8-1.2: Trading near NAV, fair valuation range
-    - Above 1.5: Significant premium to NAV, growth expectations or overvaluation
-    - Ratio of 1.0 means market price equals estimated asset value
-    - Discounts may indicate value opportunities or market concerns
-    - Premiums may reflect growth prospects or market optimism
-    - Consider market conditions and REIT quality when interpreting 
+  formula: market_price / nav_per_share
+  tags:
+  - real_estate
+  - price_to_nav
+  - market_premium
+  - asset_valuation
+  - reit_analysis
+  units: ratio
+  category: real_estate_valuation
+  related_metrics:
+  - nav_per_share
+  - market_price
+  - price_to_book_ratio
+  interpretation:
+    good_range:
+    - 0.8
+    - 1.2
+    warning_below: 0.6
+    warning_above: 1.5
+    excellent_above: null
+    poor_below: 0.5
+    notes: '- Below 0.5: Significant discount to NAV, potential distress or deep value
+
+      - 0.5-0.6: Large discount, value opportunity or fundamental concerns
+
+      - 0.6-0.8: Moderate discount, may indicate value or market pessimism
+
+      - 0.8-1.2: Trading near NAV, fair valuation range
+
+      - Above 1.5: Significant premium to NAV, growth expectations or overvaluation
+
+      - Ratio of 1.0 means market price equals estimated asset value
+
+      - Discounts may indicate value opportunities or market concerns
+
+      - Premiums may reflect growth prospects or market optimism
+
+      - Consider market conditions and REIT quality when interpreting '

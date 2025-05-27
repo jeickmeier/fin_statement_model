@@ -1,91 +1,94 @@
----
-# Valuation - Enterprise Multiples
-# Valuation metrics: enterprise_multiples
-
-# Metric definition for EV/EBITDA
-
-name: EV/EBITDA
-description: Enterprise value multiple that measures company valuation relative to cash earnings. Useful for comparing companies with different capital structures.
-inputs:
+- name: EV/EBITDA
+  description: Enterprise value multiple that measures company valuation relative to cash earnings. Useful for comparing companies
+    with different capital structures.
+  inputs:
   - enterprise_value
   - ebitda
-formula: "enterprise_value / ebitda"
-tags: [valuation, enterprise_multiple, capital_structure_neutral, cash_earnings]
-units: times
-category: valuation
-related_metrics: [price_to_earnings_ratio, ev_sales, ev_ebit]
-interpretation:
-  good_range: [8.0, 15.0]
-  warning_below: 3.0
-  warning_above: 25.0
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Below 3x: May indicate undervaluation, distress, or cyclical low
-    - 3-8x: Low valuation, potential value opportunity
-    - 8-15x: Reasonable valuation for most mature companies
-    - 15-25x: High valuation, requires strong growth or market position
-    - Above 25x: Very high valuation, speculative or exceptional growth expectations
-    - Capital structure neutral - useful for M&A analysis
-    - Better than P/E for highly leveraged companies
-    - EBITDA proxy for cash generation before capital allocation decisions
-    - Consider cyclicality - use normalized EBITDA for cyclical businesses
-    - Industry-dependent - compare to sector benchmarks 
-# Metric definition for EV/Sales
-
-name: EV/Sales
-description: Enterprise value multiple relative to revenue. Capital structure neutral valuation metric useful for M&A analysis.
-inputs:
+  formula: enterprise_value / ebitda
+  tags:
+  - valuation
+  - enterprise_multiple
+  - capital_structure_neutral
+  - cash_earnings
+  units: times
+  category: valuation
+  related_metrics:
+  - price_to_earnings_ratio
+  - ev_sales
+  - ev_ebit
+  interpretation:
+    good_range:
+    - 8.0
+    - 15.0
+    warning_below: 3.0
+    warning_above: 25.0
+    excellent_above: null
+    poor_below: null
+    notes: "- Below 3x: May indicate undervaluation, distress, or cyclical low\n- 3-8x: Low valuation, potential value opportunity\n\
+      - 8-15x: Reasonable valuation for most mature companies\n- 15-25x: High valuation, requires strong growth or market\
+      \ position\n- Above 25x: Very high valuation, speculative or exceptional growth expectations\n- Capital structure neutral\
+      \ - useful for M&A analysis\n- Better than P/E for highly leveraged companies\n- EBITDA proxy for cash generation before\
+      \ capital allocation decisions\n- Consider cyclicality - use normalized EBITDA for cyclical businesses\n- Industry-dependent\
+      \ - compare to sector benchmarks \n"
+- name: EV/Sales
+  description: Enterprise value multiple relative to revenue. Capital structure neutral valuation metric useful for M&A analysis.
+  inputs:
   - enterprise_value
   - revenue
-formula: "enterprise_value / revenue"
-tags: [valuation, enterprise_multiple, revenue_multiple, ma_analysis]
-units: times
-category: valuation
-related_metrics: [ev_ebitda, price_to_sales_ratio, ev_ebit]
-interpretation:
-  good_range: [1.0, 4.0]
-  warning_below: 0.5
-  warning_above: 8.0
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Below 0.5: Very low enterprise revenue multiple, potential distress
-    - 0.5-1.0: Low valuation, value opportunity or cyclical industry
-    - 1.0-4.0: Reasonable enterprise revenue multiple for most industries
-    - 4.0-8.0: High multiple, requires strong margins or growth prospects
-    - Above 8.0: Very high multiple, exceptional growth or speculative
-    - Capital structure neutral - useful for comparing leveraged companies
-    - Better than P/S for M&A analysis as it includes debt assumption
-    - Must consider operating margins and cash generation
-    - Industry-dependent - asset-light businesses typically higher
-    - Compare to historical averages and peer group multiples 
-# Metric definition for EV/EBIT
-
-name: EV/EBIT
-description: Enterprise value multiple relative to operating earnings. Shows valuation based on core operating performance.
-inputs:
+  formula: enterprise_value / revenue
+  tags:
+  - valuation
+  - enterprise_multiple
+  - revenue_multiple
+  - ma_analysis
+  units: times
+  category: valuation
+  related_metrics:
+  - ev_ebitda
+  - price_to_sales_ratio
+  - ev_ebit
+  interpretation:
+    good_range:
+    - 1.0
+    - 4.0
+    warning_below: 0.5
+    warning_above: 8.0
+    excellent_above: null
+    poor_below: null
+    notes: "- Below 0.5: Very low enterprise revenue multiple, potential distress\n- 0.5-1.0: Low valuation, value opportunity\
+      \ or cyclical industry\n- 1.0-4.0: Reasonable enterprise revenue multiple for most industries\n- 4.0-8.0: High multiple,\
+      \ requires strong margins or growth prospects\n- Above 8.0: Very high multiple, exceptional growth or speculative\n\
+      - Capital structure neutral - useful for comparing leveraged companies\n- Better than P/S for M&A analysis as it includes\
+      \ debt assumption\n- Must consider operating margins and cash generation\n- Industry-dependent - asset-light businesses\
+      \ typically higher\n- Compare to historical averages and peer group multiples \n"
+- name: EV/EBIT
+  description: Enterprise value multiple relative to operating earnings. Shows valuation based on core operating performance.
+  inputs:
   - enterprise_value
   - ebit
-formula: "enterprise_value / ebit"
-tags: [valuation, enterprise_multiple, operating_earnings, core_performance]
-units: times
-category: valuation
-related_metrics: [ev_ebitda, price_to_earnings_ratio, times_interest_earned]
-interpretation:
-  good_range: [10.0, 20.0]
-  warning_below: 5.0
-  warning_above: 30.0
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Below 5x: Very low operating earnings multiple, potential distress
-    - 5-10x: Low valuation, value opportunity or cyclical low
-    - 10-20x: Reasonable valuation for most mature companies
-    - 20-30x: High valuation, requires growth or market position
-    - Above 30x: Very high multiple, exceptional growth expectations
-    - Capital structure neutral operating earnings multiple
-    - More conservative than EV/EBITDA as it includes depreciation
-    - Useful for comparing companies with different D&A levels
-    - Consider sustainability and quality of operating earnings
-    - Industry context important - stable industries can support higher multiples 
+  formula: enterprise_value / ebit
+  tags:
+  - valuation
+  - enterprise_multiple
+  - operating_earnings
+  - core_performance
+  units: times
+  category: valuation
+  related_metrics:
+  - ev_ebitda
+  - price_to_earnings_ratio
+  - times_interest_earned
+  interpretation:
+    good_range:
+    - 10.0
+    - 20.0
+    warning_below: 5.0
+    warning_above: 30.0
+    excellent_above: null
+    poor_below: null
+    notes: "- Below 5x: Very low operating earnings multiple, potential distress\n- 5-10x: Low valuation, value opportunity\
+      \ or cyclical low\n- 10-20x: Reasonable valuation for most mature companies\n- 20-30x: High valuation, requires growth\
+      \ or market position\n- Above 30x: Very high multiple, exceptional growth expectations\n- Capital structure neutral\
+      \ operating earnings multiple\n- More conservative than EV/EBITDA as it includes depreciation\n- Useful for comparing\
+      \ companies with different D&A levels\n- Consider sustainability and quality of operating earnings\n- Industry context\
+      \ important - stable industries can support higher multiples \n"

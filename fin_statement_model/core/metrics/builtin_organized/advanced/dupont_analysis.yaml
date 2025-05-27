@@ -1,68 +1,72 @@
----
-# Advanced - Dupont Analysis
-# Advanced metrics: dupont_analysis
-
-# Metric definition for ROE DuPont 3-Step
-
-name: ROE DuPont 3-Step
-description: Three-factor decomposition of ROE into Net Margin, Asset Turnover, and Financial Leverage. Shows ROE drivers.
-inputs:
+- name: ROE DuPont 3-Step
+  description: Three-factor decomposition of ROE into Net Margin, Asset Turnover, and Financial Leverage. Shows ROE drivers.
+  inputs:
   - net_income
   - revenue
   - total_assets
   - total_equity
-formula: "(net_income / revenue) * (revenue / total_assets) * (total_assets / total_equity)"
-tags: [dupont_analysis, roe_decomposition, profitability_analysis, leverage_analysis]
-units: ratio
-category: dupont_analysis
-related_metrics: [return_on_equity, roe_dupont_5_step, net_profit_margin, asset_turnover, financial_leverage_ratio]
-interpretation:
-  good_range: [0.15, 0.25]
-  warning_below: 0.08
-  warning_above: 0.30
-  excellent_above: 0.20
-  poor_below: 0.05
-  notes: |
-    - Should equal direct ROE calculation (net_income / total_equity)
-    - Three components: Net Margin × Asset Turnover × Financial Leverage
-    - Net Margin shows profitability efficiency
-    - Asset Turnover shows asset utilization efficiency
-    - Financial Leverage shows capital structure impact
-    - Helps identify which factor drives ROE performance
-    - High ROE from leverage may indicate higher risk
-    - Sustainable ROE typically comes from margins and turnover
-    - Compare components to industry benchmarks
-    - Useful for identifying improvement opportunities 
-# Metric definition for ROE DuPont 5-Step
-
-name: ROE DuPont 5-Step
-description: Five-factor decomposition of ROE including Tax Burden, Interest Burden, Operating Margin, Asset Turnover, and Financial Leverage.
-inputs:
+  formula: (net_income / revenue) * (revenue / total_assets) * (total_assets / total_equity)
+  tags:
+  - dupont_analysis
+  - roe_decomposition
+  - profitability_analysis
+  - leverage_analysis
+  units: ratio
+  category: dupont_analysis
+  related_metrics:
+  - return_on_equity
+  - roe_dupont_5_step
+  - net_profit_margin
+  - asset_turnover
+  - financial_leverage_ratio
+  interpretation:
+    good_range:
+    - 0.15
+    - 0.25
+    warning_below: 0.08
+    warning_above: 0.3
+    excellent_above: 0.2
+    poor_below: 0.05
+    notes: "- Should equal direct ROE calculation (net_income / total_equity)\n- Three components: Net Margin × Asset Turnover\
+      \ × Financial Leverage\n- Net Margin shows profitability efficiency\n- Asset Turnover shows asset utilization efficiency\n\
+      - Financial Leverage shows capital structure impact\n- Helps identify which factor drives ROE performance\n- High ROE\
+      \ from leverage may indicate higher risk\n- Sustainable ROE typically comes from margins and turnover\n- Compare components\
+      \ to industry benchmarks\n- Useful for identifying improvement opportunities \n"
+- name: ROE DuPont 5-Step
+  description: Five-factor decomposition of ROE including Tax Burden, Interest Burden, Operating Margin, Asset Turnover, and
+    Financial Leverage.
+  inputs:
   - net_income
   - income_before_tax
   - ebit
   - revenue
   - total_assets
   - total_equity
-formula: "(net_income / income_before_tax) * (income_before_tax / ebit) * (ebit / revenue) * (revenue / total_assets) * (total_assets / total_equity)"
-tags: [dupont_analysis, roe_decomposition, comprehensive_analysis, profitability_drivers]
-units: ratio
-category: dupont_analysis
-related_metrics: [return_on_equity, roe_dupont_3_step, operating_profit_margin, times_interest_earned]
-interpretation:
-  good_range: [0.15, 0.25]
-  warning_below: 0.08
-  warning_above: 0.30
-  excellent_above: 0.20
-  poor_below: 0.05
-  notes: |
-    - Should equal direct ROE calculation (net_income / total_equity)
-    - Five components: Tax Burden × Interest Burden × Operating Margin × Asset Turnover × Financial Leverage
-    - Tax Burden: (1 - effective tax rate) shows tax efficiency
-    - Interest Burden: Shows impact of interest expense on earnings
-    - Operating Margin: Shows operational profitability
-    - Asset Turnover: Shows asset utilization efficiency
-    - Financial Leverage: Shows capital structure impact
-    - More detailed analysis than 3-step DuPont
-    - Helps isolate operational vs. financial performance
-    - Useful for identifying specific improvement areas 
+  formula: (net_income / income_before_tax) * (income_before_tax / ebit) * (ebit / revenue) * (revenue / total_assets) * (total_assets
+    / total_equity)
+  tags:
+  - dupont_analysis
+  - roe_decomposition
+  - comprehensive_analysis
+  - profitability_drivers
+  units: ratio
+  category: dupont_analysis
+  related_metrics:
+  - return_on_equity
+  - roe_dupont_3_step
+  - operating_profit_margin
+  - times_interest_earned
+  interpretation:
+    good_range:
+    - 0.15
+    - 0.25
+    warning_below: 0.08
+    warning_above: 0.3
+    excellent_above: 0.2
+    poor_below: 0.05
+    notes: "- Should equal direct ROE calculation (net_income / total_equity)\n- Five components: Tax Burden × Interest Burden\
+      \ × Operating Margin × Asset Turnover × Financial Leverage\n- Tax Burden: (1 - effective tax rate) shows tax efficiency\n\
+      - Interest Burden: Shows impact of interest expense on earnings\n- Operating Margin: Shows operational profitability\n\
+      - Asset Turnover: Shows asset utilization efficiency\n- Financial Leverage: Shows capital structure impact\n- More detailed\
+      \ analysis than 3-step DuPont\n- Helps isolate operational vs. financial performance\n- Useful for identifying specific\
+      \ improvement areas \n"

@@ -172,23 +172,76 @@ __all__ = [
 """Analytics functions for summarizing and analyzing adjustments."""
 
 import logging
+from typing import Optional, Union
+from collections.abc import Callable
 
 import pandas as pd
 
 from fin_statement_model.core.adjustments.manager import AdjustmentManager
 from fin_statement_model.core.adjustments.models import (
     Adjustment,
-    AdjustmentFilterInput,
     AdjustmentFilter,
+    AdjustmentTag,
 )
 from fin_statement_model.core.adjustments.helpers import tag_matches
 
 logger = logging.getLogger(__name__)
 
 
+def _filter_adjustments_static(
+    all_adjustments: list[Adjustment],
+    filter_input: Optional[
+        Union[AdjustmentFilter, set[AdjustmentTag], Callable[[Adjustment], bool]]
+    ],
+) -> list[Adjustment]:
+    """Apply filtering to adjustments based on filter_input, excluding period context.
+
+    This helper function centralizes the common filtering logic used by both
+    summary() and list_by_tag() methods. It applies filters based on the static
+    properties of adjustments (tags, scenario, type, etc.) but ignores any
+    period-based filtering since that requires runtime context.
+
+    Args:
+        all_adjustments: List of all adjustments to filter.
+        filter_input: Filter criteria (AdjustmentFilter, set of tags, callable, or None).
+
+    Returns:
+        Filtered list of adjustments matching the filter criteria.
+    """
+    if filter_input is None:
+        # No filter means include all adjustments
+        logger.debug("No filter applied.")
+        return all_adjustments
+
+    elif isinstance(filter_input, AdjustmentFilter):
+        # Apply filter, ignoring its period attribute
+        temp_filter = filter_input.model_copy(update={"period": None})
+        filtered = [adj for adj in all_adjustments if temp_filter.matches(adj)]
+        logger.debug(f"Applied AdjustmentFilter (ignoring period). Filter: {temp_filter}")
+        return filtered
+
+    elif isinstance(filter_input, set):
+        # Shorthand for include_tags
+        filtered = [adj for adj in all_adjustments if tag_matches(adj.tags, filter_input)]
+        logger.debug(f"Applied tag filter. Tags: {filter_input}")
+        return filtered
+
+    elif callable(filter_input):
+        filtered = [adj for adj in all_adjustments if filter_input(adj)]
+        logger.debug("Applied callable filter.")
+        return filtered
+
+    else:
+        # Should not happen due to type hint, but defensive
+        logger.warning(f"Invalid filter_input type: {type(filter_input)}. No filtering applied.")
+        return all_adjustments
+
+
 def summary(
     manager: AdjustmentManager,
-    filter_input: AdjustmentFilterInput = None,
+    filter_input: Optional[
+        Union[AdjustmentFilter, set[AdjustmentTag], Callable[[Adjustment], bool]]
+    ] = None,
     group_by: list[str] = ["period", "node_name"],
 ) -> pd.DataFrame:
     """Generate a summary DataFrame of adjustments, optionally filtered and grouped.
@@ -216,40 +269,8 @@ def summary(
     # The period-based filtering (effective window) cannot be applied generically here.
     all_adjustments = manager.get_all_adjustments()
 
-    # --- Apply filtering based on filter_input (excluding period context) ---
-    filtered_adjustments: list[Adjustment]
-    if filter_input is None:
-        # If filter is None, manager usually defaults to DEFAULT_SCENARIO.
-        # Here, we want summary across ALL by default, unless filter specifies otherwise.
-        # Let's filter manually if needed.
-        # For default summary, maybe include all scenarios?
-        # Revisit: What is the desired default filter scope for summary?
-        # Let's assume None means *no* filter for the summary function.
-        filtered_adjustments = all_adjustments
-        logger.debug("No filter applied for summary.")
-    elif isinstance(filter_input, AdjustmentFilter):
-        # Apply filter, ignoring its period attribute
-        temp_filter = filter_input.model_copy(update={"period": None})
-        filtered_adjustments = [adj for adj in all_adjustments if temp_filter.matches(adj)]
-        logger.debug(
-            f"Applied AdjustmentFilter for summary (ignoring period). Filter: {temp_filter}"
-        )
-    elif isinstance(filter_input, set):
-        # Shorthand for include_tags
-        filtered_adjustments = [
-            adj for adj in all_adjustments if tag_matches(adj.tags, filter_input)
-        ]
-        logger.debug(f"Applied tag filter for summary. Tags: {filter_input}")
-    elif callable(filter_input):
-        filtered_adjustments = [adj for adj in all_adjustments if filter_input(adj)]
-        logger.debug("Applied callable filter for summary.")
-    else:
-        # Should not happen due to type hint, but defensive
-        logger.warning(
-            f"Invalid filter_input type for summary: {type(filter_input)}. No filtering applied."
-        )
-        filtered_adjustments = all_adjustments
-    # --- End Filtering ---
+    # Apply filtering using the helper function
+    filtered_adjustments = _filter_adjustments_static(all_adjustments, filter_input)
 
     if not filtered_adjustments:
         logger.info("No adjustments found matching the filter criteria for summary.")
@@ -285,7 +306,9 @@ def summary(
 def list_by_tag(
     manager: AdjustmentManager,
     tag_prefix: str,
-    filter_input: AdjustmentFilterInput = None,
+    filter_input: Optional[
+        Union[AdjustmentFilter, set[AdjustmentTag], Callable[[Adjustment], bool]]
+    ] = None,
 ) -> list[Adjustment]:
     """List all adjustments matching a tag prefix, optionally applying further filters.
 
@@ -301,26 +324,9 @@ def list_by_tag(
     """
     logger.debug(f"Listing adjustments by tag prefix: '{tag_prefix}'")
 
-    # Similar to summary, get all adjustments and apply filters without period context
+    # Get all adjustments and apply filters using the helper function
     all_adjustments = manager.get_all_adjustments()
-
-    # --- Apply filter_input (excluding period context) ---
-    filtered_adjustments: list[Adjustment]
-    if filter_input is None:
-        filtered_adjustments = all_adjustments
-    elif isinstance(filter_input, AdjustmentFilter):
-        temp_filter = filter_input.model_copy(update={"period": None})
-        filtered_adjustments = [adj for adj in all_adjustments if temp_filter.matches(adj)]
-    elif isinstance(filter_input, set):
-        filtered_adjustments = [
-            adj for adj in all_adjustments if tag_matches(adj.tags, filter_input)
-        ]
-    elif callable(filter_input):
-        filtered_adjustments = [adj for adj in all_adjustments if filter_input(adj)]
-    else:
-        logger.warning(f"Invalid filter_input type for list_by_tag: {type(filter_input)}.")
-        filtered_adjustments = all_adjustments
-    # --- End Filtering ---
+    filtered_adjustments = _filter_adjustments_static(all_adjustments, filter_input)
 
     # Apply the primary tag prefix filter
     prefix_set = {tag_prefix}
@@ -812,6 +818,7 @@ from .calculation import (
     DivisionCalculation,
     WeightedAverageCalculation,
     CustomFormulaCalculation,
+    FormulaCalculation,
 )
 from .registry import Registry
 
@@ -822,12 +829,14 @@ Registry.register(MultiplicationCalculation)
 Registry.register(DivisionCalculation)
 Registry.register(WeightedAverageCalculation)
 Registry.register(CustomFormulaCalculation)
+Registry.register(FormulaCalculation)
 
 __all__ = [
     "AdditionCalculation",
     "Calculation",
     "CustomFormulaCalculation",
     "DivisionCalculation",
+    "FormulaCalculation",
     "MultiplicationCalculation",
     "Registry",
     "SubtractionCalculation",
@@ -844,8 +853,10 @@ allowing different calculation types to be encapsulated in calculation classes.
 """
 
 from abc import ABC, abstractmethod
+import ast
 import logging
-from typing import Optional
+import operator
+from typing import Optional, ClassVar
 from collections.abc import Callable
 
 from fin_statement_model.core.nodes.base import Node  # Absolute
@@ -1324,6 +1335,153 @@ class CustomFormulaCalculation(Calculation):
         """Returns a description of the custom formula calculation."""
         func_name = getattr(self.formula_function, "__name__", "[anonymous function]")
         return f"Custom Formula (using function: {func_name})"
+
+
+class FormulaCalculation(Calculation):
+    """Evaluates a mathematical formula string as a calculation strategy.
+
+    This calculation parses and evaluates simple mathematical expressions
+    involving input nodes. Supports basic arithmetic operators (+, -, *, /)
+    and unary negation.
+
+    Attributes:
+        formula: The mathematical expression string to evaluate.
+        input_variable_names: List of variable names used in the formula,
+            corresponding to the order of input nodes.
+        _ast: The parsed Abstract Syntax Tree of the formula.
+    """
+
+    # Supported AST operators mapping to Python operator functions
+    OPERATORS: ClassVar[dict[type, Callable[[float, float], float]]] = {
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+        ast.USub: operator.neg,  # type: ignore[dict-item]
+    }
+
+    def __init__(self, formula: str, input_variable_names: list[str]):
+        """Initialize the FormulaCalculation.
+
+        Args:
+            formula: The mathematical formula string (e.g., "a + b / 2").
+            input_variable_names: List of variable names used in the formula,
+                in the same order as the input nodes that will be provided
+                to the calculate method.
+
+        Raises:
+            ValueError: If the formula string has invalid syntax.
+        """
+        self.formula = formula
+        self.input_variable_names = input_variable_names
+        try:
+            # Parse the formula string into an AST expression
+            self._ast = ast.parse(formula, mode="eval").body
+        except SyntaxError as e:
+            raise ValueError(f"Invalid formula syntax: {formula}") from e
+        logger.info(
+            f"Initialized FormulaCalculation with formula: {formula} and variables: {input_variable_names}"
+        )
+
+    def calculate(self, inputs: list[Node], period: str) -> float:
+        """Calculate the value by evaluating the formula with input node values.
+
+        Args:
+            inputs: A list of Node objects, in the same order as input_variable_names.
+            period: The time period string for the calculation.
+
+        Returns:
+            The result of the formula evaluation.
+
+        Raises:
+            ValueError: If the number of inputs doesn't match input_variable_names,
+                or if an error occurs during evaluation.
+        """
+        if len(inputs) != len(self.input_variable_names):
+            raise ValueError(
+                f"Number of inputs ({len(inputs)}) must match number of variable names "
+                f"({len(self.input_variable_names)})"
+            )
+
+        # Create mapping of variable names to nodes
+        variable_map = dict(zip(self.input_variable_names, inputs))
+
+        logger.debug(f"Applying formula calculation for period {period}")
+        try:
+            return self._evaluate(self._ast, period, variable_map)
+        except (ValueError, TypeError, KeyError, ZeroDivisionError) as e:
+            raise ValueError(f"Error evaluating formula: {self.formula}. Error: {e!s}") from e
+
+    def _evaluate(self, node: ast.AST, period: str, variable_map: dict[str, Node]) -> float:
+        """Recursively evaluate the parsed AST node for the formula.
+
+        Args:
+            node: The current AST node to evaluate.
+            period: The time period context for the evaluation.
+            variable_map: Mapping of variable names to Node objects.
+
+        Returns:
+            The result of evaluating the AST node.
+
+        Raises:
+            TypeError: If a non-numeric constant or input node value is encountered.
+            ValueError: If an unknown variable or unsupported operator/syntax is found.
+            ZeroDivisionError: If division by zero occurs.
+        """
+        # Numeric literal (Constant in Python 3.8+)
+        if isinstance(node, ast.Constant):
+            if isinstance(node.value, int | float):
+                return float(node.value)
+            else:
+                raise TypeError(
+                    f"Unsupported constant type '{type(node.value).__name__}' in formula"
+                )
+
+        # Variable reference
+        elif isinstance(node, ast.Name):
+            var_name = node.id
+            if var_name not in variable_map:
+                raise ValueError(
+                    f"Unknown variable '{var_name}' in formula. Available: {list(variable_map.keys())}"
+                )
+            input_node = variable_map[var_name]
+            # Recursively calculate the value of the input node
+            value = input_node.calculate(period)
+            if not isinstance(value, int | float):
+                raise TypeError(
+                    f"Input node '{input_node.name}' (variable '{var_name}') did not return a numeric value for period '{period}'"
+                )
+            return float(value)
+
+        # Binary operation (e.g., a + b)
+        elif isinstance(node, ast.BinOp):
+            left_val = self._evaluate(node.left, period, variable_map)
+            right_val = self._evaluate(node.right, period, variable_map)
+            op_type = type(node.op)
+            if op_type not in self.OPERATORS:
+                raise ValueError(f"Unsupported binary operator '{op_type.__name__}' in formula")
+            # Perform the operation
+            return float(self.OPERATORS[op_type](left_val, right_val))
+
+        # Unary operation (e.g., -a)
+        elif isinstance(node, ast.UnaryOp):
+            operand_val = self._evaluate(node.operand, period, variable_map)
+            op_type = type(node.op)
+            if op_type not in self.OPERATORS:
+                raise ValueError(f"Unsupported unary operator '{op_type.__name__}' in formula")
+            # Perform the operation
+            return float(self.OPERATORS[op_type](operand_val))
+
+        # If the node type is unsupported
+        else:
+            raise TypeError(
+                f"Unsupported syntax node type '{type(node).__name__}' in formula: {ast.dump(node)}"
+            )
+
+    @property
+    def description(self) -> str:
+        """Returns a description of the formula calculation."""
+        return f"Formula: {self.formula}"
 
 # --- END FILE: fin_statement_model/core/calculations/calculation.py ---
 
@@ -1891,7 +2049,6 @@ from fin_statement_model.core.node_factory import NodeFactory
 from fin_statement_model.core.nodes import (
     Node,
     FinancialStatementItemNode,
-    FormulaCalculationNode,
     CalculationNode,
 )
 from fin_statement_model.core.errors import (
@@ -2153,7 +2310,7 @@ class Graph:
         If `node_name` is None, uses `metric_name` as the node name.
 
         Uses the metric registry to load inputs and formula, creates a
-        FormulaCalculationNode directly, registers it, and stores metric
+        calculation node using the formula strategy, registers it, and stores metric
         metadata on the node itself.
 
         Args:
@@ -2164,7 +2321,7 @@ class Graph:
                 If None, assumes graph node names match metric input variable names.
 
         Returns:
-            The created FormulaCalculationNode.
+            The created calculation node.
 
         Raises:
             TypeError: If node_name is invalid.
@@ -2192,8 +2349,11 @@ class Graph:
         formula = metric_def.formula
         description = metric_def.description
 
-        resolved_inputs: dict[str, Node] = {}
+        # Build list of input node names and formula variable names
+        input_node_names: list[str] = []
+        formula_variable_names: list[str] = []
         missing = []
+
         for req_input_name in required_inputs:
             # Determine the actual graph node name to look for
             target_node_name = req_input_name  # Default case
@@ -2204,13 +2364,12 @@ class Graph:
                 missing.append(f"{req_input_name} (mapping missing in input_node_map)")
                 continue  # Skip trying to find the node
 
-            # Find the node in the graph using the target name
-            nd = self._nodes.get(target_node_name)
-            if nd is None:
+            # Check if the node exists in the graph
+            if target_node_name not in self._nodes:
                 missing.append(target_node_name)  # Report the name we looked for
             else:
-                # Use the required metric input name as the key for the Formula node inputs
-                resolved_inputs[req_input_name] = nd
+                input_node_names.append(target_node_name)
+                formula_variable_names.append(req_input_name)  # Use the metric's variable name
 
         if missing:
             raise NodeError(
@@ -2218,34 +2377,28 @@ class Graph:
                 node_id=node_name,
             )
 
-        # Create FormulaCalculationNode directly
+        # Create calculation node using add_calculation
         try:
-            new_node = FormulaCalculationNode(
+            new_node = self.add_calculation(
                 name=node_name,
-                inputs=resolved_inputs,
+                input_names=input_node_names,
+                operation_type="formula",
+                formula_variable_names=formula_variable_names,
                 formula=formula,
-                metric_name=metric_name,  # Store original metric key
-                metric_description=description,  # Store description
+                metric_name=metric_name,  # Pass metric metadata
+                metric_description=description,  # Pass metric description
             )
-        except (
-            ValueError,
-            TypeError,
-        ) as e:  # Catch potential FormulaCalculationNode init errors
+        except Exception as e:
             logger.exception(
-                f"Failed to instantiate FormulaCalculationNode for metric '{metric_name}' as node '{node_name}'"
+                f"Failed to create calculation node for metric '{metric_name}' as node '{node_name}'"
             )
             # Re-raise as ConfigurationError or keep original, depending on desired error reporting
             raise ConfigurationError(f"Error creating node for metric '{metric_name}': {e}") from e
 
-        # Register the new node using the graph's add_node method
-        # (Assuming add_node handles potential overwrites and adds to self._nodes)
-        self.manipulator.add_node(new_node)
-        # self._metric_names.add(node_name) # Removed - no longer tracking separately
-
         logger.info(
-            f"Added metric '{metric_name}' as FormulaCalculationNode '{node_name}' with inputs {list(resolved_inputs)}"
+            f"Added metric '{metric_name}' as calculation node '{node_name}' with inputs {input_node_names}"
         )
-        return new_node  # Return the created FormulaCalculationNode
+        return new_node
 
     def add_custom_calculation(
         self,
@@ -4010,21 +4163,26 @@ def load_organized_metrics(base_path: Optional[Path] = None) -> int:
         "banking/liquidity.yaml",
     ]
 
+    # Collect unique parent directories from the metric files
+    unique_directories = set()
     for file_path in metric_files:
         full_path = base_path / file_path
         if full_path.exists():
-            try:
-                # Load individual file by loading its parent directory
-                # but only count files that actually exist
-                metric_registry.load_metrics_from_directory(full_path.parent)
-                total_loaded += 1  # Count this file as loaded
-                logger.debug(f"Loaded metrics from {file_path}")
-            except Exception:
-                logger.exception(f"Failed to load {file_path}")
+            unique_directories.add(full_path.parent)
         else:
             logger.warning(f"Organized metric file not found: {full_path}")
 
-    logger.info(f"Loaded {total_loaded} metric files from organized structure")
+    # Load metrics from each unique directory
+    for directory in unique_directories:
+        try:
+            # load_metrics_from_directory returns the count of metrics loaded
+            metrics_count = metric_registry.load_metrics_from_directory(directory)
+            total_loaded += metrics_count
+            logger.debug(f"Loaded {metrics_count} metrics from {directory}")
+        except Exception:
+            logger.exception(f"Failed to load metrics from directory {directory}")
+
+    logger.info(f"Loaded {total_loaded} total metrics from organized structure")
     return total_loaded
 
 
@@ -4409,8 +4567,9 @@ class MetricRegistry:
         """Load all metric definitions from a directory.
 
         This method searches for '*.yaml' files, validates their content,
-        and stores them in the registry. Each YAML file can contain multiple
-        metric definitions.
+        and stores them in the registry. Each YAML file can contain either:
+        - A single metric definition (a YAML dictionary at the root)
+        - A list of metric definitions (a YAML list of dictionaries at the root)
 
         Args:
             directory_path: Path to the directory containing metric YAML files.
@@ -4446,50 +4605,52 @@ class MetricRegistry:
                 with open(filepath, encoding="utf-8") as f:
                     content = f.read()
 
-                # Split content by metric definitions (look for "name:" at start of line)
-                # This handles files with multiple metric definitions
-                metric_sections = []
-                current_section = []
+                # Use standard YAML parsing
+                try:
+                    data = yaml.safe_load(content)
+                except yaml.YAMLError as e:
+                    logger.warning(f"Failed to parse YAML file {filepath}: {e}")
+                    continue
 
-                for line in content.split("\n"):
-                    # Check if this line starts a new metric definition
-                    if line.strip().startswith("name:") and current_section:
-                        # Save the previous section
-                        if current_section:
-                            metric_sections.append("\n".join(current_section))
-                        current_section = [line]
-                    else:
-                        current_section.append(line)
+                if not data:
+                    logger.debug(f"Empty or null content in {filepath}, skipping")
+                    continue
 
-                # Don't forget the last section
-                if current_section:
-                    metric_sections.append("\n".join(current_section))
+                # Handle both single metric and list of metrics
+                metrics_to_process = []
 
-                # Process each metric section
-                for i, section in enumerate(metric_sections):
-                    # Skip empty sections or sections that are just comments
-                    if not section.strip() or not any(
-                        line.strip().startswith("name:") for line in section.split("\n")
-                    ):
+                if isinstance(data, dict):
+                    # Single metric definition
+                    metrics_to_process = [data]
+                elif isinstance(data, list):
+                    # List of metric definitions
+                    metrics_to_process = data
+                else:
+                    logger.warning(
+                        f"Invalid YAML structure in {filepath}: "
+                        f"expected dict or list, got {type(data).__name__}"
+                    )
+                    continue
+
+                # Process each metric definition
+                for i, metric_data in enumerate(metrics_to_process):
+                    if not isinstance(metric_data, dict):
+                        logger.warning(
+                            f"Invalid metric definition at index {i} in {filepath}: "
+                            f"expected dict, got {type(metric_data).__name__}"
+                        )
                         continue
 
                     try:
-                        config_data = yaml.safe_load(section)
-                        if not config_data or not isinstance(config_data, dict):
-                            continue
-
                         # Validate and register the metric
-                        model = MetricDefinition.model_validate(config_data)
+                        model = MetricDefinition.model_validate(metric_data)
                         self.register_definition(model)
                         loaded_count += 1
                         logger.debug(f"Successfully loaded metric '{model.name}' from {filepath}")
 
-                    except yaml.YAMLError as e:
-                        logger.warning(f"Failed to parse metric section {i + 1} in {filepath}: {e}")
-                        continue
                     except ValidationError as ve:
                         logger.warning(
-                            f"Invalid metric definition in section {i + 1} of {filepath}: {ve}"
+                            f"Invalid metric definition at index {i} in {filepath}: {ve}"
                         )
                         continue
 
@@ -4630,7 +4791,7 @@ class NodeFactory:
     _calculation_methods: ClassVar[dict[str, str]] = {
         "addition": "AdditionCalculation",
         "subtraction": "SubtractionCalculation",
-        "formula": "FormulaCalculationNode",
+        "formula": "FormulaCalculation",
         "division": "DivisionCalculation",
         "weighted_average": "WeightedAverageCalculation",
         "custom_formula": "CustomFormulaCalculation",
@@ -4730,60 +4891,6 @@ class NodeFactory:
         # Get the calculation name
         calculation_name = cls._calculation_methods[calculation_type]
 
-        # --- SPECIAL HANDLING for formula strings (type: 'formula') --- #
-        # If the type is 'formula', create a FormulaCalculationNode directly.
-        if calculation_type == "formula":
-            try:
-                # We actually want a FormulaCalculationNode in this case.
-                # Note: FormulaCalculationNode expects inputs as a dict {var_name: Node}
-                #       but we only have a list[Node]. We need to adapt.
-                #       For simplicity, we'll map input_0, input_1 etc. to nodes.
-                #       A more robust solution might involve passing var names from metric.
-                logger.debug(
-                    f"Intercepted 'formula' with string. Creating FormulaCalculationNode for '{name}'"
-                )
-                # Create input map: Use formula_variable_names if provided, else generate defaults
-                if formula_variable_names and len(formula_variable_names) == len(inputs):
-                    input_map = {
-                        var_name: node for var_name, node in zip(formula_variable_names, inputs)
-                    }
-                elif not formula_variable_names:
-                    # Generate default names like var_0, var_1, ...
-                    input_map = {f"var_{i}": node for i, node in enumerate(inputs)}
-                    logger.warning(
-                        f"No formula_variable_names provided for formula node '{name}'. Using defaults: {list(input_map.keys())}"
-                    )
-                else:
-                    # Mismatch between provided names and number of inputs
-                    raise ConfigurationError(
-                        f"Mismatch between formula_variable_names ({len(formula_variable_names)}) and number of inputs ({len(inputs)}) for node '{name}'"
-                    )
-
-                # Import FormulaCalculationNode locally to avoid circular dependency at module level
-                from .nodes.calculation_nodes import FormulaCalculationNode
-
-                formula_str = calculation_kwargs["formula"]
-                # Optional: Extract metric details if passed in kwargs
-                metric_name = calculation_kwargs.get("metric_name")
-                metric_desc = calculation_kwargs.get("metric_description")
-
-                return FormulaCalculationNode(
-                    name=name,
-                    inputs=input_map,
-                    formula=formula_str,
-                    metric_name=metric_name,
-                    metric_description=metric_desc,
-                )
-            except Exception as e:
-                # Catch potential errors during FormulaCalculationNode creation
-                logger.exception(
-                    f"Error creating FormulaCalculationNode for metric-like node '{name}'"
-                )
-                raise ConfigurationError(
-                    f"Failed to create FormulaCalculationNode for '{name}' from metric definition: {e}"
-                ) from e
-        # --- END SPECIAL HANDLING for type: 'formula' --- #
-
         # For other types, resolve the Calculation class from the registry
         try:
             calculation_cls: type[Calculation] = Registry.get(calculation_name)
@@ -4795,6 +4902,31 @@ class NodeFactory:
 
         # Instantiate the calculation, passing any extra kwargs
         try:
+            # Extract any metadata that should be stored on the node, not passed to calculation
+            node_kwargs = {}
+            if "metric_name" in calculation_kwargs:
+                node_kwargs["metric_name"] = calculation_kwargs.pop("metric_name")
+            if "metric_description" in calculation_kwargs:
+                node_kwargs["metric_description"] = calculation_kwargs.pop("metric_description")
+
+            # Special handling for FormulaCalculation which needs input_variable_names
+            if calculation_type == "formula":
+                if formula_variable_names and len(formula_variable_names) == len(inputs):
+                    calculation_kwargs["input_variable_names"] = formula_variable_names
+                elif not formula_variable_names:
+                    # Generate default names like var_0, var_1, ...
+                    calculation_kwargs["input_variable_names"] = [
+                        f"var_{i}" for i in range(len(inputs))
+                    ]
+                    logger.warning(
+                        f"No formula_variable_names provided for formula node '{name}'. Using defaults: {calculation_kwargs['input_variable_names']}"
+                    )
+                else:
+                    # Mismatch between provided names and number of inputs
+                    raise ConfigurationError(
+                        f"Mismatch between formula_variable_names ({len(formula_variable_names)}) and number of inputs ({len(inputs)}) for node '{name}'"
+                    )
+
             calculation_instance = calculation_cls(**calculation_kwargs)
         except TypeError as e:
             logger.exception(
@@ -4807,7 +4939,8 @@ class NodeFactory:
 
         # Create and return a CalculationNode with the instantiated calculation
         logger.debug(f"Creating calculation node '{name}' with '{calculation_name}' calculation.")
-        return CalculationNode(name, inputs, calculation_instance)
+
+        return CalculationNode(name, inputs, calculation_instance, **node_kwargs)
 
     @classmethod
     def create_forecast_node(
@@ -5257,202 +5390,14 @@ This module defines the different types of calculation nodes available in the sy
 - CustomCalculationNode: Calculates using a Python callable/function
 """
 
-import ast
-import operator
-from typing import Optional, ClassVar
+from typing import Optional, Any
 from collections.abc import Callable
 
-from fin_statement_model.core.calculations.calculation import Calculation
+from fin_statement_model.core.calculations.calculation import Calculation, FormulaCalculation
 from fin_statement_model.core.errors import (
     CalculationError,
 )
 from fin_statement_model.core.nodes.base import Node
-
-# === FormulaCalculationNode ===
-
-
-class FormulaCalculationNode(Node):
-    """Calculate a value based on a mathematical formula string.
-
-    Parses and evaluates simple mathematical expressions involving input nodes.
-    Supports basic arithmetic operators (+, -, *, /) and unary negation.
-
-    Attributes:
-        name (str): Identifier for this node.
-        inputs (Dict[str, Node]): Mapping of variable names used in the formula
-            to their corresponding input Node instances.
-        formula (str): The mathematical expression string to evaluate (e.g., "a + b").
-        metric_name (Optional[str]): The original metric identifier from the registry, if applicable.
-        metric_description (Optional[str]): The description from the metric definition, if applicable.
-        _ast (ast.Expression): The parsed Abstract Syntax Tree of the formula.
-
-    Examples:
-        >>> # Assume revenue and cogs are Node instances
-        >>> revenue = FinancialStatementItemNode("revenue", {"2023": 100})
-        >>> cogs = FinancialStatementItemNode("cogs", {"2023": 60})
-        >>> gross_profit = FormulaCalculationNode(
-        ...     "gross_profit",
-        ...     inputs={"rev": revenue, "cost": cogs},
-        ...     formula="rev - cost"
-        ... )
-        >>> print(gross_profit.calculate("2023"))
-        40.0
-    """
-
-    # Supported AST operators mapping to Python operator functions
-    OPERATORS: ClassVar[dict[type, Callable]] = {
-        ast.Add: operator.add,
-        ast.Sub: operator.sub,
-        ast.Mult: operator.mul,
-        ast.Div: operator.truediv,
-        ast.USub: operator.neg,
-    }
-
-    def __init__(
-        self,
-        name: str,
-        inputs: dict[str, Node],
-        formula: str,
-        metric_name: Optional[str] = None,
-        metric_description: Optional[str] = None,
-    ):
-        """Initialize the FormulaCalculationNode.
-
-        Args:
-            name (str): The unique identifier for this node.
-            inputs (Dict[str, Node]): Dictionary mapping variable names in the
-                formula to the corresponding input nodes.
-            formula (str): The mathematical formula string.
-            metric_name (Optional[str]): The original metric identifier from the
-                registry, if this node represents a defined metric. Defaults to None.
-            metric_description (Optional[str]): The description from the metric
-                definition, if applicable. Defaults to None.
-
-        Raises:
-            ValueError: If the formula string has invalid syntax.
-            TypeError: If any value in `inputs` is not a Node instance.
-        """
-        super().__init__(name)
-        if not isinstance(inputs, dict) or not all(isinstance(n, Node) for n in inputs.values()):
-            raise TypeError("FormulaCalculationNode inputs must be a dict of Node instances.")
-        self.inputs = inputs
-        self.formula = formula
-        self.metric_name = metric_name
-        self.metric_description = metric_description
-        try:
-            # Parse the formula string into an AST expression
-            self._ast = ast.parse(formula, mode="eval").body
-        except SyntaxError as e:
-            raise ValueError(f"Invalid formula syntax for node '{name}': {formula}") from e
-
-    def calculate(self, period: str) -> float:
-        """Calculate the node's value for a period by evaluating the formula.
-
-        Args:
-            period (str): The time period for which to perform the calculation.
-
-        Returns:
-            float: The result of the formula evaluation.
-
-        Raises:
-            CalculationError: If an error occurs during evaluation, such as
-                an unknown variable, unsupported operator, or if an input node
-                fails to provide a numeric value for the period.
-        """
-        try:
-            return self._evaluate(self._ast, period)
-        except (ValueError, TypeError, KeyError, ZeroDivisionError) as e:
-            raise CalculationError(
-                message=f"Error evaluating formula for node '{self.name}'",
-                node_id=self.name,
-                period=period,
-                details={"formula": self.formula, "error": str(e)},
-            ) from e
-
-    def _evaluate(self, node: ast.AST, period: str) -> float:
-        """Recursively evaluate the parsed AST node for the formula.
-
-        Args:
-            node (ast.AST): The current AST node to evaluate.
-            period (str): The time period context for the evaluation.
-
-        Returns:
-            float: The result of evaluating the AST node.
-
-        Raises:
-            TypeError: If a non-numeric constant or input node value is encountered.
-            ValueError: If an unknown variable or unsupported operator/syntax is found.
-            ZeroDivisionError: If division by zero occurs.
-        """
-        # Numeric literal (Constant in Python 3.8+, Num in earlier versions)
-        if isinstance(node, ast.Constant):
-            if isinstance(node.value, int | float):
-                return float(node.value)
-            else:
-                raise TypeError(
-                    f"Unsupported constant type '{type(node.value).__name__}' in formula for node '{self.name}'"
-                )
-
-        # Variable reference
-        elif isinstance(node, ast.Name):
-            var_name = node.id
-            if var_name not in self.inputs:
-                raise ValueError(
-                    f"Unknown variable '{var_name}' in formula for node '{self.name}'. Available: {list(self.inputs.keys())}"
-                )
-            input_node = self.inputs[var_name]
-            # Recursively calculate the value of the input node
-            value = input_node.calculate(period)
-            if not isinstance(value, int | float):
-                raise TypeError(
-                    f"Input node '{input_node.name}' (variable '{var_name}') did not return a numeric value for period '{period}'"
-                )
-            return float(value)
-
-        # Binary operation (e.g., a + b)
-        elif isinstance(node, ast.BinOp):
-            left_val = self._evaluate(node.left, period)
-            right_val = self._evaluate(node.right, period)
-            op_type = type(node.op)
-            if op_type not in self.OPERATORS:
-                raise ValueError(
-                    f"Unsupported binary operator '{op_type.__name__}' in formula for node '{self.name}'"
-                )
-            # Perform the operation
-            return float(self.OPERATORS[op_type](left_val, right_val))
-
-        # Unary operation (e.g., -a)
-        elif isinstance(node, ast.UnaryOp):
-            operand_val = self._evaluate(node.operand, period)
-            op_type = type(node.op)
-            if op_type not in self.OPERATORS:
-                raise ValueError(
-                    f"Unsupported unary operator '{op_type.__name__}' in formula for node '{self.name}'"
-                )
-            # Perform the operation
-            return float(self.OPERATORS[op_type](operand_val))
-
-        # If the node type is unsupported
-        else:
-            raise TypeError(
-                f"Unsupported syntax node type '{type(node).__name__}' in formula for node '{self.name}': {ast.dump(node)}"
-            )
-
-    def get_dependencies(self) -> list[str]:
-        """Return the names of input nodes used in the formula.
-
-        Returns:
-            A list of variable names corresponding to the formula inputs.
-        """
-        return [node.name for node in self.inputs.values()]
-
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs calculation.
-
-        Returns:
-            True, as FormulaCalculationNode performs calculations.
-        """
-        return True
 
 
 # === CalculationNode ===
@@ -5486,7 +5431,7 @@ class CalculationNode(Node):
         30.0
     """
 
-    def __init__(self, name: str, inputs: list[Node], calculation: Calculation):
+    def __init__(self, name: str, inputs: list[Node], calculation: Calculation, **kwargs: Any):
         """Initialize the CalculationNode.
 
         Args:
@@ -5494,6 +5439,7 @@ class CalculationNode(Node):
             inputs (List[Node]): List of input nodes needed by the calculation.
             calculation (Any): The calculation object implementing the calculation.
                 Must have a `calculate` method.
+            **kwargs: Additional attributes to store on the node (e.g., metric_name, metric_description).
 
         Raises:
             TypeError: If `inputs` is not a list of Nodes, or if `calculation`
@@ -5508,6 +5454,10 @@ class CalculationNode(Node):
         self.inputs = inputs
         self.calculation = calculation
         self._values: dict[str, float] = {}  # Cache for calculated values
+
+        # Store any additional attributes passed via kwargs
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def calculate(self, period: str) -> float:
         """Calculate the value for a period using the assigned calculation.
@@ -5586,6 +5536,98 @@ class CalculationNode(Node):
 
         Returns:
             True, as CalculationNode performs calculations.
+        """
+        return True
+
+
+# === FormulaCalculationNode ===
+
+
+class FormulaCalculationNode(CalculationNode):
+    """Calculate a value based on a mathematical formula string.
+
+    This node extends CalculationNode and uses a FormulaCalculation strategy
+    internally to parse and evaluate mathematical expressions.
+
+    Attributes:
+        name (str): Identifier for this node.
+        inputs (Dict[str, Node]): Mapping of variable names used in the formula
+            to their corresponding input Node instances.
+        formula (str): The mathematical expression string to evaluate (e.g., "a + b").
+        metric_name (Optional[str]): The original metric identifier from the registry, if applicable.
+        metric_description (Optional[str]): The description from the metric definition, if applicable.
+
+    Examples:
+        >>> # Assume revenue and cogs are Node instances
+        >>> revenue = FinancialStatementItemNode("revenue", {"2023": 100})
+        >>> cogs = FinancialStatementItemNode("cogs", {"2023": 60})
+        >>> gross_profit = FormulaCalculationNode(
+        ...     "gross_profit",
+        ...     inputs={"rev": revenue, "cost": cogs},
+        ...     formula="rev - cost"
+        ... )
+        >>> print(gross_profit.calculate("2023"))
+        40.0
+    """
+
+    def __init__(
+        self,
+        name: str,
+        inputs: dict[str, Node],
+        formula: str,
+        metric_name: Optional[str] = None,
+        metric_description: Optional[str] = None,
+    ):
+        """Initialize the FormulaCalculationNode.
+
+        Args:
+            name (str): The unique identifier for this node.
+            inputs (Dict[str, Node]): Dictionary mapping variable names in the
+                formula to the corresponding input nodes.
+            formula (str): The mathematical formula string.
+            metric_name (Optional[str]): The original metric identifier from the
+                registry, if this node represents a defined metric. Defaults to None.
+            metric_description (Optional[str]): The description from the metric
+                definition, if applicable. Defaults to None.
+
+        Raises:
+            ValueError: If the formula string has invalid syntax.
+            TypeError: If any value in `inputs` is not a Node instance.
+        """
+        if not isinstance(inputs, dict) or not all(isinstance(n, Node) for n in inputs.values()):
+            raise TypeError("FormulaCalculationNode inputs must be a dict of Node instances.")
+
+        # Store the formula and metric attributes
+        self.formula = formula
+        self.metric_name = metric_name
+        self.metric_description = metric_description
+
+        # Extract variable names and input nodes in consistent order
+        input_variable_names = list(inputs.keys())
+        input_nodes = list(inputs.values())
+
+        # Create FormulaCalculation strategy
+        formula_calculation = FormulaCalculation(formula, input_variable_names)
+
+        # Initialize parent CalculationNode with the strategy
+        super().__init__(name, input_nodes, formula_calculation)
+
+        # Store the inputs dict for compatibility (separate from parent's inputs list)
+        self.inputs_dict = inputs
+
+    def get_dependencies(self) -> list[str]:
+        """Return the names of input nodes used in the formula.
+
+        Returns:
+            A list of variable names corresponding to the formula inputs.
+        """
+        return [node.name for node in self.inputs_dict.values()]
+
+    def has_calculation(self) -> bool:
+        """Indicate that this node performs calculation.
+
+        Returns:
+            True, as FormulaCalculationNode performs calculations.
         """
         return True
 
@@ -7447,7 +7489,13 @@ class LLMClient:
 # --- END FILE: fin_statement_model/extensions/llm/llm_client.py ---
 
 # --- START FILE: fin_statement_model/forecasting/forecaster.py ---
-"""Forecasting operations dedicated to statement-level financial graphs."""
+"""Forecasting operations dedicated to statement-level financial graphs.
+
+This module provides the StatementForecaster class, which handles forecasting
+operations for financial statement graphs. It offers both mutating operations
+(that modify the graph) and non-mutating operations (that return forecast values
+without changing the graph state).
+"""
 
 import logging
 from typing import Any, Optional, Union
@@ -7462,7 +7510,25 @@ logger = logging.getLogger(__name__)
 
 
 class StatementForecaster:
-    """Handles forecasting operations specifically for a FinancialStatementGraph."""
+    """Handles forecasting operations specifically for a FinancialStatementGraph.
+
+    This class provides two main approaches to forecasting:
+
+    1. **Mutating operations** (`create_forecast`): Modifies the graph by adding
+       forecast periods and updating node values directly. This is useful when
+       you want to extend the graph with forecast data for further analysis.
+
+    2. **Non-mutating operations** (`forecast_value`): Returns forecast values
+       without modifying the graph state. This is useful for what-if scenarios
+       or when you need forecast values without altering the original data.
+
+    The forecaster supports multiple forecasting methods:
+    - simple: Fixed growth rate
+    - curve: Variable growth rates per period
+    - statistical: Random sampling from distributions
+    - average: Average of historical values
+    - historical_growth: Based on historical growth patterns
+    """
 
     def __init__(self, fsg: Any) -> None:
         """Initialize the forecaster.
@@ -7481,14 +7547,41 @@ class StatementForecaster:
     ) -> None:
         """Create forecasts for financial statement items on the graph.
 
+        **IMPORTANT**: This method MUTATES the graph by:
+        - Adding new periods to the graph if they don't exist
+        - Updating node values with forecast data
+        - Clearing node caches after updates
+
+        Use `forecast_value` instead if you need forecast values without
+        modifying the graph.
+
         Args:
             forecast_periods: List of future periods to forecast.
             node_configs: Mapping of node names to their forecast configurations.
+                Each config should contain:
+                - 'method': Forecasting method ('simple', 'curve', 'statistical',
+                           'average', 'historical_growth')
+                - 'config': Method-specific parameters (growth rate, distribution, etc.)
             historical_periods: Optional list of historical periods to use as base.
+                If not provided, will be inferred from the graph's existing periods.
             **kwargs: Additional arguments passed to the forecasting logic.
 
         Returns:
-            None
+            None (modifies the graph in-place)
+
+        Raises:
+            ValueError: If no historical periods found, no forecast periods provided,
+                       or invalid forecasting method/configuration.
+
+        Example:
+            >>> forecaster = StatementForecaster(graph)
+            >>> forecaster.create_forecast(
+            ...     forecast_periods=['2024', '2025'],
+            ...     node_configs={
+            ...         'revenue': {'method': 'simple', 'config': 0.05},  # 5% growth
+            ...         'costs': {'method': 'curve', 'config': [0.03, 0.04]}  # Variable growth
+            ...     }
+            ... )
         """
         logger.info(f"StatementForecaster: Creating forecast for periods {forecast_periods}")
         try:
@@ -7579,16 +7672,31 @@ class StatementForecaster:
     ) -> None:
         """Calculate forecast values and update the original node.
 
+        **IMPORTANT**: This is an internal MUTATING method that:
+        - Creates a temporary forecast node for calculations
+        - Updates the original node's values dictionary with forecast results
+        - Clears the original node's cache after updates
+
+        This method should not be called directly. Use `create_forecast` for
+        mutating operations or `forecast_value` for non-mutating operations.
+
         Args:
-            node: The graph node to forecast.
+            node: The graph node to forecast. Must have a 'values' dictionary.
             historical_periods: List of historical periods for base values.
             forecast_periods: List of periods for which to calculate forecasts.
-            growth_config: Growth parameter(s) (rate, list, or generator).
-            method: Forecasting method name.
+            growth_config: Growth parameter(s) (rate, list, or generator function).
+            method: Forecasting method name ('simple', 'curve', etc.).
             **kwargs: Additional arguments passed to growth logic.
 
         Returns:
-            None
+            None (modifies the node in-place)
+
+        Raises:
+            ValueError: If no historical periods provided or invalid method.
+
+        Side Effects:
+            - Modifies node.values dictionary with forecast data
+            - Clears node cache if clear_cache method exists
         """
         logger.debug(f"StatementForecaster: Forecasting node {node.name} using method {method}")
         if not historical_periods:
@@ -7717,15 +7825,48 @@ class StatementForecaster:
     ) -> dict[str, float]:
         """Forecast and return values for a node without mutating the graph.
 
+        **IMPORTANT**: This is a NON-MUTATING method that:
+        - Does NOT add periods to the graph
+        - Does NOT modify any node values
+        - Does NOT affect the graph state in any way
+        - Returns forecast values as a separate dictionary
+
+        This method is ideal for:
+        - What-if analysis
+        - Comparing different forecast scenarios
+        - Getting forecast values without committing them to the graph
+        - API responses where you don't want to modify server state
+
         Args:
             node_name: Name of the node to forecast.
             forecast_periods: List of future periods to forecast.
-            base_period: Optional base period to use for forecasting. If omitted, inferred from graph.
-            forecast_config: Forecast configuration dict mapping 'method' and 'config'.
+            base_period: Optional base period to use for forecasting.
+                        If omitted, will be inferred from the node's historical data.
+            forecast_config: Forecast configuration dict with:
+                - 'method': Forecasting method ('simple', 'curve', 'statistical',
+                           'average', 'historical_growth')
+                - 'config': Method-specific parameters
+                If not provided, defaults to simple method with 0% growth.
             **kwargs: Additional arguments passed to the internal forecasting logic.
 
         Returns:
-            A mapping from forecast period to its forecasted float value.
+            A dictionary mapping forecast periods to their calculated values.
+            Example: {'2024': 1050.0, '2025': 1102.5}
+
+        Raises:
+            ValueError: If node not found, no historical periods available,
+                       or invalid forecast configuration.
+
+        Example:
+            >>> forecaster = StatementForecaster(graph)
+            >>> # Get forecast without modifying the graph
+            >>> values = forecaster.forecast_value(
+            ...     'revenue',
+            ...     forecast_periods=['2024', '2025'],
+            ...     forecast_config={'method': 'simple', 'config': 0.05}
+            ... )
+            >>> print(values)  # {'2024': 1050.0, '2025': 1102.5}
+            >>> # Original graph remains unchanged
         """
         # Locate the node
         node = self.fsg.get_node(node_name)
@@ -10661,6 +10802,7 @@ from fin_statement_model.io.base import DataReader
 from fin_statement_model.io.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
 from fin_statement_model.core.errors import NodeError, ConfigurationError
+from fin_statement_model.core.node_factory import NodeFactory
 
 logger = logging.getLogger(__name__)
 
@@ -10696,6 +10838,12 @@ class GraphDefinitionReader(DataReader):
                 node_type = node_def.get("type")
                 # Get actual dependency names (might differ from formula vars)
                 dependency_names = node_def.get("inputs", [])
+
+                # For forecast nodes, the dependency is the base node
+                if node_type == "forecast":
+                    base_node_name = node_def.get("base_node_name")
+                    if base_node_name:
+                        dependency_names = [base_node_name]
 
                 # Check if all dependencies are already added
                 dependencies_met = all(dep_name in added_nodes for dep_name in dependency_names)
@@ -10735,19 +10883,119 @@ class GraphDefinitionReader(DataReader):
                                 )
                                 continue
 
-                            # TODO: Deserialize calculation_args if they were saved
+                            # Retrieve calculation_args if they were saved
                             calculation_args = node_def.get("calculation_args", {})
 
-                            logger.warning(
-                                f"Reconstructing generic CalculationNode '{node_name}' with type '{calc_type_key}'. Argument handling TBD."
-                            )
-                            graph.add_calculation(
-                                name=node_name,
-                                input_names=dependency_names,
-                                operation_type=calc_type_key,
-                                **calculation_args,
-                            )
-                        # TODO: Add elif for "forecast" type
+                            # Special handling for formula type to ensure formula_variable_names is passed correctly
+                            if calc_type_key == "formula" and "formula_variable_names" in node_def:
+                                # Pass formula_variable_names as a separate parameter, not in calculation_args
+                                formula_variable_names = node_def.get("formula_variable_names")
+                                logger.debug(
+                                    f"Reconstructing CalculationNode '{node_name}' with type '{calc_type_key}', "
+                                    f"formula_variable_names: {formula_variable_names}, and args: {calculation_args}"
+                                )
+                                graph.add_calculation(
+                                    name=node_name,
+                                    input_names=dependency_names,
+                                    operation_type=calc_type_key,
+                                    formula_variable_names=formula_variable_names,
+                                    **calculation_args,
+                                )
+                            else:
+                                logger.debug(
+                                    f"Reconstructing CalculationNode '{node_name}' with type '{calc_type_key}' and args: {calculation_args}"
+                                )
+                                graph.add_calculation(
+                                    name=node_name,
+                                    input_names=dependency_names,
+                                    operation_type=calc_type_key,
+                                    **calculation_args,
+                                )
+                        elif node_type == "forecast":
+                            # Reconstruct ForecastNode
+                            base_node_name = node_def.get("base_node_name")
+                            base_period = node_def.get("base_period")
+                            forecast_periods = node_def.get("forecast_periods")
+                            forecast_type = node_def.get("forecast_type")
+                            growth_params = node_def.get(
+                                "growth_params", 0.0
+                            )  # Default to 0.0 if not provided
+
+                            if not all(
+                                [
+                                    base_node_name,
+                                    base_period,
+                                    forecast_periods,
+                                    forecast_type,
+                                ]
+                            ):
+                                logger.error(
+                                    f"Missing required fields for forecast node '{node_name}'. Skipping."
+                                )
+                                continue
+
+                            # Get the base node from the graph
+                            base_node = graph.nodes.get(base_node_name) if base_node_name else None
+                            if not base_node:
+                                logger.error(
+                                    f"Base node '{base_node_name}' not found for forecast node '{node_name}'. Skipping."
+                                )
+                                continue
+
+                            # Handle special cases where growth_params might not be serializable
+                            if forecast_type in ["statistical", "custom"]:
+                                logger.warning(
+                                    f"Forecast node '{node_name}' of type '{forecast_type}' uses non-serializable "
+                                    f"parameters. Using default values. Manual reconstruction may be needed."
+                                )
+                                if forecast_type == "statistical":
+                                    # Use a default function that returns 0 growth
+                                    def default_statistical_growth() -> float:
+                                        return 0.0
+
+                                    growth_params = default_statistical_growth
+                                elif forecast_type == "custom":
+                                    # Use a default function that returns 0 growth
+                                    def default_custom_growth(
+                                        period: str, prev_period: str, prev_value: float
+                                    ) -> float:
+                                        return 0.0
+
+                                    growth_params = default_custom_growth
+                            elif forecast_type in ["average", "historical_growth"]:
+                                # These types don't need growth_params
+                                growth_params = None
+
+                            # Create the forecast node
+                            try:
+                                # Ensure all required parameters are not None
+                                if (
+                                    not isinstance(base_period, str)
+                                    or not isinstance(forecast_periods, list)
+                                    or not isinstance(forecast_type, str)
+                                ):
+                                    logger.error(
+                                        f"Invalid types for forecast node '{node_name}' parameters. Skipping."
+                                    )
+                                    continue
+
+                                forecast_node = NodeFactory.create_forecast_node(
+                                    name=node_name,
+                                    base_node=base_node,
+                                    base_period=base_period,
+                                    forecast_periods=forecast_periods,
+                                    forecast_type=forecast_type,
+                                    growth_params=growth_params,
+                                )
+                                graph.add_node(forecast_node)
+                                logger.debug(
+                                    f"Added forecast node '{node_name}' of type '{forecast_type}'."
+                                )
+                            except Exception:
+                                logger.exception(
+                                    f"Failed to create forecast node '{node_name}'. Skipping."
+                                )
+                                continue
                         else:
                             logger.warning(
                                 f"Unknown node type '{node_type}' for node '{node_name}' during deserialization. Skipping."
@@ -10774,7 +11022,10 @@ class GraphDefinitionReader(DataReader):
                 # No progress made in this pass, indicates missing nodes or cycle
                 missing_deps = set()
                 for node_name, node_def in nodes_to_add.items():
-                    for dep in node_def.get("inputs", []):
+                    deps = node_def.get("inputs", [])
+                    if node_def.get("type") == "forecast":
+                        deps = [node_def.get("base_node_name", "")]
+                    for dep in deps:
                         if (
                             dep not in added_nodes and dep not in nodes_to_add
                         ):  # Check if dep itself is missing entirely
@@ -11811,7 +12062,15 @@ from fin_statement_model.core.nodes import (
     FinancialStatementItemNode,
     CalculationNode,
     FormulaCalculationNode,
-    # TODO: Add ForecastNode if/when it exists in core.nodes
+)
+from fin_statement_model.core.nodes.forecast_nodes import (
+    ForecastNode,
+    FixedGrowthForecastNode,
+    CurveGrowthForecastNode,
+    StatisticalGrowthForecastNode,
+    AverageValueForecastNode,
+    AverageHistoricalGrowthForecastNode,
+    CustomGrowthForecastNode,
 )
 from fin_statement_model.io.base import DataWriter
 from fin_statement_model.io.registry import register_writer
@@ -11854,7 +12113,7 @@ class GraphDefinitionWriter(DataWriter):
             node_def["inputs"] = node.get_dependencies()  # Store actual dependency names
             # Store the variable names used in the formula
             node_def["formula_variable_names"] = list(
-                node.inputs.keys()  # These are the variable names used in the formula
+                node.inputs_dict.keys()  # Use inputs_dict instead of inputs for FormulaCalculationNode
             )  # Store input names (which are keys in formula node)
             node_def["formula"] = node.formula
             # Include metric info if it's a metric node
@@ -11877,6 +12136,31 @@ class GraphDefinitionWriter(DataWriter):
                 type_key = inv_map.get(type(calc_instance).__name__)
                 if type_key:
                     node_def["calculation_type"] = type_key  # Save the type key
+
+                    # Extract calculation arguments based on the calculation type
+                    calculation_args = {}
+
+                    # WeightedAverageCalculation has weights attribute
+                    if type_key == "weighted_average" and hasattr(calc_instance, "weights"):
+                        calculation_args["weights"] = calc_instance.weights
+
+                    # FormulaCalculation has formula and input_variable_names
+                    elif type_key == "formula" and hasattr(calc_instance, "formula"):
+                        calculation_args["formula"] = calc_instance.formula
+                        if hasattr(calc_instance, "input_variable_names"):
+                            # Store input_variable_names at the node level for proper deserialization
+                            node_def["formula_variable_names"] = calc_instance.input_variable_names
+
+                    # CustomFormulaCalculation has formula_function (not easily serializable)
+                    elif type_key == "custom_formula":
+                        logger.warning(
+                            f"CustomFormulaCalculation for node '{node.name}' uses a Python function "
+                            "which cannot be serialized. This node will need manual reconstruction."
+                        )
+
+                    # Store calculation args if any were extracted
+                    if calculation_args:
+                        node_def["calculation_args"] = calculation_args
                 else:
                     logger.warning(
                         f"Could not find type key in NodeFactory._calculation_methods for calculation class {type(calc_instance).__name__}"
@@ -11885,13 +12169,44 @@ class GraphDefinitionWriter(DataWriter):
                 logger.warning(
                     f"CalculationNode '{node.name}' has no internal calculation instance to serialize type."
                 )
-        # TODO: Add elif for ForecastNode when defined
-        # elif isinstance(node, ForecastNode):
-        #     node_def["type"] = "forecast"
-        #     node_def["inputs"] = [n.name for n in node.inputs]
-        #     # Serialize forecast method key and config
-        #     node_def["forecast_method"] = ...
-        #     node_def["forecast_config"] = ...
+        elif isinstance(node, ForecastNode):
+            node_def["type"] = "forecast"
+            node_def["base_node_name"] = node.input_node.name
+            node_def["base_period"] = node.base_period
+            node_def["forecast_periods"] = node.forecast_periods
+
+            # Determine the forecast type based on the node class
+            if isinstance(node, FixedGrowthForecastNode):
+                node_def["forecast_type"] = "fixed"
+                node_def["growth_params"] = node.growth_rate
+            elif isinstance(node, CurveGrowthForecastNode):
+                node_def["forecast_type"] = "curve"
+                node_def["growth_params"] = node.growth_rates
+            elif isinstance(node, StatisticalGrowthForecastNode):
+                node_def["forecast_type"] = "statistical"
+                logger.warning(
+                    f"StatisticalGrowthForecastNode '{node.name}' uses a distribution callable "
+                    "which cannot be serialized. This node will need manual reconstruction."
+                )
+                # We can't serialize the callable, so we'll skip growth_params
+            elif isinstance(node, AverageValueForecastNode):
+                node_def["forecast_type"] = "average"
+                # No growth_params needed for average value
+            elif isinstance(node, AverageHistoricalGrowthForecastNode):
+                node_def["forecast_type"] = "historical_growth"
+                # No growth_params needed for historical growth
+            elif isinstance(node, CustomGrowthForecastNode):
+                node_def["forecast_type"] = "custom"
+                logger.warning(
+                    f"CustomGrowthForecastNode '{node.name}' uses a growth function "
+                    "which cannot be serialized. This node will need manual reconstruction."
+                )
+                # We can't serialize the callable, so we'll skip growth_params
+            else:
+                logger.warning(
+                    f"Unknown ForecastNode subclass '{type(node).__name__}' for node '{node.name}'. "
+                    "Using generic forecast serialization."
+                )
         else:
             logger.warning(
                 f"Node type '{type(node).__name__}' for node '{node.name}' is not explicitly handled by GraphDefinitionWriter. Skipping."
@@ -15269,13 +15584,20 @@ class StatementFormatter:
 
 This module provides the function `populate_graph_from_statement`, which is
 responsible for translating the calculation logic defined within a
-`StatementStructure` (specifically `CalculatedLineItem` and `SubtotalLineItem`)
-into actual calculation nodes within a `Graph` instance. It bridges the gap
-between the static definition of a statement and the dynamic calculation graph.
+`StatementStructure` (specifically `CalculatedLineItem`, `SubtotalLineItem`,
+and `MetricLineItem`) into actual calculation nodes within a `Graph` instance.
+
+Key Concepts:
+- **ID Resolution**: Statement configurations use item IDs that must be resolved
+  to graph node IDs. This is handled by `_resolve_statement_input_to_graph_node_id`.
+- **Dependency Ordering**: Items may depend on other items. The populator handles
+  this by retrying failed items after successful ones, allowing dependencies to
+  be satisfied.
+- **Idempotency**: If a node already exists in the graph, it will be skipped.
 """
 
 import logging
-from typing import Union
+from typing import Union, Optional
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.errors import (
@@ -15303,24 +15625,93 @@ logger = logging.getLogger(__name__)
 __all__ = ["populate_graph_from_statement"]
 
 
+def _resolve_statement_input_to_graph_node_id(
+    item_id_from_config: str, statement: StatementStructure, graph: Graph
+) -> Optional[str]:
+    """Resolve a statement item ID to its corresponding graph node ID.
+
+    This helper function centralizes the logic for mapping item IDs from statement
+    configurations (as found in calculation inputs or metric input mappings) to
+    actual graph node IDs. This is necessary because:
+
+    1. **LineItems** have a separate `node_id` property that differs from their `id`
+    2. **Calculated/Subtotal/MetricLineItems** use their `id` as the node ID
+    3. Some nodes may exist directly in the graph without being statement items
+
+    Resolution Process:
+    1. First, search for the item in the statement structure
+    2. If found as a LineItem, return its `node_id` property
+    3. If found as a CalculatedLineItem/SubtotalLineItem/MetricLineItem, return its `id`
+    4. If not found in statement, check if it exists directly in the graph
+    5. Return None if not found anywhere
+
+    Args:
+        item_id_from_config: The item ID as specified in the statement configuration.
+                            This is typically what appears in YAML/JSON configs.
+        statement: The StatementStructure containing the item definitions.
+        graph: The Graph instance to check for existing nodes.
+
+    Returns:
+        The resolved graph node ID if found, None otherwise.
+
+    Example:
+        >>> # Given a LineItem with id='revenue_item' and node_id='revenue_node'
+        >>> # And a CalculatedLineItem with id='gross_profit'
+        >>> _resolve_statement_input_to_graph_node_id('revenue_item', statement, graph)
+        'revenue_node'  # Returns the node_id property
+        >>> _resolve_statement_input_to_graph_node_id('gross_profit', statement, graph)
+        'gross_profit'  # Returns the id itself
+    """
+    # First, try to find the item in the statement structure
+    found_item = statement.find_item_by_id(item_id_from_config)
+
+    if found_item:
+        if isinstance(found_item, LineItem):
+            # For basic LineItems, use the node_id property
+            return found_item.node_id
+        elif isinstance(found_item, CalculatedLineItem | SubtotalLineItem | MetricLineItem):
+            # For calculated/subtotal/metric items, the item ID itself is the node ID
+            return found_item.id
+
+    # If not found as a statement item, check if it exists directly in the graph
+    elif graph.has_node(item_id_from_config):
+        return item_id_from_config
+
+    # Not found in statement or graph
+    return None
+
+
 def populate_graph_from_statement(
     statement: StatementStructure, graph: Graph
 ) -> list[tuple[str, str]]:
     """Add calculation nodes defined in a StatementStructure to a Graph.
 
-    Iterates through `CalculatedLineItem` and `SubtotalLineItem` instances
-    found within the provided `statement` structure. For each item, it attempts
-    to add a corresponding calculation node to the `graph` using the
-    `graph.add_calculation` method. This method implicitly handles dependency
-    checking and cycle detection within the graph.
+    This function bridges the gap between static statement definitions and the
+    dynamic calculation graph. It processes three types of items:
 
-    This function is designed to be idempotent: if a node corresponding to a
-    statement item already exists in the graph, it will be skipped.
+    1. **CalculatedLineItem**: Creates calculation nodes with specified operations
+    2. **SubtotalLineItem**: Creates addition nodes that sum multiple items
+    3. **MetricLineItem**: Creates metric-based calculation nodes
+
+    ID Resolution Logic:
+    - Input IDs in statement configurations are resolved to graph node IDs using
+      `_resolve_statement_input_to_graph_node_id`
+    - This handles the mapping between statement item IDs and actual graph nodes
+    - Resolution accounts for LineItem.node_id vs other items using their ID directly
+
+    Dependency Handling:
+    - Items may depend on other items that haven't been created yet
+    - The function uses a retry mechanism: failed items are retried after
+      successful ones, allowing dependencies to be resolved
+    - Circular dependencies are detected and reported as errors
+
+    Idempotency:
+    - If a node already exists in the graph, it will be skipped
+    - This allows the function to be called multiple times safely
 
     Args:
         statement: The `StatementStructure` object containing the definitions
-            of calculated items and subtotals (e.g., built by
-            `StatementStructureBuilder`).
+            of calculated items, subtotals, and metrics.
         graph: The `core.graph.Graph` instance that will be populated with
             the calculation nodes.
 
@@ -15336,21 +15727,30 @@ def populate_graph_from_statement(
 
     Example:
         >>> from fin_statement_model.core.graph import Graph
-        >>> from fin_statement_model.statements.structure import StatementStructure # and items
-        >>> # Assume 'my_statement' is a valid StatementStructure instance
-        >>> # Assume 'my_graph' is a Graph, potentially with data nodes
-        >>> my_graph = Graph()
-        >>> my_statement = StatementStructure(id="IS", name="Income Statement")
-        >>> # ... add sections and items to my_statement ...
-        >>> # Example item: CalculatedLineItem(id="gross_profit", ..., calculation=...)
+        >>> from fin_statement_model.statements.structure import StatementStructure
         >>>
-        >>> errors = populate_graph_from_statement(my_statement, my_graph)
-        >>> if errors:
-        ...     # Example of handling errors - use logging in real code
-        ...     logger.warning(f"Errors encountered during population: {errors}")
-        ... else:
-        ...     logger.info("Graph populated successfully.")
-        >>> # 'my_graph' now contains a calculation node for 'gross_profit' (if defined)
+        >>> # Create graph with data nodes
+        >>> graph = Graph()
+        >>> graph.add_node('revenue_node', values={'2023': 1000})
+        >>> graph.add_node('cogs_node', values={'2023': 600})
+        >>>
+        >>> # Create statement with calculations
+        >>> statement = StatementStructure(id="IS", name="Income Statement")
+        >>> # Add a LineItem that maps to 'revenue_node'
+        >>> revenue_item = LineItem(id='revenue', name='Revenue', node_id='revenue_node')
+        >>> # Add a CalculatedLineItem that references the LineItem
+        >>> gross_profit = CalculatedLineItem(
+        ...     id='gross_profit',
+        ...     name='Gross Profit',
+        ...     calculation_type='subtraction',
+        ...     input_ids=['revenue', 'cogs']  # Uses LineItem IDs
+        ... )
+        >>>
+        >>> errors = populate_graph_from_statement(statement, graph)
+        >>> # The function will:
+        >>> # 1. Resolve 'revenue' to 'revenue_node' via LineItem.node_id
+        >>> # 2. Resolve 'cogs' to 'cogs_node' (if it exists in statement or graph)
+        >>> # 3. Create a calculation node 'gross_profit' with the resolved inputs
     """
     if not isinstance(statement, StatementStructure):
         raise TypeError("statement must be a StatementStructure instance")
@@ -15374,7 +15774,41 @@ def populate_graph_from_statement(
         item: Union[CalculatedLineItem, SubtotalLineItem, MetricLineItem],
         is_retry: bool = False,
     ) -> bool:  # Update Union
-        """Process a single calculation/subtotal/metric item. Return True if successful, False otherwise."""
+        """Process a single calculation/subtotal/metric item and add it to the graph.
+
+        This internal function handles the creation of a single calculation node,
+        including ID resolution and error handling. It's designed to be called
+        multiple times as part of the dependency resolution mechanism.
+
+        Processing Logic:
+        1. Check if node already exists (idempotency check)
+        2. Based on item type, resolve input IDs to graph node IDs
+        3. Attempt to create the calculation node
+        4. Handle missing dependencies gracefully (allows retry)
+
+        ID Resolution:
+        - Uses `_resolve_statement_input_to_graph_node_id` for all input IDs
+        - Handles the mapping from statement item IDs to graph node IDs
+        - Tracks missing inputs for detailed error reporting
+
+        Error Handling:
+        - Missing inputs on first pass: Returns False without logging errors
+        - Missing inputs on retry: Logs errors and adds to error list
+        - Other errors: Always logged immediately
+
+        Args:
+            item: The statement item to process (CalculatedLineItem, SubtotalLineItem,
+                  or MetricLineItem)
+            is_retry: Whether this is a retry attempt. Affects error logging behavior.
+
+        Returns:
+            True if the node was successfully added or already exists, False otherwise.
+
+        Side Effects:
+            - May add a node to the graph
+            - May append to errors_encountered list
+            - Increments nodes_added_count on success
+        """
         nonlocal nodes_added_count  # Allow modification of outer scope variable
         item_id = item.id
         success = False  # Initialize success flag
@@ -15411,7 +15845,7 @@ def populate_graph_from_statement(
                     item_input_map = item.inputs  # Mapping: metric_input_name -> statement_item_id
 
                     resolved_node_ids_map: dict[str, str] = {}
-                    missing_metric_input_details = []
+                    missing_metric_input_details: list[tuple[str, Optional[str]]] = []
 
                     # Verify item_input_map provides all required metric inputs
                     provided_metric_inputs = set(item_input_map.keys())
@@ -15433,43 +15867,20 @@ def populate_graph_from_statement(
                             input_map_value = item_input_map[
                                 metric_input_name
                             ]  # ID from the YAML mapping value
-                            target_node_id = None
 
-                            # 1. Check if the mapping value refers to another statement item ID
-                            found_item = statement.find_item_by_id(input_map_value)
-                            if found_item:
-                                if isinstance(
-                                    found_item, CalculatedLineItem | MetricLineItem
-                                ):  # Includes Subtotal
-                                    target_node_id = (
-                                        found_item.id
-                                    )  # The item ID itself is the node ID
-                                elif isinstance(found_item, LineItem):
-                                    target_node_id = (
-                                        found_item.node_id
-                                    )  # Map to the underlying node_id
+                            # Use the helper function to resolve the node ID
+                            target_node_id = _resolve_statement_input_to_graph_node_id(
+                                input_map_value, statement, graph
+                            )
 
-                            # 2. If not found as a statement item, check if it's a direct graph node ID
-                            elif graph.has_node(input_map_value):
-                                target_node_id = input_map_value  # The mapping value IS the node ID
-
-                            # 3. Now check if the resolved target_node_id exists and add it
-                            if target_node_id:
-                                if graph.has_node(target_node_id):
-                                    # Map metric input name -> resolved graph node name
-                                    resolved_node_ids_map[metric_input_name] = target_node_id
-                                else:
-                                    # The target node (either from item.node_id or direct mapping) doesn't exist in the graph
-                                    missing_metric_input_details.append(
-                                        (input_map_value, target_node_id)
-                                    )
+                            if target_node_id and graph.has_node(target_node_id):
+                                # Map metric input name -> resolved graph node name
+                                resolved_node_ids_map[metric_input_name] = target_node_id
                             else:
-                                # The input_map_value wasn't found as a statement item OR a direct graph node
-                                logger.error(
-                                    f"Mapped input '{input_map_value}' (for metric input '{metric_input_name}') "
-                                    f"required by metric item '{item.id}' could not be resolved to a statement item or a graph node in statement '{statement.id}'."
+                                # The target node doesn't exist in the graph
+                                missing_metric_input_details.append(
+                                    (input_map_value, target_node_id)
                                 )
-                                missing_metric_input_details.append((input_map_value, None))
 
                         if missing_metric_input_details:
                             missing_summary = [
@@ -15513,16 +15924,15 @@ def populate_graph_from_statement(
                 params = item.parameters
 
                 resolved_node_ids = []
-                missing_input_details = []  # Store tuples of (item_id, node_id)
+                missing_input_details: list[
+                    tuple[str, Optional[str]]
+                ] = []  # Store tuples of (item_id, node_id)
 
                 for input_item_id in input_item_ids:
-                    found_item = statement.find_item_by_id(input_item_id)
-                    target_node_id = None
-                    if found_item:
-                        if isinstance(found_item, CalculatedLineItem):  # Includes SubtotalLineItem
-                            target_node_id = found_item.id
-                        elif isinstance(found_item, LineItem):
-                            target_node_id = found_item.node_id
+                    # Use the helper function to resolve the node ID
+                    target_node_id = _resolve_statement_input_to_graph_node_id(
+                        input_item_id, statement, graph
+                    )
 
                     if target_node_id:
                         if graph.has_node(target_node_id):
@@ -15579,18 +15989,13 @@ def populate_graph_from_statement(
                     action_taken = True
                 else:
                     resolved_node_ids_sub = []
-                    missing_input_details_sub = []
+                    missing_input_details_sub: list[tuple[str, Optional[str]]] = []
 
                     for input_item_id_sub in input_item_ids:
-                        found_item_sub = statement.find_item_by_id(input_item_id_sub)
-                        target_node_id_sub = None
-                        if found_item_sub:
-                            if isinstance(
-                                found_item_sub, CalculatedLineItem
-                            ):  # Includes SubtotalLineItem
-                                target_node_id_sub = found_item_sub.id
-                            elif isinstance(found_item_sub, LineItem):
-                                target_node_id_sub = found_item_sub.node_id
+                        # Use the helper function to resolve the node ID
+                        target_node_id_sub = _resolve_statement_input_to_graph_node_id(
+                            input_item_id_sub, statement, graph
+                        )
 
                         if target_node_id_sub:
                             if graph.has_node(target_node_id_sub):

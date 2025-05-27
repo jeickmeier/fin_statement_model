@@ -49,7 +49,7 @@ class NodeFactory:
     _calculation_methods: ClassVar[dict[str, str]] = {
         "addition": "AdditionCalculation",
         "subtraction": "SubtractionCalculation",
-        "formula": "FormulaCalculationNode",
+        "formula": "FormulaCalculation",
         "division": "DivisionCalculation",
         "weighted_average": "WeightedAverageCalculation",
         "custom_formula": "CustomFormulaCalculation",
@@ -149,60 +149,6 @@ class NodeFactory:
         # Get the calculation name
         calculation_name = cls._calculation_methods[calculation_type]
 
-        # --- SPECIAL HANDLING for formula strings (type: 'formula') --- #
-        # If the type is 'formula', create a FormulaCalculationNode directly.
-        if calculation_type == "formula":
-            try:
-                # We actually want a FormulaCalculationNode in this case.
-                # Note: FormulaCalculationNode expects inputs as a dict {var_name: Node}
-                #       but we only have a list[Node]. We need to adapt.
-                #       For simplicity, we'll map input_0, input_1 etc. to nodes.
-                #       A more robust solution might involve passing var names from metric.
-                logger.debug(
-                    f"Intercepted 'formula' with string. Creating FormulaCalculationNode for '{name}'"
-                )
-                # Create input map: Use formula_variable_names if provided, else generate defaults
-                if formula_variable_names and len(formula_variable_names) == len(inputs):
-                    input_map = {
-                        var_name: node for var_name, node in zip(formula_variable_names, inputs)
-                    }
-                elif not formula_variable_names:
-                    # Generate default names like var_0, var_1, ...
-                    input_map = {f"var_{i}": node for i, node in enumerate(inputs)}
-                    logger.warning(
-                        f"No formula_variable_names provided for formula node '{name}'. Using defaults: {list(input_map.keys())}"
-                    )
-                else:
-                    # Mismatch between provided names and number of inputs
-                    raise ConfigurationError(
-                        f"Mismatch between formula_variable_names ({len(formula_variable_names)}) and number of inputs ({len(inputs)}) for node '{name}'"
-                    )
-
-                # Import FormulaCalculationNode locally to avoid circular dependency at module level
-                from .nodes.calculation_nodes import FormulaCalculationNode
-
-                formula_str = calculation_kwargs["formula"]
-                # Optional: Extract metric details if passed in kwargs
-                metric_name = calculation_kwargs.get("metric_name")
-                metric_desc = calculation_kwargs.get("metric_description")
-
-                return FormulaCalculationNode(
-                    name=name,
-                    inputs=input_map,
-                    formula=formula_str,
-                    metric_name=metric_name,
-                    metric_description=metric_desc,
-                )
-            except Exception as e:
-                # Catch potential errors during FormulaCalculationNode creation
-                logger.exception(
-                    f"Error creating FormulaCalculationNode for metric-like node '{name}'"
-                )
-                raise ConfigurationError(
-                    f"Failed to create FormulaCalculationNode for '{name}' from metric definition: {e}"
-                ) from e
-        # --- END SPECIAL HANDLING for type: 'formula' --- #
-
         # For other types, resolve the Calculation class from the registry
         try:
             calculation_cls: type[Calculation] = Registry.get(calculation_name)
@@ -214,6 +160,31 @@ class NodeFactory:
 
         # Instantiate the calculation, passing any extra kwargs
         try:
+            # Extract any metadata that should be stored on the node, not passed to calculation
+            node_kwargs = {}
+            if "metric_name" in calculation_kwargs:
+                node_kwargs["metric_name"] = calculation_kwargs.pop("metric_name")
+            if "metric_description" in calculation_kwargs:
+                node_kwargs["metric_description"] = calculation_kwargs.pop("metric_description")
+
+            # Special handling for FormulaCalculation which needs input_variable_names
+            if calculation_type == "formula":
+                if formula_variable_names and len(formula_variable_names) == len(inputs):
+                    calculation_kwargs["input_variable_names"] = formula_variable_names
+                elif not formula_variable_names:
+                    # Generate default names like var_0, var_1, ...
+                    calculation_kwargs["input_variable_names"] = [
+                        f"var_{i}" for i in range(len(inputs))
+                    ]
+                    logger.warning(
+                        f"No formula_variable_names provided for formula node '{name}'. Using defaults: {calculation_kwargs['input_variable_names']}"
+                    )
+                else:
+                    # Mismatch between provided names and number of inputs
+                    raise ConfigurationError(
+                        f"Mismatch between formula_variable_names ({len(formula_variable_names)}) and number of inputs ({len(inputs)}) for node '{name}'"
+                    )
+
             calculation_instance = calculation_cls(**calculation_kwargs)
         except TypeError as e:
             logger.exception(
@@ -226,7 +197,8 @@ class NodeFactory:
 
         # Create and return a CalculationNode with the instantiated calculation
         logger.debug(f"Creating calculation node '{name}' with '{calculation_name}' calculation.")
-        return CalculationNode(name, inputs, calculation_instance)
+
+        return CalculationNode(name, inputs, calculation_instance, **node_kwargs)
 
     @classmethod
     def create_forecast_node(

@@ -14,7 +14,6 @@ from fin_statement_model.core.node_factory import NodeFactory
 from fin_statement_model.core.nodes import (
     Node,
     FinancialStatementItemNode,
-    FormulaCalculationNode,
     CalculationNode,
 )
 from fin_statement_model.core.errors import (
@@ -276,7 +275,7 @@ class Graph:
         If `node_name` is None, uses `metric_name` as the node name.
 
         Uses the metric registry to load inputs and formula, creates a
-        FormulaCalculationNode directly, registers it, and stores metric
+        calculation node using the formula strategy, registers it, and stores metric
         metadata on the node itself.
 
         Args:
@@ -287,7 +286,7 @@ class Graph:
                 If None, assumes graph node names match metric input variable names.
 
         Returns:
-            The created FormulaCalculationNode.
+            The created calculation node.
 
         Raises:
             TypeError: If node_name is invalid.
@@ -315,8 +314,11 @@ class Graph:
         formula = metric_def.formula
         description = metric_def.description
 
-        resolved_inputs: dict[str, Node] = {}
+        # Build list of input node names and formula variable names
+        input_node_names: list[str] = []
+        formula_variable_names: list[str] = []
         missing = []
+
         for req_input_name in required_inputs:
             # Determine the actual graph node name to look for
             target_node_name = req_input_name  # Default case
@@ -327,13 +329,12 @@ class Graph:
                 missing.append(f"{req_input_name} (mapping missing in input_node_map)")
                 continue  # Skip trying to find the node
 
-            # Find the node in the graph using the target name
-            nd = self._nodes.get(target_node_name)
-            if nd is None:
+            # Check if the node exists in the graph
+            if target_node_name not in self._nodes:
                 missing.append(target_node_name)  # Report the name we looked for
             else:
-                # Use the required metric input name as the key for the Formula node inputs
-                resolved_inputs[req_input_name] = nd
+                input_node_names.append(target_node_name)
+                formula_variable_names.append(req_input_name)  # Use the metric's variable name
 
         if missing:
             raise NodeError(
@@ -341,34 +342,28 @@ class Graph:
                 node_id=node_name,
             )
 
-        # Create FormulaCalculationNode directly
+        # Create calculation node using add_calculation
         try:
-            new_node = FormulaCalculationNode(
+            new_node = self.add_calculation(
                 name=node_name,
-                inputs=resolved_inputs,
+                input_names=input_node_names,
+                operation_type="formula",
+                formula_variable_names=formula_variable_names,
                 formula=formula,
-                metric_name=metric_name,  # Store original metric key
-                metric_description=description,  # Store description
+                metric_name=metric_name,  # Pass metric metadata
+                metric_description=description,  # Pass metric description
             )
-        except (
-            ValueError,
-            TypeError,
-        ) as e:  # Catch potential FormulaCalculationNode init errors
+        except Exception as e:
             logger.exception(
-                f"Failed to instantiate FormulaCalculationNode for metric '{metric_name}' as node '{node_name}'"
+                f"Failed to create calculation node for metric '{metric_name}' as node '{node_name}'"
             )
             # Re-raise as ConfigurationError or keep original, depending on desired error reporting
             raise ConfigurationError(f"Error creating node for metric '{metric_name}': {e}") from e
 
-        # Register the new node using the graph's add_node method
-        # (Assuming add_node handles potential overwrites and adds to self._nodes)
-        self.manipulator.add_node(new_node)
-        # self._metric_names.add(node_name) # Removed - no longer tracking separately
-
         logger.info(
-            f"Added metric '{metric_name}' as FormulaCalculationNode '{node_name}' with inputs {list(resolved_inputs)}"
+            f"Added metric '{metric_name}' as calculation node '{node_name}' with inputs {input_node_names}"
         )
-        return new_node  # Return the created FormulaCalculationNode
+        return new_node
 
     def add_custom_calculation(
         self,

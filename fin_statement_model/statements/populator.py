@@ -2,13 +2,20 @@
 
 This module provides the function `populate_graph_from_statement`, which is
 responsible for translating the calculation logic defined within a
-`StatementStructure` (specifically `CalculatedLineItem` and `SubtotalLineItem`)
-into actual calculation nodes within a `Graph` instance. It bridges the gap
-between the static definition of a statement and the dynamic calculation graph.
+`StatementStructure` (specifically `CalculatedLineItem`, `SubtotalLineItem`,
+and `MetricLineItem`) into actual calculation nodes within a `Graph` instance.
+
+Key Concepts:
+- **ID Resolution**: Statement configurations use item IDs that must be resolved
+  to graph node IDs. This is handled by `_resolve_statement_input_to_graph_node_id`.
+- **Dependency Ordering**: Items may depend on other items. The populator handles
+  this by retrying failed items after successful ones, allowing dependencies to
+  be satisfied.
+- **Idempotency**: If a node already exists in the graph, it will be skipped.
 """
 
 import logging
-from typing import Union
+from typing import Union, Optional
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.errors import (
@@ -36,24 +43,93 @@ logger = logging.getLogger(__name__)
 __all__ = ["populate_graph_from_statement"]
 
 
+def _resolve_statement_input_to_graph_node_id(
+    item_id_from_config: str, statement: StatementStructure, graph: Graph
+) -> Optional[str]:
+    """Resolve a statement item ID to its corresponding graph node ID.
+
+    This helper function centralizes the logic for mapping item IDs from statement
+    configurations (as found in calculation inputs or metric input mappings) to
+    actual graph node IDs. This is necessary because:
+
+    1. **LineItems** have a separate `node_id` property that differs from their `id`
+    2. **Calculated/Subtotal/MetricLineItems** use their `id` as the node ID
+    3. Some nodes may exist directly in the graph without being statement items
+
+    Resolution Process:
+    1. First, search for the item in the statement structure
+    2. If found as a LineItem, return its `node_id` property
+    3. If found as a CalculatedLineItem/SubtotalLineItem/MetricLineItem, return its `id`
+    4. If not found in statement, check if it exists directly in the graph
+    5. Return None if not found anywhere
+
+    Args:
+        item_id_from_config: The item ID as specified in the statement configuration.
+                            This is typically what appears in YAML/JSON configs.
+        statement: The StatementStructure containing the item definitions.
+        graph: The Graph instance to check for existing nodes.
+
+    Returns:
+        The resolved graph node ID if found, None otherwise.
+
+    Example:
+        >>> # Given a LineItem with id='revenue_item' and node_id='revenue_node'
+        >>> # And a CalculatedLineItem with id='gross_profit'
+        >>> _resolve_statement_input_to_graph_node_id('revenue_item', statement, graph)
+        'revenue_node'  # Returns the node_id property
+        >>> _resolve_statement_input_to_graph_node_id('gross_profit', statement, graph)
+        'gross_profit'  # Returns the id itself
+    """
+    # First, try to find the item in the statement structure
+    found_item = statement.find_item_by_id(item_id_from_config)
+
+    if found_item:
+        if isinstance(found_item, LineItem):
+            # For basic LineItems, use the node_id property
+            return found_item.node_id
+        elif isinstance(found_item, CalculatedLineItem | SubtotalLineItem | MetricLineItem):
+            # For calculated/subtotal/metric items, the item ID itself is the node ID
+            return found_item.id
+
+    # If not found as a statement item, check if it exists directly in the graph
+    elif graph.has_node(item_id_from_config):
+        return item_id_from_config
+
+    # Not found in statement or graph
+    return None
+
+
 def populate_graph_from_statement(
     statement: StatementStructure, graph: Graph
 ) -> list[tuple[str, str]]:
     """Add calculation nodes defined in a StatementStructure to a Graph.
 
-    Iterates through `CalculatedLineItem` and `SubtotalLineItem` instances
-    found within the provided `statement` structure. For each item, it attempts
-    to add a corresponding calculation node to the `graph` using the
-    `graph.add_calculation` method. This method implicitly handles dependency
-    checking and cycle detection within the graph.
+    This function bridges the gap between static statement definitions and the
+    dynamic calculation graph. It processes three types of items:
 
-    This function is designed to be idempotent: if a node corresponding to a
-    statement item already exists in the graph, it will be skipped.
+    1. **CalculatedLineItem**: Creates calculation nodes with specified operations
+    2. **SubtotalLineItem**: Creates addition nodes that sum multiple items
+    3. **MetricLineItem**: Creates metric-based calculation nodes
+
+    ID Resolution Logic:
+    - Input IDs in statement configurations are resolved to graph node IDs using
+      `_resolve_statement_input_to_graph_node_id`
+    - This handles the mapping between statement item IDs and actual graph nodes
+    - Resolution accounts for LineItem.node_id vs other items using their ID directly
+
+    Dependency Handling:
+    - Items may depend on other items that haven't been created yet
+    - The function uses a retry mechanism: failed items are retried after
+      successful ones, allowing dependencies to be resolved
+    - Circular dependencies are detected and reported as errors
+
+    Idempotency:
+    - If a node already exists in the graph, it will be skipped
+    - This allows the function to be called multiple times safely
 
     Args:
         statement: The `StatementStructure` object containing the definitions
-            of calculated items and subtotals (e.g., built by
-            `StatementStructureBuilder`).
+            of calculated items, subtotals, and metrics.
         graph: The `core.graph.Graph` instance that will be populated with
             the calculation nodes.
 
@@ -69,21 +145,30 @@ def populate_graph_from_statement(
 
     Example:
         >>> from fin_statement_model.core.graph import Graph
-        >>> from fin_statement_model.statements.structure import StatementStructure # and items
-        >>> # Assume 'my_statement' is a valid StatementStructure instance
-        >>> # Assume 'my_graph' is a Graph, potentially with data nodes
-        >>> my_graph = Graph()
-        >>> my_statement = StatementStructure(id="IS", name="Income Statement")
-        >>> # ... add sections and items to my_statement ...
-        >>> # Example item: CalculatedLineItem(id="gross_profit", ..., calculation=...)
+        >>> from fin_statement_model.statements.structure import StatementStructure
         >>>
-        >>> errors = populate_graph_from_statement(my_statement, my_graph)
-        >>> if errors:
-        ...     # Example of handling errors - use logging in real code
-        ...     logger.warning(f"Errors encountered during population: {errors}")
-        ... else:
-        ...     logger.info("Graph populated successfully.")
-        >>> # 'my_graph' now contains a calculation node for 'gross_profit' (if defined)
+        >>> # Create graph with data nodes
+        >>> graph = Graph()
+        >>> graph.add_node('revenue_node', values={'2023': 1000})
+        >>> graph.add_node('cogs_node', values={'2023': 600})
+        >>>
+        >>> # Create statement with calculations
+        >>> statement = StatementStructure(id="IS", name="Income Statement")
+        >>> # Add a LineItem that maps to 'revenue_node'
+        >>> revenue_item = LineItem(id='revenue', name='Revenue', node_id='revenue_node')
+        >>> # Add a CalculatedLineItem that references the LineItem
+        >>> gross_profit = CalculatedLineItem(
+        ...     id='gross_profit',
+        ...     name='Gross Profit',
+        ...     calculation_type='subtraction',
+        ...     input_ids=['revenue', 'cogs']  # Uses LineItem IDs
+        ... )
+        >>>
+        >>> errors = populate_graph_from_statement(statement, graph)
+        >>> # The function will:
+        >>> # 1. Resolve 'revenue' to 'revenue_node' via LineItem.node_id
+        >>> # 2. Resolve 'cogs' to 'cogs_node' (if it exists in statement or graph)
+        >>> # 3. Create a calculation node 'gross_profit' with the resolved inputs
     """
     if not isinstance(statement, StatementStructure):
         raise TypeError("statement must be a StatementStructure instance")
@@ -107,7 +192,41 @@ def populate_graph_from_statement(
         item: Union[CalculatedLineItem, SubtotalLineItem, MetricLineItem],
         is_retry: bool = False,
     ) -> bool:  # Update Union
-        """Process a single calculation/subtotal/metric item. Return True if successful, False otherwise."""
+        """Process a single calculation/subtotal/metric item and add it to the graph.
+
+        This internal function handles the creation of a single calculation node,
+        including ID resolution and error handling. It's designed to be called
+        multiple times as part of the dependency resolution mechanism.
+
+        Processing Logic:
+        1. Check if node already exists (idempotency check)
+        2. Based on item type, resolve input IDs to graph node IDs
+        3. Attempt to create the calculation node
+        4. Handle missing dependencies gracefully (allows retry)
+
+        ID Resolution:
+        - Uses `_resolve_statement_input_to_graph_node_id` for all input IDs
+        - Handles the mapping from statement item IDs to graph node IDs
+        - Tracks missing inputs for detailed error reporting
+
+        Error Handling:
+        - Missing inputs on first pass: Returns False without logging errors
+        - Missing inputs on retry: Logs errors and adds to error list
+        - Other errors: Always logged immediately
+
+        Args:
+            item: The statement item to process (CalculatedLineItem, SubtotalLineItem,
+                  or MetricLineItem)
+            is_retry: Whether this is a retry attempt. Affects error logging behavior.
+
+        Returns:
+            True if the node was successfully added or already exists, False otherwise.
+
+        Side Effects:
+            - May add a node to the graph
+            - May append to errors_encountered list
+            - Increments nodes_added_count on success
+        """
         nonlocal nodes_added_count  # Allow modification of outer scope variable
         item_id = item.id
         success = False  # Initialize success flag
@@ -144,7 +263,7 @@ def populate_graph_from_statement(
                     item_input_map = item.inputs  # Mapping: metric_input_name -> statement_item_id
 
                     resolved_node_ids_map: dict[str, str] = {}
-                    missing_metric_input_details = []
+                    missing_metric_input_details: list[tuple[str, Optional[str]]] = []
 
                     # Verify item_input_map provides all required metric inputs
                     provided_metric_inputs = set(item_input_map.keys())
@@ -166,43 +285,20 @@ def populate_graph_from_statement(
                             input_map_value = item_input_map[
                                 metric_input_name
                             ]  # ID from the YAML mapping value
-                            target_node_id = None
 
-                            # 1. Check if the mapping value refers to another statement item ID
-                            found_item = statement.find_item_by_id(input_map_value)
-                            if found_item:
-                                if isinstance(
-                                    found_item, CalculatedLineItem | MetricLineItem
-                                ):  # Includes Subtotal
-                                    target_node_id = (
-                                        found_item.id
-                                    )  # The item ID itself is the node ID
-                                elif isinstance(found_item, LineItem):
-                                    target_node_id = (
-                                        found_item.node_id
-                                    )  # Map to the underlying node_id
+                            # Use the helper function to resolve the node ID
+                            target_node_id = _resolve_statement_input_to_graph_node_id(
+                                input_map_value, statement, graph
+                            )
 
-                            # 2. If not found as a statement item, check if it's a direct graph node ID
-                            elif graph.has_node(input_map_value):
-                                target_node_id = input_map_value  # The mapping value IS the node ID
-
-                            # 3. Now check if the resolved target_node_id exists and add it
-                            if target_node_id:
-                                if graph.has_node(target_node_id):
-                                    # Map metric input name -> resolved graph node name
-                                    resolved_node_ids_map[metric_input_name] = target_node_id
-                                else:
-                                    # The target node (either from item.node_id or direct mapping) doesn't exist in the graph
-                                    missing_metric_input_details.append(
-                                        (input_map_value, target_node_id)
-                                    )
+                            if target_node_id and graph.has_node(target_node_id):
+                                # Map metric input name -> resolved graph node name
+                                resolved_node_ids_map[metric_input_name] = target_node_id
                             else:
-                                # The input_map_value wasn't found as a statement item OR a direct graph node
-                                logger.error(
-                                    f"Mapped input '{input_map_value}' (for metric input '{metric_input_name}') "
-                                    f"required by metric item '{item.id}' could not be resolved to a statement item or a graph node in statement '{statement.id}'."
+                                # The target node doesn't exist in the graph
+                                missing_metric_input_details.append(
+                                    (input_map_value, target_node_id)
                                 )
-                                missing_metric_input_details.append((input_map_value, None))
 
                         if missing_metric_input_details:
                             missing_summary = [
@@ -246,16 +342,15 @@ def populate_graph_from_statement(
                 params = item.parameters
 
                 resolved_node_ids = []
-                missing_input_details = []  # Store tuples of (item_id, node_id)
+                missing_input_details: list[
+                    tuple[str, Optional[str]]
+                ] = []  # Store tuples of (item_id, node_id)
 
                 for input_item_id in input_item_ids:
-                    found_item = statement.find_item_by_id(input_item_id)
-                    target_node_id = None
-                    if found_item:
-                        if isinstance(found_item, CalculatedLineItem):  # Includes SubtotalLineItem
-                            target_node_id = found_item.id
-                        elif isinstance(found_item, LineItem):
-                            target_node_id = found_item.node_id
+                    # Use the helper function to resolve the node ID
+                    target_node_id = _resolve_statement_input_to_graph_node_id(
+                        input_item_id, statement, graph
+                    )
 
                     if target_node_id:
                         if graph.has_node(target_node_id):
@@ -312,18 +407,13 @@ def populate_graph_from_statement(
                     action_taken = True
                 else:
                     resolved_node_ids_sub = []
-                    missing_input_details_sub = []
+                    missing_input_details_sub: list[tuple[str, Optional[str]]] = []
 
                     for input_item_id_sub in input_item_ids:
-                        found_item_sub = statement.find_item_by_id(input_item_id_sub)
-                        target_node_id_sub = None
-                        if found_item_sub:
-                            if isinstance(
-                                found_item_sub, CalculatedLineItem
-                            ):  # Includes SubtotalLineItem
-                                target_node_id_sub = found_item_sub.id
-                            elif isinstance(found_item_sub, LineItem):
-                                target_node_id_sub = found_item_sub.node_id
+                        # Use the helper function to resolve the node ID
+                        target_node_id_sub = _resolve_statement_input_to_graph_node_id(
+                            input_item_id_sub, statement, graph
+                        )
 
                         if target_node_id_sub:
                             if graph.has_node(target_node_id_sub):

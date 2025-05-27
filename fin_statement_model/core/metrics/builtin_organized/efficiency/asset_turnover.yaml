@@ -1,120 +1,125 @@
----
-# Efficiency - Asset Turnover
-# Efficiency metrics: asset_turnover
-
-# Metric definition for Asset Turnover
-
-name: Asset Turnover
-description: Measures how efficiently a company uses its assets to generate revenue. Higher ratios indicate better asset utilization.
-inputs:
+- name: Asset Turnover
+  description: Measures how efficiently a company uses its assets to generate revenue. Higher ratios indicate better asset
+    utilization.
+  inputs:
   - revenue
   - total_assets
-formula: "revenue / total_assets"
-tags: [efficiency, asset_utilization, operational_efficiency, turnover]
-units: times
-category: efficiency
-related_metrics: [fixed_asset_turnover, working_capital_turnover, return_on_assets]
-interpretation:
-  good_range: [0.8, 2.0]
-  warning_below: 0.4
-  warning_above: null
-  excellent_above: 1.5
-  poor_below: 0.2
-  notes: |
-    - Below 0.2: Very poor asset utilization, potential operational issues
-    - 0.2-0.4: Low efficiency, may indicate asset-heavy business or underutilization
-    - 0.4-0.8: Adequate efficiency for many capital-intensive industries
-    - 0.8-2.0: Good to strong asset utilization, efficient operations
-    - Above 2.0: Excellent efficiency, very effective asset use
-    - Highly industry-dependent - capital-intensive industries typically lower
-    - Asset-light businesses (services, retail) typically higher
-    - Component of ROA analysis (ROA = Net Margin × Asset Turnover)
-    - Consider using average assets for more accurate calculation
-    - Declining turnover may indicate overinvestment or operational issues 
-# Metric definition for Fixed Asset Turnover
-
-name: Fixed Asset Turnover
-description: Measures revenue generated per dollar of fixed assets. Shows efficiency of property, plant, and equipment utilization.
-inputs:
+  formula: revenue / total_assets
+  tags:
+  - efficiency
+  - asset_utilization
+  - operational_efficiency
+  - turnover
+  units: times
+  category: efficiency
+  related_metrics:
+  - fixed_asset_turnover
+  - working_capital_turnover
+  - return_on_assets
+  interpretation:
+    good_range:
+    - 0.8
+    - 2.0
+    warning_below: 0.4
+    warning_above: null
+    excellent_above: 1.5
+    poor_below: 0.2
+    notes: "- Below 0.2: Very poor asset utilization, potential operational issues\n- 0.2-0.4: Low efficiency, may indicate\
+      \ asset-heavy business or underutilization\n- 0.4-0.8: Adequate efficiency for many capital-intensive industries\n-\
+      \ 0.8-2.0: Good to strong asset utilization, efficient operations\n- Above 2.0: Excellent efficiency, very effective\
+      \ asset use\n- Highly industry-dependent - capital-intensive industries typically lower\n- Asset-light businesses (services,\
+      \ retail) typically higher\n- Component of ROA analysis (ROA = Net Margin × Asset Turnover)\n- Consider using average\
+      \ assets for more accurate calculation\n- Declining turnover may indicate overinvestment or operational issues \n"
+- name: Fixed Asset Turnover
+  description: Measures revenue generated per dollar of fixed assets. Shows efficiency of property, plant, and equipment utilization.
+  inputs:
   - revenue
   - property_plant_equipment
-formula: "revenue / property_plant_equipment"
-tags: [efficiency, asset_utilization, fixed_asset_productivity, capital_efficiency]
-units: times
-category: efficiency
-related_metrics: [asset_turnover, working_capital_turnover, return_on_assets]
-interpretation:
-  good_range: [2.0, 6.0]
-  warning_below: 1.0
-  warning_above: null
-  excellent_above: 4.0
-  poor_below: 0.5
-  notes: |
-    - Below 0.5: Very poor fixed asset utilization, potential overcapacity
-    - 0.5-1.0: Low efficiency, underutilized fixed assets
-    - 1.0-2.0: Adequate efficiency for capital-intensive industries
-    - 2.0-6.0: Good to strong fixed asset productivity
-    - Above 6.0: Excellent efficiency, very effective asset use
-    - Highly industry-dependent - manufacturing typically lower than services
-    - Consider asset age and depreciation policies
-    - Low turnover may indicate recent large capex or overcapacity
-    - High turnover may indicate efficient operations or aging assets
-    - Use gross PP&E for more consistent comparison across companies 
-# Metric definition for Working Capital Turnover
-
-name: Working Capital Turnover
-description: Measures revenue generated per dollar of working capital. Shows efficiency of working capital utilization.
-inputs:
+  formula: revenue / property_plant_equipment
+  tags:
+  - efficiency
+  - asset_utilization
+  - fixed_asset_productivity
+  - capital_efficiency
+  units: times
+  category: efficiency
+  related_metrics:
+  - asset_turnover
+  - working_capital_turnover
+  - return_on_assets
+  interpretation:
+    good_range:
+    - 2.0
+    - 6.0
+    warning_below: 1.0
+    warning_above: null
+    excellent_above: 4.0
+    poor_below: 0.5
+    notes: "- Below 0.5: Very poor fixed asset utilization, potential overcapacity\n- 0.5-1.0: Low efficiency, underutilized\
+      \ fixed assets\n- 1.0-2.0: Adequate efficiency for capital-intensive industries\n- 2.0-6.0: Good to strong fixed asset\
+      \ productivity\n- Above 6.0: Excellent efficiency, very effective asset use\n- Highly industry-dependent - manufacturing\
+      \ typically lower than services\n- Consider asset age and depreciation policies\n- Low turnover may indicate recent\
+      \ large capex or overcapacity\n- High turnover may indicate efficient operations or aging assets\n- Use gross PP&E for\
+      \ more consistent comparison across companies \n"
+- name: Working Capital Turnover
+  description: Measures revenue generated per dollar of working capital. Shows efficiency of working capital utilization.
+  inputs:
   - revenue
   - working_capital
-formula: "revenue / working_capital"
-tags: [efficiency, working_capital_management, capital_utilization, turnover]
-units: times
-category: efficiency
-related_metrics: [asset_turnover, cash_conversion_cycle, current_ratio]
-interpretation:
-  good_range: [4.0, 12.0]
-  warning_below: 2.0
-  warning_above: null
-  excellent_above: 8.0
-  poor_below: 1.0
-  notes: |
-    - Below 1.0: Very poor working capital efficiency
-    - 1.0-2.0: Low efficiency, excessive working capital investment
-    - 2.0-4.0: Adequate efficiency for many industries
-    - 4.0-12.0: Good to strong working capital utilization
-    - Above 12.0: Excellent efficiency, very effective working capital management
-    - Higher ratios indicate more efficient working capital use
-    - Negative working capital creates undefined ratio (handle separately)
-    - Consider alongside cash conversion cycle for complete picture
-    - Industry-dependent - retailers typically higher than manufacturers
-    - Monitor trends - improving efficiency indicates better management 
-# Metric definition for Capital Intensity
-
-name: Capital Intensity
-description: Measures assets required per dollar of revenue. Shows capital requirements for business operations.
-inputs:
+  formula: revenue / working_capital
+  tags:
+  - efficiency
+  - working_capital_management
+  - capital_utilization
+  - turnover
+  units: times
+  category: efficiency
+  related_metrics:
+  - asset_turnover
+  - cash_conversion_cycle
+  - current_ratio
+  interpretation:
+    good_range:
+    - 4.0
+    - 12.0
+    warning_below: 2.0
+    warning_above: null
+    excellent_above: 8.0
+    poor_below: 1.0
+    notes: "- Below 1.0: Very poor working capital efficiency\n- 1.0-2.0: Low efficiency, excessive working capital investment\n\
+      - 2.0-4.0: Adequate efficiency for many industries\n- 4.0-12.0: Good to strong working capital utilization\n- Above\
+      \ 12.0: Excellent efficiency, very effective working capital management\n- Higher ratios indicate more efficient working\
+      \ capital use\n- Negative working capital creates undefined ratio (handle separately)\n- Consider alongside cash conversion\
+      \ cycle for complete picture\n- Industry-dependent - retailers typically higher than manufacturers\n- Monitor trends\
+      \ - improving efficiency indicates better management \n"
+- name: Capital Intensity
+  description: Measures assets required per dollar of revenue. Shows capital requirements for business operations.
+  inputs:
   - total_assets
   - revenue
-formula: "total_assets / revenue"
-tags: [efficiency, capital_requirements, asset_intensity, business_model]
-units: ratio
-category: efficiency
-related_metrics: [asset_turnover, fixed_asset_turnover, working_capital_turnover]
-interpretation:
-  good_range: [0.5, 2.0]
-  warning_below: null
-  warning_above: 4.0
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Below 0.5: Very low capital intensity, asset-light business model
-    - 0.5-2.0: Moderate capital intensity, balanced business model
-    - 2.0-4.0: High capital intensity, asset-heavy operations
-    - Above 4.0: Very high capital intensity, significant asset requirements
-    - Inverse of asset turnover ratio
-    - Lower ratios generally indicate more efficient business models
-    - Industry-dependent - utilities much higher than software companies
-    - Consider asset age and depreciation policies
-    - High intensity may indicate barriers to entry but lower returns
-    - Useful for comparing business model efficiency across companies 
+  formula: total_assets / revenue
+  tags:
+  - efficiency
+  - capital_requirements
+  - asset_intensity
+  - business_model
+  units: ratio
+  category: efficiency
+  related_metrics:
+  - asset_turnover
+  - fixed_asset_turnover
+  - working_capital_turnover
+  interpretation:
+    good_range:
+    - 0.5
+    - 2.0
+    warning_below: null
+    warning_above: 4.0
+    excellent_above: null
+    poor_below: null
+    notes: "- Below 0.5: Very low capital intensity, asset-light business model\n- 0.5-2.0: Moderate capital intensity, balanced\
+      \ business model\n- 2.0-4.0: High capital intensity, asset-heavy operations\n- Above 4.0: Very high capital intensity,\
+      \ significant asset requirements\n- Inverse of asset turnover ratio\n- Lower ratios generally indicate more efficient\
+      \ business models\n- Industry-dependent - utilities much higher than software companies\n- Consider asset age and depreciation\
+      \ policies\n- High intensity may indicate barriers to entry but lower returns\n- Useful for comparing business model\
+      \ efficiency across companies \n"

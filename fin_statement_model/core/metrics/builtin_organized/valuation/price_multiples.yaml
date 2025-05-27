@@ -1,120 +1,126 @@
----
-# Valuation - Price Multiples
-# Valuation metrics: price_multiples
-
-# Metric definition for Price-to-Earnings Ratio
-
-name: Price-to-Earnings Ratio
-description: Measures the price investors are willing to pay per dollar of earnings. Key valuation metric for equity analysis.
-inputs:
+- name: Price-to-Earnings Ratio
+  description: Measures the price investors are willing to pay per dollar of earnings. Key valuation metric for equity analysis.
+  inputs:
   - market_price
   - earnings_per_share
-formula: "market_price / earnings_per_share"
-tags: [valuation, market_multiple, equity_analysis, investor_sentiment]
-units: times
-category: valuation
-related_metrics: [price_to_book_ratio, ev_ebitda, earnings_yield]
-interpretation:
-  good_range: [12.0, 25.0]
-  warning_below: 5.0
-  warning_above: 40.0
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Below 5x: May indicate undervaluation or fundamental problems
-    - 5-12x: Low valuation, potential value opportunity or concerns
-    - 12-25x: Reasonable valuation for most mature companies
-    - 25-40x: High valuation, requires strong growth to justify
-    - Above 40x: Very high valuation, speculative or high-growth expectations
-    - Market's assessment of company's earnings quality and growth prospects
-    - Compare to industry peers and historical averages
-    - Consider growth rate (PEG ratio) for growth companies
-    - Meaningless for companies with negative earnings
-    - Forward P/E often more relevant than trailing P/E 
-# Metric definition for Price-to-Book Ratio
-
-name: Price-to-Book Ratio
-description: Measures market price relative to book value per share. Shows market premium or discount to accounting value.
-inputs:
+  formula: market_price / earnings_per_share
+  tags:
+  - valuation
+  - market_multiple
+  - equity_analysis
+  - investor_sentiment
+  units: times
+  category: valuation
+  related_metrics:
+  - price_to_book_ratio
+  - ev_ebitda
+  - earnings_yield
+  interpretation:
+    good_range:
+    - 12.0
+    - 25.0
+    warning_below: 5.0
+    warning_above: 40.0
+    excellent_above: null
+    poor_below: null
+    notes: "- Below 5x: May indicate undervaluation or fundamental problems\n- 5-12x: Low valuation, potential value opportunity\
+      \ or concerns\n- 12-25x: Reasonable valuation for most mature companies\n- 25-40x: High valuation, requires strong growth\
+      \ to justify\n- Above 40x: Very high valuation, speculative or high-growth expectations\n- Market's assessment of company's\
+      \ earnings quality and growth prospects\n- Compare to industry peers and historical averages\n- Consider growth rate\
+      \ (PEG ratio) for growth companies\n- Meaningless for companies with negative earnings\n- Forward P/E often more relevant\
+      \ than trailing P/E \n"
+- name: Price-to-Book Ratio
+  description: Measures market price relative to book value per share. Shows market premium or discount to accounting value.
+  inputs:
   - market_price
   - book_value_per_share
-formula: "market_price / book_value_per_share"
-tags: [valuation, market_multiple, book_value, asset_valuation]
-units: times
-category: valuation
-related_metrics: [price_to_earnings_ratio, tangible_book_value_per_share, return_on_equity]
-interpretation:
-  good_range: [1.0, 3.0]
-  warning_below: 0.5
-  warning_above: 5.0
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Below 0.5: Significant discount to book value, potential distress or undervaluation
-    - 0.5-1.0: Trading below book value, value opportunity or fundamental issues
-    - 1.0-3.0: Reasonable valuation relative to book value
-    - 3.0-5.0: Premium valuation, requires strong ROE or growth
-    - Above 5.0: High premium, speculative or exceptional franchise value
-    - More relevant for asset-heavy businesses with tangible book value
-    - Consider ROE - high P/B justified by high returns on equity
-    - Less meaningful for asset-light businesses with significant intangibles
-    - Compare to industry peers and historical averages
-    - Tangible book value may be more relevant than total book value 
-# Metric definition for Price-to-Sales Ratio
-
-name: Price-to-Sales Ratio
-description: Measures market capitalization relative to revenue. Useful for valuing companies with volatile or negative earnings.
-inputs:
+  formula: market_price / book_value_per_share
+  tags:
+  - valuation
+  - market_multiple
+  - book_value
+  - asset_valuation
+  units: times
+  category: valuation
+  related_metrics:
+  - price_to_earnings_ratio
+  - tangible_book_value_per_share
+  - return_on_equity
+  interpretation:
+    good_range:
+    - 1.0
+    - 3.0
+    warning_below: 0.5
+    warning_above: 5.0
+    excellent_above: null
+    poor_below: null
+    notes: "- Below 0.5: Significant discount to book value, potential distress or undervaluation\n- 0.5-1.0: Trading below\
+      \ book value, value opportunity or fundamental issues\n- 1.0-3.0: Reasonable valuation relative to book value\n- 3.0-5.0:\
+      \ Premium valuation, requires strong ROE or growth\n- Above 5.0: High premium, speculative or exceptional franchise\
+      \ value\n- More relevant for asset-heavy businesses with tangible book value\n- Consider ROE - high P/B justified by\
+      \ high returns on equity\n- Less meaningful for asset-light businesses with significant intangibles\n- Compare to industry\
+      \ peers and historical averages\n- Tangible book value may be more relevant than total book value \n"
+- name: Price-to-Sales Ratio
+  description: Measures market capitalization relative to revenue. Useful for valuing companies with volatile or negative
+    earnings.
+  inputs:
   - market_cap
   - revenue
-formula: "market_cap / revenue"
-tags: [valuation, market_multiple, revenue_multiple, growth_valuation]
-units: times
-category: valuation
-related_metrics: [price_to_earnings_ratio, ev_sales, net_profit_margin]
-interpretation:
-  good_range: [1.0, 5.0]
-  warning_below: 0.5
-  warning_above: 10.0
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Below 0.5: Very low revenue multiple, potential distress or deep value
-    - 0.5-1.0: Low valuation, value opportunity or cyclical low
-    - 1.0-5.0: Reasonable revenue multiple for most industries
-    - 5.0-10.0: High revenue multiple, requires strong margins or growth
-    - Above 10.0: Very high multiple, speculative or exceptional growth expectations
-    - Useful when earnings are volatile, negative, or non-meaningful
-    - Must consider profit margins - high P/S acceptable with high margins
-    - More relevant for growth companies and asset-light businesses
-    - Industry-dependent - software/tech typically higher than manufacturing
-    - Compare to EV/Sales for capital structure neutral analysis 
-# Metric definition for Book-to-Market Ratio
-
-name: Book-to-Market Ratio
-description: Inverse of Price-to-Book ratio, showing book value relative to market price. Higher values indicate potential value opportunities.
-inputs:
+  formula: market_cap / revenue
+  tags:
+  - valuation
+  - market_multiple
+  - revenue_multiple
+  - growth_valuation
+  units: times
+  category: valuation
+  related_metrics:
+  - price_to_earnings_ratio
+  - ev_sales
+  - net_profit_margin
+  interpretation:
+    good_range:
+    - 1.0
+    - 5.0
+    warning_below: 0.5
+    warning_above: 10.0
+    excellent_above: null
+    poor_below: null
+    notes: "- Below 0.5: Very low revenue multiple, potential distress or deep value\n- 0.5-1.0: Low valuation, value opportunity\
+      \ or cyclical low\n- 1.0-5.0: Reasonable revenue multiple for most industries\n- 5.0-10.0: High revenue multiple, requires\
+      \ strong margins or growth\n- Above 10.0: Very high multiple, speculative or exceptional growth expectations\n- Useful\
+      \ when earnings are volatile, negative, or non-meaningful\n- Must consider profit margins - high P/S acceptable with\
+      \ high margins\n- More relevant for growth companies and asset-light businesses\n- Industry-dependent - software/tech\
+      \ typically higher than manufacturing\n- Compare to EV/Sales for capital structure neutral analysis \n"
+- name: Book-to-Market Ratio
+  description: Inverse of Price-to-Book ratio, showing book value relative to market price. Higher values indicate potential
+    value opportunities.
+  inputs:
   - book_value_per_share
   - market_price
-formula: "book_value_per_share / market_price"
-tags: [valuation, value_investing, book_value, market_discount]
-units: ratio
-category: valuation
-related_metrics: [price_to_book_ratio, return_on_equity, tangible_book_value_per_share]
-interpretation:
-  good_range: [0.3, 1.0]
-  warning_below: 0.2
-  warning_above: 2.0
-  excellent_above: 0.8
-  poor_below: 0.1
-  notes: |
-    - Below 0.1: Very low book-to-market, significant premium to book value
-    - 0.1-0.2: Low ratio, trading at high premium to book value
-    - 0.2-0.3: Below average, moderate premium to book value
-    - 0.3-1.0: Reasonable to attractive book-to-market ratio
-    - Above 2.0: Very high ratio, trading below book value (potential distress)
-    - Higher ratios indicate potential value opportunities
-    - Inverse of P/B ratio - useful for value investing screens
-    - Consider asset quality and ROE when interpreting
-    - More relevant for asset-heavy businesses
-    - Values above 1.0 indicate trading below book value 
+  formula: book_value_per_share / market_price
+  tags:
+  - valuation
+  - value_investing
+  - book_value
+  - market_discount
+  units: ratio
+  category: valuation
+  related_metrics:
+  - price_to_book_ratio
+  - return_on_equity
+  - tangible_book_value_per_share
+  interpretation:
+    good_range:
+    - 0.3
+    - 1.0
+    warning_below: 0.2
+    warning_above: 2.0
+    excellent_above: 0.8
+    poor_below: 0.1
+    notes: "- Below 0.1: Very low book-to-market, significant premium to book value\n- 0.1-0.2: Low ratio, trading at high\
+      \ premium to book value\n- 0.2-0.3: Below average, moderate premium to book value\n- 0.3-1.0: Reasonable to attractive\
+      \ book-to-market ratio\n- Above 2.0: Very high ratio, trading below book value (potential distress)\n- Higher ratios\
+      \ indicate potential value opportunities\n- Inverse of P/B ratio - useful for value investing screens\n- Consider asset\
+      \ quality and ROE when interpreting\n- More relevant for asset-heavy businesses\n- Values above 1.0 indicate trading\
+      \ below book value \n"

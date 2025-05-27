@@ -72,7 +72,7 @@ trim_trailing_whitespace = true
 # Type checking
 [mypy]
 # See [tool.mypy] in pyproject.toml for configuration
-python_version = 3.9
+python_version = 3.12
 strict = true
 warn_unused_ignores = true
 warn_redundant_casts = true

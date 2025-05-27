@@ -1,118 +1,127 @@
----
-# Profitability - Margins
-# Profitability metrics: margins
-
-# Metric definition for Gross Profit Margin
-
-name: Gross Profit Margin
-description: Measures profitability after direct costs as a percentage of revenue. Shows pricing power and cost control effectiveness.
-inputs:
+- name: Gross Profit Margin
+  description: Measures profitability after direct costs as a percentage of revenue. Shows pricing power and cost control
+    effectiveness.
+  inputs:
   - gross_profit
   - revenue
-formula: "gross_profit / revenue * 100"
-tags: [profitability, margin_analysis, pricing_power, cost_control]
-units: percentage
-category: profitability
-related_metrics: [operating_profit_margin, net_profit_margin, ebitda_margin]
-interpretation:
-  good_range: [25.0, 60.0]
-  warning_below: 15.0
-  warning_above: null
-  excellent_above: 50.0
-  poor_below: 10.0
-  notes: |
-    - Below 10%: Very low margins, potential pricing or cost issues
-    - 10-15%: Low margins, requires high volume or cost reduction
-    - 15-25%: Adequate margins for many industries, room for improvement
-    - 25-60%: Good to strong margins, indicates pricing power or efficiency
-    - Above 60%: Excellent margins, strong competitive position
-    - Highly industry-dependent - compare to sector benchmarks
-    - Declining margins may indicate competitive pressure or rising costs
-    - Stable or improving margins suggest good operational control
-    - Consider alongside volume trends for complete picture 
-# Metric definition for Operating Profit Margin
-
-name: Operating Profit Margin
-description: Measures profitability from core operations as a percentage of revenue. Shows operational efficiency after all operating expenses.
-inputs:
+  formula: gross_profit / revenue * 100
+  tags:
+  - profitability
+  - margin_analysis
+  - pricing_power
+  - cost_control
+  units: percentage
+  category: profitability
+  related_metrics:
+  - operating_profit_margin
+  - net_profit_margin
+  - ebitda_margin
+  interpretation:
+    good_range:
+    - 25.0
+    - 60.0
+    warning_below: 15.0
+    warning_above: null
+    excellent_above: 50.0
+    poor_below: 10.0
+    notes: "- Below 10%: Very low margins, potential pricing or cost issues\n- 10-15%: Low margins, requires high volume or\
+      \ cost reduction\n- 15-25%: Adequate margins for many industries, room for improvement\n- 25-60%: Good to strong margins,\
+      \ indicates pricing power or efficiency\n- Above 60%: Excellent margins, strong competitive position\n- Highly industry-dependent\
+      \ - compare to sector benchmarks\n- Declining margins may indicate competitive pressure or rising costs\n- Stable or\
+      \ improving margins suggest good operational control\n- Consider alongside volume trends for complete picture \n"
+- name: Operating Profit Margin
+  description: Measures profitability from core operations as a percentage of revenue. Shows operational efficiency after
+    all operating expenses.
+  inputs:
   - operating_income
   - revenue
-formula: "operating_income / revenue * 100"
-tags: [profitability, operational_efficiency, margin_analysis, core_operations]
-units: percentage
-category: profitability
-related_metrics: [gross_profit_margin, ebitda_margin, net_profit_margin]
-interpretation:
-  good_range: [10.0, 25.0]
-  warning_below: 5.0
-  warning_above: null
-  excellent_above: 20.0
-  poor_below: 2.0
-  notes: |
-    - Below 2%: Very poor operational efficiency, potential business model issues
-    - 2-5%: Low operational margins, requires cost control or revenue growth
-    - 5-10%: Adequate margins for many industries, room for improvement
-    - 10-25%: Good to strong operational efficiency
-    - Above 25%: Excellent operational margins, strong competitive position
-    - More comprehensive than gross margin as it includes all operating costs
-    - Shows management's ability to control operating expenses
-    - Industry-dependent but generally more comparable across sectors than gross margin
-    - Declining margins may indicate operational challenges or competitive pressure 
-# Metric definition for EBITDA Margin
-
-name: EBITDA Margin
-description: Measures cash operating profitability as a percentage of revenue. Shows operational efficiency before capital allocation decisions.
-inputs:
+  formula: operating_income / revenue * 100
+  tags:
+  - profitability
+  - operational_efficiency
+  - margin_analysis
+  - core_operations
+  units: percentage
+  category: profitability
+  related_metrics:
+  - gross_profit_margin
+  - ebitda_margin
+  - net_profit_margin
+  interpretation:
+    good_range:
+    - 10.0
+    - 25.0
+    warning_below: 5.0
+    warning_above: null
+    excellent_above: 20.0
+    poor_below: 2.0
+    notes: "- Below 2%: Very poor operational efficiency, potential business model issues\n- 2-5%: Low operational margins,\
+      \ requires cost control or revenue growth\n- 5-10%: Adequate margins for many industries, room for improvement\n- 10-25%:\
+      \ Good to strong operational efficiency\n- Above 25%: Excellent operational margins, strong competitive position\n-\
+      \ More comprehensive than gross margin as it includes all operating costs\n- Shows management's ability to control operating\
+      \ expenses\n- Industry-dependent but generally more comparable across sectors than gross margin\n- Declining margins\
+      \ may indicate operational challenges or competitive pressure \n"
+- name: EBITDA Margin
+  description: Measures cash operating profitability as a percentage of revenue. Shows operational efficiency before capital
+    allocation decisions.
+  inputs:
   - ebitda
   - revenue
-formula: "ebitda / revenue * 100"
-tags: [profitability, cash_profitability, operational_efficiency, margin_analysis]
-units: percentage
-category: profitability
-related_metrics: [operating_profit_margin, gross_profit_margin, net_profit_margin]
-interpretation:
-  good_range: [15.0, 30.0]
-  warning_below: 8.0
-  warning_above: null
-  excellent_above: 25.0
-  poor_below: 5.0
-  notes: |
-    - Below 5%: Very poor cash generation, potential operational issues
-    - 5-8%: Low cash margins, requires operational improvements
-    - 8-15%: Adequate cash generation for many industries
-    - 15-30%: Good to strong cash profitability, healthy operations
-    - Above 30%: Excellent cash margins, strong operational efficiency
-    - Better proxy for cash generation than operating margin
-    - Useful for capital-intensive businesses with high D&A
-    - Excludes impact of capital allocation and financing decisions
-    - Industry-dependent - compare to sector benchmarks
-    - Consider sustainability and quality of EBITDA components 
-# Metric definition for Net Profit Margin
-
-name: Net Profit Margin
-description: Measures bottom-line profitability as a percentage of revenue. Shows overall efficiency after all expenses including interest and taxes.
-inputs:
+  formula: ebitda / revenue * 100
+  tags:
+  - profitability
+  - cash_profitability
+  - operational_efficiency
+  - margin_analysis
+  units: percentage
+  category: profitability
+  related_metrics:
+  - operating_profit_margin
+  - gross_profit_margin
+  - net_profit_margin
+  interpretation:
+    good_range:
+    - 15.0
+    - 30.0
+    warning_below: 8.0
+    warning_above: null
+    excellent_above: 25.0
+    poor_below: 5.0
+    notes: "- Below 5%: Very poor cash generation, potential operational issues\n- 5-8%: Low cash margins, requires operational\
+      \ improvements\n- 8-15%: Adequate cash generation for many industries\n- 15-30%: Good to strong cash profitability,\
+      \ healthy operations\n- Above 30%: Excellent cash margins, strong operational efficiency\n- Better proxy for cash generation\
+      \ than operating margin\n- Useful for capital-intensive businesses with high D&A\n- Excludes impact of capital allocation\
+      \ and financing decisions\n- Industry-dependent - compare to sector benchmarks\n- Consider sustainability and quality\
+      \ of EBITDA components \n"
+- name: Net Profit Margin
+  description: Measures bottom-line profitability as a percentage of revenue. Shows overall efficiency after all expenses
+    including interest and taxes.
+  inputs:
   - net_income
   - revenue
-formula: "net_income / revenue * 100"
-tags: [profitability, bottom_line, overall_efficiency, margin_analysis]
-units: percentage
-category: profitability
-related_metrics: [gross_profit_margin, operating_profit_margin, ebitda_margin]
-interpretation:
-  good_range: [5.0, 15.0]
-  warning_below: 2.0
-  warning_above: null
-  excellent_above: 12.0
-  poor_below: 0.0
-  notes: |
-    - Below 0%: Company is operating at a loss, unsustainable long-term
-    - 0-2%: Very thin margins, vulnerable to economic downturns
-    - 2-5%: Low but acceptable margins for many industries
-    - 5-15%: Good to strong profitability, healthy business model
-    - Above 15%: Excellent margins, strong competitive position
-    - Ultimate measure of profitability after all costs
-    - Most comprehensive margin metric for overall performance assessment
-    - Consider quality of earnings - one-time items can distort this metric
-    - Compare to industry benchmarks and historical performance
-    - Sustainable positive margins essential for long-term viability 
+  formula: net_income / revenue * 100
+  tags:
+  - profitability
+  - bottom_line
+  - overall_efficiency
+  - margin_analysis
+  units: percentage
+  category: profitability
+  related_metrics:
+  - gross_profit_margin
+  - operating_profit_margin
+  - ebitda_margin
+  interpretation:
+    good_range:
+    - 5.0
+    - 15.0
+    warning_below: 2.0
+    warning_above: null
+    excellent_above: 12.0
+    poor_below: 0.0
+    notes: "- Below 0%: Company is operating at a loss, unsustainable long-term\n- 0-2%: Very thin margins, vulnerable to\
+      \ economic downturns\n- 2-5%: Low but acceptable margins for many industries\n- 5-15%: Good to strong profitability,\
+      \ healthy business model\n- Above 15%: Excellent margins, strong competitive position\n- Ultimate measure of profitability\
+      \ after all costs\n- Most comprehensive margin metric for overall performance assessment\n- Consider quality of earnings\
+      \ - one-time items can distort this metric\n- Compare to industry benchmarks and historical performance\n- Sustainable\
+      \ positive margins essential for long-term viability \n"

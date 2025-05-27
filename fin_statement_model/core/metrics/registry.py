@@ -47,8 +47,9 @@ class MetricRegistry:
         """Load all metric definitions from a directory.
 
         This method searches for '*.yaml' files, validates their content,
-        and stores them in the registry. Each YAML file can contain multiple
-        metric definitions.
+        and stores them in the registry. Each YAML file can contain either:
+        - A single metric definition (a YAML dictionary at the root)
+        - A list of metric definitions (a YAML list of dictionaries at the root)
 
         Args:
             directory_path: Path to the directory containing metric YAML files.
@@ -84,50 +85,52 @@ class MetricRegistry:
                 with open(filepath, encoding="utf-8") as f:
                     content = f.read()
 
-                # Split content by metric definitions (look for "name:" at start of line)
-                # This handles files with multiple metric definitions
-                metric_sections = []
-                current_section = []
+                # Use standard YAML parsing
+                try:
+                    data = yaml.safe_load(content)
+                except yaml.YAMLError as e:
+                    logger.warning(f"Failed to parse YAML file {filepath}: {e}")
+                    continue
 
-                for line in content.split("\n"):
-                    # Check if this line starts a new metric definition
-                    if line.strip().startswith("name:") and current_section:
-                        # Save the previous section
-                        if current_section:
-                            metric_sections.append("\n".join(current_section))
-                        current_section = [line]
-                    else:
-                        current_section.append(line)
+                if not data:
+                    logger.debug(f"Empty or null content in {filepath}, skipping")
+                    continue
 
-                # Don't forget the last section
-                if current_section:
-                    metric_sections.append("\n".join(current_section))
+                # Handle both single metric and list of metrics
+                metrics_to_process = []
 
-                # Process each metric section
-                for i, section in enumerate(metric_sections):
-                    # Skip empty sections or sections that are just comments
-                    if not section.strip() or not any(
-                        line.strip().startswith("name:") for line in section.split("\n")
-                    ):
+                if isinstance(data, dict):
+                    # Single metric definition
+                    metrics_to_process = [data]
+                elif isinstance(data, list):
+                    # List of metric definitions
+                    metrics_to_process = data
+                else:
+                    logger.warning(
+                        f"Invalid YAML structure in {filepath}: "
+                        f"expected dict or list, got {type(data).__name__}"
+                    )
+                    continue
+
+                # Process each metric definition
+                for i, metric_data in enumerate(metrics_to_process):
+                    if not isinstance(metric_data, dict):
+                        logger.warning(
+                            f"Invalid metric definition at index {i} in {filepath}: "
+                            f"expected dict, got {type(metric_data).__name__}"
+                        )
                         continue
 
                     try:
-                        config_data = yaml.safe_load(section)
-                        if not config_data or not isinstance(config_data, dict):
-                            continue
-
                         # Validate and register the metric
-                        model = MetricDefinition.model_validate(config_data)
+                        model = MetricDefinition.model_validate(metric_data)
                         self.register_definition(model)
                         loaded_count += 1
                         logger.debug(f"Successfully loaded metric '{model.name}' from {filepath}")
 
-                    except yaml.YAMLError as e:
-                        logger.warning(f"Failed to parse metric section {i + 1} in {filepath}: {e}")
-                        continue
                     except ValidationError as ve:
                         logger.warning(
-                            f"Invalid metric definition in section {i + 1} of {filepath}: {ve}"
+                            f"Invalid metric definition at index {i} in {filepath}: {ve}"
                         )
                         continue
 

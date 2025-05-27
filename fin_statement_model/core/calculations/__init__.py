@@ -13,6 +13,7 @@ from .calculation import (
     DivisionCalculation,
     WeightedAverageCalculation,
     CustomFormulaCalculation,
+    FormulaCalculation,
 )
 from .registry import Registry
 
@@ -23,12 +24,14 @@ Registry.register(MultiplicationCalculation)
 Registry.register(DivisionCalculation)
 Registry.register(WeightedAverageCalculation)
 Registry.register(CustomFormulaCalculation)
+Registry.register(FormulaCalculation)
 
 __all__ = [
     "AdditionCalculation",
     "Calculation",
     "CustomFormulaCalculation",
     "DivisionCalculation",
+    "FormulaCalculation",
     "MultiplicationCalculation",
     "Registry",
     "SubtractionCalculation",

@@ -1,123 +1,130 @@
----
-# Coverage - Debt Service
-# Coverage metrics: debt_service
-
-# Metric definition for Debt Service Coverage Ratio
-
-name: Debt Service Coverage Ratio
-description: Measures cash available for debt service including both interest and principal payments. Critical metric for credit analysis.
-inputs:
+- name: Debt Service Coverage Ratio
+  description: Measures cash available for debt service including both interest and principal payments. Critical metric for
+    credit analysis.
+  inputs:
   - operating_cash_flow
   - interest_expense
-  # Note: principal_repayments not yet in standard nodes - may need to be added or estimated
-formula: "operating_cash_flow / (interest_expense + 0)"  # Simplified until principal_repayments available
-tags: [coverage, debt_service, credit_risk, cash_flow_coverage]
-units: times
-category: coverage
-related_metrics: [times_interest_earned, ebitda_interest_coverage, cash_flow_coverage]
-interpretation:
-  good_range: [1.5, 3.0]
-  warning_below: 1.2
-  warning_above: null
-  excellent_above: 2.5
-  poor_below: 1.0
-  notes: |
-    - Below 1.0: Insufficient cash to cover debt service, default risk
-    - 1.0-1.2: Tight coverage, vulnerable to cash flow volatility
-    - 1.2-1.5: Adequate coverage for stable businesses
-    - 1.5-3.0: Good to strong debt service coverage
-    - Above 3.0: Very strong coverage, low default risk
-    - Most comprehensive debt coverage metric
-    - Critical for loan covenant compliance
-    - Formula currently simplified - needs principal_repayments node
-    - Consider using free cash flow for more conservative measure
-    - Lenders typically require minimum DSCR of 1.2-1.25x 
-# Metric definition for Cash Flow Coverage
-
-name: Cash Flow Coverage
-description: Measures operating cash flow relative to total debt. Shows ability to service debt from actual cash generation.
-inputs:
+  formula: operating_cash_flow / (interest_expense + 0)
+  tags:
+  - coverage
+  - debt_service
+  - credit_risk
+  - cash_flow_coverage
+  units: times
+  category: coverage
+  related_metrics:
+  - times_interest_earned
+  - ebitda_interest_coverage
+  - cash_flow_coverage
+  interpretation:
+    good_range:
+    - 1.5
+    - 3.0
+    warning_below: 1.2
+    warning_above: null
+    excellent_above: 2.5
+    poor_below: 1.0
+    notes: "- Below 1.0: Insufficient cash to cover debt service, default risk\n- 1.0-1.2: Tight coverage, vulnerable to cash\
+      \ flow volatility\n- 1.2-1.5: Adequate coverage for stable businesses\n- 1.5-3.0: Good to strong debt service coverage\n\
+      - Above 3.0: Very strong coverage, low default risk\n- Most comprehensive debt coverage metric\n- Critical for loan\
+      \ covenant compliance\n- Formula currently simplified - needs principal_repayments node\n- Consider using free cash\
+      \ flow for more conservative measure\n- Lenders typically require minimum DSCR of 1.2-1.25x \n"
+- name: Cash Flow Coverage
+  description: Measures operating cash flow relative to total debt. Shows ability to service debt from actual cash generation.
+  inputs:
   - operating_cash_flow
   - total_debt
-formula: "operating_cash_flow / total_debt"
-tags: [coverage, cash_flow, debt_service, credit_risk, liquidity]
-units: ratio
-category: coverage
-related_metrics: [debt_service_coverage_ratio, free_cash_flow_to_debt, operating_cash_flow_ratio]
-interpretation:
-  good_range: [0.20, 0.50]
-  warning_below: 0.10
-  warning_above: null
-  excellent_above: 0.40
-  poor_below: 0.05
-  notes: |
-    - Below 5%: Very poor cash generation relative to debt burden
-    - 5-10%: Low cash coverage, potential debt service issues
-    - 10-20%: Adequate cash coverage for stable businesses
-    - 20-50%: Good to strong cash coverage, comfortable debt service
-    - Above 50%: Excellent cash generation, very low debt risk
-    - Shows percentage of debt that could be repaid from one year's OCF
-    - More reliable than earnings-based coverage ratios
-    - Consider cash flow volatility and seasonality
-    - Use trailing twelve months OCF for better representation
-    - Critical metric for credit analysis and debt capacity assessment 
-# Metric definition for Free Cash Flow to Debt
-
-name: Free Cash Flow to Debt
-description: Measures free cash flow available for debt repayment after necessary capital investments. Conservative debt coverage metric.
-inputs:
+  formula: operating_cash_flow / total_debt
+  tags:
+  - coverage
+  - cash_flow
+  - debt_service
+  - credit_risk
+  - liquidity
+  units: ratio
+  category: coverage
+  related_metrics:
+  - debt_service_coverage_ratio
+  - free_cash_flow_to_debt
+  - operating_cash_flow_ratio
+  interpretation:
+    good_range:
+    - 0.2
+    - 0.5
+    warning_below: 0.1
+    warning_above: null
+    excellent_above: 0.4
+    poor_below: 0.05
+    notes: "- Below 5%: Very poor cash generation relative to debt burden\n- 5-10%: Low cash coverage, potential debt service\
+      \ issues\n- 10-20%: Adequate cash coverage for stable businesses\n- 20-50%: Good to strong cash coverage, comfortable\
+      \ debt service\n- Above 50%: Excellent cash generation, very low debt risk\n- Shows percentage of debt that could be\
+      \ repaid from one year's OCF\n- More reliable than earnings-based coverage ratios\n- Consider cash flow volatility and\
+      \ seasonality\n- Use trailing twelve months OCF for better representation\n- Critical metric for credit analysis and\
+      \ debt capacity assessment \n"
+- name: Free Cash Flow to Debt
+  description: Measures free cash flow available for debt repayment after necessary capital investments. Conservative debt
+    coverage metric.
+  inputs:
   - free_cash_flow
   - total_debt
-formula: "free_cash_flow / total_debt"
-tags: [coverage, free_cash_flow, debt_repayment, financial_flexibility, credit_risk]
-units: ratio
-category: coverage
-related_metrics: [cash_flow_coverage, debt_service_coverage_ratio, free_cash_flow_margin]
-interpretation:
-  good_range: [0.15, 0.40]
-  warning_below: 0.05
-  warning_above: null
-  excellent_above: 0.30
-  poor_below: 0.00
-  notes: |
-    - Below 0%: Negative FCF, no cash available for debt repayment
-    - 0-5%: Very low FCF coverage, limited debt repayment capacity
-    - 5-15%: Adequate FCF coverage for stable businesses
-    - 15-40%: Good to strong FCF coverage, healthy debt repayment ability
-    - Above 40%: Excellent FCF generation, very strong debt coverage
-    - Most conservative debt coverage metric as it accounts for capex
-    - Shows cash available for debt service, dividends, and acquisitions
-    - Critical for assessing financial flexibility and debt capacity
-    - Negative FCF may be acceptable for high-growth companies
-    - Consider maintenance vs. growth capex when interpreting 
-# Metric definition for Asset Coverage Ratio
-
-name: Asset Coverage Ratio
-description: Measures tangible assets available to cover debt after paying current liabilities. Shows asset-based debt security.
-inputs:
+  formula: free_cash_flow / total_debt
+  tags:
+  - coverage
+  - free_cash_flow
+  - debt_repayment
+  - financial_flexibility
+  - credit_risk
+  units: ratio
+  category: coverage
+  related_metrics:
+  - cash_flow_coverage
+  - debt_service_coverage_ratio
+  - free_cash_flow_margin
+  interpretation:
+    good_range:
+    - 0.15
+    - 0.4
+    warning_below: 0.05
+    warning_above: null
+    excellent_above: 0.3
+    poor_below: 0.0
+    notes: "- Below 0%: Negative FCF, no cash available for debt repayment\n- 0-5%: Very low FCF coverage, limited debt repayment\
+      \ capacity\n- 5-15%: Adequate FCF coverage for stable businesses\n- 15-40%: Good to strong FCF coverage, healthy debt\
+      \ repayment ability\n- Above 40%: Excellent FCF generation, very strong debt coverage\n- Most conservative debt coverage\
+      \ metric as it accounts for capex\n- Shows cash available for debt service, dividends, and acquisitions\n- Critical\
+      \ for assessing financial flexibility and debt capacity\n- Negative FCF may be acceptable for high-growth companies\n\
+      - Consider maintenance vs. growth capex when interpreting \n"
+- name: Asset Coverage Ratio
+  description: Measures tangible assets available to cover debt after paying current liabilities. Shows asset-based debt security.
+  inputs:
   - total_assets
   - current_liabilities
   - intangible_assets
   - total_debt
-formula: "(total_assets - current_liabilities - intangible_assets) / total_debt"
-tags: [coverage, asset_security, tangible_assets, debt_protection, solvency]
-units: times
-category: coverage
-related_metrics: [debt_to_assets_ratio, tangible_book_value, financial_leverage_ratio]
-interpretation:
-  good_range: [1.5, 3.0]
-  warning_below: 1.0
-  warning_above: null
-  excellent_above: 2.5
-  poor_below: 0.8
-  notes: |
-    - Below 0.8: Insufficient tangible assets to cover debt
-    - 0.8-1.0: Minimal asset coverage, high liquidation risk
-    - 1.0-1.5: Adequate asset coverage for stable businesses
-    - 1.5-3.0: Good to strong asset coverage, secure debt position
-    - Above 3.0: Excellent asset coverage, very secure debt
-    - Shows dollars of tangible assets per dollar of debt
-    - Important for asset-based lending and secured debt analysis
-    - Excludes intangibles as they may have uncertain liquidation value
-    - Consider asset quality and marketability when interpreting
-    - More relevant for capital-intensive businesses with substantial fixed assets 
+  formula: (total_assets - current_liabilities - intangible_assets) / total_debt
+  tags:
+  - coverage
+  - asset_security
+  - tangible_assets
+  - debt_protection
+  - solvency
+  units: times
+  category: coverage
+  related_metrics:
+  - debt_to_assets_ratio
+  - tangible_book_value
+  - financial_leverage_ratio
+  interpretation:
+    good_range:
+    - 1.5
+    - 3.0
+    warning_below: 1.0
+    warning_above: null
+    excellent_above: 2.5
+    poor_below: 0.8
+    notes: "- Below 0.8: Insufficient tangible assets to cover debt\n- 0.8-1.0: Minimal asset coverage, high liquidation risk\n\
+      - 1.0-1.5: Adequate asset coverage for stable businesses\n- 1.5-3.0: Good to strong asset coverage, secure debt position\n\
+      - Above 3.0: Excellent asset coverage, very secure debt\n- Shows dollars of tangible assets per dollar of debt\n- Important\
+      \ for asset-based lending and secured debt analysis\n- Excludes intangibles as they may have uncertain liquidation value\n\
+      - Consider asset quality and marketability when interpreting\n- More relevant for capital-intensive businesses with\
+      \ substantial fixed assets \n"

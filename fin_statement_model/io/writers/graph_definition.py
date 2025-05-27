@@ -9,7 +9,15 @@ from fin_statement_model.core.nodes import (
     FinancialStatementItemNode,
     CalculationNode,
     FormulaCalculationNode,
-    # TODO: Add ForecastNode if/when it exists in core.nodes
+)
+from fin_statement_model.core.nodes.forecast_nodes import (
+    ForecastNode,
+    FixedGrowthForecastNode,
+    CurveGrowthForecastNode,
+    StatisticalGrowthForecastNode,
+    AverageValueForecastNode,
+    AverageHistoricalGrowthForecastNode,
+    CustomGrowthForecastNode,
 )
 from fin_statement_model.io.base import DataWriter
 from fin_statement_model.io.registry import register_writer
@@ -52,7 +60,7 @@ class GraphDefinitionWriter(DataWriter):
             node_def["inputs"] = node.get_dependencies()  # Store actual dependency names
             # Store the variable names used in the formula
             node_def["formula_variable_names"] = list(
-                node.inputs.keys()  # These are the variable names used in the formula
+                node.inputs_dict.keys()  # Use inputs_dict instead of inputs for FormulaCalculationNode
             )  # Store input names (which are keys in formula node)
             node_def["formula"] = node.formula
             # Include metric info if it's a metric node
@@ -75,6 +83,31 @@ class GraphDefinitionWriter(DataWriter):
                 type_key = inv_map.get(type(calc_instance).__name__)
                 if type_key:
                     node_def["calculation_type"] = type_key  # Save the type key
+
+                    # Extract calculation arguments based on the calculation type
+                    calculation_args = {}
+
+                    # WeightedAverageCalculation has weights attribute
+                    if type_key == "weighted_average" and hasattr(calc_instance, "weights"):
+                        calculation_args["weights"] = calc_instance.weights
+
+                    # FormulaCalculation has formula and input_variable_names
+                    elif type_key == "formula" and hasattr(calc_instance, "formula"):
+                        calculation_args["formula"] = calc_instance.formula
+                        if hasattr(calc_instance, "input_variable_names"):
+                            # Store input_variable_names at the node level for proper deserialization
+                            node_def["formula_variable_names"] = calc_instance.input_variable_names
+
+                    # CustomFormulaCalculation has formula_function (not easily serializable)
+                    elif type_key == "custom_formula":
+                        logger.warning(
+                            f"CustomFormulaCalculation for node '{node.name}' uses a Python function "
+                            "which cannot be serialized. This node will need manual reconstruction."
+                        )
+
+                    # Store calculation args if any were extracted
+                    if calculation_args:
+                        node_def["calculation_args"] = calculation_args
                 else:
                     logger.warning(
                         f"Could not find type key in NodeFactory._calculation_methods for calculation class {type(calc_instance).__name__}"
@@ -83,13 +116,44 @@ class GraphDefinitionWriter(DataWriter):
                 logger.warning(
                     f"CalculationNode '{node.name}' has no internal calculation instance to serialize type."
                 )
-        # TODO: Add elif for ForecastNode when defined
-        # elif isinstance(node, ForecastNode):
-        #     node_def["type"] = "forecast"
-        #     node_def["inputs"] = [n.name for n in node.inputs]
-        #     # Serialize forecast method key and config
-        #     node_def["forecast_method"] = ...
-        #     node_def["forecast_config"] = ...
+        elif isinstance(node, ForecastNode):
+            node_def["type"] = "forecast"
+            node_def["base_node_name"] = node.input_node.name
+            node_def["base_period"] = node.base_period
+            node_def["forecast_periods"] = node.forecast_periods
+
+            # Determine the forecast type based on the node class
+            if isinstance(node, FixedGrowthForecastNode):
+                node_def["forecast_type"] = "fixed"
+                node_def["growth_params"] = node.growth_rate
+            elif isinstance(node, CurveGrowthForecastNode):
+                node_def["forecast_type"] = "curve"
+                node_def["growth_params"] = node.growth_rates
+            elif isinstance(node, StatisticalGrowthForecastNode):
+                node_def["forecast_type"] = "statistical"
+                logger.warning(
+                    f"StatisticalGrowthForecastNode '{node.name}' uses a distribution callable "
+                    "which cannot be serialized. This node will need manual reconstruction."
+                )
+                # We can't serialize the callable, so we'll skip growth_params
+            elif isinstance(node, AverageValueForecastNode):
+                node_def["forecast_type"] = "average"
+                # No growth_params needed for average value
+            elif isinstance(node, AverageHistoricalGrowthForecastNode):
+                node_def["forecast_type"] = "historical_growth"
+                # No growth_params needed for historical growth
+            elif isinstance(node, CustomGrowthForecastNode):
+                node_def["forecast_type"] = "custom"
+                logger.warning(
+                    f"CustomGrowthForecastNode '{node.name}' uses a growth function "
+                    "which cannot be serialized. This node will need manual reconstruction."
+                )
+                # We can't serialize the callable, so we'll skip growth_params
+            else:
+                logger.warning(
+                    f"Unknown ForecastNode subclass '{type(node).__name__}' for node '{node.name}'. "
+                    "Using generic forecast serialization."
+                )
         else:
             logger.warning(
                 f"Node type '{type(node).__name__}' for node '{node.name}' is not explicitly handled by GraphDefinitionWriter. Skipping."

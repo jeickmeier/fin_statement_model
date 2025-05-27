@@ -29,9 +29,7 @@ from fin_statement_model.core.metrics import (
 )
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -56,9 +54,7 @@ def step_1_validate_node_names() -> dict[str, str]:
     ]
     print(f"Raw node names: {raw_banking_names}")
 
-    validator = NodeNameValidator(
-        auto_standardize=True, warn_on_non_standard=False
-    )  # Quieter
+    validator = NodeNameValidator(auto_standardize=True, warn_on_non_standard=False)  # Quieter
     validation_results = validator.validate_batch(raw_banking_names)
 
     standardized_mapping = {}
@@ -515,9 +511,7 @@ def explore_metrics_registry() -> None:
 
     # Show a few categories and their metric counts
     print("\nExample Metric Categories:")
-    all_categories = set(
-        metric_registry.get(m).category for m in metric_registry.list_metrics()
-    )
+    all_categories = set(metric_registry.get(m).category for m in metric_registry.list_metrics())
     for i, category in enumerate(sorted(list(all_categories))):
         if i < 5:  # Show first 5 categories as an example
             count = sum(
@@ -547,9 +541,7 @@ def explore_metrics_registry() -> None:
 def main() -> None:
     """Run the simplified banking graph analysis example."""
     print("SIMPLIFIED BANKING GRAPH ANALYSIS EXAMPLE")
-    print(
-        "Demonstrating core library features with banking data using statement functionality."
-    )
+    print("Demonstrating core library features with banking data using statement functionality.")
 
     # Step 1: Node name validation
     step_1_validate_node_names()
@@ -575,9 +567,7 @@ def main() -> None:
     print("=" * 60)
     print("\nKey Takeaways:")
     print("1. Node validation helps ensure data quality upfront.")
-    print(
-        "2. Graphs should be built using statement configurations for proper structure."
-    )
+    print("2. Graphs should be built using statement configurations for proper structure.")
     print("3. Statement functionality automatically handles calculation nodes.")
     print("4. Key financial metrics are easily calculated using the registry.")
     print("5. Metric interpretations provide quick insights (e.g., ratings).")

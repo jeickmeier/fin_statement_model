@@ -1,59 +1,62 @@
----
-# Credit_Risk - Warning Flags
-# Credit_Risk metrics: warning_flags
-
-# Metric definition for Interest Coverage Below 1.5x Flag
-
-name: Interest Coverage Below 1.5x Flag
-description: Binary flag indicating weak interest coverage below 1.5x threshold. Early warning indicator for financial distress.
-inputs:
+- name: Interest Coverage Below 1.5x Flag
+  description: Binary flag indicating weak interest coverage below 1.5x threshold. Early warning indicator for financial distress.
+  inputs:
   - ebit
   - interest_expense
-formula: "(ebit / interest_expense) < 1.5"
-tags: [credit_risk, early_warning, interest_coverage, financial_distress, binary_flag]
-units: boolean
-category: credit_risk
-related_metrics: [times_interest_earned, ebitda_interest_coverage, debt_service_coverage_ratio]
-interpretation:
-  good_range: [0, 0]
-  warning_below: null
-  warning_above: 0.5
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - 0 (False): Interest coverage above 1.5x, adequate coverage
-    - 1 (True): Interest coverage below 1.5x, warning signal
-    - Threshold of 1.5x is commonly used by credit analysts
-    - Coverage below 1.5x indicates potential difficulty servicing debt
-    - Should trigger deeper analysis of cash flows and debt structure
-    - Consider alongside other coverage ratios and cash flow metrics
-    - May indicate need for debt restructuring or additional equity
-    - Particularly concerning if trend is deteriorating
-    - Industry context important - some sectors naturally have lower coverage 
-# Metric definition for Negative Working Capital Flag
-
-name: Negative Working Capital Flag
-description: Binary flag indicating negative working capital. Potential liquidity stress indicator requiring analysis.
-inputs:
+  formula: (ebit / interest_expense) < 1.5
+  tags:
+  - credit_risk
+  - early_warning
+  - interest_coverage
+  - financial_distress
+  - binary_flag
+  units: boolean
+  category: credit_risk
+  related_metrics:
+  - times_interest_earned
+  - ebitda_interest_coverage
+  - debt_service_coverage_ratio
+  interpretation:
+    good_range:
+    - 0
+    - 0
+    warning_below: null
+    warning_above: 0.5
+    excellent_above: null
+    poor_below: null
+    notes: "- 0 (False): Interest coverage above 1.5x, adequate coverage\n- 1 (True): Interest coverage below 1.5x, warning\
+      \ signal\n- Threshold of 1.5x is commonly used by credit analysts\n- Coverage below 1.5x indicates potential difficulty\
+      \ servicing debt\n- Should trigger deeper analysis of cash flows and debt structure\n- Consider alongside other coverage\
+      \ ratios and cash flow metrics\n- May indicate need for debt restructuring or additional equity\n- Particularly concerning\
+      \ if trend is deteriorating\n- Industry context important - some sectors naturally have lower coverage \n"
+- name: Negative Working Capital Flag
+  description: Binary flag indicating negative working capital. Potential liquidity stress indicator requiring analysis.
+  inputs:
   - working_capital
-formula: "working_capital < 0"
-tags: [credit_risk, liquidity_stress, working_capital, early_warning, binary_flag]
-units: boolean
-category: credit_risk
-related_metrics: [current_ratio, quick_ratio, working_capital_turnover]
-interpretation:
-  good_range: [0, 0]
-  warning_below: null
-  warning_above: 0.5
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - 0 (False): Positive working capital, normal liquidity position
-    - 1 (True): Negative working capital, potential liquidity concern
-    - Negative working capital means current liabilities exceed current assets
-    - May indicate liquidity stress or efficient working capital management
-    - Context matters - some business models operate with negative working capital
-    - Retailers and service companies may have sustainable negative working capital
-    - Consider cash conversion cycle and operating cash flow trends
-    - Concerning if combined with declining cash flows or tight credit
-    - Monitor trends - improving vs. deteriorating working capital position 
+  formula: working_capital < 0
+  tags:
+  - credit_risk
+  - liquidity_stress
+  - working_capital
+  - early_warning
+  - binary_flag
+  units: boolean
+  category: credit_risk
+  related_metrics:
+  - current_ratio
+  - quick_ratio
+  - working_capital_turnover
+  interpretation:
+    good_range:
+    - 0
+    - 0
+    warning_below: null
+    warning_above: 0.5
+    excellent_above: null
+    poor_below: null
+    notes: "- 0 (False): Positive working capital, normal liquidity position\n- 1 (True): Negative working capital, potential\
+      \ liquidity concern\n- Negative working capital means current liabilities exceed current assets\n- May indicate liquidity\
+      \ stress or efficient working capital management\n- Context matters - some business models operate with negative working\
+      \ capital\n- Retailers and service companies may have sustainable negative working capital\n- Consider cash conversion\
+      \ cycle and operating cash flow trends\n- Concerning if combined with declining cash flows or tight credit\n- Monitor\
+      \ trends - improving vs. deteriorating working capital position \n"

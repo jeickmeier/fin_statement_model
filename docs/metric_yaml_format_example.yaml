@@ -1,0 +1,36 @@
+# Example of metric YAML file formats supported by MetricRegistry
+# Both single metric and list of metrics formats are supported
+
+# Format 1: Single metric definition (root is a dictionary)
+---
+name: Example Single Metric
+description: This file contains a single metric definition at the root level
+inputs:
+  - revenue
+  - expenses
+formula: revenue - expenses
+tags: [example, single]
+units: currency
+category: example
+
+# Format 2: List of metric definitions (save as separate file)
+# ---
+# - name: First Metric
+#   description: First metric in a list
+#   inputs:
+#     - input_a
+#     - input_b
+#   formula: input_a + input_b
+#   tags: [example, list]
+#   units: ratio
+#   category: example
+#
+# - name: Second Metric
+#   description: Second metric in a list
+#   inputs:
+#     - input_c
+#     - input_d
+#   formula: input_c / input_d
+#   tags: [example, list]
+#   units: percentage
+#   category: example 

@@ -6,202 +6,14 @@ This module defines the different types of calculation nodes available in the sy
 - CustomCalculationNode: Calculates using a Python callable/function
 """
 
-import ast
-import operator
-from typing import Optional, ClassVar
+from typing import Optional, Any
 from collections.abc import Callable
 
-from fin_statement_model.core.calculations.calculation import Calculation
+from fin_statement_model.core.calculations.calculation import Calculation, FormulaCalculation
 from fin_statement_model.core.errors import (
     CalculationError,
 )
 from fin_statement_model.core.nodes.base import Node
-
-# === FormulaCalculationNode ===
-
-
-class FormulaCalculationNode(Node):
-    """Calculate a value based on a mathematical formula string.
-
-    Parses and evaluates simple mathematical expressions involving input nodes.
-    Supports basic arithmetic operators (+, -, *, /) and unary negation.
-
-    Attributes:
-        name (str): Identifier for this node.
-        inputs (Dict[str, Node]): Mapping of variable names used in the formula
-            to their corresponding input Node instances.
-        formula (str): The mathematical expression string to evaluate (e.g., "a + b").
-        metric_name (Optional[str]): The original metric identifier from the registry, if applicable.
-        metric_description (Optional[str]): The description from the metric definition, if applicable.
-        _ast (ast.Expression): The parsed Abstract Syntax Tree of the formula.
-
-    Examples:
-        >>> # Assume revenue and cogs are Node instances
-        >>> revenue = FinancialStatementItemNode("revenue", {"2023": 100})
-        >>> cogs = FinancialStatementItemNode("cogs", {"2023": 60})
-        >>> gross_profit = FormulaCalculationNode(
-        ...     "gross_profit",
-        ...     inputs={"rev": revenue, "cost": cogs},
-        ...     formula="rev - cost"
-        ... )
-        >>> print(gross_profit.calculate("2023"))
-        40.0
-    """
-
-    # Supported AST operators mapping to Python operator functions
-    OPERATORS: ClassVar[dict[type, Callable]] = {
-        ast.Add: operator.add,
-        ast.Sub: operator.sub,
-        ast.Mult: operator.mul,
-        ast.Div: operator.truediv,
-        ast.USub: operator.neg,
-    }
-
-    def __init__(
-        self,
-        name: str,
-        inputs: dict[str, Node],
-        formula: str,
-        metric_name: Optional[str] = None,
-        metric_description: Optional[str] = None,
-    ):
-        """Initialize the FormulaCalculationNode.
-
-        Args:
-            name (str): The unique identifier for this node.
-            inputs (Dict[str, Node]): Dictionary mapping variable names in the
-                formula to the corresponding input nodes.
-            formula (str): The mathematical formula string.
-            metric_name (Optional[str]): The original metric identifier from the
-                registry, if this node represents a defined metric. Defaults to None.
-            metric_description (Optional[str]): The description from the metric
-                definition, if applicable. Defaults to None.
-
-        Raises:
-            ValueError: If the formula string has invalid syntax.
-            TypeError: If any value in `inputs` is not a Node instance.
-        """
-        super().__init__(name)
-        if not isinstance(inputs, dict) or not all(isinstance(n, Node) for n in inputs.values()):
-            raise TypeError("FormulaCalculationNode inputs must be a dict of Node instances.")
-        self.inputs = inputs
-        self.formula = formula
-        self.metric_name = metric_name
-        self.metric_description = metric_description
-        try:
-            # Parse the formula string into an AST expression
-            self._ast = ast.parse(formula, mode="eval").body
-        except SyntaxError as e:
-            raise ValueError(f"Invalid formula syntax for node '{name}': {formula}") from e
-
-    def calculate(self, period: str) -> float:
-        """Calculate the node's value for a period by evaluating the formula.
-
-        Args:
-            period (str): The time period for which to perform the calculation.
-
-        Returns:
-            float: The result of the formula evaluation.
-
-        Raises:
-            CalculationError: If an error occurs during evaluation, such as
-                an unknown variable, unsupported operator, or if an input node
-                fails to provide a numeric value for the period.
-        """
-        try:
-            return self._evaluate(self._ast, period)
-        except (ValueError, TypeError, KeyError, ZeroDivisionError) as e:
-            raise CalculationError(
-                message=f"Error evaluating formula for node '{self.name}'",
-                node_id=self.name,
-                period=period,
-                details={"formula": self.formula, "error": str(e)},
-            ) from e
-
-    def _evaluate(self, node: ast.AST, period: str) -> float:
-        """Recursively evaluate the parsed AST node for the formula.
-
-        Args:
-            node (ast.AST): The current AST node to evaluate.
-            period (str): The time period context for the evaluation.
-
-        Returns:
-            float: The result of evaluating the AST node.
-
-        Raises:
-            TypeError: If a non-numeric constant or input node value is encountered.
-            ValueError: If an unknown variable or unsupported operator/syntax is found.
-            ZeroDivisionError: If division by zero occurs.
-        """
-        # Numeric literal (Constant in Python 3.8+, Num in earlier versions)
-        if isinstance(node, ast.Constant):
-            if isinstance(node.value, int | float):
-                return float(node.value)
-            else:
-                raise TypeError(
-                    f"Unsupported constant type '{type(node.value).__name__}' in formula for node '{self.name}'"
-                )
-
-        # Variable reference
-        elif isinstance(node, ast.Name):
-            var_name = node.id
-            if var_name not in self.inputs:
-                raise ValueError(
-                    f"Unknown variable '{var_name}' in formula for node '{self.name}'. Available: {list(self.inputs.keys())}"
-                )
-            input_node = self.inputs[var_name]
-            # Recursively calculate the value of the input node
-            value = input_node.calculate(period)
-            if not isinstance(value, int | float):
-                raise TypeError(
-                    f"Input node '{input_node.name}' (variable '{var_name}') did not return a numeric value for period '{period}'"
-                )
-            return float(value)
-
-        # Binary operation (e.g., a + b)
-        elif isinstance(node, ast.BinOp):
-            left_val = self._evaluate(node.left, period)
-            right_val = self._evaluate(node.right, period)
-            op_type = type(node.op)
-            if op_type not in self.OPERATORS:
-                raise ValueError(
-                    f"Unsupported binary operator '{op_type.__name__}' in formula for node '{self.name}'"
-                )
-            # Perform the operation
-            return float(self.OPERATORS[op_type](left_val, right_val))
-
-        # Unary operation (e.g., -a)
-        elif isinstance(node, ast.UnaryOp):
-            operand_val = self._evaluate(node.operand, period)
-            op_type = type(node.op)
-            if op_type not in self.OPERATORS:
-                raise ValueError(
-                    f"Unsupported unary operator '{op_type.__name__}' in formula for node '{self.name}'"
-                )
-            # Perform the operation
-            return float(self.OPERATORS[op_type](operand_val))
-
-        # If the node type is unsupported
-        else:
-            raise TypeError(
-                f"Unsupported syntax node type '{type(node).__name__}' in formula for node '{self.name}': {ast.dump(node)}"
-            )
-
-    def get_dependencies(self) -> list[str]:
-        """Return the names of input nodes used in the formula.
-
-        Returns:
-            A list of variable names corresponding to the formula inputs.
-        """
-        return [node.name for node in self.inputs.values()]
-
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs calculation.
-
-        Returns:
-            True, as FormulaCalculationNode performs calculations.
-        """
-        return True
 
 
 # === CalculationNode ===
@@ -235,7 +47,7 @@ class CalculationNode(Node):
         30.0
     """
 
-    def __init__(self, name: str, inputs: list[Node], calculation: Calculation):
+    def __init__(self, name: str, inputs: list[Node], calculation: Calculation, **kwargs: Any):
         """Initialize the CalculationNode.
 
         Args:
@@ -243,6 +55,7 @@ class CalculationNode(Node):
             inputs (List[Node]): List of input nodes needed by the calculation.
             calculation (Any): The calculation object implementing the calculation.
                 Must have a `calculate` method.
+            **kwargs: Additional attributes to store on the node (e.g., metric_name, metric_description).
 
         Raises:
             TypeError: If `inputs` is not a list of Nodes, or if `calculation`
@@ -257,6 +70,10 @@ class CalculationNode(Node):
         self.inputs = inputs
         self.calculation = calculation
         self._values: dict[str, float] = {}  # Cache for calculated values
+
+        # Store any additional attributes passed via kwargs
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def calculate(self, period: str) -> float:
         """Calculate the value for a period using the assigned calculation.
@@ -335,6 +152,98 @@ class CalculationNode(Node):
 
         Returns:
             True, as CalculationNode performs calculations.
+        """
+        return True
+
+
+# === FormulaCalculationNode ===
+
+
+class FormulaCalculationNode(CalculationNode):
+    """Calculate a value based on a mathematical formula string.
+
+    This node extends CalculationNode and uses a FormulaCalculation strategy
+    internally to parse and evaluate mathematical expressions.
+
+    Attributes:
+        name (str): Identifier for this node.
+        inputs (Dict[str, Node]): Mapping of variable names used in the formula
+            to their corresponding input Node instances.
+        formula (str): The mathematical expression string to evaluate (e.g., "a + b").
+        metric_name (Optional[str]): The original metric identifier from the registry, if applicable.
+        metric_description (Optional[str]): The description from the metric definition, if applicable.
+
+    Examples:
+        >>> # Assume revenue and cogs are Node instances
+        >>> revenue = FinancialStatementItemNode("revenue", {"2023": 100})
+        >>> cogs = FinancialStatementItemNode("cogs", {"2023": 60})
+        >>> gross_profit = FormulaCalculationNode(
+        ...     "gross_profit",
+        ...     inputs={"rev": revenue, "cost": cogs},
+        ...     formula="rev - cost"
+        ... )
+        >>> print(gross_profit.calculate("2023"))
+        40.0
+    """
+
+    def __init__(
+        self,
+        name: str,
+        inputs: dict[str, Node],
+        formula: str,
+        metric_name: Optional[str] = None,
+        metric_description: Optional[str] = None,
+    ):
+        """Initialize the FormulaCalculationNode.
+
+        Args:
+            name (str): The unique identifier for this node.
+            inputs (Dict[str, Node]): Dictionary mapping variable names in the
+                formula to the corresponding input nodes.
+            formula (str): The mathematical formula string.
+            metric_name (Optional[str]): The original metric identifier from the
+                registry, if this node represents a defined metric. Defaults to None.
+            metric_description (Optional[str]): The description from the metric
+                definition, if applicable. Defaults to None.
+
+        Raises:
+            ValueError: If the formula string has invalid syntax.
+            TypeError: If any value in `inputs` is not a Node instance.
+        """
+        if not isinstance(inputs, dict) or not all(isinstance(n, Node) for n in inputs.values()):
+            raise TypeError("FormulaCalculationNode inputs must be a dict of Node instances.")
+
+        # Store the formula and metric attributes
+        self.formula = formula
+        self.metric_name = metric_name
+        self.metric_description = metric_description
+
+        # Extract variable names and input nodes in consistent order
+        input_variable_names = list(inputs.keys())
+        input_nodes = list(inputs.values())
+
+        # Create FormulaCalculation strategy
+        formula_calculation = FormulaCalculation(formula, input_variable_names)
+
+        # Initialize parent CalculationNode with the strategy
+        super().__init__(name, input_nodes, formula_calculation)
+
+        # Store the inputs dict for compatibility (separate from parent's inputs list)
+        self.inputs_dict = inputs
+
+    def get_dependencies(self) -> list[str]:
+        """Return the names of input nodes used in the formula.
+
+        Returns:
+            A list of variable names corresponding to the formula inputs.
+        """
+        return [node.name for node in self.inputs_dict.values()]
+
+    def has_calculation(self) -> bool:
+        """Indicate that this node performs calculation.
+
+        Returns:
+            True, as FormulaCalculationNode performs calculations.
         """
         return True
 

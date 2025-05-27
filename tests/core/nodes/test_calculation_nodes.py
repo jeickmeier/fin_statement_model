@@ -51,7 +51,7 @@ def test_formula_init_success(node_a: Node, node_b: Node):
     formula = "a + b * 2"
     node = FormulaCalculationNode(name="TestFormula", inputs=inputs, formula=formula)
     assert node.name == "TestFormula"
-    assert node.inputs == inputs
+    assert node.inputs_dict == inputs
     assert node.formula == formula
     assert node.has_calculation() is True
     assert node.get_dependencies() == ["NodeA", "NodeB"]

@@ -1,32 +1,42 @@
----
-# Special - Calculated Items
-# Special metrics: calculated items
-
-# Metric definition for Net Income
-
-name: Net Income
-description: Profit after all expenses and taxes have been deducted from revenue.
-inputs:
+- name: Net Income
+  description: Profit after all expenses and taxes have been deducted from revenue.
+  inputs:
   - operating_income
   - interest_expense
   - income_tax
-formula: "operating_income - interest_expense - income_tax"
-tags: [profitability, income_statement, bottom_line, calculated_item]
-units: currency
-category: special
-related_metrics: [gross_profit, operating_income, net_profit_margin, return_on_equity, return_on_assets, earnings_per_share]
-interpretation:
-  good_range: null
-  warning_below: null
-  warning_above: null
-  excellent_above: null
-  poor_below: 0
-  notes: |
-    - Negative net income indicates the company is operating at a loss
-    - Net income is the "bottom line" - the ultimate measure of profitability
-    - Compare to previous periods to assess growth trends
-    - Consider net profit margin (net income / revenue) for better comparability across companies
-    - Quality of earnings matters - examine one-time items and non-cash charges
-    - Consistent positive net income is essential for long-term sustainability
-    - Use in conjunction with cash flow analysis for complete financial picture
-    - Industry context is important - some sectors naturally have lower margins 
+  formula: operating_income - interest_expense - income_tax
+  tags:
+  - profitability
+  - income_statement
+  - bottom_line
+  - calculated_item
+  units: currency
+  category: special
+  related_metrics:
+  - gross_profit
+  - operating_income
+  - net_profit_margin
+  - return_on_equity
+  - return_on_assets
+  - earnings_per_share
+  interpretation:
+    good_range: null
+    warning_below: null
+    warning_above: null
+    excellent_above: null
+    poor_below: 0
+    notes: '- Negative net income indicates the company is operating at a loss
+
+      - Net income is the "bottom line" - the ultimate measure of profitability
+
+      - Compare to previous periods to assess growth trends
+
+      - Consider net profit margin (net income / revenue) for better comparability across companies
+
+      - Quality of earnings matters - examine one-time items and non-cash charges
+
+      - Consistent positive net income is essential for long-term sustainability
+
+      - Use in conjunction with cash flow analysis for complete financial picture
+
+      - Industry context is important - some sectors naturally have lower margins '

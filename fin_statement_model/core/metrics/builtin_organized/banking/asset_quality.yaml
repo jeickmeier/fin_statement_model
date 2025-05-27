@@ -1,150 +1,153 @@
----
-# Banking - Asset Quality
-# Banking metrics: asset quality and credit risk
-
-# Metric definition for Non-Performing Loan Ratio
-
-name: Non-Performing Loan Ratio
-description: Non-performing loans as a percentage of total loans. Key indicator of asset quality and credit risk.
-inputs:
+- name: Non-Performing Loan Ratio
+  description: Non-performing loans as a percentage of total loans. Key indicator of asset quality and credit risk.
+  inputs:
   - non_performing_loans
   - total_loans
-formula: "non_performing_loans / total_loans * 100"
-tags: [banking, asset_quality, credit_risk, npl_ratio]
-units: percentage
-category: banking_asset_quality
-related_metrics: [charge_off_rate, provision_coverage_ratio, allowance_to_loans_ratio]
-interpretation:
-  good_range: [0.5, 2.0]
-  warning_below: null
-  warning_above: 3.0
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Below 0.5%: Excellent asset quality, very low credit risk
-    - 0.5-2.0%: Good asset quality, normal credit risk for most banks
-    - 2.0-3.0%: Elevated credit risk, requires monitoring
-    - 3.0-5.0%: High credit risk, potential asset quality issues
-    - Above 5.0%: Very high credit risk, significant asset quality concerns
-    - Industry and economic cycle dependent
-    - Compare to peer banks and historical averages
-    - Consider loan portfolio composition and geographic concentration
-    - Rising NPL ratios may indicate deteriorating credit conditions
-    - Regulatory attention typically increases above 3-4% 
-# Metric definition for Charge-Off Rate
-
-name: Charge-Off Rate
-description: Net charge-offs as a percentage of average loans. Measures actual credit losses realized by the bank.
-inputs:
+  formula: non_performing_loans / total_loans * 100
+  tags:
+  - banking
+  - asset_quality
+  - credit_risk
+  - npl_ratio
+  units: percentage
+  category: banking_asset_quality
+  related_metrics:
+  - charge_off_rate
+  - provision_coverage_ratio
+  - allowance_to_loans_ratio
+  interpretation:
+    good_range:
+    - 0.5
+    - 2.0
+    warning_below: null
+    warning_above: 3.0
+    excellent_above: null
+    poor_below: null
+    notes: "- Below 0.5%: Excellent asset quality, very low credit risk\n- 0.5-2.0%: Good asset quality, normal credit risk\
+      \ for most banks\n- 2.0-3.0%: Elevated credit risk, requires monitoring\n- 3.0-5.0%: High credit risk, potential asset\
+      \ quality issues\n- Above 5.0%: Very high credit risk, significant asset quality concerns\n- Industry and economic cycle\
+      \ dependent\n- Compare to peer banks and historical averages\n- Consider loan portfolio composition and geographic concentration\n\
+      - Rising NPL ratios may indicate deteriorating credit conditions\n- Regulatory attention typically increases above 3-4%\
+      \ \n"
+- name: Charge-Off Rate
+  description: Net charge-offs as a percentage of average loans. Measures actual credit losses realized by the bank.
+  inputs:
   - net_charge_offs
   - average_total_loans
-formula: "net_charge_offs / average_total_loans * 100"
-tags: [banking, asset_quality, credit_losses, charge_offs]
-units: percentage
-category: banking_asset_quality
-related_metrics: [non_performing_loan_ratio, provision_for_credit_losses, recovery_rate]
-interpretation:
-  good_range: [0.2, 1.0]
-  warning_below: null
-  warning_above: 1.5
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Below 0.2%: Very low charge-offs, excellent credit performance
-    - 0.2-1.0%: Normal charge-off levels for most commercial banks
-    - 1.0-1.5%: Elevated charge-offs, monitor credit trends
-    - 1.5-3.0%: High charge-offs, significant credit stress
-    - Above 3.0%: Very high charge-offs, severe credit deterioration
-    - Typically annualized for quarterly reporting
-    - Compare to provision expense to assess adequacy
-    - Consider loan portfolio mix - credit cards typically higher
-    - Economic cycle and geographic factors impact levels
-    - Consistent with peer banks and historical norms important 
-# Metric definition for Provision Coverage Ratio
-
-name: Provision Coverage Ratio
-description: Allowance for credit losses as a percentage of non-performing loans. Shows adequacy of loss reserves.
-inputs:
+  formula: net_charge_offs / average_total_loans * 100
+  tags:
+  - banking
+  - asset_quality
+  - credit_losses
+  - charge_offs
+  units: percentage
+  category: banking_asset_quality
+  related_metrics:
+  - non_performing_loan_ratio
+  - provision_for_credit_losses
+  - recovery_rate
+  interpretation:
+    good_range:
+    - 0.2
+    - 1.0
+    warning_below: null
+    warning_above: 1.5
+    excellent_above: null
+    poor_below: null
+    notes: "- Below 0.2%: Very low charge-offs, excellent credit performance\n- 0.2-1.0%: Normal charge-off levels for most\
+      \ commercial banks\n- 1.0-1.5%: Elevated charge-offs, monitor credit trends\n- 1.5-3.0%: High charge-offs, significant\
+      \ credit stress\n- Above 3.0%: Very high charge-offs, severe credit deterioration\n- Typically annualized for quarterly\
+      \ reporting\n- Compare to provision expense to assess adequacy\n- Consider loan portfolio mix - credit cards typically\
+      \ higher\n- Economic cycle and geographic factors impact levels\n- Consistent with peer banks and historical norms important\
+      \ \n"
+- name: Provision Coverage Ratio
+  description: Allowance for credit losses as a percentage of non-performing loans. Shows adequacy of loss reserves.
+  inputs:
   - allowance_for_loan_losses
   - non_performing_loans
-formula: "allowance_for_loan_losses / non_performing_loans * 100"
-tags: [banking, asset_quality, provision_coverage, loss_reserves]
-units: percentage
-category: banking_asset_quality
-related_metrics: [non_performing_loan_ratio, allowance_to_loans_ratio, charge_off_rate]
-interpretation:
-  good_range: [80.0, 150.0]
-  warning_below: 60.0
-  warning_above: 200.0
-  excellent_above: 120.0
-  poor_below: 50.0
-  notes: |
-    - Below 50%: Inadequate provision coverage, potential reserve deficiency
-    - 50-80%: Below average coverage, may need reserve build
-    - 80-150%: Adequate to strong provision coverage
-    - Above 200%: Very high coverage, potentially over-reserved
-    - Higher coverage ratios indicate more conservative reserving
-    - Consider collateral values and recovery expectations
-    - CECL accounting may result in higher coverage ratios
-    - Compare to peer banks and regulatory guidance
-    - Economic uncertainty may warrant higher coverage
-    - Monitor trends - declining coverage may indicate inadequate reserves 
-# Metric definition for Allowance to Loans Ratio
-
-name: Allowance to Loans Ratio
-description: Allowance for credit losses as a percentage of total loans. Shows overall reserve level relative to loan portfolio.
-inputs:
+  formula: allowance_for_loan_losses / non_performing_loans * 100
+  tags:
+  - banking
+  - asset_quality
+  - provision_coverage
+  - loss_reserves
+  units: percentage
+  category: banking_asset_quality
+  related_metrics:
+  - non_performing_loan_ratio
+  - allowance_to_loans_ratio
+  - charge_off_rate
+  interpretation:
+    good_range:
+    - 80.0
+    - 150.0
+    warning_below: 60.0
+    warning_above: 200.0
+    excellent_above: 120.0
+    poor_below: 50.0
+    notes: "- Below 50%: Inadequate provision coverage, potential reserve deficiency\n- 50-80%: Below average coverage, may\
+      \ need reserve build\n- 80-150%: Adequate to strong provision coverage\n- Above 200%: Very high coverage, potentially\
+      \ over-reserved\n- Higher coverage ratios indicate more conservative reserving\n- Consider collateral values and recovery\
+      \ expectations\n- CECL accounting may result in higher coverage ratios\n- Compare to peer banks and regulatory guidance\n\
+      - Economic uncertainty may warrant higher coverage\n- Monitor trends - declining coverage may indicate inadequate reserves\
+      \ \n"
+- name: Allowance to Loans Ratio
+  description: Allowance for credit losses as a percentage of total loans. Shows overall reserve level relative to loan portfolio.
+  inputs:
   - allowance_for_loan_losses
   - total_loans
-formula: "allowance_for_loan_losses / total_loans * 100"
-tags: [banking, asset_quality, loss_reserves, allowance_ratio]
-units: percentage
-category: banking_asset_quality
-related_metrics: [provision_coverage_ratio, non_performing_loan_ratio, charge_off_rate]
-interpretation:
-  good_range: [1.0, 2.5]
-  warning_below: 0.5
-  warning_above: 4.0
-  excellent_above: null
-  poor_below: 0.3
-  notes: |
-    - Below 0.3%: Very low reserves, potential inadequacy
-    - 0.3-1.0%: Below average reserves, monitor adequacy
-    - 1.0-2.5%: Normal reserve levels for most banks
-    - 2.5-4.0%: High reserves, conservative or stressed portfolio
-    - Above 4.0%: Very high reserves, significant credit concerns
-    - CECL accounting typically results in higher ratios
-    - Consider loan portfolio composition and risk profile
-    - Economic conditions and outlook impact appropriate levels
-    - Compare to peer banks and historical averages
-    - Regulatory expectations vary by bank size and complexity 
-# Metric definition for Net Interest Margin
-
-name: Net Interest Margin
-description: Net interest income as a percentage of average earning assets. Key profitability metric for banks.
-inputs:
+  formula: allowance_for_loan_losses / total_loans * 100
+  tags:
+  - banking
+  - asset_quality
+  - loss_reserves
+  - allowance_ratio
+  units: percentage
+  category: banking_asset_quality
+  related_metrics:
+  - provision_coverage_ratio
+  - non_performing_loan_ratio
+  - charge_off_rate
+  interpretation:
+    good_range:
+    - 1.0
+    - 2.5
+    warning_below: 0.5
+    warning_above: 4.0
+    excellent_above: null
+    poor_below: 0.3
+    notes: "- Below 0.3%: Very low reserves, potential inadequacy\n- 0.3-1.0%: Below average reserves, monitor adequacy\n\
+      - 1.0-2.5%: Normal reserve levels for most banks\n- 2.5-4.0%: High reserves, conservative or stressed portfolio\n- Above\
+      \ 4.0%: Very high reserves, significant credit concerns\n- CECL accounting typically results in higher ratios\n- Consider\
+      \ loan portfolio composition and risk profile\n- Economic conditions and outlook impact appropriate levels\n- Compare\
+      \ to peer banks and historical averages\n- Regulatory expectations vary by bank size and complexity \n"
+- name: Net Interest Margin
+  description: Net interest income as a percentage of average earning assets. Key profitability metric for banks.
+  inputs:
   - net_interest_income
   - average_earning_assets
-formula: "net_interest_income / average_earning_assets * 100"
-tags: [banking, profitability, net_interest_margin, nim]
-units: percentage
-category: banking_profitability
-related_metrics: [return_on_assets, efficiency_ratio, asset_yield]
-interpretation:
-  good_range: [3.0, 4.5]
-  warning_below: 2.5
-  warning_above: null
-  excellent_above: 4.0
-  poor_below: 2.0
-  notes: |
-    - Below 2.0%: Very low NIM, profitability challenges
-    - 2.0-2.5%: Below average NIM, margin pressure
-    - 2.5-3.0%: Adequate NIM for most banks
-    - 3.0-4.5%: Good to strong NIM, healthy spread
-    - Above 4.5%: Excellent NIM, superior spread management
-    - Interest rate environment significantly impacts NIM
-    - Asset/liability mix and repricing characteristics important
-    - Compare to peer banks and interest rate cycle
-    - Rising rate environments typically benefit NIM
-    - Consider asset quality impact on yields
-    - Community banks typically have higher NIMs than large banks 
+  formula: net_interest_income / average_earning_assets * 100
+  tags:
+  - banking
+  - profitability
+  - net_interest_margin
+  - nim
+  units: percentage
+  category: banking_profitability
+  related_metrics:
+  - return_on_assets
+  - efficiency_ratio
+  - asset_yield
+  interpretation:
+    good_range:
+    - 3.0
+    - 4.5
+    warning_below: 2.5
+    warning_above: null
+    excellent_above: 4.0
+    poor_below: 2.0
+    notes: "- Below 2.0%: Very low NIM, profitability challenges\n- 2.0-2.5%: Below average NIM, margin pressure\n- 2.5-3.0%:\
+      \ Adequate NIM for most banks\n- 3.0-4.5%: Good to strong NIM, healthy spread\n- Above 4.5%: Excellent NIM, superior\
+      \ spread management\n- Interest rate environment significantly impacts NIM\n- Asset/liability mix and repricing characteristics\
+      \ important\n- Compare to peer banks and interest rate cycle\n- Rising rate environments typically benefit NIM\n- Consider\
+      \ asset quality impact on yields\n- Community banks typically have higher NIMs than large banks \n"

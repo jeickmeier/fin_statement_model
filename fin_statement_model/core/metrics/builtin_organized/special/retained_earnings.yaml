@@ -1,31 +1,40 @@
----
-# Special - Calculated Items
-# Special metrics: calculated items
-
-# Metric definition for Retained Earnings Change
-
-name: Retained Earnings Change
-description: Calculates the change in retained earnings based on net income and dividends paid during the period.
-inputs:
+- name: Retained Earnings Change
+  description: Calculates the change in retained earnings based on net income and dividends paid during the period.
+  inputs:
   - net_income
   - dividends
-formula: "net_income - dividends"
-tags: [equity, balance_sheet, calculated_item, period_change]
-units: currency
-category: special
-related_metrics: [net_income, dividends, total_equity, return_on_equity, dividend_payout_ratio]
-interpretation:
-  good_range: null
-  warning_below: null
-  warning_above: null
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Positive change indicates earnings are being retained in the business
-    - Negative change suggests dividends exceed net income (paying from accumulated earnings)
-    - Growing retained earnings indicate profitable operations and reinvestment
-    - Compare to net income to understand dividend policy and payout ratio
-    - High retention rate shows strong internal financing capability
-    - Consider the balance between retaining earnings and paying dividends
-    - Retained earnings are a key source of internal funding for growth
-    - Analyze trends over multiple years to assess management's capital allocation strategy 
+  formula: net_income - dividends
+  tags:
+  - equity
+  - balance_sheet
+  - calculated_item
+  - period_change
+  units: currency
+  category: special
+  related_metrics:
+  - net_income
+  - dividends
+  - total_equity
+  - return_on_equity
+  - dividend_payout_ratio
+  interpretation:
+    good_range: null
+    warning_below: null
+    warning_above: null
+    excellent_above: null
+    poor_below: null
+    notes: '- Positive change indicates earnings are being retained in the business
+
+      - Negative change suggests dividends exceed net income (paying from accumulated earnings)
+
+      - Growing retained earnings indicate profitable operations and reinvestment
+
+      - Compare to net income to understand dividend policy and payout ratio
+
+      - High retention rate shows strong internal financing capability
+
+      - Consider the balance between retaining earnings and paying dividends
+
+      - Retained earnings are a key source of internal funding for growth
+
+      - Analyze trends over multiple years to assess management''s capital allocation strategy '

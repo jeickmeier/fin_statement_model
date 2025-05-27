@@ -1,149 +1,154 @@
----
-# Banking - Capital Adequacy
-# Banking metrics: capital adequacy and regulatory compliance
-
-# Metric definition for Common Equity Tier 1 Ratio
-
-name: Common Equity Tier 1 Ratio
-description: Common Equity Tier 1 capital as a percentage of risk-weighted assets. Primary regulatory capital ratio.
-inputs:
+- name: Common Equity Tier 1 Ratio
+  description: Common Equity Tier 1 capital as a percentage of risk-weighted assets. Primary regulatory capital ratio.
+  inputs:
   - common_equity_tier_1
   - total_risk_weighted_assets
-formula: "common_equity_tier_1 / total_risk_weighted_assets * 100"
-tags: [banking, capital_adequacy, cet1_ratio, regulatory_capital]
-units: percentage
-category: banking_capital_adequacy
-related_metrics: [tier_1_capital_ratio, total_capital_ratio, tier_1_leverage_ratio]
-interpretation:
-  good_range: [9.0, 15.0]
-  warning_below: 7.0
-  warning_above: null
-  excellent_above: 12.0
-  poor_below: 6.0
-  notes: |
-    - Below 6.0%: Below regulatory minimum, potential enforcement action
-    - 6.0-7.0%: Minimum regulatory requirement, limited flexibility
-    - 7.0-9.0%: Above minimum but below well-capitalized threshold
-    - 9.0-15.0%: Well-capitalized, good regulatory standing
-    - Above 15.0%: Very strong capital position, significant buffer
-    - Regulatory minimum is 4.5% plus buffers (typically 7.0-8.5% total)
-    - Well-capitalized threshold is typically 6.5%
-    - G-SIBs have additional buffer requirements
-    - Stress test results may require higher levels
-    - Consider capital planning and distribution restrictions 
-# Metric definition for Tier 1 Capital Ratio
-
-name: Tier 1 Capital Ratio
-description: Total Tier 1 capital as a percentage of risk-weighted assets. Includes CET1 plus Additional Tier 1 capital.
-inputs:
+  formula: common_equity_tier_1 / total_risk_weighted_assets * 100
+  tags:
+  - banking
+  - capital_adequacy
+  - cet1_ratio
+  - regulatory_capital
+  units: percentage
+  category: banking_capital_adequacy
+  related_metrics:
+  - tier_1_capital_ratio
+  - total_capital_ratio
+  - tier_1_leverage_ratio
+  interpretation:
+    good_range:
+    - 9.0
+    - 15.0
+    warning_below: 7.0
+    warning_above: null
+    excellent_above: 12.0
+    poor_below: 6.0
+    notes: "- Below 6.0%: Below regulatory minimum, potential enforcement action\n- 6.0-7.0%: Minimum regulatory requirement,\
+      \ limited flexibility\n- 7.0-9.0%: Above minimum but below well-capitalized threshold\n- 9.0-15.0%: Well-capitalized,\
+      \ good regulatory standing\n- Above 15.0%: Very strong capital position, significant buffer\n- Regulatory minimum is\
+      \ 4.5% plus buffers (typically 7.0-8.5% total)\n- Well-capitalized threshold is typically 6.5%\n- G-SIBs have additional\
+      \ buffer requirements\n- Stress test results may require higher levels\n- Consider capital planning and distribution\
+      \ restrictions \n"
+- name: Tier 1 Capital Ratio
+  description: Total Tier 1 capital as a percentage of risk-weighted assets. Includes CET1 plus Additional Tier 1 capital.
+  inputs:
   - total_tier_1_capital
   - total_risk_weighted_assets
-formula: "total_tier_1_capital / total_risk_weighted_assets * 100"
-tags: [banking, capital_adequacy, tier_1_ratio, regulatory_capital]
-units: percentage
-category: banking_capital_adequacy
-related_metrics: [common_equity_tier_1_ratio, total_capital_ratio, tier_1_leverage_ratio]
-interpretation:
-  good_range: [10.0, 16.0]
-  warning_below: 8.0
-  warning_above: null
-  excellent_above: 13.0
-  poor_below: 7.0
-  notes: |
-    - Below 7.0%: Below regulatory minimum, potential enforcement action
-    - 7.0-8.0%: Minimum regulatory requirement, limited flexibility
-    - 8.0-10.0%: Above minimum but below well-capitalized threshold
-    - 10.0-16.0%: Well-capitalized, good regulatory standing
-    - Above 16.0%: Very strong capital position, significant buffer
-    - Regulatory minimum is 6.0% plus buffers (typically 8.5-10.0% total)
-    - Well-capitalized threshold is typically 8.0%
-    - Includes CET1 plus qualifying Additional Tier 1 instruments
-    - AT1 instruments provide additional loss absorption capacity
-    - Consider quality and composition of Tier 1 capital 
-# Metric definition for Total Capital Ratio
-
-name: Total Capital Ratio
-description: Total regulatory capital as a percentage of risk-weighted assets. Includes Tier 1 and Tier 2 capital.
-inputs:
+  formula: total_tier_1_capital / total_risk_weighted_assets * 100
+  tags:
+  - banking
+  - capital_adequacy
+  - tier_1_ratio
+  - regulatory_capital
+  units: percentage
+  category: banking_capital_adequacy
+  related_metrics:
+  - common_equity_tier_1_ratio
+  - total_capital_ratio
+  - tier_1_leverage_ratio
+  interpretation:
+    good_range:
+    - 10.0
+    - 16.0
+    warning_below: 8.0
+    warning_above: null
+    excellent_above: 13.0
+    poor_below: 7.0
+    notes: "- Below 7.0%: Below regulatory minimum, potential enforcement action\n- 7.0-8.0%: Minimum regulatory requirement,\
+      \ limited flexibility\n- 8.0-10.0%: Above minimum but below well-capitalized threshold\n- 10.0-16.0%: Well-capitalized,\
+      \ good regulatory standing\n- Above 16.0%: Very strong capital position, significant buffer\n- Regulatory minimum is\
+      \ 6.0% plus buffers (typically 8.5-10.0% total)\n- Well-capitalized threshold is typically 8.0%\n- Includes CET1 plus\
+      \ qualifying Additional Tier 1 instruments\n- AT1 instruments provide additional loss absorption capacity\n- Consider\
+      \ quality and composition of Tier 1 capital \n"
+- name: Total Capital Ratio
+  description: Total regulatory capital as a percentage of risk-weighted assets. Includes Tier 1 and Tier 2 capital.
+  inputs:
   - total_capital
   - total_risk_weighted_assets
-formula: "total_capital / total_risk_weighted_assets * 100"
-tags: [banking, capital_adequacy, total_capital_ratio, regulatory_capital]
-units: percentage
-category: banking_capital_adequacy
-related_metrics: [common_equity_tier_1_ratio, tier_1_capital_ratio, tier_1_leverage_ratio]
-interpretation:
-  good_range: [12.0, 18.0]
-  warning_below: 10.0
-  warning_above: null
-  excellent_above: 15.0
-  poor_below: 9.0
-  notes: |
-    - Below 9.0%: Below regulatory minimum, potential enforcement action
-    - 9.0-10.0%: Minimum regulatory requirement, limited flexibility
-    - 10.0-12.0%: Above minimum but below well-capitalized threshold
-    - 12.0-18.0%: Well-capitalized, good regulatory standing
-    - Above 18.0%: Very strong capital position, significant buffer
-    - Regulatory minimum is 8.0% plus buffers (typically 10.5-12.0% total)
-    - Well-capitalized threshold is typically 10.0%
-    - Includes all qualifying Tier 1 and Tier 2 capital
-    - Tier 2 capital provides additional loss absorption capacity
-    - Consider composition and quality of total capital 
-# Metric definition for Tier 1 Leverage Ratio
-
-name: Tier 1 Leverage Ratio
-description: Tier 1 capital as a percentage of average total consolidated assets. Non-risk-based capital measure.
-inputs:
+  formula: total_capital / total_risk_weighted_assets * 100
+  tags:
+  - banking
+  - capital_adequacy
+  - total_capital_ratio
+  - regulatory_capital
+  units: percentage
+  category: banking_capital_adequacy
+  related_metrics:
+  - common_equity_tier_1_ratio
+  - tier_1_capital_ratio
+  - tier_1_leverage_ratio
+  interpretation:
+    good_range:
+    - 12.0
+    - 18.0
+    warning_below: 10.0
+    warning_above: null
+    excellent_above: 15.0
+    poor_below: 9.0
+    notes: "- Below 9.0%: Below regulatory minimum, potential enforcement action\n- 9.0-10.0%: Minimum regulatory requirement,\
+      \ limited flexibility\n- 10.0-12.0%: Above minimum but below well-capitalized threshold\n- 12.0-18.0%: Well-capitalized,\
+      \ good regulatory standing\n- Above 18.0%: Very strong capital position, significant buffer\n- Regulatory minimum is\
+      \ 8.0% plus buffers (typically 10.5-12.0% total)\n- Well-capitalized threshold is typically 10.0%\n- Includes all qualifying\
+      \ Tier 1 and Tier 2 capital\n- Tier 2 capital provides additional loss absorption capacity\n- Consider composition and\
+      \ quality of total capital \n"
+- name: Tier 1 Leverage Ratio
+  description: Tier 1 capital as a percentage of average total consolidated assets. Non-risk-based capital measure.
+  inputs:
   - total_tier_1_capital
   - average_total_assets
-formula: "total_tier_1_capital / average_total_assets * 100"
-tags: [banking, capital_adequacy, leverage_ratio, non_risk_based]
-units: percentage
-category: banking_capital_adequacy
-related_metrics: [common_equity_tier_1_ratio, tier_1_capital_ratio, supplementary_leverage_ratio]
-interpretation:
-  good_range: [6.0, 10.0]
-  warning_below: 4.5
-  warning_above: null
-  excellent_above: 8.0
-  poor_below: 4.0
-  notes: |
-    - Below 4.0%: Below regulatory minimum, potential enforcement action
-    - 4.0-4.5%: Minimum regulatory requirement, limited flexibility
-    - 4.5-6.0%: Above minimum but below well-capitalized threshold
-    - 6.0-10.0%: Well-capitalized, good regulatory standing
-    - Above 10.0%: Very strong leverage ratio, significant buffer
-    - Regulatory minimum is typically 4.0%
-    - Well-capitalized threshold is typically 5.0%
-    - Non-risk-based measure provides backstop to risk-based ratios
-    - Uses average assets rather than period-end
-    - Consider off-balance sheet exposures in calculation 
-# Metric definition for Supplementary Leverage Ratio
-
-name: Supplementary Leverage Ratio
-description: Enhanced leverage ratio for large banks including off-balance sheet exposures. More comprehensive than basic leverage ratio.
-inputs:
+  formula: total_tier_1_capital / average_total_assets * 100
+  tags:
+  - banking
+  - capital_adequacy
+  - leverage_ratio
+  - non_risk_based
+  units: percentage
+  category: banking_capital_adequacy
+  related_metrics:
+  - common_equity_tier_1_ratio
+  - tier_1_capital_ratio
+  - supplementary_leverage_ratio
+  interpretation:
+    good_range:
+    - 6.0
+    - 10.0
+    warning_below: 4.5
+    warning_above: null
+    excellent_above: 8.0
+    poor_below: 4.0
+    notes: "- Below 4.0%: Below regulatory minimum, potential enforcement action\n- 4.0-4.5%: Minimum regulatory requirement,\
+      \ limited flexibility\n- 4.5-6.0%: Above minimum but below well-capitalized threshold\n- 6.0-10.0%: Well-capitalized,\
+      \ good regulatory standing\n- Above 10.0%: Very strong leverage ratio, significant buffer\n- Regulatory minimum is typically\
+      \ 4.0%\n- Well-capitalized threshold is typically 5.0%\n- Non-risk-based measure provides backstop to risk-based ratios\n\
+      - Uses average assets rather than period-end\n- Consider off-balance sheet exposures in calculation \n"
+- name: Supplementary Leverage Ratio
+  description: Enhanced leverage ratio for large banks including off-balance sheet exposures. More comprehensive than basic
+    leverage ratio.
+  inputs:
   - total_tier_1_capital
   - total_leverage_exposure
-formula: "total_tier_1_capital / total_leverage_exposure * 100"
-tags: [banking, capital_adequacy, supplementary_leverage_ratio, enhanced_leverage]
-units: percentage
-category: banking_capital_adequacy
-related_metrics: [tier_1_leverage_ratio, common_equity_tier_1_ratio, tier_1_capital_ratio]
-interpretation:
-  good_range: [5.0, 8.0]
-  warning_below: 3.5
-  warning_above: null
-  excellent_above: 6.0
-  poor_below: 3.0
-  notes: |
-    - Below 3.0%: Below regulatory minimum for large banks
-    - 3.0-3.5%: Minimum regulatory requirement, limited flexibility
-    - 3.5-5.0%: Above minimum but may face restrictions
-    - 5.0-8.0%: Strong leverage ratio, good regulatory standing
-    - Above 8.0%: Very strong leverage position
-    - Applies to banks with >$250B assets or >$10B foreign exposure
-    - Includes on and off-balance sheet exposures
-    - G-SIBs typically have 2% buffer requirement (5% total)
-    - More comprehensive than basic leverage ratio
-    - Consider impact on capital distribution restrictions 
+  formula: total_tier_1_capital / total_leverage_exposure * 100
+  tags:
+  - banking
+  - capital_adequacy
+  - supplementary_leverage_ratio
+  - enhanced_leverage
+  units: percentage
+  category: banking_capital_adequacy
+  related_metrics:
+  - tier_1_leverage_ratio
+  - common_equity_tier_1_ratio
+  - tier_1_capital_ratio
+  interpretation:
+    good_range:
+    - 5.0
+    - 8.0
+    warning_below: 3.5
+    warning_above: null
+    excellent_above: 6.0
+    poor_below: 3.0
+    notes: "- Below 3.0%: Below regulatory minimum for large banks\n- 3.0-3.5%: Minimum regulatory requirement, limited flexibility\n\
+      - 3.5-5.0%: Above minimum but may face restrictions\n- 5.0-8.0%: Strong leverage ratio, good regulatory standing\n-\
+      \ Above 8.0%: Very strong leverage position\n- Applies to banks with >$250B assets or >$10B foreign exposure\n- Includes\
+      \ on and off-balance sheet exposures\n- G-SIBs typically have 2% buffer requirement (5% total)\n- More comprehensive\
+      \ than basic leverage ratio\n- Consider impact on capital distribution restrictions \n"

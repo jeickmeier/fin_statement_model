@@ -77,21 +77,26 @@ def load_organized_metrics(base_path: Optional[Path] = None) -> int:
         "banking/liquidity.yaml",
     ]
 
+    # Collect unique parent directories from the metric files
+    unique_directories = set()
     for file_path in metric_files:
         full_path = base_path / file_path
         if full_path.exists():
-            try:
-                # Load individual file by loading its parent directory
-                # but only count files that actually exist
-                metric_registry.load_metrics_from_directory(full_path.parent)
-                total_loaded += 1  # Count this file as loaded
-                logger.debug(f"Loaded metrics from {file_path}")
-            except Exception:
-                logger.exception(f"Failed to load {file_path}")
+            unique_directories.add(full_path.parent)
         else:
             logger.warning(f"Organized metric file not found: {full_path}")
 
-    logger.info(f"Loaded {total_loaded} metric files from organized structure")
+    # Load metrics from each unique directory
+    for directory in unique_directories:
+        try:
+            # load_metrics_from_directory returns the count of metrics loaded
+            metrics_count = metric_registry.load_metrics_from_directory(directory)
+            total_loaded += metrics_count
+            logger.debug(f"Loaded {metrics_count} metrics from {directory}")
+        except Exception:
+            logger.exception(f"Failed to load metrics from directory {directory}")
+
+    logger.info(f"Loaded {total_loaded} total metrics from organized structure")
     return total_loaded
 
 

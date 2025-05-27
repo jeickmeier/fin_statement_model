@@ -23,22 +23,15 @@ from fin_statement_model.statements import create_statement_dataframe
 from fin_statement_model.forecasting.forecaster import StatementForecaster
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # --- 1. Setup ---
 
 # Use relative paths assuming script is run from workspace root
 WORKSPACE_ROOT = Path(__file__).resolve().parents[2]  # Adjust depth if needed
-CONFIG_PATH = (
-    WORKSPACE_ROOT
-    / "fin_statement_model/statements/config/mappings/test_statement.yaml"
-)
-MD_OUTPUT_PATH = (
-    WORKSPACE_ROOT / "examples/scripts/output/statement_with_adjustments.md"
-)
+CONFIG_PATH = WORKSPACE_ROOT / "fin_statement_model/statements/config/mappings/test_statement.yaml"
+MD_OUTPUT_PATH = WORKSPACE_ROOT / "examples/scripts/output/statement_with_adjustments.md"
 
 if not CONFIG_PATH.is_file():
     logger.error(f"Configuration file not found: {CONFIG_PATH}")
@@ -78,9 +71,7 @@ except FinancialModelError as e:
 # Use create_statement_dataframe to properly build the statement structure,
 # populate the graph with calculation nodes, and generate the initial dataframe
 try:
-    logger.info(
-        "Building statement structure and populating graph with calculation nodes..."
-    )
+    logger.info("Building statement structure and populating graph with calculation nodes...")
 
     # This will:
     # 1. Load and validate the statement configuration
@@ -206,9 +197,7 @@ except FinancialModelError as e:
     logger.error(f"Error generating statement dataframe: {e}", exc_info=True)
     sys.exit(1)
 except FileNotFoundError:
-    logger.error(
-        f"Statement configuration file not found: {CONFIG_PATH}", exc_info=True
-    )
+    logger.error(f"Statement configuration file not found: {CONFIG_PATH}", exc_info=True)
     sys.exit(1)
 
 # --- 8. Write Output Data ---
@@ -216,9 +205,7 @@ logger.info(f"\nWriting output markdown to: {MD_OUTPUT_PATH}")
 try:
     # Note: The markdown writer currently has schema issues with statement_config_path
     # For now, we'll skip this part or use a different approach
-    logger.info(
-        "Markdown output writing is currently disabled due to writer configuration issues."
-    )
+    logger.info("Markdown output writing is currently disabled due to writer configuration issues.")
     # write_data(
     #     format_type="markdown",
     #     graph=graph,

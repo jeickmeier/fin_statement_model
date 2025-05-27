@@ -1,151 +1,155 @@
----
-# Banking - Profitability
-# Banking metrics: profitability and efficiency
-
-# Metric definition for Efficiency Ratio
-
-name: Efficiency Ratio
-description: Non-interest expense as a percentage of net interest income plus non-interest income. Lower ratios indicate better efficiency.
-inputs:
+- name: Efficiency Ratio
+  description: Non-interest expense as a percentage of net interest income plus non-interest income. Lower ratios indicate
+    better efficiency.
+  inputs:
   - total_non_interest_expense
   - net_interest_income
   - total_non_interest_income
-formula: "total_non_interest_expense / (net_interest_income + total_non_interest_income) * 100"
-tags: [banking, profitability, efficiency_ratio, cost_control]
-units: percentage
-category: banking_profitability
-related_metrics: [return_on_assets, return_on_equity, net_interest_margin]
-interpretation:
-  good_range: [50.0, 65.0]
-  warning_below: null
-  warning_above: 75.0
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Below 50%: Excellent efficiency, very strong cost control
-    - 50-65%: Good efficiency, well-managed expenses
-    - 65-75%: Adequate efficiency, room for improvement
-    - 75-85%: Poor efficiency, high cost structure
-    - Above 85%: Very poor efficiency, significant cost issues
-    - Lower ratios are better - indicates more revenue per dollar of expense
-    - Industry benchmark is typically 60-65% for well-run banks
-    - Consider revenue mix and business model differences
-    - Technology investments may temporarily increase ratio
-    - Compare to peer banks and historical trends 
-# Metric definition for Return on Assets (Banking)
-
-name: Return on Assets (Banking)
-description: Net income as a percentage of average total assets. Key profitability metric for banks showing asset utilization efficiency.
-inputs:
+  formula: total_non_interest_expense / (net_interest_income + total_non_interest_income) * 100
+  tags:
+  - banking
+  - profitability
+  - efficiency_ratio
+  - cost_control
+  units: percentage
+  category: banking_profitability
+  related_metrics:
+  - return_on_assets
+  - return_on_equity
+  - net_interest_margin
+  interpretation:
+    good_range:
+    - 50.0
+    - 65.0
+    warning_below: null
+    warning_above: 75.0
+    excellent_above: null
+    poor_below: null
+    notes: "- Below 50%: Excellent efficiency, very strong cost control\n- 50-65%: Good efficiency, well-managed expenses\n\
+      - 65-75%: Adequate efficiency, room for improvement\n- 75-85%: Poor efficiency, high cost structure\n- Above 85%: Very\
+      \ poor efficiency, significant cost issues\n- Lower ratios are better - indicates more revenue per dollar of expense\n\
+      - Industry benchmark is typically 60-65% for well-run banks\n- Consider revenue mix and business model differences\n\
+      - Technology investments may temporarily increase ratio\n- Compare to peer banks and historical trends \n"
+- name: Return on Assets (Banking)
+  description: Net income as a percentage of average total assets. Key profitability metric for banks showing asset utilization
+    efficiency.
+  inputs:
   - net_income
   - average_total_assets
-formula: "net_income / average_total_assets * 100"
-tags: [banking, profitability, return_on_assets, roa]
-units: percentage
-category: banking_profitability
-related_metrics: [return_on_equity, net_interest_margin, efficiency_ratio]
-interpretation:
-  good_range: [1.0, 1.5]
-  warning_below: 0.5
-  warning_above: null
-  excellent_above: 1.3
-  poor_below: 0.3
-  notes: |
-    - Below 0.3%: Very poor profitability, potential viability issues
-    - 0.3-0.5%: Below average profitability, needs improvement
-    - 0.5-1.0%: Adequate profitability for most banks
-    - 1.0-1.5%: Good to strong profitability, well-managed bank
-    - Above 1.5%: Excellent profitability, superior performance
-    - Industry benchmark is typically 1.0-1.2% for well-performing banks
-    - Consider credit cycle and economic conditions
-    - Higher ROA may indicate higher risk-taking
-    - Use average assets for more accurate calculation
-    - Compare to peer banks and regulatory expectations 
-# Metric definition for Return on Equity (Banking)
-
-name: Return on Equity (Banking)
-description: Net income as a percentage of average shareholders' equity. Shows returns generated for equity holders.
-inputs:
+  formula: net_income / average_total_assets * 100
+  tags:
+  - banking
+  - profitability
+  - return_on_assets
+  - roa
+  units: percentage
+  category: banking_profitability
+  related_metrics:
+  - return_on_equity
+  - net_interest_margin
+  - efficiency_ratio
+  interpretation:
+    good_range:
+    - 1.0
+    - 1.5
+    warning_below: 0.5
+    warning_above: null
+    excellent_above: 1.3
+    poor_below: 0.3
+    notes: "- Below 0.3%: Very poor profitability, potential viability issues\n- 0.3-0.5%: Below average profitability, needs\
+      \ improvement\n- 0.5-1.0%: Adequate profitability for most banks\n- 1.0-1.5%: Good to strong profitability, well-managed\
+      \ bank\n- Above 1.5%: Excellent profitability, superior performance\n- Industry benchmark is typically 1.0-1.2% for\
+      \ well-performing banks\n- Consider credit cycle and economic conditions\n- Higher ROA may indicate higher risk-taking\n\
+      - Use average assets for more accurate calculation\n- Compare to peer banks and regulatory expectations \n"
+- name: Return on Equity (Banking)
+  description: Net income as a percentage of average shareholders' equity. Shows returns generated for equity holders.
+  inputs:
   - net_income
   - average_total_equity
-formula: "net_income / average_total_equity * 100"
-tags: [banking, profitability, return_on_equity, roe]
-units: percentage
-category: banking_profitability
-related_metrics: [return_on_assets, net_interest_margin, efficiency_ratio]
-interpretation:
-  good_range: [10.0, 15.0]
-  warning_below: 6.0
-  warning_above: 20.0
-  excellent_above: 13.0
-  poor_below: 4.0
-  notes: |
-    - Below 4%: Very poor returns, potential capital adequacy issues
-    - 4-6%: Below average returns, needs improvement
-    - 6-10%: Adequate returns for most banks
-    - 10-15%: Good to strong returns, attractive to investors
-    - Above 20%: Very high returns, may indicate excessive risk
-    - Industry benchmark is typically 10-12% for well-performing banks
-    - Consider leverage impact - higher leverage amplifies ROE
-    - Balance with capital adequacy and risk management
-    - Use average equity for more accurate calculation
-    - Compare to cost of equity and peer banks 
-# Metric definition for Pre-Provision Net Revenue
-
-name: Pre-Provision Net Revenue
-description: Net interest income plus non-interest income minus non-interest expense. Shows operating performance before credit costs.
-inputs:
+  formula: net_income / average_total_equity * 100
+  tags:
+  - banking
+  - profitability
+  - return_on_equity
+  - roe
+  units: percentage
+  category: banking_profitability
+  related_metrics:
+  - return_on_assets
+  - net_interest_margin
+  - efficiency_ratio
+  interpretation:
+    good_range:
+    - 10.0
+    - 15.0
+    warning_below: 6.0
+    warning_above: 20.0
+    excellent_above: 13.0
+    poor_below: 4.0
+    notes: "- Below 4%: Very poor returns, potential capital adequacy issues\n- 4-6%: Below average returns, needs improvement\n\
+      - 6-10%: Adequate returns for most banks\n- 10-15%: Good to strong returns, attractive to investors\n- Above 20%: Very\
+      \ high returns, may indicate excessive risk\n- Industry benchmark is typically 10-12% for well-performing banks\n- Consider\
+      \ leverage impact - higher leverage amplifies ROE\n- Balance with capital adequacy and risk management\n- Use average\
+      \ equity for more accurate calculation\n- Compare to cost of equity and peer banks \n"
+- name: Pre-Provision Net Revenue
+  description: Net interest income plus non-interest income minus non-interest expense. Shows operating performance before
+    credit costs.
+  inputs:
   - net_interest_income
   - total_non_interest_income
   - total_non_interest_expense
-formula: "net_interest_income + total_non_interest_income - total_non_interest_expense"
-tags: [banking, profitability, ppnr, operating_performance]
-units: currency
-category: banking_profitability
-related_metrics: [net_interest_margin, efficiency_ratio, provision_for_credit_losses]
-interpretation:
-  good_range: null
-  warning_below: null
-  warning_above: null
-  excellent_above: null
-  poor_below: 0
-  notes: |
-    - Positive PPNR: Bank generates operating income before credit costs
-    - Negative PPNR: Operating expenses exceed revenue, unsustainable
-    - Higher PPNR provides more cushion for credit losses
-    - Key metric for stress testing and capital planning
-    - Should grow over time for healthy banks
-    - Compare to provision expense to assess earnings sustainability
-    - Consider revenue mix and expense control trends
-    - Important for assessing core operating performance
-    - Use in conjunction with efficiency ratio analysis 
-# Metric definition for Fee Income Ratio
-
-name: Fee Income Ratio
-description: Non-interest income as a percentage of total revenue. Shows revenue diversification beyond interest income.
-inputs:
+  formula: net_interest_income + total_non_interest_income - total_non_interest_expense
+  tags:
+  - banking
+  - profitability
+  - ppnr
+  - operating_performance
+  units: currency
+  category: banking_profitability
+  related_metrics:
+  - net_interest_margin
+  - efficiency_ratio
+  - provision_for_credit_losses
+  interpretation:
+    good_range: null
+    warning_below: null
+    warning_above: null
+    excellent_above: null
+    poor_below: 0
+    notes: "- Positive PPNR: Bank generates operating income before credit costs\n- Negative PPNR: Operating expenses exceed\
+      \ revenue, unsustainable\n- Higher PPNR provides more cushion for credit losses\n- Key metric for stress testing and\
+      \ capital planning\n- Should grow over time for healthy banks\n- Compare to provision expense to assess earnings sustainability\n\
+      - Consider revenue mix and expense control trends\n- Important for assessing core operating performance\n- Use in conjunction\
+      \ with efficiency ratio analysis \n"
+- name: Fee Income Ratio
+  description: Non-interest income as a percentage of total revenue. Shows revenue diversification beyond interest income.
+  inputs:
   - total_non_interest_income
   - net_interest_income
   - total_non_interest_income
-formula: "total_non_interest_income / (net_interest_income + total_non_interest_income) * 100"
-tags: [banking, profitability, fee_income, revenue_diversification]
-units: percentage
-category: banking_profitability
-related_metrics: [net_interest_margin, efficiency_ratio, return_on_assets]
-interpretation:
-  good_range: [20.0, 40.0]
-  warning_below: 10.0
-  warning_above: 60.0
-  excellent_above: null
-  poor_below: 5.0
-  notes: |
-    - Below 5%: Very low fee income, limited revenue diversification
-    - 5-10%: Low fee income, heavily dependent on interest income
-    - 10-20%: Moderate fee income, some diversification
-    - 20-40%: Good fee income diversification, balanced revenue mix
-    - Above 60%: High fee income dependence, may indicate volatility
-    - Fee income typically less stable than interest income
-    - Consider quality and sustainability of fee income sources
-    - Trading income can be particularly volatile
-    - Wealth management and trust fees typically more stable
-    - Balance diversification with core banking competencies 
+  formula: total_non_interest_income / (net_interest_income + total_non_interest_income) * 100
+  tags:
+  - banking
+  - profitability
+  - fee_income
+  - revenue_diversification
+  units: percentage
+  category: banking_profitability
+  related_metrics:
+  - net_interest_margin
+  - efficiency_ratio
+  - return_on_assets
+  interpretation:
+    good_range:
+    - 20.0
+    - 40.0
+    warning_below: 10.0
+    warning_above: 60.0
+    excellent_above: null
+    poor_below: 5.0
+    notes: "- Below 5%: Very low fee income, limited revenue diversification\n- 5-10%: Low fee income, heavily dependent on\
+      \ interest income\n- 10-20%: Moderate fee income, some diversification\n- 20-40%: Good fee income diversification, balanced\
+      \ revenue mix\n- Above 60%: High fee income dependence, may indicate volatility\n- Fee income typically less stable\
+      \ than interest income\n- Consider quality and sustainability of fee income sources\n- Trading income can be particularly\
+      \ volatile\n- Wealth management and trust fees typically more stable\n- Balance diversification with core banking competencies\
+      \ \n"

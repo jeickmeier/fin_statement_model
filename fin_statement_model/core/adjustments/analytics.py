@@ -1,23 +1,76 @@
 """Analytics functions for summarizing and analyzing adjustments."""
 
 import logging
+from typing import Optional, Union
+from collections.abc import Callable
 
 import pandas as pd
 
 from fin_statement_model.core.adjustments.manager import AdjustmentManager
 from fin_statement_model.core.adjustments.models import (
     Adjustment,
-    AdjustmentFilterInput,
     AdjustmentFilter,
+    AdjustmentTag,
 )
 from fin_statement_model.core.adjustments.helpers import tag_matches
 
 logger = logging.getLogger(__name__)
 
 
+def _filter_adjustments_static(
+    all_adjustments: list[Adjustment],
+    filter_input: Optional[
+        Union[AdjustmentFilter, set[AdjustmentTag], Callable[[Adjustment], bool]]
+    ],
+) -> list[Adjustment]:
+    """Apply filtering to adjustments based on filter_input, excluding period context.
+
+    This helper function centralizes the common filtering logic used by both
+    summary() and list_by_tag() methods. It applies filters based on the static
+    properties of adjustments (tags, scenario, type, etc.) but ignores any
+    period-based filtering since that requires runtime context.
+
+    Args:
+        all_adjustments: List of all adjustments to filter.
+        filter_input: Filter criteria (AdjustmentFilter, set of tags, callable, or None).
+
+    Returns:
+        Filtered list of adjustments matching the filter criteria.
+    """
+    if filter_input is None:
+        # No filter means include all adjustments
+        logger.debug("No filter applied.")
+        return all_adjustments
+
+    elif isinstance(filter_input, AdjustmentFilter):
+        # Apply filter, ignoring its period attribute
+        temp_filter = filter_input.model_copy(update={"period": None})
+        filtered = [adj for adj in all_adjustments if temp_filter.matches(adj)]
+        logger.debug(f"Applied AdjustmentFilter (ignoring period). Filter: {temp_filter}")
+        return filtered
+
+    elif isinstance(filter_input, set):
+        # Shorthand for include_tags
+        filtered = [adj for adj in all_adjustments if tag_matches(adj.tags, filter_input)]
+        logger.debug(f"Applied tag filter. Tags: {filter_input}")
+        return filtered
+
+    elif callable(filter_input):
+        filtered = [adj for adj in all_adjustments if filter_input(adj)]
+        logger.debug("Applied callable filter.")
+        return filtered
+
+    else:
+        # Should not happen due to type hint, but defensive
+        logger.warning(f"Invalid filter_input type: {type(filter_input)}. No filtering applied.")
+        return all_adjustments
+
+
 def summary(
     manager: AdjustmentManager,
-    filter_input: AdjustmentFilterInput = None,
+    filter_input: Optional[
+        Union[AdjustmentFilter, set[AdjustmentTag], Callable[[Adjustment], bool]]
+    ] = None,
     group_by: list[str] = ["period", "node_name"],
 ) -> pd.DataFrame:
     """Generate a summary DataFrame of adjustments, optionally filtered and grouped.
@@ -45,40 +98,8 @@ def summary(
     # The period-based filtering (effective window) cannot be applied generically here.
     all_adjustments = manager.get_all_adjustments()
 
-    # --- Apply filtering based on filter_input (excluding period context) ---
-    filtered_adjustments: list[Adjustment]
-    if filter_input is None:
-        # If filter is None, manager usually defaults to DEFAULT_SCENARIO.
-        # Here, we want summary across ALL by default, unless filter specifies otherwise.
-        # Let's filter manually if needed.
-        # For default summary, maybe include all scenarios?
-        # Revisit: What is the desired default filter scope for summary?
-        # Let's assume None means *no* filter for the summary function.
-        filtered_adjustments = all_adjustments
-        logger.debug("No filter applied for summary.")
-    elif isinstance(filter_input, AdjustmentFilter):
-        # Apply filter, ignoring its period attribute
-        temp_filter = filter_input.model_copy(update={"period": None})
-        filtered_adjustments = [adj for adj in all_adjustments if temp_filter.matches(adj)]
-        logger.debug(
-            f"Applied AdjustmentFilter for summary (ignoring period). Filter: {temp_filter}"
-        )
-    elif isinstance(filter_input, set):
-        # Shorthand for include_tags
-        filtered_adjustments = [
-            adj for adj in all_adjustments if tag_matches(adj.tags, filter_input)
-        ]
-        logger.debug(f"Applied tag filter for summary. Tags: {filter_input}")
-    elif callable(filter_input):
-        filtered_adjustments = [adj for adj in all_adjustments if filter_input(adj)]
-        logger.debug("Applied callable filter for summary.")
-    else:
-        # Should not happen due to type hint, but defensive
-        logger.warning(
-            f"Invalid filter_input type for summary: {type(filter_input)}. No filtering applied."
-        )
-        filtered_adjustments = all_adjustments
-    # --- End Filtering ---
+    # Apply filtering using the helper function
+    filtered_adjustments = _filter_adjustments_static(all_adjustments, filter_input)
 
     if not filtered_adjustments:
         logger.info("No adjustments found matching the filter criteria for summary.")
@@ -114,7 +135,9 @@ def summary(
 def list_by_tag(
     manager: AdjustmentManager,
     tag_prefix: str,
-    filter_input: AdjustmentFilterInput = None,
+    filter_input: Optional[
+        Union[AdjustmentFilter, set[AdjustmentTag], Callable[[Adjustment], bool]]
+    ] = None,
 ) -> list[Adjustment]:
     """List all adjustments matching a tag prefix, optionally applying further filters.
 
@@ -130,26 +153,9 @@ def list_by_tag(
     """
     logger.debug(f"Listing adjustments by tag prefix: '{tag_prefix}'")
 
-    # Similar to summary, get all adjustments and apply filters without period context
+    # Get all adjustments and apply filters using the helper function
     all_adjustments = manager.get_all_adjustments()
-
-    # --- Apply filter_input (excluding period context) ---
-    filtered_adjustments: list[Adjustment]
-    if filter_input is None:
-        filtered_adjustments = all_adjustments
-    elif isinstance(filter_input, AdjustmentFilter):
-        temp_filter = filter_input.model_copy(update={"period": None})
-        filtered_adjustments = [adj for adj in all_adjustments if temp_filter.matches(adj)]
-    elif isinstance(filter_input, set):
-        filtered_adjustments = [
-            adj for adj in all_adjustments if tag_matches(adj.tags, filter_input)
-        ]
-    elif callable(filter_input):
-        filtered_adjustments = [adj for adj in all_adjustments if filter_input(adj)]
-    else:
-        logger.warning(f"Invalid filter_input type for list_by_tag: {type(filter_input)}.")
-        filtered_adjustments = all_adjustments
-    # --- End Filtering ---
+    filtered_adjustments = _filter_adjustments_static(all_adjustments, filter_input)
 
     # Apply the primary tag prefix filter
     prefix_set = {tag_prefix}

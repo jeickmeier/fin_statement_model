@@ -1,89 +1,98 @@
----
-# Coverage - Interest Coverage
-# Coverage metrics: interest_coverage
-
-# Metric definition for Times Interest Earned
-
-name: Times Interest Earned
-description: Measures a company's ability to service its debt by comparing earnings to interest expenses. Critical for assessing default risk.
-inputs:
-  - ebit  # Earnings before interest and taxes
+- name: Times Interest Earned
+  description: Measures a company's ability to service its debt by comparing earnings to interest expenses. Critical for assessing
+    default risk.
+  inputs:
+  - ebit
   - interest_expense
-formula: "ebit / interest_expense"
-tags: [coverage, solvency, debt_service, credit_risk, interest_coverage]
-units: times
-category: coverage
-related_metrics: [debt_service_coverage, cash_coverage_ratio, debt_to_equity_ratio, ebitda_to_interest]
-interpretation:
-  good_range: [5.0, 15.0]
-  warning_below: 2.5
-  warning_above: null
-  excellent_above: 10.0
-  poor_below: 1.5
-  notes: |
-    - Below 1.5: High default risk, earnings barely cover interest payments
-    - 1.5-2.5: Concerning coverage, vulnerable to earnings volatility
-    - 2.5-5.0: Adequate coverage, acceptable for stable businesses
-    - 5.0-15.0: Good to strong coverage, comfortable debt service ability
-    - Above 15.0: Very strong coverage, low financial risk
-    - Consider earnings volatility and cyclicality when interpreting
-    - EBITDA-based coverage ratios may be more relevant for capital-intensive businesses
-    - Trend analysis is crucial - declining coverage is a red flag 
-# Metric definition for EBITDA Interest Coverage
-
-name: EBITDA Interest Coverage
-description: Measures a company's ability to service its debt using cash-based earnings. More conservative than EBIT-based coverage as it includes depreciation and amortization.
-inputs:
+  formula: ebit / interest_expense
+  tags:
+  - coverage
+  - solvency
+  - debt_service
+  - credit_risk
+  - interest_coverage
+  units: times
+  category: coverage
+  related_metrics:
+  - debt_service_coverage
+  - cash_coverage_ratio
+  - debt_to_equity_ratio
+  - ebitda_to_interest
+  interpretation:
+    good_range:
+    - 5.0
+    - 15.0
+    warning_below: 2.5
+    warning_above: null
+    excellent_above: 10.0
+    poor_below: 1.5
+    notes: "- Below 1.5: High default risk, earnings barely cover interest payments\n- 1.5-2.5: Concerning coverage, vulnerable\
+      \ to earnings volatility\n- 2.5-5.0: Adequate coverage, acceptable for stable businesses\n- 5.0-15.0: Good to strong\
+      \ coverage, comfortable debt service ability\n- Above 15.0: Very strong coverage, low financial risk\n- Consider earnings\
+      \ volatility and cyclicality when interpreting\n- EBITDA-based coverage ratios may be more relevant for capital-intensive\
+      \ businesses\n- Trend analysis is crucial - declining coverage is a red flag \n"
+- name: EBITDA Interest Coverage
+  description: Measures a company's ability to service its debt using cash-based earnings. More conservative than EBIT-based
+    coverage as it includes depreciation and amortization.
+  inputs:
   - ebitda
   - interest_expense
-formula: "ebitda / interest_expense"
-tags: [coverage, solvency, debt_service, credit_risk, cash_coverage]
-units: times
-category: coverage
-related_metrics: [times_interest_earned, debt_service_coverage, cash_coverage_ratio]
-interpretation:
-  good_range: [6.0, 20.0]
-  warning_below: 3.0
-  warning_above: null
-  excellent_above: 12.0
-  poor_below: 2.0
-  notes: |
-    - Below 2.0: High default risk, cash earnings barely cover interest payments
-    - 2.0-3.0: Concerning coverage, vulnerable to earnings volatility
-    - 3.0-6.0: Adequate coverage, acceptable for stable businesses
-    - 6.0-20.0: Good to strong coverage, comfortable debt service ability
-    - Above 20.0: Very strong coverage, low financial risk
-    - More relevant than EBIT coverage for capital-intensive businesses
-    - Better reflects actual cash available for debt service
-    - Consider alongside operating cash flow metrics for complete picture
-    - Trend analysis is crucial - declining coverage is a red flag 
-# Metric definition for Fixed Charge Coverage Ratio
-
-name: Fixed Charge Coverage Ratio
-description: Measures ability to cover all fixed charges including interest and lease expenses. Comprehensive coverage metric.
-inputs:
+  formula: ebitda / interest_expense
+  tags:
+  - coverage
+  - solvency
+  - debt_service
+  - credit_risk
+  - cash_coverage
+  units: times
+  category: coverage
+  related_metrics:
+  - times_interest_earned
+  - debt_service_coverage
+  - cash_coverage_ratio
+  interpretation:
+    good_range:
+    - 6.0
+    - 20.0
+    warning_below: 3.0
+    warning_above: null
+    excellent_above: 12.0
+    poor_below: 2.0
+    notes: "- Below 2.0: High default risk, cash earnings barely cover interest payments\n- 2.0-3.0: Concerning coverage,\
+      \ vulnerable to earnings volatility\n- 3.0-6.0: Adequate coverage, acceptable for stable businesses\n- 6.0-20.0: Good\
+      \ to strong coverage, comfortable debt service ability\n- Above 20.0: Very strong coverage, low financial risk\n- More\
+      \ relevant than EBIT coverage for capital-intensive businesses\n- Better reflects actual cash available for debt service\n\
+      - Consider alongside operating cash flow metrics for complete picture\n- Trend analysis is crucial - declining coverage\
+      \ is a red flag \n"
+- name: Fixed Charge Coverage Ratio
+  description: Measures ability to cover all fixed charges including interest and lease expenses. Comprehensive coverage metric.
+  inputs:
   - ebit
   - lease_expense
   - interest_expense
-formula: "(ebit + lease_expense) / (interest_expense + lease_expense)"
-tags: [coverage, fixed_charges, lease_coverage, comprehensive_coverage]
-units: times
-category: coverage
-related_metrics: [times_interest_earned, ebitda_interest_coverage, debt_service_coverage_ratio]
-interpretation:
-  good_range: [2.5, 8.0]
-  warning_below: 1.5
-  warning_above: null
-  excellent_above: 4.0
-  poor_below: 1.25
-  notes: |
-    - Below 1.25: Insufficient coverage of fixed charges, high default risk
-    - 1.25-1.5: Tight coverage, vulnerable to earnings volatility
-    - 1.5-2.5: Adequate coverage for stable businesses
-    - 2.5-8.0: Good to strong fixed charge coverage
-    - Above 8.0: Very strong coverage, low financial risk
-    - More comprehensive than interest coverage as it includes lease obligations
-    - Important for companies with significant operating leases
-    - Lease expenses treated as fixed obligations similar to interest
-    - Critical for credit analysis and loan covenant compliance
-    - Consider alongside other coverage ratios for complete assessment 
+  formula: (ebit + lease_expense) / (interest_expense + lease_expense)
+  tags:
+  - coverage
+  - fixed_charges
+  - lease_coverage
+  - comprehensive_coverage
+  units: times
+  category: coverage
+  related_metrics:
+  - times_interest_earned
+  - ebitda_interest_coverage
+  - debt_service_coverage_ratio
+  interpretation:
+    good_range:
+    - 2.5
+    - 8.0
+    warning_below: 1.5
+    warning_above: null
+    excellent_above: 4.0
+    poor_below: 1.25
+    notes: "- Below 1.25: Insufficient coverage of fixed charges, high default risk\n- 1.25-1.5: Tight coverage, vulnerable\
+      \ to earnings volatility\n- 1.5-2.5: Adequate coverage for stable businesses\n- 2.5-8.0: Good to strong fixed charge\
+      \ coverage\n- Above 8.0: Very strong coverage, low financial risk\n- More comprehensive than interest coverage as it\
+      \ includes lease obligations\n- Important for companies with significant operating leases\n- Lease expenses treated\
+      \ as fixed obligations similar to interest\n- Critical for credit analysis and loan covenant compliance\n- Consider\
+      \ alongside other coverage ratios for complete assessment \n"

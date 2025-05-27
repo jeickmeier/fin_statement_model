@@ -1,91 +1,93 @@
----
-# Efficiency - Component Turnover
-# Efficiency metrics: component_turnover
-
-# Metric definition for Inventory Turnover
-
-name: Inventory Turnover
-description: Measures how many times inventory is sold and replaced over a period. Shows inventory management efficiency.
-inputs:
+- name: Inventory Turnover
+  description: Measures how many times inventory is sold and replaced over a period. Shows inventory management efficiency.
+  inputs:
   - cost_of_goods_sold
   - inventory
-formula: "cost_of_goods_sold / inventory"
-tags: [efficiency, inventory_management, turnover, working_capital]
-units: times
-category: efficiency
-related_metrics: [days_inventory_outstanding, working_capital_turnover, asset_turnover]
-interpretation:
-  good_range: [4.0, 12.0]
-  warning_below: 2.0
-  warning_above: null
-  excellent_above: 8.0
-  poor_below: 1.0
-  notes: |
-    - Below 1.0: Very slow inventory turnover, potential obsolescence risk
-    - 1.0-2.0: Slow turnover, excessive inventory investment
-    - 2.0-4.0: Adequate turnover for many industries
-    - 4.0-12.0: Good to strong inventory management
-    - Above 12.0: Excellent turnover, very efficient inventory management
-    - Higher turnover generally indicates better inventory management
-    - Inverse relationship with Days Inventory Outstanding
-    - Industry-dependent - grocery stores much higher than auto dealers
-    - Consider seasonality and product lifecycle
-    - Balance efficiency with stockout risk and customer service 
-# Metric definition for Receivables Turnover
-
-name: Receivables Turnover
-description: Measures how many times receivables are collected over a period. Shows credit and collection efficiency.
-inputs:
+  formula: cost_of_goods_sold / inventory
+  tags:
+  - efficiency
+  - inventory_management
+  - turnover
+  - working_capital
+  units: times
+  category: efficiency
+  related_metrics:
+  - days_inventory_outstanding
+  - working_capital_turnover
+  - asset_turnover
+  interpretation:
+    good_range:
+    - 4.0
+    - 12.0
+    warning_below: 2.0
+    warning_above: null
+    excellent_above: 8.0
+    poor_below: 1.0
+    notes: "- Below 1.0: Very slow inventory turnover, potential obsolescence risk\n- 1.0-2.0: Slow turnover, excessive inventory\
+      \ investment\n- 2.0-4.0: Adequate turnover for many industries\n- 4.0-12.0: Good to strong inventory management\n- Above\
+      \ 12.0: Excellent turnover, very efficient inventory management\n- Higher turnover generally indicates better inventory\
+      \ management\n- Inverse relationship with Days Inventory Outstanding\n- Industry-dependent - grocery stores much higher\
+      \ than auto dealers\n- Consider seasonality and product lifecycle\n- Balance efficiency with stockout risk and customer\
+      \ service \n"
+- name: Receivables Turnover
+  description: Measures how many times receivables are collected over a period. Shows credit and collection efficiency.
+  inputs:
   - revenue
   - accounts_receivable
-formula: "revenue / accounts_receivable"
-tags: [efficiency, receivables_management, collection_efficiency, working_capital]
-units: times
-category: efficiency
-related_metrics: [days_sales_outstanding, working_capital_turnover, cash_conversion_cycle]
-interpretation:
-  good_range: [6.0, 18.0]
-  warning_below: 3.0
-  warning_above: null
-  excellent_above: 12.0
-  poor_below: 2.0
-  notes: |
-    - Below 2.0: Very slow collections, potential credit issues
-    - 2.0-3.0: Slow collections, inefficient credit management
-    - 3.0-6.0: Adequate collection efficiency for many industries
-    - 6.0-18.0: Good to strong receivables management
-    - Above 18.0: Excellent collections, very efficient credit management
-    - Higher turnover indicates faster collections
-    - Inverse relationship with Days Sales Outstanding
-    - Compare to stated payment terms (e.g., Net 30 = 12x annual turnover)
-    - Industry-dependent - B2B typically lower than B2C
-    - Monitor trends - declining turnover may indicate credit quality issues 
-# Metric definition for Payables Turnover
-
-name: Payables Turnover
-description: Measures how many times payables are paid over a period. Shows supplier payment efficiency and cash flow management.
-inputs:
+  formula: revenue / accounts_receivable
+  tags:
+  - efficiency
+  - receivables_management
+  - collection_efficiency
+  - working_capital
+  units: times
+  category: efficiency
+  related_metrics:
+  - days_sales_outstanding
+  - working_capital_turnover
+  - cash_conversion_cycle
+  interpretation:
+    good_range:
+    - 6.0
+    - 18.0
+    warning_below: 3.0
+    warning_above: null
+    excellent_above: 12.0
+    poor_below: 2.0
+    notes: "- Below 2.0: Very slow collections, potential credit issues\n- 2.0-3.0: Slow collections, inefficient credit management\n\
+      - 3.0-6.0: Adequate collection efficiency for many industries\n- 6.0-18.0: Good to strong receivables management\n-\
+      \ Above 18.0: Excellent collections, very efficient credit management\n- Higher turnover indicates faster collections\n\
+      - Inverse relationship with Days Sales Outstanding\n- Compare to stated payment terms (e.g., Net 30 = 12x annual turnover)\n\
+      - Industry-dependent - B2B typically lower than B2C\n- Monitor trends - declining turnover may indicate credit quality\
+      \ issues \n"
+- name: Payables Turnover
+  description: Measures how many times payables are paid over a period. Shows supplier payment efficiency and cash flow management.
+  inputs:
   - cost_of_goods_sold
   - accounts_payable
-formula: "cost_of_goods_sold / accounts_payable"
-tags: [efficiency, payables_management, cash_flow_optimization, working_capital]
-units: times
-category: efficiency
-related_metrics: [days_payables_outstanding, working_capital_turnover, cash_conversion_cycle]
-interpretation:
-  good_range: [6.0, 15.0]
-  warning_below: 3.0
-  warning_above: 20.0
-  excellent_above: null
-  poor_below: null
-  notes: |
-    - Below 3.0: Very slow payments, may strain supplier relationships
-    - 3.0-6.0: Slow payments, extended payment terms
-    - 6.0-15.0: Balanced payment approach, good cash flow management
-    - 15.0-20.0: Fast payments, good supplier relations but limited cash benefit
-    - Above 20.0: Very fast payments, may miss cash flow optimization opportunities
-    - Lower turnover generally better for cash flow (within reason)
-    - Inverse relationship with Days Payables Outstanding
-    - Balance cash flow benefits with supplier relationship management
-    - Consider negotiated payment terms and industry practices
-    - Monitor for sudden changes that may indicate cash flow stress 
+  formula: cost_of_goods_sold / accounts_payable
+  tags:
+  - efficiency
+  - payables_management
+  - cash_flow_optimization
+  - working_capital
+  units: times
+  category: efficiency
+  related_metrics:
+  - days_payables_outstanding
+  - working_capital_turnover
+  - cash_conversion_cycle
+  interpretation:
+    good_range:
+    - 6.0
+    - 15.0
+    warning_below: 3.0
+    warning_above: 20.0
+    excellent_above: null
+    poor_below: null
+    notes: "- Below 3.0: Very slow payments, may strain supplier relationships\n- 3.0-6.0: Slow payments, extended payment\
+      \ terms\n- 6.0-15.0: Balanced payment approach, good cash flow management\n- 15.0-20.0: Fast payments, good supplier\
+      \ relations but limited cash benefit\n- Above 20.0: Very fast payments, may miss cash flow optimization opportunities\n\
+      - Lower turnover generally better for cash flow (within reason)\n- Inverse relationship with Days Payables Outstanding\n\
+      - Balance cash flow benefits with supplier relationship management\n- Consider negotiated payment terms and industry\
+      \ practices\n- Monitor for sudden changes that may indicate cash flow stress \n"
