@@ -6,23 +6,72 @@ This module implements the NormalizationTransformer for the preprocessing layer.
 """
 
 from typing import Optional, Union, ClassVar
+import logging
 
+import numpy as np
 import pandas as pd
 
 from fin_statement_model.preprocessing.base_transformer import DataTransformer
-from fin_statement_model.preprocessing.enums import NormalizationType
-from fin_statement_model.preprocessing.config import NormalizationConfig
+from fin_statement_model.preprocessing.config.enums import NormalizationType
+from fin_statement_model.preprocessing.config.models import NormalizationConfig
+
+logger = logging.getLogger(__name__)
 
 
 class NormalizationTransformer(DataTransformer):
-    """Transformer that normalizes financial data.
+    """Transformer that normalizes financial data using various methods.
 
-    This transformer can normalize values by:
-    - Dividing by a reference value (e.g. convert to percentages of revenue)
-    - Scaling to a specific range (e.g. 0-1)
-    - Applying standard normalization ((x - mean) / std)
+    This transformer provides multiple normalization strategies commonly used in
+    financial analysis to make data comparable across different scales or to
+    express values as percentages of a reference metric.
 
-    It can operate on DataFrames or dictionary data structures.
+    Supported normalization types:
+        - **percent_of**: Express values as percentages of a reference column
+          (e.g., all items as % of revenue)
+        - **minmax**: Scale values to [0, 1] range based on min/max values
+        - **standard**: Standardize using (x - mean) / std deviation
+        - **scale_by**: Multiply all values by a fixed scale factor
+
+    Examples:
+        Express all income statement items as percentage of revenue:
+
+        >>> import pandas as pd
+        >>> from fin_statement_model.preprocessing.transformers import NormalizationTransformer
+        >>>
+        >>> # Sample income statement data
+        >>> data = pd.DataFrame({
+        ...     'revenue': [1000, 1100, 1200],
+        ...     'cogs': [600, 650, 700],
+        ...     'operating_expenses': [200, 220, 250]
+        ... }, index=['2021', '2022', '2023'])
+        >>>
+        >>> # Create transformer to express as % of revenue
+        >>> normalizer = NormalizationTransformer(
+        ...     normalization_type='percent_of',
+        ...     reference='revenue'
+        ... )
+        >>>
+        >>> # Transform the data
+        >>> normalized = normalizer.transform(data)
+        >>> print(normalized)
+        #       revenue  cogs  operating_expenses
+        # 2021    100.0  60.0               20.0
+        # 2022    100.0  59.1               20.0
+        # 2023    100.0  58.3               20.8
+
+        Scale financial data to millions:
+
+        >>> # Scale values to millions (divide by 1,000,000)
+        >>> scaler = NormalizationTransformer(
+        ...     normalization_type='scale_by',
+        ...     scale_factor=0.000001
+        ... )
+        >>> scaled = scaler.transform(data)
+
+    Note:
+        For 'percent_of' normalization, if a reference value is 0 or NaN,
+        the corresponding output for that row will be NaN to avoid division
+        by zero errors.
     """
 
     NORMALIZATION_TYPES: ClassVar[list[str]] = [t.value for t in NormalizationType]
@@ -36,19 +85,28 @@ class NormalizationTransformer(DataTransformer):
         scale_factor: Optional[float] = None,
         config: Optional[NormalizationConfig] = None,
     ):
-        """Initialize the normalizer.
+        """Initialize the normalizer with specified parameters.
 
         Args:
-            normalization_type: Type of normalization to apply
-                - 'percent_of': Divides by a reference value
-                - 'minmax': Scales to range [0,1]
-                - 'standard': Applies (x - mean) / std
-                - 'scale_by': Multiplies by a scale factor
-            reference: Reference field for percent_of normalization
-            scale_factor: Factor to scale by for scale_by normalization
-            config: Additional configuration options
+            normalization_type: Type of normalization to apply. Can be either
+                a string or NormalizationType enum value:
+                - 'percent_of': Express values as percentage of reference column
+                - 'minmax': Scale to [0,1] range
+                - 'standard': Apply z-score normalization
+                - 'scale_by': Multiply by scale_factor
+            reference: Name of the reference column for 'percent_of' normalization.
+                Required when normalization_type is 'percent_of'.
+            scale_factor: Multiplication factor for 'scale_by' normalization.
+                Required when normalization_type is 'scale_by'.
+                Common values: 0.001 (to thousands), 0.000001 (to millions)
+            config: Optional NormalizationConfig object containing configuration.
+                If provided, overrides other parameters.
+
+        Raises:
+            ValueError: If normalization_type is invalid, or if required
+                parameters are missing for the selected normalization type.
         """
-        super().__init__(config)
+        super().__init__(config.model_dump() if config else None)
         # Normalize enum to string
         if isinstance(normalization_type, NormalizationType):
             norm_type = normalization_type.value
@@ -83,10 +141,27 @@ class NormalizationTransformer(DataTransformer):
         """Normalize the data based on the configured normalization type.
 
         Args:
-            data: pd.DataFrame containing financial data
+            data: DataFrame containing financial data to normalize.
+                All columns will be normalized except the reference column
+                in 'percent_of' normalization.
 
         Returns:
-            pd.DataFrame: Normalized DataFrame
+            DataFrame with normalized values. Original column names are preserved
+            for all normalization types.
+
+        Raises:
+            TypeError: If data is not a pandas DataFrame.
+            ValueError: If reference column is not found in DataFrame
+                (for 'percent_of' normalization).
+
+        Examples:
+            >>> df = pd.DataFrame({'revenue': [100, 200], 'costs': [60, 120]})
+            >>> normalizer = NormalizationTransformer('percent_of', reference='revenue')
+            >>> result = normalizer.transform(df)
+            >>> print(result)
+            #    revenue  costs
+            # 0    100.0   60.0
+            # 1    100.0   60.0
         """
         if not isinstance(data, pd.DataFrame):
             raise TypeError(
@@ -95,7 +170,11 @@ class NormalizationTransformer(DataTransformer):
         return self._transform_dataframe(data)
 
     def _transform_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Transform a DataFrame."""
+        """Transform a DataFrame with the selected normalization method.
+
+        For 'percent_of' normalization, if a reference value is 0 or NaN,
+        the corresponding output for that row will be NaN.
+        """
         result = df.copy()
 
         if self.normalization_type == NormalizationType.PERCENT_OF.value:
@@ -106,7 +185,17 @@ class NormalizationTransformer(DataTransformer):
 
             for col in df.columns:
                 if col != self.reference:
-                    result[col] = df[col] / df[self.reference] * 100
+                    # Replace 0 with NaN in the denominator to ensure division by zero results in NaN
+                    reference_series = df[self.reference].replace(0, np.nan)
+                    if (
+                        reference_series.isnull().all()
+                    ):  # If all reference values are NaN (or were 0)
+                        result[col] = np.nan
+                        logger.warning(
+                            f"All reference values for '{self.reference}' are zero or NaN. '{col}' will be NaN."
+                        )
+                    else:
+                        result[col] = (df[col] / reference_series) * 100
 
         elif (
             self.normalization_type == NormalizationType.MINMAX.value
@@ -119,6 +208,11 @@ class NormalizationTransformer(DataTransformer):
                     result[col] = (df[col] - min_val) / (
                         max_val - min_val
                     )  # pragma: no cover
+                elif max_val == min_val:  # Handles constant columns
+                    result[col] = (
+                        0.0  # Or np.nan, depending on desired behavior for constant series
+                    )
+                # else: max_val < min_val (should not happen with .min()/.max())
 
         elif self.normalization_type == NormalizationType.STANDARD.value:
             for col in df.columns:
@@ -127,6 +221,9 @@ class NormalizationTransformer(DataTransformer):
 
                 if std > 0:
                     result[col] = (df[col] - mean) / std
+                elif std == 0:  # Handles constant columns
+                    result[col] = 0.0  # Or np.nan, depending on desired behavior
+                # else: std < 0 (not possible)
 
         elif self.normalization_type == NormalizationType.SCALE_BY.value:
             for col in df.columns:

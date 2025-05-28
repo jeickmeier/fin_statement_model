@@ -10,6 +10,5 @@ from .period_conversion import PeriodConversionTransformer
 __all__ = [
     "NormalizationTransformer",
     "PeriodConversionTransformer",
-    "StatementFormattingTransformer",
     "TimeSeriesTransformer",
 ]
