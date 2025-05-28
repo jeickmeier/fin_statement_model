@@ -8,7 +8,7 @@ import pandas as pd
 from typing import Optional, Union, ClassVar
 
 from fin_statement_model.preprocessing.base_transformer import DataTransformer
-from fin_statement_model.preprocessing.types import PeriodConversionConfig
+from fin_statement_model.preprocessing.config import PeriodConversionConfig
 from fin_statement_model.preprocessing.enums import ConversionType
 
 # Configure logging
@@ -28,7 +28,9 @@ class PeriodConversionTransformer(DataTransformer):
 
     def __init__(
         self,
-        conversion_type: Union[str, ConversionType] = ConversionType.QUARTERLY_TO_ANNUAL,
+        conversion_type: Union[
+            str, ConversionType
+        ] = ConversionType.QUARTERLY_TO_ANNUAL,
         aggregation: str = "sum",
         config: Optional[PeriodConversionConfig] = None,
     ):
@@ -71,7 +73,9 @@ class PeriodConversionTransformer(DataTransformer):
                 data = data.copy()
                 data.index = pd.to_datetime(data.index, format="%Y-%m-%d")
             except Exception:
-                raise ValueError("Index must be convertible to datetime for period conversion")
+                raise ValueError(
+                    "Index must be convertible to datetime for period conversion"
+                )
 
         if self.conversion_type == ConversionType.QUARTERLY_TO_ANNUAL.value:
             # Group by year and aggregate
@@ -79,7 +83,9 @@ class PeriodConversionTransformer(DataTransformer):
 
         elif self.conversion_type == ConversionType.MONTHLY_TO_QUARTERLY.value:
             # Group by year and quarter
-            return data.groupby([data.index.year, data.index.quarter]).agg(self.aggregation)
+            return data.groupby([data.index.year, data.index.quarter]).agg(
+                self.aggregation
+            )
 
         elif self.conversion_type == ConversionType.MONTHLY_TO_ANNUAL.value:
             # Group by year
@@ -91,6 +97,8 @@ class PeriodConversionTransformer(DataTransformer):
                 return data.rolling(window=4).sum()
             else:
                 # For other aggregation methods, we need custom logic
-                raise ValueError("annual_to_ttm conversion only supports 'sum' aggregation")
+                raise ValueError(
+                    "annual_to_ttm conversion only supports 'sum' aggregation"
+                )
 
         return data  # pragma: no cover

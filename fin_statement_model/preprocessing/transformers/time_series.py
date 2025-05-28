@@ -7,7 +7,7 @@ moving averages, CAGR, year-over-year, and quarter-over-quarter conversions.
 import pandas as pd
 from typing import Union, Optional, ClassVar
 
-from fin_statement_model.preprocessing.types import TimeSeriesConfig
+from fin_statement_model.preprocessing.config import TimeSeriesConfig
 from fin_statement_model.preprocessing.enums import TransformationType
 from fin_statement_model.preprocessing.base_transformer import DataTransformer
 
@@ -26,7 +26,9 @@ class TimeSeriesTransformer(DataTransformer):
 
     def __init__(
         self,
-        transformation_type: Union[str, TransformationType] = TransformationType.GROWTH_RATE,
+        transformation_type: Union[
+            str, TransformationType
+        ] = TransformationType.GROWTH_RATE,
         periods: int = 1,
         window_size: int = 3,
         config: Optional[TimeSeriesConfig] = None,
@@ -69,7 +71,9 @@ class TimeSeriesTransformer(DataTransformer):
             pd.DataFrame: Transformed DataFrame
         """
         if not isinstance(data, pd.DataFrame):
-            raise TypeError(f"Unsupported data type: {type(data)}. Expected pandas.DataFrame")
+            raise TypeError(
+                f"Unsupported data type: {type(data)}. Expected pandas.DataFrame"
+            )
         return self._transform_dataframe(data)
 
     def _transform_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
