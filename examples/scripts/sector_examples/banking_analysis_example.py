@@ -12,8 +12,7 @@ from fin_statement_model.core.metrics import (
 )
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.core.nodes.base import Node
-from fin_statement_model.io.node_name_validator import NodeNameValidator
-from fin_statement_model.io.context_aware_validator import ContextAwareNodeValidator
+from fin_statement_model.io.validation import UnifiedNodeValidator
 from fin_statement_model.core.nodes.calculation_nodes import (
     FormulaCalculationNode,
     CustomCalculationNode,
@@ -45,8 +44,8 @@ def validate_node_names_example() -> dict[str, str]:
 
     print(f"Raw node names to validate: {raw_node_names}")
 
-    # Create basic validator
-    validator = NodeNameValidator(
+    # Create unified validator
+    validator = UnifiedNodeValidator(
         strict_mode=False,  # Allow alternate names
         auto_standardize=True,  # Convert to standard names
         warn_on_non_standard=True,  # Log warnings for non-standard names
@@ -57,24 +56,28 @@ def validate_node_names_example() -> dict[str, str]:
 
     print("\n--- Basic Validation Results ---")
     standardized_mapping = {}
-    for original_name, (
-        standardized_name,
-        is_valid,
-        message,
-    ) in validation_results.items():
-        print(f"'{original_name}' -> '{standardized_name}' (Valid: {is_valid})")
-        print(f"  Message: {message}")
-        standardized_mapping[original_name] = standardized_name
+    for original_name, result in validation_results.items():
+        print(f"'{original_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})")
+        print(f"  Category: {result.category}")
+        print(f"  Message: {result.message}")
+        if result.suggestions:
+            print(f"  Suggestions: {result.suggestions}")
+        standardized_mapping[original_name] = result.standardized_name
 
     # Get validation summary
-    summary = validator.get_validation_summary()
     print("\n--- Validation Summary ---")
-    print(f"Total validated: {summary['total_validated']}")
-    print(f"Valid: {summary['valid']}")
-    print(f"Invalid: {summary['invalid']}")
-    print(f"Standard names: {summary['standard_names']}")
-    print(f"Alternate names: {summary['alternate_names']}")
-    print(f"Unrecognized names: {summary['unrecognized_names']}")
+    print(f"Total validated: {len(validation_results)}")
+    valid_count = sum(1 for r in validation_results.values() if r.is_valid)
+    print(f"Valid: {valid_count}")
+    print(f"Invalid: {len(validation_results) - valid_count}")
+
+    # Count by category
+    categories = {}
+    for result in validation_results.values():
+        categories[result.category] = categories.get(result.category, 0) + 1
+
+    for category, count in categories.items():
+        print(f"{category}: {count}")
 
     return standardized_mapping
 
@@ -83,12 +86,11 @@ def context_aware_validation_example():
     """Demonstrate context-aware node validation."""
     print("\n=== Context-Aware Validation Example ===")
 
-    # Create context-aware validator
-    context_validator = ContextAwareNodeValidator(
+    # Create unified validator with pattern recognition
+    validator = UnifiedNodeValidator(
         strict_mode=False,
         auto_standardize=True,
-        validate_subnodes=True,
-        validate_formulas=True,
+        enable_patterns=True,  # Enable pattern recognition
     )
 
     # Example node names with different patterns
@@ -115,15 +117,13 @@ def context_aware_validation_example():
 
     print("--- Context-Aware Validation Results ---")
     for node_name, node_type, parent_nodes in test_nodes:
-        standardized, is_valid, message, category = context_validator.validate_node(
-            node_name, node_type=node_type, parent_nodes=parent_nodes
-        )
+        result = validator.validate(node_name, node_type=node_type, parent_nodes=parent_nodes)
 
         print(f"Node: '{node_name}' (Type: {node_type})")
-        print(f"  Standardized: '{standardized}'")
-        print(f"  Valid: {is_valid}")
-        print(f"  Category: {category}")
-        print(f"  Message: {message}")
+        print(f"  Standardized: '{result.standardized_name}'")
+        print(f"  Valid: {result.is_valid}")
+        print(f"  Category: {result.category}")
+        print(f"  Message: {result.message}")
         if parent_nodes:
             print(f"  Parent nodes: {parent_nodes}")
         print()
@@ -134,7 +134,7 @@ def create_validated_bank_data() -> dict[str, FinancialStatementItemNode]:
     print("\n=== Creating Validated Bank Data ===")
 
     # Create validator
-    validator = NodeNameValidator(auto_standardize=True)
+    validator = UnifiedNodeValidator(auto_standardize=True)
 
     # Raw data with potentially non-standard names
     raw_data_mapping = {
@@ -159,14 +159,16 @@ def create_validated_bank_data() -> dict[str, FinancialStatementItemNode]:
 
     for raw_name, values in raw_data_mapping.items():
         # Validate and standardize the name
-        standardized_name, is_valid, message = validator.validate_and_standardize(raw_name)
+        result = validator.validate(raw_name)
 
-        print(f"  '{raw_name}' -> '{standardized_name}' (Valid: {is_valid})")
-        if message:
-            print(f"    Note: {message}")
+        print(f"  '{raw_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})")
+        if result.message:
+            print(f"    Note: {result.message}")
 
         # Create node with standardized name
-        validated_nodes[standardized_name] = FinancialStatementItemNode(standardized_name, values)
+        validated_nodes[result.standardized_name] = FinancialStatementItemNode(
+            result.standardized_name, values
+        )
 
     return validated_nodes
 
@@ -752,15 +754,17 @@ def demonstrate_validation_in_metrics(
     }
 
     # Create validator to check metric inputs
-    validator = NodeNameValidator(auto_standardize=True)
+    validator = UnifiedNodeValidator(auto_standardize=True)
 
     print("Checking metric input node names:")
     standardized_inputs = {}
     for input_name, node in test_metric_inputs.items():
         if node is not None:
-            standardized_name, is_valid, message = validator.validate_and_standardize(input_name)
-            print(f"  Input '{input_name}' -> '{standardized_name}' (Valid: {is_valid})")
-            standardized_inputs[standardized_name] = node
+            result = validator.validate(input_name)
+            print(
+                f"  Input '{input_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})"
+            )
+            standardized_inputs[result.standardized_name] = node
         else:
             print(f"  Input '{input_name}' -> Node not found in data")
 

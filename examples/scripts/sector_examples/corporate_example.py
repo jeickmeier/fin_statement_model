@@ -6,7 +6,7 @@ It includes:
 - Generating the statement DataFrame based on the config.
 
 NEW FEATURES ADDED:
-- Node name validation and normalization using NodeNameValidator and ContextAwareNodeValidator
+- Node name validation and normalization using UnifiedNodeValidator
 - Automatic standardization of alternate node names (e.g., 'cash' -> 'cash_and_equivalents')
 - Recognition of sub-node patterns (e.g., 'revenue_q1', 'revenue_2024')
 - Formula node pattern detection (e.g., 'gross_margin', 'debt_ratio')
@@ -29,9 +29,8 @@ from fin_statement_model.statements import create_statement_dataframe
 from fin_statement_model.io import write_data  # Import the forecaster
 from fin_statement_model.forecasting.forecaster import StatementForecaster
 
-# Import validators
-from fin_statement_model.io.node_name_validator import NodeNameValidator
-from fin_statement_model.io.context_aware_validator import ContextAwareNodeValidator
+# Import unified validator
+from fin_statement_model.io.validation import UnifiedNodeValidator
 
 # --- 1. Setup ---
 
@@ -74,18 +73,12 @@ historical_data = {
 
 print("Validating and normalizing node names...")
 
-# Create validators
-basic_validator = NodeNameValidator(
+# Create unified validator
+validator = UnifiedNodeValidator(
     strict_mode=False,  # Allow alternate names
     auto_standardize=True,  # Automatically convert to standard names
     warn_on_non_standard=True,  # Warn about non-standard names
-)
-
-context_validator = ContextAwareNodeValidator(
-    strict_mode=False,  # Allow non-standard names for flexibility
-    auto_standardize=True,  # Convert alternate names to standard
-    validate_subnodes=True,  # Validate sub-node patterns
-    validate_formulas=True,  # Check formula node patterns
+    enable_patterns=True,  # Enable pattern recognition for sub-nodes and formulas
 )
 
 # Demonstrate validation with some non-standard names
@@ -107,19 +100,11 @@ demo_names = [
 print(f"Demo names to validate: {demo_names}")
 
 for demo_name in demo_names:
-    std_name, is_valid, message = basic_validator.validate_and_standardize(demo_name)
-    print(f"  Basic: '{demo_name}' -> '{std_name}' ({message})")
+    result = validator.validate(demo_name)
+    print(f"  '{demo_name}' -> '{result.standardized_name}' [{result.category}] ({result.message})")
 
-    # Also try context-aware validation
-    ctx_std_name, ctx_is_valid, ctx_message, ctx_category = context_validator.validate_node(
-        demo_name
-    )
-    print(f"  Context: '{demo_name}' -> '{ctx_std_name}' [{ctx_category}] ({ctx_message})")
-
-    # Get suggestions for improvement
-    suggestions = context_validator.suggest_naming_improvements(demo_name)
-    if suggestions:
-        print(f"    Suggestions: {suggestions[:2]}")  # Show first 2 suggestions
+    if result.suggestions:
+        print(f"    Suggestions: {result.suggestions[:2]}")  # Show first 2 suggestions
     print()
 
 print("=== END DEMONSTRATION ===\n")
@@ -128,41 +113,47 @@ print("=== END DEMONSTRATION ===\n")
 original_node_names = list(historical_data.keys())
 print(f"Original node names: {original_node_names}")
 
-# Use basic validator first
-basic_results = basic_validator.validate_batch(original_node_names)
+# Use unified validator
+validation_results = validator.validate_batch(original_node_names)
 
 # Create normalized historical data
 normalized_historical_data = {}
 name_changes = []
 
-for original_name in original_node_names:
-    standardized_name, is_valid, message = basic_results[original_name]
-
-    if standardized_name != original_name:
-        name_changes.append((original_name, standardized_name))
-        print(f"  Normalized: '{original_name}' -> '{standardized_name}' ({message})")
+for original_name, result in validation_results.items():
+    if result.standardized_name != original_name:
+        name_changes.append((original_name, result.standardized_name))
+        print(f"  Normalized: '{original_name}' -> '{result.standardized_name}' ({result.message})")
     else:
-        print(f"  Validated: '{original_name}' - {message}")
+        print(f"  Validated: '{original_name}' - {result.message}")
 
     # Copy data with standardized name
-    normalized_historical_data[standardized_name] = historical_data[original_name]
+    normalized_historical_data[result.standardized_name] = historical_data[original_name]
 
 # Show validation summary
-validation_summary = basic_validator.get_validation_summary()
 print("\nValidation Summary:")
-print(f"  Total nodes validated: {validation_summary['total_validated']}")
-print(f"  Valid nodes: {validation_summary['valid']}")
-print(f"  Standard names: {validation_summary['standard_names']}")
-print(f"  Alternate names: {validation_summary['alternate_names']}")
-print(f"  Unrecognized names: {validation_summary['unrecognized_names']}")
+print(f"  Total nodes validated: {len(validation_results)}")
+valid_count = sum(1 for r in validation_results.values() if r.is_valid)
+print(f"  Valid nodes: {valid_count}")
+print(f"  Invalid nodes: {len(validation_results) - valid_count}")
 
-if validation_summary["details"]["unrecognized"]:
-    print(f"  Unrecognized node names: {validation_summary['details']['unrecognized']}")
-    # Use context-aware validator for suggestions
-    for unrecognized_name in validation_summary["details"]["unrecognized"]:
-        suggestions = context_validator.suggest_naming_improvements(unrecognized_name)
-        if suggestions:
-            print(f"    Suggestions for '{unrecognized_name}': {suggestions}")
+# Count by category
+categories = {}
+for result in validation_results.values():
+    categories[result.category] = categories.get(result.category, 0) + 1
+
+for category, count in categories.items():
+    print(f"  {category}: {count}")
+
+# Show unrecognized names with suggestions
+unrecognized = [
+    name for name, result in validation_results.items() if result.category in ["custom", "invalid"]
+]
+if unrecognized:
+    print(f"\nUnrecognized node names: {unrecognized}")
+    for name in unrecognized:
+        if validation_results[name].suggestions:
+            print(f"  Suggestions for '{name}': {validation_results[name].suggestions}")
 
 # Update historical_data to use normalized names
 historical_data = normalized_historical_data
@@ -209,10 +200,10 @@ for original_name, config in {
     "income_tax": {"method": "historical_growth"},  # Tax expense based on historical growth
 }.items():
     # Validate and normalize forecast config keys
-    standardized_name, _, _ = basic_validator.validate_and_standardize(original_name)
-    normalized_forecast_configs[standardized_name] = config
-    if standardized_name != original_name:
-        print(f"  Forecast config: '{original_name}' -> '{standardized_name}'")
+    result = validator.validate(original_name)
+    normalized_forecast_configs[result.standardized_name] = config
+    if result.standardized_name != original_name:
+        print(f"  Forecast config: '{original_name}' -> '{result.standardized_name}'")
 
 forecast_configs = normalized_forecast_configs
 
@@ -231,32 +222,53 @@ except FinancialModelError as e:
 
 # --- 3c. Post-Graph Node Validation ---
 
-print("\nValidating graph nodes with context-aware validator...")
+print("\nValidating graph nodes with unified validator...")
 
 # Get all nodes from the graph
 graph_nodes = list(graph.nodes.values())
 print(f"Graph contains {len(graph_nodes)} nodes")
 
-# Use context-aware validator to analyze the graph nodes
-context_results = context_validator.validate_graph_nodes(graph_nodes)
+# Validate each node in the graph
+node_validation_results = {}
+for node in graph_nodes:
+    # Determine node type and parent nodes for context-aware validation
+    node_type = "data"  # Default to data node
+    parent_nodes = None
+
+    if hasattr(node, "inputs") and node.inputs:
+        node_type = "calculation"
+        # Extract parent node names
+        if isinstance(node.inputs, dict):
+            parent_nodes = list(node.inputs.keys())
+        elif isinstance(node.inputs, list):
+            parent_nodes = [n.name for n in node.inputs if hasattr(n, "name")]
+
+    result = validator.validate(node.name, node_type=node_type, parent_nodes=parent_nodes)
+    node_validation_results[node.name] = result
 
 # Display categorized results
-for category, nodes in context_results.items():
+categories_in_graph = {}
+for node_name, result in node_validation_results.items():
+    category = result.category
+    if category not in categories_in_graph:
+        categories_in_graph[category] = []
+    categories_in_graph[category].append(
+        {"name": node_name, "message": result.message, "standardized": result.standardized_name}
+    )
+
+for category, nodes in categories_in_graph.items():
     if nodes:  # Only show categories that have nodes
         print(f"\n{category.upper()} nodes ({len(nodes)}):")
         for node_info in nodes:
             print(f"  - {node_info['name']}: {node_info['message']}")
-            if node_info.get("parents"):
-                print(f"    Dependencies: {node_info['parents']}")
 
 # Show any naming improvement suggestions
 print("\nNaming improvement suggestions:")
 suggestions_found = False
-for node in graph_nodes:
-    suggestions = context_validator.suggest_naming_improvements(node.name)
-    if suggestions:
+for node_name, result in node_validation_results.items():
+    if result.suggestions:
         suggestions_found = True
-        print(f"  {node.name}: {suggestions}")
+        print(f"  {node_name}: {result.suggestions}")
 
 if not suggestions_found:
     print("  All node names are using standard conventions - no improvements needed!")

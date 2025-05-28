@@ -1,0 +1,83 @@
+"""Forecasting sub-module for financial statement models.
+
+This module provides comprehensive forecasting capabilities including:
+- Multiple forecast methods (simple, curve, statistical, average, historical growth)
+- Mutating and non-mutating forecast operations
+- Extensible architecture for custom forecast methods
+- Period management and validation utilities
+
+Example:
+    >>> from fin_statement_model.forecasting import StatementForecaster
+    >>> forecaster = StatementForecaster(graph)
+    >>>
+    >>> # Mutating forecast - modifies the graph
+    >>> forecaster.create_forecast(
+    ...     forecast_periods=['2024', '2025'],
+    ...     node_configs={
+    ...         'revenue': {'method': 'simple', 'config': 0.05},
+    ...         'costs': {'method': 'curve', 'config': [0.03, 0.04]}
+    ...     }
+    ... )
+    >>>
+    >>> # Non-mutating forecast - returns values without modifying graph
+    >>> values = forecaster.forecast_value(
+    ...     'revenue',
+    ...     forecast_periods=['2024', '2025'],
+    ...     forecast_config={'method': 'simple', 'config': 0.05}
+    ... )
+"""
+
+# Main forecaster class
+from .forecaster import StatementForecaster
+
+# Forecast methods
+from .methods import (
+    ForecastMethod,
+    BaseForecastMethod,
+    SimpleForecastMethod,
+    CurveForecastMethod,
+    StatisticalForecastMethod,
+    AverageForecastMethod,
+    HistoricalGrowthForecastMethod,
+)
+
+# Registry and strategies
+from .strategies import (
+    ForecastMethodRegistry,
+    forecast_registry,
+    get_forecast_method,
+    register_forecast_method,
+)
+
+# Utilities
+from .period_manager import PeriodManager
+from .validators import ForecastValidator
+
+# Types
+from .types import (
+    ForecastMethodType,
+    ForecastConfig,
+    StatisticalConfig,
+    ForecastResult,
+)
+
+__all__ = [
+    "AverageForecastMethod",
+    "BaseForecastMethod",
+    "CurveForecastMethod",
+    "ForecastConfig",
+    "ForecastMethod",
+    "ForecastMethodRegistry",
+    "ForecastMethodType",
+    "ForecastResult",
+    "ForecastValidator",
+    "HistoricalGrowthForecastMethod",
+    "PeriodManager",
+    "SimpleForecastMethod",
+    "StatementForecaster",
+    "StatisticalConfig",
+    "StatisticalForecastMethod",
+    "forecast_registry",
+    "get_forecast_method",
+    "register_forecast_method",
+]

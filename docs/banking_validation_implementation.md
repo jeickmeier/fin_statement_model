@@ -129,20 +129,23 @@ These nodes enhance analysis quality:
 
 ### Basic Node Validation
 ```python
-from fin_statement_model.io.node_name_validator import NodeNameValidator
+from fin_statement_model.io.validation import UnifiedNodeValidator
 
-validator = NodeNameValidator(auto_standardize=True)
-standardized_name, is_valid, message = validator.validate_and_standardize("npl")
-# Result: ("non_performing_loans", True, "Standardized 'npl' to 'non_performing_loans'")
+validator = UnifiedNodeValidator(auto_standardize=True)
+result = validator.validate("npl")
+# Result: result.standardized_name = "non_performing_loans"
+#         result.is_valid = True
+#         result.message = "Standardized 'npl' to 'non_performing_loans'"
 ```
 
 ### Context-Aware Validation
 ```python
-from fin_statement_model.io.context_aware_validator import ContextAwareNodeValidator
+from fin_statement_model.io.validation import UnifiedNodeValidator
 
-validator = ContextAwareNodeValidator(strict_mode=False, auto_standardize=True)
-result = validator.validate_node("revenue_q1", node_type="data")
+validator = UnifiedNodeValidator(strict_mode=False, auto_standardize=True, enable_patterns=True)
+result = validator.validate("revenue_q1", node_type="data")
 # Recognizes as valid quarterly sub-node of revenue
+# result.category = "subnode"
 ```
 
 ### Data Completeness Check

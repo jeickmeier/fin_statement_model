@@ -1,236 +1,187 @@
-"""Examples of node name validation for different use cases.
+"""Examples demonstrating node name validation in the financial statement model."""
 
-This module demonstrates how to handle sub-nodes, formula nodes, and
-custom nodes while maintaining standard naming where appropriate.
-"""
-
-from fin_statement_model.io.node_name_validator import NodeNameValidator
-from fin_statement_model.io.context_aware_validator import ContextAwareNodeValidator
-from fin_statement_model.core.nodes import (
-    FinancialStatementItemNode,
-    FormulaCalculationNode,
-)
+from fin_statement_model.io.validation import UnifiedNodeValidator
+from fin_statement_model.io import read_data
 
 
 def example_basic_validation():
-    """Example: Basic validation with flexibility for sub-nodes."""
-    # Create a flexible validator (default settings)
-    validator = NodeNameValidator(
-        strict_mode=False,  # Allow non-standard names
-        auto_standardize=True,  # Standardize known alternates
-        warn_on_non_standard=True,  # Warn about non-standard names
+    """Basic validation example."""
+    print("=== Basic Validation Example ===")
+
+    validator = UnifiedNodeValidator(
+        strict_mode=False, auto_standardize=True, warn_on_non_standard=True
     )
 
-    # Example node names including sub-nodes
-    node_names = [
-        # Standard names
-        "revenue",
-        "cost_of_goods_sold",
-        "operating_income",
-        # Alternate names (will be standardized)
-        "sales",  # -> revenue
-        "cogs",  # -> cost_of_goods_sold
-        # Sub-nodes (allowed, with warnings)
-        "revenue_north_america",
-        "revenue_europe",
-        "revenue_asia_pacific",
-        "revenue_product_a",
-        "revenue_product_b",
-        # Time-based sub-nodes
-        "revenue_q1",
-        "revenue_q2",
-        "revenue_2023",
-        "revenue_2024",
-        # Formula nodes
-        "gross_margin_pct",
-        "operating_margin_ratio",
-        "revenue_growth_yoy",
+    # Test various node names
+    test_names = [
+        "revenue",  # Standard name
+        "sales",  # Alternate name
+        "total_revenue",  # Custom name
+        "revenue_q1",  # Sub-node pattern
+        "gross_margin",  # Formula pattern
     ]
 
-    print("=== Basic Validation Example ===")
-    for name in node_names:
-        std_name, is_valid, message = validator.validate_and_standardize(name)
-        print(f"{name:30} -> {std_name:30} Valid: {is_valid} ({message})")
+    for name in test_names:
+        result = validator.validate(name)
+        print(f"\nNode: '{name}'")
+        print(f"  Standardized: '{result.standardized_name}'")
+        print(f"  Valid: {result.is_valid}")
+        print(f"  Category: {result.category}")
+        print(f"  Message: {result.message}")
+        if result.suggestions:
+            print(f"  Suggestions: {result.suggestions}")
+
+    # Batch validation
+    print("\n--- Batch Validation ---")
+    results = validator.validate_batch(test_names)
+    for name, result in results.items():
+        print(f"{name}: {result.category} - {result.standardized_name}")
 
 
 def example_context_aware_validation():
-    """Example: Context-aware validation that understands relationships."""
-    # Create context-aware validator
-    validator = ContextAwareNodeValidator(
-        strict_mode=False, validate_subnodes=True, validate_formulas=True
+    """Context-aware validation with parent nodes."""
+    print("\n=== Context-Aware Validation Example ===")
+
+    validator = UnifiedNodeValidator(
+        strict_mode=False,
+        enable_patterns=True,  # Enable pattern recognition
     )
 
-    # Example validations with context
+    # Test with context
     test_cases = [
-        # (name, node_type, parent_nodes)
-        ("revenue", "data", None),
-        ("revenue_north_america", "data", None),
-        ("revenue_q1_2024", "data", None),
-        ("gross_profit_margin", "formula", ["gross_profit", "revenue"]),
-        ("ebitda_adjustment", "calculation", ["ebitda"]),
-        ("custom_metric_123", "calculation", None),
+        ("revenue_margin", "calculation", ["revenue", "gross_profit"]),
+        ("debt_equity_ratio", "formula", ["total_debt", "total_equity"]),
+        ("revenue_north_america", "data", ["revenue"]),
+        ("custom_metric", "calculation", ["revenue", "expenses"]),
     ]
 
-    print("\n=== Context-Aware Validation Example ===")
-    for name, node_type, parents in test_cases:
-        std_name, is_valid, message, category = validator.validate_node(
-            name, node_type=node_type, parent_nodes=parents
-        )
-        print(f"{name:30} Category: {category:20} Valid: {is_valid}")
-        print(f"   Message: {message}")
+    for name, node_type, parent_nodes in test_cases:
+        result = validator.validate(name, node_type=node_type, parent_nodes=parent_nodes)
+        print(f"\nNode: '{name}' (Type: {node_type})")
+        print(f"  Parents: {parent_nodes}")
+        print(f"  Category: {result.category}")
+        print(f"  Valid: {result.is_valid}")
+        print(f"  Message: {result.message}")
 
 
 def example_graph_building_with_validation():
-    """Example: Building a graph with mixed node names."""
-    from fin_statement_model.core.graph import Graph
+    """Build a graph with validation."""
+    print("\n=== Graph Building with Validation ===")
 
-    # Create a graph
-    graph = Graph()
-
-    # Create a flexible validator
-    validator = NodeNameValidator(strict_mode=False)
-
-    # Regional revenue nodes (sub-nodes)
-    regional_revenues = {
-        "revenue_north_america": [100, 110, 120],
-        "revenue_europe": [80, 85, 90],
-        "revenue_asia_pacific": [60, 70, 80],
-        "revenue_other": [20, 22, 25],
+    # Create data with potentially non-standard names
+    raw_data = {
+        "sales": {"2021": 1000, "2022": 1100, "2023": 1200},
+        "cogs": {"2021": 600, "2022": 650, "2023": 700},
+        "opex": {"2021": 200, "2022": 210, "2023": 220},
+        "custom_item": {"2021": 50, "2022": 55, "2023": 60},
     }
 
-    # Add regional revenue nodes
-    regional_nodes = {}
-    for name, values in regional_revenues.items():
-        # Validate but don't standardize (we want to keep the regional detail)
-        _, is_valid, _ = validator.validate_and_standardize(name)
-        if is_valid:
-            node = FinancialStatementItemNode(name=name, values=values)
-            graph.add_node(node)
-            regional_nodes[name] = node
+    validator = UnifiedNodeValidator(strict_mode=False)
 
-    # Add total revenue node (sums up regions) - Fixed to use dict inputs
-    total_revenue = FormulaCalculationNode(
-        name="revenue",  # Standard name
-        inputs=regional_nodes,  # Dictionary of name -> node
-        formula="revenue_north_america + revenue_europe + revenue_asia_pacific + revenue_other",
+    # Validate and standardize before creating graph
+    standardized_data = {}
+    for name, values in raw_data.items():
+        result = validator.validate(name)
+        if result.is_valid:
+            standardized_data[result.standardized_name] = values
+            if result.standardized_name != name:
+                print(f"Standardized '{name}' to '{result.standardized_name}'")
+        else:
+            print(f"Warning: '{name}' is invalid - {result.message}")
+            # Still include it if not in strict mode
+            standardized_data[name] = values
+
+    # Create graph with standardized data
+    graph = read_data("dict", standardized_data)
+
+    # Add calculations
+    graph.add_calculation(
+        name="gross_profit",
+        input_names=["revenue", "cost_of_goods_sold"],
+        operation_type="addition",
     )
-    graph.add_node(total_revenue)
 
-    # Add COGS and gross profit
-    cogs = FinancialStatementItemNode(
-        name="cost_of_goods_sold",  # Standard name
-        values=[150, 160, 170],
-    )
-    graph.add_node(cogs)
+    # Validate the entire graph
+    print("\n--- Graph Validation Report ---")
+    report = validator.validate_graph(list(graph.nodes.values()))
 
-    gross_profit = FormulaCalculationNode(
-        name="gross_profit",  # Standard name
-        inputs={"revenue": total_revenue, "cost_of_goods_sold": cogs},
-        formula="revenue - cost_of_goods_sold",
-    )
-    graph.add_node(gross_profit)
+    print(f"Total nodes: {report['total']}")
+    print(f"Valid: {report['by_validity']['valid']}")
+    print(f"Invalid: {report['by_validity']['invalid']}")
 
-    # Add a margin calculation (formula node)
-    gross_margin = FormulaCalculationNode(
-        name="gross_profit_margin",  # Formula pattern node
-        inputs={"gross_profit": gross_profit, "revenue": total_revenue},
-        formula="gross_profit / revenue * 100",
-    )
-    graph.add_node(gross_margin)
+    print("\nBy category:")
+    for category, nodes in report["by_category"].items():
+        print(f"  {category}: {len(nodes)} nodes")
 
-    print("\n=== Graph Building Example ===")
-    print(f"Total nodes in graph: {len(graph.nodes)}")
-    print("\nNodes by type:")
+    if report["suggestions"]:
+        print("\nSuggestions for improvement:")
+        for node_name, suggestions in report["suggestions"].items():
+            print(f"  {node_name}:")
+            for suggestion in suggestions:
+                print(f"    - {suggestion}")
 
-    # Validate all nodes with context
-    context_validator = ContextAwareNodeValidator()
-    results = context_validator.validate_graph_nodes(list(graph.nodes.values()))
-
-    for category, nodes in results.items():
-        if nodes:
-            print(f"\n{category.upper()}:")
-            for node_info in nodes:
-                print(f"  - {node_info['name']}")
+    return graph
 
 
 def example_strict_vs_flexible():
-    """Example: Difference between strict and flexible validation."""
-    # Strict validator - only allows standard names
-    strict_validator = NodeNameValidator(strict_mode=True, auto_standardize=True)
-
-    # Flexible validator - allows custom names
-    flexible_validator = NodeNameValidator(strict_mode=False, auto_standardize=True)
-
-    test_names = [
-        "revenue",  # Standard
-        "sales",  # Alternate for revenue
-        "revenue_europe",  # Sub-node
-        "custom_adjustment",  # Custom
-    ]
-
+    """Compare strict vs flexible validation modes."""
     print("\n=== Strict vs Flexible Validation ===")
-    print("Name                    | Strict Valid | Flexible Valid")
-    print("-" * 55)
 
+    strict_validator = UnifiedNodeValidator(strict_mode=True, auto_standardize=True)
+    flexible_validator = UnifiedNodeValidator(strict_mode=False, auto_standardize=True)
+
+    test_names = ["revenue", "sales", "custom_metric", "revenue_q1"]
+
+    print("Strict Mode Results:")
     for name in test_names:
-        _, strict_valid, _ = strict_validator.validate_and_standardize(name)
-        _, flex_valid, _ = flexible_validator.validate_and_standardize(name)
-        print(f"{name:23} | {strict_valid!s:12} | {flex_valid!s:12}")
+        result = strict_validator.validate(name)
+        print(f"  {name}: Valid={result.is_valid}, Category={result.category}")
+
+    print("\nFlexible Mode Results:")
+    for name in test_names:
+        result = flexible_validator.validate(name)
+        print(f"  {name}: Valid={result.is_valid}, Category={result.category}")
 
 
 def example_reader_integration():
-    """Example: Using validation in a data reader."""
-    # Simulated data from Excel/CSV
-    raw_data = {
-        "Sales": [1000, 1100, 1200],  # Will standardize to revenue
-        "Revenue - North America": [600, 650, 700],  # Sub-node
-        "Revenue - Europe": [400, 450, 500],  # Sub-node
-        "Cost of Sales": [600, 650, 700],  # Will standardize to COGS
-        "Gross Margin %": [40, 41, 42],  # Formula node
-        "EBITDA Adjustment": [10, 12, 15],  # Custom node
+    """Show validation integrated with data readers."""
+    print("\n=== Reader Integration Example ===")
+
+    # Simulate reading from Excel with non-standard names
+    excel_data = {
+        "Sales Revenue": {"2021": 1000, "2022": 1100, "2023": 1200},
+        "Cost of Sales": {"2021": 600, "2022": 650, "2023": 700},
+        "Operating Expenses": {"2021": 200, "2022": 210, "2023": 220},
     }
 
-    # Create validator for reader
-    validator = NodeNameValidator(strict_mode=False, auto_standardize=True)
+    # Create mapping based on validation
+    validator = UnifiedNodeValidator(strict_mode=False, auto_standardize=True)
 
-    print("\n=== Reader Integration Example ===")
-    print("Original Name           | Standardized Name      | Category")
-    print("-" * 70)
+    mapping = {}
+    for excel_name in excel_data:
+        # Try to find a match by checking various possibilities
+        test_name = excel_name.lower().replace(" ", "_")
+        result = validator.validate(test_name)
 
-    # Process data with validation
-    processed_data = {}
-    for original_name, values in raw_data.items():
-        # Clean the name (remove extra spaces, normalize)
-        clean_name = original_name.lower().replace(" - ", "_").replace(" ", "_")
-
-        # Validate and potentially standardize
-        std_name, is_valid, message = validator.validate_and_standardize(clean_name)
-
-        # Determine category
-        if "sales" in clean_name and std_name == "revenue":
-            category = "standardized"
-        elif "_" in std_name and any(region in std_name for region in ["north", "europe"]):
-            category = "sub-node"
-        elif "%" in original_name or "margin" in std_name:
-            category = "formula"
+        if result.is_valid:
+            mapping[excel_name] = result.standardized_name
+            print(f"Mapped '{excel_name}' to '{result.standardized_name}'")
         else:
-            category = "custom"
+            # Use as-is if no match found
+            mapping[excel_name] = excel_name
+            print(f"No mapping found for '{excel_name}', using as-is")
 
-        processed_data[std_name] = values
-        print(f"{original_name:23} | {std_name:23} | {category}")
-
-    # Show validation summary
-    summary = validator.get_validation_summary()
-    print("\nValidation Summary:")
-    print(f"  Standard names: {summary['standard_names']}")
-    print(f"  Alternate names: {summary['alternate_names']}")
-    print(f"  Unrecognized names: {summary['unrecognized_names']}")
+    print(f"\nFinal mapping: {mapping}")
 
 
-if __name__ == "__main__":
-    # Run all examples
+def main():
+    """Run all validation examples."""
     example_basic_validation()
     example_context_aware_validation()
     example_graph_building_with_validation()
     example_strict_vs_flexible()
     example_reader_integration()
+
+
+if __name__ == "__main__":
+    main()

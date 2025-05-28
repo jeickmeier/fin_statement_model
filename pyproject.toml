@@ -122,7 +122,7 @@ allow-star-arg-any = true        # Allow *args and **kwargs without explicit typ
 # Configuration for mypy - although mypy runs separately, ruff can integrate some checks
 # This section remains top-level as it's for the mypy tool itself
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.12"
 strict = true
 warn_unused_ignores = true
 warn_redundant_casts = true

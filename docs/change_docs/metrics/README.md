@@ -52,18 +52,20 @@ The library now includes a **Standard Node Registry** that defines and enforces 
 
 3. **Node Name Validation**: Use the validator when importing data
    ```python
-   from fin_statement_model.io.node_name_validator import NodeNameValidator
+   from fin_statement_model.io.validation import UnifiedNodeValidator
    
    # Create a validator
-   validator = NodeNameValidator(
+   validator = UnifiedNodeValidator(
        strict_mode=False,        # Allow non-standard names with warnings
        auto_standardize=True,    # Convert alternates to standard names
        warn_on_non_standard=True # Log warnings for unrecognized names
    )
    
    # Validate and standardize a name
-   std_name, is_valid, msg = validator.validate_and_standardize("sales")
-   # Returns: ("revenue", True, "Standardized 'sales' to 'revenue'")
+   result = validator.validate("sales")
+   # result.standardized_name = "revenue"
+   # result.is_valid = True
+   # result.message = "Standardized 'sales' to 'revenue'"
    ```
 
 4. **Sign Conventions**: The registry tracks whether values are typically positive or negative
@@ -84,14 +86,16 @@ The library now includes a **Standard Node Registry** that defines and enforces 
 
 ```python
 # In a CSV reader
-validator = NodeNameValidator(auto_standardize=True)
+from fin_statement_model.io.validation import UnifiedNodeValidator
+
+validator = UnifiedNodeValidator(auto_standardize=True)
 
 for row in csv_data:
     original_name = row['item_name']
-    std_name, _, _ = validator.validate_and_standardize(original_name)
+    result = validator.validate(original_name)
     
     # Create node with standardized name
-    node = FinancialStatementItemNode(name=std_name, values=values)
+    node = FinancialStatementItemNode(name=result.standardized_name, values=values)
     graph.add_node(node)
 
 # Get validation summary

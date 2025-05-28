@@ -19,7 +19,7 @@ import yaml
 from contextlib import suppress
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.io.node_name_validator import NodeNameValidator
+from fin_statement_model.io.validation import UnifiedNodeValidator
 from fin_statement_model.io import read_data
 from fin_statement_model.statements import create_statement_dataframe
 from fin_statement_model.core.metrics import (
@@ -54,22 +54,26 @@ def step_1_validate_node_names() -> dict[str, str]:
     ]
     print(f"Raw node names: {raw_banking_names}")
 
-    validator = NodeNameValidator(auto_standardize=True, warn_on_non_standard=False)  # Quieter
+    validator = UnifiedNodeValidator(auto_standardize=True, warn_on_non_standard=False)  # Quieter
     validation_results = validator.validate_batch(raw_banking_names)
 
     standardized_mapping = {}
     print("\nValidation Mapping (Original -> Standardized | Status):")
-    for original, (standardized, is_valid, _) in validation_results.items():
-        status = "VALID" if is_valid else "INVALID/UNRECOGNIZED"
-        print(f"  '{original}' -> '{standardized}' | {status}")
-        if is_valid:
-            standardized_mapping[original] = standardized
+    for original, result in validation_results.items():
+        status = "VALID" if result.is_valid else "INVALID/UNRECOGNIZED"
+        print(f"  '{original}' -> '{result.standardized_name}' | {status}")
+        if result.is_valid:
+            standardized_mapping[original] = result.standardized_name
 
-    summary = validator.get_validation_summary()
-    print(
-        f"\nSummary: {summary['alternate_names']} alternates mapped, "
-        f"{summary['unrecognized_names']} unrecognized."
-    )
+    # Count by category
+    categories = {}
+    for result in validation_results.values():
+        categories[result.category] = categories.get(result.category, 0) + 1
+
+    alternate_count = categories.get("alternate", 0)
+    unrecognized_count = categories.get("custom", 0) + categories.get("invalid", 0)
+
+    print(f"\nSummary: {alternate_count} alternates mapped, {unrecognized_count} unrecognized.")
 
     return standardized_mapping
 

@@ -78,9 +78,7 @@ class NormalizationTransformer(DataTransformer):
 
     def __init__(
         self,
-        normalization_type: Union[
-            str, NormalizationType
-        ] = NormalizationType.PERCENT_OF,
+        normalization_type: Union[str, NormalizationType] = NormalizationType.PERCENT_OF,
         reference: Optional[str] = None,
         scale_factor: Optional[float] = None,
         config: Optional[NormalizationConfig] = None,
@@ -123,18 +121,10 @@ class NormalizationTransformer(DataTransformer):
         self.scale_factor = scale_factor
 
         # Validation
-        if (
-            self.normalization_type == NormalizationType.PERCENT_OF.value
-            and not reference
-        ):
-            raise ValueError(
-                "Reference field must be provided for percent_of normalization"
-            )
+        if self.normalization_type == NormalizationType.PERCENT_OF.value and not reference:
+            raise ValueError("Reference field must be provided for percent_of normalization")
 
-        if (
-            self.normalization_type == NormalizationType.SCALE_BY.value
-            and scale_factor is None
-        ):
+        if self.normalization_type == NormalizationType.SCALE_BY.value and scale_factor is None:
             raise ValueError("Scale factor must be provided for scale_by normalization")
 
     def transform(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -164,9 +154,7 @@ class NormalizationTransformer(DataTransformer):
             # 1    100.0   60.0
         """
         if not isinstance(data, pd.DataFrame):
-            raise TypeError(
-                f"Unsupported data type: {type(data)}. Expected pandas.DataFrame"
-            )
+            raise TypeError(f"Unsupported data type: {type(data)}. Expected pandas.DataFrame")
         return self._transform_dataframe(data)
 
     def _transform_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -179,9 +167,7 @@ class NormalizationTransformer(DataTransformer):
 
         if self.normalization_type == NormalizationType.PERCENT_OF.value:
             if self.reference not in df.columns:
-                raise ValueError(
-                    f"Reference column '{self.reference}' not found in DataFrame"
-                )
+                raise ValueError(f"Reference column '{self.reference}' not found in DataFrame")
 
             for col in df.columns:
                 if col != self.reference:
@@ -197,17 +183,13 @@ class NormalizationTransformer(DataTransformer):
                     else:
                         result[col] = (df[col] / reference_series) * 100
 
-        elif (
-            self.normalization_type == NormalizationType.MINMAX.value
-        ):  # pragma: no cover
+        elif self.normalization_type == NormalizationType.MINMAX.value:  # pragma: no cover
             for col in df.columns:
                 min_val = df[col].min()
                 max_val = df[col].max()
 
                 if max_val > min_val:
-                    result[col] = (df[col] - min_val) / (
-                        max_val - min_val
-                    )  # pragma: no cover
+                    result[col] = (df[col] - min_val) / (max_val - min_val)  # pragma: no cover
                 elif max_val == min_val:  # Handles constant columns
                     result[col] = (
                         0.0  # Or np.nan, depending on desired behavior for constant series

@@ -92,7 +92,9 @@ class StatementForecaster:
             ...     }
             ... )
         """
-        logger.info(f"StatementForecaster: Creating forecast for periods {forecast_periods}")
+        logger.info(
+            f"StatementForecaster: Creating forecast for periods {forecast_periods}"
+        )
         try:
             if historical_periods is None:
                 if not self.fsg.periods or not forecast_periods:
@@ -110,7 +112,9 @@ class StatementForecaster:
                         f"First forecast period {first_forecast} not found; using all periods."
                     )
             else:
-                logger.debug(f"Using explicitly provided historical periods: {historical_periods}")
+                logger.debug(
+                    f"Using explicitly provided historical periods: {historical_periods}"
+                )
 
             if not historical_periods:
                 raise ValueError("No historical periods found for forecasting")
@@ -126,7 +130,9 @@ class StatementForecaster:
                     # Correct the call: add_periods is on fsg (the graph), not manipulator
                     self.fsg.add_periods([period])
             if new_periods:
-                logger.info(f"Added new periods to graph for forecasting: {new_periods}")
+                logger.info(
+                    f"Added new periods to graph for forecasting: {new_periods}"
+                )
 
             if node_configs is None:
                 node_configs = {}
@@ -150,7 +156,10 @@ class StatementForecaster:
                     if not isinstance(growth_config, list):
                         growth_config = [growth_config] * len(forecast_periods)
                 elif method == "statistical":
-                    if not isinstance(growth_config, dict) or "distribution" not in growth_config:
+                    if (
+                        not isinstance(growth_config, dict)
+                        or "distribution" not in growth_config
+                    ):
                         raise ValueError(
                             f"Statistical method requires distribution parameters for {node_name}"
                         )
@@ -207,7 +216,9 @@ class StatementForecaster:
             - Modifies node.values dictionary with forecast data
             - Clears node cache if clear_cache method exists
         """
-        logger.debug(f"StatementForecaster: Forecasting node {node.name} using method {method}")
+        logger.debug(
+            f"StatementForecaster: Forecasting node {node.name} using method {method}"
+        )
         if not historical_periods:
             raise ValueError(f"No historical periods for node {node.name}")
 
@@ -243,11 +254,16 @@ class StatementForecaster:
         if method == "simple":
             growth_params = float(growth_config)
         elif method == "curve":
-            if not isinstance(growth_config, list) or len(growth_config) != len(forecast_periods):
+            if not isinstance(growth_config, list) or len(growth_config) != len(
+                forecast_periods
+            ):
                 raise ValueError("Curve growth list length mismatch")
             growth_params = [float(x) for x in growth_config]
         elif method == "statistical":
-            if not isinstance(growth_config, dict) or "distribution" not in growth_config:
+            if (
+                not isinstance(growth_config, dict)
+                or "distribution" not in growth_config
+            ):
                 raise ValueError(
                     f"Statistical method requires distribution parameters for {node.name}"
                 )
@@ -265,7 +281,9 @@ class StatementForecaster:
             growth_params = gen
         elif method == "average":
             if not hasattr(node, "calculate") or not callable(node.calculate):
-                raise ValueError(f"Node {node.name} cannot be calculated for average method.")
+                raise ValueError(
+                    f"Node {node.name} cannot be calculated for average method."
+                )
             hist_vals = [
                 node.calculate(p)
                 for p in historical_periods
@@ -273,7 +291,9 @@ class StatementForecaster:
             ]
             valid = [v for v in hist_vals if v is not None and not np.isnan(v)]
             if not valid:
-                raise ValueError(f"No valid historical data to compute average for {node.name}")
+                raise ValueError(
+                    f"No valid historical data to compute average for {node.name}"
+                )
             # For 'average' forecast node type, growth_params is not directly used by factory
             # The node itself calculates the average. Set growth_params=None.
             growth_params = None
@@ -314,7 +334,9 @@ class StatementForecaster:
                     val = 0.0
                 node.values[period] = float(val)  # Update the original node
             except Exception as e:
-                logger.error(f"Error forecasting {node.name}@{period}: {e}", exc_info=True)
+                logger.error(
+                    f"Error forecasting {node.name}@{period}: {e}", exc_info=True
+                )
                 node.values[period] = 0.0  # Set default on error
 
         # --- END RESTORED LOGIC ---
@@ -422,7 +444,9 @@ class StatementForecaster:
             growth_cfg = [growth_cfg] * len(forecast_periods)
         elif method == "statistical":
             if not isinstance(growth_cfg, dict) or "distribution" not in growth_cfg:
-                raise ValueError(f"Statistical forecast requires distribution for {node_name}")
+                raise ValueError(
+                    f"Statistical forecast requires distribution for {node_name}"
+                )
         elif method in {"average", "historical_growth"}:
             growth_cfg = 0.0  # Will be handled by forecast node type
         else:
@@ -457,7 +481,9 @@ class StatementForecaster:
         if method == "simple":
             growth_params = float(growth_cfg)
         elif method == "curve":
-            if not isinstance(growth_cfg, list) or len(growth_cfg) != len(forecast_periods):
+            if not isinstance(growth_cfg, list) or len(growth_cfg) != len(
+                forecast_periods
+            ):
                 raise ValueError("Curve growth list length mismatch")
             growth_params = [float(x) for x in growth_cfg]
         elif method == "statistical":
