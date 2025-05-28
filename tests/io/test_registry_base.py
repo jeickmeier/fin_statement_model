@@ -10,10 +10,8 @@ class MockHandler:
     """Mock handler class for testing."""
 
 
-
 class AnotherMockHandler:
     """Another mock handler class for testing."""
-
 
 
 class TestHandlerRegistry:

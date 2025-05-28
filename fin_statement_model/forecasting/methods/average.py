@@ -9,7 +9,6 @@ import numpy as np
 
 from fin_statement_model.core.nodes import Node
 from .base import BaseForecastMethod
-from fin_statement_model.forecasting.types import InternalForecastType
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +35,7 @@ class AverageForecastMethod(BaseForecastMethod):
         return "average"
 
     @property
-    def internal_type(self) -> InternalForecastType:
+    def internal_type(self) -> str:
         """Return the internal forecast type for NodeFactory."""
         return "average"
 

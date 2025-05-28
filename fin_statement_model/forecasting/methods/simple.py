@@ -1,4 +1,4 @@
-"""Simple fixed growth rate forecasting method.
+"""Simple growth rate forecasting method.
 
 This method applies a constant growth rate to forecast future values.
 """
@@ -6,11 +6,10 @@ This method applies a constant growth rate to forecast future values.
 from typing import Any
 
 from .base import BaseForecastMethod
-from fin_statement_model.forecasting.types import InternalForecastType
 
 
 class SimpleForecastMethod(BaseForecastMethod):
-    """Fixed growth rate forecasting.
+    """Simple growth rate forecasting.
 
     This method applies a constant growth rate to the base value
     for all forecast periods.
@@ -22,7 +21,7 @@ class SimpleForecastMethod(BaseForecastMethod):
     Example:
         >>> method = SimpleForecastMethod()
         >>> params = method.get_forecast_params(0.05, ['2024', '2025'])
-        >>> # Returns: {'forecast_type': 'fixed', 'growth_params': 0.05}
+        >>> # Returns: {'forecast_type': 'simple', 'growth_params': 0.05}
     """
 
     @property
@@ -31,9 +30,9 @@ class SimpleForecastMethod(BaseForecastMethod):
         return "simple"
 
     @property
-    def internal_type(self) -> InternalForecastType:
+    def internal_type(self) -> str:
         """Return the internal forecast type for NodeFactory."""
-        return "fixed"
+        return "simple"
 
     def validate_config(self, config: Any) -> None:
         """Validate the configuration for simple method.
@@ -53,13 +52,9 @@ class SimpleForecastMethod(BaseForecastMethod):
                     f"Simple method requires numeric growth rate, got {type(config[0])}"
                 )
         elif not isinstance(config, int | float):
-            raise TypeError(
-                f"Simple method requires numeric growth rate, got {type(config)}"
-            )
+            raise TypeError(f"Simple method requires numeric growth rate, got {type(config)}")
 
-    def normalize_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory.
 
         Args:

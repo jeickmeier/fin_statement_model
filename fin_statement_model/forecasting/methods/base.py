@@ -7,7 +7,6 @@ from typing import Protocol, Any, Optional, runtime_checkable
 from abc import ABC, abstractmethod
 
 from fin_statement_model.core.nodes import Node
-from fin_statement_model.forecasting.types import InternalForecastType
 
 
 @runtime_checkable
@@ -30,9 +29,7 @@ class ForecastMethod(Protocol):
         """
         ...
 
-    def normalize_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory.
 
         Args:
@@ -72,7 +69,7 @@ class BaseForecastMethod(ABC):
 
     @property
     @abstractmethod
-    def internal_type(self) -> InternalForecastType:
+    def internal_type(self) -> str:
         """Return the internal forecast type for NodeFactory."""
 
     @abstractmethod
@@ -80,9 +77,7 @@ class BaseForecastMethod(ABC):
         """Validate the configuration for this method."""
 
     @abstractmethod
-    def normalize_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory."""
 
     def prepare_historical_data(
@@ -95,9 +90,7 @@ class BaseForecastMethod(ABC):
         """
         return None
 
-    def get_forecast_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def get_forecast_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Get complete forecast parameters.
 
         This is a convenience method that validates and normalizes in one call.

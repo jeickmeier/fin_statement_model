@@ -1,6 +1,5 @@
 """Tests for the unified validation module."""
 
-
 from fin_statement_model.io.validation import (
     UnifiedNodeValidator,
     ValidationResult,

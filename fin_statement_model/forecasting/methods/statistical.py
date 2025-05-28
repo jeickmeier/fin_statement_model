@@ -7,10 +7,7 @@ from typing import Any
 import numpy as np
 
 from .base import BaseForecastMethod
-from fin_statement_model.forecasting.types import (
-    InternalForecastType,
-    StatisticalConfig,
-)
+from fin_statement_model.forecasting.types import StatisticalConfig
 
 
 class StatisticalForecastMethod(BaseForecastMethod):
@@ -43,7 +40,7 @@ class StatisticalForecastMethod(BaseForecastMethod):
         return "statistical"
 
     @property
-    def internal_type(self) -> InternalForecastType:
+    def internal_type(self) -> str:
         """Return the internal forecast type for NodeFactory."""
         return "statistical"
 

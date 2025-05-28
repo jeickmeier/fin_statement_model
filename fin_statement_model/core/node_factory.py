@@ -217,7 +217,7 @@ class NodeFactory:
             base_node: The Node instance to base projections on.
             base_period: Period identifier providing the base value.
             forecast_periods: List of periods for which to forecast.
-            forecast_type: Forecast method ('fixed', 'curve', 'statistical',
+            forecast_type: Forecast method ('simple', 'curve', 'statistical',
                 'average', 'historical_growth').
             growth_params: Parameters controlling forecast behavior (float,
                 list of floats, or callable). Ignored for 'average' and 'historical_growth'.
@@ -234,12 +234,12 @@ class NodeFactory:
             ...     base_node=revenue,
             ...     base_period="2023",
             ...     forecast_periods=["2024", "2025"],
-            ...     forecast_type="fixed",
+            ...     forecast_type="simple",
             ...     growth_params=0.05
             ... )
         """
         # Instantiate the appropriate forecast node
-        if forecast_type == "fixed":
+        if forecast_type == "simple":
             node = FixedGrowthForecastNode(base_node, base_period, forecast_periods, growth_params)
         elif forecast_type == "curve":
             node = CurveGrowthForecastNode(base_node, base_period, forecast_periods, growth_params)

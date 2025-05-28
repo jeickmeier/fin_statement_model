@@ -379,7 +379,7 @@ class MarkdownWriter(DataWriter):
                     cfg_details = config.get("config")
                     desc = f"- **{node_id}**: Forecasted using method '{method}'"
                     if method == "simple" and cfg_details is not None:
-                        desc += f" (e.g., fixed growth rate: {cfg_details:.1%})."
+                        desc += f" (e.g., simple growth rate: {cfg_details:.1%})."
                     elif method == "curve" and cfg_details:
                         rates_str = ", ".join([f"{r:.1%}" for r in cfg_details])
                         desc += f" (e.g., specific growth rates: [{rates_str}])."

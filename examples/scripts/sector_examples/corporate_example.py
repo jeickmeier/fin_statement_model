@@ -162,9 +162,9 @@ historical_data = normalized_historical_data
 print("\nNormalizing forecast configuration keys...")
 normalized_forecast_configs = {}
 for original_name, config in {
-    "cash_and_equivalents": {"method": "simple", "config": 0.05},  # Fixed 5% growth
-    "accounts_receivable": {"method": "historical_growth"},  # Average historical
-    "property_plant_equipment": {"method": "simple", "config": 0.02},  # Fixed 2% growth
+    "cash_and_equivalents": {"method": "simple", "config": 0.05},  # 5% growth
+    "accounts_receivable": {"method": "curve", "config": [0.08, 0.06]},  # Slowing growth
+    "property_plant_equipment": {"method": "simple", "config": 0.02},  # 2% growth
     "accounts_payable": {
         "method": "curve",
         "config": [0.04, 0.03, 0.03, 0.02, 0.02],

@@ -443,7 +443,7 @@ class GraphDefinitionWriter(DataWriter):
 
             # Determine the forecast type based on the node class
             if isinstance(node, FixedGrowthForecastNode):
-                node_def["forecast_type"] = "fixed"
+                node_def["forecast_type"] = "simple"
                 node_def["growth_params"] = node.growth_rate
             elif isinstance(node, CurveGrowthForecastNode):
                 node_def["forecast_type"] = "curve"

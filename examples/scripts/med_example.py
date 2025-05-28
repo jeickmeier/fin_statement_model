@@ -206,8 +206,8 @@ forecast_periods = ["2024", "2025", "2026"]
 # Maps node_id to forecast configuration
 forecast_configs = {
     "Revenue": {
-        "method": "simple",  # Corresponds to 'fixed' growth in NodeFactory
-        "config": 0.10,  # 10% fixed growth rate
+        "method": "simple",  # Simple growth method
+        "config": 0.10,  # 10% growth rate
     },
     "COGS": {
         "method": "historical_growth",  # Use average historical growth
@@ -229,15 +229,15 @@ forecast_configs = {
     },
     "Interest Expense": {  # Added forecast
         "method": "simple",
-        "config": 0.05,  # 5% fixed growth rate (increase in expense)
+        "config": 0.05,  # 5% growth rate (increase in expense)
     },
     "Taxes": {  # Added forecast
         "method": "historical_growth",  # Assume taxes grow similarly to past trends
         "config": None,
     },
     "D&A": {  # Added forecast
-        "method": "simple",  # Assume D&A increases steadily
-        "config": 0.03,  # 3% fixed growth rate (increase in expense)
+        "method": "simple",  # Simple growth method
+        "config": 0.03,  # 3% growth rate (increase in expense)
     },
     # Note: Calculated items (like gross_profit, ebitda, ebit, net_income) don't need forecast configs,
     # they will be recalculated based on their forecasted inputs.

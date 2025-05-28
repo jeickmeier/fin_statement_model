@@ -6,7 +6,6 @@ This method applies different growth rates for each forecast period.
 from typing import Any
 
 from .base import BaseForecastMethod
-from fin_statement_model.forecasting.types import InternalForecastType
 
 
 class CurveForecastMethod(BaseForecastMethod):
@@ -31,7 +30,7 @@ class CurveForecastMethod(BaseForecastMethod):
         return "curve"
 
     @property
-    def internal_type(self) -> InternalForecastType:
+    def internal_type(self) -> str:
         """Return the internal forecast type for NodeFactory."""
         return "curve"
 
@@ -50,17 +49,13 @@ class CurveForecastMethod(BaseForecastMethod):
                 raise ValueError("Curve method: empty list provided")
             for i, value in enumerate(config):
                 if not isinstance(value, int | float):
-                    raise TypeError(
-                        f"Curve method: non-numeric value at index {i}: {type(value)}"
-                    )
+                    raise TypeError(f"Curve method: non-numeric value at index {i}: {type(value)}")
         elif not isinstance(config, int | float):
             raise TypeError(
                 f"Curve method requires numeric or list of numeric values, got {type(config)}"
             )
 
-    def normalize_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory.
 
         Args:

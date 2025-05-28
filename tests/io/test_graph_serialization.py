@@ -2,8 +2,7 @@
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.node_factory import NodeFactory
-from fin_statement_model.io.writers.graph_definition import GraphDefinitionWriter
-from fin_statement_model.io.readers.graph_definition import GraphDefinitionReader
+from fin_statement_model.io.specialized.graph import GraphDefinitionWriter, GraphDefinitionReader
 
 
 class TestGraphSerialization:
@@ -53,15 +52,15 @@ class TestGraphSerialization:
         # Add forecast nodes
         revenue_node = graph.nodes["Revenue"]
 
-        fixed_forecast = NodeFactory.create_forecast_node(
-            name="RevenueForecast_Fixed",
+        simple_forecast = NodeFactory.create_forecast_node(
+            name="RevenueForecast_Simple",
             base_node=revenue_node,
             base_period="2023",
             forecast_periods=["2024", "2025"],
-            forecast_type="fixed",
-            growth_params=0.05,
+            forecast_type="simple",
+            growth_params=0.1,
         )
-        graph.add_node(fixed_forecast)
+        graph.add_node(simple_forecast)
 
         curve_forecast = NodeFactory.create_forecast_node(
             name="RevenueForecast_Curve",
@@ -118,8 +117,8 @@ class TestGraphSerialization:
 
         # Test forecast nodes
         for period in ["2024", "2025"]:
-            assert graph.nodes["RevenueForecast_Fixed"].calculate(period) == new_graph.nodes[
-                "RevenueForecast_Fixed"
+            assert graph.nodes["RevenueForecast_Simple"].calculate(period) == new_graph.nodes[
+                "RevenueForecast_Simple"
             ].calculate(period)
             assert graph.nodes["RevenueForecast_Curve"].calculate(period) == new_graph.nodes[
                 "RevenueForecast_Curve"
@@ -169,7 +168,7 @@ class TestGraphSerialization:
 
         # Test different forecast types
         forecast_configs = [
-            ("fixed", 0.1),
+            ("simple", 0.1),
             ("curve", [0.12]),  # Only one forecast period, so only one growth rate
             ("average", None),
             ("historical_growth", None),
@@ -198,7 +197,7 @@ class TestGraphSerialization:
         new_graph = reader.read(graph_dict)
 
         # Verify all forecast nodes exist
-        assert "Forecast_fixed" in new_graph.nodes
+        assert "Forecast_simple" in new_graph.nodes
         assert "Forecast_curve" in new_graph.nodes
         assert "Forecast_average" in new_graph.nodes
         assert "Forecast_historical_growth" in new_graph.nodes

@@ -7,13 +7,19 @@ without changing the graph state).
 """
 
 import logging
-from typing import Any, Optional, Union
-from collections.abc import Callable
+from typing import Any, Optional, cast
 import numpy as np
 
 # Core imports
 from fin_statement_model.core.nodes import Node
 from fin_statement_model.core.node_factory import NodeFactory
+
+# Forecasting module imports
+from .period_manager import PeriodManager
+from .validators import ForecastValidator
+from .strategies import get_forecast_method
+from .types import ForecastConfig, ForecastResult
+from .methods import BaseForecastMethod
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +38,7 @@ class StatementForecaster:
        or when you need forecast values without altering the original data.
 
     The forecaster supports multiple forecasting methods:
-    - simple: Fixed growth rate
+    - simple: Simple growth rate
     - curve: Variable growth rates per period
     - statistical: Random sampling from distributions
     - average: Average of historical values
@@ -92,47 +98,20 @@ class StatementForecaster:
             ...     }
             ... )
         """
-        logger.info(
-            f"StatementForecaster: Creating forecast for periods {forecast_periods}"
-        )
+        logger.info(f"StatementForecaster: Creating forecast for periods {forecast_periods}")
         try:
-            if historical_periods is None:
-                if not self.fsg.periods or not forecast_periods:
-                    raise ValueError(
-                        "Cannot infer historical periods: missing graph or forecast periods."
-                    )
-                first_forecast = forecast_periods[0]
-                try:
-                    idx = self.fsg.periods.index(first_forecast)
-                    historical_periods = self.fsg.periods[:idx]
-                    logger.debug(f"Inferred historical periods: {historical_periods}")
-                except ValueError:
-                    historical_periods = list(self.fsg.periods)
-                    logger.warning(
-                        f"First forecast period {first_forecast} not found; using all periods."
-                    )
-            else:
-                logger.debug(
-                    f"Using explicitly provided historical periods: {historical_periods}"
-                )
+            # Use PeriodManager to infer historical periods
+            historical_periods = PeriodManager.infer_historical_periods(
+                self.fsg, forecast_periods, historical_periods
+            )
 
-            if not historical_periods:
-                raise ValueError("No historical periods found for forecasting")
-            if not forecast_periods:
-                raise ValueError("No forecast periods provided")
+            # Validate inputs using ForecastValidator
+            ForecastValidator.validate_forecast_inputs(
+                historical_periods, forecast_periods, node_configs
+            )
 
             # Ensure forecast periods exist in the graph
-            existing_periods = set(self.fsg.periods)
-            new_periods = []
-            for period in forecast_periods:
-                if period not in existing_periods:
-                    new_periods.append(period)
-                    # Correct the call: add_periods is on fsg (the graph), not manipulator
-                    self.fsg.add_periods([period])
-            if new_periods:
-                logger.info(
-                    f"Added new periods to graph for forecasting: {new_periods}"
-                )
+            PeriodManager.ensure_periods_exist(self.fsg, forecast_periods, add_missing=True)
 
             if node_configs is None:
                 node_configs = {}
@@ -141,36 +120,12 @@ class StatementForecaster:
                 node = self.fsg.get_node(node_name)
                 if node is None:
                     raise ValueError(f"Node {node_name} not found in graph")
-                if not hasattr(node, "values") or not isinstance(node.values, dict):
-                    logger.warning(
-                        f"Skipping forecast for node {node_name}: not a value-storing node"
-                    )
-                    continue
 
-                method = config.get("method", "simple")
-                growth_config = config.get("config")
-                if method == "simple":
-                    if isinstance(growth_config, list):
-                        growth_config = growth_config[0]
-                elif method == "curve":
-                    if not isinstance(growth_config, list):
-                        growth_config = [growth_config] * len(forecast_periods)
-                elif method == "statistical":
-                    if (
-                        not isinstance(growth_config, dict)
-                        or "distribution" not in growth_config
-                    ):
-                        raise ValueError(
-                            f"Statistical method requires distribution parameters for {node_name}"
-                        )
-                elif method in {"average", "historical_growth"}:
-                    growth_config = 0.0
-                else:
-                    raise ValueError(f"Invalid forecasting method: {method}")
+                # Validate node can be forecasted
+                forecast_config = ForecastValidator.validate_forecast_config(config)
+                ForecastValidator.validate_node_for_forecast(node, forecast_config.method)
 
-                self._forecast_node(
-                    node, historical_periods, forecast_periods, growth_config, method
-                )
+                self._forecast_node(node, historical_periods, forecast_periods, forecast_config)
 
             logger.info(
                 f"Created forecast for {len(forecast_periods)} periods and {len(node_configs)} nodes"
@@ -184,9 +139,8 @@ class StatementForecaster:
         node: Node,
         historical_periods: list[str],
         forecast_periods: list[str],
-        growth_config: Union[float, list[float], Callable[[], float]],
-        method: str,
-        **kwargs: dict[str, Any],
+        forecast_config: ForecastConfig,
+        **kwargs: Any,
     ) -> None:
         """Calculate forecast values and update the original node.
 
@@ -202,8 +156,7 @@ class StatementForecaster:
             node: The graph node to forecast. Must have a 'values' dictionary.
             historical_periods: List of historical periods for base values.
             forecast_periods: List of periods for which to calculate forecasts.
-            growth_config: Growth parameter(s) (rate, list, or generator function).
-            method: Forecasting method name ('simple', 'curve', etc.).
+            forecast_config: Validated forecast configuration.
             **kwargs: Additional arguments passed to growth logic.
 
         Returns:
@@ -217,103 +170,28 @@ class StatementForecaster:
             - Clears node cache if clear_cache method exists
         """
         logger.debug(
-            f"StatementForecaster: Forecasting node {node.name} using method {method}"
+            f"StatementForecaster: Forecasting node {node.name} using method {forecast_config.method}"
         )
-        if not historical_periods:
-            raise ValueError(f"No historical periods for node {node.name}")
 
-        # Determine base period (last available historical period for the node)
-        base_period = None
-        if hasattr(node, "values") and isinstance(node.values, dict):
-            available_historical = sorted(
-                [p for p in node.values if p in historical_periods], reverse=True
-            )
-            if available_historical:
-                base_period = available_historical[0]
+        # Determine base period using PeriodManager
+        base_period = PeriodManager.determine_base_period(node, historical_periods)
 
-        # Fallback or if node has no values dict
-        if base_period is None:
-            base_period = historical_periods[-1]  # Use last provided historical period
-            logger.info(
-                f"Using {base_period} as base period for {node.name} (node might lack values or specific history)"
-            )
+        # Get the forecast method from registry
+        method = get_forecast_method(forecast_config.method)
 
-        # --- Keep logic to determine forecast_type and growth_params ---
-        method_map = {
-            "simple": "fixed",
-            "curve": "curve",
-            "statistical": "statistical",
-            "average": "average",
-            "historical_growth": "historical_growth",
-        }
-        forecast_type = method_map.get(method)
-        if forecast_type is None:
-            raise ValueError(f"Invalid forecasting method: {method}")
+        # Get normalized parameters for NodeFactory
+        # All built-in methods extend BaseForecastMethod which has get_forecast_params
+        base_method = cast(BaseForecastMethod, method)
+        params = base_method.get_forecast_params(forecast_config.config, forecast_periods)
 
-        growth_params: Any  # Define type more precisely if possible
-        if method == "simple":
-            growth_params = float(growth_config)
-        elif method == "curve":
-            if not isinstance(growth_config, list) or len(growth_config) != len(
-                forecast_periods
-            ):
-                raise ValueError("Curve growth list length mismatch")
-            growth_params = [float(x) for x in growth_config]
-        elif method == "statistical":
-            if (
-                not isinstance(growth_config, dict)
-                or "distribution" not in growth_config
-            ):
-                raise ValueError(
-                    f"Statistical method requires distribution parameters for {node.name}"
-                )
-            distr = growth_config["distribution"]
-            params = growth_config["params"]
-
-            def gen() -> float:
-                if distr == "normal":
-                    return np.random.normal(params["mean"], params["std"])
-                elif distr == "uniform":
-                    return np.random.uniform(params["low"], params["high"])
-                else:
-                    raise ValueError(f"Unsupported distribution: {distr}")
-
-            growth_params = gen
-        elif method == "average":
-            if not hasattr(node, "calculate") or not callable(node.calculate):
-                raise ValueError(
-                    f"Node {node.name} cannot be calculated for average method."
-                )
-            hist_vals = [
-                node.calculate(p)
-                for p in historical_periods
-                if hasattr(node, "values") and p in node.values
-            ]
-            valid = [v for v in hist_vals if v is not None and not np.isnan(v)]
-            if not valid:
-                raise ValueError(
-                    f"No valid historical data to compute average for {node.name}"
-                )
-            # For 'average' forecast node type, growth_params is not directly used by factory
-            # The node itself calculates the average. Set growth_params=None.
-            growth_params = None
-        elif method == "historical_growth":
-            # For 'historical_growth' forecast node type, growth_params is not directly used by factory
-            # The node itself calculates the average growth. Set growth_params=None.
-            growth_params = None
-        else:
-            growth_params = growth_config  # Pass through for potential custom types
-        # --- End logic for forecast_type and growth_params ---
-
-        # --- START RESTORED LOGIC ---
         # Create a temporary node to perform calculations
         tmp_node = NodeFactory.create_forecast_node(
             name=f"{node.name}_forecast_temp",
             base_node=node,
             base_period=base_period,
             forecast_periods=forecast_periods,
-            forecast_type=forecast_type,
-            growth_params=growth_params,
+            forecast_type=params["forecast_type"],
+            growth_params=params["growth_params"],
         )
 
         # Ensure the original node has a values dictionary
@@ -334,16 +212,12 @@ class StatementForecaster:
                     val = 0.0
                 node.values[period] = float(val)  # Update the original node
             except Exception as e:
-                logger.error(
-                    f"Error forecasting {node.name}@{period}: {e}", exc_info=True
-                )
+                logger.error(f"Error forecasting {node.name}@{period}: {e}", exc_info=True)
                 node.values[period] = 0.0  # Set default on error
-
-        # --- END RESTORED LOGIC ---
 
         # Clear cache of the original node as its values have changed
         if hasattr(node, "clear_cache") and callable(node.clear_cache):
-            node.clear_cache()
+            node.clear_cache()  # type: ignore[no-untyped-call]
             logger.debug(f"Cleared cache for node {node.name} after forecast update.")
 
     def forecast_value(
@@ -404,120 +278,45 @@ class StatementForecaster:
         if node is None:
             raise ValueError(f"Node {node_name} not found in graph")
 
-        # Determine historical periods list
+        # Determine historical periods
         if base_period:
             historical_periods = [base_period]
-        # Try custom getter, otherwise infer
-        elif hasattr(self.fsg, "get_historical_periods") and callable(
-            getattr(self.fsg, "get_historical_periods")
-        ):
-            historical_periods = self.fsg.get_historical_periods()
         else:
-            if not self.fsg.periods or not forecast_periods:
-                raise ValueError(
-                    "Cannot infer historical periods: graph or forecast periods missing"
-                )
-            first = forecast_periods[0]
-            try:
-                idx = self.fsg.periods.index(first)
-                historical_periods = self.fsg.periods[:idx]
-            except ValueError:
-                historical_periods = list(self.fsg.periods)
+            historical_periods = PeriodManager.infer_historical_periods(self.fsg, forecast_periods)
 
-        if not historical_periods:
-            raise ValueError("No historical periods found for forecasting")
-        if not forecast_periods:
-            raise ValueError("No forecast periods provided")
+        # Validate inputs
+        ForecastValidator.validate_forecast_inputs(historical_periods, forecast_periods)
 
-        # --- Note: Do NOT add forecast periods to the main graph here ---
-        # for period in forecast_periods:
-        #     if period not in self.fsg.periods:
-        #         self.fsg.add_periods([period]) # Don't modify graph state
+        # Set default config if not provided
+        if forecast_config is None:
+            forecast_config = {"method": "simple", "config": 0.0}
 
-        config = forecast_config or {}
-        method = config.get("method", "simple")
-        growth_cfg = config.get("config")
-        # Normalize configuration parameters
-        if method == "simple" and isinstance(growth_cfg, list):
-            growth_cfg = growth_cfg[0]
-        elif method == "curve" and not isinstance(growth_cfg, list):
-            growth_cfg = [growth_cfg] * len(forecast_periods)
-        elif method == "statistical":
-            if not isinstance(growth_cfg, dict) or "distribution" not in growth_cfg:
-                raise ValueError(
-                    f"Statistical forecast requires distribution for {node_name}"
-                )
-        elif method in {"average", "historical_growth"}:
-            growth_cfg = 0.0  # Will be handled by forecast node type
-        else:
-            # Leave other methods as-is
-            pass
+        # Validate and create ForecastConfig
+        validated_config = ForecastValidator.validate_forecast_config(forecast_config)
+        ForecastValidator.validate_node_for_forecast(node, validated_config.method)
 
-        # --- START Non-Mutating Calculation Logic ---
-        # Determine base period (ensure logic matches _forecast_node)
-        calc_base_period = None
-        if hasattr(node, "values") and isinstance(node.values, dict):
-            available_historical = sorted(
-                [p for p in node.values if p in historical_periods], reverse=True
-            )
-            if available_historical:
-                calc_base_period = available_historical[0]
-        if calc_base_period is None:
-            calc_base_period = historical_periods[-1]
+        # Determine base period
+        calc_base_period = PeriodManager.determine_base_period(
+            node, historical_periods, base_period
+        )
 
-        # Prepare forecast_type and growth_params (reuse logic from _forecast_node)
-        method_map = {
-            "simple": "fixed",
-            "curve": "curve",
-            "statistical": "statistical",
-            "average": "average",
-            "historical_growth": "historical_growth",
-        }
-        forecast_type = method_map.get(method)
-        if forecast_type is None:
-            raise ValueError(f"Invalid method: {method}")
+        # Get the forecast method from registry
+        method = get_forecast_method(validated_config.method)
 
-        growth_params: Any = None  # Default
-        if method == "simple":
-            growth_params = float(growth_cfg)
-        elif method == "curve":
-            if not isinstance(growth_cfg, list) or len(growth_cfg) != len(
-                forecast_periods
-            ):
-                raise ValueError("Curve growth list length mismatch")
-            growth_params = [float(x) for x in growth_cfg]
-        elif method == "statistical":
-            # Simplified - assume growth_cfg has needed keys
-            if not isinstance(growth_cfg, dict):
-                raise ValueError("Invalid config for statistical method")
-            distr = growth_cfg.get("distribution")
-            params = growth_cfg.get("params")
-            if not distr or not params:
-                raise ValueError("Missing distribution or params for statistical")
-
-            def gen() -> float:
-                if distr == "normal":
-                    return np.random.normal(params["mean"], params["std"])
-                elif distr == "uniform":
-                    return np.random.uniform(params["low"], params["high"])
-                else:
-                    raise ValueError(f"Unsupported distribution: {distr}")
-
-            growth_params = gen
-        elif method in {"average", "historical_growth"}:
-            growth_params = None
-        else:
-            growth_params = growth_cfg
+        # Get normalized parameters for NodeFactory
+        # All built-in methods extend BaseForecastMethod which has get_forecast_params
+        base_method = cast(BaseForecastMethod, method)
+        params = base_method.get_forecast_params(validated_config.config, forecast_periods)
 
         # Create a temporary forecast node (DO NOT add to graph)
         try:
             temp_forecast_node = NodeFactory.create_forecast_node(
-                name=f"{node_name}_temp_forecast",  # Temporary name
-                base_node=node,  # Use the actual node from graph as base
+                name=f"{node_name}_temp_forecast",
+                base_node=node,
                 base_period=calc_base_period,
                 forecast_periods=forecast_periods,
-                forecast_type=forecast_type,
-                growth_params=growth_params,
+                forecast_type=params["forecast_type"],
+                growth_params=params["growth_params"],
             )
         except Exception as e:
             logger.error(
@@ -539,5 +338,80 @@ class StatementForecaster:
                 )
                 results[period] = 0.0
 
+        # Validate results before returning
+        ForecastValidator.validate_forecast_result(results, forecast_periods, node_name)
+
         return results
-        # --- END Non-Mutating Calculation Logic ---
+
+    def forecast_multiple(
+        self,
+        node_names: list[str],
+        forecast_periods: list[str],
+        forecast_configs: Optional[dict[str, dict[str, Any]]] = None,
+        base_period: Optional[str] = None,
+        **kwargs: Any,
+    ) -> dict[str, ForecastResult]:
+        """Forecast multiple nodes without mutating the graph.
+
+        This is a convenience method that forecasts multiple nodes at once
+        and returns structured results.
+
+        Args:
+            node_names: List of node names to forecast.
+            forecast_periods: List of future periods to forecast.
+            forecast_configs: Optional mapping of node names to their forecast configs.
+                             If not provided, uses simple method with 0% growth for all.
+            base_period: Optional base period to use for all nodes.
+            **kwargs: Additional arguments passed to forecast_value.
+
+        Returns:
+            Dictionary mapping node names to ForecastResult objects.
+
+        Example:
+            >>> results = forecaster.forecast_multiple(
+            ...     ['revenue', 'costs'],
+            ...     ['2024', '2025'],
+            ...     {'revenue': {'method': 'simple', 'config': 0.05}}
+            ... )
+            >>> print(results['revenue'].get_value('2024'))
+        """
+        results = {}
+        configs = forecast_configs or {}
+
+        for node_name in node_names:
+            try:
+                # Get config for this node or use default
+                node_config = configs.get(node_name)
+
+                # Forecast the node
+                values = self.forecast_value(
+                    node_name, forecast_periods, base_period, node_config, **kwargs
+                )
+
+                # Determine actual base period used
+                node = self.fsg.get_node(node_name)
+                historical_periods = PeriodManager.infer_historical_periods(
+                    self.fsg, forecast_periods
+                )
+                actual_base_period = PeriodManager.determine_base_period(
+                    node, historical_periods, base_period
+                )
+
+                # Create ForecastResult
+                config = ForecastValidator.validate_forecast_config(
+                    node_config or {"method": "simple", "config": 0.0}
+                )
+
+                results[node_name] = ForecastResult(
+                    node_name=node_name,
+                    periods=forecast_periods,
+                    values=values,
+                    method=config.method,
+                    base_period=actual_base_period,
+                )
+            except Exception:
+                logger.exception(f"Error forecasting node {node_name}")
+                # Continue with other nodes
+                continue
+
+        return results
