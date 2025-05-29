@@ -8,6 +8,7 @@ This package provides:
 
 from .loader import load_config_file, load_config_directory
 from .models import (
+    AdjustmentFilterSpec,
     BaseItemModel,
     CalculatedItemModel,
     CalculationSpec,
@@ -21,6 +22,7 @@ from .validator import StatementConfig
 
 __all__ = [
     # Models
+    "AdjustmentFilterSpec",
     "BaseItemModel",
     "CalculatedItemModel",
     "CalculationSpec",

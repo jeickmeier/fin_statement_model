@@ -6,6 +6,7 @@ validates them, builds statement structures, and registers them with the registr
 
 import logging
 from pathlib import Path
+from typing import Optional
 
 from fin_statement_model.core.errors import ConfigurationError, StatementError
 from fin_statement_model.io import (
@@ -18,6 +19,9 @@ from fin_statement_model.statements.structure.builder import StatementStructureB
 from fin_statement_model.statements.configs.validator import StatementConfig
 from fin_statement_model.statements.registry import StatementRegistry
 
+# Import UnifiedNodeValidator for optional node validation
+from fin_statement_model.io.validation import UnifiedNodeValidator
+
 logger = logging.getLogger(__name__)
 
 __all__ = ["load_build_register_statements"]
@@ -26,7 +30,10 @@ __all__ = ["load_build_register_statements"]
 def load_build_register_statements(
     config_path_or_dir: str,
     registry: StatementRegistry,
-    builder: StatementStructureBuilder,
+    builder: Optional[StatementStructureBuilder] = None,
+    enable_node_validation: bool = False,
+    node_validation_strict: bool = False,
+    node_validator: Optional[UnifiedNodeValidator] = None,
 ) -> list[str]:
     """Load, validate, build, and register statement structures from configs.
 
@@ -40,8 +47,11 @@ def load_build_register_statements(
             'income_statement.yaml') or a directory containing multiple
             config files.
         registry: The StatementRegistry instance to register loaded statements.
-        builder: The StatementStructureBuilder instance used to construct
-            statement objects from validated configurations.
+        builder: Optional StatementStructureBuilder instance. If None, creates
+            a default builder with node validation settings.
+        enable_node_validation: If True, validates node IDs during config and build.
+        node_validation_strict: If True, treats node validation failures as errors.
+        node_validator: Optional pre-configured UnifiedNodeValidator instance.
 
     Returns:
         A list of statement IDs that were successfully loaded and registered.
@@ -53,6 +63,14 @@ def load_build_register_statements(
     """
     loaded_statement_ids = []
     errors = []
+
+    # Create builder if not provided
+    if builder is None:
+        builder = StatementStructureBuilder(
+            enable_node_validation=enable_node_validation,
+            node_validation_strict=node_validation_strict,
+            node_validator=node_validator,
+        )
 
     try:
         if Path(config_path_or_dir).is_dir():
@@ -78,7 +96,14 @@ def load_build_register_statements(
 
     for stmt_id, raw_data in raw_configs.items():
         try:
-            config = StatementConfig(raw_data)
+            # Create config with node validation if enabled
+            config = StatementConfig(
+                config_data=raw_data,
+                enable_node_validation=enable_node_validation,
+                node_validation_strict=node_validation_strict,
+                node_validator=node_validator,
+            )
+
             validation_errors = config.validate_config()
             if validation_errors:
                 raise ConfigurationError(

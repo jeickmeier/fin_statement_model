@@ -71,18 +71,14 @@ def export_statements(
         raise  # Re-raise critical errors from generation step
 
     if not dfs:
-        logger.warning(
-            f"No DataFrames generated, nothing to export to {file_suffix} files."
-        )
+        logger.warning(f"No DataFrames generated, nothing to export to {file_suffix} files.")
         return
 
     # Standardize to dictionary format
     if isinstance(dfs, pd.DataFrame):
         # Try to get a meaningful name if it was a single file
         stmt_id = (
-            Path(config_path_or_dir).stem
-            if Path(config_path_or_dir).is_file()
-            else "statement"
+            Path(config_path_or_dir).stem if Path(config_path_or_dir).is_file() else "statement"
         )
         dfs_dict = {stmt_id: dfs}
     else:
@@ -97,14 +93,10 @@ def export_statements(
             writer_func(df, str(file_path), **writer_kwargs)
             logger.info(f"Successfully exported statement '{stmt_id}' to {file_path}")
         except WriteError as e:
-            logger.exception(
-                f"Failed to write {file_suffix} file for statement '{stmt_id}':"
-            )
+            logger.exception(f"Failed to write {file_suffix} file for statement '{stmt_id}':")
             export_errors.append((stmt_id, str(e)))
         except Exception as e:
-            logger.exception(
-                f"Unexpected error exporting statement '{stmt_id}' to {file_suffix}."
-            )
+            logger.exception(f"Unexpected error exporting statement '{stmt_id}' to {file_suffix}.")
             export_errors.append((stmt_id, f"Unexpected export error: {e!s}"))
 
     if export_errors:

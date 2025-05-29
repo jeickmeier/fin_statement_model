@@ -294,7 +294,10 @@ except (ConfigurationError, StatementError, FinancialModelError):
 # --- 7. Exporting ---
 
 # Reload the special metrics directory to pick up the newly added retained_earnings metric
-special_dir = MetricPath(__file__).parent.parent.parent / "fin_statement_model/core/metrics/builtin_organized/special"
+special_dir = (
+    MetricPath(__file__).parent.parent.parent
+    / "fin_statement_model/core/metrics/builtin_organized/special"
+)
 metric_count = metric_registry.load_metrics_from_directory(special_dir)
 logger.info(f"Reloaded {metric_count} metrics from special directory to include retained_earnings")
 

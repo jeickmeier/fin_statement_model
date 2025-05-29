@@ -1,0 +1,104 @@
+id: contra_items_statement
+name: Statement with Contra Items Example
+description: Financial statement demonstrating contra item handling for accumulated depreciation, treasury stock, and sales returns
+
+sections:
+  # ASSETS SECTION with Contra Item
+  - id: assets_section
+    name: Assets
+    items:
+      - id: gross_ppe
+        name: Property, Plant & Equipment (Gross)
+        type: line_item
+        node_id: gross_property_plant_equipment
+        sign_convention: 1
+        
+      - id: accumulated_depreciation
+        name: Less, Accumulated Depreciation
+        type: line_item
+        node_id: accumulated_depreciation
+        sign_convention: -1  # Calculation convention (reduces assets)
+        is_contra: true       # Display convention (show as contra item)
+        css_class: "asset-contra"
+        
+      - id: net_ppe
+        name: Property, Plant & Equipment (Net)
+        type: calculated
+        calculation:
+          type: addition
+          inputs:
+            - gross_ppe
+            - accumulated_depreciation
+        sign_convention: 1
+
+  # REVENUE SECTION with Contra Items
+  - id: revenue_section
+    name: Revenue
+    items:
+      - id: gross_sales
+        name: Gross Sales
+        type: line_item
+        node_id: gross_sales
+        sign_convention: 1
+        
+      - id: sales_returns
+        name: Less, Sales Returns & Allowances
+        type: line_item
+        node_id: sales_returns_allowances
+        sign_convention: -1  # Calculation convention (reduces revenue)
+        is_contra: true      # Display convention (show as contra item)
+        css_class: "revenue-contra"
+        
+      - id: sales_discounts
+        name: Less, Sales Discounts
+        type: line_item
+        node_id: sales_discounts
+        sign_convention: -1  # Calculation convention (reduces revenue)
+        is_contra: true      # Display convention (show as contra item)
+        css_class: "revenue-contra"
+        
+      - id: net_sales
+        name: Net Sales
+        type: calculated
+        calculation:
+          type: addition
+          inputs:
+            - gross_sales
+            - sales_returns
+            - sales_discounts
+        sign_convention: 1
+
+  # EQUITY SECTION with Contra Item
+  - id: equity_section
+    name: Shareholders Equity
+    items:
+      - id: common_stock
+        name: Common Stock
+        type: line_item
+        node_id: common_stock
+        sign_convention: 1
+        
+      - id: retained_earnings
+        name: Retained Earnings
+        type: line_item
+        node_id: retained_earnings
+        sign_convention: 1
+        
+      - id: treasury_stock
+        name: Less, Treasury Stock
+        type: line_item
+        node_id: treasury_stock
+        sign_convention: -1  # Calculation convention (reduces equity)
+        is_contra: true      # Display convention (show as contra item)
+        css_class: "equity-contra"
+        display_format: ",.0f"  # Show without decimals
+        
+    subtotal:
+      id: total_equity
+      name: Total Shareholders Equity
+      type: subtotal
+      items_to_sum:
+        - common_stock
+        - retained_earnings
+        - treasury_stock
+      sign_convention: 1 

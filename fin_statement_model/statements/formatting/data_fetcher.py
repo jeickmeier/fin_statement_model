@@ -15,7 +15,7 @@ import pandas as pd
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.errors import NodeError, CalculationError
 from fin_statement_model.core.adjustments.models import AdjustmentFilterInput
-from fin_statement_model.statements.structure import StatementStructure
+from fin_statement_model.statements.structure import StatementStructure, Section, StatementItem
 from fin_statement_model.statements.population.id_resolver import IDResolver
 from fin_statement_model.statements.utilities.result_types import (
     Result,
@@ -97,6 +97,87 @@ class DataFetcher:
         self.graph = graph
         self.id_resolver = IDResolver(statement)
 
+    def _resolve_adjustment_filter(
+        self,
+        item: StatementItem,
+        global_filter: Optional[AdjustmentFilterInput] = None,
+    ) -> Optional[AdjustmentFilterInput]:
+        """Resolve which adjustment filter to use for an item.
+
+        Precedence order:
+        1. Global filter passed to fetch method (highest priority)
+        2. Item's default adjustment filter
+        3. Parent section's default adjustment filter
+        4. None (no filter)
+
+        Args:
+            item: The statement item to get the filter for.
+            global_filter: Optional global filter that overrides everything.
+
+        Returns:
+            The resolved adjustment filter to use, or None.
+        """
+        # Global filter has highest priority
+        if global_filter is not None:
+            return global_filter
+
+        # Check item's own default filter
+        if (
+            hasattr(item, "default_adjustment_filter")
+            and item.default_adjustment_filter is not None
+        ):
+            return item.default_adjustment_filter
+
+        # Check parent section's default filter
+        # We need to find which section contains this item
+        parent_section = self._find_parent_section(item)
+        if (
+            parent_section
+            and hasattr(parent_section, "default_adjustment_filter")
+            and parent_section.default_adjustment_filter is not None
+        ):
+            return parent_section.default_adjustment_filter
+
+        # No filter
+        return None
+
+    def _find_parent_section(self, target_item: StatementItem) -> Optional[Section]:
+        """Find the parent section that contains the given item.
+
+        Args:
+            target_item: The item to find the parent section for.
+
+        Returns:
+            The parent Section object, or None if not found.
+        """
+
+        def search_in_section(section: Section) -> Optional[Section]:
+            # Check direct items
+            for item in section.items:
+                if item is target_item or (
+                    hasattr(item, "id") and hasattr(target_item, "id") and item.id == target_item.id
+                ):
+                    return section
+                # Check nested sections
+                if isinstance(item, Section):
+                    result = search_in_section(item)
+                    if result:
+                        return result
+
+            # Check subtotal
+            if hasattr(section, "subtotal") and section.subtotal is target_item:
+                return section
+
+            return None
+
+        # Search through all top-level sections
+        for section in self.statement.sections:
+            result = search_in_section(section)
+            if result:
+                return result
+
+        return None
+
     def fetch_all_data(
         self,
         adjustment_filter: Optional[AdjustmentFilterInput] = None,
@@ -105,7 +186,7 @@ class DataFetcher:
         """Fetch data for all items in the statement.
 
         Args:
-            adjustment_filter: Optional filter for adjustments
+            adjustment_filter: Optional global filter for adjustments (overrides item defaults)
             include_missing: If True, include nodes that don't exist in graph
                            with NaN values
 
@@ -124,9 +205,7 @@ class DataFetcher:
                 message=f"Graph has no periods defined for statement '{self.statement.id}'",
                 source=self.statement.id,
             )
-            return FetchResult(
-                data={}, errors=error_collector, node_count=0, missing_nodes=[]
-            )
+            return FetchResult(data={}, errors=error_collector, node_count=0, missing_nodes=[])
 
         logger.debug(
             f"Fetching data for statement '{self.statement.id}' across {len(periods)} periods"
@@ -154,10 +233,11 @@ class DataFetcher:
 
             processed_node_ids.add(node_id)
 
+            # Resolve adjustment filter for this specific item
+            item_filter = self._resolve_adjustment_filter(item, adjustment_filter)
+
             # Fetch data for this node
-            node_result = self._fetch_node_data(
-                node_id, periods, adjustment_filter, item_id=item.id
-            )
+            node_result = self._fetch_node_data(node_id, periods, item_filter, item_id=item.id)
 
             if node_result.is_success():
                 node_data = node_result.get_value()
@@ -244,9 +324,7 @@ class DataFetcher:
 
             except (NodeError, CalculationError) as e:
                 # Expected errors - log as warning
-                logger.warning(
-                    f"Error calculating node '{node_id}' for period '{period}': {e}"
-                )
+                logger.warning(f"Error calculating node '{node_id}' for period '{period}': {e}")
                 values[period] = np.nan
                 is_adjusted[period] = False
                 errors.append(
@@ -261,9 +339,7 @@ class DataFetcher:
 
             except TypeError as e:
                 # Filter/adjustment errors
-                logger.warning(
-                    f"Type error for node '{node_id}', period '{period}': {e}"
-                )
+                logger.warning(f"Type error for node '{node_id}', period '{period}': {e}")
                 values[period] = np.nan
                 is_adjusted[period] = False
                 errors.append(
@@ -295,9 +371,7 @@ class DataFetcher:
                 )
 
         return Success(
-            NodeData(
-                node_id=node_id, values=values, is_adjusted=is_adjusted, errors=errors
-            )
+            NodeData(node_id=node_id, values=values, is_adjusted=is_adjusted, errors=errors)
         )
 
     def check_adjustments(
@@ -326,14 +400,10 @@ class DataFetcher:
             period_results = {}
             for period in periods:
                 try:
-                    was_adjusted = self.graph.was_adjusted(
-                        node_id, period, adjustment_filter
-                    )
+                    was_adjusted = self.graph.was_adjusted(node_id, period, adjustment_filter)
                     period_results[period] = bool(was_adjusted)
                 except Exception as e:
-                    logger.warning(
-                        f"Error checking adjustments for {node_id}/{period}: {e}"
-                    )
+                    logger.warning(f"Error checking adjustments for {node_id}/{period}: {e}")
                     period_results[period] = False
 
             results[node_id] = period_results

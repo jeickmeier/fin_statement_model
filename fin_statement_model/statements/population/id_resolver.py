@@ -2,13 +2,14 @@
 
 This module provides centralized logic for resolving statement item IDs to their
 corresponding graph node IDs, handling the complexity of different item types
-having different ID mapping rules.
+having different ID mapping rules, including standard node references.
 """
 
 import logging
 from typing import Optional
 
 from fin_statement_model.core.graph import Graph
+from fin_statement_model.core.nodes import standard_node_registry
 from fin_statement_model.statements.structure import (
     StatementStructure,
     LineItem,
@@ -24,13 +25,15 @@ class IDResolver:
 
     This class handles the complexity of mapping statement item IDs to graph
     node IDs, accounting for the fact that:
-    - LineItems have a separate node_id property that differs from their ID
+    - LineItems can have either a direct node_id property OR a standard_node_ref
+      that gets resolved through the standard_node_registry
     - Other items (CalculatedLineItem, SubtotalLineItem, MetricLineItem) use
       their ID directly as the node ID
     - Some nodes may exist directly in the graph without being statement items
 
     The resolver caches mappings for performance and provides both single and
-    batch resolution methods.
+    batch resolution methods. Standard node references are resolved at cache
+    build time for optimal performance.
     """
 
     def __init__(self, statement: StatementStructure):
@@ -50,9 +53,24 @@ class IDResolver:
 
         for item in self.statement.get_all_items():
             if isinstance(item, LineItem):
-                # LineItems map their ID to their node_id property
-                self._item_to_node_cache[item.id] = item.node_id
-                self._node_to_items_cache.setdefault(item.node_id, []).append(item.id)
+                # Get the resolved node ID (handles both direct node_id and standard_node_ref)
+                resolved_node_id = item.get_resolved_node_id(standard_node_registry)
+                if resolved_node_id:
+                    # LineItems map their ID to their resolved node_id
+                    self._item_to_node_cache[item.id] = resolved_node_id
+                    self._node_to_items_cache.setdefault(resolved_node_id, []).append(item.id)
+
+                    # Log if using standard node reference for debugging
+                    if item.standard_node_ref:
+                        logger.debug(
+                            f"Resolved standard node reference '{item.standard_node_ref}' "
+                            f"to '{resolved_node_id}' for item '{item.id}'"
+                        )
+                else:
+                    logger.warning(
+                        f"Could not resolve node reference for LineItem '{item.id}'. "
+                        f"node_id: {item.node_id}, standard_node_ref: {item.standard_node_ref}"
+                    )
             else:
                 # Other items use their ID directly as the node ID
                 self._item_to_node_cache[item.id] = item.id

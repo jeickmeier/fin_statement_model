@@ -1,0 +1,114 @@
+<style>
+
+            .statement-table { border-collapse: collapse; width: 100%; }
+            .statement-table th, .statement-table td { padding: 8px; text-align: right; border: 1px solid #ddd; }
+            .statement-table th { background-color: #f2f2f2; font-weight: bold; }
+            .statement-table .Line.Item { text-align: left; }
+            .contra-item { font-style: italic; color: #666; }
+            .contra-item { font-style: italic; color: #666; font-weight: bold; }
+.asset-contra { background-color: #f0f8f0; border-left: 3px solid #4CAF50; }
+.revenue-contra { background-color: #fff8f0; border-left: 3px solid #FF9800; }
+.equity-contra { background-color: #f8f0f0; border-left: 3px solid #F44336; }
+</style>
+<table border="1" class="dataframe statement-table" id="financial-statement">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Line Item</th>
+      <th>ID</th>
+      <th>2023</th>
+      <th>2024</th>
+      <th>units</th>
+      <th>css_class</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Property, Plant &amp; Equipment (Gross)</td>
+      <td>gross_ppe</td>
+      <td>1000000.0</td>
+      <td>1200000.0</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td>Less, Accumulated Depreciation</td>
+      <td>accumulated_depreciation</td>
+      <td>250000.0</td>
+      <td>350000.0</td>
+      <td>None</td>
+      <td>asset-contra contra-item</td>
+    </tr>
+    <tr>
+      <td>Property, Plant &amp; Equipment (Net)</td>
+      <td>net_ppe</td>
+      <td>750000.0</td>
+      <td>850000.0</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td>Gross Sales</td>
+      <td>gross_sales</td>
+      <td>5000000.0</td>
+      <td>5500000.0</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td>Less, Sales Returns &amp; Allowances</td>
+      <td>sales_returns</td>
+      <td>50000.0</td>
+      <td>60000.0</td>
+      <td>None</td>
+      <td>revenue-contra contra-item</td>
+    </tr>
+    <tr>
+      <td>Less, Sales Discounts</td>
+      <td>sales_discounts</td>
+      <td>25000.0</td>
+      <td>30000.0</td>
+      <td>None</td>
+      <td>revenue-contra contra-item</td>
+    </tr>
+    <tr>
+      <td>Net Sales</td>
+      <td>net_sales</td>
+      <td>4925000.0</td>
+      <td>5410000.0</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td>Common Stock</td>
+      <td>common_stock</td>
+      <td>1000000.0</td>
+      <td>1000000.0</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td>Retained Earnings</td>
+      <td>retained_earnings</td>
+      <td>800000.0</td>
+      <td>950000.0</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+    <tr>
+      <td>Less, Treasury Stock</td>
+      <td>treasury_stock</td>
+      <td>150000.0</td>
+      <td>200000.0</td>
+      <td>None</td>
+      <td>equity-contra contra-item</td>
+    </tr>
+    <tr>
+      <td>Total Shareholders Equity</td>
+      <td>total_equity</td>
+      <td>1650000.0</td>
+      <td>1750000.0</td>
+      <td>None</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>

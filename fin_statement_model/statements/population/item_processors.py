@@ -105,9 +105,7 @@ class ItemProcessor(ABC):
     and handling missing inputs across different item types.
     """
 
-    def __init__(
-        self, id_resolver: IDResolver, graph: Graph, statement: StatementStructure
-    ):
+    def __init__(self, id_resolver: IDResolver, graph: Graph, statement: StatementStructure):
         """Initialize the processor.
 
         Args:
@@ -183,11 +181,7 @@ class ItemProcessor(ABC):
             ProcessorResult with appropriate error details.
         """
         missing_summary = [
-            (
-                f"item '{i_id}' needs node '{n_id}'"
-                if n_id
-                else f"item '{i_id}' not found/mappable"
-            )
+            (f"item '{i_id}' needs node '{n_id}'" if n_id else f"item '{i_id}' not found/mappable")
             for i_id, n_id in missing
         ]
 
@@ -270,9 +264,7 @@ class MetricItemProcessor(ItemProcessor):
             return ProcessorResult(success=False, error_message=error_message)
         return ProcessorResult(success=True, node_added=node_added)
 
-    def _validate_metric_inputs(
-        self, metric: Any, item: MetricLineItem
-    ) -> Optional[str]:
+    def _validate_metric_inputs(self, metric: Any, item: MetricLineItem) -> Optional[str]:
         """Validate that the item provides all required metric inputs."""
         provided_inputs = set(item.inputs.keys())
         required_inputs = set(metric.inputs)
@@ -316,7 +308,8 @@ class CalculatedItemProcessor(ItemProcessor):
 
     Handles the creation of calculation nodes with specific operations by:
     1. Resolving input IDs to graph nodes
-    2. Adding the calculation node with the specified operation type
+    2. Getting sign conventions from input items
+    3. Creating the calculation node with proper sign handling
     """
 
     def can_process(self, item: StatementItem) -> bool:
@@ -332,8 +325,8 @@ class CalculatedItemProcessor(ItemProcessor):
         if self.graph.has_node(item.id):
             return ProcessorResult(success=True, node_added=False)
 
-        # Resolve inputs
-        resolved, missing = self.resolve_inputs(item.input_ids)
+        # Resolve inputs with sign conventions
+        resolved_inputs, missing = self._resolve_inputs_with_sign_conventions(item)
         if missing:
             return self._handle_missing_inputs(item, missing, is_retry)
 
@@ -342,7 +335,7 @@ class CalculatedItemProcessor(ItemProcessor):
         try:
             self.graph.add_calculation(
                 name=item.id,
-                input_names=resolved,
+                input_names=resolved_inputs,
                 operation_type=item.calculation_type,
                 **item.parameters,
             )
@@ -363,6 +356,67 @@ class CalculatedItemProcessor(ItemProcessor):
         if error_message:
             return ProcessorResult(success=False, error_message=error_message)
         return ProcessorResult(success=True, node_added=True)
+
+    def _resolve_inputs_with_sign_conventions(
+        self, item: CalculatedLineItem
+    ) -> tuple[list[str], list[tuple[str, Optional[str]]]]:
+        """Resolve input IDs to graph node IDs, applying sign conventions.
+
+        Creates intermediate signed nodes for inputs that have sign_convention = -1.
+
+        Args:
+            item: The CalculatedLineItem being processed.
+
+        Returns:
+            Tuple of (resolved_node_ids, missing_details).
+        """
+        resolved = []
+        missing = []
+
+        for input_id in item.input_ids:
+            # Get the input item to check its sign convention
+            input_item = self.statement.find_item_by_id(input_id)
+            if not input_item:
+                # Try to resolve as a node ID
+                node_id = self.id_resolver.resolve(input_id, self.graph)
+                if node_id and self.graph.has_node(node_id):
+                    resolved.append(node_id)
+                else:
+                    missing.append((input_id, node_id))
+                continue
+
+            # Resolve the node ID for this input item
+            node_id = self.id_resolver.resolve(input_id, self.graph)
+            if not node_id or not self.graph.has_node(node_id):
+                missing.append((input_id, node_id))
+                continue
+
+            # Check if we need to apply sign convention
+            sign_convention = getattr(input_item, "sign_convention", 1)
+            if sign_convention == -1:
+                # Create a signed version of this node using formula calculation
+                signed_node_id = f"{node_id}_signed"
+                if not self.graph.has_node(signed_node_id):
+                    try:
+                        # Create a formula node that multiplies by -1
+                        self.graph.add_calculation(
+                            name=signed_node_id,
+                            input_names=[node_id],
+                            operation_type="formula",
+                            formula="-input_0",
+                            formula_variable_names=["input_0"],
+                        )
+                        logger.debug(f"Created signed node '{signed_node_id}' for input '{input_id}' with sign_convention=-1")
+                    except Exception as e:
+                        logger.error(f"Failed to create signed node for '{input_id}': {e}")
+                        missing.append((input_id, node_id))
+                        continue
+                resolved.append(signed_node_id)
+            else:
+                # Use the node directly (sign_convention = 1 or default)
+                resolved.append(node_id)
+
+        return resolved, missing
 
 
 class SubtotalItemProcessor(ItemProcessor):
@@ -428,9 +482,7 @@ class ItemProcessorManager:
     by delegating to the appropriate processor based on the item type.
     """
 
-    def __init__(
-        self, id_resolver: IDResolver, graph: Graph, statement: StatementStructure
-    ):
+    def __init__(self, id_resolver: IDResolver, graph: Graph, statement: StatementStructure):
         """Initialize the processor manager with all available processors.
 
         Args:
@@ -444,9 +496,7 @@ class ItemProcessorManager:
             SubtotalItemProcessor(id_resolver, graph, statement),
         ]
 
-    def process_item(
-        self, item: StatementItem, is_retry: bool = False
-    ) -> ProcessorResult:
+    def process_item(self, item: StatementItem, is_retry: bool = False) -> ProcessorResult:
         """Process a statement item using the appropriate processor.
 
         Args:

@@ -42,6 +42,7 @@ from .structure import (
 
 # Configuration related classes
 from .configs.validator import StatementConfig
+from .configs.models import AdjustmentFilterSpec
 
 # Building
 from .structure.builder import StatementStructureBuilder
@@ -109,14 +110,196 @@ from .orchestration.factory import (
 # Errors specific to statements
 from .errors import StatementError, ConfigurationError
 
+# Import UnifiedNodeValidator for convenience
+from fin_statement_model.io.validation import UnifiedNodeValidator
+
+
+# Node validation convenience functions
+def create_validated_statement_config(
+    config_data: dict,
+    enable_node_validation: bool = True,
+    strict_mode: bool = False,
+    node_validator: UnifiedNodeValidator = None,
+) -> StatementConfig:
+    """Create a StatementConfig with optional node validation enabled.
+
+    Args:
+        config_data: Dictionary containing the raw configuration data.
+        enable_node_validation: If True, validates node IDs using UnifiedNodeValidator.
+        strict_mode: If True, treats node validation failures as errors.
+        node_validator: Optional pre-configured UnifiedNodeValidator instance.
+
+    Returns:
+        StatementConfig instance with validation configured.
+
+    Example:
+        >>> config_data = {...}  # Your YAML/JSON config as dict
+        >>> config = create_validated_statement_config(
+        ...     config_data,
+        ...     enable_node_validation=True,
+        ...     strict_mode=True
+        ... )
+        >>> errors = config.validate_config()
+        >>> if errors:
+        ...     print("Validation failed:", errors)
+    """
+    return StatementConfig(
+        config_data=config_data,
+        enable_node_validation=enable_node_validation,
+        node_validation_strict=strict_mode,
+        node_validator=node_validator,
+    )
+
+
+def create_validated_statement_builder(
+    enable_node_validation: bool = True,
+    strict_mode: bool = False,
+    node_validator: UnifiedNodeValidator = None,
+) -> StatementStructureBuilder:
+    """Create a StatementStructureBuilder with optional node validation enabled.
+
+    Args:
+        enable_node_validation: If True, validates node IDs during build.
+        strict_mode: If True, treats node validation failures as errors.
+        node_validator: Optional pre-configured UnifiedNodeValidator instance.
+
+    Returns:
+        StatementStructureBuilder instance with validation configured.
+
+    Example:
+        >>> builder = create_validated_statement_builder(
+        ...     enable_node_validation=True,
+        ...     strict_mode=False  # Warnings only
+        ... )
+        >>> statement = builder.build(validated_config)
+    """
+    return StatementStructureBuilder(
+        enable_node_validation=enable_node_validation,
+        node_validation_strict=strict_mode,
+        node_validator=node_validator,
+    )
+
+
+def validate_statement_config_with_nodes(
+    config_path_or_data: str | dict,
+    strict_mode: bool = False,
+    auto_standardize: bool = True,
+) -> tuple[StatementConfig, list[str]]:
+    """Validate a statement configuration with comprehensive node validation.
+
+    This is a high-level convenience function that handles the entire validation
+    process including node ID validation.
+
+    Args:
+        config_path_or_data: Path to config file or config data dict.
+        strict_mode: If True, treats node validation failures as errors.
+        auto_standardize: If True, auto-standardize alternate node names.
+
+    Returns:
+        Tuple of (StatementConfig, validation_errors).
+        If validation_errors is empty, validation was successful.
+
+    Example:
+        >>> config, errors = validate_statement_config_with_nodes(
+        ...     "path/to/income_statement.yaml",
+        ...     strict_mode=True
+        ... )
+        >>> if errors:
+        ...     print("Validation failed:", errors)
+        >>> else:
+        ...     print("Validation passed!")
+    """
+    # Import here to avoid circular dependencies
+    from fin_statement_model.statements.configs.loader import load_config_file
+
+    # Load config data if path provided
+    if isinstance(config_path_or_data, str):
+        config_data = load_config_file(config_path_or_data)
+    else:
+        config_data = config_path_or_data
+
+    # Create validator
+    node_validator = UnifiedNodeValidator(
+        strict_mode=strict_mode,
+        auto_standardize=auto_standardize,
+        warn_on_non_standard=True,
+        enable_patterns=True,
+    )
+
+    # Create and validate config
+    config = StatementConfig(
+        config_data=config_data,
+        enable_node_validation=True,
+        node_validation_strict=strict_mode,
+        node_validator=node_validator,
+    )
+
+    errors = config.validate_config()
+    return config, errors
+
+
+def build_validated_statement_from_config(
+    config_path_or_data: str | dict,
+    strict_mode: bool = False,
+    auto_standardize: bool = True,
+) -> StatementStructure:
+    """Build a complete validated StatementStructure from configuration.
+
+    This is the highest-level convenience function that handles the entire
+    process from config to built statement with comprehensive validation.
+
+    Args:
+        config_path_or_data: Path to config file or config data dict.
+        strict_mode: If True, treats node validation failures as errors.
+        auto_standardize: If True, auto-standardize alternate node names.
+
+    Returns:
+        StatementStructure instance.
+
+    Raises:
+        ConfigurationError: If validation fails in strict mode.
+        ValueError: If config validation fails.
+
+    Example:
+        >>> try:
+        ...     statement = build_validated_statement_from_config(
+        ...         "path/to/income_statement.yaml",
+        ...         strict_mode=True
+        ...     )
+        ...     print(f"Built statement: {statement.name}")
+        ... except ConfigurationError as e:
+        ...     print(f"Validation failed: {e}")
+    """
+    # Validate config
+    config, errors = validate_statement_config_with_nodes(
+        config_path_or_data, strict_mode, auto_standardize
+    )
+
+    if errors:
+        raise ConfigurationError(
+            message="Statement configuration validation failed",
+            errors=errors,
+        )
+
+    # Create builder with validation
+    builder = create_validated_statement_builder(
+        enable_node_validation=True,
+        strict_mode=strict_mode,
+    )
+
+    # Build statement
+    return builder.build(config)
+
+
 # Public API definition
 __all__ = [
+    # Core components
+    "AdjustmentFilterSpec",
     "BackoffStrategy",
     "CalculatedItemProcessor",
     "CalculatedLineItem",
     "ConfigurationError",
     "ConstantBackoff",
-    # Data Fetching
     "DataFetcher",
     "ErrorCollector",
     "ErrorDetail",
@@ -134,12 +317,9 @@ __all__ = [
     "NodeData",
     "OperationResult",
     "ProcessingResult",
-    # Item Processors
     "ProcessorResult",
-    # Result Types
     "Result",
     "RetryConfig",
-    # Retry Handler
     "RetryHandler",
     "RetryResult",
     "RetryStrategy",
@@ -155,18 +335,20 @@ __all__ = [
     "SubtotalItemProcessor",
     "SubtotalLineItem",
     "Success",
+    "UnifiedNodeValidator",
     "ValidationResult",
+    # High-level functions
+    "build_validated_statement_from_config",
     "combine_results",
     "create_statement_dataframe",
+    "create_validated_statement_builder",
+    "create_validated_statement_config",
     "export_statements_to_excel",
     "export_statements_to_json",
     "populate_graph_from_statement",
     "retry_on_specific_errors",
     "retry_with_exponential_backoff",
-    # --- Removed --- #
-    # "FinancialStatementGraph", (unless reintroduced)
-    # "StatementFactory", (class)
-    # "StatementManager",
+    "validate_statement_config_with_nodes",
 ]
 
 # Note: FinancialStatementGraph removed as part of refactor, assuming its

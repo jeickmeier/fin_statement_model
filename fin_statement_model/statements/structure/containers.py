@@ -22,7 +22,8 @@ __all__ = ["Section", "StatementStructure"]
 class Section:
     """Represents a section in a financial statement.
 
-    Sections group related items and subsections into a hierarchical container.
+    Sections group related items and subsections into a hierarchical container
+    with enhanced display control and units metadata.
     """
 
     def __init__(
@@ -31,6 +32,13 @@ class Section:
         name: str,
         description: str = "",
         metadata: Optional[dict[str, Any]] = None,
+        default_adjustment_filter: Optional[Any] = None,
+        display_format: Optional[str] = None,
+        hide_if_all_zero: bool = False,
+        css_class: Optional[str] = None,
+        notes_references: Optional[list[str]] = None,
+        units: Optional[str] = None,
+        display_scale_factor: float = 1.0,
     ):
         """Initialize a section.
 
@@ -39,19 +47,35 @@ class Section:
             name: Display name for the section.
             description: Optional description text.
             metadata: Optional additional metadata.
+            default_adjustment_filter: Optional default adjustment filter for this section.
+            display_format: Optional specific number format string for section items.
+            hide_if_all_zero: Whether to hide this section if all values are zero.
+            css_class: Optional CSS class name for HTML/web outputs.
+            notes_references: List of footnote/note IDs referenced by this section.
+            units: Optional unit description for this section.
+            display_scale_factor: Factor to scale values for display in this section.
 
         Raises:
             StatementError: If id or name is invalid.
         """
         if not id or not isinstance(id, str):
-            raise StatementError(message=f"Invalid section ID: {id}")
+            raise StatementError(f"Invalid section ID: {id}")
         if not name or not isinstance(name, str):
-            raise StatementError(message=f"Invalid section name: {name} for ID: {id}")
+            raise StatementError(f"Invalid section name: {name} for ID: {id}")
+        if display_scale_factor <= 0:
+            raise StatementError(f"display_scale_factor must be positive for section: {id}")
 
         self._id = id
         self._name = name
         self._description = description
         self._metadata = metadata or {}
+        self._default_adjustment_filter = default_adjustment_filter
+        self._display_format = display_format
+        self._hide_if_all_zero = hide_if_all_zero
+        self._css_class = css_class
+        self._notes_references = notes_references or []
+        self._units = units
+        self._display_scale_factor = display_scale_factor
         self._items: list[Union[Section, StatementItem]] = []
 
     @property
@@ -75,6 +99,41 @@ class Section:
         return self._metadata
 
     @property
+    def default_adjustment_filter(self) -> Optional[Any]:
+        """Get the default adjustment filter for this section."""
+        return self._default_adjustment_filter
+
+    @property
+    def display_format(self) -> Optional[str]:
+        """Get the display format string for this section."""
+        return self._display_format
+
+    @property
+    def hide_if_all_zero(self) -> bool:
+        """Get whether to hide this section if all values are zero."""
+        return self._hide_if_all_zero
+
+    @property
+    def css_class(self) -> Optional[str]:
+        """Get the CSS class for this section."""
+        return self._css_class
+
+    @property
+    def notes_references(self) -> list[str]:
+        """Get the list of note references for this section."""
+        return list(self._notes_references)
+
+    @property
+    def units(self) -> Optional[str]:
+        """Get the unit description for this section."""
+        return self._units
+
+    @property
+    def display_scale_factor(self) -> float:
+        """Get the display scale factor for this section."""
+        return self._display_scale_factor
+
+    @property
     def items(self) -> list[Union["Section", StatementItem]]:
         """Get the child items and subsections."""
         return list(self._items)
@@ -94,14 +153,10 @@ class Section:
             StatementError: If an item with the same id already exists.
         """
         if any(existing.id == item.id for existing in self._items):
-            raise StatementError(
-                message=f"Duplicate item ID: {item.id} in section: {self.id}"
-            )
+            raise StatementError(f"Duplicate item ID: {item.id} in section: {self.id}")
         self._items.append(item)
 
-    def find_item_by_id(
-        self, item_id: str
-    ) -> Optional[Union["Section", StatementItem]]:
+    def find_item_by_id(self, item_id: str) -> Optional[Union["Section", StatementItem]]:
         """Recursively find an item by its identifier within this section.
 
         Args:
@@ -127,7 +182,8 @@ class Section:
 class StatementStructure:
     """Top-level container for a financial statement structure.
 
-    Manages a hierarchy of Section objects.
+    Manages a hierarchy of Section objects with statement-level display
+    and units metadata.
     """
 
     def __init__(
@@ -136,6 +192,8 @@ class StatementStructure:
         name: str,
         description: str = "",
         metadata: Optional[dict[str, Any]] = None,
+        units: Optional[str] = None,
+        display_scale_factor: float = 1.0,
     ):
         """Initialize a statement structure.
 
@@ -144,19 +202,25 @@ class StatementStructure:
             name: Display name for the statement.
             description: Optional description text.
             metadata: Optional additional metadata.
+            units: Optional default unit description for the statement.
+            display_scale_factor: Default scale factor for displaying values.
 
         Raises:
             StatementError: If id or name is invalid.
         """
         if not id or not isinstance(id, str):
-            raise StatementError(message=f"Invalid statement ID: {id}")
+            raise StatementError(f"Invalid statement ID: {id}")
         if not name or not isinstance(name, str):
-            raise StatementError(message=f"Invalid statement name: {name} for ID: {id}")
+            raise StatementError(f"Invalid statement name: {name} for ID: {id}")
+        if display_scale_factor <= 0:
+            raise StatementError(f"display_scale_factor must be positive for statement: {id}")
 
         self._id = id
         self._name = name
         self._description = description
         self._metadata = metadata or {}
+        self._units = units
+        self._display_scale_factor = display_scale_factor
         self._sections: list[Section] = []
 
     @property
@@ -180,6 +244,16 @@ class StatementStructure:
         return self._metadata
 
     @property
+    def units(self) -> Optional[str]:
+        """Get the default unit description for the statement."""
+        return self._units
+
+    @property
+    def display_scale_factor(self) -> float:
+        """Get the default display scale factor for the statement."""
+        return self._display_scale_factor
+
+    @property
     def sections(self) -> list[Section]:
         """Get the top-level sections."""
         return list(self._sections)
@@ -199,9 +273,7 @@ class StatementStructure:
             StatementError: If a section with the same id already exists.
         """
         if any(s.id == section.id for s in self._sections):
-            raise StatementError(
-                message=f"Duplicate section ID: {section.id} in statement: {self.id}"
-            )
+            raise StatementError(f"Duplicate section ID: {section.id} in statement: {self.id}")
         self._sections.append(section)
 
     def find_item_by_id(self, item_id: str) -> Optional[Union[Section, StatementItem]]:
@@ -282,9 +354,7 @@ class StatementStructure:
                 if isinstance(item, Section):
                     _collect_items_recursive(item.items)
                     # Also collect the section's subtotal if it exists and is a StatementItem
-                    if hasattr(item, "subtotal") and isinstance(
-                        item.subtotal, StatementItem
-                    ):
+                    if hasattr(item, "subtotal") and isinstance(item.subtotal, StatementItem):
                         all_statement_items.append(item.subtotal)
                 elif isinstance(item, StatementItem):
                     all_statement_items.append(item)

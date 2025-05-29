@@ -59,9 +59,7 @@ def populate_graph(registry: StatementRegistry, graph: Graph) -> list[tuple[str,
             )
 
     if all_populator_errors:
-        logger.warning(
-            f"Encountered {len(all_populator_errors)} errors during graph population."
-        )
+        logger.warning(f"Encountered {len(all_populator_errors)} errors during graph population.")
         # Log details if needed: logger.warning(f"Population errors: {all_populator_errors}")
 
     return [
@@ -73,6 +71,8 @@ def create_statement_dataframe(
     graph: Graph,
     config_path_or_dir: str,
     format_kwargs: Optional[dict[str, Any]] = None,
+    enable_node_validation: bool = False,
+    node_validation_strict: bool = False,
 ) -> Union[pd.DataFrame, dict[str, pd.DataFrame]]:
     r"""Load config(s), build structure(s), populate graph, format as DataFrame(s).
 
@@ -82,7 +82,7 @@ def create_statement_dataframe(
 
     It performs the following steps:
     1. Loads configuration(s) from the specified path or directory.
-    2. Validates the configuration(s).
+    2. Validates the configuration(s) with optional node ID validation.
     3. Builds the internal statement structure(s).
     4. Registers the structure(s).
     5. Populates the provided `graph` with nodes based on the statement(s).
@@ -102,6 +102,10 @@ def create_statement_dataframe(
             to the `StatementFormatter.generate_dataframe` method. This can
             be used to control aspects like date ranges, periods, or number
             formatting. See `StatementFormatter` documentation for details.
+        enable_node_validation: If True, validates node IDs using UnifiedNodeValidator
+            during config parsing and building. Enforces naming conventions early.
+        node_validation_strict: If True, treats node validation failures as errors
+            instead of warnings. Only applies when enable_node_validation is True.
 
     Returns:
         If `config_path_or_dir` points to a single file, returns a single
@@ -127,7 +131,9 @@ def create_statement_dataframe(
         ...     income_df = create_statement_dataframe(
         ...         graph=my_graph,
         ...         config_path_or_dir='configs/income_stmt.yaml',
-        ...         format_kwargs={'periods': ['2023Q1', '2023Q2']}
+        ...         format_kwargs={'periods': ['2023Q1', '2023Q2']},
+        ...         enable_node_validation=True,
+        ...         node_validation_strict=True
         ...     )
         ...     # In real code, use logger.debug or logger.info
         ...     logger.debug(f"Income DataFrame head:\n{income_df.head()}")
@@ -138,11 +144,13 @@ def create_statement_dataframe(
         ...     # Use logger.error or logger.exception
         ...     logger.error(f"Error processing statement: {e}")
 
-        >>> # Process all configs in a directory
+        >>> # Process all configs in a directory with node validation
         >>> try:
         ...     all_statements = create_statement_dataframe(
         ...         graph=my_graph,
-        ...         config_path_or_dir='configs/'
+        ...         config_path_or_dir='configs/',
+        ...         enable_node_validation=True,
+        ...         node_validation_strict=False  # Warnings only
         ...     )
         ...     balance_sheet_df = all_statements.get('balance_sheet')
         ...     if balance_sheet_df is not None:
@@ -156,15 +164,22 @@ def create_statement_dataframe(
         ...     logger.error(f"Error processing statements: {e}")
     """
     registry = StatementRegistry()
-    builder = StatementStructureBuilder()
+    builder = StatementStructureBuilder(
+        enable_node_validation=enable_node_validation,
+        node_validation_strict=node_validation_strict,
+    )
     format_kwargs = format_kwargs or {}
 
-    # Step 1: Load, Build, Register
-    loaded_ids = load_build_register_statements(config_path_or_dir, registry, builder)
+    # Step 1: Load, Build, Register with node validation
+    loaded_ids = load_build_register_statements(
+        config_path_or_dir,
+        registry,
+        builder,
+        enable_node_validation=enable_node_validation,
+        node_validation_strict=node_validation_strict,
+    )
     if not loaded_ids:
-        raise StatementError(
-            f"No valid statements could be loaded from {config_path_or_dir}"
-        )
+        raise StatementError(f"No valid statements could be loaded from {config_path_or_dir}")
 
     # Step 2: Populate Graph (handles errors internally, logs warnings)
     populate_graph(registry, graph)
@@ -178,9 +193,7 @@ def create_statement_dataframe(
             logger.error(
                 f"Internal error: Statement '{stmt_id}' was loaded but not found in registry."
             )
-            formatting_errors.append(
-                (stmt_id, "Statement not found in registry after loading")
-            )
+            formatting_errors.append((stmt_id, "Statement not found in registry after loading"))
             continue
         try:
             formatter = StatementFormatter(statement)
@@ -193,9 +206,7 @@ def create_statement_dataframe(
     if formatting_errors:
         # Decide policy: raise error, or return partial results?
         # For now, log warning and return what succeeded.
-        logger.warning(
-            f"Encountered {len(formatting_errors)} errors during formatting."
-        )
+        logger.warning(f"Encountered {len(formatting_errors)} errors during formatting.")
 
     # Return single DF or Dict based on input type
     is_single_file = Path(config_path_or_dir).is_file()

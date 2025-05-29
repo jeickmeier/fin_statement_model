@@ -1,0 +1,265 @@
+id: enhanced_income_statement
+name: Enhanced Income Statement with Display Control
+description: Demonstrates enhanced metadata features for display control and units
+metadata:
+  department: Finance
+  prepared_by: Financial Planning Team
+  
+# Statement-level units and scaling
+units: "USD Thousands"
+display_scale_factor: 0.001  # Convert to thousands
+
+sections:
+  - id: revenue_section
+    name: Revenue
+    description: Top-line revenue items
+    # Section-level units override statement level
+    units: "USD Thousands"
+    display_scale_factor: 0.001
+    css_class: "revenue-section"
+    notes_references: ["note1", "note2"]
+    
+    items:
+      - type: line_item
+        id: gross_revenue
+        name: Gross Revenue
+        node_id: revenue_gross
+        display_format: ",.0f"  # No decimal places for revenue
+        css_class: "revenue-line"
+        notes_references: ["note1"]
+        
+      - type: line_item
+        id: revenue_deductions
+        name: Returns & Allowances
+        node_id: revenue_deductions
+        sign_convention: -1
+        display_format: ",.0f"
+        hide_if_all_zero: true  # Hide if no deductions
+        css_class: "deduction-line"
+        
+      - type: calculated
+        id: net_revenue
+        name: Net Revenue
+        description: Gross revenue less deductions
+        calculation:
+          type: subtraction
+          inputs: ["gross_revenue", "revenue_deductions"]
+        display_format: ",.0f"
+        css_class: "calculated-revenue bold-line"
+        notes_references: ["note3"]
+
+  - id: cost_section
+    name: Cost of Goods Sold
+    description: Direct costs
+    units: "USD Thousands"
+    css_class: "cost-section"
+    
+    items:
+      - type: line_item
+        id: material_costs
+        name: Materials
+        node_id: cogs_materials
+        display_format: ",.0f"
+        
+      - type: line_item
+        id: labor_costs
+        name: Direct Labor
+        node_id: cogs_labor
+        display_format: ",.0f"
+        
+      - type: line_item
+        id: overhead_costs
+        name: Manufacturing Overhead
+        node_id: cogs_overhead
+        display_format: ",.0f"
+        hide_if_all_zero: true
+        
+    subtotal:
+      type: subtotal
+      id: total_cogs
+      name: Total Cost of Goods Sold
+      items_to_sum: ["material_costs", "labor_costs", "overhead_costs"]
+      display_format: ",.0f"
+      css_class: "subtotal-line bold-line"
+
+  - id: gross_profit_section
+    name: Gross Profit
+    description: Revenue less direct costs
+    css_class: "profit-section"
+    
+    items:
+      - type: calculated
+        id: gross_profit
+        name: Gross Profit
+        calculation:
+          type: subtraction
+          inputs: ["net_revenue", "total_cogs"]
+        display_format: ",.0f"
+        css_class: "gross-profit bold-line"
+        
+      - type: calculated
+        id: gross_margin
+        name: Gross Margin %
+        calculation:
+          type: division
+          inputs: ["gross_profit", "net_revenue"]
+        # Different units for percentage
+        units: "Percentage"
+        display_scale_factor: 100  # Convert to percentage
+        display_format: ".1%"  # Percentage format
+        css_class: "margin-line"
+        notes_references: ["note4"]
+
+  - id: operating_expenses_section
+    name: Operating Expenses
+    description: Indirect costs and expenses
+    units: "USD Thousands"
+    css_class: "expense-section"
+    
+    items:
+      - type: line_item
+        id: salaries_expense
+        name: Salaries & Benefits
+        node_id: opex_salaries
+        display_format: ",.0f"
+        
+      - type: line_item
+        id: marketing_expense
+        name: Marketing & Advertising
+        node_id: opex_marketing
+        display_format: ",.0f"
+        hide_if_all_zero: true
+        
+      - type: line_item
+        id: admin_expense
+        name: General & Administrative
+        node_id: opex_admin
+        display_format: ",.0f"
+        
+      - type: line_item
+        id: rd_expense
+        name: Research & Development
+        node_id: opex_rd
+        display_format: ",.0f"
+        hide_if_all_zero: true  # Hide if no R&D spending
+        css_class: "rd-expense"
+        notes_references: ["note5"]
+        
+    subtotal:
+      type: subtotal
+      id: total_opex
+      name: Total Operating Expenses
+      items_to_sum: ["salaries_expense", "marketing_expense", "admin_expense", "rd_expense"]
+      display_format: ",.0f"
+      css_class: "subtotal-line bold-line"
+
+  - id: operating_income_section
+    name: Operating Income
+    description: Operating profit calculations
+    css_class: "operating-section"
+    
+    items:
+      - type: calculated
+        id: operating_income
+        name: Operating Income (EBIT)
+        calculation:
+          type: subtraction
+          inputs: ["gross_profit", "total_opex"]
+        display_format: ",.0f"
+        css_class: "operating-income bold-line highlight"
+        notes_references: ["note6"]
+        
+      - type: calculated
+        id: operating_margin
+        name: Operating Margin %
+        calculation:
+          type: division
+          inputs: ["operating_income", "net_revenue"]
+        units: "Percentage"
+        display_scale_factor: 100
+        display_format: ".1%"
+        css_class: "margin-line"
+
+  - id: other_income_section
+    name: Other Income/Expenses
+    description: Non-operating items
+    units: "USD Thousands"
+    css_class: "other-section"
+    hide_if_all_zero: true  # Hide entire section if no other income/expenses
+    
+    items:
+      - type: line_item
+        id: interest_income
+        name: Interest Income
+        node_id: other_interest_income
+        display_format: ",.0f"
+        hide_if_all_zero: true
+        
+      - type: line_item
+        id: interest_expense
+        name: Interest Expense
+        node_id: other_interest_expense
+        sign_convention: -1
+        display_format: ",.0f"
+        hide_if_all_zero: true
+        
+      - type: line_item
+        id: other_income
+        name: Other Income
+        node_id: other_misc_income
+        display_format: ",.0f"
+        hide_if_all_zero: true
+        
+    subtotal:
+      type: subtotal
+      id: total_other
+      name: Total Other Income/Expenses
+      items_to_sum: ["interest_income", "interest_expense", "other_income"]
+      display_format: ",.0f"
+      css_class: "subtotal-line"
+      hide_if_all_zero: true
+
+  - id: net_income_section
+    name: Net Income
+    description: Bottom-line profit
+    css_class: "net-income-section"
+    
+    items:
+      - type: calculated
+        id: pretax_income
+        name: Income Before Taxes
+        calculation:
+          type: addition
+          inputs: ["operating_income", "total_other"]
+        display_format: ",.0f"
+        css_class: "pretax-income bold-line"
+        
+      - type: line_item
+        id: tax_expense
+        name: Income Tax Expense
+        node_id: tax_provision
+        sign_convention: -1
+        display_format: ",.0f"
+        css_class: "tax-line"
+        notes_references: ["note7"]
+        
+      - type: calculated
+        id: net_income
+        name: Net Income
+        calculation:
+          type: addition
+          inputs: ["pretax_income", "tax_expense"]
+        display_format: ",.0f"
+        css_class: "net-income bold-line double-underline highlight"
+        notes_references: ["note8"]
+        
+      - type: calculated
+        id: net_margin
+        name: Net Margin %
+        calculation:
+          type: division
+          inputs: ["net_income", "net_revenue"]
+        units: "Percentage"
+        display_scale_factor: 100
+        display_format: ".1%"
+        css_class: "margin-line final-margin" 
