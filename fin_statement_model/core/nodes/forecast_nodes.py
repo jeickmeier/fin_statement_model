@@ -129,14 +129,18 @@ class ForecastNode(Node):
 
         # For forecast periods, calculate using growth rate
         if period not in self.forecast_periods:
-            raise ValueError(f"Period '{period}' not in forecast periods for {self.name}")
+            raise ValueError(
+                f"Period '{period}' not in forecast periods for {self.name}"
+            )
 
         # Get the previous period's value
         prev_period = self._get_previous_period(period)
         prev_value = self.calculate(prev_period)
 
         # Get the growth rate for this period
-        growth_factor = self._get_growth_factor_for_period(period, prev_period, prev_value)
+        growth_factor = self._get_growth_factor_for_period(
+            period, prev_period, prev_value
+        )
 
         # Calculate the new value
         return prev_value * (1 + growth_factor)
@@ -196,7 +200,9 @@ class FixedGrowthForecastNode(ForecastNode):
         """
         super().__init__(input_node, base_period, forecast_periods)
         self.growth_rate = float(growth_rate)  # Ensure it's a float
-        logger.debug(f"Created FixedGrowthForecastNode with growth rate: {self.growth_rate}")
+        logger.debug(
+            f"Created FixedGrowthForecastNode with growth rate: {self.growth_rate}"
+        )
 
     def _get_growth_factor_for_period(
         self, period: str, prev_period: str, prev_value: float
@@ -256,8 +262,12 @@ class CurveGrowthForecastNode(ForecastNode):
         super().__init__(input_node, base_period, forecast_periods)
         if len(growth_rates) != len(forecast_periods):
             raise ValueError("Number of growth rates must match forecast periods.")
-        self.growth_rates = [float(rate) for rate in growth_rates]  # Ensure all are floats
-        logger.debug(f"Created CurveGrowthForecastNode with growth rates: {self.growth_rates}")
+        self.growth_rates = [
+            float(rate) for rate in growth_rates
+        ]  # Ensure all are floats
+        logger.debug(
+            f"Created CurveGrowthForecastNode with growth rates: {self.growth_rates}"
+        )
         logger.debug(f"  Base period: {base_period}")
         logger.debug(f"  Forecast periods: {forecast_periods}")
         logger.debug(f"  Base value: {input_node.calculate(base_period)}")
@@ -411,7 +421,9 @@ class AverageValueForecastNode(ForecastNode):
         """
         super().__init__(input_node, base_period, forecast_periods)
         self.average_value = self._calculate_average_value()
-        logger.debug(f"Created AverageValueForecastNode with average value: {self.average_value}")
+        logger.debug(
+            f"Created AverageValueForecastNode with average value: {self.average_value}"
+        )
 
     def _calculate_average_value(self) -> float:
         """Calculate the average historical value up to the base period.
@@ -419,9 +431,13 @@ class AverageValueForecastNode(ForecastNode):
         Returns:
             float: The average of historical values or 0.0 if none.
         """
-        values = [value for period, value in self.values.items() if period <= self.base_period]
+        values = [
+            value for period, value in self.values.items() if period <= self.base_period
+        ]
         if not values:
-            logger.warning(f"No historical values found for {self.name}, using 0.0 as average")
+            logger.warning(
+                f"No historical values found for {self.name}, using 0.0 as average"
+            )
             return 0.0
         return sum(values) / len(values)
 
@@ -433,7 +449,9 @@ class AverageValueForecastNode(ForecastNode):
 
         # For forecast periods, return the constant average value
         if period not in self.forecast_periods:
-            raise ValueError(f"Period '{period}' not in forecast periods for {self.name}")
+            raise ValueError(
+                f"Period '{period}' not in forecast periods for {self.name}"
+            )
 
         return self.average_value
 
@@ -483,13 +501,17 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
             float: The average growth rate across historical periods
         """
         if not self.values:
-            logger.warning(f"No historical values found for {self.name}, using 0% growth")
+            logger.warning(
+                f"No historical values found for {self.name}, using 0% growth"
+            )
             return 0.0
 
         # Get sorted historical periods up to base period
         historical_periods = sorted([p for p in self.values if p <= self.base_period])
         if len(historical_periods) < 2:
-            logger.warning(f"Insufficient historical data for {self.name}, using 0% growth")
+            logger.warning(
+                f"Insufficient historical data for {self.name}, using 0% growth"
+            )
             return 0.0
 
         # Calculate growth rates between consecutive periods
@@ -510,7 +532,9 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
             growth_rates.append(growth_rate)
 
         if not growth_rates:
-            logger.warning(f"No valid growth rates calculated for {self.name}, using 0% growth")
+            logger.warning(
+                f"No valid growth rates calculated for {self.name}, using 0% growth"
+            )
             return 0.0
 
         # Calculate and return average growth rate

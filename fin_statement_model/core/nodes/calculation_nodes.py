@@ -9,7 +9,10 @@ This module defines the different types of calculation nodes available in the sy
 from typing import Optional, Any
 from collections.abc import Callable
 
-from fin_statement_model.core.calculations.calculation import Calculation, FormulaCalculation
+from fin_statement_model.core.calculations.calculation import (
+    Calculation,
+    FormulaCalculation,
+)
 from fin_statement_model.core.errors import (
     CalculationError,
 )
@@ -47,7 +50,9 @@ class CalculationNode(Node):
         30.0
     """
 
-    def __init__(self, name: str, inputs: list[Node], calculation: Calculation, **kwargs: Any):
+    def __init__(
+        self, name: str, inputs: list[Node], calculation: Calculation, **kwargs: Any
+    ):
         """Initialize the CalculationNode.
 
         Args:
@@ -64,8 +69,12 @@ class CalculationNode(Node):
         super().__init__(name)
         if not isinstance(inputs, list) or not all(isinstance(n, Node) for n in inputs):
             raise TypeError("CalculationNode inputs must be a list of Node instances.")
-        if not hasattr(calculation, "calculate") or not callable(getattr(calculation, "calculate")):
-            raise TypeError("Calculation object must have a callable 'calculate' method.")
+        if not hasattr(calculation, "calculate") or not callable(
+            getattr(calculation, "calculate")
+        ):
+            raise TypeError(
+                "Calculation object must have a callable 'calculate' method."
+            )
 
         self.inputs = inputs
         self.calculation = calculation
@@ -126,8 +135,12 @@ class CalculationNode(Node):
         Raises:
             TypeError: If the new calculation is invalid.
         """
-        if not hasattr(calculation, "calculate") or not callable(getattr(calculation, "calculate")):
-            raise TypeError("New calculation object must have a callable 'calculate' method.")
+        if not hasattr(calculation, "calculate") or not callable(
+            getattr(calculation, "calculate")
+        ):
+            raise TypeError(
+                "New calculation object must have a callable 'calculate' method."
+            )
         self.calculation = calculation
         self.clear_cache()  # Clear cache as logic has changed
 
@@ -210,8 +223,12 @@ class FormulaCalculationNode(CalculationNode):
             ValueError: If the formula string has invalid syntax.
             TypeError: If any value in `inputs` is not a Node instance.
         """
-        if not isinstance(inputs, dict) or not all(isinstance(n, Node) for n in inputs.values()):
-            raise TypeError("FormulaCalculationNode inputs must be a dict of Node instances.")
+        if not isinstance(inputs, dict) or not all(
+            isinstance(n, Node) for n in inputs.values()
+        ):
+            raise TypeError(
+                "FormulaCalculationNode inputs must be a dict of Node instances."
+            )
 
         # Store the formula and metric attributes
         self.formula = formula
@@ -298,9 +315,13 @@ class CustomCalculationNode(Node):
         """
         super().__init__(name)
         if not isinstance(inputs, list) or not all(isinstance(n, Node) for n in inputs):
-            raise TypeError("CustomCalculationNode inputs must be a list of Node instances")
+            raise TypeError(
+                "CustomCalculationNode inputs must be a list of Node instances"
+            )
         if not callable(formula_func):
-            raise TypeError("CustomCalculationNode formula_func must be a callable function")
+            raise TypeError(
+                "CustomCalculationNode formula_func must be a callable function"
+            )
 
         self.inputs = inputs
         self.formula_func = formula_func

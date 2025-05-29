@@ -289,7 +289,9 @@ class ErrorCollector:
 
 
 # Type aliases for common result types
-OperationResult = Result[bool]  # For operations that succeed/fail without returning data
+OperationResult = Result[
+    bool
+]  # For operations that succeed/fail without returning data
 ValidationResult = Result[bool]  # For validation operations
 ProcessingResult = Result[dict[str, any]]  # For processing operations that return data
 
@@ -309,9 +311,13 @@ def combine_results(*results: Result[T]) -> Result[list[T]]:
         else:
             for error in result.get_errors():
                 if error.severity == ErrorSeverity.WARNING:
-                    collector.add_warning(error.code, error.message, error.context, error.source)
+                    collector.add_warning(
+                        error.code, error.message, error.context, error.source
+                    )
                 else:
-                    collector.add_error(error.code, error.message, error.context, error.source)
+                    collector.add_error(
+                        error.code, error.message, error.context, error.source
+                    )
 
     if collector.has_errors():
         return Failure(errors=collector.get_all())

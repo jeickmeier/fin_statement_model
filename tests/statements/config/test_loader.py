@@ -11,7 +11,9 @@ from unittest.mock import patch
 
 import pytest
 
-from fin_statement_model.statements.orchestration.loader import load_build_register_statements
+from fin_statement_model.statements.orchestration.loader import (
+    load_build_register_statements,
+)
 from fin_statement_model.statements.structure.builder import StatementStructureBuilder
 from fin_statement_model.statements.registry import StatementRegistry
 from fin_statement_model.core.errors import ConfigurationError
@@ -24,7 +26,11 @@ class TestLoadBuildRegisterStatements:
         """Test loading a single valid configuration file."""
         # Create a temporary config file
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
-            config_data = {"id": "test_statement", "name": "Test Statement", "sections": []}
+            config_data = {
+                "id": "test_statement",
+                "name": "Test Statement",
+                "sections": [],
+            }
             json.dump(config_data, f)
             config_path = f.name
 
@@ -38,7 +44,9 @@ class TestLoadBuildRegisterStatements:
             ) as mock_read:
                 mock_read.return_value = config_data
 
-                loaded_ids = load_build_register_statements(config_path, registry, builder)
+                loaded_ids = load_build_register_statements(
+                    config_path, registry, builder
+                )
 
                 assert loaded_ids == ["test_statement"]
                 assert registry.get("test_statement") is not None
@@ -100,7 +108,9 @@ class TestLoadBuildRegisterStatements:
                 mock_read.return_value = config_data
 
                 # Should not raise but log warning
-                loaded_ids = load_build_register_statements(config_path, registry, builder)
+                loaded_ids = load_build_register_statements(
+                    config_path, registry, builder
+                )
 
                 # No statements should be loaded due to validation error
                 assert loaded_ids == []

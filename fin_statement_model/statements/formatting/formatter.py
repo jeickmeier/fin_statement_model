@@ -69,7 +69,9 @@ class StatementFormatter:
             "contra_css_class": "contra-item",  # CSS class for contra items
         }
 
-    def _resolve_display_scale_factor(self, item: Union[StatementItem, Section]) -> float:
+    def _resolve_display_scale_factor(
+        self, item: Union[StatementItem, Section]
+    ) -> float:
         """Resolve the display scale factor for an item, considering hierarchy.
 
         Precedence: Item > Section > Statement > Default (1.0)
@@ -122,7 +124,11 @@ class StatementFormatter:
         # Check if item is part of a section with units
         if isinstance(item, StatementItem):
             parent_section = self._find_parent_section_for_item(item)
-            if parent_section and hasattr(parent_section, "units") and parent_section.units:
+            if (
+                parent_section
+                and hasattr(parent_section, "units")
+                and parent_section.units
+            ):
                 return parent_section.units
 
         # Check statement-level units
@@ -131,7 +137,9 @@ class StatementFormatter:
 
         return None
 
-    def _find_parent_section_for_item(self, target_item: StatementItem) -> Optional[Section]:
+    def _find_parent_section_for_item(
+        self, target_item: StatementItem
+    ) -> Optional[Section]:
         """Find the parent section that contains the given item.
 
         Args:
@@ -145,7 +153,9 @@ class StatementFormatter:
             # Check direct items
             for item in section.items:
                 if item is target_item or (
-                    hasattr(item, "id") and hasattr(target_item, "id") and item.id == target_item.id
+                    hasattr(item, "id")
+                    and hasattr(target_item, "id")
+                    and item.id == target_item.id
                 ):
                     return section
                 # Check nested sections
@@ -244,15 +254,21 @@ class StatementFormatter:
                         logger.warning(
                             f"Invalid display format '{item_format}' for item '{getattr(item, 'id', 'unknown')}', using default"
                         )
-                        formatted_values[period] = str(value)  # Convert to string for consistency
+                        formatted_values[period] = str(
+                            value
+                        )  # Convert to string for consistency
                 else:
-                    formatted_values[period] = str(value)  # Convert to string for consistency
+                    formatted_values[period] = str(
+                        value
+                    )  # Convert to string for consistency
             else:
                 formatted_values[period] = ""
 
         return formatted_values
 
-    def _format_contra_value(self, value: float, display_style: str | None = None) -> str:
+    def _format_contra_value(
+        self, value: float, display_style: str | None = None
+    ) -> str:
         """Format a contra item value according to the specified display style.
 
         Args:
@@ -265,7 +281,9 @@ class StatementFormatter:
         if pd.isna(value) or value == 0:
             return ""
 
-        style = display_style or self.default_formats.get("contra_display_style", "parentheses")
+        style = display_style or self.default_formats.get(
+            "contra_display_style", "parentheses"
+        )
 
         # For contra items, we typically want to show the absolute value with special formatting
         # regardless of the underlying sign, since sign_convention handles calculation logic
@@ -367,7 +385,9 @@ class StatementFormatter:
 
         # Log any warnings/errors from fetching
         if fetch_result.errors.has_warnings() or fetch_result.errors.has_errors():
-            fetch_result.errors.log_all(prefix=f"Statement '{self.statement.id}' data fetch: ")
+            fetch_result.errors.log_all(
+                prefix=f"Statement '{self.statement.id}' data fetch: "
+            )
 
         data = fetch_result.data
         all_periods = graph.periods
@@ -400,7 +420,9 @@ class StatementFormatter:
                             node_id = id_resolver.resolve(section_item.id, graph)
                             if node_id and node_id in data:
                                 item_data = data[node_id]
-                                if any(pd.notna(v) and v != 0 for v in item_data.values()):
+                                if any(
+                                    pd.notna(v) and v != 0 for v in item_data.values()
+                                ):
                                     section_has_data = True
                                     break
                         if not section_has_data:
@@ -416,10 +438,14 @@ class StatementFormatter:
                         # Apply item-specific scaling if enabled
                         if apply_item_scaling:
                             scale_factor = self._resolve_display_scale_factor(item)
-                            row_values = self._apply_item_scaling(row_values, scale_factor)
+                            row_values = self._apply_item_scaling(
+                                row_values, scale_factor
+                            )
 
                         # Check if item should be hidden
-                        if respect_hide_flags and self._should_hide_item(item, row_values):
+                        if respect_hide_flags and self._should_hide_item(
+                            item, row_values
+                        ):
                             items_to_hide.add(item.id)
                             return
 
@@ -429,25 +455,35 @@ class StatementFormatter:
                                 item, row_values, all_periods
                             )
                             # Only apply if we got actual formatted strings
-                            if any(isinstance(v, str) for v in formatted_values.values()):
+                            if any(
+                                isinstance(v, str) for v in formatted_values.values()
+                            ):
                                 for period in all_periods:
                                     if period in formatted_values and isinstance(
                                         formatted_values[period], str
                                     ):
                                         # Keep numeric value for calculations, store formatted for display
-                                        row_values[f"{period}_formatted"] = formatted_values[period]
+                                        row_values[f"{period}_formatted"] = (
+                                            formatted_values[period]
+                                        )
 
                         # Apply contra formatting if enabled and item is marked as contra
-                        if apply_contra_formatting and getattr(item, "is_contra", False):
+                        if apply_contra_formatting and getattr(
+                            item, "is_contra", False
+                        ):
                             contra_formatted = self._apply_contra_formatting(
                                 item, row_values, all_periods, contra_display_style
                             )
                             # Store contra formatted values for later use
                             for period in all_periods:
                                 if contra_formatted.get(period):
-                                    row_values[f"{period}_contra"] = contra_formatted[period]
+                                    row_values[f"{period}_contra"] = contra_formatted[
+                                        period
+                                    ]
 
-                        if include_empty_items or any(pd.notna(v) for v in row_values.values()):
+                        if include_empty_items or any(
+                            pd.notna(v) for v in row_values.values()
+                        ):
                             row = {
                                 "Line Item": indent_char * current_depth + item.name,
                                 "ID": item.id,
@@ -473,7 +509,9 @@ class StatementFormatter:
                                         "contra_css_class", "contra-item"
                                     )
                                     if item_css_class:
-                                        row["css_class"] = f"{item_css_class} {contra_css}"
+                                        row["css_class"] = (
+                                            f"{item_css_class} {contra_css}"
+                                        )
                                     else:
                                         row["css_class"] = contra_css
                                 else:
@@ -552,12 +590,16 @@ class StatementFormatter:
 
                 if node_id and not is_calc_or_subtotal and node_id in adjustment_status:
                     row_adj_flags = {
-                        f"{period}_is_adjusted": adjustment_status[node_id].get(period, False)
+                        f"{period}_is_adjusted": adjustment_status[node_id].get(
+                            period, False
+                        )
                         for period in all_periods
                     }
                 else:
                     # For calculated/subtotal items or missing nodes, flags are False
-                    row_adj_flags = {f"{period}_is_adjusted": False for period in all_periods}
+                    row_adj_flags = {
+                        f"{period}_is_adjusted": False for period in all_periods
+                    }
                 is_adjusted_data.append(row_adj_flags)
 
             if is_adjusted_data:
@@ -573,7 +615,9 @@ class StatementFormatter:
             final_cols += enhanced_cols
         if include_metadata_cols:
             # Add metadata cols (excluding adjustment flags if they are already added)
-            final_cols += [m_col for m_col in metadata_cols if m_col not in adjusted_flag_cols]
+            final_cols += [
+                m_col for m_col in metadata_cols if m_col not in adjusted_flag_cols
+            ]
 
         # Ensure contra formatting columns are available temporarily (will be removed later)
         all_available_cols = final_cols.copy()
@@ -583,7 +627,11 @@ class StatementFormatter:
 
         for col in all_available_cols:
             if col not in df.columns:
-                df[col] = np.nan if col in all_periods else ("" if col == "Line Item" else None)
+                df[col] = (
+                    np.nan
+                    if col in all_periods
+                    else ("" if col == "Line Item" else None)
+                )
 
         df = df[all_available_cols]
 
@@ -598,16 +646,22 @@ class StatementFormatter:
                 if row.get("is_contra", False):
                     for period in all_periods:
                         contra_col = f"{period}_contra"
-                        if contra_col in row and pd.notna(row[contra_col]) and row[contra_col]:
+                        if (
+                            contra_col in row
+                            and pd.notna(row[contra_col])
+                            and row[contra_col]
+                        ):
                             # Suppress dtype warnings since we're intentionally converting float to string
                             with warnings.catch_warnings():
                                 warnings.simplefilter("ignore", FutureWarning)
                                 df.at[index, period] = row[contra_col]
-            
+
             # Remove the contra formatting columns from the final output
             contra_cols_to_remove = [f"{period}_contra" for period in all_periods]
-            df = df.drop(columns=[col for col in contra_cols_to_remove if col in df.columns])
-            
+            df = df.drop(
+                columns=[col for col in contra_cols_to_remove if col in df.columns]
+            )
+
             # Select only the final columns for output
             df = df[final_cols]
 
@@ -674,7 +728,9 @@ class StatementFormatter:
             **kwargs,
         )
 
-        html = df.to_html(index=False, classes="statement-table", table_id="financial-statement")
+        html = df.to_html(
+            index=False, classes="statement-table", table_id="financial-statement"
+        )
 
         if css_styles or use_item_css_classes:
             style_str = "<style>\n"

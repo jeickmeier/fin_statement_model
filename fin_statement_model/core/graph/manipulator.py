@@ -111,7 +111,9 @@ class GraphManipulator:
         if not self.has_node(node_name):
             raise NodeError(f"Node '{node_name}' not found, cannot replace.")
         if node_name != new_node.name:
-            raise ValueError("New node name must match the name of the node being replaced.")
+            raise ValueError(
+                "New node name must match the name of the node being replaced."
+            )
         self.remove_node(node_name)
         self.add_node(new_node)
 

@@ -63,11 +63,15 @@ class StatementRegistry:
 
         statement_id = statement.id
         if not statement_id:
-            raise ValueError("StatementStructure must have a valid non-empty id to be registered.")
+            raise ValueError(
+                "StatementStructure must have a valid non-empty id to be registered."
+            )
 
         if statement_id in self._statements:
             # Policy: Raise error on conflict
-            logger.error(f"Attempted to register duplicate statement ID: '{statement_id}'")
+            logger.error(
+                f"Attempted to register duplicate statement ID: '{statement_id}'"
+            )
             raise StatementError(
                 message=f"Statement with ID '{statement_id}' is already registered.",
                 # statement_id=statement_id # Add if StatementError accepts this arg

@@ -101,7 +101,9 @@ def test_formula_calculate_success(
 
 def test_formula_calculate_unknown_variable(node_a: Node):
     """Test CalculationError for unknown variable in formula."""
-    calc_node = FormulaCalculationNode(name="TestCalc", inputs={"a": node_a}, formula="a + x")
+    calc_node = FormulaCalculationNode(
+        name="TestCalc", inputs={"a": node_a}, formula="a + x"
+    )
     with pytest.raises(CalculationError) as exc_info:
         calc_node.calculate("2023")
     assert "Unknown variable 'x'" in str(exc_info.value)
@@ -153,7 +155,9 @@ def test_formula_calculate_unsupported_operator(node_a: Node, node_b: Node):
 
 def test_formula_calculate_non_numeric_constant(node_a: Node):
     """Test CalculationError for non-numeric constants in formula."""
-    calc_node = FormulaCalculationNode(name="TestCalc", inputs={"a": node_a}, formula="a + 'hello'")
+    calc_node = FormulaCalculationNode(
+        name="TestCalc", inputs={"a": node_a}, formula="a + 'hello'"
+    )
     with pytest.raises(CalculationError) as exc_info:
         calc_node.calculate("2023")
     assert "Unsupported constant type 'str'" in str(exc_info.value)
@@ -223,7 +227,9 @@ def non_numeric_strategy() -> MockNonNumericStrategy:
     return MockNonNumericStrategy()
 
 
-def test_strategy_init_success(node_a: Node, node_b: Node, sum_strategy: MockSumStrategy):
+def test_strategy_init_success(
+    node_a: Node, node_b: Node, sum_strategy: MockSumStrategy
+):
     """Test successful initialization of CalculationNode with a strategy."""
     inputs = [node_a, node_b]
     node = CalculationNode(name="TestStrategy", inputs=inputs, calculation=sum_strategy)
@@ -236,13 +242,19 @@ def test_strategy_init_success(node_a: Node, node_b: Node, sum_strategy: MockSum
 
 def test_strategy_init_invalid_inputs_type(node_a: Node, sum_strategy: MockSumStrategy):
     """Test TypeError if inputs is not a list."""
-    with pytest.raises(TypeError, match="CalculationNode inputs must be a list of Node instances"):
-        CalculationNode(name="TestStrategy", inputs={"a": node_a}, calculation=sum_strategy)
+    with pytest.raises(
+        TypeError, match="CalculationNode inputs must be a list of Node instances"
+    ):
+        CalculationNode(
+            name="TestStrategy", inputs={"a": node_a}, calculation=sum_strategy
+        )
 
 
 def test_strategy_init_invalid_input_value_type(sum_strategy: MockSumStrategy):
     """Test TypeError if inputs list contains non-Node values."""
-    with pytest.raises(TypeError, match="CalculationNode inputs must be a list of Node instances"):
+    with pytest.raises(
+        TypeError, match="CalculationNode inputs must be a list of Node instances"
+    ):
         CalculationNode(name="TestStrategy", inputs=[123], calculation=sum_strategy)
 
 
@@ -264,20 +276,30 @@ def test_strategy_init_invalid_strategy_non_callable_calculate():
     with pytest.raises(
         TypeError, match="Calculation object must have a callable 'calculate' method"
     ):
-        CalculationNode(name="TestStrategy", inputs=[], calculation=InvalidCalculation())
+        CalculationNode(
+            name="TestStrategy", inputs=[], calculation=InvalidCalculation()
+        )
 
 
-def test_strategy_calculate_success(node_a: Node, node_b: Node, sum_strategy: MockSumStrategy):
+def test_strategy_calculate_success(
+    node_a: Node, node_b: Node, sum_strategy: MockSumStrategy
+):
     """Test successful calculation using the strategy via CalculationNode."""
-    node = CalculationNode(name="TestSum", inputs=[node_a, node_b], calculation=sum_strategy)
+    node = CalculationNode(
+        name="TestSum", inputs=[node_a, node_b], calculation=sum_strategy
+    )
     assert node.calculate("2023") == pytest.approx(15.0)  # 10.0 + 5.0
     assert node.calculate("2024") == pytest.approx(16.0)  # 12.0 + 4.0
 
 
-def test_strategy_calculate_caching(node_a: Node, node_b: Node, sum_strategy: MockSumStrategy):
+def test_strategy_calculate_caching(
+    node_a: Node, node_b: Node, sum_strategy: MockSumStrategy
+):
     """Test that results are cached after the first calculation."""
     mock_strategy = MagicMock(wraps=sum_strategy)
-    node = CalculationNode(name="TestCache", inputs=[node_a, node_b], calculation=mock_strategy)
+    node = CalculationNode(
+        name="TestCache", inputs=[node_a, node_b], calculation=mock_strategy
+    )
 
     # First call - should call strategy
     assert node.calculate("2023") == pytest.approx(15.0)
@@ -289,7 +311,9 @@ def test_strategy_calculate_caching(node_a: Node, node_b: Node, sum_strategy: Mo
     mock_strategy.calculate.assert_not_called()
 
 
-def test_strategy_clear_cache(node_a: Node, node_b: Node, sum_strategy: MockSumStrategy):
+def test_strategy_clear_cache(
+    node_a: Node, node_b: Node, sum_strategy: MockSumStrategy
+):
     """Test that clear_cache empties the cache."""
     mock_strategy = MagicMock(wraps=sum_strategy)
     node = CalculationNode(
@@ -337,9 +361,13 @@ def test_strategy_set_strategy(
     mock_product_strategy.calculate.assert_called_once_with([node_a, node_b], "2023")
 
 
-def test_strategy_set_invalid_strategy(node_a: Node, node_b: Node, sum_strategy: MockSumStrategy):
+def test_strategy_set_invalid_strategy(
+    node_a: Node, node_b: Node, sum_strategy: MockSumStrategy
+):
     """Test TypeError when setting an invalid calculation object."""
-    node = CalculationNode(name="TestSetInvalid", inputs=[node_a, node_b], calculation=sum_strategy)
+    node = CalculationNode(
+        name="TestSetInvalid", inputs=[node_a, node_b], calculation=sum_strategy
+    )
     invalid_calculation = object()
     with pytest.raises(
         TypeError,
@@ -427,7 +455,9 @@ def test_custom_init_invalid_inputs_type(node_a: Node):
     with pytest.raises(
         TypeError, match="CustomCalculationNode inputs must be a list of Node instances"
     ):
-        CustomCalculationNode(name="TestCustom", inputs={"a": node_a}, formula_func=custom_sum_func)
+        CustomCalculationNode(
+            name="TestCustom", inputs={"a": node_a}, formula_func=custom_sum_func
+        )
 
 
 def test_custom_init_invalid_input_value_type():
@@ -435,7 +465,9 @@ def test_custom_init_invalid_input_value_type():
     with pytest.raises(
         TypeError, match="CustomCalculationNode inputs must be a list of Node instances"
     ):
-        CustomCalculationNode(name="TestCustom", inputs=[123], formula_func=custom_sum_func)
+        CustomCalculationNode(
+            name="TestCustom", inputs=[123], formula_func=custom_sum_func
+        )
 
 
 def test_custom_init_invalid_formula_func_type(node_a: Node):

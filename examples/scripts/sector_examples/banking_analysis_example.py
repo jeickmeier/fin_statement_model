@@ -57,7 +57,9 @@ def validate_node_names_example() -> dict[str, str]:
     print("\n--- Basic Validation Results ---")
     standardized_mapping = {}
     for original_name, result in validation_results.items():
-        print(f"'{original_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})")
+        print(
+            f"'{original_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})"
+        )
         print(f"  Category: {result.category}")
         print(f"  Message: {result.message}")
         if result.suggestions:
@@ -117,7 +119,9 @@ def context_aware_validation_example():
 
     print("--- Context-Aware Validation Results ---")
     for node_name, node_type, parent_nodes in test_nodes:
-        result = validator.validate(node_name, node_type=node_type, parent_nodes=parent_nodes)
+        result = validator.validate(
+            node_name, node_type=node_type, parent_nodes=parent_nodes
+        )
 
         print(f"Node: '{node_name}' (Type: {node_type})")
         print(f"  Standardized: '{result.standardized_name}'")
@@ -161,7 +165,9 @@ def create_validated_bank_data() -> dict[str, FinancialStatementItemNode]:
         # Validate and standardize the name
         result = validator.validate(raw_name)
 
-        print(f"  '{raw_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})")
+        print(
+            f"  '{raw_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})"
+        )
         if result.message:
             print(f"    Note: {result.message}")
 
@@ -415,7 +421,9 @@ def validate_data_completeness(
         print("✓ All required nodes present")
 
     if validation_report["recommended_missing"]:
-        print(f"Missing recommended nodes ({len(validation_report['recommended_missing'])}):")
+        print(
+            f"Missing recommended nodes ({len(validation_report['recommended_missing'])}):"
+        )
         for node in validation_report["recommended_missing"]:
             print(f"  - {node}")
     else:
@@ -424,7 +432,9 @@ def validate_data_completeness(
     return validation_report
 
 
-def analyze_asset_quality(data_nodes: dict[str, FinancialStatementItemNode], period: str) -> dict:
+def analyze_asset_quality(
+    data_nodes: dict[str, FinancialStatementItemNode], period: str
+) -> dict:
     """Analyze asset quality metrics for the bank."""
     print(f"\n=== Asset Quality Analysis for {period} ===")
 
@@ -490,7 +500,9 @@ def analyze_capital_adequacy(
     return results
 
 
-def analyze_profitability(data_nodes: dict[str, FinancialStatementItemNode], period: str) -> dict:
+def analyze_profitability(
+    data_nodes: dict[str, FinancialStatementItemNode], period: str
+) -> dict:
     """Analyze profitability metrics for the bank."""
     print(f"\n=== Profitability Analysis for {period} ===")
 
@@ -523,7 +535,9 @@ def analyze_profitability(data_nodes: dict[str, FinancialStatementItemNode], per
     return results
 
 
-def analyze_liquidity(data_nodes: dict[str, FinancialStatementItemNode], period: str) -> dict:
+def analyze_liquidity(
+    data_nodes: dict[str, FinancialStatementItemNode], period: str
+) -> dict:
     """Analyze liquidity metrics for the bank."""
     print(f"\n=== Liquidity Analysis for {period} ===")
 
@@ -634,13 +648,17 @@ def main():
 
     # Print validation summary
     if validation_report["required_missing"]:
-        print(f"⚠️  Warning: {len(validation_report['required_missing'])} required nodes missing")
+        print(
+            f"⚠️  Warning: {len(validation_report['required_missing'])} required nodes missing"
+        )
     if validation_report["completeness_score"] < 80:
         print(
             f"⚠️  Data completeness below recommended threshold: {validation_report['completeness_score']:.1f}%"
         )
     else:
-        print(f"✅ Data completeness acceptable: {validation_report['completeness_score']:.1f}%")
+        print(
+            f"✅ Data completeness acceptable: {validation_report['completeness_score']:.1f}%"
+        )
 
     print(f"\n{'=' * 60}")
     print("BANKING ANALYSIS WITH VALIDATED DATA (Node Collection)")
@@ -691,7 +709,9 @@ def main():
         node for node in graph_data.values() if hasattr(node, "inputs") and node.inputs
     ]
     data_nodes = [
-        node for node in graph_data.values() if not (hasattr(node, "inputs") and node.inputs)
+        node
+        for node in graph_data.values()
+        if not (hasattr(node, "inputs") and node.inputs)
     ]
 
     print(f"  Total nodes: {len(graph_data)}")
@@ -735,9 +755,13 @@ def main():
     print(f"{'=' * 60}")
     print("\nKey Takeaways:")
     print("1. Node Collection: Simple, direct access, manual calculations")
-    print("2. Graph Structure: Automatic calculations, dependency tracking, more complex setup")
+    print(
+        "2. Graph Structure: Automatic calculations, dependency tracking, more complex setup"
+    )
     print("3. Both approaches can be validated using the same validation framework")
-    print("4. Graph structure provides better consistency and maintainability for complex models")
+    print(
+        "4. Graph structure provides better consistency and maintainability for complex models"
+    )
 
 
 def demonstrate_validation_in_metrics(
@@ -748,7 +772,9 @@ def demonstrate_validation_in_metrics(
 
     # Example: Try to calculate a metric with potentially problematic node names
     test_metric_inputs = {
-        "loan_loss_allowance": data_nodes.get("allowance_for_loan_losses"),  # Using alternate name
+        "loan_loss_allowance": data_nodes.get(
+            "allowance_for_loan_losses"
+        ),  # Using alternate name
         "npl": data_nodes.get("non_performing_loans"),  # Using alternate name
         "total_loans": data_nodes.get("total_loans"),  # Standard name
     }
@@ -770,17 +796,24 @@ def demonstrate_validation_in_metrics(
 
     # Calculate provision coverage ratio with validated inputs
     if all(
-        key in standardized_inputs for key in ["allowance_for_loan_losses", "non_performing_loans"]
+        key in standardized_inputs
+        for key in ["allowance_for_loan_losses", "non_performing_loans"]
     ):
         try:
             # Use standardized names for metric calculation
             metric_data = {
-                "allowance_for_loan_losses": standardized_inputs["allowance_for_loan_losses"],
+                "allowance_for_loan_losses": standardized_inputs[
+                    "allowance_for_loan_losses"
+                ],
                 "non_performing_loans": standardized_inputs["non_performing_loans"],
             }
 
-            provision_coverage = calculate_metric("provision_coverage_ratio", metric_data, "2023")
-            print(f"\nCalculated Provision Coverage Ratio (2023): {provision_coverage:.2f}%")
+            provision_coverage = calculate_metric(
+                "provision_coverage_ratio", metric_data, "2023"
+            )
+            print(
+                f"\nCalculated Provision Coverage Ratio (2023): {provision_coverage:.2f}%"
+            )
 
             # Interpret the result
             interpretation = interpret_metric(
@@ -949,7 +982,10 @@ def create_banking_graph_example() -> dict[str, FinancialStatementItemNode]:
     total_assets = CustomCalculationNode(
         name="total_assets",
         inputs=[cash_and_equivalents, total_securities, net_loans, other_assets],
-        formula_func=lambda cash, securities, loans, other: cash + securities + loans + other,
+        formula_func=lambda cash, securities, loans, other: cash
+        + securities
+        + loans
+        + other,
         description="Total bank assets",
     )
 
@@ -1012,7 +1048,9 @@ def create_banking_graph_example() -> dict[str, FinancialStatementItemNode]:
 
     print(f"  total_assets depends on: {get_input_names(total_assets)}")
     print(f"  net_interest_income depends on: {get_input_names(net_interest_income)}")
-    print(f"  total_interest_income depends on: {get_input_names(total_interest_income)}")
+    print(
+        f"  total_interest_income depends on: {get_input_names(total_interest_income)}"
+    )
     print(f"  total_securities depends on: {get_input_names(total_securities)}")
     print(f"  net_loans depends on: {get_input_names(net_loans)}")
 

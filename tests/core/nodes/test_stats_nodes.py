@@ -103,14 +103,18 @@ def test_yoy_init_invalid_input_type():
 
 def test_yoy_init_invalid_period_type(input_node_yoy: Node):
     """Test TypeError if periods are not strings."""
-    with pytest.raises(TypeError, match="prior_period and current_period must be strings"):
+    with pytest.raises(
+        TypeError, match="prior_period and current_period must be strings"
+    ):
         YoYGrowthNode(
             name="test",
             input_node=input_node_yoy,
             prior_period=2022,
             current_period="2023",
         )
-    with pytest.raises(TypeError, match="prior_period and current_period must be strings"):
+    with pytest.raises(
+        TypeError, match="prior_period and current_period must be strings"
+    ):
         YoYGrowthNode(
             name="test",
             input_node=input_node_yoy,
@@ -145,9 +149,13 @@ def test_yoy_calculate_prior_zero(input_node_yoy: Node):
     assert math.isnan(node.calculate())
 
 
-def test_yoy_calculate_non_numeric_prior(input_node_yoy: Node, non_numeric_input_node: MagicMock):
+def test_yoy_calculate_non_numeric_prior(
+    input_node_yoy: Node, non_numeric_input_node: MagicMock
+):
     """Test CalculationError when prior period value is non-numeric."""
-    non_numeric_input_node.calculate.side_effect = lambda p: ("abc" if p == "prior" else 100)
+    non_numeric_input_node.calculate.side_effect = lambda p: (
+        "abc" if p == "prior" else 100
+    )
     node = YoYGrowthNode(
         name="g",
         input_node=non_numeric_input_node,
@@ -156,12 +164,19 @@ def test_yoy_calculate_non_numeric_prior(input_node_yoy: Node, non_numeric_input
     )
     with pytest.raises(CalculationError) as exc_info:
         node.calculate()
-    assert "Prior period ('prior') value is non-numeric" in exc_info.value.details["original_error"]
+    assert (
+        "Prior period ('prior') value is non-numeric"
+        in exc_info.value.details["original_error"]
+    )
 
 
-def test_yoy_calculate_non_numeric_current(input_node_yoy: Node, non_numeric_input_node: MagicMock):
+def test_yoy_calculate_non_numeric_current(
+    input_node_yoy: Node, non_numeric_input_node: MagicMock
+):
     """Test CalculationError when current period value is non-numeric."""
-    non_numeric_input_node.calculate.side_effect = lambda p: (100 if p == "prior" else "abc")
+    non_numeric_input_node.calculate.side_effect = lambda p: (
+        100 if p == "prior" else "abc"
+    )
     node = YoYGrowthNode(
         name="g",
         input_node=non_numeric_input_node,
@@ -221,7 +236,9 @@ def test_multi_init_default_stat_func(input_node_multi: Node):
 def test_multi_init_invalid_input_type():
     """Test TypeError if input_node is not a Node."""
     with pytest.raises(TypeError, match="input_node must be a Node instance"):
-        MultiPeriodStatNode(name="t", input_node="abc", periods=["Q1"], stat_func=statistics.mean)
+        MultiPeriodStatNode(
+            name="t", input_node="abc", periods=["Q1"], stat_func=statistics.mean
+        )
 
 
 def test_multi_init_invalid_periods_empty(input_node_multi: Node):
@@ -253,7 +270,9 @@ def test_multi_init_invalid_periods_type(input_node_multi: Node):
 def test_multi_init_invalid_stat_func_type(input_node_multi: Node):
     """Test TypeError if stat_func is not callable."""
     with pytest.raises(TypeError, match="stat_func must be a callable function"):
-        MultiPeriodStatNode(name="t", input_node=input_node_multi, periods=["Q1"], stat_func=123)
+        MultiPeriodStatNode(
+            name="t", input_node=input_node_multi, periods=["Q1"], stat_func=123
+        )
 
 
 def test_multi_calculate_mean(input_node_multi: Node):
@@ -274,7 +293,9 @@ def test_multi_calculate_stdev(input_node_multi: Node):
         name="StdevSales", input_node=input_node_multi, periods=["Q1", "Q2", "Q3", "Q4"]
     )
     # Stdev of [10, 12, 11, 13]
-    assert node.calculate("ignored") == pytest.approx(statistics.stdev([10, 12, 11, 13]))
+    assert node.calculate("ignored") == pytest.approx(
+        statistics.stdev([10, 12, 11, 13])
+    )
 
 
 def test_multi_calculate_median(input_node_multi: Node):
@@ -331,7 +352,9 @@ def test_multi_calculate_input_error_partial(input_node_multi: Node):
 
     def side_effect_func(period: str) -> Optional[float]:
         if period == "Q2":
-            raise CalculationError("Failed Q2", node_id=input_node_multi.name, period=period)
+            raise CalculationError(
+                "Failed Q2", node_id=input_node_multi.name, period=period
+            )
         # Call the original method for other periods
         return original_calculate(period)
 
@@ -392,9 +415,13 @@ def test_avg_init_invalid_input_type():
 def test_avg_init_invalid_period_type(input_node_avg: Node):
     """Test TypeError if periods are not strings."""
     with pytest.raises(TypeError, match="period1 and period2 must be strings"):
-        TwoPeriodAverageNode(name="t", input_node=input_node_avg, period1=1, period2="b")
+        TwoPeriodAverageNode(
+            name="t", input_node=input_node_avg, period1=1, period2="b"
+        )
     with pytest.raises(TypeError, match="period1 and period2 must be strings"):
-        TwoPeriodAverageNode(name="t", input_node=input_node_avg, period1="a", period2=2)
+        TwoPeriodAverageNode(
+            name="t", input_node=input_node_avg, period1="a", period2=2
+        )
 
 
 def test_avg_calculate_success(input_node_avg: Node):
@@ -416,7 +443,9 @@ def test_avg_calculate_with_nan_input(input_node_avg: Node):
 
 def test_avg_calculate_non_numeric_input(non_numeric_input_node: MagicMock):
     """Test returns NaN if one of the input values is non-numeric."""
-    non_numeric_input_node.calculate.side_effect = lambda p: (10.0 if p == "p1" else "abc")
+    non_numeric_input_node.calculate.side_effect = lambda p: (
+        10.0 if p == "p1" else "abc"
+    )
     node = TwoPeriodAverageNode(
         name="AvgNonNum", input_node=non_numeric_input_node, period1="p1", period2="p2"
     )

@@ -156,7 +156,9 @@ class TransformationService:
 
         for config in transformers_config:
             if "name" not in config:
-                raise ValueError("Each transformer configuration must have a 'name' field")
+                raise ValueError(
+                    "Each transformer configuration must have a 'name' field"
+                )
 
             name = config.pop("name")
             transformer = TransformerFactory.create_transformer(name, **config)

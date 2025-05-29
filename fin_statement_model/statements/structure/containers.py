@@ -63,7 +63,9 @@ class Section:
         if not name or not isinstance(name, str):
             raise StatementError(f"Invalid section name: {name} for ID: {id}")
         if display_scale_factor <= 0:
-            raise StatementError(f"display_scale_factor must be positive for section: {id}")
+            raise StatementError(
+                f"display_scale_factor must be positive for section: {id}"
+            )
 
         self._id = id
         self._name = name
@@ -156,7 +158,9 @@ class Section:
             raise StatementError(f"Duplicate item ID: {item.id} in section: {self.id}")
         self._items.append(item)
 
-    def find_item_by_id(self, item_id: str) -> Optional[Union["Section", StatementItem]]:
+    def find_item_by_id(
+        self, item_id: str
+    ) -> Optional[Union["Section", StatementItem]]:
         """Recursively find an item by its identifier within this section.
 
         Args:
@@ -213,7 +217,9 @@ class StatementStructure:
         if not name or not isinstance(name, str):
             raise StatementError(f"Invalid statement name: {name} for ID: {id}")
         if display_scale_factor <= 0:
-            raise StatementError(f"display_scale_factor must be positive for statement: {id}")
+            raise StatementError(
+                f"display_scale_factor must be positive for statement: {id}"
+            )
 
         self._id = id
         self._name = name
@@ -273,7 +279,9 @@ class StatementStructure:
             StatementError: If a section with the same id already exists.
         """
         if any(s.id == section.id for s in self._sections):
-            raise StatementError(f"Duplicate section ID: {section.id} in statement: {self.id}")
+            raise StatementError(
+                f"Duplicate section ID: {section.id} in statement: {self.id}"
+            )
         self._sections.append(section)
 
     def find_item_by_id(self, item_id: str) -> Optional[Union[Section, StatementItem]]:
@@ -354,7 +362,9 @@ class StatementStructure:
                 if isinstance(item, Section):
                     _collect_items_recursive(item.items)
                     # Also collect the section's subtotal if it exists and is a StatementItem
-                    if hasattr(item, "subtotal") and isinstance(item.subtotal, StatementItem):
+                    if hasattr(item, "subtotal") and isinstance(
+                        item.subtotal, StatementItem
+                    ):
                         all_statement_items.append(item.subtotal)
                 elif isinstance(item, StatementItem):
                     all_statement_items.append(item)

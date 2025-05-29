@@ -18,18 +18,34 @@ def create_sample_graph() -> Graph:
     graph = Graph()
 
     # Asset items
-    graph.add_financial_statement_item("gross_property_plant_equipment", {"2023": 1000000, "2024": 1200000})
-    graph.add_financial_statement_item("accumulated_depreciation", {"2023": 250000, "2024": 350000})
+    graph.add_financial_statement_item(
+        "gross_property_plant_equipment", {"2023": 1000000, "2024": 1200000}
+    )
+    graph.add_financial_statement_item(
+        "accumulated_depreciation", {"2023": 250000, "2024": 350000}
+    )
 
     # Revenue items
-    graph.add_financial_statement_item("gross_sales", {"2023": 5000000, "2024": 5500000})
-    graph.add_financial_statement_item("sales_returns_allowances", {"2023": 50000, "2024": 60000})
-    graph.add_financial_statement_item("sales_discounts", {"2023": 25000, "2024": 30000})
+    graph.add_financial_statement_item(
+        "gross_sales", {"2023": 5000000, "2024": 5500000}
+    )
+    graph.add_financial_statement_item(
+        "sales_returns_allowances", {"2023": 50000, "2024": 60000}
+    )
+    graph.add_financial_statement_item(
+        "sales_discounts", {"2023": 25000, "2024": 30000}
+    )
 
     # Equity items
-    graph.add_financial_statement_item("common_stock", {"2023": 1000000, "2024": 1000000})
-    graph.add_financial_statement_item("retained_earnings", {"2023": 800000, "2024": 950000})
-    graph.add_financial_statement_item("treasury_stock", {"2023": 150000, "2024": 200000})
+    graph.add_financial_statement_item(
+        "common_stock", {"2023": 1000000, "2024": 1000000}
+    )
+    graph.add_financial_statement_item(
+        "retained_earnings", {"2023": 800000, "2024": 950000}
+    )
+    graph.add_financial_statement_item(
+        "treasury_stock", {"2023": 150000, "2024": 200000}
+    )
 
     return graph
 

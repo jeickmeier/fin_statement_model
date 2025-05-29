@@ -165,11 +165,15 @@ class NodeFactory:
             if "metric_name" in calculation_kwargs:
                 node_kwargs["metric_name"] = calculation_kwargs.pop("metric_name")
             if "metric_description" in calculation_kwargs:
-                node_kwargs["metric_description"] = calculation_kwargs.pop("metric_description")
+                node_kwargs["metric_description"] = calculation_kwargs.pop(
+                    "metric_description"
+                )
 
             # Special handling for FormulaCalculation which needs input_variable_names
             if calculation_type == "formula":
-                if formula_variable_names and len(formula_variable_names) == len(inputs):
+                if formula_variable_names and len(formula_variable_names) == len(
+                    inputs
+                ):
                     calculation_kwargs["input_variable_names"] = formula_variable_names
                 elif not formula_variable_names:
                     # Generate default names like var_0, var_1, ...
@@ -196,7 +200,9 @@ class NodeFactory:
             ) from e
 
         # Create and return a CalculationNode with the instantiated calculation
-        logger.debug(f"Creating calculation node '{name}' with '{calculation_name}' calculation.")
+        logger.debug(
+            f"Creating calculation node '{name}' with '{calculation_name}' calculation."
+        )
 
         return CalculationNode(name, inputs, calculation_instance, **node_kwargs)
 
@@ -240,9 +246,13 @@ class NodeFactory:
         """
         # Instantiate the appropriate forecast node
         if forecast_type == "simple":
-            node = FixedGrowthForecastNode(base_node, base_period, forecast_periods, growth_params)
+            node = FixedGrowthForecastNode(
+                base_node, base_period, forecast_periods, growth_params
+            )
         elif forecast_type == "curve":
-            node = CurveGrowthForecastNode(base_node, base_period, forecast_periods, growth_params)
+            node = CurveGrowthForecastNode(
+                base_node, base_period, forecast_periods, growth_params
+            )
         elif forecast_type == "statistical":
             node = StatisticalGrowthForecastNode(
                 base_node, base_period, forecast_periods, growth_params
@@ -250,13 +260,17 @@ class NodeFactory:
         elif forecast_type == "average":
             node = AverageValueForecastNode(base_node, base_period, forecast_periods)
         elif forecast_type == "historical_growth":
-            node = AverageHistoricalGrowthForecastNode(base_node, base_period, forecast_periods)
+            node = AverageHistoricalGrowthForecastNode(
+                base_node, base_period, forecast_periods
+            )
         else:
             raise ValueError(f"Invalid forecast type: {forecast_type}")
 
         # Override forecast node's name to match factory 'name' argument
         node.name = name
-        logger.debug(f"Forecast node created with custom name: {name} (original: {base_node.name})")
+        logger.debug(
+            f"Forecast node created with custom name: {name} (original: {base_node.name})"
+        )
         return node
 
     @classmethod
@@ -328,7 +342,9 @@ class NodeFactory:
 
         # Use the imported CustomCalculationNode
         logger.debug(f"Creating CustomCalculationNode: {name} using provided callable.")
-        return CustomCalculationNode(name, inputs, formula_func=formula, description=description)
+        return CustomCalculationNode(
+            name, inputs, formula_func=formula, description=description
+        )
 
     # Consider adding a method for creating FormulaCalculationNode if needed directly
     # @classmethod

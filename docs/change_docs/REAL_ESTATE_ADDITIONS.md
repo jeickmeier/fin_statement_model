@@ -154,7 +154,7 @@ Comprehensive test coverage includes:
 fin_statement_model/
 ├── core/
 │   ├── metrics/
-│   │   └── builtin_organized/
+│   │   └── metric_defn/
 │   │       └── real_estate/
 │   │           ├── __init__.py
 │   │           ├── operational_metrics.yaml

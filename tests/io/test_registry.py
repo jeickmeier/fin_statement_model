@@ -21,7 +21,11 @@ from fin_statement_model.io.registry import (
 )
 from fin_statement_model.io.registry_base import HandlerRegistry
 from fin_statement_model.io.base import DataReader, DataWriter
-from fin_statement_model.io.exceptions import FormatNotSupportedError, ReadError, WriteError
+from fin_statement_model.io.exceptions import (
+    FormatNotSupportedError,
+    ReadError,
+    WriteError,
+)
 
 
 class TestRegistryDecorators:
@@ -161,7 +165,14 @@ class TestGetHandler:
         mock_schema = Mock()
         mock_schema.model_validate.side_effect = ValidationError.from_exception_data(
             "ValidationError",
-            [{"type": "missing", "loc": ("field",), "msg": "Field required", "input": {}}],
+            [
+                {
+                    "type": "missing",
+                    "loc": ("field",),
+                    "msg": "Field required",
+                    "input": {},
+                }
+            ],
         )
 
         with pytest.raises(ReadError) as exc_info:
@@ -226,7 +237,9 @@ class TestGetHandler:
         )
 
         assert result == "handler_instance"
-        mock_handler_class.assert_called_once_with(target="output.txt", custom_param="value")
+        mock_handler_class.assert_called_once_with(
+            target="output.txt", custom_param="value"
+        )
 
     def test_get_handler_error_context_for_reader(self):
         """Test _get_handler sets correct error context for readers."""
@@ -238,7 +251,14 @@ class TestGetHandler:
         mock_schema = Mock()
         mock_schema.model_validate.side_effect = ValidationError.from_exception_data(
             "ValidationError",
-            [{"type": "missing", "loc": ("field",), "msg": "Field required", "input": {}}],
+            [
+                {
+                    "type": "missing",
+                    "loc": ("field",),
+                    "msg": "Field required",
+                    "input": {},
+                }
+            ],
         )
 
         with pytest.raises(ReadError) as exc_info:
@@ -263,7 +283,14 @@ class TestGetHandler:
         mock_schema = Mock()
         mock_schema.model_validate.side_effect = ValidationError.from_exception_data(
             "ValidationError",
-            [{"type": "missing", "loc": ("field",), "msg": "Field required", "input": {}}],
+            [
+                {
+                    "type": "missing",
+                    "loc": ("field",),
+                    "msg": "Field required",
+                    "input": {},
+                }
+            ],
         )
 
         with pytest.raises(WriteError) as exc_info:

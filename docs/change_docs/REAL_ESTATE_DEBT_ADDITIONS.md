@@ -8,7 +8,7 @@ The real estate debt additions provide comprehensive tools for analyzing the deb
 
 ## New Real Estate Debt Metrics (9 metrics)
 
-### Location: `fin_statement_model/core/metrics/builtin_organized/real_estate/debt_metrics.yaml`
+### Location: `fin_statement_model/core/metrics/metric_defn/real_estate/debt_metrics.yaml`
 
 #### 1. Loan-to-Value Ratio (LTV)
 - **Formula**: `total_debt / total_property_value * 100`
@@ -195,7 +195,7 @@ All tests pass successfully, ensuring reliability and accuracy.
 - No breaking changes to existing functionality
 
 ### Registry Updates
-- Updated `builtin_organized/__init__.py` to include debt metrics
+- Updated `metric_defn/__init__.py` to include debt metrics
 - Updated `standard_nodes/__init__.py` to include debt nodes
 - Maintains backward compatibility
 
@@ -204,7 +204,7 @@ All tests pass successfully, ensuring reliability and accuracy.
 fin_statement_model/
 ├── core/
 │   ├── metrics/
-│   │   └── builtin_organized/
+│   │   └── metric_defn/
 │   │       └── real_estate/
 │   │           ├── operational_metrics.yaml
 │   │           ├── valuation_metrics.yaml

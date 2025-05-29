@@ -28,10 +28,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Basic logging configuration (optional, can be removed if desired)
-logging.basicConfig(level=logging.WARNING, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.WARNING, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 TICKER = "AAPL"  # Example ticker
-STATEMENT_TYPE = "income_statement"  # Options: 'income_statement', 'balance_sheet', 'cash_flow'
+STATEMENT_TYPE = (
+    "income_statement"  # Options: 'income_statement', 'balance_sheet', 'cash_flow'
+)
 PERIOD_TYPE = "FY"  # Options: 'FY' (annual), 'QTR' (quarterly)
 LIMIT = 5  # Number of past periods to fetch
 

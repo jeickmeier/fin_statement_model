@@ -103,7 +103,9 @@ class ExcelReader(FileBasedReader, ConfigurableReaderMixin):
         graph_periods = self._extract_periods(period_headers, items_col)
 
         # Create and populate graph
-        return self._create_graph(df, graph_periods, items_col, mapping, file_path, sheet_name)
+        return self._create_graph(
+            df, graph_periods, items_col, mapping, file_path, sheet_name
+        )
 
     def _read_excel_data(
         self,
@@ -162,7 +164,9 @@ class ExcelReader(FileBasedReader, ConfigurableReaderMixin):
 
         # Filter period headers: exclude the item column and empty values
         graph_periods = [
-            p for i, p in enumerate(period_headers) if i > items_col_0idx and p and p.strip()
+            p
+            for i, p in enumerate(period_headers)
+            if i > items_col_0idx and p and p.strip()
         ]
 
         if not graph_periods:
@@ -214,7 +218,9 @@ class ExcelReader(FileBasedReader, ConfigurableReaderMixin):
                         "Overwriting data is not standard for readers."
                     )
                 else:
-                    new_node = FinancialStatementItemNode(name=node_name, values=period_values)
+                    new_node = FinancialStatementItemNode(
+                        name=node_name, values=period_values
+                    )
                     graph.add_node(new_node)
                     nodes_added += 1
 

@@ -41,7 +41,9 @@ class TestRealEstateDebtMetrics:
         """Test Loan-to-Value Ratio calculation."""
         # Create test nodes
         total_debt = FinancialStatementItemNode("total_debt", {"2023": 6_000_000})
-        property_value = FinancialStatementItemNode("total_property_value", {"2023": 10_000_000})
+        property_value = FinancialStatementItemNode(
+            "total_property_value", {"2023": 10_000_000}
+        )
 
         # Get LTV metric definition
         ltv_metric = metric_registry.get("loan_to_value_ratio")
@@ -62,7 +64,9 @@ class TestRealEstateDebtMetrics:
         """Test Debt Service Coverage Ratio calculation."""
         # Create test nodes
         noi = FinancialStatementItemNode("net_operating_income", {"2023": 1_500_000})
-        debt_service = FinancialStatementItemNode("mortgage_payments", {"2023": 1_200_000})
+        debt_service = FinancialStatementItemNode(
+            "mortgage_payments", {"2023": 1_200_000}
+        )
 
         # Get DSCR metric definition
         dscr_metric = metric_registry.get("debt_service_coverage_ratio_(real_estate)")
@@ -103,8 +107,12 @@ class TestRealEstateDebtMetrics:
     def test_unencumbered_asset_ratio_calculation(self):
         """Test Unencumbered Asset Ratio calculation."""
         # Create test nodes
-        unencumbered = FinancialStatementItemNode("unencumbered_assets", {"2023": 3_000_000})
-        total_value = FinancialStatementItemNode("total_property_value", {"2023": 10_000_000})
+        unencumbered = FinancialStatementItemNode(
+            "unencumbered_assets", {"2023": 3_000_000}
+        )
+        total_value = FinancialStatementItemNode(
+            "total_property_value", {"2023": 10_000_000}
+        )
 
         # Get UAR metric definition
         uar_metric = metric_registry.get("unencumbered_asset_ratio")
@@ -148,7 +156,9 @@ class TestRealEstateDebtMetrics:
     def test_weighted_average_interest_rate_calculation(self):
         """Test Weighted Average Interest Rate calculation."""
         # Create test nodes
-        interest_payments = FinancialStatementItemNode("interest_payments", {"2023": 500_000})
+        interest_payments = FinancialStatementItemNode(
+            "interest_payments", {"2023": 500_000}
+        )
         total_debt = FinancialStatementItemNode("total_debt", {"2023": 10_000_000})
 
         # Get WAIR metric definition
@@ -169,7 +179,9 @@ class TestRealEstateDebtMetrics:
     def test_debt_maturity_profile_calculation(self):
         """Test Debt Maturity Profile calculation."""
         # Create test nodes
-        near_term_debt = FinancialStatementItemNode("debt_maturities_1_year", {"2023": 1_500_000})
+        near_term_debt = FinancialStatementItemNode(
+            "debt_maturities_1_year", {"2023": 1_500_000}
+        )
         total_debt = FinancialStatementItemNode("total_debt", {"2023": 10_000_000})
 
         # Get debt maturity profile metric definition
@@ -190,8 +202,12 @@ class TestRealEstateDebtMetrics:
     def test_construction_loan_to_cost_ratio_calculation(self):
         """Test Construction Loan to Cost Ratio calculation."""
         # Create test nodes
-        construction_loans = FinancialStatementItemNode("construction_loans", {"2023": 8_000_000})
-        costs_to_date = FinancialStatementItemNode("development_costs_to_date", {"2023": 6_000_000})
+        construction_loans = FinancialStatementItemNode(
+            "construction_loans", {"2023": 8_000_000}
+        )
+        costs_to_date = FinancialStatementItemNode(
+            "development_costs_to_date", {"2023": 6_000_000}
+        )
         remaining_budget = FinancialStatementItemNode(
             "remaining_development_budget", {"2023": 4_000_000}
         )
@@ -252,10 +268,12 @@ class TestRealEstateDebtMetrics:
 
         for metric_name in metrics_with_interpretations:
             metric = metric_registry.get(metric_name)
-            assert metric.interpretation is not None, f"Metric {metric_name} missing interpretation"
-            assert metric.interpretation.notes is not None, (
-                f"Metric {metric_name} missing interpretation notes"
-            )
+            assert (
+                metric.interpretation is not None
+            ), f"Metric {metric_name} missing interpretation"
+            assert (
+                metric.interpretation.notes is not None
+            ), f"Metric {metric_name} missing interpretation notes"
 
     def test_debt_metric_categories(self):
         """Test that debt metrics are properly categorized."""
@@ -268,9 +286,9 @@ class TestRealEstateDebtMetrics:
         # Ensure all debt metrics have the correct category
         for metric_name in debt_metrics:
             metric = metric_registry.get(metric_name)
-            assert metric.category == "real_estate_debt", (
-                f"Metric {metric_name} has wrong category: {metric.category}"
-            )
+            assert (
+                metric.category == "real_estate_debt"
+            ), f"Metric {metric_name} has wrong category: {metric.category}"
 
     def test_debt_metric_tags(self):
         """Test that debt metrics have appropriate tags."""
@@ -282,5 +300,9 @@ class TestRealEstateDebtMetrics:
 
         for metric_name in debt_metrics:
             metric = metric_registry.get(metric_name)
-            assert "real_estate" in metric.tags, f"Metric {metric_name} missing 'real_estate' tag"
-            assert len(metric.tags) > 1, f"Metric {metric_name} should have multiple tags"
+            assert (
+                "real_estate" in metric.tags
+            ), f"Metric {metric_name} missing 'real_estate' tag"
+            assert (
+                len(metric.tags) > 1
+            ), f"Metric {metric_name} should have multiple tags"

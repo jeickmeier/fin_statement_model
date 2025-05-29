@@ -95,7 +95,9 @@ class ForecastMethodRegistry:
         """
         if name not in self._methods:
             available = ", ".join(sorted(self._methods.keys()))
-            raise ValueError(f"Unknown forecast method: '{name}'. Available methods: {available}")
+            raise ValueError(
+                f"Unknown forecast method: '{name}'. Available methods: {available}"
+            )
 
         return self._methods[name]
 

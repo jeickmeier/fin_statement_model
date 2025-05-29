@@ -108,11 +108,15 @@ class StatementConfig:
             validation_errors = []
 
             # Add errors (always included)
-            validation_errors.extend(str(error) for error in error_collector.get_errors())
+            validation_errors.extend(
+                str(error) for error in error_collector.get_errors()
+            )
 
             # Add warnings if in strict mode
             if self.node_validation_strict:
-                validation_errors.extend(str(warning) for warning in error_collector.get_warnings())
+                validation_errors.extend(
+                    str(warning) for warning in error_collector.get_warnings()
+                )
             else:
                 # Log warnings but don't include in errors list
                 for warning in error_collector.get_warnings():
@@ -135,7 +139,9 @@ class StatementConfig:
             self.model = None
             return [f"Unexpected validation error: {e}"]
 
-    def _validate_node_ids(self, model: StatementModel, error_collector: ErrorCollector) -> None:
+    def _validate_node_ids(
+        self, model: StatementModel, error_collector: ErrorCollector
+    ) -> None:
         """Validate all node IDs in the statement model using UnifiedNodeValidator.
 
         Args:
@@ -145,14 +151,21 @@ class StatementConfig:
         logger.debug(f"Starting node ID validation for statement '{model.id}'")
 
         # Validate statement ID itself
-        self._validate_single_node_id(model.id, "statement", "statement.id", error_collector)
+        self._validate_single_node_id(
+            model.id, "statement", "statement.id", error_collector
+        )
 
         # Validate all sections recursively
         for section in model.sections:
-            self._validate_section_node_ids(section, error_collector, f"statement.{model.id}")
+            self._validate_section_node_ids(
+                section, error_collector, f"statement.{model.id}"
+            )
 
     def _validate_section_node_ids(
-        self, section: SectionModel, error_collector: ErrorCollector, parent_context: str
+        self,
+        section: SectionModel,
+        error_collector: ErrorCollector,
+        parent_context: str,
     ) -> None:
         """Validate node IDs within a section and its items.
 
@@ -174,11 +187,15 @@ class StatementConfig:
 
         # Validate subsections recursively
         for subsection in section.subsections:
-            self._validate_section_node_ids(subsection, error_collector, section_context)
+            self._validate_section_node_ids(
+                subsection, error_collector, section_context
+            )
 
         # Validate section subtotal if present
         if section.subtotal:
-            self._validate_item_node_ids(section.subtotal, error_collector, section_context)
+            self._validate_item_node_ids(
+                section.subtotal, error_collector, section_context
+            )
 
     def _validate_item_node_ids(
         self, item: BaseItemModel, error_collector: ErrorCollector, parent_context: str
@@ -193,7 +210,9 @@ class StatementConfig:
         item_context = f"{parent_context}.item.{item.id}"
 
         # Validate the item ID itself
-        self._validate_single_node_id(item.id, "item", f"{item_context}.id", error_collector)
+        self._validate_single_node_id(
+            item.id, "item", f"{item_context}.id", error_collector
+        )
 
         # Type-specific validation
         if isinstance(item, LineItemModel):
@@ -214,13 +233,18 @@ class StatementConfig:
 
         elif isinstance(item, CalculatedItemModel):
             # Validate calculation inputs
-            self._validate_calculation_inputs(item.calculation, error_collector, item_context)
+            self._validate_calculation_inputs(
+                item.calculation, error_collector, item_context
+            )
 
         elif isinstance(item, MetricItemModel):
             # Validate metric inputs (the values, not the keys)
             for input_key, input_id in item.inputs.items():
                 self._validate_single_node_id(
-                    input_id, "metric_input", f"{item_context}.inputs.{input_key}", error_collector
+                    input_id,
+                    "metric_input",
+                    f"{item_context}.inputs.{input_key}",
+                    error_collector,
                 )
 
         elif isinstance(item, SubtotalModel):
@@ -236,14 +260,19 @@ class StatementConfig:
 
             # Validate calculation inputs if present
             if item.calculation:
-                self._validate_calculation_inputs(item.calculation, error_collector, item_context)
+                self._validate_calculation_inputs(
+                    item.calculation, error_collector, item_context
+                )
 
         elif isinstance(item, SectionModel):
             # Recursive validation for nested sections
             self._validate_section_node_ids(item, error_collector, parent_context)
 
     def _validate_calculation_inputs(
-        self, calculation: CalculationSpec, error_collector: ErrorCollector, parent_context: str
+        self,
+        calculation: CalculationSpec,
+        error_collector: ErrorCollector,
+        parent_context: str,
     ) -> None:
         """Validate inputs within a calculation specification.
 
@@ -261,7 +290,11 @@ class StatementConfig:
             )
 
     def _validate_single_node_id(
-        self, node_id: str, node_type: str, context: str, error_collector: ErrorCollector
+        self,
+        node_id: str,
+        node_type: str,
+        context: str,
+        error_collector: ErrorCollector,
     ) -> None:
         """Validate a single node ID using the UnifiedNodeValidator.
 
@@ -285,9 +318,13 @@ class StatementConfig:
             # Determine severity based on validation result and configuration
             if not validation_result.is_valid:
                 severity = (
-                    ErrorSeverity.ERROR if self.node_validation_strict else ErrorSeverity.WARNING
+                    ErrorSeverity.ERROR
+                    if self.node_validation_strict
+                    else ErrorSeverity.WARNING
                 )
-                message = f"Invalid {node_type} ID '{node_id}': {validation_result.message}"
+                message = (
+                    f"Invalid {node_type} ID '{node_id}': {validation_result.message}"
+                )
                 if severity == ErrorSeverity.ERROR:
                     error_collector.add_error(
                         code="invalid_node_id",
@@ -303,7 +340,11 @@ class StatementConfig:
                         source=node_id,
                     )
 
-            elif validation_result.category in ["alternate", "subnode_nonstandard", "custom"]:
+            elif validation_result.category in [
+                "alternate",
+                "subnode_nonstandard",
+                "custom",
+            ]:
                 # These are valid but could be improved
                 error_collector.add_warning(
                     code="non_standard_node_id",
@@ -323,7 +364,9 @@ class StatementConfig:
                 )
 
         except Exception as e:
-            logger.exception(f"Error validating node ID '{node_id}' in context '{context}'")
+            logger.exception(
+                f"Error validating node ID '{node_id}' in context '{context}'"
+            )
             error_collector.add_warning(
                 code="node_validation_error",
                 message=f"Failed to validate {node_type} ID '{node_id}': {e}",

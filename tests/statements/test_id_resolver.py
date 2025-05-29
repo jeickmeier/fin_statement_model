@@ -46,7 +46,9 @@ class TestIDResolver:
         # SubtotalLineItem - uses its ID as node_id
         section.add_item(
             SubtotalLineItem(
-                id="total_revenue", name="Total Revenue", item_ids=["revenue", "other_revenue"]
+                id="total_revenue",
+                name="Total Revenue",
+                item_ids=["revenue", "other_revenue"],
             )
         )
 

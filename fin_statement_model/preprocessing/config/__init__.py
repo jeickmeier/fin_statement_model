@@ -14,14 +14,12 @@ from .enums import (
 )
 
 __all__ = [
-    # Config models
+    "ConversionType",
     "NormalizationConfig",
+    "NormalizationType",
     "PeriodConversionConfig",
     "StatementFormattingConfig",
-    "TimeSeriesConfig",
-    # Enums
-    "NormalizationType",
-    "TransformationType",
-    "ConversionType",
     "StatementType",
+    "TimeSeriesConfig",
+    "TransformationType",
 ]

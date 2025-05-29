@@ -29,7 +29,9 @@ class ForecastMethod(Protocol):
         """
         ...
 
-    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
+    def normalize_params(
+        self, config: Any, forecast_periods: list[str]
+    ) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory.
 
         Args:
@@ -77,7 +79,9 @@ class BaseForecastMethod(ABC):
         """Validate the configuration for this method."""
 
     @abstractmethod
-    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
+    def normalize_params(
+        self, config: Any, forecast_periods: list[str]
+    ) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory."""
 
     def prepare_historical_data(
@@ -90,7 +94,9 @@ class BaseForecastMethod(ABC):
         """
         return None
 
-    def get_forecast_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
+    def get_forecast_params(
+        self, config: Any, forecast_periods: list[str]
+    ) -> dict[str, Any]:
         """Get complete forecast parameters.
 
         This is a convenience method that validates and normalizes in one call.

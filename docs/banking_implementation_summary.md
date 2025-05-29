@@ -9,7 +9,7 @@ The Financial Statement Model library includes comprehensive banking-specific fu
 ```
 fin_statement_model/
 ├── core/
-│   ├── metrics/builtin_organized/banking/
+│   ├── metrics/metric_defn/banking/
 │   │   ├── asset_quality.yaml          # NPL ratios, charge-offs, provisions
 │   │   ├── capital_adequacy.yaml       # CET1, Tier 1, Total capital ratios
 │   │   ├── profitability.yaml          # ROA, ROE, NIM, efficiency ratio
@@ -225,7 +225,7 @@ liquid_assets_ratio: 22.67% - excellent
 
 ### Automatic Loading
 - Banking nodes automatically loaded via `standard_nodes/__init__.py`
-- Banking metrics automatically loaded via `builtin_organized/__init__.py`
+- Banking metrics automatically loaded via `metric_defn/__init__.py`
 - No manual registration required
 
 ### Registry Integration

@@ -56,7 +56,9 @@ def example_context_aware_validation():
     ]
 
     for name, node_type, parent_nodes in test_cases:
-        result = validator.validate(name, node_type=node_type, parent_nodes=parent_nodes)
+        result = validator.validate(
+            name, node_type=node_type, parent_nodes=parent_nodes
+        )
         print(f"\nNode: '{name}' (Type: {node_type})")
         print(f"  Parents: {parent_nodes}")
         print(f"  Category: {result.category}")

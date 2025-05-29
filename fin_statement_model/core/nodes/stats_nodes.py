@@ -53,7 +53,9 @@ class YoYGrowthNode(Node):
         0.2
     """
 
-    def __init__(self, name: str, input_node: Node, prior_period: str, current_period: str):
+    def __init__(
+        self, name: str, input_node: Node, prior_period: str, current_period: str
+    ):
         """Initialize the YoY Growth node.
 
         Args:
@@ -69,7 +71,9 @@ class YoYGrowthNode(Node):
         if not isinstance(input_node, Node):
             raise TypeError("YoYGrowthNode input_node must be a Node instance.")
         if not isinstance(prior_period, str) or not isinstance(current_period, str):
-            raise TypeError("YoYGrowthNode prior_period and current_period must be strings.")
+            raise TypeError(
+                "YoYGrowthNode prior_period and current_period must be strings."
+            )
 
         self.input_node = input_node
         self.prior_period = prior_period
@@ -101,9 +105,13 @@ class YoYGrowthNode(Node):
 
             # Validate input types
             if not isinstance(prior_value, int | float):
-                raise TypeError(f"Prior period ('{self.prior_period}') value is non-numeric.")
+                raise TypeError(
+                    f"Prior period ('{self.prior_period}') value is non-numeric."
+                )
             if not isinstance(current_value, int | float):
-                raise TypeError(f"Current period ('{self.current_period}') value is non-numeric.")
+                raise TypeError(
+                    f"Current period ('{self.current_period}') value is non-numeric."
+                )
 
             # Handle division by zero or non-finite prior value
             if prior_value == 0 or not math.isfinite(prior_value):
@@ -204,7 +212,9 @@ class MultiPeriodStatNode(Node):
         if not all(isinstance(p, str) for p in periods):
             raise TypeError("MultiPeriodStatNode periods must contain only strings.")
         if not callable(stat_func):
-            raise TypeError("MultiPeriodStatNode stat_func must be a callable function.")
+            raise TypeError(
+                "MultiPeriodStatNode stat_func must be a callable function."
+            )
 
         self.input_node = input_node
         self.periods = periods

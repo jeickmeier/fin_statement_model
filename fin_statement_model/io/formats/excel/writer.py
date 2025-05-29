@@ -6,10 +6,16 @@ from typing import Any, Optional
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.base import DataWriter
-from fin_statement_model.io.core.mixins import ConfigurableReaderMixin, handle_write_errors
+from fin_statement_model.io.core.mixins import (
+    ConfigurableReaderMixin,
+    handle_write_errors,
+)
 from fin_statement_model.io.core.registry import register_writer
 from fin_statement_model.io.formats.dataframe.writer import DataFrameWriter
-from fin_statement_model.io.config.models import ExcelWriterConfig, DataFrameWriterConfig
+from fin_statement_model.io.config.models import (
+    ExcelWriterConfig,
+    DataFrameWriterConfig,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -78,14 +84,20 @@ class ExcelWriter(DataWriter, ConfigurableReaderMixin):
         """
         # Create a config for DataFrameWriter
         df_config = DataFrameWriterConfig(
-            format_type="dataframe", recalculate=recalculate, include_nodes=include_nodes
+            format_type="dataframe",
+            recalculate=recalculate,
+            include_nodes=include_nodes,
         )
 
         df_writer = DataFrameWriter(df_config)
         return df_writer.write(graph=graph, target=None)
 
     def _write_to_excel(
-        self, df: Any, file_path: str, sheet_name: str, excel_writer_options: dict[str, Any]
+        self,
+        df: Any,
+        file_path: str,
+        sheet_name: str,
+        excel_writer_options: dict[str, Any],
     ) -> None:
         """Write DataFrame to Excel file.
 

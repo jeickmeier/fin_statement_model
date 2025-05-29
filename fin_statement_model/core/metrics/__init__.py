@@ -36,13 +36,15 @@ logger = logging.getLogger(__name__)
 # Load metrics from the organized structure by default
 try:
     # Load from organized structure
-    organized_path = Path(__file__).parent / "builtin_organized"
+    organized_path = Path(__file__).parent / "metric_defn"
     if organized_path.exists():
         logger.info("Loading metrics from organized structure")
-        from .builtin_organized import load_organized_metrics
+        from .metric_defn import load_organized_metrics
 
         organized_count = load_organized_metrics()
-        logger.info(f"Successfully loaded {organized_count} metrics from organized structure")
+        logger.info(
+            f"Successfully loaded {organized_count} metrics from organized structure"
+        )
     else:
         logger.warning("Organized metric structure not found - no metrics loaded")
 

@@ -36,7 +36,9 @@ class DataFrameWriter(DataFrameBasedWriter, ConfigurableReaderMixin):
         self.cfg = cfg
 
     @handle_write_errors()
-    def write(self, graph: Graph, target: Any = None, **kwargs: dict[str, object]) -> pd.DataFrame:
+    def write(
+        self, graph: Graph, target: Any = None, **kwargs: dict[str, object]
+    ) -> pd.DataFrame:
         """Convert the graph data to a pandas DataFrame based on instance configuration.
 
         Args:
@@ -61,7 +63,9 @@ class DataFrameWriter(DataFrameBasedWriter, ConfigurableReaderMixin):
             self._recalculate_graph(graph)
 
         # Extract data using base class method
-        data = self.extract_graph_data(graph, include_nodes=include_nodes, calculate=True)
+        data = self.extract_graph_data(
+            graph, include_nodes=include_nodes, calculate=True
+        )
 
         # Convert to DataFrame
         periods = sorted(graph.periods) if graph.periods else []
@@ -88,4 +92,6 @@ class DataFrameWriter(DataFrameBasedWriter, ConfigurableReaderMixin):
                 f"Error during recalculation for DataFrame export: {e}",
                 exc_info=True,
             )
-            logger.warning("Proceeding to export DataFrame without successful recalculation.")
+            logger.warning(
+                "Proceeding to export DataFrame without successful recalculation."
+            )

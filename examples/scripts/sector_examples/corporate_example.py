@@ -35,12 +35,8 @@ from fin_statement_model.io.validation import UnifiedNodeValidator
 # --- 1. Setup ---
 
 # Hardcoded paths (as modified by user)
-md_output_path = (
-    "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/output/test_statement.md"
-)
-TEST_CONFIG_PATH = (
-    "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/configs/test_statement.yaml"
-)
+md_output_path = "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/output/test_statement.md"
+TEST_CONFIG_PATH = "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/configs/test_statement.yaml"
 
 # --- 2. Sample Data ---
 
@@ -101,7 +97,9 @@ print(f"Demo names to validate: {demo_names}")
 
 for demo_name in demo_names:
     result = validator.validate(demo_name)
-    print(f"  '{demo_name}' -> '{result.standardized_name}' [{result.category}] ({result.message})")
+    print(
+        f"  '{demo_name}' -> '{result.standardized_name}' [{result.category}] ({result.message})"
+    )
 
     if result.suggestions:
         print(f"    Suggestions: {result.suggestions[:2]}")  # Show first 2 suggestions
@@ -123,12 +121,16 @@ name_changes = []
 for original_name, result in validation_results.items():
     if result.standardized_name != original_name:
         name_changes.append((original_name, result.standardized_name))
-        print(f"  Normalized: '{original_name}' -> '{result.standardized_name}' ({result.message})")
+        print(
+            f"  Normalized: '{original_name}' -> '{result.standardized_name}' ({result.message})"
+        )
     else:
         print(f"  Validated: '{original_name}' - {result.message}")
 
     # Copy data with standardized name
-    normalized_historical_data[result.standardized_name] = historical_data[original_name]
+    normalized_historical_data[result.standardized_name] = historical_data[
+        original_name
+    ]
 
 # Show validation summary
 print("\nValidation Summary:")
@@ -147,7 +149,9 @@ for category, count in categories.items():
 
 # Show unrecognized names with suggestions
 unrecognized = [
-    name for name, result in validation_results.items() if result.category in ["custom", "invalid"]
+    name
+    for name, result in validation_results.items()
+    if result.category in ["custom", "invalid"]
 ]
 if unrecognized:
     print(f"\nUnrecognized node names: {unrecognized}")
@@ -163,7 +167,10 @@ print("\nNormalizing forecast configuration keys...")
 normalized_forecast_configs = {}
 for original_name, config in {
     "cash_and_equivalents": {"method": "simple", "config": 0.05},  # 5% growth
-    "accounts_receivable": {"method": "curve", "config": [0.08, 0.06]},  # Slowing growth
+    "accounts_receivable": {
+        "method": "curve",
+        "config": [0.08, 0.06],
+    },  # Slowing growth
     "property_plant_equipment": {"method": "simple", "config": 0.02},  # 2% growth
     "accounts_payable": {
         "method": "curve",
@@ -183,7 +190,9 @@ for original_name, config in {
         "method": "curve",
         "config": [0.10, 0.09, 0.08, 0.07, 0.06],
     },  # Declining revenue growth
-    "cost_of_goods_sold": {"method": "historical_growth"},  # COGS based on historical growth
+    "cost_of_goods_sold": {
+        "method": "historical_growth"
+    },  # COGS based on historical growth
     "operating_expenses": {
         "method": "statistical",
         "config": {
@@ -197,7 +206,9 @@ for original_name, config in {
     "interest_expense": {
         "method": "historical_growth"
     },  # Interest expense based on historical growth
-    "income_tax": {"method": "historical_growth"},  # Tax expense based on historical growth
+    "income_tax": {
+        "method": "historical_growth"
+    },  # Tax expense based on historical growth
 }.items():
     # Validate and normalize forecast config keys
     result = validator.validate(original_name)
@@ -243,7 +254,9 @@ for node in graph_nodes:
         elif isinstance(node.inputs, list):
             parent_nodes = [n.name for n in node.inputs if hasattr(n, "name")]
 
-    result = validator.validate(node.name, node_type=node_type, parent_nodes=parent_nodes)
+    result = validator.validate(
+        node.name, node_type=node_type, parent_nodes=parent_nodes
+    )
     node_validation_results[node.name] = result
 
 # Display categorized results
@@ -253,7 +266,11 @@ for node_name, result in node_validation_results.items():
     if category not in categories_in_graph:
         categories_in_graph[category] = []
     categories_in_graph[category].append(
-        {"name": node_name, "message": result.message, "standardized": result.standardized_name}
+        {
+            "name": node_name,
+            "message": result.message,
+            "standardized": result.standardized_name,
+        }
     )
 
 for category, nodes in categories_in_graph.items():
@@ -291,7 +308,9 @@ print(f"Forecast periods: {forecast_periods}")
 
 # Use the StatementForecaster
 # Restore try-except block
-forecaster = StatementForecaster(fsg=graph)  # fsg likely stands for financial statement graph
+forecaster = StatementForecaster(
+    fsg=graph
+)  # fsg likely stands for financial statement graph
 print(f"Applying forecasts for periods: {forecast_periods}")
 
 # Apply the forecasts using the defined configs

@@ -114,11 +114,15 @@ class BaseItemModel(BaseModel):
         description="Unique identifier for the item. Must not contain spaces.",
     )
     name: str = Field(..., description="Human-readable name of the item.")
-    description: Optional[str] = Field("", description="Optional description for the item.")
+    description: Optional[str] = Field(
+        "", description="Optional description for the item."
+    )
     metadata: dict[str, Any] = Field(
         default_factory=dict, description="Optional metadata for the item."
     )
-    sign_convention: int = Field(1, description="Sign convention for the item (1 or -1).")
+    sign_convention: int = Field(
+        1, description="Sign convention for the item (1 or -1)."
+    )
     default_adjustment_filter: Optional[Union[AdjustmentFilterSpec, list[str]]] = Field(
         None,
         description="Optional default adjustment filter for this item. Can be a filter specification or list of tags.",
@@ -201,9 +205,12 @@ class LineItemModel(BaseItemModel):
     type: Literal["line_item"] = Field(
         "line_item", description="Discriminator for basic line items."
     )
-    node_id: Optional[str] = Field(None, description="ID of the core node this line item maps to.")
+    node_id: Optional[str] = Field(
+        None, description="ID of the core node this line item maps to."
+    )
     standard_node_ref: Optional[str] = Field(
-        None, description="Reference to a standard node name from the standard_node_registry."
+        None,
+        description="Reference to a standard node name from the standard_node_registry.",
     )
 
     @model_validator(mode="before")
@@ -215,7 +222,9 @@ class LineItemModel(BaseItemModel):
         if not node_id and not standard_ref:
             raise ValueError("must provide either 'node_id' or 'standard_node_ref'")
         if node_id and standard_ref:
-            raise ValueError("cannot provide both 'node_id' and 'standard_node_ref' - use only one")
+            raise ValueError(
+                "cannot provide both 'node_id' and 'standard_node_ref' - use only one"
+            )
         return values
 
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -230,8 +239,12 @@ class MetricItemModel(BaseItemModel):
         inputs: Mapping of metric input names to statement item IDs.
     """
 
-    type: Literal["metric"] = Field("metric", description="Discriminator for metric-based items.")
-    metric_id: str = Field(..., description="ID of the metric in the core.metrics.registry.")
+    type: Literal["metric"] = Field(
+        "metric", description="Discriminator for metric-based items."
+    )
+    metric_id: str = Field(
+        ..., description="ID of the metric in the core.metrics.registry."
+    )
     inputs: dict[str, str] = Field(
         ..., description="Mapping of metric input names to statement item IDs."
     )
@@ -266,7 +279,9 @@ class SubtotalModel(BaseItemModel):
         items_to_sum: Optional list of item IDs to sum for the subtotal.
     """
 
-    type: Literal["subtotal"] = Field("subtotal", description="Discriminator for subtotal items.")
+    type: Literal["subtotal"] = Field(
+        "subtotal", description="Discriminator for subtotal items."
+    )
     calculation: Optional[CalculationSpec] = Field(
         None, description="Calculation specification for the subtotal."
     )
@@ -275,11 +290,15 @@ class SubtotalModel(BaseItemModel):
     )
 
     @model_validator(mode="before")
-    def exactly_one_of_calculation_or_items(cls, values: dict[str, Any]) -> dict[str, Any]:
+    def exactly_one_of_calculation_or_items(
+        cls, values: dict[str, Any]
+    ) -> dict[str, Any]:
         """Ensure exactly one of 'calculation' or 'items_to_sum' is provided."""
         calc, items = values.get("calculation"), values.get("items_to_sum")
         if bool(calc) == bool(items):
-            raise ValueError("must provide exactly one of 'calculation' or 'items_to_sum'")
+            raise ValueError(
+                "must provide exactly one of 'calculation' or 'items_to_sum'"
+            )
         return values
 
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -296,7 +315,9 @@ class SectionModel(BaseItemModel):
         default_adjustment_filter: Optional default adjustment filter for this section.
     """
 
-    type: Literal["section"] = Field("section", description="Discriminator for nested sections.")
+    type: Literal["section"] = Field(
+        "section", description="Discriminator for nested sections."
+    )
     items: list[
         Union[
             LineItemModel,
@@ -307,7 +328,9 @@ class SectionModel(BaseItemModel):
         ]
     ] = Field(
         default_factory=list,
-        description=("List of line items, calculated items, subtotals, or nested sections."),
+        description=(
+            "List of line items, calculated items, subtotals, or nested sections."
+        ),
     )
     subsections: list[SectionModel] = Field(
         default_factory=list,
@@ -322,7 +345,9 @@ class SectionModel(BaseItemModel):
     @model_validator(mode="after")
     def check_unique_item_ids(cls, section: SectionModel) -> SectionModel:
         """Ensure that item and subsection IDs within a section are unique and subtotal refs valid."""
-        ids = [item.id for item in section.items] + [sub.id for sub in section.subsections]
+        ids = [item.id for item in section.items] + [
+            sub.id for sub in section.subsections
+        ]
         duplicates = {item_id for item_id in ids if ids.count(item_id) > 1}
         if duplicates:
             raise ValueError(
@@ -354,9 +379,13 @@ class StatementModel(BaseModel):
         display_scale_factor: Optional default scale factor for the entire statement.
     """
 
-    id: str = Field(..., description="Unique statement identifier. Must not contain spaces.")
+    id: str = Field(
+        ..., description="Unique statement identifier. Must not contain spaces."
+    )
     name: str = Field(..., description="Human-readable statement name.")
-    description: Optional[str] = Field("", description="Optional statement description.")
+    description: Optional[str] = Field(
+        "", description="Optional statement description."
+    )
     metadata: dict[str, Any] = Field(
         default_factory=dict, description="Optional metadata dictionary."
     )

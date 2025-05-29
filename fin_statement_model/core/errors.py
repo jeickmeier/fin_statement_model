@@ -208,7 +208,9 @@ class GraphError(FinancialModelError):
         """Initializes the GraphError."""
         self.nodes = nodes or []
 
-        full_message = f"{message} involving nodes: {', '.join(nodes)}" if nodes else message
+        full_message = (
+            f"{message} involving nodes: {', '.join(nodes)}" if nodes else message
+        )
 
         super().__init__(full_message)
 
@@ -328,7 +330,9 @@ class StatementError(FinancialModelError):
         """Initializes the StatementError."""
         self.statement_id = statement_id
 
-        full_message = f"{message} for statement '{statement_id}'" if statement_id else message
+        full_message = (
+            f"{message} for statement '{statement_id}'" if statement_id else message
+        )
 
         super().__init__(full_message)
 
@@ -441,6 +445,8 @@ class MetricError(FinancialModelError):
         self.metric_name = metric_name
         self.details = details or {}
 
-        full_message = f"{message} related to metric '{metric_name}'" if metric_name else message
+        full_message = (
+            f"{message} related to metric '{metric_name}'" if metric_name else message
+        )
 
         super().__init__(full_message)

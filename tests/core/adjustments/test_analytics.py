@@ -42,10 +42,14 @@ def populated_manager() -> AdjustmentManager:
     """Provides an AdjustmentManager populated with diverse adjustments."""
     manager = AdjustmentManager()
     manager.add_adjustment(
-        create_adj(node_name="Revenue", period="P1", value=100, tags={"Actual", "Region/NA"})
+        create_adj(
+            node_name="Revenue", period="P1", value=100, tags={"Actual", "Region/NA"}
+        )
     )
     manager.add_adjustment(
-        create_adj(node_name="Revenue", period="P2", value=120, tags={"Actual", "Region/NA"})
+        create_adj(
+            node_name="Revenue", period="P2", value=120, tags={"Actual", "Region/NA"}
+        )
     )
     manager.add_adjustment(
         create_adj(
@@ -66,7 +70,9 @@ def populated_manager() -> AdjustmentManager:
         )
     )  # Budget scenario
     manager.add_adjustment(
-        create_adj(node_name="Opex", period="P1", value=-20, tags={"Actual", "Type/Recurring"})
+        create_adj(
+            node_name="Opex", period="P1", value=-20, tags={"Actual", "Type/Recurring"}
+        )
     )
     manager.add_adjustment(
         create_adj(
@@ -231,7 +237,9 @@ def test_list_by_tag_sorting(populated_manager: AdjustmentManager) -> None:
         if a.node_name == "Revenue" and a.period == "P1" and a.scenario == "default"
     )
     # Find COGS adjustments
-    cogs_actual = next(a for a in results if a.node_name == "COGS" and a.scenario == "default")
+    cogs_actual = next(
+        a for a in results if a.node_name == "COGS" and a.scenario == "default"
+    )
     # cogs_budget does not have "Actual" tag
 
     # Check relative order based on timestamp (assuming default sorting for priority 0)

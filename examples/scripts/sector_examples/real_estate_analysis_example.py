@@ -4,7 +4,11 @@ This example demonstrates how to use the real estate-specific metrics
 and nodes in the financial statement model library for REIT analysis.
 """
 
-from fin_statement_model.core.metrics import metric_registry, interpret_metric, calculate_metric
+from fin_statement_model.core.metrics import (
+    metric_registry,
+    interpret_metric,
+    calculate_metric,
+)
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 
 
@@ -111,9 +115,15 @@ def calculate_reit_metrics(
     )
 
     # Calculate metrics that depend on calculated values
-    results["cap_rate"] = calculate_metric("capitalization_rate", extended_data_nodes, period)
-    results["ffo_per_share"] = calculate_metric("ffo_per_share", extended_data_nodes, period)
-    results["ffo_multiple"] = calculate_metric("ffo_multiple", extended_data_nodes, period)
+    results["cap_rate"] = calculate_metric(
+        "capitalization_rate", extended_data_nodes, period
+    )
+    results["ffo_per_share"] = calculate_metric(
+        "ffo_per_share", extended_data_nodes, period
+    )
+    results["ffo_multiple"] = calculate_metric(
+        "ffo_multiple", extended_data_nodes, period
+    )
 
     return results
 

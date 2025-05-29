@@ -85,7 +85,9 @@ class StandardNodeRegistry:
         # Load each node definition
         for node_name, node_data in data.items():
             if not isinstance(node_data, dict):
-                logger.warning(f"Skipping invalid node definition '{node_name}': not a dict")
+                logger.warning(
+                    f"Skipping invalid node definition '{node_name}': not a dict"
+                )
                 continue
 
             try:
@@ -113,7 +115,9 @@ class StandardNodeRegistry:
 
             except Exception as e:
                 logger.exception(f"Error loading node '{node_name}'")
-                raise ValueError(f"Invalid node definition for '{node_name}': {e}") from e
+                raise ValueError(
+                    f"Invalid node definition for '{node_name}': {e}"
+                ) from e
 
         logger.info(
             f"Loaded {nodes_loaded} standard node definitions "
@@ -151,7 +155,9 @@ class StandardNodeRegistry:
         # Load each node definition
         for node_name, node_data in data.items():
             if not isinstance(node_data, dict):
-                logger.warning(f"Skipping invalid node definition '{node_name}': not a dict")
+                logger.warning(
+                    f"Skipping invalid node definition '{node_name}': not a dict"
+                )
                 continue
 
             try:
@@ -180,7 +186,9 @@ class StandardNodeRegistry:
 
             except Exception as e:
                 logger.exception(f"Error loading node '{node_name}' from {yaml_path}")
-                raise ValueError(f"Invalid node definition for '{node_name}': {e}") from e
+                raise ValueError(
+                    f"Invalid node definition for '{node_name}': {e}"
+                ) from e
 
         logger.debug(f"Loaded {nodes_loaded} nodes from {yaml_path}")
         return nodes_loaded
@@ -267,7 +275,9 @@ class StandardNodeRegistry:
         """
         if category:
             names = [
-                name for name, defn in self._standard_nodes.items() if defn.category == category
+                name
+                for name, defn in self._standard_nodes.items()
+                if defn.category == category
             ]
         else:
             names = list(self._standard_nodes.keys())

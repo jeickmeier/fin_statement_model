@@ -11,7 +11,11 @@ from collections.abc import Callable
 from pydantic import ValidationError
 
 from fin_statement_model.io.core.base import DataReader, DataWriter
-from fin_statement_model.io.exceptions import FormatNotSupportedError, ReadError, WriteError
+from fin_statement_model.io.exceptions import (
+    FormatNotSupportedError,
+    ReadError,
+    WriteError,
+)
 from fin_statement_model.io.config.models import (
     CsvReaderConfig,
     ExcelReaderConfig,
@@ -289,7 +293,9 @@ def _get_handler(
                 exc_info=True,
             )
             raise error_class(
-                message=f"Failed to initialize {handler_type}er", original_error=e, **error_context
+                message=f"Failed to initialize {handler_type}er",
+                original_error=e,
+                **error_context,
             ) from e
 
     # Fallback for handlers without config schema (legacy support)
@@ -302,7 +308,9 @@ def _get_handler(
             exc_info=True,
         )
         raise error_class(
-            message=f"Failed to initialize {handler_type}er", original_error=e, **error_context
+            message=f"Failed to initialize {handler_type}er",
+            original_error=e,
+            **error_context,
         ) from e
 
 

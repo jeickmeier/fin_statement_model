@@ -131,10 +131,14 @@ class FileBasedReader(DataReader):
         """
         if not os.path.exists(path):
             raise ReadError(
-                f"File not found: {path}", source=path, reader_type=self.__class__.__name__
+                f"File not found: {path}",
+                source=path,
+                reader_type=self.__class__.__name__,
             )
 
-    def validate_file_extension(self, path: str, valid_extensions: tuple[str, ...]) -> None:
+    def validate_file_extension(
+        self, path: str, valid_extensions: tuple[str, ...]
+    ) -> None:
         """Validate file has correct extension.
 
         Args:
@@ -280,7 +284,10 @@ class DataFrameBasedWriter(ValueExtractionMixin):
     """
 
     def extract_graph_data(
-        self, graph: Graph, include_nodes: Optional[list[str]] = None, calculate: bool = True
+        self,
+        graph: Graph,
+        include_nodes: Optional[list[str]] = None,
+        calculate: bool = True,
     ) -> dict[str, dict[str, float]]:
         """Extract data from graph nodes into a dictionary format.
 
@@ -369,7 +376,10 @@ class BatchProcessingMixin:
         self._total_count = 0
 
     def process_in_batches(
-        self, items: list[Any], process_func: callable, progress_callback: Optional[callable] = None
+        self,
+        items: list[Any],
+        process_func: callable,
+        progress_callback: Optional[callable] = None,
     ) -> list[Any]:
         """Process items in batches.
 

@@ -156,7 +156,7 @@ The library supports multiple data sources through the IO layer:
 - See the main project README for installation and setup
 - Check `docs/` for detailed API documentation
 - Review `fin_statement_model/statements/config/mappings/` for example configurations
-- Explore the metrics registry at `fin_statement_model/core/metrics/builtin_organized/`
+- Explore the metrics registry at `fin_statement_model/core/metrics/metric_defn/`
 
 ## 💡 Tips
 

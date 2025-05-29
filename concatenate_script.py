@@ -7,7 +7,9 @@ workspace_root = os.path.dirname(__file__)
 
 # Dynamically discover all Python files in the fin_statement_model directory
 file_paths = []
-for dirpath, dirnames, filenames in os.walk(os.path.join(workspace_root, "fin_statement_model")):
+for dirpath, dirnames, filenames in os.walk(
+    os.path.join(workspace_root, "fin_statement_model")
+):
     # Skip __pycache__ and hidden directories
     dirnames[:] = [d for d in dirnames if not d.startswith(".") and d != "__pycache__"]
     for filename in filenames:

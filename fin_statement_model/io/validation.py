@@ -47,7 +47,13 @@ class UnifiedNodeValidator:
     SEGMENT_PATTERN = r"^(.+)_([a-z_]+)$"
 
     # Formula patterns - check exact endings
-    FORMULA_ENDINGS: ClassVar[list[str]] = ["_margin", "_ratio", "_growth", "_change", "_pct"]
+    FORMULA_ENDINGS: ClassVar[list[str]] = [
+        "_margin",
+        "_ratio",
+        "_growth",
+        "_change",
+        "_pct",
+    ]
 
     def __init__(
         self,
@@ -104,7 +110,9 @@ class UnifiedNodeValidator:
         if self.warn_on_non_standard and result.category in ["custom", "invalid"]:
             logger.warning(f"{result.message}")
             if result.suggestions:
-                logger.info(f"Suggestions for '{name}': {'; '.join(result.suggestions)}")
+                logger.info(
+                    f"Suggestions for '{name}': {'; '.join(result.suggestions)}"
+                )
 
         return result
 
@@ -140,7 +148,9 @@ class UnifiedNodeValidator:
 
         # Pattern recognition if enabled
         if self.enable_patterns:
-            pattern_result = self._check_pattern_validations(name, node_type, parent_nodes)
+            pattern_result = self._check_pattern_validations(
+                name, node_type, parent_nodes
+            )
             if pattern_result:
                 return pattern_result
 
@@ -237,7 +247,9 @@ class UnifiedNodeValidator:
                 "unit",
             ]
 
-            if len(suffix) > 2 and any(keyword in suffix.lower() for keyword in segment_keywords):
+            if len(suffix) > 2 and any(
+                keyword in suffix.lower() for keyword in segment_keywords
+            ):
                 is_base_standard = standard_node_registry.is_recognized_name(base_name)
 
                 return ValidationResult(
@@ -350,12 +362,16 @@ class UnifiedNodeValidator:
             # Suggest standardizing the base
             for std_name in standard_node_registry.list_standard_names():
                 if self._is_similar(base.lower(), std_name.lower()):
-                    suggestions.append(f"Consider using '{std_name}_{parts[1]}' for consistency")
+                    suggestions.append(
+                        f"Consider using '{std_name}_{parts[1]}' for consistency"
+                    )
                     break
 
         # Generic suggestions if nothing specific found
         if not suggestions:
-            if any(suffix in name for suffix in ["_margin", "_ratio", "_growth", "_pct"]):
+            if any(
+                suffix in name for suffix in ["_margin", "_ratio", "_growth", "_pct"]
+            ):
                 suggestions.append(
                     "Formula node detected - ensure base name follows standard conventions"
                 )

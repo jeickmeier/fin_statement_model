@@ -18,7 +18,7 @@ def load_organized_metrics(base_path: Optional[Path] = None) -> int:
     """Load all metrics from the organized structure.
 
     Args:
-        base_path: Base path to the builtin_organized directory. If None, uses default.
+        base_path: Base path to the metric_defn directory. If None, uses default.
 
     Returns:
         Total number of metrics loaded.

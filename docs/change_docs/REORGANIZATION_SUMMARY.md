@@ -39,7 +39,7 @@ standard_nodes/
 **After**: Organized into analytical categories
 
 ```
-builtin_organized/
+metric_defn/
 ├── liquidity/ (8 metrics)
 │   ├── ratios.yaml (4 metrics)
 │   └── working_capital.yaml (4 metrics)
@@ -112,7 +112,7 @@ builtin_organized/
 ### Metrics Registry Updates
 - Preserved existing loading mechanism
 - Created backup of original structure (`builtin_backup/`)
-- Organized structure ready for deployment (`builtin_organized/`)
+- Organized structure ready for deployment (`metric_defn/`)
 - Comprehensive reorganization script for future use
 
 ### File Structure Standards
@@ -187,7 +187,7 @@ metrics/industry_extensions/insurance/
 ### New Files
 - `fin_statement_model/core/nodes/standard_nodes/` (entire directory structure)
 - `fin_statement_model/core/metrics/README.md`
-- `fin_statement_model/core/metrics/builtin_organized/` (entire directory structure)
+- `fin_statement_model/core/metrics/metric_defn/` (entire directory structure)
 - `reorganize_metrics.py` (reorganization script)
 
 ### Enhanced Files

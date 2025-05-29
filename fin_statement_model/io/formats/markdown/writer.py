@@ -74,10 +74,14 @@ class MarkdownWriter(DataWriter):
             with open(statement_config_path) as f:
                 config_data = yaml.safe_load(f)
             if not config_data or not isinstance(config_data, dict):
-                raise WriteError(f"Invalid or empty YAML structure in {statement_config_path}")
+                raise WriteError(
+                    f"Invalid or empty YAML structure in {statement_config_path}"
+                )
 
         except FileNotFoundError:
-            logger.exception(f"Statement configuration file not found: {statement_config_path}")
+            logger.exception(
+                f"Statement configuration file not found: {statement_config_path}"
+            )
             raise WriteError(
                 f"Statement configuration file not found: {statement_config_path}"
             ) from None
@@ -117,9 +121,9 @@ class MarkdownWriter(DataWriter):
                     section_subtotal_config = config_item.get("subtotal")
                     if section_subtotal_config:
                         # Ensure subtotal has correct type and id before processing
-                        if section_subtotal_config.get("id") and section_subtotal_config.get(
-                            "type"
-                        ):
+                        if section_subtotal_config.get(
+                            "id"
+                        ) and section_subtotal_config.get("type"):
                             subtotal_item = process_item(
                                 section_subtotal_config,
                                 level + 1,  # Indent subtotal
@@ -358,14 +362,18 @@ class MarkdownWriter(DataWriter):
 
             # Add separator line
             separator_parts = ["-" * max_desc_width]
-            separator_parts.extend("-" * period_max_value_widths[period] for period in periods)
+            separator_parts.extend(
+                "-" * period_max_value_widths[period] for period in periods
+            )
             output_lines.append(f"| {(' | ').join(separator_parts)} |")
 
             # Build data rows
             for line_data in formatted_lines:
                 row_parts = [line_data["name"].ljust(max_desc_width)]
                 for period in periods:
-                    value = line_data["values"].get(period, "")  # Get value or empty string
+                    value = line_data["values"].get(
+                        period, ""
+                    )  # Get value or empty string
                     row_parts.append(value.rjust(period_max_value_widths[period]))
                 # Join with | and add start/end |
                 output_lines.append(f"| {(' | ').join(row_parts)} |")
@@ -425,10 +433,14 @@ class MarkdownWriter(DataWriter):
                         period=None,
                     )
                 else:  # Includes None or other types
-                    filt = AdjustmentFilter(include_scenarios={DEFAULT_SCENARIO}, period=None)
+                    filt = AdjustmentFilter(
+                        include_scenarios={DEFAULT_SCENARIO}, period=None
+                    )
 
                 # Apply the filter
-                filtered_adjustments = [adj for adj in all_adjustments if filt.matches(adj)]
+                filtered_adjustments = [
+                    adj for adj in all_adjustments if filt.matches(adj)
+                ]
 
             if filtered_adjustments:
                 output_lines.append("")  # Blank line

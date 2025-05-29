@@ -6,9 +6,9 @@ from pathlib import Path
 import pytest
 import yaml
 
-from fin_statement_model.core.metrics.builtin_organized import load_organized_metrics
+from fin_statement_model.core.metrics.metric_defn import load_organized_metrics
 from fin_statement_model.core.metrics.registry import MetricRegistry
-from fin_statement_model.core.nodes.standard_nodes import load_all_standard_nodes
+from fin_statement_model.core.nodes.standard_nodes_defn import load_all_standard_nodes
 from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
 
 

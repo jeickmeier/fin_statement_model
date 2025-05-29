@@ -44,7 +44,9 @@ def format_numbers(
 
     if period_columns:
         numeric_cols = [
-            col for col in period_columns if col in result.columns and is_numeric_dtype(result[col])
+            col
+            for col in period_columns
+            if col in result.columns and is_numeric_dtype(result[col])
         ]
     else:
         # Original logic if period_columns not specified

@@ -43,21 +43,29 @@ class PeriodManager:
         """
         # If explicitly provided, use them
         if provided_periods is not None:
-            logger.debug(f"Using explicitly provided historical periods: {provided_periods}")
+            logger.debug(
+                f"Using explicitly provided historical periods: {provided_periods}"
+            )
             return provided_periods
 
         # Check if graph has a custom method for getting historical periods
-        if hasattr(graph, "get_historical_periods") and callable(graph.get_historical_periods):
+        if hasattr(graph, "get_historical_periods") and callable(
+            graph.get_historical_periods
+        ):
             historical = graph.get_historical_periods()
             logger.debug(f"Using graph's get_historical_periods method: {historical}")
             return historical
 
         # Otherwise, infer from graph periods and forecast periods
         if not hasattr(graph, "periods") or not graph.periods:
-            raise ValueError("Cannot infer historical periods: graph has no periods attribute")
+            raise ValueError(
+                "Cannot infer historical periods: graph has no periods attribute"
+            )
 
         if not forecast_periods:
-            raise ValueError("Cannot infer historical periods: no forecast periods provided")
+            raise ValueError(
+                "Cannot infer historical periods: no forecast periods provided"
+            )
 
         # Try to find where forecast periods start
         first_forecast = forecast_periods[0]
@@ -115,7 +123,9 @@ class PeriodManager:
             and isinstance(node.values, dict)
             and preferred_period in node.values
         ):
-            logger.debug(f"Using preferred base period {preferred_period} for {node.name}")
+            logger.debug(
+                f"Using preferred base period {preferred_period} for {node.name}"
+            )
             return preferred_period
 
         # Try to find the most recent period with data for this node
@@ -177,7 +187,9 @@ class PeriodManager:
             raise ValueError(f"Period '{period}' not found in period list") from None
 
     @staticmethod
-    def ensure_periods_exist(graph: Any, periods: list[str], add_missing: bool = True) -> list[str]:
+    def ensure_periods_exist(
+        graph: Any, periods: list[str], add_missing: bool = True
+    ) -> list[str]:
         """Ensure periods exist in the graph.
 
         Args:

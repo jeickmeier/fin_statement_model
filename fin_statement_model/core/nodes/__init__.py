@@ -68,10 +68,10 @@ _nodes_loaded = False
 if not _nodes_loaded:
     try:
         # First try to load from organized structure
-        organized_path = Path(__file__).parent / "standard_nodes"
+        organized_path = Path(__file__).parent / "standard_nodes_defn"
         if organized_path.exists() and (organized_path / "__init__.py").exists():
             logger.info("Loading standard nodes from organized structure")
-            from .standard_nodes import load_all_standard_nodes
+            from .standard_nodes_defn import load_all_standard_nodes
 
             organized_count = load_all_standard_nodes()
             logger.info(
@@ -80,14 +80,20 @@ if not _nodes_loaded:
             _nodes_loaded = True
         else:
             # Fallback to flat structure if organized doesn't exist
-            logger.info("Organized structure not found, loading from flat standard_nodes.yaml")
+            logger.info(
+                "Organized structure not found, loading from flat standard_nodes.yaml"
+            )
             flat_file = Path(__file__).parent / "standard_nodes.yaml"
             if flat_file.exists():
                 flat_count = standard_node_registry.load_from_yaml(flat_file)
-                logger.info(f"Successfully loaded {flat_count} standard nodes from flat file")
+                logger.info(
+                    f"Successfully loaded {flat_count} standard nodes from flat file"
+                )
                 _nodes_loaded = True
             else:
-                logger.warning("No standard node files found in either organized or flat structure")
+                logger.warning(
+                    "No standard node files found in either organized or flat structure"
+                )
 
     except Exception:
         logger.exception("Failed to load standard nodes")
@@ -97,7 +103,9 @@ if not _nodes_loaded:
                 flat_file = Path(__file__).parent / "standard_nodes.yaml"
                 if flat_file.exists():
                     flat_count = standard_node_registry.load_from_yaml(flat_file)
-                    logger.info(f"Fallback: loaded {flat_count} standard nodes from flat file")
+                    logger.info(
+                        f"Fallback: loaded {flat_count} standard nodes from flat file"
+                    )
                     _nodes_loaded = True
             except Exception:
                 logger.exception("Fallback loading also failed")

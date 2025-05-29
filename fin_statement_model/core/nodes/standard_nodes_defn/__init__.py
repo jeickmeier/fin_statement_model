@@ -17,7 +17,7 @@ def load_all_standard_nodes(base_path: Optional[Path] = None) -> int:
     """Load all standard node definitions from organized YAML files.
 
     Args:
-        base_path: Base path to the standard_nodes directory. If None, uses default.
+        base_path: Base path to the standard_nodes_defn directory. If None, uses default.
 
     Returns:
         Total number of nodes loaded.

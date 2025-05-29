@@ -5,7 +5,11 @@ and nodes in the financial statement model library for comprehensive debt
 analysis of real estate investments and REITs.
 """
 
-from fin_statement_model.core.metrics import metric_registry, interpret_metric, calculate_metric
+from fin_statement_model.core.metrics import (
+    metric_registry,
+    interpret_metric,
+    calculate_metric,
+)
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 
 
@@ -233,7 +237,9 @@ def analyze_debt_composition(
     # Credit facility utilization
     total_facility = data_nodes["credit_facility_total"].calculate(period)
     available = data_nodes["available_credit"].calculate(period)
-    composition["credit_utilization_pct"] = ((total_facility - available) / total_facility) * 100
+    composition["credit_utilization_pct"] = (
+        (total_facility - available) / total_facility
+    ) * 100
 
     return composition
 
@@ -374,7 +380,9 @@ def perform_debt_analysis() -> None:
     trends = analyze_debt_trends(data_nodes)
 
     print(f"LTV Change: {trends['ltv_change']:+.1f} percentage points")
-    print(f"Interest Rate Change: {trends['interest_rate_change']:+.1f} percentage points")
+    print(
+        f"Interest Rate Change: {trends['interest_rate_change']:+.1f} percentage points"
+    )
     print(f"DSCR Change: {trends['dscr_change']:+.2f}x")
     print(f"Total Debt Growth: {trends['debt_growth']:+.1f}%")
     print()
@@ -395,7 +403,9 @@ def perform_debt_analysis() -> None:
     if dscr < 1.25:
         risk_factors.append(f"Tight debt service coverage (DSCR: {dscr:.2f}x)")
     if fixed_rate_pct < 70:
-        risk_factors.append(f"High interest rate exposure ({100 - fixed_rate_pct:.1f}% variable)")
+        risk_factors.append(
+            f"High interest rate exposure ({100 - fixed_rate_pct:.1f}% variable)"
+        )
     if near_term_maturities > 20:
         risk_factors.append(
             f"High refinancing risk ({near_term_maturities:.1f}% maturing in 1 year)"

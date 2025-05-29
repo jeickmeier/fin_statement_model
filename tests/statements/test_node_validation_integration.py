@@ -4,15 +4,12 @@ This module tests the integration of UnifiedNodeValidator into the statement
 configuration parsing and building process.
 """
 
-import pytest
 from fin_statement_model.statements import (
     StatementConfig,
     StatementStructureBuilder,
     create_validated_statement_config,
     create_validated_statement_builder,
     validate_statement_config_with_nodes,
-    build_validated_statement_from_config,
-    ConfigurationError,
 )
 from fin_statement_model.io.validation import UnifiedNodeValidator
 
@@ -121,7 +118,9 @@ class TestNodeValidationIntegration:
         assert len(errors) > 0
         assert any("invalid" in error.lower() for error in errors)
 
-    def test_statement_config_with_node_validation_enabled_invalid_names_non_strict(self):
+    def test_statement_config_with_node_validation_enabled_invalid_names_non_strict(
+        self,
+    ):
         """Test StatementConfig with invalid node names in non-strict mode."""
         config_data = {
             "id": "custom_statement",
@@ -250,7 +249,9 @@ class TestNodeValidationIntegration:
         assert errors == []
 
         # Test create_validated_statement_builder
-        builder = create_validated_statement_builder(enable_node_validation=True, strict_mode=False)
+        builder = create_validated_statement_builder(
+            enable_node_validation=True, strict_mode=False
+        )
         statement = builder.build(config)
         assert statement is not None
 
@@ -277,7 +278,9 @@ class TestNodeValidationIntegration:
         }
 
         # Test with dictionary input
-        config, errors = validate_statement_config_with_nodes(config_data, strict_mode=False)
+        config, errors = validate_statement_config_with_nodes(
+            config_data, strict_mode=False
+        )
         assert errors == []
         assert config.model is not None
 
@@ -349,7 +352,10 @@ class TestNodeValidationIntegration:
                             "name": "Total Cost",
                             "calculation": {
                                 "type": "addition",
-                                "inputs": ["cogs", "operating_expenses"],  # Should be validated
+                                "inputs": [
+                                    "cogs",
+                                    "operating_expenses",
+                                ],  # Should be validated
                             },
                         },
                         {
@@ -410,9 +416,6 @@ class TestNodeValidationIntegration:
 
     def test_integration_with_orchestration(self):
         """Test that node validation works with high-level orchestration functions."""
-        from fin_statement_model.statements.orchestration.orchestrator import (
-            create_statement_dataframe,
-        )
         from fin_statement_model.core.graph import Graph
 
         # Create a simple graph

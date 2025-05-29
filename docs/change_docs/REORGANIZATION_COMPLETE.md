@@ -48,7 +48,7 @@ fin_statement_model/core/nodes/standard_nodes/
 **After**: Organized into logical categories
 
 ```
-fin_statement_model/core/metrics/builtin_organized/
+fin_statement_model/core/metrics/metric_defn/
 ├── README.md                           # Documentation
 ├── __init__.py                         # Auto-loading logic
 ├── liquidity/

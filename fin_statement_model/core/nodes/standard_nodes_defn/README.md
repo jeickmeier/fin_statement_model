@@ -5,7 +5,7 @@ This directory contains the organized standard node definitions for the financia
 ## Directory Structure
 
 ```
-standard_nodes/
+standard_nodes_defn/
 ├── README.md                    # This file
 ├── __init__.py                  # Exports and registry loading
 ├── balance_sheet/
@@ -76,7 +76,7 @@ To add new standard nodes:
 For industry-specific nodes, create new directories:
 
 ```
-standard_nodes/
+standard_nodes_defn/
 ├── industries/
 │   ├── banking/
 │   │   ├── assets.yaml         # Loans, securities, etc.

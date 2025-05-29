@@ -50,7 +50,10 @@ class MetricInterpreter:
             return MetricRating.EXCELLENT
 
         # Check for poor rating
-        if self.interpretation.poor_below is not None and value < self.interpretation.poor_below:
+        if (
+            self.interpretation.poor_below is not None
+            and value < self.interpretation.poor_below
+        ):
             return MetricRating.POOR
 
         # Check for warning conditions
@@ -71,7 +74,10 @@ class MetricInterpreter:
             return MetricRating.WARNING
 
         # Check if in good range
-        if self.interpretation.good_range is not None and len(self.interpretation.good_range) == 2:
+        if (
+            self.interpretation.good_range is not None
+            and len(self.interpretation.good_range) == 2
+        ):
             min_good, max_good = self.interpretation.good_range
             if min_good <= value <= max_good:
                 return MetricRating.GOOD
@@ -142,7 +148,9 @@ class MetricInterpreter:
         return analysis
 
 
-def interpret_metric(metric_definition: MetricDefinition, value: float) -> dict[str, Any]:
+def interpret_metric(
+    metric_definition: MetricDefinition, value: float
+) -> dict[str, Any]:
     """Convenience function to interpret a metric value.
 
     Args:

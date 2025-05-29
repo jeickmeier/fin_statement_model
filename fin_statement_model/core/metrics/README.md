@@ -11,7 +11,7 @@ metrics/
 ├── models.py                    # Pydantic models for metric definitions
 ├── registry.py                  # Metric registry and loading logic
 ├── interpretation.py            # Metric interpretation and rating system
-├── builtin_organized/           # Built-in metrics organized by category
+├── metric_defn/                # Built-in metrics organized by category
 │   ├── README.md               # Built-in metrics documentation
 │   ├── __init__.py             # Built-in metrics loading
 │   ├── liquidity/              # Liquidity and working capital metrics
