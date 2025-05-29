@@ -68,9 +68,7 @@ class MetricRegistry:
             >>> print(f"Loaded {count} metrics.")
         """
         if not HAS_YAML:
-            logger.error(
-                "PyYAML is required to load metrics from YAML files. Please install it."
-            )
+            logger.error("PyYAML is required to load metrics from YAML files. Please install it.")
             raise ImportError("PyYAML is required to load metrics from YAML files.")
 
         dir_path = Path(directory_path)
@@ -128,9 +126,7 @@ class MetricRegistry:
                         model = MetricDefinition.model_validate(metric_data)
                         self.register_definition(model)
                         loaded_count += 1
-                        logger.debug(
-                            f"Successfully loaded metric '{model.name}' from {filepath}"
-                        )
+                        logger.debug(f"Successfully loaded metric '{model.name}' from {filepath}")
 
                     except ValidationError as ve:
                         logger.warning(
@@ -165,9 +161,7 @@ class MetricRegistry:
             return self._metrics[metric_id]
         except KeyError:
             logger.warning(f"Metric ID '{metric_id}' not found in registry.")
-            raise KeyError(
-                f"Metric ID '{metric_id}' not found. Available: {self.list_metrics()}"
-            )
+            raise KeyError(f"Metric ID '{metric_id}' not found. Available: {self.list_metrics()}")
 
     def list_metrics(self) -> list[str]:
         """Get a sorted list of all loaded metric IDs.

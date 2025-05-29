@@ -39,9 +39,7 @@ class TestRealEstateMetrics:
         """Test Net Operating Income calculation."""
         # Create test nodes
         rental_income = FinancialStatementItemNode("rental_income", {"2023": 1000000})
-        other_income = FinancialStatementItemNode(
-            "other_property_income", {"2023": 50000}
-        )
+        other_income = FinancialStatementItemNode("other_property_income", {"2023": 50000})
         operating_expenses = FinancialStatementItemNode(
             "property_operating_expenses", {"2023": 400000}
         )
@@ -69,9 +67,7 @@ class TestRealEstateMetrics:
         """Test Funds From Operations calculation."""
         # Create test nodes
         net_income = FinancialStatementItemNode("net_income", {"2023": 500000})
-        depreciation = FinancialStatementItemNode(
-            "depreciation_and_amortization", {"2023": 200000}
-        )
+        depreciation = FinancialStatementItemNode("depreciation_and_amortization", {"2023": 200000})
         gains = FinancialStatementItemNode("gains_on_property_sales", {"2023": 50000})
 
         # Get FFO metric definition
@@ -96,12 +92,8 @@ class TestRealEstateMetrics:
     def test_occupancy_rate_calculation(self):
         """Test Occupancy Rate calculation."""
         # Create test nodes
-        occupied_sf = FinancialStatementItemNode(
-            "occupied_square_feet", {"2023": 90000}
-        )
-        total_sf = FinancialStatementItemNode(
-            "total_rentable_square_feet", {"2023": 100000}
-        )
+        occupied_sf = FinancialStatementItemNode("occupied_square_feet", {"2023": 90000})
+        total_sf = FinancialStatementItemNode("total_rentable_square_feet", {"2023": 100000})
 
         # Get occupancy metric definition
         occupancy_metric = metric_registry.get("occupancy_rate")
@@ -125,9 +117,7 @@ class TestRealEstateMetrics:
         """Test Capitalization Rate calculation."""
         # Create test nodes
         noi = FinancialStatementItemNode("net_operating_income", {"2023": 650000})
-        property_value = FinancialStatementItemNode(
-            "property_value", {"2023": 10000000}
-        )
+        property_value = FinancialStatementItemNode("property_value", {"2023": 10000000})
 
         # Get cap rate metric definition
         cap_rate_metric = metric_registry.get("capitalization_rate")
@@ -177,9 +167,7 @@ class TestRealEstateMetrics:
 
         for metric_name in metrics_with_interpretations:
             metric = metric_registry.get(metric_name)
-            assert (
-                metric.interpretation is not None
-            ), f"Metric {metric_name} missing interpretation"
-            assert (
-                metric.interpretation.notes is not None
-            ), f"Metric {metric_name} missing interpretation notes"
+            assert metric.interpretation is not None, f"Metric {metric_name} missing interpretation"
+            assert metric.interpretation.notes is not None, (
+                f"Metric {metric_name} missing interpretation notes"
+            )

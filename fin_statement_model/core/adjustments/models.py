@@ -135,30 +135,17 @@ class AdjustmentFilter(BaseModel):
         is_match = True
 
         # --- Scenario Checks ---
-        if (
-            self.include_scenarios is not None
-            and adj.scenario not in self.include_scenarios
-        ) or (
-            self.exclude_scenarios is not None
-            and adj.scenario in self.exclude_scenarios
+        if (self.include_scenarios is not None and adj.scenario not in self.include_scenarios) or (
+            self.exclude_scenarios is not None and adj.scenario in self.exclude_scenarios
         ):
             is_match = False
 
         # --- Tag Checks ---
         # Only check if still potentially a match
         if is_match and (
-            (
-                self.include_tags is not None
-                and not tag_matches(adj.tags, self.include_tags)
-            )
-            or (
-                self.exclude_tags is not None
-                and tag_matches(adj.tags, self.exclude_tags)
-            )
-            or (
-                self.require_all_tags is not None
-                and not self.require_all_tags.issubset(adj.tags)
-            )
+            (self.include_tags is not None and not tag_matches(adj.tags, self.include_tags))
+            or (self.exclude_tags is not None and tag_matches(adj.tags, self.exclude_tags))
+            or (self.require_all_tags is not None and not self.require_all_tags.issubset(adj.tags))
         ):
             is_match = False
 
@@ -172,9 +159,7 @@ class AdjustmentFilter(BaseModel):
 
         # --- Effective Window Check (Phase 2) ---
         # Assumes periods are sortable strings (e.g., 'YYYY-MM' or 'Q1-2023')
-        if (
-            is_match and self.period is not None
-        ):  # Only check if still potentially a match
+        if is_match and self.period is not None:  # Only check if still potentially a match
             logger.debug(
                 f"Period check: FilterPeriod={self.period}, AdjStart={adj.start_period}, AdjEnd={adj.end_period}"
             )
@@ -183,11 +168,7 @@ class AdjustmentFilter(BaseModel):
                 logger.debug("Period check failed: FilterPeriod < AdjStart")
                 period_match = False
             # Use 'if period_match' to avoid unnecessary log if start check already failed
-            if (
-                period_match
-                and adj.end_period is not None
-                and self.period > adj.end_period
-            ):
+            if period_match and adj.end_period is not None and self.period > adj.end_period:
                 logger.debug("Period check failed: FilterPeriod > AdjEnd")
                 period_match = False
 

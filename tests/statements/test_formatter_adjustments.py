@@ -182,9 +182,7 @@ class TestStatementFormatterAdjustments:
         # Check values - should get adjusted values from default scenario
         product_row = df[df["ID"] == "product_revenue"].iloc[0]
         assert product_row["2023Q1"] == "1,000.00"
-        assert (
-            product_row["2023Q2"] == "1,200.00"
-        )  # 1100 + 100 adjustment (default scenario)
+        assert product_row["2023Q2"] == "1,200.00"  # 1100 + 100 adjustment (default scenario)
         assert product_row["2023Q3"] == "1,200.00"
 
     def test_generate_dataframe_with_metadata_columns(self):

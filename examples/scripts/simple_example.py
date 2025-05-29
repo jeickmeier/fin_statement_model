@@ -1,180 +1,159 @@
-"""Simple example demonstrating the proper use of the financial statement model library.
+"""Simplified Financial Statement Model Example.
 
-This example shows the recommended approach for:
-1. Loading financial data
-2. Using statement configurations to define structure
-3. Performing calculations and analysis
-4. Working with metrics
-
-The key principle: Use the high-level statement abstractions rather than
-building graphs directly with core functionality.
+This example demonstrates the most straightforward way to use the library
+for basic financial analysis tasks without complex configurations.
 """
 
 import logging
+import sys
 from pathlib import Path
 
 from fin_statement_model.io import read_data
 from fin_statement_model.statements import create_statement_dataframe
-from fin_statement_model.core.metrics import (
-    calculate_metric,
-    interpret_metric,
-    metric_registry,
-)
+from fin_statement_model.core.metrics.registry import metric_registry
+from fin_statement_model.core.metrics.models import MetricDefinition
 
-# Configure logging
+# Configure logging for visibility
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
+# Example configuration path (you would replace with your actual path)
+INCOME_STATEMENT_CONFIG = Path(__file__).parent / "configs" / "sample_income_statement.yaml"
 
-def main():
-    """Run a simple financial analysis example."""
-    print("=" * 60)
-    print("SIMPLE FINANCIAL STATEMENT MODEL EXAMPLE")
-    print("=" * 60)
+# If config doesn't exist, use the full example instead
+if not INCOME_STATEMENT_CONFIG.exists():
+    from examples.scripts.med_example import main as run_full_example
 
-    # Step 1: Prepare your financial data
-    # This could come from various sources (Excel, API, CSV, etc.)
-    financial_data = {
-        # Balance Sheet items
-        "cash_equivalents": {"2021": 10000, "2022": 12000, "2023": 15000},
-        "accounts_receivable": {"2021": 5000, "2022": 5500, "2023": 6000},
-        "inventory": {"2021": 8000, "2022": 8500, "2023": 9000},
-        "ppe": {"2021": 20000, "2022": 22000, "2023": 25000},
-        "accounts_payable": {"2021": 3000, "2022": 3200, "2023": 3500},
-        "long_term_debt": {"2021": 15000, "2022": 14000, "2023": 13000},
-        "common_stock": {"2021": 10000, "2022": 10000, "2023": 10000},
-        "retained_earnings": {"2021": 15000, "2022": 18300, "2023": 22500},
-        # Income Statement items
-        "revenue": {"2021": 50000, "2022": 55000, "2023": 60000},
-        "cogs": {"2021": -30000, "2022": -32000, "2023": -35000},
-        "operating_expenses": {"2021": -10000, "2022": -11000, "2023": -12000},
-        "interest_expense": {"2021": -1500, "2022": -1400, "2023": -1300},
-        "tax_expense": {"2021": -2125, "2022": -2650, "2023": -2925},
-        # Additional items for metrics
-        "total_assets": {"2021": 43000, "2022": 48000, "2023": 55000},
-        "total_liabilities": {"2021": 18000, "2022": 17200, "2023": 16500},
-        "total_equity": {"2021": 25000, "2022": 28300, "2023": 32500},
-        "net_income": {"2021": 6375, "2022": 7950, "2023": 8775},
-        "shares_outstanding": {"2021": 1000, "2022": 1000, "2023": 1000},
-    }
+    run_full_example()
+    sys.exit()
 
-    print("\nStep 1: Loading financial data...")
-    # Load data into a graph using the dict reader
-    graph = read_data(format_type="dict", source=financial_data)
-    print(f"✓ Loaded data for periods: {graph.periods}")
-    print(f"✓ Created {len(graph.nodes)} data nodes")
+logger.info("=" * 60)
+logger.info("SIMPLE FINANCIAL STATEMENT MODEL EXAMPLE")
+logger.info("=" * 60)
 
-    # Step 2: Use statement configurations to define structure
-    # For this example, we'll use the existing income statement config
-    workspace_root = Path(__file__).resolve().parents[2]
-    income_stmt_config = workspace_root / "examples/examples/income_statement.json"
+# Sample data - in practice, you'd load from Excel/CSV/API
+sample_data = {
+    # Income Statement items with realistic values
+    "revenue": {"2022": 1000000, "2023": 1200000},
+    "cost_of_revenue": {"2022": 600000, "2023": 700000},
+    "operating_expenses": {"2022": 250000, "2023": 300000},
+    "interest_expense": {"2022": 20000, "2023": 25000},
+    "tax_expense": {"2022": 32500, "2023": 43750},
+    # Balance Sheet items for ratio calculations
+    "total_assets": {"2022": 2000000, "2023": 2500000},
+    "current_assets": {"2022": 500000, "2023": 600000},
+    "current_liabilities": {"2022": 300000, "2023": 350000},
+    "total_liabilities": {"2022": 800000, "2023": 1000000},
+    "shareholders_equity": {"2022": 1200000, "2023": 1500000},
+    "inventory": {"2022": 150000, "2023": 180000},
+    "accounts_receivable": {"2022": 120000, "2023": 150000},
+    "accounts_payable": {"2022": 80000, "2023": 95000},
+    # Additional items for comprehensive analysis
+    "depreciation": {"2022": 50000, "2023": 60000},
+    "capex": {"2022": 100000, "2023": 120000},
+    "dividends": {"2022": 50000, "2023": 60000},
+}
 
-    if income_stmt_config.exists():
-        print("\nStep 2: Building statement structure...")
-        try:
-            # This will:
-            # 1. Load and validate the statement configuration
-            # 2. Build the statement structure
-            # 3. Populate the graph with calculation nodes
-            # 4. Generate a formatted dataframe
-            income_df = create_statement_dataframe(
-                graph=graph,
-                config_path_or_dir=str(income_stmt_config),
-                format_kwargs={
-                    "should_apply_signs": True,
-                    "number_format": ",.0f",
-                },
-            )
+# Step 1: Load the data into a graph
+logger.info("\nStep 1: Loading financial data...")
+graph = read_data(format_type="dict", source=sample_data)
 
-            print("✓ Statement structure built successfully")
-            print("\nIncome Statement:")
-            print(income_df.to_string(index=False))
-        except Exception as e:
-            logger.warning(f"Could not build full statement structure: {e}")
-            print("⚠ Using simplified analysis instead")
+logger.info(f"✓ Loaded data for periods: {graph.periods}")
+logger.info(f"✓ Created {len(graph.nodes)} data nodes")
 
-    # Step 3: Calculate and analyze key metrics
-    print("\nStep 3: Calculating financial metrics...")
+# Step 2: Create statement DataFrame
+# Note: This requires a proper config file. For demo purposes,
+# we'll show the structure even if the config is missing
+try:
+    logger.info("\nStep 2: Building statement structure...")
+    income_df = create_statement_dataframe(
+        graph=graph,
+        config_path_or_dir=str(INCOME_STATEMENT_CONFIG),
+        format_kwargs={
+            "number_format": ",.0f",
+            "should_apply_signs": True,
+        },
+    )
 
-    # Get all nodes as a dictionary for metric calculations
-    data_nodes = {node.name: node for node in graph.nodes.values()}
+    logger.info("✓ Statement structure built successfully")
+    logger.info("\nIncome Statement:")
+    logger.info(income_df.to_string(index=False))
+except Exception:
+    logger.warning("Could not load statement config")
+    logger.warning("⚠ Using simplified analysis instead")
 
-    # Define metrics to calculate
-    metrics_to_analyze = [
-        "gross_profit_margin",
-        "operating_margin",
-        "net_profit_margin",
-        "return_on_assets",
-        "return_on_equity",
-        "debt_to_equity_ratio",
-        "current_ratio",
-        "earnings_per_share",
-    ]
+# Step 3: Calculate key financial metrics
+logger.info("\nStep 3: Calculating financial metrics...")
 
-    print("\nKey Financial Metrics (2023):")
-    print("-" * 40)
+# Define which metrics to calculate
+key_metrics = [
+    "gross_margin",
+    "operating_margin",
+    "net_margin",
+    "roe",
+    "current_ratio",
+    "debt_to_equity",
+]
 
-    for metric_name in metrics_to_analyze:
-        try:
-            # Calculate the metric
-            value = calculate_metric(metric_name, data_nodes, "2023")
+# Calculate and display metrics
+logger.info("\nKey Financial Metrics (2023):")
+logger.info("-" * 40)
 
-            # Get metric definition and interpretation
-            metric_def = metric_registry.get(metric_name)
-            interpretation = interpret_metric(metric_def, value)
-
-            # Format the value
-            if "ratio" in metric_name or "margin" in metric_name:
-                value_str = (
-                    f"{value:.2f}%" if "margin" in metric_name else f"{value:.2f}"
-                )
-            else:
-                value_str = f"{value:,.2f}"
-
-            # Get rating emoji
-            rating = interpretation["rating"].upper()
-            status = {"EXCELLENT": "🟢", "GOOD": "🟢", "FAIR": "🟡", "POOR": "🔴"}.get(
-                rating, "⚪"
-            )
-
-            print(f"{status} {metric_def.name}: {value_str} ({rating})")
-
-        except Exception as e:
-            print(f"❌ {metric_name}: Could not calculate - {str(e)[:50]}...")
-
-    # Step 4: Show trend analysis
-    print("\nStep 4: Trend Analysis (Revenue Growth):")
-    print("-" * 40)
-
+for metric_name in key_metrics:
     try:
-        revenue_node = graph.get_node("revenue")
-        if revenue_node:
-            revenue_values = revenue_node.get_values()
-            years = sorted(revenue_values.keys())
+        # Get metric definition
+        metric_def: MetricDefinition = metric_registry.get_metric(metric_name)
 
-            for i in range(1, len(years)):
-                prev_year = years[i - 1]
-                curr_year = years[i]
-                prev_val = revenue_values[prev_year]
-                curr_val = revenue_values[curr_year]
+        # Calculate value
+        value = graph.calculate(metric_name, "2023")
 
-                growth = ((curr_val - prev_val) / prev_val) * 100
-                print(f"{prev_year} → {curr_year}: {growth:.1f}% growth")
-    except Exception as e:
-        print(f"Could not perform trend analysis: {e}")
+        # Format based on metric type
+        if "margin" in metric_name or metric_name == "roe":
+            value_str = f"{value * 100:.1f}%"
+        else:
+            value_str = f"{value:.2f}"
 
-    print("\n" + "=" * 60)
-    print("EXAMPLE COMPLETE")
-    print("=" * 60)
-    print("\nKey Takeaways:")
-    print("• Use read_data() to load financial data from various sources")
-    print("• Use create_statement_dataframe() to build proper statement structures")
-    print("• Statement configurations automatically handle calculation nodes")
-    print("• The metrics registry provides comprehensive financial analysis")
-    print("• Always work with the high-level abstractions, not core directly")
+        # Simple rating system
+        if metric_name == "current_ratio":
+            rating = "Good" if value > 1.5 else "Needs attention"
+        elif metric_name == "debt_to_equity":
+            rating = "Conservative" if value < 1.0 else "Leveraged"
+        else:
+            rating = "Healthy" if value > 0.1 else "Review needed"
 
+        status = "✓" if rating in ["Good", "Conservative", "Healthy"] else "⚠"
+        logger.info(f"{status} {metric_def.name}: {value_str} ({rating})")
 
-if __name__ == "__main__":
-    main()
+    except Exception:
+        logger.exception(f"❌ {metric_name}: Could not calculate")
+
+# Step 4: Simple trend analysis
+logger.info("\nStep 4: Trend Analysis (Revenue Growth):")
+logger.info("-" * 40)
+
+try:
+    # Calculate year-over-year growth
+    periods = sorted(graph.periods)
+    for i in range(1, len(periods)):
+        prev_year = periods[i - 1]
+        curr_year = periods[i]
+
+        prev_revenue = graph.get_node("revenue").get_value(prev_year)
+        curr_revenue = graph.get_node("revenue").get_value(curr_year)
+
+        growth = ((curr_revenue - prev_revenue) / prev_revenue) * 100
+        logger.info(f"{prev_year} → {curr_year}: {growth:.1f}% growth")
+except Exception:
+    logger.exception("Could not perform trend analysis")
+
+logger.info("\n" + "=" * 60)
+logger.info("EXAMPLE COMPLETE")
+logger.info("=" * 60)
+logger.info("\nKey Takeaways:")
+logger.info("• Use read_data() to load financial data from various sources")
+logger.info("• Use create_statement_dataframe() to build proper statement structures")
+logger.info("• Statement configurations automatically handle calculation nodes")
+logger.info("• The metrics registry provides comprehensive financial analysis")
+logger.info("• Always work with the high-level abstractions, not core directly")

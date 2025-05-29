@@ -324,9 +324,7 @@ def example_integration_with_graph():
     graph = Graph()
     graph.add_financial_statement_item("revenue", {"2023": 100000, "2024": 120000})
     graph.add_financial_statement_item("cogs", {"2023": 60000, "2024": 70000})
-    graph.add_financial_statement_item(
-        "operating_expenses", {"2023": 25000, "2024": 30000}
-    )
+    graph.add_financial_statement_item("operating_expenses", {"2023": 25000, "2024": 30000})
 
     config_data = {
         "id": "income_statement",

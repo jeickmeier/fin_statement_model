@@ -40,9 +40,7 @@ class TestHandleReadErrors:
         with pytest.raises(ReadError) as exc_info:
             reader.read("test.csv")
 
-        assert (
-            str(exc_info.value) == "Original error involving source/target 'test.csv'"
-        )
+        assert str(exc_info.value) == "Original error involving source/target 'test.csv'"
 
     def test_converts_file_not_found(self):
         """Test decorator converts FileNotFoundError to ReadError."""
@@ -122,10 +120,7 @@ class TestHandleWriteErrors:
         with pytest.raises(WriteError) as exc_info:
             writer.write(graph, "output.xlsx")
 
-        assert (
-            str(exc_info.value)
-            == "Original error involving source/target 'output.xlsx'"
-        )
+        assert str(exc_info.value) == "Original error involving source/target 'output.xlsx'"
 
     def test_converts_generic_exception(self):
         """Test decorator converts generic exceptions to WriteError."""

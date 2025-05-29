@@ -312,9 +312,7 @@ def test_write_excel_valid(tmp_path: Path):
         )
     )  # Scenario: default
     adj_list.append(
-        Adjustment(
-            node_name="Interest", period="P1", value=1.0, reason="R4", id=uuid4()
-        )
+        Adjustment(node_name="Interest", period="P1", value=1.0, reason="R4", id=uuid4())
     )  # Scenario: default
     # adj_list.append(Adjustment(node_name="Tax", period="P1", value=-1, reason="Budget Tax", scenario="Budget", id=uuid4())) # Scenario: Budget
 
@@ -349,10 +347,7 @@ def test_write_excel_valid(tmp_path: Path):
     # assert df_actual.loc[0, 'tags'] == "TagA,TagB" # Comma separated
 
     # Check one from default
-    assert (
-        df_default[df_default["node_name"] == "Opex"].iloc[0]["type"]
-        == "multiplicative"
-    )
+    assert df_default[df_default["node_name"] == "Opex"].iloc[0]["type"] == "multiplicative"
 
     # Check one from budget - removed
     # assert df_budget[df_budget['node_name'] == 'Tax'].iloc[0]['reason'] == "Budget Tax"
@@ -366,9 +361,7 @@ def test_write_excel_empty_list(tmp_path: Path):
     assert output_file.is_file()
     # Check it created a file, maybe read to ensure it's a valid empty excel
     try:
-        df_read = pd.read_excel(
-            output_file
-        )  # Reading without sheet name reads first sheet
+        df_read = pd.read_excel(output_file)  # Reading without sheet name reads first sheet
         assert df_read.empty  # Expect an empty dataframe
     except Exception as e:
         pytest.fail(f"Failed to read back empty Excel file: {e}")
@@ -407,7 +400,5 @@ def test_write_excel_error(tmp_path: Path, mocker: MockerFixture):
         side_effect=OSError("Permission denied during save"),
     )
 
-    with pytest.raises(
-        WriteError, match="Failed to write adjustments to Excel.*Permission denied"
-    ):
+    with pytest.raises(WriteError, match="Failed to write adjustments to Excel.*Permission denied"):
         write_excel(adj_list, output_file)

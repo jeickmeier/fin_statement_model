@@ -174,9 +174,7 @@ class TestConfigurableReaderMixin:
         with pytest.raises(ReadError) as exc_info:
             reader.require_config_value("api_key")
 
-        assert "Required configuration value 'api_key' is missing" in str(
-            exc_info.value
-        )
+        assert "Required configuration value 'api_key' is missing" in str(exc_info.value)
 
 
 class TestDataFrameBasedWriter:

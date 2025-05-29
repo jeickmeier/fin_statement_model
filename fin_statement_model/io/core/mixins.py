@@ -136,9 +136,7 @@ class FileBasedReader(DataReader):
                 reader_type=self.__class__.__name__,
             )
 
-    def validate_file_extension(
-        self, path: str, valid_extensions: tuple[str, ...]
-    ) -> None:
+    def validate_file_extension(self, path: str, valid_extensions: tuple[str, ...]) -> None:
         """Validate file has correct extension.
 
         Args:

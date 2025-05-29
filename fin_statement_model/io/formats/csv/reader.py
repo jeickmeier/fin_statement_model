@@ -95,15 +95,12 @@ class CsvReader(FileBasedReader, ConfigurableReaderMixin):
         # Process data
         return self._process_dataframe(df, item_col, period_col, value_col, file_path)
 
-    def _read_csv_file(
-        self, file_path: str, user_options: dict[str, Any]
-    ) -> pd.DataFrame:
+    def _read_csv_file(self, file_path: str, user_options: dict[str, Any]) -> pd.DataFrame:
         """Read CSV file with configuration options."""
         # Use configuration from self.cfg, allow overrides via user_options
         read_options = {
             "delimiter": self.get_config_value("delimiter", ","),
-            "header": self.get_config_value("header_row", 1)
-            - 1,  # Convert to 0-indexed
+            "header": self.get_config_value("header_row", 1) - 1,  # Convert to 0-indexed
         }
 
         # Handle optional index_col
@@ -188,9 +185,7 @@ class CsvReader(FileBasedReader, ConfigurableReaderMixin):
                         "Overwriting data is not standard for readers."
                     )
                 else:
-                    new_node = FinancialStatementItemNode(
-                        name=node_name, values=period_values
-                    )
+                    new_node = FinancialStatementItemNode(name=node_name, values=period_values)
                     graph.add_node(new_node)
                     nodes_added += 1
 
@@ -203,9 +198,7 @@ class CsvReader(FileBasedReader, ConfigurableReaderMixin):
                 reader_type=self.__class__.__name__,
             )
 
-        logger.info(
-            f"Successfully created graph with {nodes_added} nodes from {file_path}."
-        )
+        logger.info(f"Successfully created graph with {nodes_added} nodes from {file_path}.")
         return graph
 
     def _extract_period_values(

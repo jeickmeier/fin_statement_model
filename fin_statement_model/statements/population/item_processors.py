@@ -105,9 +105,7 @@ class ItemProcessor(ABC):
     and handling missing inputs across different item types.
     """
 
-    def __init__(
-        self, id_resolver: IDResolver, graph: Graph, statement: StatementStructure
-    ):
+    def __init__(self, id_resolver: IDResolver, graph: Graph, statement: StatementStructure):
         """Initialize the processor.
 
         Args:
@@ -183,11 +181,7 @@ class ItemProcessor(ABC):
             ProcessorResult with appropriate error details.
         """
         missing_summary = [
-            (
-                f"item '{i_id}' needs node '{n_id}'"
-                if n_id
-                else f"item '{i_id}' not found/mappable"
-            )
+            (f"item '{i_id}' needs node '{n_id}'" if n_id else f"item '{i_id}' not found/mappable")
             for i_id, n_id in missing
         ]
 
@@ -270,9 +264,7 @@ class MetricItemProcessor(ItemProcessor):
             return ProcessorResult(success=False, error_message=error_message)
         return ProcessorResult(success=True, node_added=node_added)
 
-    def _validate_metric_inputs(
-        self, metric: Any, item: MetricLineItem
-    ) -> Optional[str]:
+    def _validate_metric_inputs(self, metric: Any, item: MetricLineItem) -> Optional[str]:
         """Validate that the item provides all required metric inputs."""
         provided_inputs = set(item.inputs.keys())
         required_inputs = set(metric.inputs)
@@ -418,9 +410,7 @@ class CalculatedItemProcessor(ItemProcessor):
                             f"Created signed node '{signed_node_id}' for input '{input_id}' with sign_convention=-1"
                         )
                     except Exception:
-                        logger.exception(
-                            f"Failed to create signed node for '{input_id}'"
-                        )
+                        logger.exception(f"Failed to create signed node for '{input_id}'")
                         missing.append((input_id, node_id))
                         continue
                 resolved.append(signed_node_id)
@@ -494,9 +484,7 @@ class ItemProcessorManager:
     by delegating to the appropriate processor based on the item type.
     """
 
-    def __init__(
-        self, id_resolver: IDResolver, graph: Graph, statement: StatementStructure
-    ):
+    def __init__(self, id_resolver: IDResolver, graph: Graph, statement: StatementStructure):
         """Initialize the processor manager with all available processors.
 
         Args:
@@ -510,9 +498,7 @@ class ItemProcessorManager:
             SubtotalItemProcessor(id_resolver, graph, statement),
         ]
 
-    def process_item(
-        self, item: StatementItem, is_retry: bool = False
-    ) -> ProcessorResult:
+    def process_item(self, item: StatementItem, is_retry: bool = False) -> ProcessorResult:
         """Process a statement item using the appropriate processor.
 
         Args:

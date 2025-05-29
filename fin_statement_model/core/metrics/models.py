@@ -23,9 +23,7 @@ class MetricInterpretation(BaseModel):
     poor_below: Optional[float] = Field(
         None, description="Value below which the metric is considered poor"
     )
-    notes: Optional[str] = Field(
-        None, description="Additional interpretation notes and context"
-    )
+    notes: Optional[str] = Field(None, description="Additional interpretation notes and context")
 
 
 class MetricDefinition(BaseModel):

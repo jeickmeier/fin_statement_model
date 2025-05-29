@@ -416,9 +416,7 @@ def validate_banking_data(
             validation_report["valid"] += 1
             if original_name != result.standardized_name:
                 validation_report["standardized"] += 1
-                print(
-                    f"  ✓ '{original_name}' → '{result.standardized_name}' (standardized)"
-                )
+                print(f"  ✓ '{original_name}' → '{result.standardized_name}' (standardized)")
 
             # Check if it's a banking-specific metric
             if any(
@@ -475,15 +473,11 @@ def build_banking_graph(data: dict[str, dict[str, float]]) -> Graph:
     }
 
     for node_name in graph.nodes:
-        if any(
-            term in node_name for term in ["loan", "securities", "cash", "premises"]
-        ):
+        if any(term in node_name for term in ["loan", "securities", "cash", "premises"]):
             node_categories["assets"].append(node_name)
         elif any(term in node_name for term in ["deposit", "borrowing", "debt"]):
             node_categories["liabilities"].append(node_name)
-        elif any(
-            term in node_name for term in ["stock", "capital", "retained", "equity"]
-        ):
+        elif any(term in node_name for term in ["stock", "capital", "retained", "equity"]):
             if "tier" in node_name or "risk_weighted" in node_name:
                 node_categories["regulatory"].append(node_name)
             else:
@@ -492,9 +486,7 @@ def build_banking_graph(data: dict[str, dict[str, float]]) -> Graph:
             node_categories["income"].append(node_name)
         elif "expense" in node_name:
             node_categories["expense"].append(node_name)
-        elif any(
-            term in node_name for term in ["non_performing", "charge_off", "past_due"]
-        ):
+        elif any(term in node_name for term in ["non_performing", "charge_off", "past_due"]):
             node_categories["quality"].append(node_name)
         elif any(term in node_name for term in ["liquid", "outflow", "funding"]):
             node_categories["liquidity"].append(node_name)
@@ -579,9 +571,7 @@ def calculate_banking_metrics(graph: Graph) -> dict[str, dict[str, Any]]:
             for metric_name in metric_list:
                 try:
                     value = calculate_metric(metric_name, data_nodes, period)
-                    interpretation = interpret_metric(
-                        metric_registry.get(metric_name), value
-                    )
+                    interpretation = interpret_metric(metric_registry.get(metric_name), value)
 
                     metrics[category][period][metric_name] = {
                         "value": value,
@@ -596,21 +586,15 @@ def calculate_banking_metrics(graph: Graph) -> dict[str, dict[str, Any]]:
                         "net_interest_margin",
                         "liquidity_coverage_ratio",
                     ]:
-                        print(
-                            f"  {metric_name}: {value:.2f}% - {interpretation['rating']}"
-                        )
+                        print(f"  {metric_name}: {value:.2f}% - {interpretation['rating']}")
 
                 except Exception as e:
-                    logger.warning(
-                        f"Could not calculate {metric_name} for {period}: {e}"
-                    )
+                    logger.warning(f"Could not calculate {metric_name} for {period}: {e}")
 
     return metrics
 
 
-def perform_stress_testing(
-    graph: Graph, metrics: dict[str, dict[str, Any]]
-) -> dict[str, Any]:
+def perform_stress_testing(graph: Graph, metrics: dict[str, dict[str, Any]]) -> dict[str, Any]:
     """Perform basic stress testing on the bank's financial position.
 
     Args:
@@ -668,9 +652,7 @@ def perform_stress_testing(
         ):
             gross_loans = data_nodes["gross_loans"].get_value(latest_period)
             total_deposits = data_nodes["total_deposits"].get_value(latest_period)
-            securities = data_nodes["securities_available_for_sale"].get_value(
-                latest_period
-            )
+            securities = data_nodes["securities_available_for_sale"].get_value(latest_period)
 
             # Calculate stressed values
             loan_losses = gross_loans * scenario_params["loan_loss_rate"]
@@ -681,15 +663,11 @@ def perform_stress_testing(
 
             # Calculate impact on capital
             if "common_equity_tier_1" in data_nodes:
-                cet1_capital = data_nodes["common_equity_tier_1"].get_value(
-                    latest_period
-                )
+                cet1_capital = data_nodes["common_equity_tier_1"].get_value(latest_period)
                 stressed_cet1 = cet1_capital - total_losses
 
                 if "total_risk_weighted_assets" in data_nodes:
-                    rwa = data_nodes["total_risk_weighted_assets"].get_value(
-                        latest_period
-                    )
+                    rwa = data_nodes["total_risk_weighted_assets"].get_value(latest_period)
                     stressed_cet1_ratio = (stressed_cet1 / rwa) * 100
 
                     stress_results[scenario_name] = {
@@ -699,8 +677,7 @@ def perform_stress_testing(
                         "deposit_outflows": deposit_outflows,
                         "stressed_cet1_capital": stressed_cet1,
                         "stressed_cet1_ratio": stressed_cet1_ratio,
-                        "capital_buffer": stressed_cet1_ratio
-                        - 4.5,  # Minimum CET1 requirement
+                        "capital_buffer": stressed_cet1_ratio - 4.5,  # Minimum CET1 requirement
                     }
 
                     print(f"  Loan Losses: ${loan_losses:,.1f}M")
@@ -769,10 +746,7 @@ def create_banking_visualizations(
             if metric_name:
                 values = []
                 for period in periods:
-                    if (
-                        period in metrics[category]
-                        and metric_name in metrics[category][period]
-                    ):
+                    if period in metrics[category] and metric_name in metrics[category][period]:
                         values.append(metrics[category][period][metric_name]["value"])
                     else:
                         values.append(None)
@@ -829,9 +803,7 @@ def create_banking_visualizations(
         fig.suptitle("Stress Test Results", fontsize=14, fontweight="bold")
 
         scenarios = list(stress_results.keys())
-        cet1_ratios = [
-            stress_results[s].get("stressed_cet1_ratio", 0) for s in scenarios
-        ]
+        cet1_ratios = [stress_results[s].get("stressed_cet1_ratio", 0) for s in scenarios]
         total_losses = [stress_results[s].get("total_losses", 0) for s in scenarios]
 
         # CET1 Ratio under stress
@@ -873,9 +845,7 @@ def create_banking_visualizations(
             )
 
         plt.tight_layout()
-        plt.savefig(
-            output_dir / "stress_test_results.png", dpi=300, bbox_inches="tight"
-        )
+        plt.savefig(output_dir / "stress_test_results.png", dpi=300, bbox_inches="tight")
         plt.close()
         print("  ✓ Created stress test visualization")
 
@@ -888,9 +858,7 @@ def create_banking_visualizations(
         asset_node = graph.get_node("average_total_assets")
         if asset_node:
             assets = [asset_node.get_value(p) / 1000 for p in periods]  # In billions
-            ax1.plot(
-                periods, assets, marker="o", linewidth=2, markersize=8, color="blue"
-            )
+            ax1.plot(periods, assets, marker="o", linewidth=2, markersize=8, color="blue")
             ax1.set_title("Total Assets Growth")
             ax1.set_ylabel("Assets ($B)")
             ax1.grid(True, alpha=0.3)
@@ -900,9 +868,7 @@ def create_banking_visualizations(
     for period in periods:
         if "earnings" in metrics and period in metrics["earnings"]:
             if "net_interest_margin" in metrics["earnings"][period]:
-                nim_values.append(
-                    metrics["earnings"][period]["net_interest_margin"]["value"]
-                )
+                nim_values.append(metrics["earnings"][period]["net_interest_margin"]["value"])
 
     if nim_values:
         ax2.plot(
@@ -923,9 +889,7 @@ def create_banking_visualizations(
         if "asset_quality" in metrics and period in metrics["asset_quality"]:
             if "non_performing_loan_ratio" in metrics["asset_quality"][period]:
                 npl_values.append(
-                    metrics["asset_quality"][period]["non_performing_loan_ratio"][
-                        "value"
-                    ]
+                    metrics["asset_quality"][period]["non_performing_loan_ratio"]["value"]
                 )
 
     if npl_values:
@@ -945,15 +909,10 @@ def create_banking_visualizations(
     # Efficiency Ratio trend
     eff_values = []
     for period in periods:
-        if (
-            "management_efficiency" in metrics
-            and period in metrics["management_efficiency"]
-        ):
+        if "management_efficiency" in metrics and period in metrics["management_efficiency"]:
             if "efficiency_ratio" in metrics["management_efficiency"][period]:
                 eff_values.append(
-                    metrics["management_efficiency"][period]["efficiency_ratio"][
-                        "value"
-                    ]
+                    metrics["management_efficiency"][period]["efficiency_ratio"]["value"]
                 )
 
     if eff_values:
@@ -1011,26 +970,16 @@ def generate_banking_report(
         latest_period = graph.periods[-1]
 
         # Key metrics summary
-        if (
-            "capital_adequacy" in metrics
-            and latest_period in metrics["capital_adequacy"]
-        ):
-            if (
-                "common_equity_tier_1_ratio"
-                in metrics["capital_adequacy"][latest_period]
-            ):
-                cet1 = metrics["capital_adequacy"][latest_period][
-                    "common_equity_tier_1_ratio"
-                ]
+        if "capital_adequacy" in metrics and latest_period in metrics["capital_adequacy"]:
+            if "common_equity_tier_1_ratio" in metrics["capital_adequacy"][latest_period]:
+                cet1 = metrics["capital_adequacy"][latest_period]["common_equity_tier_1_ratio"]
                 f.write(
                     f"- **CET1 Ratio**: {cet1['value']:.2f}% ({cet1['interpretation']['rating']})\n"
                 )
 
         if "asset_quality" in metrics and latest_period in metrics["asset_quality"]:
             if "non_performing_loan_ratio" in metrics["asset_quality"][latest_period]:
-                npl = metrics["asset_quality"][latest_period][
-                    "non_performing_loan_ratio"
-                ]
+                npl = metrics["asset_quality"][latest_period]["non_performing_loan_ratio"]
                 f.write(
                     f"- **NPL Ratio**: {npl['value']:.2f}% ({npl['interpretation']['rating']})\n"
                 )
@@ -1038,9 +987,7 @@ def generate_banking_report(
         if "earnings" in metrics and latest_period in metrics["earnings"]:
             if "return_on_equity_(banking)" in metrics["earnings"][latest_period]:
                 roe = metrics["earnings"][latest_period]["return_on_equity_(banking)"]
-                f.write(
-                    f"- **ROE**: {roe['value']:.2f}% ({roe['interpretation']['rating']})\n"
-                )
+                f.write(f"- **ROE**: {roe['value']:.2f}% ({roe['interpretation']['rating']})\n")
 
             if "net_interest_margin" in metrics["earnings"][latest_period]:
                 nim = metrics["earnings"][latest_period]["net_interest_margin"]
@@ -1051,9 +998,7 @@ def generate_banking_report(
         if "liquidity" in metrics and latest_period in metrics["liquidity"]:
             if "liquidity_coverage_ratio" in metrics["liquidity"][latest_period]:
                 lcr = metrics["liquidity"][latest_period]["liquidity_coverage_ratio"]
-                f.write(
-                    f"- **LCR**: {lcr['value']:.2f}% ({lcr['interpretation']['rating']})\n"
-                )
+                f.write(f"- **LCR**: {lcr['value']:.2f}% ({lcr['interpretation']['rating']})\n")
 
         # CAMELS Assessment
         f.write("\n## CAMELS Assessment\n\n")
@@ -1074,35 +1019,25 @@ def generate_banking_report(
                 f.write("| Metric | Value | Rating | Interpretation |\n")
                 f.write("|--------|-------|--------|----------------|\n")
 
-                for metric_name, metric_data in metrics[category_key][
-                    latest_period
-                ].items():
+                for metric_name, metric_data in metrics[category_key][latest_period].items():
                     if "value" in metric_data and "interpretation" in metric_data:
                         value = metric_data["value"]
                         rating = metric_data["interpretation"]["rating"]
-                        message = metric_data["interpretation"][
-                            "interpretation_message"
-                        ]
+                        message = metric_data["interpretation"]["interpretation_message"]
 
                         # Truncate long messages
                         if len(message) > 50:
                             message = message[:47] + "..."
 
                         metric_display = metric_name.replace("_", " ").title()
-                        f.write(
-                            f"| {metric_display} | {value:.2f}% | {rating} | {message} |\n"
-                        )
+                        f.write(f"| {metric_display} | {value:.2f}% | {rating} | {message} |\n")
 
         # Stress Testing Results
         f.write("\n## Stress Testing Results\n\n")
 
         if stress_results:
-            f.write(
-                "| Scenario | Total Losses | Stressed CET1 Ratio | Capital Buffer | Status |\n"
-            )
-            f.write(
-                "|----------|--------------|---------------------|----------------|--------|\n"
-            )
+            f.write("| Scenario | Total Losses | Stressed CET1 Ratio | Capital Buffer | Status |\n")
+            f.write("|----------|--------------|---------------------|----------------|--------|\n")
 
             for scenario_name, results in stress_results.items():
                 if "total_losses" in results:
@@ -1113,7 +1048,9 @@ def generate_banking_report(
                     status = (
                         "✅ Pass"
                         if cet1_ratio >= 7.0
-                        else "⚠️ Watch" if cet1_ratio >= 4.5 else "❌ Fail"
+                        else "⚠️ Watch"
+                        if cet1_ratio >= 4.5
+                        else "❌ Fail"
                     )
 
                     f.write(
@@ -1126,9 +1063,7 @@ def generate_banking_report(
         # Credit Risk
         f.write("### Credit Risk\n")
         if "asset_quality" in metrics and latest_period in metrics["asset_quality"]:
-            npl_data = metrics["asset_quality"][latest_period].get(
-                "non_performing_loan_ratio", {}
-            )
+            npl_data = metrics["asset_quality"][latest_period].get("non_performing_loan_ratio", {})
             if npl_data:
                 npl_value = npl_data.get("value", 0)
                 if npl_value < 1.0:
@@ -1141,10 +1076,7 @@ def generate_banking_report(
         # Interest Rate Risk
         f.write("\n### Interest Rate Risk\n")
         data_nodes = {node.name: node for node in graph.nodes.values()}
-        if all(
-            node in data_nodes
-            for node in ["interest_income_loans", "average_earning_assets"]
-        ):
+        if all(node in data_nodes for node in ["interest_income_loans", "average_earning_assets"]):
             int_income = data_nodes["interest_income_loans"].get_value(latest_period)
             avg_assets = data_nodes["average_earning_assets"].get_value(latest_period)
             asset_yield = (int_income / avg_assets) * 100 if avg_assets > 0 else 0
@@ -1154,9 +1086,7 @@ def generate_banking_report(
         # Liquidity Risk
         f.write("\n### Liquidity Risk\n")
         if "liquidity" in metrics and latest_period in metrics["liquidity"]:
-            lcr_data = metrics["liquidity"][latest_period].get(
-                "liquidity_coverage_ratio", {}
-            )
+            lcr_data = metrics["liquidity"][latest_period].get("liquidity_coverage_ratio", {})
             if lcr_data and "value" in lcr_data:
                 lcr_value = lcr_data["value"]
                 if lcr_value >= 100:
@@ -1167,9 +1097,7 @@ def generate_banking_report(
         # Data Quality
         f.write("\n## Data Quality Assessment\n\n")
         f.write(f"- **Total Nodes Validated**: {validation_report['total']}\n")
-        f.write(
-            f"- **Banking-Specific Nodes**: {validation_report['banking_specific']}\n"
-        )
+        f.write(f"- **Banking-Specific Nodes**: {validation_report['banking_specific']}\n")
         f.write(
             f"- **Data Completeness**: {(validation_report['valid'] / validation_report['total'] * 100):.1f}%\n"
         )
@@ -1180,43 +1108,27 @@ def generate_banking_report(
         recommendations = []
 
         # Check capital adequacy
-        if (
-            "capital_adequacy" in metrics
-            and latest_period in metrics["capital_adequacy"]
-        ):
+        if "capital_adequacy" in metrics and latest_period in metrics["capital_adequacy"]:
             cet1_data = metrics["capital_adequacy"][latest_period].get(
                 "common_equity_tier_1_ratio", {}
             )
             if cet1_data and "value" in cet1_data:
                 if cet1_data["value"] < 9.0:
-                    recommendations.append(
-                        "Consider building additional capital buffers"
-                    )
+                    recommendations.append("Consider building additional capital buffers")
 
         # Check asset quality
         if "asset_quality" in metrics and latest_period in metrics["asset_quality"]:
-            npl_data = metrics["asset_quality"][latest_period].get(
-                "non_performing_loan_ratio", {}
-            )
+            npl_data = metrics["asset_quality"][latest_period].get("non_performing_loan_ratio", {})
             if npl_data and "value" in npl_data:
                 if npl_data["value"] > 2.0:
-                    recommendations.append(
-                        "Enhance credit underwriting and monitoring processes"
-                    )
+                    recommendations.append("Enhance credit underwriting and monitoring processes")
 
         # Check efficiency
-        if (
-            "management_efficiency" in metrics
-            and latest_period in metrics["management_efficiency"]
-        ):
-            eff_data = metrics["management_efficiency"][latest_period].get(
-                "efficiency_ratio", {}
-            )
+        if "management_efficiency" in metrics and latest_period in metrics["management_efficiency"]:
+            eff_data = metrics["management_efficiency"][latest_period].get("efficiency_ratio", {})
             if eff_data and "value" in eff_data:
                 if eff_data["value"] > 60.0:
-                    recommendations.append(
-                        "Focus on operational efficiency improvements"
-                    )
+                    recommendations.append("Focus on operational efficiency improvements")
 
         if recommendations:
             for i, rec in enumerate(recommendations, 1):
@@ -1225,9 +1137,7 @@ def generate_banking_report(
             f.write("The bank appears to be well-positioned across all key metrics.\n")
 
         f.write("\n---\n")
-        f.write(
-            "*This report was generated using the Financial Statement Model library*\n"
-        )
+        f.write("*This report was generated using the Financial Statement Model library*\n")
 
     print(f"  ✓ Created banking analysis report: {report_path}")
 
@@ -1271,9 +1181,7 @@ def main():
     create_banking_visualizations(graph, metrics, stress_results, output_dir)
 
     # Step 6: Generate comprehensive report
-    generate_banking_report(
-        graph, metrics, stress_results, validation_report, output_dir
-    )
+    generate_banking_report(graph, metrics, stress_results, validation_report, output_dir)
 
     print("\n" + "=" * 60)
     print("ANALYSIS COMPLETE")

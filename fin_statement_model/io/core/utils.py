@@ -25,9 +25,7 @@ def normalize_mapping(
     if mapping_config is None:
         return {}
     if not isinstance(mapping_config, dict):
-        raise TypeError(
-            f"mapping_config must be a dict, got {type(mapping_config).__name__}"
-        )
+        raise TypeError(f"mapping_config must be a dict, got {type(mapping_config).__name__}")
     if None not in mapping_config:
         # Flat mapping
         return mapping_config

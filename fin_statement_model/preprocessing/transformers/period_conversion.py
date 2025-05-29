@@ -118,9 +118,7 @@ class PeriodConversionTransformer(DataTransformer):
 
     def __init__(
         self,
-        conversion_type: Union[
-            str, ConversionType
-        ] = ConversionType.QUARTERLY_TO_ANNUAL,
+        conversion_type: Union[str, ConversionType] = ConversionType.QUARTERLY_TO_ANNUAL,
         aggregation: str = "sum",
         config: Optional[PeriodConversionConfig] = None,
     ):

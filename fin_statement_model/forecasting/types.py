@@ -15,9 +15,7 @@ GrowthRate = Union[float, list[float], Callable[[], float]]
 PeriodValue = dict[str, float]
 
 # Forecast method types
-ForecastMethodType = Literal[
-    "simple", "curve", "statistical", "average", "historical_growth"
-]
+ForecastMethodType = Literal["simple", "curve", "statistical", "average", "historical_growth"]
 
 
 @dataclass
@@ -50,14 +48,10 @@ class StatisticalConfig:
         """Validate the statistical configuration."""
         if self.distribution == "normal":
             if "mean" not in self.params or "std" not in self.params:
-                raise ValueError(
-                    "Normal distribution requires 'mean' and 'std' parameters"
-                )
+                raise ValueError("Normal distribution requires 'mean' and 'std' parameters")
         elif self.distribution == "uniform":
             if "low" not in self.params or "high" not in self.params:
-                raise ValueError(
-                    "Uniform distribution requires 'low' and 'high' parameters"
-                )
+                raise ValueError("Uniform distribution requires 'low' and 'high' parameters")
         else:
             raise ValueError(f"Unsupported distribution: {self.distribution}")
 

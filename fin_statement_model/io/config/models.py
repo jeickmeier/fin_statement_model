@@ -20,9 +20,7 @@ MappingConfig = Union[dict[str, str], dict[Optional[str], dict[str, str]]]
 class BaseReaderConfig(BaseModel):
     """Base configuration for IO readers."""
 
-    source: str = Field(
-        ..., description="URI or path to data source (file path, ticker, etc.)"
-    )
+    source: str = Field(..., description="URI or path to data source (file path, ticker, etc.)")
     format_type: Literal["csv", "excel", "dataframe", "dict", "fmp"] = Field(
         ..., description="Type of reader (csv, excel, dataframe, dict, fmp)."
     )
@@ -34,12 +32,8 @@ class CsvReaderConfig(BaseReaderConfig):
     """CSV reader options."""
 
     delimiter: str = Field(",", description="Field delimiter for CSV files.")
-    header_row: int = Field(
-        1, description="Row number containing column names (1-indexed)."
-    )
-    index_col: Optional[int] = Field(
-        None, description="1-indexed column for row labels."
-    )
+    header_row: int = Field(1, description="Row number containing column names (1-indexed).")
+    index_col: Optional[int] = Field(None, description="1-indexed column for row labels.")
     mapping_config: Optional[MappingConfig] = Field(
         None, description="Optional configuration for mapping source item names."
     )
@@ -76,9 +70,7 @@ class FmpReaderConfig(BaseReaderConfig):
     statement_type: Literal["income_statement", "balance_sheet", "cash_flow"] = Field(
         ..., description="Type of financial statement to fetch."
     )
-    period_type: Literal["FY", "QTR"] = Field(
-        "FY", description="Period type: 'FY' or 'QTR'."
-    )
+    period_type: Literal["FY", "QTR"] = Field("FY", description="Period type: 'FY' or 'QTR'.")
     limit: int = Field(5, description="Number of periods to fetch.")
     api_key: Optional[str] = Field(None, description="Financial Modeling Prep API key.")
     mapping_config: Optional[MappingConfig] = Field(
@@ -125,9 +117,7 @@ class DictReaderConfig(BaseReaderConfig):
     placeholder keeps the IO registry symmetric and future-proof.
     """
 
-    source: dict[str, dict[str, float]] = Field(
-        ..., description="In-memory dictionary source"
-    )
+    source: dict[str, dict[str, float]] = Field(..., description="In-memory dictionary source")
     format_type: Literal["dict"] = "dict"
 
 
@@ -150,9 +140,7 @@ class ExcelWriterConfig(BaseWriterConfig):
     """Excel writer options."""
 
     sheet_name: str = Field("Sheet1", description="Name of the sheet to write to.")
-    recalculate: bool = Field(
-        True, description="Whether to recalculate graph before export."
-    )
+    recalculate: bool = Field(True, description="Whether to recalculate graph before export.")
     include_nodes: Optional[list[str]] = Field(
         None, description="Optional list of node names to include in export."
     )
@@ -168,9 +156,7 @@ class DataFrameWriterConfig(BaseWriterConfig):
     target: Optional[str] = Field(
         None, description="Optional target path (ignored by DataFrameWriter)."
     )
-    recalculate: bool = Field(
-        True, description="Whether to recalculate graph before export."
-    )
+    recalculate: bool = Field(True, description="Whether to recalculate graph before export.")
     include_nodes: Optional[list[str]] = Field(
         None, description="Optional list of node names to include in export."
     )
@@ -179,9 +165,7 @@ class DataFrameWriterConfig(BaseWriterConfig):
 class DictWriterConfig(BaseWriterConfig):
     """Dict writer has no additional options."""
 
-    target: Optional[str] = Field(
-        None, description="Optional target (ignored by DictWriter)."
-    )
+    target: Optional[str] = Field(None, description="Optional target (ignored by DictWriter).")
 
 
 class MarkdownWriterConfig(BaseWriterConfig):

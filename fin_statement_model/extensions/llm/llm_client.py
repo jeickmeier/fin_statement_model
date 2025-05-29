@@ -79,9 +79,7 @@ class LLMClient:
             LLMClientError: For any client-related errors, including timeout if applicable
         """
         try:
-            logger.debug(
-                f"Sending async request to OpenAI API with model {self.config.model_name}"
-            )
+            logger.debug(f"Sending async request to OpenAI API with model {self.config.model_name}")
             response = await openai.ChatCompletion.acreate(
                 model=self.config.model_name,
                 messages=messages,

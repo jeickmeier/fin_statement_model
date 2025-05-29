@@ -20,9 +20,7 @@ logger = logging.getLogger(__name__)
 
 # Define known keyword arguments for reader/writer initialization
 _READER_INIT_KWARGS = {"api_key", "mapping_config"}
-_WRITER_INIT_KWARGS = {
-    "target"
-}  # Use 'target' as init kwarg for writer Pydantic config
+_WRITER_INIT_KWARGS = {"target"}  # Use 'target' as init kwarg for writer Pydantic config
 
 
 def read_data(
@@ -74,9 +72,7 @@ def read_data(
         reader = get_reader(**config_kwargs)
 
         # Determine the actual source object for the read method
-        actual_source = (
-            source if format_type in ("dict", "dataframe") else config_kwargs["source"]
-        )
+        actual_source = source if format_type in ("dict", "dataframe") else config_kwargs["source"]
 
         # Pass the determined source and the original kwargs (excluding config keys potentially)
         # to the read method. Specific readers handle relevant kwargs.
@@ -156,9 +152,7 @@ def write_data(
                     f.write(result)
                 return None  # Consistent return for file writers
             except OSError as e:
-                logger.exception(
-                    f"Failed to write writer output to target file: {target}"
-                )
+                logger.exception(f"Failed to write writer output to target file: {target}")
                 raise WriteError(
                     f"Failed to write writer output to file: {target}",
                     target=target,

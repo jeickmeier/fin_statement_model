@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections import defaultdict
 from typing import Optional
 from uuid import UUID
@@ -15,6 +16,9 @@ from .models import (
 )
 
 
+logger = logging.getLogger(__name__)
+
+
 class AdjustmentManager:
     """Handles the lifecycle and application of Adjustment objects.
 
@@ -25,9 +29,7 @@ class AdjustmentManager:
     def __init__(self) -> None:
         """Initializes the AdjustmentManager with empty storage."""
         # Primary index: (scenario, node_name, period) -> list[Adjustment]
-        self._by_location: dict[tuple[str, str, str], list[Adjustment]] = defaultdict(
-            list
-        )
+        self._by_location: dict[tuple[str, str, str], list[Adjustment]] = defaultdict(list)
         # Secondary index for quick lookup and removal by ID
         self._by_id: dict[UUID, Adjustment] = {}
 
@@ -53,9 +55,7 @@ class AdjustmentManager:
 
         if key in self._by_location:
             # Filter out the specific adjustment object instance
-            self._by_location[key] = [
-                a for a in self._by_location[key] if a.id != adj_id
-            ]
+            self._by_location[key] = [a for a in self._by_location[key] if a.id != adj_id]
             # If the list becomes empty, remove the key
             if not self._by_location[key]:
                 del self._by_location[key]
@@ -106,9 +106,7 @@ class AdjustmentManager:
         # Sort by priority (ascending), then timestamp (ascending) as per spec
         # Note: add_adjustment already sorts the list in _by_location, but
         # this ensures correctness if an unsorted list is passed directly.
-        sorted_adjustments = sorted(
-            adjustments, key=lambda x: (x.priority, x.timestamp)
-        )
+        sorted_adjustments = sorted(adjustments, key=lambda x: (x.priority, x.timestamp))
 
         for adj in sorted_adjustments:
             current_value = self._apply_one(current_value, adj)
@@ -154,8 +152,8 @@ class AdjustmentManager:
             # A more robust solution might involve passing period to the callable.
             # Let's just return a base filter for now and handle callable later.
             # TODO: Revisit handling of callable filters if period context is critical.
-            print(
-                "Warning: Callable filter used; period context for effective window check might be ignored."
+            logger.warning(
+                "Callable filter used; period context for effective window check might be ignored."
             )
             # Apply callable, but filter to default scenario like other shorthand.
             return AdjustmentFilter(
@@ -184,24 +182,18 @@ class AdjustmentManager:
         # Determine which scenarios to check based on the filter
         scenarios_to_check: set[str]
         if normalized_filter.include_scenarios is not None:
-            scenarios_to_check = (
-                normalized_filter.include_scenarios.copy()
-            )  # Work on a copy
+            scenarios_to_check = normalized_filter.include_scenarios.copy()  # Work on a copy
             if normalized_filter.exclude_scenarios is not None:
                 scenarios_to_check -= normalized_filter.exclude_scenarios
         elif normalized_filter.exclude_scenarios is not None:
             # Get all scenarios currently known to the manager
             all_known_scenarios = {adj.scenario for adj in self._by_id.values()}
-            scenarios_to_check = (
-                all_known_scenarios - normalized_filter.exclude_scenarios
-            )
+            scenarios_to_check = all_known_scenarios - normalized_filter.exclude_scenarios
         else:
             # No include/exclude specified: check all scenarios relevant for this node/period
             # This requires checking keys in _by_location
             scenarios_to_check = {
-                key[0]
-                for key in self._by_location
-                if key[1] == node_name and key[2] == period
+                key[0] for key in self._by_location if key[1] == node_name and key[2] == period
             }
             # If no specific adjustments exist for this node/period, we might check default?
             # Let's assume we only check scenarios that *have* adjustments for this location.
@@ -219,9 +211,7 @@ class AdjustmentManager:
         matching_adjustments: list[Adjustment] = []
         if callable(filter_input):
             # Apply the callable filter directly
-            matching_adjustments = [
-                adj for adj in candidate_adjustments if filter_input(adj)
-            ]
+            matching_adjustments = [adj for adj in candidate_adjustments if filter_input(adj)]
         else:
             # Apply the normalized AdjustmentFilter's matches method
             matching_adjustments = [

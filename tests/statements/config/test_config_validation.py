@@ -74,9 +74,7 @@ def test_validate_subtotal_invalid_ref():
             {
                 "id": "sec",
                 "name": "S",
-                "items": [
-                    {"id": "i1", "name": "I1", "type": "line_item", "node_id": "n"}
-                ],
+                "items": [{"id": "i1", "name": "I1", "type": "line_item", "node_id": "n"}],
                 "subtotal": {"id": "sub", "name": "Sum", "items_to_sum": ["i1", "x"]},
             }
         ],

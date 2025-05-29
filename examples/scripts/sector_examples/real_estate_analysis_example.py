@@ -1,202 +1,222 @@
-"""Real Estate Analysis Example.
+"""Real Estate Investment Trust (REIT) Analysis Example.
 
-This example demonstrates how to use the real estate-specific metrics
-and nodes in the financial statement model library for REIT analysis.
+This example demonstrates using specialized real estate metrics and calculations
+for analyzing REIT financial performance.
 """
 
-from fin_statement_model.core.metrics import (
-    metric_registry,
-    interpret_metric,
-    calculate_metric,
+import logging
+from fin_statement_model.core.graph import Graph
+from fin_statement_model.core.nodes import ItemNode, MetricNode
+from fin_statement_model.core.metrics import metric_registry
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
-from fin_statement_model.core.nodes import FinancialStatementItemNode
+logger = logging.getLogger(__name__)
 
 
-def create_sample_reit_data() -> dict[str, FinancialStatementItemNode]:
-    """Create sample REIT financial data for analysis."""
-    # Property operations data
-    rental_income = FinancialStatementItemNode(
-        "rental_income", {"2021": 95_000_000, "2022": 102_000_000, "2023": 108_000_000}
-    )
-
-    other_property_income = FinancialStatementItemNode(
-        "other_property_income",
-        {"2021": 5_000_000, "2022": 5_500_000, "2023": 6_000_000},
-    )
-
-    property_operating_expenses = FinancialStatementItemNode(
-        "property_operating_expenses",
-        {"2021": 40_000_000, "2022": 42_000_000, "2023": 44_000_000},
-    )
-
-    # REIT-specific data
-    net_income = FinancialStatementItemNode(
-        "net_income", {"2021": 45_000_000, "2022": 48_000_000, "2023": 52_000_000}
-    )
-
-    depreciation_and_amortization = FinancialStatementItemNode(
-        "depreciation_and_amortization",
-        {"2021": 25_000_000, "2022": 26_000_000, "2023": 27_000_000},
-    )
-
-    gains_on_property_sales = FinancialStatementItemNode(
-        "gains_on_property_sales",
-        {"2021": 2_000_000, "2022": 3_000_000, "2023": 1_500_000},
-    )
-
-    # Property metrics
-    occupied_square_feet = FinancialStatementItemNode(
-        "occupied_square_feet",
-        {"2021": 4_500_000, "2022": 4_750_000, "2023": 4_900_000},
-    )
-
-    total_rentable_square_feet = FinancialStatementItemNode(
-        "total_rentable_square_feet",
-        {"2021": 5_000_000, "2022": 5_000_000, "2023": 5_200_000},
-    )
-
-    # Market data
-    shares_outstanding = FinancialStatementItemNode(
-        "shares_outstanding",
-        {"2021": 100_000_000, "2022": 102_000_000, "2023": 104_000_000},
-    )
-
-    market_cap = FinancialStatementItemNode(
-        "market_cap",
-        {"2021": 2_500_000_000, "2022": 2_800_000_000, "2023": 3_100_000_000},
-    )
-
-    property_value = FinancialStatementItemNode(
-        "property_value",
-        {"2021": 1_800_000_000, "2022": 1_950_000_000, "2023": 2_100_000_000},
-    )
-
-    return {
-        "rental_income": rental_income,
-        "other_property_income": other_property_income,
-        "property_operating_expenses": property_operating_expenses,
-        "net_income": net_income,
-        "depreciation_and_amortization": depreciation_and_amortization,
-        "gains_on_property_sales": gains_on_property_sales,
-        "occupied_square_feet": occupied_square_feet,
-        "total_rentable_square_feet": total_rentable_square_feet,
-        "shares_outstanding": shares_outstanding,
-        "market_cap": market_cap,
-        "property_value": property_value,
+def create_reit_financial_model():
+    """Create a financial model for a REIT with specialized metrics."""
+    graph = Graph()
+    
+    # === Income Statement Items ===
+    income_items = {
+        # Revenue
+        "rental_income": {"2022": 50000000, "2023": 55000000},
+        "property_management_fees": {"2022": 2500000, "2023": 2750000},
+        "other_income": {"2022": 1000000, "2023": 1200000},
+        
+        # Operating Expenses
+        "property_operating_expenses": {"2022": 18000000, "2023": 20000000},
+        "property_management_expenses": {"2022": 3500000, "2023": 3850000},
+        "general_admin_expenses": {"2022": 4000000, "2023": 4400000},
+        "depreciation_expense": {"2022": 12000000, "2023": 13200000},
+        
+        # Other
+        "interest_expense": {"2022": 8000000, "2023": 8500000},
+        "gain_on_property_sales": {"2022": 2000000, "2023": 1500000},
     }
-
-
-def calculate_reit_metrics(
-    data_nodes: dict[str, FinancialStatementItemNode], period: str = "2023"
-) -> dict[str, float]:
-    """Calculate key REIT metrics for analysis."""
-    results = {}
-
-    # Calculate Net Operating Income first (needed for cap rate)
-    results["noi"] = calculate_metric("net_operating_income", data_nodes, period)
-
-    # Calculate Funds From Operations (needed for FFO per share and multiple)
-    results["ffo"] = calculate_metric("funds_from_operations", data_nodes, period)
-
-    # Calculate Occupancy Rate
-    results["occupancy_rate"] = calculate_metric("occupancy_rate", data_nodes, period)
-
-    # For metrics that depend on calculated values, we need to add them to data_nodes
-    # Create temporary nodes for calculated values
-    from fin_statement_model.core.nodes import FinancialStatementItemNode
-
-    # Add calculated NOI and FFO to data_nodes for dependent calculations
-    extended_data_nodes = data_nodes.copy()
-    extended_data_nodes["net_operating_income"] = FinancialStatementItemNode(
-        "net_operating_income", {period: results["noi"]}
+    
+    # === Balance Sheet Items ===
+    balance_sheet_items = {
+        # Assets
+        "investment_properties": {"2022": 600000000, "2023": 650000000},
+        "accumulated_depreciation": {"2022": -120000000, "2023": -133200000},
+        "cash": {"2022": 15000000, "2023": 18000000},
+        "accounts_receivable": {"2022": 3000000, "2023": 3500000},
+        
+        # Liabilities
+        "mortgages_payable": {"2022": 350000000, "2023": 380000000},
+        "bonds_payable": {"2022": 50000000, "2023": 50000000},
+        "accounts_payable": {"2022": 2000000, "2023": 2200000},
+        
+        # Equity
+        "common_shares": {"2022": 100000000, "2023": 100000000},
+        "preferred_shares": {"2022": 25000000, "2023": 25000000},
+        "retained_earnings": {"2022": 70000000, "2023": 77300000},
+        
+        # Share count for per-share metrics
+        "shares_outstanding": {"2022": 10000000, "2023": 10000000},
+    }
+    
+    # === Cash Flow Items ===
+    cash_flow_items = {
+        "capital_expenditures": {"2022": 45000000, "2023": 50000000},
+        "property_acquisitions": {"2022": 30000000, "2023": 35000000},
+        "dividends_paid": {"2022": 22000000, "2023": 24000000},
+    }
+    
+    # Add all items to graph
+    for name, values in {**income_items, **balance_sheet_items, **cash_flow_items}.items():
+        node = ItemNode(name)
+        for period, value in values.items():
+            node.set_value(period, value)
+        graph.add_node(node)
+    
+    # === Add REIT-Specific Metrics ===
+    
+    # Net Operating Income (NOI)
+    noi = MetricNode(
+        name="net_operating_income",
+        metric_id="net_operating_income",
+        inputs={
+            "rental_income": "rental_income",
+            "property_management_fees": "property_management_fees",
+            "other_income": "other_income",
+            "property_operating_expenses": "property_operating_expenses",
+        }
     )
-    extended_data_nodes["funds_from_operations"] = FinancialStatementItemNode(
-        "funds_from_operations", {period: results["ffo"]}
+    graph.add_node(noi)
+    
+    # Funds From Operations (FFO)
+    ffo = MetricNode(
+        name="funds_from_operations",
+        metric_id="funds_from_operations",
+        inputs={
+            "net_income": "net_income",  # Would need to calculate this
+            "depreciation_expense": "depreciation_expense",
+            "gain_on_property_sales": "gain_on_property_sales",
+        }
     )
-
-    # Calculate metrics that depend on calculated values
-    results["cap_rate"] = calculate_metric(
-        "capitalization_rate", extended_data_nodes, period
+    graph.add_node(ffo)
+    
+    # FFO per Share
+    ffo_per_share = MetricNode(
+        name="ffo_per_share",
+        metric_id="ffo_per_share",
+        inputs={
+            "funds_from_operations": "funds_from_operations",
+            "shares_outstanding": "shares_outstanding",
+        }
     )
-    results["ffo_per_share"] = calculate_metric(
-        "ffo_per_share", extended_data_nodes, period
+    graph.add_node(ffo_per_share)
+    
+    # Cap Rate
+    cap_rate = MetricNode(
+        name="capitalization_rate",
+        metric_id="capitalization_rate",
+        inputs={
+            "net_operating_income": "net_operating_income",
+            "investment_properties": "investment_properties",
+        }
     )
-    results["ffo_multiple"] = calculate_metric(
-        "ffo_multiple", extended_data_nodes, period
+    graph.add_node(cap_rate)
+    
+    # Debt Service Coverage Ratio
+    dscr = MetricNode(
+        name="debt_service_coverage_ratio",
+        metric_id="debt_service_coverage_ratio",
+        inputs={
+            "net_operating_income": "net_operating_income",
+            "interest_expense": "interest_expense",
+        }
     )
+    graph.add_node(dscr)
+    
+    return graph
 
-    return results
 
-
-def analyze_reit_performance() -> None:
-    """Perform comprehensive REIT analysis."""
-    print("=== REIT Analysis Example ===\n")
-
-    # Create sample data
-    data_nodes = create_sample_reit_data()
-
-    # Calculate metrics for 2023
-    metrics_2023 = calculate_reit_metrics(data_nodes, "2023")
-
-    print("Key REIT Metrics for 2023:")
-    print("-" * 40)
-
-    # Display results with interpretations
-    metric_names = [
-        ("noi", "Net Operating Income"),
-        ("ffo", "Funds From Operations"),
-        ("occupancy_rate", "Occupancy Rate"),
-        ("cap_rate", "Capitalization Rate"),
-        ("ffo_per_share", "FFO Per Share"),
-        ("ffo_multiple", "FFO Multiple"),
+def analyze_reit_performance(graph, period="2023"):
+    """Analyze REIT performance using specialized metrics."""
+    logger.info("=== REIT Analysis Example ===\n")
+    
+    # Calculate key REIT metrics
+    metrics_to_calculate = [
+        ("net_operating_income", "Net Operating Income"),
+        ("funds_from_operations", "Funds From Operations (FFO)"),
+        ("ffo_per_share", "FFO per Share"),
+        ("capitalization_rate", "Cap Rate"),
+        ("debt_service_coverage_ratio", "Debt Service Coverage Ratio"),
     ]
-
-    for metric_key, display_name in metric_names:
-        value = metrics_2023[metric_key]
-
-        # Get interpretation if available
+    
+    logger.info("Key REIT Metrics for 2023:")
+    logger.info("-" * 40)
+    
+    for metric_id, display_name in metrics_to_calculate:
         try:
-            if metric_key in ["noi", "ffo"]:
-                # These are dollar amounts
-                print(f"{display_name}: ${value:,.0f}")
-            elif metric_key in ["occupancy_rate", "cap_rate"]:
-                # These are percentages
-                metric_def = metric_registry.get(metric_key)
-                interpretation = interpret_metric(metric_def, value)
-                print(f"{display_name}: {value:.1f}%")
-                print(f"  → {interpretation['interpretation_message']}")
-            elif metric_key == "ffo_per_share":
-                # This is per share
-                print(f"{display_name}: ${value:.2f}")
-            elif metric_key == "ffo_multiple":
-                # This is a multiple
-                metric_def = metric_registry.get(metric_key)
-                interpretation = interpret_metric(metric_def, value)
-                print(f"{display_name}: {value:.1f}x")
-                print(f"  → {interpretation['interpretation_message']}")
-        except Exception:
-            print(f"{display_name}: {value:.2f}")
+            value = graph.calculate(metric_id, period)
+            
+            # Get metric definition for interpretation
+            metric_def = metric_registry.get_metric(metric_id)
+            
+            # Format based on metric type
+            if metric_id in ["net_operating_income", "funds_from_operations"]:
+                logger.info(f"{display_name}: ${value:,.0f}")
+            elif metric_id == "capitalization_rate":
+                # Cap rate is typically shown as percentage
+                logger.info(f"{display_name}: {value:.1f}%")
+                
+                # Provide interpretation
+                if hasattr(metric_def, 'interpret'):
+                    interpretation = metric_def.interpret(value)
+                    logger.info(f"  → {interpretation['interpretation_message']}")
+            elif metric_id == "ffo_per_share":
+                logger.info(f"{display_name}: ${value:.2f}")
+            elif metric_id == "debt_service_coverage_ratio":
+                logger.info(f"{display_name}: {value:.1f}x")
+                
+                # Provide interpretation
+                if hasattr(metric_def, 'interpret'):
+                    interpretation = metric_def.interpret(value)
+                    logger.info(f"  → {interpretation['interpretation_message']}")
+            else:
+                logger.info(f"{display_name}: {value:.2f}")
+                
+        except Exception as e:
+            logger.error(f"Could not calculate {display_name}: {e}")
+        logger.info("")
+    
+    # Growth analysis
+    logger.info("Growth Analysis:")
+    logger.info("-" * 40)
+    
+    try:
+        # NOI growth
+        noi_2022 = graph.calculate("net_operating_income", "2022")
+        noi_2023 = graph.calculate("net_operating_income", "2023")
+        noi_growth = ((noi_2023 - noi_2022) / noi_2022) * 100
+        logger.info(f"NOI Growth (2022-2023): {noi_growth:.1f}%")
+        
+        # FFO growth
+        ffo_2022 = graph.calculate("funds_from_operations", "2022")
+        ffo_2023 = graph.calculate("funds_from_operations", "2023")
+        ffo_growth = ((ffo_2023 - ffo_2022) / ffo_2022) * 100
+        logger.info(f"FFO Growth (2022-2023): {ffo_growth:.1f}%")
+    except Exception as e:
+        logger.error(f"Could not calculate growth metrics: {e}")
+    
+    logger.info("\n=== Analysis Complete ===")
 
-        print()
 
-    # Calculate growth rates
-    print("Growth Analysis:")
-    print("-" * 40)
-
-    # NOI growth 2022 to 2023
-    noi_2022 = calculate_reit_metrics(data_nodes, "2022")["noi"]
-    noi_2023 = metrics_2023["noi"]
-    noi_growth = ((noi_2023 - noi_2022) / noi_2022) * 100
-    print(f"NOI Growth (2022-2023): {noi_growth:.1f}%")
-
-    # FFO growth 2022 to 2023
-    ffo_2022 = calculate_reit_metrics(data_nodes, "2022")["ffo"]
-    ffo_2023 = metrics_2023["ffo"]
-    ffo_growth = ((ffo_2023 - ffo_2022) / ffo_2022) * 100
-    print(f"FFO Growth (2022-2023): {ffo_growth:.1f}%")
-
-    print("\n=== Analysis Complete ===")
+def main():
+    """Run the REIT analysis example."""
+    # Create the REIT financial model
+    graph = create_reit_financial_model()
+    
+    # Analyze performance
+    analyze_reit_performance(graph)
 
 
 if __name__ == "__main__":
-    analyze_reit_performance()
+    main()

@@ -1,100 +1,124 @@
-"""Fetches FMP data, converts to graphs, and displays as DataFrame.
+"""FMP (Financial Modeling Prep) API Example.
 
-Demonstrates fetching data using the FMP reader, converting the raw
-data graph into a FinancialStatementGraph, and finally presenting
-the information as a pandas DataFrame.
+This example demonstrates how to use the FMP API reader to fetch financial data
+and load it into a financial statement graph.
 
-Requires:
-- fin_statement_model library installed.
-- FMP_API_KEY environment variable set with your Financial Modeling Prep API key.
-
+Prerequisites:
+- Set FMP_API_KEY environment variable with your API key
+- Install requests library if not already installed
 """
 
 import logging
 import os
-import pandas as pd
-from typing import Optional
+from fin_statement_model.io import read_data, write_data
 
-from fin_statement_model.core.graph import Graph
-from fin_statement_model.io import (
-    read_data,
-    write_data,
-    ReadError,
-    FormatNotSupportedError,
-)
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
-
-# Basic logging configuration (optional, can be removed if desired)
+# Configure logging
 logging.basicConfig(
-    level=logging.WARNING, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
+logger = logging.getLogger(__name__)
 
-TICKER = "AAPL"  # Example ticker
-STATEMENT_TYPE = (
-    "income_statement"  # Options: 'income_statement', 'balance_sheet', 'cash_flow'
-)
-PERIOD_TYPE = "FY"  # Options: 'FY' (annual), 'QTR' (quarterly)
-LIMIT = 5  # Number of past periods to fetch
+# Configuration
+TICKER = "AAPL"  # Stock ticker to fetch
+STATEMENT_TYPE = "income"  # Options: 'income', 'balance', 'cash'
+PERIOD_TYPE = "annual"  # Options: 'annual', 'quarter'
 
+# FMP API configuration
+FMP_API_KEY = os.environ.get("FMP_API_KEY")
 
-# --- Main Script ---
-def main():
-    """Runs the FMP data fetching and conversion example."""
-    print(f"Fetching {PERIOD_TYPE} {STATEMENT_TYPE} data for {TICKER}...")
-
-    api_key = os.environ.get("FMP_API_KEY")
-    if not api_key:
-        print("Error: FMP_API_KEY environment variable not set.")
-        return
-
-    graph: Optional[Graph] = None  # Renamed from core_graph for simplicity
-    df: Optional[pd.DataFrame] = None
-
+# Example function to demonstrate FMP usage
+def fetch_fmp_data():
+    """Fetch financial data from FMP API and create a graph."""
+    
+    if not FMP_API_KEY:
+        logger.error("FMP_API_KEY environment variable not set.")
+        logger.error("Please set it with: export FMP_API_KEY='your_api_key'")
+        return None
+    
+    # FMP reader configuration
+    fmp_config = {
+        "ticker": TICKER,
+        "statement_type": STATEMENT_TYPE,
+        "period_type": PERIOD_TYPE,
+        "api_key": FMP_API_KEY,
+        "limit": 5,  # Number of periods to fetch
+    }
+    
     try:
-        # 1. Read data from FMP API into a core Graph object
+        logger.info(f"Fetching {PERIOD_TYPE} {STATEMENT_TYPE} data for {TICKER}...")
+        
+        # Use the FMP reader to fetch data
         graph = read_data(
             format_type="fmp",
-            source=TICKER,
-            api_key=api_key,
-            statement_type=STATEMENT_TYPE,
-            period_type=PERIOD_TYPE,
-            limit=LIMIT,
+            source=fmp_config,
+            # Optional: provide custom node mappings
+            node_mappings={
+                "revenue": ["revenue", "totalRevenue"],
+                "gross_profit": ["grossProfit"],
+                "operating_income": ["operatingIncome"],
+                "net_income": ["netIncome"],
+            }
         )
-        print(f"Successfully fetched data. Graph has {len(graph.nodes)} nodes.")
-
-        # 3. Convert Graph to DataFrame using the utility
-        print("Converting graph to DataFrame...")
-        # Use the write_data facade, which handles configuration
-        df = write_data(format_type="dataframe", graph=graph, target=None)
-        print("Conversion successful.")
-
-    except FormatNotSupportedError:
-        print("Error: The 'fmp' reader format is unavailable or not registered.")
-    except ReadError as e:
-        print(f"Error reading data from FMP API: {e}")
+        
+        logger.info(f"Successfully fetched data. Graph has {len(graph.nodes)} nodes.")
+        return graph
+        
+    except ValueError as e:
+        if "fmp" in str(e).lower():
+            logger.error("Error: The 'fmp' reader format is unavailable or not registered.")
+            logger.error("Please ensure the FMP reader is properly installed.")
+        else:
+            logger.error(f"Error reading data from FMP API: {e}")
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        # Optionally re-raise if debugging: raise e
+        logger.error(f"An unexpected error occurred: {e}")
+    
+    return None
 
-    # 4. Display results if successful
-    if df is not None:
-        print(f"\n--- FMP Data for {TICKER} ({STATEMENT_TYPE}, {PERIOD_TYPE}) ---")
-        # Example: Accessing specific data if needed
-        if "revenue" in df.index:
-            print("\nRevenue:")
-            # Ensure correct formatting, applymap might error if columns aren't numeric
-            try:
-                print(df.loc[["revenue"]].map("{:,.0f}".format))
-            except (TypeError, ValueError):
-                print(df.loc[["revenue"]])  # Print raw if formatting fails
 
-        print("\n--- DataFrame Head ---")
-        print(df.head(10))  # Print head for brevity
+def convert_to_dataframe(graph):
+    """Convert graph to DataFrame for easy viewing."""
+    if graph is None:
+        return None
+    
+    try:
+        logger.info("Converting graph to DataFrame...")
+        df = write_data(
+            format_type="dataframe",
+            graph=graph,
+            target=None,  # Return DataFrame instead of writing to file
+        )
+        logger.info("Conversion successful.")
+        return df
+    except Exception as e:
+        logger.error(f"Error converting to DataFrame: {e}")
+        return None
+
+
+def main():
+    """Main function to demonstrate FMP data fetching."""
+    # Fetch data from FMP
+    graph = fetch_fmp_data()
+    
+    if graph:
+        # Convert to DataFrame for display
+        df = convert_to_dataframe(graph)
+        
+        if df is not None:
+            logger.info(f"\n--- FMP Data for {TICKER} ({STATEMENT_TYPE}, {PERIOD_TYPE}) ---")
+            
+            # Display specific rows if they exist
+            if "revenue" in df.index:
+                logger.info("\nRevenue:")
+                try:
+                    # Try to format numbers nicely
+                    logger.info(df.loc[["revenue"]].map("{:,.0f}".format))
+                except:
+                    logger.info(df.loc[["revenue"]])  # Print raw if formatting fails
+            
+            logger.info("\n--- DataFrame Head ---")
+            logger.info(df.head(10))  # Print head for brevity
     else:
-        print("\nCould not generate DataFrame due to previous errors.")
+        logger.info("\nCould not generate DataFrame due to previous errors.")
 
 
 if __name__ == "__main__":

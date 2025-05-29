@@ -52,9 +52,7 @@ class TestUnifiedNodeValidator:
         """Test validation of alternate names."""
         # With auto-standardize
         validator = UnifiedNodeValidator(auto_standardize=True)
-        result = validator.validate(
-            "sales"
-        )  # Assuming 'sales' is alternate for 'revenue'
+        result = validator.validate("sales")  # Assuming 'sales' is alternate for 'revenue'
         assert result.original_name == "sales"
         assert result.standardized_name == "revenue"
         assert result.is_valid is True
@@ -257,9 +255,7 @@ class TestUnifiedNodeValidator:
         assert "Standardized" in message
 
         # Without auto-standardize
-        std_name, is_valid, message = validate_node_name(
-            "sales", auto_standardize=False
-        )
+        std_name, is_valid, message = validate_node_name("sales", auto_standardize=False)
         assert std_name == "sales"
         assert is_valid is True
 

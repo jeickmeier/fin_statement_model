@@ -77,9 +77,7 @@ class TestTimeSeriesTransformer:
         )
 
         # Test with periods=4 (quarterly YoY)
-        transformer = TimeSeriesTransformer(
-            transformation_type=TransformationType.YOY, periods=4
-        )
+        transformer = TimeSeriesTransformer(transformation_type=TransformationType.YOY, periods=4)
 
         result = transformer.transform(df)
 
@@ -101,9 +99,7 @@ class TestTimeSeriesTransformer:
         )
 
         # Test with periods=1 (quarterly QoQ)
-        transformer = TimeSeriesTransformer(
-            transformation_type=TransformationType.QOQ, periods=1
-        )
+        transformer = TimeSeriesTransformer(transformation_type=TransformationType.QOQ, periods=1)
 
         result = transformer.transform(df)
 
@@ -122,9 +118,7 @@ class TestTimeSeriesTransformer:
         )
 
         # Using periods=2 (unusual for YoY)
-        transformer = TimeSeriesTransformer(
-            transformation_type=TransformationType.YOY, periods=2
-        )
+        transformer = TimeSeriesTransformer(transformation_type=TransformationType.YOY, periods=2)
 
         # Should not raise error, just log warning
         result = transformer.transform(df)
@@ -138,9 +132,7 @@ class TestTimeSeriesTransformer:
             }
         )
 
-        transformer = TimeSeriesTransformer(
-            transformation_type=TransformationType.GROWTH_RATE
-        )
+        transformer = TimeSeriesTransformer(transformation_type=TransformationType.GROWTH_RATE)
 
         # Manually set an invalid transformation type
         transformer.transformation_type = "invalid_transformation"

@@ -53,9 +53,7 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
         # Historical growth method doesn't need specific configuration
         # Accept None, 0, or any placeholder value
 
-    def normalize_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory.
 
         Args:
@@ -87,9 +85,7 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
             ValueError: If insufficient historical data is available.
         """
         if not hasattr(node, "calculate") or not callable(node.calculate):
-            raise ValueError(
-                f"Node {node.name} cannot be calculated for historical growth method"
-            )
+            raise ValueError(f"Node {node.name} cannot be calculated for historical growth method")
 
         if not hasattr(node, "values") or not isinstance(node.values, dict):
             raise ValueError(
@@ -102,11 +98,7 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
             if period in node.values:
                 try:
                     value = node.calculate(period)
-                    if (
-                        value is not None
-                        and not np.isnan(value)
-                        and not np.isinf(value)
-                    ):
+                    if value is not None and not np.isnan(value) and not np.isinf(value):
                         historical_values.append(float(value))
                 except Exception as e:
                     # Log the exception and skip this period
@@ -143,9 +135,9 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
         growth_rates = []
         for i in range(1, len(historical_values)):
             if historical_values[i - 1] != 0:
-                growth_rate = (
-                    historical_values[i] - historical_values[i - 1]
-                ) / historical_values[i - 1]
+                growth_rate = (historical_values[i] - historical_values[i - 1]) / historical_values[
+                    i - 1
+                ]
                 growth_rates.append(growth_rate)
 
         # Return average growth rate, or 0 if no valid rates

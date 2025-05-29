@@ -1,189 +1,193 @@
-"""Examples demonstrating node name validation in the financial statement model."""
+"""Examples demonstrating the UnifiedNodeValidator's capabilities."""
 
+import logging
 from fin_statement_model.io.validation import UnifiedNodeValidator
-from fin_statement_model.io import read_data
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 
 def example_basic_validation():
-    """Basic validation example."""
-    print("=== Basic Validation Example ===")
+    """Show basic node name validation."""
+    logger.info("=== Basic Validation Example ===")
 
-    validator = UnifiedNodeValidator(
-        strict_mode=False, auto_standardize=True, warn_on_non_standard=True
-    )
+    validator = UnifiedNodeValidator()
 
     # Test various node names
     test_names = [
-        "revenue",  # Standard name
-        "sales",  # Alternate name
-        "total_revenue",  # Custom name
-        "revenue_q1",  # Sub-node pattern
-        "gross_margin",  # Formula pattern
+        "revenue",  # Standard financial item
+        "Accounts Receivable",  # Needs case standardization
+        "core.ebitda",  # Namespaced metric
+        "custom_metric",  # Custom node
+        "revenue_growth_yoy",  # Pattern-based metric
+        "invalid name!",  # Invalid characters
     ]
 
     for name in test_names:
-        result = validator.validate(name)
-        print(f"\nNode: '{name}'")
-        print(f"  Standardized: '{result.standardized_name}'")
-        print(f"  Valid: {result.is_valid}")
-        print(f"  Category: {result.category}")
-        print(f"  Message: {result.message}")
+        result = validator.validate_node(name)
+        logger.info(f"\nNode: '{name}'")
+        logger.info(f"  Standardized: '{result.standardized_name}'")
+        logger.info(f"  Valid: {result.is_valid}")
+        logger.info(f"  Category: {result.category}")
+        logger.info(f"  Message: {result.message}")
         if result.suggestions:
-            print(f"  Suggestions: {result.suggestions}")
+            logger.info(f"  Suggestions: {result.suggestions}")
 
     # Batch validation
-    print("\n--- Batch Validation ---")
-    results = validator.validate_batch(test_names)
+    logger.info("\n--- Batch Validation ---")
+    results = validator.validate_nodes(test_names)
     for name, result in results.items():
-        print(f"{name}: {result.category} - {result.standardized_name}")
+        logger.info(f"{name}: {result.category} - {result.standardized_name}")
 
 
 def example_context_aware_validation():
-    """Context-aware validation with parent nodes."""
-    print("\n=== Context-Aware Validation Example ===")
+    """Show context-aware validation with node types and relationships."""
+    logger.info("\n=== Context-Aware Validation Example ===")
 
     validator = UnifiedNodeValidator(
+        enable_patterns=True,
         strict_mode=False,
-        enable_patterns=True,  # Enable pattern recognition
     )
 
-    # Test with context
+    # Test nodes with context
     test_cases = [
-        ("revenue_margin", "calculation", ["revenue", "gross_profit"]),
-        ("debt_equity_ratio", "formula", ["total_debt", "total_equity"]),
-        ("revenue_north_america", "data", ["revenue"]),
-        ("custom_metric", "calculation", ["revenue", "expenses"]),
+        ("revenue", "data", []),
+        ("gross_profit", "calculation", ["revenue", "cogs"]),
+        ("revenue_growth_yoy", "metric", ["revenue"]),
+        ("custom_analysis", "custom", []),
     ]
 
     for name, node_type, parent_nodes in test_cases:
-        result = validator.validate(
-            name, node_type=node_type, parent_nodes=parent_nodes
-        )
-        print(f"\nNode: '{name}' (Type: {node_type})")
-        print(f"  Parents: {parent_nodes}")
-        print(f"  Category: {result.category}")
-        print(f"  Valid: {result.is_valid}")
-        print(f"  Message: {result.message}")
+        result = validator.validate_node(name, node_type=node_type, parent_nodes=parent_nodes)
+        logger.info(f"\nNode: '{name}' (Type: {node_type})")
+        logger.info(f"  Parents: {parent_nodes}")
+        logger.info(f"  Category: {result.category}")
+        logger.info(f"  Valid: {result.is_valid}")
+        logger.info(f"  Message: {result.message}")
 
 
-def example_graph_building_with_validation():
-    """Build a graph with validation."""
-    print("\n=== Graph Building with Validation ===")
+def example_graph_building():
+    """Show validation during graph building."""
+    logger.info("\n=== Graph Building with Validation ===")
 
-    # Create data with potentially non-standard names
-    raw_data = {
-        "sales": {"2021": 1000, "2022": 1100, "2023": 1200},
-        "cogs": {"2021": 600, "2022": 650, "2023": 700},
-        "opex": {"2021": 200, "2022": 210, "2023": 220},
-        "custom_item": {"2021": 50, "2022": 55, "2023": 60},
-    }
+    from fin_statement_model.core.graph import Graph
+    from fin_statement_model.core.nodes import ItemNode
 
-    validator = UnifiedNodeValidator(strict_mode=False)
-
-    # Validate and standardize before creating graph
-    standardized_data = {}
-    for name, values in raw_data.items():
-        result = validator.validate(name)
-        if result.is_valid:
-            standardized_data[result.standardized_name] = values
-            if result.standardized_name != name:
-                print(f"Standardized '{name}' to '{result.standardized_name}'")
-        else:
-            print(f"Warning: '{name}' is invalid - {result.message}")
-            # Still include it if not in strict mode
-            standardized_data[name] = values
-
-    # Create graph with standardized data
-    graph = read_data("dict", standardized_data)
-
-    # Add calculations
-    graph.add_calculation(
-        name="gross_profit",
-        input_names=["revenue", "cost_of_goods_sold"],
-        operation_type="addition",
+    validator = UnifiedNodeValidator(
+        auto_standardize=True,
+        warn_on_non_standard=True,
     )
 
-    # Validate the entire graph
-    print("\n--- Graph Validation Report ---")
-    report = validator.validate_graph(list(graph.nodes.values()))
+    graph = Graph()
 
-    print(f"Total nodes: {report['total']}")
-    print(f"Valid: {report['by_validity']['valid']}")
-    print(f"Invalid: {report['by_validity']['invalid']}")
-
-    print("\nBy category:")
-    for category, nodes in report["by_category"].items():
-        print(f"  {category}: {len(nodes)} nodes")
-
-    if report["suggestions"]:
-        print("\nSuggestions for improvement:")
-        for node_name, suggestions in report["suggestions"].items():
-            print(f"  {node_name}:")
-            for suggestion in suggestions:
-                print(f"    - {suggestion}")
-
-    return graph
-
-
-def example_strict_vs_flexible():
-    """Compare strict vs flexible validation modes."""
-    print("\n=== Strict vs Flexible Validation ===")
-
-    strict_validator = UnifiedNodeValidator(strict_mode=True, auto_standardize=True)
-    flexible_validator = UnifiedNodeValidator(strict_mode=False, auto_standardize=True)
-
-    test_names = ["revenue", "sales", "custom_metric", "revenue_q1"]
-
-    print("Strict Mode Results:")
-    for name in test_names:
-        result = strict_validator.validate(name)
-        print(f"  {name}: Valid={result.is_valid}, Category={result.category}")
-
-    print("\nFlexible Mode Results:")
-    for name in test_names:
-        result = flexible_validator.validate(name)
-        print(f"  {name}: Valid={result.is_valid}, Category={result.category}")
-
-
-def example_reader_integration():
-    """Show validation integrated with data readers."""
-    print("\n=== Reader Integration Example ===")
-
-    # Simulate reading from Excel with non-standard names
-    excel_data = {
-        "Sales Revenue": {"2021": 1000, "2022": 1100, "2023": 1200},
-        "Cost of Sales": {"2021": 600, "2022": 650, "2023": 700},
-        "Operating Expenses": {"2021": 200, "2022": 210, "2023": 220},
+    # Simulate adding nodes with validation
+    node_data = {
+        "Revenue": {"2023": 1000},
+        "COGS": {"2023": 600},
+        "gross profit": {"2023": 400},
+        "Operating Expenses": {"2023": 200},
     }
 
-    # Create mapping based on validation
-    validator = UnifiedNodeValidator(strict_mode=False, auto_standardize=True)
-
-    mapping = {}
-    for excel_name in excel_data:
-        # Try to find a match by checking various possibilities
-        test_name = excel_name.lower().replace(" ", "_")
-        result = validator.validate(test_name)
+    for name, values in node_data.items():
+        result = validator.validate_node(name)
 
         if result.is_valid:
+            if result.standardized_name != name:
+                logger.info(f"Standardized '{name}' to '{result.standardized_name}'")
+            else:
+                logger.warning(f"Warning: '{name}' is invalid - {result.message}")
+
+            # Add node with standardized name
+            node = ItemNode(result.standardized_name)
+            for period, value in values.items():
+                node.set_value(period, value)
+            graph.add_node(node)
+
+    # Generate validation report
+    all_node_names = [node.name for node in graph.nodes.values()]
+    report = validator.generate_validation_report(all_node_names)
+
+    logger.info("\n--- Graph Validation Report ---")
+    logger.info(f"Total nodes: {report['total']}")
+    logger.info(f"Valid: {report['by_validity']['valid']}")
+    logger.info(f"Invalid: {report['by_validity']['invalid']}")
+
+    logger.info("\nBy category:")
+    for category, nodes in report["by_category"].items():
+        logger.info(f"  {category}: {len(nodes)} nodes")
+
+    if report["suggestions"]:
+        logger.info("\nSuggestions for improvement:")
+        for node_name, suggestions in report["suggestions"].items():
+            logger.info(f"  {node_name}:")
+            for suggestion in suggestions:
+                logger.info(f"    - {suggestion}")
+
+
+def example_flexible_vs_strict():
+    """Show difference between flexible and strict validation modes."""
+    logger.info("\n=== Strict vs Flexible Validation ===")
+
+    # Strict validator
+    strict_validator = UnifiedNodeValidator(strict_mode=True)
+
+    # Flexible validator
+    flexible_validator = UnifiedNodeValidator(strict_mode=False)
+
+    test_names = ["revenue_2023_q1", "custom_metric", "My Special Node"]
+
+    logger.info("Strict Mode Results:")
+    for name in test_names:
+        result = strict_validator.validate_node(name)
+        logger.info(f"  {name}: Valid={result.is_valid}, Category={result.category}")
+
+    logger.info("\nFlexible Mode Results:")
+    for name in test_names:
+        result = flexible_validator.validate_node(name)
+        logger.info(f"  {name}: Valid={result.is_valid}, Category={result.category}")
+
+
+def example_excel_reader_integration():
+    """Show how validation integrates with Excel reading."""
+    logger.info("\n=== Reader Integration Example ===")
+
+    validator = UnifiedNodeValidator(
+        auto_standardize=True,
+        enable_patterns=True,
+    )
+
+    # Simulate Excel column headers
+    excel_headers = [
+        "Revenue",
+        "Cost of Goods Sold",
+        "Operating Income",
+        "EBITDA",
+        "Accounts Receivable",
+        "PP&E",
+    ]
+
+    # Map Excel headers to standardized node names
+    mapping = {}
+    for excel_name in excel_headers:
+        result = validator.validate_node(excel_name)
+        if result.is_valid:
             mapping[excel_name] = result.standardized_name
-            print(f"Mapped '{excel_name}' to '{result.standardized_name}'")
+            if excel_name != result.standardized_name:
+                logger.info(f"Mapped '{excel_name}' to '{result.standardized_name}'")
         else:
-            # Use as-is if no match found
+            # Handle invalid names - maybe prompt user or use as-is
+            logger.warning(f"No mapping found for '{excel_name}', using as-is")
             mapping[excel_name] = excel_name
-            print(f"No mapping found for '{excel_name}', using as-is")
 
-    print(f"\nFinal mapping: {mapping}")
-
-
-def main():
-    """Run all validation examples."""
-    example_basic_validation()
-    example_context_aware_validation()
-    example_graph_building_with_validation()
-    example_strict_vs_flexible()
-    example_reader_integration()
+    logger.info(f"\nFinal mapping: {mapping}")
 
 
 if __name__ == "__main__":
-    main()
+    example_basic_validation()
+    example_context_aware_validation()
+    example_graph_building()
+    example_flexible_vs_strict()
+    example_excel_reader_integration()

@@ -1,51 +1,73 @@
-"""Concatenate all Python files in the fin_statement_model directory into a single file."""
+"""Script to concatenate all source files for documentation purposes."""
 
-import os
+import logging
+from pathlib import Path
 
-# Determine workspace root (assumes script is in workspace root)
-workspace_root = os.path.dirname(__file__)
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
-# Dynamically discover all Python files in the fin_statement_model directory
-file_paths = []
-for dirpath, dirnames, filenames in os.walk(
-    os.path.join(workspace_root, "fin_statement_model")
-):
-    # Skip __pycache__ and hidden directories
-    dirnames[:] = [d for d in dirnames if not d.startswith(".") and d != "__pycache__"]
-    for filename in filenames:
-        if filename.endswith(".py"):
-            full_path = os.path.join(dirpath, filename)
-            rel_path = os.path.relpath(full_path, workspace_root)
-            file_paths.append(rel_path)
+# Define the paths to include
+include_paths = [
+    "fin_statement_model",
+    "tests",
+    "examples",
+]
 
-# Sort file paths for consistent order
-file_paths.sort()
+# Define patterns to exclude
+exclude_patterns = [
+    "__pycache__",
+    "*.pyc",
+    ".git",
+    ".pytest_cache",
+    "*.egg-info",
+]
 
-output_filename = "concatenated_code.txt"
-
-all_content = []
-
-for file_path in file_paths:
-    full_path = os.path.join(workspace_root, file_path)
-    all_content.append(f"# --- START FILE: {file_path} ---\n")
+def concatenate_files(output_filename="concatenated_code.txt"):
+    """Concatenate all Python files in the specified directories."""
+    file_paths = []
+    
+    # Collect all Python files
+    for path_str in include_paths:
+        path = Path(path_str)
+        if path.exists():
+            for py_file in path.rglob("*.py"):
+                # Check if file should be excluded
+                if not any(pattern in str(py_file) for pattern in exclude_patterns):
+                    file_paths.append(py_file)
+    
+    # Sort file paths for consistent output
+    file_paths.sort()
+    
+    # Write to output file
+    with open(output_filename, "w", encoding="utf-8") as output_file:
+        for file_path in file_paths:
+            output_file.write(f"\n{'='*80}\n")
+            output_file.write(f"File: {file_path}\n")
+            output_file.write(f"{'='*80}\n\n")
+            
+            try:
+                with open(file_path, "r", encoding="utf-8") as input_file:
+                    content = input_file.read()
+                    output_file.write(content)
+                    output_file.write("\n\n")
+            except FileNotFoundError:
+                full_path = Path.cwd() / file_path
+                logger.warning(f"File not found at {full_path}")
+            except UnicodeDecodeError:
+                logger.warning(f"Could not decode file {full_path} as UTF-8")
+            except Exception as e:
+                logger.warning(f"Error reading file {full_path}: {e}")
+    
     try:
-        with open(full_path, encoding="utf-8") as f:
-            all_content.append(f.read())
-    except FileNotFoundError:
-        all_content.append(f"# Error: File not found at {full_path}\n")
-        print(f"Warning: File not found at {full_path}")
-    except UnicodeDecodeError:
-        all_content.append(f"# Error: Could not decode file {full_path} as UTF-8\n")
-        print(f"Warning: Could not decode file {full_path} as UTF-8")
+        # Verify the output file was created
+        output_path = Path(output_filename)
+        if output_path.exists():
+            logger.info(f"Successfully concatenated {len(file_paths)} files into {output_filename}")
     except Exception as e:
-        all_content.append(f"# Error reading file {full_path}: {e}\n")
-        print(f"Warning: Error reading file {full_path}: {e}")
-    all_content.append(f"\n# --- END FILE: {file_path} ---\n\n")
+        logger.error(f"Error writing to output file {output_filename}: {e}")
 
-output_full_path = os.path.join(workspace_root, output_filename)
-try:
-    with open(output_full_path, "w", encoding="utf-8") as outfile:
-        outfile.write("".join(all_content))
-    print(f"Successfully concatenated {len(file_paths)} files into {output_filename}")
-except Exception as e:
-    print(f"Error writing to output file {output_filename}: {e}")
+if __name__ == "__main__":
+    concatenate_files()

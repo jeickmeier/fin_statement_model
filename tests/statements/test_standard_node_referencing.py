@@ -140,17 +140,13 @@ class TestLineItemCreation:
             standard_node_registry._alternate_to_standard["sales"] = "revenue"
 
             # Test direct standard name
-            item = LineItem(
-                id="revenue_item", name="Revenue", standard_node_ref="revenue"
-            )
+            item = LineItem(id="revenue_item", name="Revenue", standard_node_ref="revenue")
 
             resolved = item.get_resolved_node_id()
             assert resolved == "revenue"
 
             # Test alternate name
-            item_alt = LineItem(
-                id="sales_item", name="Sales", standard_node_ref="sales"
-            )
+            item_alt = LineItem(id="sales_item", name="Sales", standard_node_ref="sales")
 
             resolved_alt = item_alt.get_resolved_node_id()
             assert resolved_alt == "revenue"
@@ -191,9 +187,7 @@ class TestIDResolverWithStandardNodes:
         standard_node_registry._standard_nodes["revenue"] = revenue_def
         standard_node_registry._standard_nodes["cost_of_goods_sold"] = cogs_def
         standard_node_registry._alternate_to_standard["sales"] = "revenue"
-        standard_node_registry._alternate_to_standard["cost_of_sales"] = (
-            "cost_of_goods_sold"
-        )
+        standard_node_registry._alternate_to_standard["cost_of_sales"] = "cost_of_goods_sold"
 
     def teardown_method(self) -> None:
         """Clean up after each test."""
@@ -206,9 +200,7 @@ class TestIDResolverWithStandardNodes:
         statement = StatementStructure(id="test", name="Test Statement")
         section = Section(id="revenue_section", name="Revenue")
 
-        revenue_item = LineItem(
-            id="revenue_item", name="Revenue", standard_node_ref="revenue"
-        )
+        revenue_item = LineItem(id="revenue_item", name="Revenue", standard_node_ref="revenue")
 
         cogs_item = LineItem(
             id="cogs_item",
@@ -240,14 +232,10 @@ class TestIDResolverWithStandardNodes:
         section = Section(id="mixed_section", name="Mixed")
 
         # Direct node_id
-        item1 = LineItem(
-            id="custom_item", name="Custom Item", node_id="custom_node_123"
-        )
+        item1 = LineItem(id="custom_item", name="Custom Item", node_id="custom_node_123")
 
         # Standard node reference
-        item2 = LineItem(
-            id="standard_item", name="Standard Item", standard_node_ref="revenue"
-        )
+        item2 = LineItem(id="standard_item", name="Standard Item", standard_node_ref="revenue")
 
         section.add_item(item1)
         section.add_item(item2)
@@ -412,9 +400,7 @@ class TestEndToEndFunctionality:
         # Create a graph with standard-named nodes
         graph = Graph()
         graph.add_financial_statement_item("revenue", {"2023": 1000, "2024": 1200})
-        graph.add_financial_statement_item(
-            "cost_of_goods_sold", {"2023": 600, "2024": 700}
-        )
+        graph.add_financial_statement_item("cost_of_goods_sold", {"2023": 600, "2024": 700})
 
         # Create config using standard node references
         config_data = {
@@ -473,9 +459,7 @@ class TestEndToEndFunctionality:
         # Should resolve standard reference to standard name
         assert resolver.resolve("total_revenue") == "revenue"  # "sales" -> "revenue"
         assert resolver.resolve("cogs") == "cost_of_goods_sold"
-        assert (
-            resolver.resolve("gross_profit") == "gross_profit"
-        )  # Calculated item uses its own ID
+        assert resolver.resolve("gross_profit") == "gross_profit"  # Calculated item uses its own ID
 
         # Test with graph context
         assert resolver.resolve("total_revenue", graph) == "revenue"

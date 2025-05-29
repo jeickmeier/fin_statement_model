@@ -1,425 +1,475 @@
-"""Real Estate Debt Analysis Example.
+"""Real Estate Company Debt Analysis Example.
 
-This example demonstrates how to use the real estate debt-specific metrics
-and nodes in the financial statement model library for comprehensive debt
-analysis of real estate investments and REITs.
+This example demonstrates comprehensive debt analysis for a real estate company,
+including loan portfolios, maturity schedules, and covenant calculations.
 """
 
-from fin_statement_model.core.metrics import (
-    metric_registry,
-    interpret_metric,
-    calculate_metric,
+import logging
+from typing import Union
+
+from fin_statement_model.core.graph import Graph
+from fin_statement_model.core.nodes import ItemNode, CalculationNode, MetricNode
+from fin_statement_model.core.calculations import Addition, Subtraction, Division
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
-from fin_statement_model.core.nodes import FinancialStatementItemNode
+logger = logging.getLogger(__name__)
 
 
-def create_sample_reit_debt_data() -> dict[str, FinancialStatementItemNode]:
-    """Create sample REIT debt and financing data for analysis."""
-    # Property Portfolio Data
-    total_property_value = FinancialStatementItemNode(
-        "total_property_value",
-        {"2021": 2_800_000_000, "2022": 3_200_000_000, "2023": 3_500_000_000},
-    )
+def create_real_estate_financial_model() -> Graph:
+    """Create a financial model for a real estate company with detailed debt analysis."""
+    graph = Graph()
 
-    net_operating_income = FinancialStatementItemNode(
-        "net_operating_income",
-        {"2021": 180_000_000, "2022": 195_000_000, "2023": 210_000_000},
-    )
-
-    # Debt Portfolio Data
-    total_debt = FinancialStatementItemNode(
-        "total_debt",
-        {
-            "2021": 1_680_000_000,  # 60% LTV
-            "2022": 1_920_000_000,  # 60% LTV
-            "2023": 2_100_000_000,  # 60% LTV
-        },
-    )
-
-    mortgage_debt = FinancialStatementItemNode(
-        "mortgage_debt",
-        {"2021": 1_400_000_000, "2022": 1_600_000_000, "2023": 1_750_000_000},
-    )
-
-    construction_loans = FinancialStatementItemNode(
-        "construction_loans",
-        {"2021": 150_000_000, "2022": 200_000_000, "2023": 250_000_000},
-    )
-
-    bridge_loans = FinancialStatementItemNode(
-        "bridge_loans", {"2021": 80_000_000, "2022": 70_000_000, "2023": 50_000_000}
-    )
-
-    mezzanine_debt = FinancialStatementItemNode(
-        "mezzanine_debt", {"2021": 50_000_000, "2022": 50_000_000, "2023": 50_000_000}
-    )
-
-    # Debt Service and Payments
-    mortgage_payments = FinancialStatementItemNode(
-        "mortgage_payments",
-        {"2021": 120_000_000, "2022": 135_000_000, "2023": 150_000_000},
-    )
-
-    interest_payments = FinancialStatementItemNode(
-        "interest_payments",
-        {
-            "2021": 84_000_000,  # 5.0% weighted average rate
-            "2022": 96_000_000,  # 5.0% weighted average rate
-            "2023": 115_500_000,  # 5.5% weighted average rate
-        },
-    )
-
-    principal_payments = FinancialStatementItemNode(
-        "principal_payments",
-        {"2021": 36_000_000, "2022": 39_000_000, "2023": 34_500_000},
-    )
-
-    # Debt Composition
-    fixed_rate_debt = FinancialStatementItemNode(
-        "fixed_rate_debt",
-        {
-            "2021": 1_344_000_000,  # 80% fixed
-            "2022": 1_536_000_000,  # 80% fixed
-            "2023": 1_575_000_000,  # 75% fixed
-        },
-    )
-
-    variable_rate_debt = FinancialStatementItemNode(
-        "variable_rate_debt",
-        {
-            "2021": 336_000_000,  # 20% variable
-            "2022": 384_000_000,  # 20% variable
-            "2023": 525_000_000,  # 25% variable
-        },
-    )
-
-    # Unencumbered Assets
-    unencumbered_assets = FinancialStatementItemNode(
-        "unencumbered_assets",
-        {
-            "2021": 840_000_000,  # 30% unencumbered
-            "2022": 960_000_000,  # 30% unencumbered
-            "2023": 1_050_000_000,  # 30% unencumbered
-        },
-    )
-
-    # Debt Maturities
-    debt_maturities_1_year = FinancialStatementItemNode(
-        "debt_maturities_1_year",
-        {
-            "2021": 168_000_000,  # 10% maturing in 1 year
-            "2022": 192_000_000,  # 10% maturing in 1 year
-            "2023": 315_000_000,  # 15% maturing in 1 year
-        },
-    )
-
-    debt_maturities_2_to_5_years = FinancialStatementItemNode(
-        "debt_maturities_2_to_5_years",
-        {
-            "2021": 672_000_000,  # 40% maturing in 2-5 years
-            "2022": 768_000_000,  # 40% maturing in 2-5 years
-            "2023": 840_000_000,  # 40% maturing in 2-5 years
-        },
-    )
-
-    # Development Projects
-    development_costs_to_date = FinancialStatementItemNode(
-        "development_costs_to_date",
-        {"2021": 120_000_000, "2022": 180_000_000, "2023": 250_000_000},
-    )
-
-    remaining_development_budget = FinancialStatementItemNode(
-        "remaining_development_budget",
-        {"2021": 80_000_000, "2022": 120_000_000, "2023": 100_000_000},
-    )
-
-    # Credit Facilities
-    available_credit = FinancialStatementItemNode(
-        "available_credit",
-        {"2021": 200_000_000, "2022": 150_000_000, "2023": 100_000_000},
-    )
-
-    credit_facility_total = FinancialStatementItemNode(
-        "credit_facility_total",
-        {"2021": 500_000_000, "2022": 500_000_000, "2023": 500_000_000},
-    )
-
-    return {
-        "total_property_value": total_property_value,
-        "net_operating_income": net_operating_income,
-        "total_debt": total_debt,
-        "mortgage_debt": mortgage_debt,
-        "construction_loans": construction_loans,
-        "bridge_loans": bridge_loans,
-        "mezzanine_debt": mezzanine_debt,
-        "mortgage_payments": mortgage_payments,
-        "interest_payments": interest_payments,
-        "principal_payments": principal_payments,
-        "fixed_rate_debt": fixed_rate_debt,
-        "variable_rate_debt": variable_rate_debt,
-        "unencumbered_assets": unencumbered_assets,
-        "debt_maturities_1_year": debt_maturities_1_year,
-        "debt_maturities_2_to_5_years": debt_maturities_2_to_5_years,
-        "development_costs_to_date": development_costs_to_date,
-        "remaining_development_budget": remaining_development_budget,
-        "available_credit": available_credit,
-        "credit_facility_total": credit_facility_total,
+    # === Basic Financial Statement Items ===
+    # Balance Sheet Items
+    balance_sheet_items = {
+        # Assets
+        "investment_properties": {"2022": 5000000, "2023": 5500000},
+        "development_properties": {"2022": 800000, "2023": 1200000},
+        "cash": {"2022": 150000, "2023": 180000},
+        "other_assets": {"2022": 50000, "2023": 70000},
+        # Liabilities - Debt Components
+        "mortgage_debt": {"2022": 2800000, "2023": 3100000},
+        "construction_loans": {"2022": 500000, "2023": 750000},
+        "bridge_loans": {"2022": 200000, "2023": 150000},
+        "mezzanine_debt": {"2022": 300000, "2023": 250000},
+        "credit_facility": {"2022": 0, "2023": 100000},
+        # Other Liabilities
+        "accounts_payable": {"2022": 100000, "2023": 120000},
+        "accrued_expenses": {"2022": 80000, "2023": 90000},
+        # Equity
+        "common_equity": {"2022": 1500000, "2023": 1600000},
+        "preferred_equity": {"2022": 500000, "2023": 500000},
     }
+
+    # Income Statement Items
+    income_items = {
+        "rental_income": {"2022": 450000, "2023": 520000},
+        "property_management_fees": {"2022": 25000, "2023": 30000},
+        "other_income": {"2022": 15000, "2023": 20000},
+        "property_operating_expenses": {"2022": 180000, "2023": 210000},
+        "interest_expense_mortgage": {"2022": 140000, "2023": 155000},
+        "interest_expense_construction": {"2022": 35000, "2023": 52500},
+        "interest_expense_other": {"2022": 30000, "2023": 25000},
+        "depreciation": {"2022": 125000, "2023": 140000},
+        "general_admin": {"2022": 45000, "2023": 50000},
+    }
+
+    # Debt Details
+    debt_details = {
+        # Fixed vs Variable Rate Breakdown
+        "fixed_rate_debt": {"2022": 3200000, "2023": 3400000},
+        "variable_rate_debt": {"2022": 600000, "2023": 950000},
+        # Maturity Schedule
+        "debt_maturing_1yr": {"2022": 200000, "2023": 450000},
+        "debt_maturing_2_5yr": {"2022": 1500000, "2023": 1600000},
+        "debt_maturing_after_5yr": {"2022": 2100000, "2023": 2300000},
+        # Credit Facility Details
+        "credit_facility_limit": {"2022": 500000, "2023": 500000},
+        "unencumbered_assets": {"2022": 800000, "2023": 1000000},
+    }
+
+    # Add all items to graph
+    for name, values in {**balance_sheet_items, **income_items, **debt_details}.items():
+        node = ItemNode(name)
+        for period, value in values.items():
+            node.set_value(period, value)
+        graph.add_node(node)
+
+    # === Calculated Items ===
+
+    # Total Assets
+    total_assets = CalculationNode(
+        name="total_assets",
+        inputs=[
+            "investment_properties",
+            "development_properties",
+            "cash",
+            "other_assets",
+        ],
+        calculation=Addition(),
+    )
+    graph.add_node(total_assets)
+
+    # Total Debt
+    total_debt = CalculationNode(
+        name="total_debt",
+        inputs=[
+            "mortgage_debt",
+            "construction_loans",
+            "bridge_loans",
+            "mezzanine_debt",
+            "credit_facility",
+        ],
+        calculation=Addition(),
+    )
+    graph.add_node(total_debt)
+
+    # Total Equity
+    total_equity = CalculationNode(
+        name="total_equity",
+        inputs=["common_equity", "preferred_equity"],
+        calculation=Addition(),
+    )
+    graph.add_node(total_equity)
+
+    # Net Operating Income (NOI)
+    total_income = CalculationNode(
+        name="total_income",
+        inputs=["rental_income", "property_management_fees", "other_income"],
+        calculation=Addition(),
+    )
+    graph.add_node(total_income)
+
+    noi = CalculationNode(
+        name="net_operating_income",
+        inputs=["total_income", "property_operating_expenses"],
+        calculation=Subtraction(),
+    )
+    graph.add_node(noi)
+
+    # Total Interest Expense
+    total_interest = CalculationNode(
+        name="total_interest_expense",
+        inputs=[
+            "interest_expense_mortgage",
+            "interest_expense_construction",
+            "interest_expense_other",
+        ],
+        calculation=Addition(),
+    )
+    graph.add_node(total_interest)
+
+    # EBITDA
+    ebitda = CalculationNode(
+        name="ebitda",
+        inputs=["net_operating_income", "general_admin"],
+        calculation=Subtraction(),
+    )
+    graph.add_node(ebitda)
+
+    # === Key Debt Metrics ===
+
+    # Loan-to-Value (LTV) Ratio
+    ltv_ratio = MetricNode(
+        name="ltv_ratio",
+        metric_id="ltv_ratio",
+        inputs={"total_debt": "total_debt", "total_assets": "total_assets"},
+    )
+    graph.add_node(ltv_ratio)
+
+    # Debt Service Coverage Ratio (DSCR)
+    dscr = MetricNode(
+        name="dscr",
+        metric_id="dscr",
+        inputs={
+            "net_operating_income": "net_operating_income",
+            "total_debt_service": "total_interest_expense",
+        },
+    )
+    graph.add_node(dscr)
+
+    # Debt-to-Equity Ratio
+    debt_to_equity = MetricNode(
+        name="debt_to_equity",
+        metric_id="debt_to_equity",
+        inputs={"total_debt": "total_debt", "total_equity": "total_equity"},
+    )
+    graph.add_node(debt_to_equity)
+
+    # Interest Coverage Ratio
+    interest_coverage = MetricNode(
+        name="interest_coverage_ratio",
+        metric_id="interest_coverage_ratio",
+        inputs={"ebitda": "ebitda", "interest_expense": "total_interest_expense"},
+    )
+    graph.add_node(interest_coverage)
+
+    # Weighted Average Interest Rate
+    weighted_avg_rate = CalculationNode(
+        name="weighted_avg_interest_rate",
+        inputs=["total_interest_expense", "total_debt"],
+        calculation=Division(),
+    )
+    graph.add_node(weighted_avg_rate)
+
+    return graph
 
 
 def calculate_debt_metrics(
-    data_nodes: dict[str, FinancialStatementItemNode], period: str = "2023"
-) -> dict[str, float]:
-    """Calculate key real estate debt metrics for analysis."""
-    results = {}
+    graph: Graph, period: str = "2023"
+) -> dict[str, Union[float, None]]:
+    """Calculate and return key debt metrics for analysis."""
+    metrics = {}
 
-    # Use the new calculate_metric helper function to simplify calculations
-    metric_calculations = [
-        ("loan_to_value_ratio", "loan_to_value_ratio"),
-        ("debt_service_coverage_ratio_(real_estate)", "debt_service_coverage_ratio"),
-        ("interest_coverage_ratio_(real_estate)", "interest_coverage_ratio"),
-        ("unencumbered_asset_ratio", "unencumbered_asset_ratio"),
-        ("fixed_rate_debt_percentage", "fixed_rate_debt_percentage"),
-        ("weighted_average_interest_rate", "weighted_average_interest_rate"),
-        ("debt_maturity_profile", "debt_maturity_profile_1yr"),
-        ("construction_loan_to_cost_ratio", "construction_loan_to_cost_ratio"),
-        ("debt_yield", "debt_yield"),
+    # Basic metrics
+    basic_metrics = [
+        "ltv_ratio",
+        "dscr",
+        "debt_to_equity",
+        "interest_coverage_ratio",
+        "weighted_avg_interest_rate",
     ]
 
-    for metric_name, result_key in metric_calculations:
+    for metric_name in basic_metrics:
         try:
-            results[result_key] = calculate_metric(metric_name, data_nodes, period)
-        except (KeyError, ValueError) as e:
-            print(f"Warning: Could not calculate {metric_name}: {e}")
-            results[result_key] = 0.0  # Default value for missing calculations
+            metrics[metric_name] = graph.calculate(metric_name, period)
+        except Exception as e:
+            logger.warning(f"Warning: Could not calculate {metric_name}: {e}")
+            metrics[metric_name] = None
 
-    return results
+    return metrics
 
 
-def analyze_debt_composition(
-    data_nodes: dict[str, FinancialStatementItemNode], period: str = "2023"
-) -> dict[str, float]:
+def analyze_debt_composition(graph: Graph, period: str = "2023") -> dict[str, float]:
     """Analyze the composition of the debt portfolio."""
-    composition = {}
+    try:
+        total_debt = graph.calculate("total_debt", period)
 
-    total_debt = data_nodes["total_debt"].calculate(period)
+        # Debt type breakdown
+        mortgage = graph.get_node("mortgage_debt").get_value(period)
+        construction = graph.get_node("construction_loans").get_value(period)
+        bridge = graph.get_node("bridge_loans").get_value(period)
+        mezzanine = graph.get_node("mezzanine_debt").get_value(period)
 
-    # Debt by type
-    composition["mortgage_debt_pct"] = (
-        data_nodes["mortgage_debt"].calculate(period) / total_debt
-    ) * 100
-    composition["construction_loans_pct"] = (
-        data_nodes["construction_loans"].calculate(period) / total_debt
-    ) * 100
-    composition["bridge_loans_pct"] = (
-        data_nodes["bridge_loans"].calculate(period) / total_debt
-    ) * 100
-    composition["mezzanine_debt_pct"] = (
-        data_nodes["mezzanine_debt"].calculate(period) / total_debt
-    ) * 100
+        # Fixed vs Variable
+        fixed = graph.get_node("fixed_rate_debt").get_value(period)
+        variable = graph.get_node("variable_rate_debt").get_value(period)
 
-    # Rate type composition
-    composition["fixed_rate_pct"] = (
-        data_nodes["fixed_rate_debt"].calculate(period) / total_debt
-    ) * 100
-    composition["variable_rate_pct"] = (
-        data_nodes["variable_rate_debt"].calculate(period) / total_debt
-    ) * 100
+        # Maturity profile
+        short_term = graph.get_node("debt_maturing_1yr").get_value(period)
+        medium_term = graph.get_node("debt_maturing_2_5yr").get_value(period)
 
-    # Maturity composition
-    composition["maturities_1yr_pct"] = (
-        data_nodes["debt_maturities_1_year"].calculate(period) / total_debt
-    ) * 100
-    composition["maturities_2_5yr_pct"] = (
-        data_nodes["debt_maturities_2_to_5_years"].calculate(period) / total_debt
-    ) * 100
+        # Credit utilization
+        credit_used = graph.get_node("credit_facility").get_value(period)
+        credit_limit = graph.get_node("credit_facility_limit").get_value(period)
 
-    # Credit facility utilization
-    total_facility = data_nodes["credit_facility_total"].calculate(period)
-    available = data_nodes["available_credit"].calculate(period)
-    composition["credit_utilization_pct"] = (
-        (total_facility - available) / total_facility
-    ) * 100
+        composition = {
+            "mortgage_debt_pct": (mortgage / total_debt) * 100,
+            "construction_loans_pct": (construction / total_debt) * 100,
+            "bridge_loans_pct": (bridge / total_debt) * 100,
+            "mezzanine_debt_pct": (mezzanine / total_debt) * 100,
+            "fixed_rate_pct": (fixed / total_debt) * 100,
+            "variable_rate_pct": (variable / total_debt) * 100,
+            "maturities_1yr_pct": (short_term / total_debt) * 100,
+            "maturities_2_5yr_pct": (medium_term / total_debt) * 100,
+            "credit_utilization_pct": (
+                (credit_used / credit_limit) * 100 if credit_limit > 0 else 0
+            ),
+        }
 
-    return composition
+        return composition
+    except Exception:
+        logger.exception("Error analyzing debt composition")
+        return {}
 
 
-def analyze_debt_trends(
-    data_nodes: dict[str, FinancialStatementItemNode],
-) -> dict[str, float]:
-    """Analyze debt trends over time."""
+def calculate_debt_trends(graph: Graph) -> dict[str, float]:
+    """Calculate year-over-year trends in debt metrics."""
     trends = {}
 
-    # LTV trend
-    ltv_2022 = (
-        data_nodes["total_debt"].calculate("2022")
-        / data_nodes["total_property_value"].calculate("2022")
-    ) * 100
-    ltv_2023 = (
-        data_nodes["total_debt"].calculate("2023")
-        / data_nodes["total_property_value"].calculate("2023")
-    ) * 100
-    trends["ltv_change"] = ltv_2023 - ltv_2022
+    try:
+        # LTV trend
+        ltv_2022 = graph.calculate("ltv_ratio", "2022")
+        ltv_2023 = graph.calculate("ltv_ratio", "2023")
+        trends["ltv_change"] = ltv_2023 - ltv_2022
 
-    # Interest rate trend
-    rate_2022 = (
-        data_nodes["interest_payments"].calculate("2022")
-        / data_nodes["total_debt"].calculate("2022")
-    ) * 100
-    rate_2023 = (
-        data_nodes["interest_payments"].calculate("2023")
-        / data_nodes["total_debt"].calculate("2023")
-    ) * 100
-    trends["interest_rate_change"] = rate_2023 - rate_2022
+        # Interest rate trend
+        rate_2022 = graph.calculate("weighted_avg_interest_rate", "2022")
+        rate_2023 = graph.calculate("weighted_avg_interest_rate", "2023")
+        trends["interest_rate_change"] = (rate_2023 - rate_2022) * 100
 
-    # DSCR trend
-    dscr_2022 = data_nodes["net_operating_income"].calculate("2022") / data_nodes[
-        "mortgage_payments"
-    ].calculate("2022")
-    dscr_2023 = data_nodes["net_operating_income"].calculate("2023") / data_nodes[
-        "mortgage_payments"
-    ].calculate("2023")
-    trends["dscr_change"] = dscr_2023 - dscr_2022
+        # DSCR trend
+        dscr_2022 = graph.calculate("dscr", "2022")
+        dscr_2023 = graph.calculate("dscr", "2023")
+        trends["dscr_change"] = dscr_2023 - dscr_2022
 
-    # Debt growth
-    debt_2022 = data_nodes["total_debt"].calculate("2022")
-    debt_2023 = data_nodes["total_debt"].calculate("2023")
-    trends["debt_growth"] = ((debt_2023 - debt_2022) / debt_2022) * 100
+        # Total debt growth
+        debt_2022 = graph.calculate("total_debt", "2022")
+        debt_2023 = graph.calculate("total_debt", "2023")
+        trends["debt_growth"] = ((debt_2023 - debt_2022) / debt_2022) * 100
+
+    except Exception:
+        logger.exception("Error calculating trends")
 
     return trends
 
 
-def perform_debt_analysis() -> None:
-    """Perform comprehensive real estate debt analysis."""
-    print("=== Real Estate Debt Analysis Example ===\n")
+def interpret_debt_metrics(
+    metrics: dict[str, Union[float, None]],
+) -> dict[str, dict[str, str]]:
+    """Provide interpretation of debt metrics for real estate context."""
+    interpretations = {}
 
-    # Create sample data
-    data_nodes = create_sample_reit_debt_data()
+    # LTV Ratio interpretation
+    ltv = metrics.get("ltv_ratio", 0)
+    if ltv:
+        if ltv < 0.5:
+            interpretations["ltv"] = {
+                "status": "Conservative",
+                "interpretation": "Low leverage, strong equity cushion",
+            }
+        elif ltv < 0.65:
+            interpretations["ltv"] = {
+                "status": "Moderate",
+                "interpretation": "Industry standard leverage",
+            }
+        elif ltv < 0.75:
+            interpretations["ltv"] = {
+                "status": "Aggressive",
+                "interpretation": "High leverage, limited refinancing flexibility",
+            }
+        else:
+            interpretations["ltv"] = {
+                "status": "Very High Risk",
+                "interpretation": "Excessive leverage, potential covenant breach",
+            }
 
-    # Calculate debt metrics for 2023
-    debt_metrics_2023 = calculate_debt_metrics(data_nodes, "2023")
+    # DSCR interpretation
+    dscr = metrics.get("dscr", 0)
+    if dscr:
+        if dscr > 1.5:
+            interpretations["dscr"] = {
+                "status": "Strong",
+                "interpretation": "Comfortable debt service coverage",
+            }
+        elif dscr > 1.25:
+            interpretations["dscr"] = {
+                "status": "Adequate",
+                "interpretation": "Meeting typical covenant requirements",
+            }
+        elif dscr > 1.0:
+            interpretations["dscr"] = {
+                "status": "Thin",
+                "interpretation": "Limited margin of safety",
+            }
+        else:
+            interpretations["dscr"] = {
+                "status": "Insufficient",
+                "interpretation": "Unable to cover debt service from operations",
+            }
 
-    print("Key Debt Metrics for 2023:")
-    print("-" * 50)
+    return interpretations
 
-    # Display debt metrics with interpretations
-    debt_metric_names = [
-        ("loan_to_value_ratio", "Loan-to-Value Ratio"),
-        ("debt_service_coverage_ratio", "Debt Service Coverage Ratio"),
-        ("interest_coverage_ratio", "Interest Coverage Ratio"),
-        ("unencumbered_asset_ratio", "Unencumbered Asset Ratio"),
-        ("fixed_rate_debt_percentage", "Fixed Rate Debt Percentage"),
-        ("weighted_average_interest_rate", "Weighted Average Interest Rate"),
-        ("debt_maturity_profile_1yr", "Debt Maturing in 1 Year"),
-        ("construction_loan_to_cost_ratio", "Construction Loan-to-Cost Ratio"),
-        ("debt_yield", "Debt Yield"),
-    ]
 
-    for metric_key, display_name in debt_metric_names:
-        value = debt_metrics_2023[metric_key]
+def main() -> None:
+    """Run the real estate debt analysis example."""
+    logger.info("=== Real Estate Debt Analysis Example ===\n")
 
-        try:
-            # Get interpretation if available
-            metric_def = metric_registry.get(metric_key.replace("_(real_estate)", ""))
-            if metric_def:
-                interpretation = interpret_metric(metric_def, value)
-                if metric_key in [
-                    "loan_to_value_ratio",
-                    "fixed_rate_debt_percentage",
-                    "weighted_average_interest_rate",
-                    "debt_maturity_profile_1yr",
-                    "construction_loan_to_cost_ratio",
-                    "debt_yield",
-                ]:
-                    print(f"{display_name}: {value:.1f}%")
+    # Create the financial model
+    graph = create_real_estate_financial_model()
+
+    # Calculate key metrics
+    metrics = calculate_debt_metrics(graph)
+
+    # Display results
+    logger.info("Key Debt Metrics for 2023:")
+    logger.info("-" * 50)
+
+    # Format and display metrics
+    metric_display = {
+        "ltv_ratio": ("Loan-to-Value Ratio", "%"),
+        "dscr": ("Debt Service Coverage Ratio", "x"),
+        "debt_to_equity": ("Debt-to-Equity Ratio", "x"),
+        "interest_coverage_ratio": ("Interest Coverage Ratio", "x"),
+        "weighted_avg_interest_rate": ("Weighted Avg Interest Rate", "%"),
+    }
+
+    interpretations = interpret_debt_metrics(metrics)
+
+    for metric_key, (display_name, unit) in metric_display.items():
+        value = metrics.get(metric_key)
+        if value is not None:
+            if unit == "%":
+                if metric_key == "weighted_avg_interest_rate":
+                    value *= 100  # Convert to percentage
                 else:
-                    print(f"{display_name}: {value:.2f}x")
-                print(f"  → {interpretation['interpretation_message']}")
-            elif "ratio" in metric_key or "coverage" in metric_key:
-                print(f"{display_name}: {value:.2f}x")
+                    value *= 100  # LTV is already a ratio
+                logger.info(f"{display_name}: {value:.1f}%")
             else:
-                print(f"{display_name}: {value:.1f}%")
-        except Exception:
-            if "ratio" in metric_key or "coverage" in metric_key:
-                print(f"{display_name}: {value:.2f}x")
-            else:
-                print(f"{display_name}: {value:.1f}%")
-        print()
+                logger.info(f"{display_name}: {value:.2f}x")
+                logger.info(f"  → {interpretations[metric_key]['interpretation']}")
 
-    # Debt composition analysis
-    print("Debt Portfolio Composition (2023):")
-    print("-" * 50)
+            if metric_key == "ltv_ratio":
+                logger.info(f"{display_name}: {value:.2f}x")
+            elif metric_key == "weighted_avg_interest_rate":
+                logger.info(f"{display_name}: {value:.1f}%")
+            elif unit == "x":
+                logger.info(f"{display_name}: {value:.2f}x")
+            elif unit == "%":
+                logger.info(f"{display_name}: {value:.1f}%")
+            logger.info("")
 
-    composition = analyze_debt_composition(data_nodes, "2023")
+    # Analyze debt composition
+    logger.info("Debt Portfolio Composition (2023):")
+    logger.info("-" * 50)
 
-    print("By Debt Type:")
-    print(f"  Mortgage Debt: {composition['mortgage_debt_pct']:.1f}%")
-    print(f"  Construction Loans: {composition['construction_loans_pct']:.1f}%")
-    print(f"  Bridge Loans: {composition['bridge_loans_pct']:.1f}%")
-    print(f"  Mezzanine Debt: {composition['mezzanine_debt_pct']:.1f}%")
-    print()
+    composition = analyze_debt_composition(graph)
 
-    print("By Interest Rate Type:")
-    print(f"  Fixed Rate: {composition['fixed_rate_pct']:.1f}%")
-    print(f"  Variable Rate: {composition['variable_rate_pct']:.1f}%")
-    print()
+    logger.info("By Debt Type:")
+    logger.info(f"  Mortgage Debt: {composition['mortgage_debt_pct']:.1f}%")
+    logger.info(f"  Construction Loans: {composition['construction_loans_pct']:.1f}%")
+    logger.info(f"  Bridge Loans: {composition['bridge_loans_pct']:.1f}%")
+    logger.info(f"  Mezzanine Debt: {composition['mezzanine_debt_pct']:.1f}%")
+    logger.info("")
 
-    print("By Maturity:")
-    print(f"  Maturing in 1 Year: {composition['maturities_1yr_pct']:.1f}%")
-    print(f"  Maturing in 2-5 Years: {composition['maturities_2_5yr_pct']:.1f}%")
-    print()
+    logger.info("By Interest Rate Type:")
+    logger.info(f"  Fixed Rate: {composition['fixed_rate_pct']:.1f}%")
+    logger.info(f"  Variable Rate: {composition['variable_rate_pct']:.1f}%")
+    logger.info("")
 
-    print("Credit Facility Utilization:")
-    print(f"  Utilization Rate: {composition['credit_utilization_pct']:.1f}%")
-    print()
+    logger.info("By Maturity:")
+    logger.info(f"  Maturing in 1 Year: {composition['maturities_1yr_pct']:.1f}%")
+    logger.info(f"  Maturing in 2-5 Years: {composition['maturities_2_5yr_pct']:.1f}%")
+    logger.info("")
 
-    # Trend analysis
-    print("Debt Trends (2022-2023):")
-    print("-" * 50)
+    logger.info("Credit Facility Utilization:")
+    logger.info(f"  Utilization Rate: {composition['credit_utilization_pct']:.1f}%")
+    logger.info("")
 
-    trends = analyze_debt_trends(data_nodes)
+    # Show trends
+    logger.info("Debt Trends (2022-2023):")
+    logger.info("-" * 50)
 
-    print(f"LTV Change: {trends['ltv_change']:+.1f} percentage points")
-    print(
+    trends = calculate_debt_trends(graph)
+
+    logger.info(f"LTV Change: {trends['ltv_change']:+.1f} percentage points")
+    logger.info(
         f"Interest Rate Change: {trends['interest_rate_change']:+.1f} percentage points"
     )
-    print(f"DSCR Change: {trends['dscr_change']:+.2f}x")
-    print(f"Total Debt Growth: {trends['debt_growth']:+.1f}%")
-    print()
+    logger.info(f"DSCR Change: {trends['dscr_change']:+.2f}x")
+    logger.info(f"Total Debt Growth: {trends['debt_growth']:+.1f}%")
+    logger.info("")
 
     # Risk assessment
-    print("Risk Assessment:")
-    print("-" * 50)
-
-    ltv = debt_metrics_2023["loan_to_value_ratio"]
-    dscr = debt_metrics_2023["debt_service_coverage_ratio"]
-    fixed_rate_pct = debt_metrics_2023["fixed_rate_debt_percentage"]
-    near_term_maturities = debt_metrics_2023["debt_maturity_profile_1yr"]
+    logger.info("Risk Assessment:")
+    logger.info("-" * 50)
 
     risk_factors = []
 
-    if ltv > 75:
-        risk_factors.append(f"High leverage (LTV: {ltv:.1f}%)")
-    if dscr < 1.25:
-        risk_factors.append(f"Tight debt service coverage (DSCR: {dscr:.2f}x)")
-    if fixed_rate_pct < 70:
-        risk_factors.append(
-            f"High interest rate exposure ({100 - fixed_rate_pct:.1f}% variable)"
-        )
-    if near_term_maturities > 20:
-        risk_factors.append(
-            f"High refinancing risk ({near_term_maturities:.1f}% maturing in 1 year)"
-        )
+    if metrics.get("ltv_ratio", 0) > 0.65:
+        risk_factors.append("High leverage (LTV > 65%)")
+
+    if metrics.get("dscr", 0) < 1.25:
+        risk_factors.append("Low debt service coverage")
+
+    if composition.get("variable_rate_pct", 0) > 30:
+        risk_factors.append("Significant interest rate risk exposure")
+
+    if composition.get("maturities_1yr_pct", 0) > 20:
+        risk_factors.append("Near-term refinancing risk")
 
     if risk_factors:
-        print("Key Risk Factors:")
+        logger.info("Key Risk Factors:")
         for factor in risk_factors:
-            print(f"  • {factor}")
+            logger.info(f"  • {factor}")
     else:
-        print("No significant risk factors identified")
+        logger.info("No significant risk factors identified")
 
-    print("\n=== Debt Analysis Complete ===")
+    logger.info("\n=== Debt Analysis Complete ===")
 
 
 if __name__ == "__main__":
-    perform_debt_analysis()
+    main()

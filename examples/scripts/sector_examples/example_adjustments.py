@@ -7,9 +7,7 @@ from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.core.adjustments.models import AdjustmentType
 
 # Configure logging for visibility
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # --- 1. Setup Graph and Nodes ---
@@ -98,9 +96,7 @@ logger.info(f"Attempted to remove adjustment {adj_id_1}. Success: {removed}")
 
 # Check Revenue 2023 value again
 adjusted_revenue_2023_after_remove = graph.get_adjusted_value("Revenue", "2023")
-logger.info(
-    f"Adjusted Revenue 2023 after removal: {adjusted_revenue_2023_after_remove}"
-)
+logger.info(f"Adjusted Revenue 2023 after removal: {adjusted_revenue_2023_after_remove}")
 
 # Verify it's gone
 adj_list_2023_after_remove = graph.get_adjustments("Revenue", "2023")

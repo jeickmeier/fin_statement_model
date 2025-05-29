@@ -46,16 +46,12 @@ def _filter_adjustments_static(
         # Apply filter, ignoring its period attribute
         temp_filter = filter_input.model_copy(update={"period": None})
         filtered = [adj for adj in all_adjustments if temp_filter.matches(adj)]
-        logger.debug(
-            f"Applied AdjustmentFilter (ignoring period). Filter: {temp_filter}"
-        )
+        logger.debug(f"Applied AdjustmentFilter (ignoring period). Filter: {temp_filter}")
         return filtered
 
     elif isinstance(filter_input, set):
         # Shorthand for include_tags
-        filtered = [
-            adj for adj in all_adjustments if tag_matches(adj.tags, filter_input)
-        ]
+        filtered = [adj for adj in all_adjustments if tag_matches(adj.tags, filter_input)]
         logger.debug(f"Applied tag filter. Tags: {filter_input}")
         return filtered
 
@@ -66,9 +62,7 @@ def _filter_adjustments_static(
 
     else:
         # Should not happen due to type hint, but defensive
-        logger.warning(
-            f"Invalid filter_input type: {type(filter_input)}. No filtering applied."
-        )
+        logger.warning(f"Invalid filter_input type: {type(filter_input)}. No filtering applied.")
         return all_adjustments
 
 
@@ -115,9 +109,7 @@ def summary(
 
     # Convert to DataFrame for easier aggregation
     adj_data = [
-        adj.model_dump(
-            include=set([*group_by, "value"])
-        )  # Include value for aggregation
+        adj.model_dump(include=set([*group_by, "value"]))  # Include value for aggregation
         for adj in filtered_adjustments
     ]
     df = pd.DataFrame(adj_data)
@@ -167,9 +159,7 @@ def list_by_tag(
 
     # Apply the primary tag prefix filter
     prefix_set = {tag_prefix}
-    final_list = [
-        adj for adj in filtered_adjustments if tag_matches(adj.tags, prefix_set)
-    ]
+    final_list = [adj for adj in filtered_adjustments if tag_matches(adj.tags, prefix_set)]
 
     logger.info(
         f"Found {len(final_list)} adjustments matching prefix '{tag_prefix}' and other filters."

@@ -113,9 +113,7 @@ class DictReader(DataReader):
         # Optional: Validate if all data periods are within the provided list
         elif not all_periods.issubset(set(graph_periods)):
             missing = all_periods - set(graph_periods)
-            logger.warning(
-                f"Data contains periods not in specified graph periods: {missing}"
-            )
+            logger.warning(f"Data contains periods not in specified graph periods: {missing}")
             # Decide whether to error or just ignore extra data
 
         # Create graph and add nodes
@@ -123,9 +121,7 @@ class DictReader(DataReader):
             graph = Graph(periods=graph_periods)
             for node_name, period_values in source.items():
                 # Filter values to only include those matching graph_periods
-                filtered_values = {
-                    p: v for p, v in period_values.items() if p in graph_periods
-                }
+                filtered_values = {p: v for p, v in period_values.items() if p in graph_periods}
                 if filtered_values:
                     # Create FinancialStatementItemNode directly
                     # Assumes FinancialStatementItemNode takes name and values dict

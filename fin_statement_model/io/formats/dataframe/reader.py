@@ -130,9 +130,7 @@ class DataFrameReader(DataReader):
                     )
                     # Update existing? Log for now.
                 else:
-                    new_node = FinancialStatementItemNode(
-                        name=node_name, values=period_values
-                    )
+                    new_node = FinancialStatementItemNode(name=node_name, values=period_values)
                     graph.add_node(new_node)
                     nodes_added += 1
 
@@ -143,9 +141,7 @@ class DataFrameReader(DataReader):
                 reader_type="DataFrameReader",
             )
 
-        logger.info(
-            f"Successfully created graph with {nodes_added} nodes from DataFrame."
-        )
+        logger.info(f"Successfully created graph with {nodes_added} nodes from DataFrame.")
         return graph
 
         # No specific file operations, so less need for broad Exception catch

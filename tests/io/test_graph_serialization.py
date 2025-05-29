@@ -18,15 +18,9 @@ class TestGraphSerialization:
         graph = Graph(periods=periods)
 
         # Add financial statement items
-        graph.add_financial_statement_item(
-            "Revenue", {"2021": 1000, "2022": 1100, "2023": 1200}
-        )
-        graph.add_financial_statement_item(
-            "COGS", {"2021": 600, "2022": 650, "2023": 700}
-        )
-        graph.add_financial_statement_item(
-            "OpEx", {"2021": 200, "2022": 220, "2023": 240}
-        )
+        graph.add_financial_statement_item("Revenue", {"2021": 1000, "2022": 1100, "2023": 1200})
+        graph.add_financial_statement_item("COGS", {"2021": 600, "2022": 650, "2023": 700})
+        graph.add_financial_statement_item("OpEx", {"2021": 200, "2022": 220, "2023": 240})
 
         # Add calculation nodes
         graph.add_calculation(
@@ -126,12 +120,12 @@ class TestGraphSerialization:
 
         # Test forecast nodes
         for period in ["2024", "2025"]:
-            assert graph.nodes["RevenueForecast_Simple"].calculate(
-                period
-            ) == new_graph.nodes["RevenueForecast_Simple"].calculate(period)
-            assert graph.nodes["RevenueForecast_Curve"].calculate(
-                period
-            ) == new_graph.nodes["RevenueForecast_Curve"].calculate(period)
+            assert graph.nodes["RevenueForecast_Simple"].calculate(period) == new_graph.nodes[
+                "RevenueForecast_Simple"
+            ].calculate(period)
+            assert graph.nodes["RevenueForecast_Curve"].calculate(period) == new_graph.nodes[
+                "RevenueForecast_Curve"
+            ].calculate(period)
 
     def test_calculation_args_serialization(self):
         """Test that calculation arguments are properly serialized and deserialized."""
@@ -171,9 +165,7 @@ class TestGraphSerialization:
     def test_forecast_node_serialization(self):
         """Test serialization of different forecast node types."""
         graph = Graph(periods=["2021", "2022", "2023", "2024"])
-        graph.add_financial_statement_item(
-            "Sales", {"2021": 100, "2022": 110, "2023": 120}
-        )
+        graph.add_financial_statement_item("Sales", {"2021": 100, "2022": 110, "2023": 120})
 
         sales_node = graph.nodes["Sales"]
 
@@ -201,10 +193,7 @@ class TestGraphSerialization:
         graph_dict = writer.write(graph)
 
         # Verify forecast nodes are serialized
-        assert (
-            len([n for n in graph_dict["nodes"].values() if n["type"] == "forecast"])
-            == 4
-        )
+        assert len([n for n in graph_dict["nodes"].values() if n["type"] == "forecast"]) == 4
 
         # Deserialize
         reader = GraphDefinitionReader()

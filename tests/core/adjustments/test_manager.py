@@ -184,9 +184,7 @@ def test_apply_adjustments_replacement(manager: AdjustmentManager) -> None:
 def test_apply_adjustments_mixed_types_priority(manager: AdjustmentManager) -> None:
     """Test applying mixed adjustment types respecting priority."""
     adj_add = create_adj(value=10, type=AdjustmentType.ADDITIVE, priority=1)
-    adj_mul = create_adj(
-        value=2, type=AdjustmentType.MULTIPLICATIVE, priority=0
-    )  # Applied first
+    adj_mul = create_adj(value=2, type=AdjustmentType.MULTIPLICATIVE, priority=0)  # Applied first
     adj_rep = create_adj(value=500, type=AdjustmentType.REPLACEMENT, priority=2)
 
     value, flag = manager.apply_adjustments(100.0, [adj_add, adj_mul, adj_rep])

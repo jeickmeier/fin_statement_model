@@ -1,12 +1,29 @@
-"""Banking Analysis Example.
+"""Banking Analysis Example with Node Validation.
 
-This example demonstrates how to use the banking-specific metrics
-and nodes in the financial statement model library for bank analysis.
-It also shows how to use node name validators for data quality assurance.
+This example demonstrates comprehensive banking sector analysis with node name validation.
+It shows how to create a validated financial model, calculate banking-specific metrics, 
+and perform regulatory compliance checks.
 """
 
+import logging
+from typing import Dict, List, Optional, Tuple, Any
+
+from fin_statement_model.core.graph import Graph
+from fin_statement_model.core.nodes import ItemNode, CalculationNode, MetricNode
+from fin_statement_model.core.calculations import Addition, Subtraction, Division
+from fin_statement_model.core.metrics import metric_registry
+from fin_statement_model.io.validation import UnifiedNodeValidator, ValidationResult
+from fin_statement_model.io.validation import NodeClassification
+from dataclasses import dataclass
+from collections import defaultdict
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
 from fin_statement_model.core.metrics import (
-    metric_registry,
     interpret_metric,
     calculate_metric,
 )
@@ -25,7 +42,7 @@ def validate_node_names_example() -> dict[str, str]:
     Returns:
         Dictionary mapping original names to standardized names.
     """
-    print("\n=== Node Name Validation Example ===")
+    logger.info("\n=== Node Name Validation Example ===")
 
     # Example of raw data with various node name formats
     raw_node_names = [
@@ -42,7 +59,7 @@ def validate_node_names_example() -> dict[str, str]:
         "loan_loss_provision",  # Another alternate for provision_for_credit_losses
     ]
 
-    print(f"Raw node names to validate: {raw_node_names}")
+    logger.info(f"Raw node names to validate: {raw_node_names}")
 
     # Create unified validator
     validator = UnifiedNodeValidator(
@@ -54,24 +71,22 @@ def validate_node_names_example() -> dict[str, str]:
     # Validate and standardize names
     validation_results = validator.validate_batch(raw_node_names)
 
-    print("\n--- Basic Validation Results ---")
+    logger.info("\n--- Basic Validation Results ---")
     standardized_mapping = {}
     for original_name, result in validation_results.items():
-        print(
-            f"'{original_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})"
-        )
-        print(f"  Category: {result.category}")
-        print(f"  Message: {result.message}")
+        logger.info(f"'{original_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})")
+        logger.info(f"  Category: {result.category}")
+        logger.info(f"  Message: {result.message}")
         if result.suggestions:
-            print(f"  Suggestions: {result.suggestions}")
+            logger.info(f"  Suggestions: {result.suggestions}")
         standardized_mapping[original_name] = result.standardized_name
 
     # Get validation summary
-    print("\n--- Validation Summary ---")
-    print(f"Total validated: {len(validation_results)}")
+    logger.info("\n--- Validation Summary ---")
+    logger.info(f"Total validated: {len(validation_results)}")
     valid_count = sum(1 for r in validation_results.values() if r.is_valid)
-    print(f"Valid: {valid_count}")
-    print(f"Invalid: {len(validation_results) - valid_count}")
+    logger.info(f"Valid: {valid_count}")
+    logger.info(f"Invalid: {len(validation_results) - valid_count}")
 
     # Count by category
     categories = {}
@@ -79,14 +94,14 @@ def validate_node_names_example() -> dict[str, str]:
         categories[result.category] = categories.get(result.category, 0) + 1
 
     for category, count in categories.items():
-        print(f"{category}: {count}")
+        logger.info(f"{category}: {count}")
 
     return standardized_mapping
 
 
 def context_aware_validation_example():
     """Demonstrate context-aware node validation."""
-    print("\n=== Context-Aware Validation Example ===")
+    logger.info("\n=== Context-Aware Validation Example ===")
 
     # Create unified validator with pattern recognition
     validator = UnifiedNodeValidator(
@@ -117,25 +132,23 @@ def context_aware_validation_example():
         ),  # Ratio calculation
     ]
 
-    print("--- Context-Aware Validation Results ---")
+    logger.info("--- Context-Aware Validation Results ---")
     for node_name, node_type, parent_nodes in test_nodes:
-        result = validator.validate(
-            node_name, node_type=node_type, parent_nodes=parent_nodes
-        )
+        result = validator.validate(node_name, node_type=node_type, parent_nodes=parent_nodes)
 
-        print(f"Node: '{node_name}' (Type: {node_type})")
-        print(f"  Standardized: '{result.standardized_name}'")
-        print(f"  Valid: {result.is_valid}")
-        print(f"  Category: {result.category}")
-        print(f"  Message: {result.message}")
+        logger.info(f"Node: '{node_name}' (Type: {node_type})")
+        logger.info(f"  Standardized: '{result.standardized_name}'")
+        logger.info(f"  Valid: {result.is_valid}")
+        logger.info(f"  Category: {result.category}")
+        logger.info(f"  Message: {result.message}")
         if parent_nodes:
-            print(f"  Parent nodes: {parent_nodes}")
-        print()
+            logger.info(f"  Parent nodes: {parent_nodes}")
+        logger.info("")
 
 
 def create_validated_bank_data() -> dict[str, FinancialStatementItemNode]:
     """Create bank data using validated node names."""
-    print("\n=== Creating Validated Bank Data ===")
+    logger.info("\n=== Creating Validated Bank Data ===")
 
     # Create validator
     validator = UnifiedNodeValidator(auto_standardize=True)
@@ -165,11 +178,9 @@ def create_validated_bank_data() -> dict[str, FinancialStatementItemNode]:
         # Validate and standardize the name
         result = validator.validate(raw_name)
 
-        print(
-            f"  '{raw_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})"
-        )
+        logger.info(f"  '{raw_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})")
         if result.message:
-            print(f"    Note: {result.message}")
+            logger.info(f"    Note: {result.message}")
 
         # Create node with standardized name
         validated_nodes[result.standardized_name] = FinancialStatementItemNode(
@@ -356,7 +367,7 @@ def validate_data_completeness(
     data_nodes: dict[str, FinancialStatementItemNode],
 ) -> dict:
     """Validate that all required banking data is present."""
-    print("\n=== Data Completeness Validation ===")
+    logger.info("\n=== Data Completeness Validation ===")
 
     # Define required banking nodes for comprehensive analysis
     required_nodes = [
@@ -410,33 +421,29 @@ def validate_data_completeness(
     ) * 100
 
     # Print validation results
-    print(f"Total nodes available: {validation_report['total_nodes']}")
-    print(f"Data completeness score: {validation_report['completeness_score']:.1f}%")
+    logger.info(f"Total nodes available: {validation_report['total_nodes']}")
+    logger.info(f"Data completeness score: {validation_report['completeness_score']:.1f}%")
 
     if validation_report["required_missing"]:
-        print(f"Missing required nodes ({len(validation_report['required_missing'])}):")
+        logger.info(f"Missing required nodes ({len(validation_report['required_missing'])}):")
         for node in validation_report["required_missing"]:
-            print(f"  - {node}")
+            logger.info(f"  - {node}")
     else:
-        print("✓ All required nodes present")
+        logger.info("✓ All required nodes present")
 
     if validation_report["recommended_missing"]:
-        print(
-            f"Missing recommended nodes ({len(validation_report['recommended_missing'])}):"
-        )
+        logger.info(f"Missing recommended nodes ({len(validation_report['recommended_missing'])}):")
         for node in validation_report["recommended_missing"]:
-            print(f"  - {node}")
+            logger.info(f"  - {node}")
     else:
-        print("✓ All recommended nodes present")
+        logger.info("✓ All recommended nodes present")
 
     return validation_report
 
 
-def analyze_asset_quality(
-    data_nodes: dict[str, FinancialStatementItemNode], period: str
-) -> dict:
+def analyze_asset_quality(data_nodes: dict[str, FinancialStatementItemNode], period: str) -> dict:
     """Analyze asset quality metrics for the bank."""
-    print(f"\n=== Asset Quality Analysis for {period} ===")
+    logger.info(f"\n=== Asset Quality Analysis for {period} ===")
 
     asset_quality_metrics = [
         "non_performing_loan_ratio",
@@ -456,11 +463,11 @@ def analyze_asset_quality(
                 "interpretation": interpretation,
             }
 
-            print(f"{metric_name}: {value:.2f}% - {interpretation['rating']}")
-            print(f"  {interpretation['interpretation_message']}")
+            logger.info(f"{metric_name}: {value:.2f}% - {interpretation['rating']}")
+            logger.info(f"  {interpretation['interpretation_message']}")
 
         except Exception as e:
-            print(f"Could not calculate {metric_name}: {e}")
+            logger.error(f"Could not calculate {metric_name}: {e}")
             results[metric_name] = {"error": str(e)}
 
     return results
@@ -470,7 +477,7 @@ def analyze_capital_adequacy(
     data_nodes: dict[str, FinancialStatementItemNode], period: str
 ) -> dict:
     """Analyze capital adequacy metrics for the bank."""
-    print(f"\n=== Capital Adequacy Analysis for {period} ===")
+    logger.info(f"\n=== Capital Adequacy Analysis for {period} ===")
 
     capital_metrics = [
         "common_equity_tier_1_ratio",
@@ -490,21 +497,19 @@ def analyze_capital_adequacy(
                 "interpretation": interpretation,
             }
 
-            print(f"{metric_name}: {value:.2f}% - {interpretation['rating']}")
-            print(f"  {interpretation['interpretation_message']}")
+            logger.info(f"{metric_name}: {value:.2f}% - {interpretation['rating']}")
+            logger.info(f"  {interpretation['interpretation_message']}")
 
         except Exception as e:
-            print(f"Could not calculate {metric_name}: {e}")
+            logger.error(f"Could not calculate {metric_name}: {e}")
             results[metric_name] = {"error": str(e)}
 
     return results
 
 
-def analyze_profitability(
-    data_nodes: dict[str, FinancialStatementItemNode], period: str
-) -> dict:
+def analyze_profitability(data_nodes: dict[str, FinancialStatementItemNode], period: str) -> dict:
     """Analyze profitability metrics for the bank."""
-    print(f"\n=== Profitability Analysis for {period} ===")
+    logger.info(f"\n=== Profitability Analysis for {period} ===")
 
     profitability_metrics = [
         "net_interest_margin",
@@ -525,21 +530,19 @@ def analyze_profitability(
                 "interpretation": interpretation,
             }
 
-            print(f"{metric_name}: {value:.2f}% - {interpretation['rating']}")
-            print(f"  {interpretation['interpretation_message']}")
+            logger.info(f"{metric_name}: {value:.2f}% - {interpretation['rating']}")
+            logger.info(f"  {interpretation['interpretation_message']}")
 
         except Exception as e:
-            print(f"Could not calculate {metric_name}: {e}")
+            logger.error(f"Could not calculate {metric_name}: {e}")
             results[metric_name] = {"error": str(e)}
 
     return results
 
 
-def analyze_liquidity(
-    data_nodes: dict[str, FinancialStatementItemNode], period: str
-) -> dict:
+def analyze_liquidity(data_nodes: dict[str, FinancialStatementItemNode], period: str) -> dict:
     """Analyze liquidity metrics for the bank."""
-    print(f"\n=== Liquidity Analysis for {period} ===")
+    logger.info(f"\n=== Liquidity Analysis for {period} ===")
 
     liquidity_metrics = [
         "liquidity_coverage_ratio",
@@ -560,11 +563,11 @@ def analyze_liquidity(
                 "interpretation": interpretation,
             }
 
-            print(f"{metric_name}: {value:.2f}% - {interpretation['rating']}")
-            print(f"  {interpretation['interpretation_message']}")
+            logger.info(f"{metric_name}: {value:.2f}% - {interpretation['rating']}")
+            logger.info(f"  {interpretation['interpretation_message']}")
 
         except Exception as e:
-            print(f"Could not calculate {metric_name}: {e}")
+            logger.error(f"Could not calculate {metric_name}: {e}")
             results[metric_name] = {"error": str(e)}
 
     return results
@@ -574,9 +577,9 @@ def generate_banking_dashboard(
     data_nodes: dict[str, FinancialStatementItemNode], period: str
 ) -> dict:
     """Generate a comprehensive banking analysis dashboard."""
-    print(f"\n{'=' * 60}")
-    print(f"COMPREHENSIVE BANKING ANALYSIS DASHBOARD - {period}")
-    print(f"{'=' * 60}")
+    logger.info(f"\n{'=' * 60}")
+    logger.info(f"COMPREHENSIVE BANKING ANALYSIS DASHBOARD - {period}")
+    logger.info(f"{'=' * 60}")
 
     # Asset Quality Analysis
     asset_quality_results = analyze_asset_quality(data_nodes, period)
@@ -591,7 +594,7 @@ def generate_banking_dashboard(
     liquidity_results = analyze_liquidity(data_nodes, period)
 
     # Summary Assessment
-    print(f"\n=== Overall Assessment for {period} ===")
+    logger.info(f"\n=== Overall Assessment for {period} ===")
 
     # Count metrics by rating
     all_results = {
@@ -610,9 +613,9 @@ def generate_banking_dashboard(
     for rating in ratings:
         rating_counts[rating] = rating_counts.get(rating, 0) + 1
 
-    print("Rating Distribution:")
+    logger.info("Rating Distribution:")
     for rating, count in rating_counts.items():
-        print(f"  {rating}: {count} metrics")
+        logger.info(f"  {rating}: {count} metrics")
 
     return {
         "asset_quality": asset_quality_results,
@@ -625,8 +628,8 @@ def generate_banking_dashboard(
 
 def main():
     """Run the banking analysis example with node name validation."""
-    print("Banking Analysis Example with Node Name Validation")
-    print("=" * 60)
+    logger.info("Banking Analysis Example with Node Name Validation")
+    logger.info("=" * 60)
 
     # Step 1: Demonstrate node name validation
     validate_node_names_example()
@@ -648,21 +651,17 @@ def main():
 
     # Print validation summary
     if validation_report["required_missing"]:
-        print(
-            f"⚠️  Warning: {len(validation_report['required_missing'])} required nodes missing"
-        )
+        logger.warning(f"⚠️  Warning: {len(validation_report['required_missing'])} required nodes missing")
     if validation_report["completeness_score"] < 80:
-        print(
+        logger.warning(
             f"⚠️  Data completeness below recommended threshold: {validation_report['completeness_score']:.1f}%"
         )
     else:
-        print(
-            f"✅ Data completeness acceptable: {validation_report['completeness_score']:.1f}%"
-        )
+        logger.info(f"✅ Data completeness acceptable: {validation_report['completeness_score']:.1f}%")
 
-    print(f"\n{'=' * 60}")
-    print("BANKING ANALYSIS WITH VALIDATED DATA (Node Collection)")
-    print(f"{'=' * 60}")
+    logger.info(f"\n{'=' * 60}")
+    logger.info("BANKING ANALYSIS WITH VALIDATED DATA (Node Collection)")
+    logger.info(f"{'=' * 60}")
 
     # Analyze multiple periods using the simple node collection approach
     periods = ["2021", "2022", "2023"]
@@ -673,55 +672,53 @@ def main():
         all_results[period] = results
 
     # Step 6: Demonstrate comprehensive graph structure
-    print(f"\n{'=' * 60}")
-    print("COMPREHENSIVE GRAPH STRUCTURE DEMONSTRATION")
-    print(f"{'=' * 60}")
+    logger.info(f"\n{'=' * 60}")
+    logger.info("COMPREHENSIVE GRAPH STRUCTURE DEMONSTRATION")
+    logger.info(f"{'=' * 60}")
 
     # Create and demonstrate the graph-based approach
     graph_data = create_banking_graph_example()
 
     # Compare approaches
-    print(f"\n{'=' * 60}")
-    print("COMPARISON: Node Collection vs Graph Structure")
-    print(f"{'=' * 60}")
+    logger.info(f"\n{'=' * 60}")
+    logger.info("COMPARISON: Node Collection vs Graph Structure")
+    logger.info(f"{'=' * 60}")
 
-    print("\n--- Node Collection Approach ---")
-    print("✓ Simple dictionary of independent nodes")
-    print("✓ Easy to understand and implement")
-    print("✓ Direct data access")
-    print("✗ No automatic calculations")
-    print("✗ No dependency tracking")
-    print("✗ Manual metric calculations required")
-    print(f"  Total nodes: {len(bank_data)}")
-    print("  Calculation nodes: 0")
-    print(f"  Data nodes: {len(bank_data)}")
+    logger.info("\n--- Node Collection Approach ---")
+    logger.info("✓ Simple dictionary of independent nodes")
+    logger.info("✓ Easy to understand and implement")
+    logger.info("✓ Direct data access")
+    logger.info("✗ No automatic calculations")
+    logger.info("✗ No dependency tracking")
+    logger.info("✗ Manual metric calculations required")
+    logger.info(f"  Total nodes: {len(bank_data)}")
+    logger.info("  Calculation nodes: 0")
+    logger.info(f"  Data nodes: {len(bank_data)}")
 
-    print("\n--- Graph Structure Approach ---")
-    print("✓ Automatic calculations based on dependencies")
-    print("✓ Clear relationship modeling")
-    print("✓ Dependency tracking and validation")
-    print("✓ Consistent calculations across periods")
-    print("✗ More complex to set up initially")
-    print("✗ Requires understanding of graph concepts")
+    logger.info("\n--- Graph Structure Approach ---")
+    logger.info("✓ Automatic calculations based on dependencies")
+    logger.info("✓ Clear relationship modeling")
+    logger.info("✓ Dependency tracking and validation")
+    logger.info("✓ Consistent calculations across periods")
+    logger.info("✗ More complex to set up initially")
+    logger.info("✗ Requires understanding of graph concepts")
 
     # Count different node types in graph
     calculation_nodes = [
         node for node in graph_data.values() if hasattr(node, "inputs") and node.inputs
     ]
     data_nodes = [
-        node
-        for node in graph_data.values()
-        if not (hasattr(node, "inputs") and node.inputs)
+        node for node in graph_data.values() if not (hasattr(node, "inputs") and node.inputs)
     ]
 
-    print(f"  Total nodes: {len(graph_data)}")
-    print(f"  Calculation nodes: {len(calculation_nodes)}")
-    print(f"  Data nodes: {len(data_nodes)}")
+    logger.info(f"  Total nodes: {len(graph_data)}")
+    logger.info(f"  Calculation nodes: {len(calculation_nodes)}")
+    logger.info(f"  Data nodes: {len(data_nodes)}")
 
     # Trend analysis using simple approach
-    print(f"\n{'=' * 60}")
-    print("TREND ANALYSIS (Node Collection Approach)")
-    print(f"{'=' * 60}")
+    logger.info(f"\n{'=' * 60}")
+    logger.info("TREND ANALYSIS (Node Collection Approach)")
+    logger.info(f"{'=' * 60}")
 
     # Example: Track key metrics over time
     key_metrics = [
@@ -734,47 +731,41 @@ def main():
     ]
 
     for metric_name in key_metrics:
-        print(f"\n{metric_name} Trend:")
+        logger.info(f"\n{metric_name} Trend:")
         for period in periods:
             try:
                 value = calculate_metric(metric_name, bank_data, period)
-                print(f"  {period}: {value:.2f}%")
+                logger.info(f"  {period}: {value:.2f}%")
             except Exception as e:
-                print(f"  {period}: Error - {e}")
+                logger.error(f"  {period}: Error - {e}")
 
     # Step 7: Demonstrate validation in metric calculation workflow
-    print(f"\n{'=' * 60}")
-    print("VALIDATION-ENHANCED METRIC CALCULATION")
-    print(f"{'=' * 60}")
+    logger.info(f"\n{'=' * 60}")
+    logger.info("VALIDATION-ENHANCED METRIC CALCULATION")
+    logger.info(f"{'=' * 60}")
 
     # Show how validation helps with metric calculation
     demonstrate_validation_in_metrics(bank_data)
 
-    print(f"\n{'=' * 60}")
-    print("Analysis Complete")
-    print(f"{'=' * 60}")
-    print("\nKey Takeaways:")
-    print("1. Node Collection: Simple, direct access, manual calculations")
-    print(
-        "2. Graph Structure: Automatic calculations, dependency tracking, more complex setup"
-    )
-    print("3. Both approaches can be validated using the same validation framework")
-    print(
-        "4. Graph structure provides better consistency and maintainability for complex models"
-    )
+    logger.info(f"\n{'=' * 60}")
+    logger.info("Analysis Complete")
+    logger.info(f"{'=' * 60}")
+    logger.info("\nKey Takeaways:")
+    logger.info("1. Node Collection: Simple, direct access, manual calculations")
+    logger.info("2. Graph Structure: Automatic calculations, dependency tracking, more complex setup")
+    logger.info("3. Both approaches can be validated using the same validation framework")
+    logger.info("4. Graph structure provides better consistency and maintainability for complex models")
 
 
 def demonstrate_validation_in_metrics(
     data_nodes: dict[str, FinancialStatementItemNode],
 ):
     """Demonstrate how validation helps with metric calculation."""
-    print("\n=== Validation-Enhanced Metric Calculation ===")
+    logger.info("\n=== Validation-Enhanced Metric Calculation ===")
 
     # Example: Try to calculate a metric with potentially problematic node names
     test_metric_inputs = {
-        "loan_loss_allowance": data_nodes.get(
-            "allowance_for_loan_losses"
-        ),  # Using alternate name
+        "loan_loss_allowance": data_nodes.get("allowance_for_loan_losses"),  # Using alternate name
         "npl": data_nodes.get("non_performing_loans"),  # Using alternate name
         "total_loans": data_nodes.get("total_loans"),  # Standard name
     }
@@ -782,57 +773,50 @@ def demonstrate_validation_in_metrics(
     # Create validator to check metric inputs
     validator = UnifiedNodeValidator(auto_standardize=True)
 
-    print("Checking metric input node names:")
+    logger.info("Checking metric input node names:")
     standardized_inputs = {}
     for input_name, node in test_metric_inputs.items():
         if node is not None:
             result = validator.validate(input_name)
-            print(
+            logger.info(
                 f"  Input '{input_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})"
             )
             standardized_inputs[result.standardized_name] = node
         else:
-            print(f"  Input '{input_name}' -> Node not found in data")
+            logger.info(f"  Input '{input_name}' -> Node not found in data")
 
     # Calculate provision coverage ratio with validated inputs
     if all(
-        key in standardized_inputs
-        for key in ["allowance_for_loan_losses", "non_performing_loans"]
+        key in standardized_inputs for key in ["allowance_for_loan_losses", "non_performing_loans"]
     ):
         try:
             # Use standardized names for metric calculation
             metric_data = {
-                "allowance_for_loan_losses": standardized_inputs[
-                    "allowance_for_loan_losses"
-                ],
+                "allowance_for_loan_losses": standardized_inputs["allowance_for_loan_losses"],
                 "non_performing_loans": standardized_inputs["non_performing_loans"],
             }
 
-            provision_coverage = calculate_metric(
-                "provision_coverage_ratio", metric_data, "2023"
-            )
-            print(
-                f"\nCalculated Provision Coverage Ratio (2023): {provision_coverage:.2f}%"
-            )
+            provision_coverage = calculate_metric("provision_coverage_ratio", metric_data, "2023")
+            logger.info(f"\nCalculated Provision Coverage Ratio (2023): {provision_coverage:.2f}%")
 
             # Interpret the result
             interpretation = interpret_metric(
                 metric_registry.get("provision_coverage_ratio"), provision_coverage
             )
-            print(
+            logger.info(
                 f"Interpretation: {interpretation['rating']} - {interpretation['interpretation_message']}"
             )
 
         except Exception as e:
-            print(f"Error calculating metric: {e}")
+            logger.error(f"Error calculating metric: {e}")
 
     # Show validation benefits
-    print("\n--- Validation Benefits ---")
-    print("1. Automatic standardization of node names")
-    print("2. Early detection of missing or misnamed data")
-    print("3. Consistent metric calculations across different data sources")
-    print("4. Improved data quality and reliability")
-    print("5. Better error messages and debugging information")
+    logger.info("\n--- Validation Benefits ---")
+    logger.info("1. Automatic standardization of node names")
+    logger.info("2. Early detection of missing or misnamed data")
+    logger.info("3. Consistent metric calculations across different data sources")
+    logger.info("4. Improved data quality and reliability")
+    logger.info("5. Better error messages and debugging information")
 
 
 def create_banking_graph_example() -> dict[str, FinancialStatementItemNode]:
@@ -841,10 +825,10 @@ def create_banking_graph_example() -> dict[str, FinancialStatementItemNode]:
     This demonstrates the difference between a simple collection of nodes
     and a true graph structure with dependencies and calculations.
     """
-    print("\n=== Creating Comprehensive Banking Graph ===")
+    logger.info("\n=== Creating Comprehensive Banking Graph ===")
 
     # 1. Base data nodes (leaf nodes in the graph)
-    print("Creating base data nodes...")
+    logger.info("Creating base data nodes...")
 
     # Asset nodes
     cash_and_equivalents = FinancialStatementItemNode(
@@ -910,7 +894,7 @@ def create_banking_graph_example() -> dict[str, FinancialStatementItemNode]:
     )
 
     # 2. Create calculation nodes that derive values from base nodes
-    print("Creating calculation nodes with dependencies...")
+    logger.info("Creating calculation nodes with dependencies...")
 
     # Total securities = AFS + HTM
     total_securities = FormulaCalculationNode(
@@ -982,15 +966,12 @@ def create_banking_graph_example() -> dict[str, FinancialStatementItemNode]:
     total_assets = CustomCalculationNode(
         name="total_assets",
         inputs=[cash_and_equivalents, total_securities, net_loans, other_assets],
-        formula_func=lambda cash, securities, loans, other: cash
-        + securities
-        + loans
-        + other,
+        formula_func=lambda cash, securities, loans, other: cash + securities + loans + other,
         description="Total bank assets",
     )
 
     # 3. Create ratio calculation nodes
-    print("Creating ratio calculation nodes...")
+    logger.info("Creating ratio calculation nodes...")
 
     # Loan to deposit ratio = Net loans / Total deposits
     loan_to_deposit_ratio = CustomCalculationNode(
@@ -1009,7 +990,7 @@ def create_banking_graph_example() -> dict[str, FinancialStatementItemNode]:
     )
 
     # 4. Demonstrate graph traversal and calculation
-    print("Demonstrating graph calculations...")
+    logger.info("Demonstrating graph calculations...")
 
     # Calculate values for 2023 to show graph dependencies
     period = "2023"
@@ -1025,15 +1006,15 @@ def create_banking_graph_example() -> dict[str, FinancialStatementItemNode]:
         "Net Interest Margin": net_interest_margin_calculated.calculate(period) * 100,
     }
 
-    print(f"\nCalculated values for {period}:")
+    logger.info(f"\nCalculated values for {period}:")
     for name, value in calculated_values.items():
         if "Ratio" in name or "Margin" in name:
-            print(f"  {name}: {value:.2f}%")
+            logger.info(f"  {name}: {value:.2f}%")
         else:
-            print(f"  {name}: ${value:,.0f}")
+            logger.info(f"  {name}: ${value:,.0f}")
 
     # 5. Show graph dependencies
-    print("\nGraph Dependencies:")
+    logger.info("\nGraph Dependencies:")
 
     # Handle different input types for different calculation nodes
     def get_input_names(node: Node) -> list[str]:
@@ -1046,13 +1027,11 @@ def create_banking_graph_example() -> dict[str, FinancialStatementItemNode]:
                 return [input_node.name for input_node in node.inputs]
         return []
 
-    print(f"  total_assets depends on: {get_input_names(total_assets)}")
-    print(f"  net_interest_income depends on: {get_input_names(net_interest_income)}")
-    print(
-        f"  total_interest_income depends on: {get_input_names(total_interest_income)}"
-    )
-    print(f"  total_securities depends on: {get_input_names(total_securities)}")
-    print(f"  net_loans depends on: {get_input_names(net_loans)}")
+    logger.info(f"  total_assets depends on: {get_input_names(total_assets)}")
+    logger.info(f"  net_interest_income depends on: {get_input_names(net_interest_income)}")
+    logger.info(f"  total_interest_income depends on: {get_input_names(total_interest_income)}")
+    logger.info(f"  total_securities depends on: {get_input_names(total_securities)}")
+    logger.info(f"  net_loans depends on: {get_input_names(net_loans)}")
 
     # Return all nodes (both base and calculated)
     return {

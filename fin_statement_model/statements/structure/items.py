@@ -177,14 +177,10 @@ class LineItem(StatementItem):
             )
 
         if sign_convention not in (1, -1):
-            raise StatementError(
-                f"Invalid sign convention {sign_convention} for item: {id}"
-            )
+            raise StatementError(f"Invalid sign convention {sign_convention} for item: {id}")
 
         if display_scale_factor <= 0:
-            raise StatementError(
-                f"display_scale_factor must be positive for item: {id}"
-            )
+            raise StatementError(f"display_scale_factor must be positive for item: {id}")
 
         self._id = id
         self._name = name
@@ -282,9 +278,7 @@ class LineItem(StatementItem):
         """Get the type of this item (LINE_ITEM)."""
         return StatementItemType.LINE_ITEM
 
-    def get_resolved_node_id(
-        self, standard_registry: Optional[Any] = None
-    ) -> Optional[str]:
+    def get_resolved_node_id(self, standard_registry: Optional[Any] = None) -> Optional[str]:
         """Get the resolved node ID, handling both direct node_id and standard_node_ref.
 
         Args:
@@ -393,15 +387,9 @@ class MetricLineItem(LineItem):
         if not metric_id or not isinstance(metric_id, str):
             raise StatementError(f"Invalid metric_id '{metric_id}' for item: {id}")
         if not isinstance(inputs, dict) or not inputs:
-            raise StatementError(
-                f"Metric inputs must be a non-empty dictionary for item: {id}"
-            )
-        if not all(
-            isinstance(k, str) and isinstance(v, str) for k, v in inputs.items()
-        ):
-            raise StatementError(
-                f"Metric input keys and values must be strings for item: {id}"
-            )
+            raise StatementError(f"Metric inputs must be a non-empty dictionary for item: {id}")
+        if not all(isinstance(k, str) and isinstance(v, str) for k, v in inputs.items()):
+            raise StatementError(f"Metric input keys and values must be strings for item: {id}")
 
         self._metric_id = metric_id
         self._inputs = inputs
@@ -505,9 +493,7 @@ class CalculatedLineItem(LineItem):
             raise StatementError(f"Missing calculation type for item: {id}")
         inputs = calculation.get("inputs")
         if not isinstance(inputs, list) or not inputs:
-            raise StatementError(
-                f"Calculation inputs must be a non-empty list for item: {id}"
-            )
+            raise StatementError(f"Calculation inputs must be a non-empty list for item: {id}")
         self._calculation = calculation
 
     @property

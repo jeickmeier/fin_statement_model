@@ -34,9 +34,7 @@ class IOError(FinancialModelError):
         if format_type:
             context.append(f"format '{format_type}'")
 
-        full_message = (
-            f"{message} involving {' and '.join(context)}" if context else message
-        )
+        full_message = f"{message} involving {' and '.join(context)}" if context else message
 
         if original_error:
             full_message = f"{full_message}: {original_error!s}"

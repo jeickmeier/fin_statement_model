@@ -179,14 +179,10 @@ def example_rating_summary():
             print(f"  {status_icon[rating]} {metric_name}: {rating.value} ({value})")
 
     # Overall assessment
-    all_ratings = [
-        rating for _, metrics in ratings_summary.items() for _, rating, _ in metrics
-    ]
+    all_ratings = [rating for _, metrics in ratings_summary.items() for _, rating, _ in metrics]
     excellent_count = sum(1 for r in all_ratings if r == MetricRating.EXCELLENT)
     good_count = sum(1 for r in all_ratings if r == MetricRating.GOOD)
-    warning_count = sum(
-        1 for r in all_ratings if r in [MetricRating.WARNING, MetricRating.POOR]
-    )
+    warning_count = sum(1 for r in all_ratings if r in [MetricRating.WARNING, MetricRating.POOR])
 
     print("\nOVERALL ASSESSMENT:")
     if warning_count == 0 and (excellent_count + good_count) >= len(all_ratings) * 0.8:
@@ -228,17 +224,11 @@ def example_threshold_analysis():
             print(f"  → Below poor threshold ({analysis['guidelines']['poor_below']})")
         elif rating == MetricRating.WARNING:
             if value < analysis["guidelines"]["warning_below"]:
-                print(
-                    f"  → Below warning threshold ({analysis['guidelines']['warning_below']})"
-                )
+                print(f"  → Below warning threshold ({analysis['guidelines']['warning_below']})")
             elif value > analysis["guidelines"]["warning_above"]:
-                print(
-                    f"  → Above warning threshold ({analysis['guidelines']['warning_above']})"
-                )
+                print(f"  → Above warning threshold ({analysis['guidelines']['warning_above']})")
         elif rating == MetricRating.EXCELLENT:
-            print(
-                f"  → Above excellent threshold ({analysis['guidelines']['excellent_above']})"
-            )
+            print(f"  → Above excellent threshold ({analysis['guidelines']['excellent_above']})")
         elif rating == MetricRating.GOOD:
             good_range = analysis["guidelines"]["good_range"]
             print(f"  → Within good range ({good_range[0]} - {good_range[1]})")

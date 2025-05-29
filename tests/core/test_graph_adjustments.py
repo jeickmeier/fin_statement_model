@@ -29,9 +29,7 @@ def basic_graph() -> Graph:
 
 def test_graph_add_adjustment(basic_graph: Graph) -> None:
     """Test adding an adjustment via the Graph method."""
-    adj_id = basic_graph.add_adjustment(
-        node_name="NodeA", period="P1", value=10, reason="Test Add"
-    )
+    adj_id = basic_graph.add_adjustment(node_name="NodeA", period="P1", value=10, reason="Test Add")
     assert isinstance(adj_id, uuid4().__class__)  # Check type
 
     # Verify it was added to the manager via list_all_adjustments
@@ -154,9 +152,7 @@ def test_get_adjusted_value_with_filter(basic_graph: Graph) -> None:
     )  # How to signify all scenarios?
     # Let's test filtering for a specific scenario + tag
     filt_s2_budget = AdjustmentFilter(include_scenarios={"s2"}, include_tags={"Budget"})
-    val_s2_budget = basic_graph.get_adjusted_value(
-        "NodeA", "P1", filter_input=filt_s2_budget
-    )
+    val_s2_budget = basic_graph.get_adjusted_value("NodeA", "P1", filter_input=filt_s2_budget)
     assert val_s2_budget == 120.0  # 100 + 20
 
     # Test was_adjusted with filter

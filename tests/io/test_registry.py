@@ -237,9 +237,7 @@ class TestGetHandler:
         )
 
         assert result == "handler_instance"
-        mock_handler_class.assert_called_once_with(
-            target="output.txt", custom_param="value"
-        )
+        mock_handler_class.assert_called_once_with(target="output.txt", custom_param="value")
 
     def test_get_handler_error_context_for_reader(self):
         """Test _get_handler sets correct error context for readers."""

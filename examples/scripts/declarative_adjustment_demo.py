@@ -9,6 +9,7 @@ configuration files.
 import sys
 from typing import Any
 import pandas as pd
+import logging
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.adjustments.models import (
@@ -21,6 +22,11 @@ from fin_statement_model.statements import (
     StatementFormatter,
 )
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 def create_sample_graph_with_adjustments() -> Graph:
     """Create a sample graph with nodes and adjustments for demonstration."""
@@ -36,9 +42,7 @@ def create_sample_graph_with_adjustments() -> Graph:
     graph.add_financial_statement_item(
         "cogs_materials", {"2023Q1": 300, "2023Q2": 330, "2023Q3": 360}
     )
-    graph.add_financial_statement_item(
-        "cogs_labor", {"2023Q1": 200, "2023Q2": 220, "2023Q3": 240}
-    )
+    graph.add_financial_statement_item("cogs_labor", {"2023Q1": 200, "2023Q2": 220, "2023Q3": 240})
     graph.add_financial_statement_item(
         "opex_salaries", {"2023Q1": 150, "2023Q2": 155, "2023Q3": 160}
     )
@@ -201,30 +205,30 @@ def create_sample_config() -> dict[str, Any]:
 
 def demonstrate_declarative_adjustments():
     """Demonstrate the declarative adjustment handling feature."""
-    print("=" * 80)
-    print("Declarative Adjustment Handling Demonstration")
-    print("=" * 80)
+    logger.info("=" * 80)
+    logger.info("Declarative Adjustment Handling Demonstration")
+    logger.info("=" * 80)
 
     # Create sample data
     graph = create_sample_graph_with_adjustments()
     config_data = create_sample_config()
 
-    print("\n1. CONFIGURATION OVERVIEW")
-    print("-" * 40)
-    print(f"Statement: {config_data['name']}")
-    print(f"Sections: {len(config_data['sections'])}")
+    logger.info("\n1. CONFIGURATION OVERVIEW")
+    logger.info("-" * 40)
+    logger.info(f"Statement: {config_data['name']}")
+    logger.info(f"Sections: {len(config_data['sections'])}")
 
     for section in config_data["sections"]:
-        print(f"\n  Section: {section['name']}")
+        logger.info(f"\n  Section: {section['name']}")
         section_filter = section.get("default_adjustment_filter")
         if section_filter:
-            print(f"    Section Filter: {section_filter}")
+            logger.info(f"    Section Filter: {section_filter}")
         else:
-            print("    Section Filter: None")
+            logger.info("    Section Filter: None")
 
         for item in section["items"]:
             item_filter = item.get("default_adjustment_filter")
-            print(
+            logger.info(
                 f"    - {item['name']}: {item_filter if item_filter is not None else 'Inherits section filter'}"
             )
 
@@ -233,26 +237,26 @@ def demonstrate_declarative_adjustments():
     validation_errors = config.validate_config()
 
     if validation_errors:
-        print(f"\nConfiguration validation errors: {validation_errors}")
+        logger.info(f"\nConfiguration validation errors: {validation_errors}")
         return
 
     builder = StatementStructureBuilder()
     statement = builder.build(config)
     formatter = StatementFormatter(statement)
 
-    print("\n2. DATA FETCHING WITH DEFAULT FILTERS")
-    print("-" * 40)
+    logger.info("\n2. DATA FETCHING WITH DEFAULT FILTERS")
+    logger.info("-" * 40)
 
     # Generate dataframe using default filters from configuration
     df_with_defaults = formatter.generate_dataframe(
         graph=graph, include_empty_items=True, include_metadata_cols=True
     )
 
-    print("Generated DataFrame with default adjustment filters:")
-    print(df_with_defaults.to_string())
+    logger.info("Generated DataFrame with default adjustment filters:")
+    logger.info(df_with_defaults.to_string())
 
-    print("\n3. OVERRIDE WITH GLOBAL FILTER")
-    print("-" * 40)
+    logger.info("\n3. OVERRIDE WITH GLOBAL FILTER")
+    logger.info("-" * 40)
 
     # Override all default filters with a global filter
     global_filter = AdjustmentFilter(include_tags={"management"})
@@ -263,11 +267,11 @@ def demonstrate_declarative_adjustments():
         include_metadata_cols=True,
     )
 
-    print("Generated DataFrame with global filter override (management only):")
-    print(df_with_override.to_string())
+    logger.info("Generated DataFrame with global filter override (management only):")
+    logger.info(df_with_override.to_string())
 
-    print("\n4. RAW DATA (NO ADJUSTMENTS)")
-    print("-" * 40)
+    logger.info("\n4. RAW DATA (NO ADJUSTMENTS)")
+    logger.info("-" * 40)
 
     # Show raw data without any adjustments
     empty_filter = AdjustmentFilter()  # Empty filter
@@ -278,35 +282,32 @@ def demonstrate_declarative_adjustments():
         include_metadata_cols=True,
     )
 
-    print("Generated DataFrame with no adjustments (raw data):")
-    print(df_raw.to_string())
+    logger.info("Generated DataFrame with no adjustments (raw data):")
+    logger.info(df_raw.to_string())
 
-    print("\n5. FILTER ANALYSIS")
-    print("-" * 40)
+    logger.info("\n5. FILTER ANALYSIS")
+    logger.info("-" * 40)
 
-    print("Examining default filters in the built statement structure:")
+    logger.info("Examining default filters in the built statement structure:")
 
     for section in statement.sections:
-        print(f"\nSection '{section.name}':")
-        print(f"  Default filter: {section.default_adjustment_filter}")
+        logger.info(f"\nSection '{section.name}':")
+        logger.info(f"  Default filter: {section.default_adjustment_filter}")
 
         for item in section.items:
             if hasattr(item, "default_adjustment_filter"):
-                print(f"  Item '{item.name}': {item.default_adjustment_filter}")
+                logger.info(f"  Item '{item.name}': {item.default_adjustment_filter}")
 
-    print("\n6. COMPARISON SUMMARY")
-    print("-" * 40)
+    logger.info("\n6. COMPARISON SUMMARY")
+    logger.info("-" * 40)
 
     # Compare key values across different filter scenarios
     comparison_data = [
         {
             "Period": period,
             "Gross Revenue (Default)": (
-                df_with_defaults.loc[
-                    df_with_defaults["ID"] == "gross_revenue", period
-                ].iloc[0]
-                if len(df_with_defaults.loc[df_with_defaults["ID"] == "gross_revenue"])
-                > 0
+                df_with_defaults.loc[df_with_defaults["ID"] == "gross_revenue", period].iloc[0]
+                if len(df_with_defaults.loc[df_with_defaults["ID"] == "gross_revenue"]) > 0
                 else "N/A"
             ),
             "Gross Revenue (Raw)": (
@@ -315,19 +316,13 @@ def demonstrate_declarative_adjustments():
                 else "N/A"
             ),
             "Labor Costs (Default)": (
-                df_with_defaults.loc[
-                    df_with_defaults["ID"] == "labor_costs", period
-                ].iloc[0]
-                if len(df_with_defaults.loc[df_with_defaults["ID"] == "labor_costs"])
-                > 0
+                df_with_defaults.loc[df_with_defaults["ID"] == "labor_costs", period].iloc[0]
+                if len(df_with_defaults.loc[df_with_defaults["ID"] == "labor_costs"]) > 0
                 else "N/A"
             ),
             "Labor Costs (Management)": (
-                df_with_override.loc[
-                    df_with_override["ID"] == "labor_costs", period
-                ].iloc[0]
-                if len(df_with_override.loc[df_with_override["ID"] == "labor_costs"])
-                > 0
+                df_with_override.loc[df_with_override["ID"] == "labor_costs", period].iloc[0]
+                if len(df_with_override.loc[df_with_override["ID"] == "labor_costs"]) > 0
                 else "N/A"
             ),
         }
@@ -336,25 +331,22 @@ def demonstrate_declarative_adjustments():
     ]
 
     comparison_df = pd.DataFrame(comparison_data)
-    print("Value Comparison Across Filter Scenarios:")
-    print(comparison_df.to_string(index=False))
+    logger.info("Value Comparison Across Filter Scenarios:")
+    logger.info(comparison_df.to_string(index=False))
 
-    print("\n" + "=" * 80)
-    print("Demonstration Complete!")
-    print("\nKey Takeaways:")
-    print("- Each item can have its own default adjustment filter")
-    print("- Section-level filters apply to all items that don't override")
-    print("- Global filters passed to generate_dataframe() override all defaults")
-    print("- Filter precedence: Global > Item > Section > None")
-    print("=" * 80)
+    logger.info("\n" + "=" * 80)
+    logger.info("Demonstration Complete!")
+    logger.info("\nKey Takeaways:")
+    logger.info("- Each item can have its own default adjustment filter")
+    logger.info("- Section-level filters apply to all items that don't override")
+    logger.info("- Global filters passed to generate_dataframe() override all defaults")
+    logger.info("- Filter precedence: Global > Item > Section > None")
+    logger.info("=" * 80)
 
 
 if __name__ == "__main__":
     try:
         demonstrate_declarative_adjustments()
-    except Exception as e:
-        print(f"Demonstration failed with error: {e}")
-        import traceback
-
-        traceback.print_exc()
+    except Exception:
+        logger.exception("Demonstration failed")
         sys.exit(1)

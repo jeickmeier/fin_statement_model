@@ -56,9 +56,7 @@ class GraphDefinitionReader(DataReader):
         """Initialize the GraphDefinitionReader. Config currently unused."""
         self.cfg = cfg
 
-    def _add_nodes_iteratively(
-        self, graph: Graph, nodes_dict: dict[str, SerializedNode]
-    ) -> None:
+    def _add_nodes_iteratively(self, graph: Graph, nodes_dict: dict[str, SerializedNode]) -> None:
         """Add nodes to the graph, handling potential dependency order issues."""
         nodes_to_add = nodes_dict.copy()
         added_nodes: set[str] = set()
@@ -82,9 +80,7 @@ class GraphDefinitionReader(DataReader):
                         dependency_names = [base_node_name]
 
                 # Check if all dependencies are already added
-                dependencies_met = all(
-                    dep_name in added_nodes for dep_name in dependency_names
-                )
+                dependencies_met = all(dep_name in added_nodes for dep_name in dependency_names)
 
                 if dependencies_met:
                     try:
@@ -107,9 +103,7 @@ class GraphDefinitionReader(DataReader):
                                 name=node_name,
                                 input_names=dependency_names,
                                 operation_type="formula",
-                                formula_variable_names=node_def.get(
-                                    "formula_variable_names"
-                                ),
+                                formula_variable_names=node_def.get("formula_variable_names"),
                                 formula=formula_str,
                                 metric_name=node_def.get("metric_name"),
                                 metric_description=node_def.get("metric_description"),
@@ -127,14 +121,9 @@ class GraphDefinitionReader(DataReader):
                             calculation_args = node_def.get("calculation_args", {})
 
                             # Special handling for formula type to ensure formula_variable_names is passed correctly
-                            if (
-                                calc_type_key == "formula"
-                                and "formula_variable_names" in node_def
-                            ):
+                            if calc_type_key == "formula" and "formula_variable_names" in node_def:
                                 # Pass formula_variable_names as a separate parameter, not in calculation_args
-                                formula_variable_names = node_def.get(
-                                    "formula_variable_names"
-                                )
+                                formula_variable_names = node_def.get("formula_variable_names")
                                 logger.debug(
                                     f"Reconstructing CalculationNode '{node_name}' with type '{calc_type_key}', "
                                     f"formula_variable_names: {formula_variable_names}, and args: {calculation_args}"
@@ -180,11 +169,7 @@ class GraphDefinitionReader(DataReader):
                                 continue
 
                             # Get the base node from the graph
-                            base_node = (
-                                graph.nodes.get(base_node_name)
-                                if base_node_name
-                                else None
-                            )
+                            base_node = graph.nodes.get(base_node_name) if base_node_name else None
                             if not base_node:
                                 logger.error(
                                     f"Base node '{base_node_name}' not found for forecast node '{node_name}'. Skipping."
@@ -258,9 +243,7 @@ class GraphDefinitionReader(DataReader):
 
                     except (NodeError, ConfigurationError, ValueError, TypeError):
                         # Log error but try to continue with other nodes
-                        logger.exception(
-                            f"Failed to add node '{node_name}' during iterative build"
-                        )
+                        logger.exception(f"Failed to add node '{node_name}' during iterative build")
                         # Keep it in nodes_to_add to potentially retry if it was a temporary dependency issue
                         # or if error handling allows partial graph load.
                         # For now, let's keep it for retry, but could decide to fail hard.
@@ -311,11 +294,7 @@ class GraphDefinitionReader(DataReader):
         """
         logger.info("Starting graph reconstruction from definition dictionary.")
 
-        if (
-            not isinstance(source, dict)
-            or "periods" not in source
-            or "nodes" not in source
-        ):
+        if not isinstance(source, dict) or "periods" not in source or "nodes" not in source:
             raise ReadError(
                 message="Invalid source format for GraphDefinitionReader. Expected dict with 'periods' and 'nodes' keys.",
                 source="graph_definition_dict",
@@ -339,9 +318,7 @@ class GraphDefinitionReader(DataReader):
             adjustments_list = source.get("adjustments")  # Optional
             if adjustments_list is not None:
                 if not isinstance(adjustments_list, list):
-                    raise ReadError(
-                        "Invalid format: 'adjustments' must be a list if present."
-                    )
+                    raise ReadError("Invalid format: 'adjustments' must be a list if present.")
 
                 deserialized_adjustments = []
                 for i, adj_dict in enumerate(adjustments_list):
@@ -362,17 +339,13 @@ class GraphDefinitionReader(DataReader):
                         f"Loaded {len(deserialized_adjustments)} adjustments into the graph."
                     )
 
-            logger.info(
-                f"Successfully reconstructed graph with {len(graph.nodes)} nodes."
-            )
+            logger.info(f"Successfully reconstructed graph with {len(graph.nodes)} nodes.")
             return graph
 
         except ReadError:  # Re-raise ReadErrors directly
             raise
         except Exception as e:
-            logger.error(
-                f"Failed to reconstruct graph from definition: {e}", exc_info=True
-            )
+            logger.error(f"Failed to reconstruct graph from definition: {e}", exc_info=True)
             raise ReadError(
                 message=f"Failed to reconstruct graph from definition: {e}",
                 source="graph_definition_dict",
@@ -408,9 +381,7 @@ class GraphDefinitionWriter(DataWriter):
         elif isinstance(node, FormulaCalculationNode):
             node_def["type"] = "formula_calculation"
             # Store the *actual* dependency node names
-            node_def["inputs"] = (
-                node.get_dependencies()
-            )  # Store actual dependency names
+            node_def["inputs"] = node.get_dependencies()  # Store actual dependency names
             # Store the variable names used in the formula
             node_def["formula_variable_names"] = list(
                 node.inputs_dict.keys()  # Use inputs_dict instead of inputs for FormulaCalculationNode
@@ -419,9 +390,7 @@ class GraphDefinitionWriter(DataWriter):
             # Include metric info if it's a metric node
             if getattr(node, "metric_name", None):
                 node_def["metric_name"] = node.metric_name
-                node_def["metric_description"] = getattr(
-                    node, "metric_description", None
-                )
+                node_def["metric_description"] = getattr(node, "metric_description", None)
             # Explicitly set the calculation type key for formula nodes
             node_def["calculation_type"] = "formula"
         elif isinstance(
@@ -443,9 +412,7 @@ class GraphDefinitionWriter(DataWriter):
                     calculation_args = {}
 
                     # WeightedAverageCalculation has weights attribute
-                    if type_key == "weighted_average" and hasattr(
-                        calc_instance, "weights"
-                    ):
+                    if type_key == "weighted_average" and hasattr(calc_instance, "weights"):
                         calculation_args["weights"] = calc_instance.weights
 
                     # FormulaCalculation has formula and input_variable_names
@@ -453,9 +420,7 @@ class GraphDefinitionWriter(DataWriter):
                         calculation_args["formula"] = calc_instance.formula
                         if hasattr(calc_instance, "input_variable_names"):
                             # Store input_variable_names at the node level for proper deserialization
-                            node_def["formula_variable_names"] = (
-                                calc_instance.input_variable_names
-                            )
+                            node_def["formula_variable_names"] = calc_instance.input_variable_names
 
                     # CustomFormulaCalculation has formula_function (not easily serializable)
                     elif type_key == "custom_formula":
@@ -521,9 +486,7 @@ class GraphDefinitionWriter(DataWriter):
 
         return node_def
 
-    def write(
-        self, graph: Graph, target: Any = None, **kwargs: dict[str, Any]
-    ) -> dict[str, Any]:
+    def write(self, graph: Graph, target: Any = None, **kwargs: dict[str, Any]) -> dict[str, Any]:
         """Export the full graph definition to a dictionary.
 
         Args:
@@ -565,9 +528,7 @@ class GraphDefinitionWriter(DataWriter):
                     # Use model_dump for Pydantic V2, ensure mode='json' for types like UUID/datetime
                     serialized_adjustments.append(adj.model_dump(mode="json"))
                 except Exception as e:
-                    logger.warning(
-                        f"Failed to serialize adjustment {adj.id}: {e}. Skipping."
-                    )
+                    logger.warning(f"Failed to serialize adjustment {adj.id}: {e}. Skipping.")
             graph_definition["adjustments"] = serialized_adjustments
 
             logger.info(
@@ -576,9 +537,7 @@ class GraphDefinitionWriter(DataWriter):
             return graph_definition
 
         except Exception as e:
-            logger.error(
-                f"Failed to create graph definition dictionary: {e}", exc_info=True
-            )
+            logger.error(f"Failed to create graph definition dictionary: {e}", exc_info=True)
             raise WriteError(
                 message=f"Failed to create graph definition dictionary: {e}",
                 target="graph_definition_dict",

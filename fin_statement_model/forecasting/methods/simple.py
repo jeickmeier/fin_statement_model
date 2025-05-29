@@ -52,13 +52,9 @@ class SimpleForecastMethod(BaseForecastMethod):
                     f"Simple method requires numeric growth rate, got {type(config[0])}"
                 )
         elif not isinstance(config, int | float):
-            raise TypeError(
-                f"Simple method requires numeric growth rate, got {type(config)}"
-            )
+            raise TypeError(f"Simple method requires numeric growth rate, got {type(config)}")
 
-    def normalize_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory.
 
         Args:

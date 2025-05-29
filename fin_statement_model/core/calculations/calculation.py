@@ -189,9 +189,7 @@ class MultiplicationCalculation(Calculation):
         # Multiplication calculation should ideally return 1.0 for empty inputs.
         # Raising error if empty seems less conventional for multiplication.
         if not inputs:
-            logger.warning(
-                "Multiplication calculation called with empty inputs, returning 1.0"
-            )
+            logger.warning("Multiplication calculation called with empty inputs, returning 1.0")
             return 1.0
 
         logger.debug(f"Applying multiplication calculation for period {period}")
@@ -330,9 +328,7 @@ class WeightedAverageCalculation(Calculation):
             Number of weights (2) must match number of inputs (3)
         """
         if not inputs:
-            raise ValueError(
-                "Weighted average calculation requires at least one input node"
-            )
+            raise ValueError("Weighted average calculation requires at least one input node")
 
         num_inputs = len(inputs)
         effective_weights: list[float]
@@ -566,13 +562,9 @@ class FormulaCalculation(Calculation):
         try:
             return self._evaluate(self._ast, period, variable_map)
         except (ValueError, TypeError, KeyError, ZeroDivisionError) as e:
-            raise ValueError(
-                f"Error evaluating formula: {self.formula}. Error: {e!s}"
-            ) from e
+            raise ValueError(f"Error evaluating formula: {self.formula}. Error: {e!s}") from e
 
-    def _evaluate(
-        self, node: ast.AST, period: str, variable_map: dict[str, Node]
-    ) -> float:
+    def _evaluate(self, node: ast.AST, period: str, variable_map: dict[str, Node]) -> float:
         """Recursively evaluate the parsed AST node for the formula.
 
         Args:
@@ -619,9 +611,7 @@ class FormulaCalculation(Calculation):
             right_val = self._evaluate(node.right, period, variable_map)
             op_type = type(node.op)
             if op_type not in self.OPERATORS:
-                raise ValueError(
-                    f"Unsupported binary operator '{op_type.__name__}' in formula"
-                )
+                raise ValueError(f"Unsupported binary operator '{op_type.__name__}' in formula")
             # Perform the operation
             return float(self.OPERATORS[op_type](left_val, right_val))
 
@@ -630,9 +620,7 @@ class FormulaCalculation(Calculation):
             operand_val = self._evaluate(node.operand, period, variable_map)
             op_type = type(node.op)
             if op_type not in self.OPERATORS:
-                raise ValueError(
-                    f"Unsupported unary operator '{op_type.__name__}' in formula"
-                )
+                raise ValueError(f"Unsupported unary operator '{op_type.__name__}' in formula")
             # Perform the operation
             return float(self.OPERATORS[op_type](operand_val))
 

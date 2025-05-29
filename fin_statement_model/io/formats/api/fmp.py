@@ -178,9 +178,7 @@ class FmpReader(DataReader):
             logger.info(
                 f"Fetching {period_type_arg} {statement_type} for {ticker} from FMP API (limit={limit})."
             )
-            response = requests.get(
-                endpoint, params=params, timeout=30
-            )  # Increased timeout
+            response = requests.get(endpoint, params=params, timeout=30)  # Increased timeout
             response.raise_for_status()  # Check for HTTP errors
             api_data = response.json()
 
@@ -191,9 +189,7 @@ class FmpReader(DataReader):
                     reader_type="FmpReader",
                 )
             if not api_data:
-                logger.warning(
-                    f"FMP API returned empty list for {ticker} {statement_type}."
-                )
+                logger.warning(f"FMP API returned empty list for {ticker} {statement_type}.")
                 # Return empty graph or raise? Returning empty for now.
                 return Graph(periods=[])
 
@@ -242,15 +238,11 @@ class FmpReader(DataReader):
                     continue  # Skip records without a date
 
                 for api_field, value in period_data.items():
-                    node_name = mapping.get(
-                        api_field, api_field
-                    )  # Use mapping or fallback
+                    node_name = mapping.get(api_field, api_field)  # Use mapping or fallback
 
                     # Initialize node data dict if first time seeing this node
                     if node_name not in all_item_data:
-                        all_item_data[node_name] = {
-                            p: np.nan for p in periods
-                        }  # Pre-fill with NaN
+                        all_item_data[node_name] = {p: np.nan for p in periods}  # Pre-fill with NaN
 
                     # Store value for this period
                     if isinstance(value, int | float):
@@ -260,9 +252,7 @@ class FmpReader(DataReader):
             nodes_added = 0
             for node_name, period_values in all_item_data.items():
                 # Filter out periods that only have NaN
-                valid_period_values = {
-                    p: v for p, v in period_values.items() if not np.isnan(v)
-                }
+                valid_period_values = {p: v for p, v in period_values.items() if not np.isnan(v)}
                 if valid_period_values:
                     new_node = FinancialStatementItemNode(
                         name=node_name, values=valid_period_values
@@ -276,9 +266,7 @@ class FmpReader(DataReader):
             return graph
 
         except Exception as e:
-            logger.error(
-                f"Failed to parse FMP data and build graph: {e}", exc_info=True
-            )
+            logger.error(f"Failed to parse FMP data and build graph: {e}", exc_info=True)
             raise ReadError(
                 message=f"Failed to parse FMP data: {e}",
                 source=f"FMP API ({ticker})",

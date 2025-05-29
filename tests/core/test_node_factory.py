@@ -52,9 +52,7 @@ def mock_strategy_class() -> MagicMock:
     MockStrategy.__name__ = "MockStrategyClass"
     # Create an instance mock that __init__ would return
     mock_instance = MagicMock(spec=Calculation)
-    MockStrategy.return_value = (
-        mock_instance  # Mocking the instance returned by __init__
-    )
+    MockStrategy.return_value = mock_instance  # Mocking the instance returned by __init__
     return MockStrategy
 
 
@@ -83,9 +81,7 @@ class TestCreateFinancialStatementItem:
                 # If FinancialStatementItemNode requires more complex access, adjust this
                 assert node.get_value(period) == expected_value
             except KeyError:
-                pytest.fail(
-                    f"Node should have value for period '{period}' but get_value failed."
-                )
+                pytest.fail(f"Node should have value for period '{period}' but get_value failed.")
         # Optional: Test for a period not provided
         # It seems get_value returns 0.0 for missing periods
         assert node.get_value("2025") == 0.0
@@ -133,13 +129,9 @@ class TestCreateCalculationNode:
         assert isinstance(node, CalculationNode)
         assert node.name == name
         assert node.inputs == inputs
-        mock_registry_get.assert_called_once_with(
-            NodeFactory._calculation_methods[calc_type]
-        )
+        mock_registry_get.assert_called_once_with(NodeFactory._calculation_methods[calc_type])
         mock_strategy_class.assert_called_once_with()  # No extra kwargs
-        assert (
-            node.calculation == mock_strategy_class.return_value
-        )  # Check instance was passed
+        assert node.calculation == mock_strategy_class.return_value  # Check instance was passed
 
     def test_success_with_strategy_kwargs(
         self,
@@ -160,9 +152,7 @@ class TestCreateCalculationNode:
         assert isinstance(node, CalculationNode)
         assert node.name == name
         assert node.inputs == inputs
-        mock_registry_get.assert_called_once_with(
-            NodeFactory._calculation_methods[calc_type]
-        )
+        mock_registry_get.assert_called_once_with(NodeFactory._calculation_methods[calc_type])
         mock_strategy_class.assert_called_once_with(**kwargs)
         assert node.calculation == mock_strategy_class.return_value
 
@@ -173,17 +163,13 @@ class TestCreateCalculationNode:
 
     def test_error_empty_inputs(self):
         """Test creation fails with an empty input list."""
-        with pytest.raises(
-            ValueError, match="Calculation node must have at least one input"
-        ):
+        with pytest.raises(ValueError, match="Calculation node must have at least one input"):
             NodeFactory.create_calculation_node("TestNode", [], "addition")
 
     def test_error_invalid_calculation_type(self, mock_node_a: Node) -> None:
         """Test creation fails with an unknown calculation type."""
         invalid_type = "non_existent_type"
-        with pytest.raises(
-            ValueError, match=f"Invalid calculation type: '{invalid_type}'"
-        ):
+        with pytest.raises(ValueError, match=f"Invalid calculation type: '{invalid_type}'"):
             NodeFactory.create_calculation_node("TestNode", [mock_node_a], invalid_type)
 
     def test_error_strategy_not_in_registry(
@@ -192,9 +178,7 @@ class TestCreateCalculationNode:
         """Test creation fails if the strategy is not found in the Registry."""
         calc_type = "addition"
         calculation_name = NodeFactory._calculation_methods[calc_type]
-        mock_registry_get.side_effect = KeyError(
-            f"Strategy '{calculation_name}' not found"
-        )
+        mock_registry_get.side_effect = KeyError(f"Strategy '{calculation_name}' not found")
 
         with pytest.raises(
             ValueError,
@@ -213,9 +197,7 @@ class TestCreateCalculationNode:
         """Test creation fails if strategy instantiation fails (e.g., missing kwargs)."""
         mock_registry_get.return_value = mock_strategy_class
         # Simulate TypeError during __init__
-        mock_strategy_class.side_effect = TypeError(
-            "Missing required argument 'weights'"
-        )
+        mock_strategy_class.side_effect = TypeError("Missing required argument 'weights'")
         calc_type = "weighted_average"  # Assume this requires 'weights'
         calculation_name = NodeFactory._calculation_methods[calc_type]
 
@@ -242,9 +224,7 @@ class TestCreateCustomNodeFromCallable:
 
         description = "Custom tax calculation"
 
-        node = NodeFactory._create_custom_node_from_callable(
-            name, inputs, formula, description
-        )
+        node = NodeFactory._create_custom_node_from_callable(name, inputs, formula, description)
 
         assert isinstance(node, CustomCalculationNode)
         assert node.name == name
@@ -285,9 +265,7 @@ class TestCreateCustomNodeFromCallable:
     def test_error_empty_name(self, mock_node_a: Node):
         """Test creation fails with an empty name."""
         with pytest.raises(ValueError, match="Node name must be a non-empty string"):
-            NodeFactory._create_custom_node_from_callable(
-                "", [mock_node_a], lambda x: x
-            )
+            NodeFactory._create_custom_node_from_callable("", [mock_node_a], lambda x: x)
 
     def test_error_formula_not_callable(self, mock_node_a: Node):
         """Test creation fails if formula is not callable."""
@@ -298,9 +276,7 @@ class TestCreateCustomNodeFromCallable:
 
     def test_error_inputs_contain_non_node(self, mock_node_a: Node):
         """Test creation fails if inputs list contains non-Node objects."""
-        with pytest.raises(
-            TypeError, match="All items in inputs must be Node instances"
-        ):
+        with pytest.raises(TypeError, match="All items in inputs must be Node instances"):
             NodeFactory._create_custom_node_from_callable(
                 "TestNode", [mock_node_a, "not_a_node"], lambda x, y: x
             )

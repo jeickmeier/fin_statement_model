@@ -20,23 +20,35 @@ The validators help ensure:
 4. Helpful suggestions for non-standard names
 """
 
+import logging
 import sys
 import pandas as pd
 from fin_statement_model.core.errors import FinancialModelError
+from typing import Dict, Any, Optional
 
-from fin_statement_model.io import read_data
+from fin_statement_model.core.graph import Graph
+from fin_statement_model.io import read_data, write_data
 from fin_statement_model.statements import create_statement_dataframe
-from fin_statement_model.io import write_data  # Import the forecaster
 from fin_statement_model.forecasting.forecaster import StatementForecaster
 
 # Import unified validator
-from fin_statement_model.io.validation import UnifiedNodeValidator
+from fin_statement_model.io.validation import UnifiedNodeValidator, ValidationResult
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 # --- 1. Setup ---
 
 # Hardcoded paths (as modified by user)
-md_output_path = "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/output/test_statement.md"
-TEST_CONFIG_PATH = "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/configs/test_statement.yaml"
+md_output_path = (
+    "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/output/test_statement.md"
+)
+TEST_CONFIG_PATH = (
+    "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/configs/test_statement.yaml"
+)
 
 # --- 2. Sample Data ---
 
@@ -67,7 +79,7 @@ historical_data = {
 
 # --- 2b. Node Name Validation and Normalization ---
 
-print("Validating and normalizing node names...")
+logger.info("Validating and normalizing node names...")
 
 # Create unified validator
 validator = UnifiedNodeValidator(
@@ -78,7 +90,7 @@ validator = UnifiedNodeValidator(
 )
 
 # Demonstrate validation with some non-standard names
-print("\n=== DEMONSTRATION: Validating various node name patterns ===")
+logger.info("\n=== DEMONSTRATION: Validating various node name patterns ===")
 
 demo_names = [
     "cash",  # Alternate name
@@ -93,23 +105,21 @@ demo_names = [
     "cogs",  # Alternate for cost_of_goods_sold
 ]
 
-print(f"Demo names to validate: {demo_names}")
+logger.info(f"Demo names to validate: {demo_names}")
 
 for demo_name in demo_names:
     result = validator.validate(demo_name)
-    print(
-        f"  '{demo_name}' -> '{result.standardized_name}' [{result.category}] ({result.message})"
-    )
+    logger.info(f"  '{demo_name}' -> '{result.standardized_name}' [{result.category}] ({result.message})")
 
     if result.suggestions:
-        print(f"    Suggestions: {result.suggestions[:2]}")  # Show first 2 suggestions
-    print()
+        logger.info(f"    Suggestions: {result.suggestions[:2]}")  # Show first 2 suggestions
+    logger.info("")
 
-print("=== END DEMONSTRATION ===\n")
+logger.info("=== END DEMONSTRATION ===\n")
 
 # Validate and normalize historical data node names
 original_node_names = list(historical_data.keys())
-print(f"Original node names: {original_node_names}")
+logger.info(f"Original node names: {original_node_names}")
 
 # Use unified validator
 validation_results = validator.validate_batch(original_node_names)
@@ -121,23 +131,19 @@ name_changes = []
 for original_name, result in validation_results.items():
     if result.standardized_name != original_name:
         name_changes.append((original_name, result.standardized_name))
-        print(
-            f"  Normalized: '{original_name}' -> '{result.standardized_name}' ({result.message})"
-        )
+        logger.info(f"  Normalized: '{original_name}' -> '{result.standardized_name}' ({result.message})")
     else:
-        print(f"  Validated: '{original_name}' - {result.message}")
+        logger.info(f"  Validated: '{original_name}' - {result.message}")
 
     # Copy data with standardized name
-    normalized_historical_data[result.standardized_name] = historical_data[
-        original_name
-    ]
+    normalized_historical_data[result.standardized_name] = historical_data[original_name]
 
 # Show validation summary
-print("\nValidation Summary:")
-print(f"  Total nodes validated: {len(validation_results)}")
+logger.info("\nValidation Summary:")
+logger.info(f"  Total nodes validated: {len(validation_results)}")
 valid_count = sum(1 for r in validation_results.values() if r.is_valid)
-print(f"  Valid nodes: {valid_count}")
-print(f"  Invalid nodes: {len(validation_results) - valid_count}")
+logger.info(f"  Valid nodes: {valid_count}")
+logger.info(f"  Invalid nodes: {len(validation_results) - valid_count}")
 
 # Count by category
 categories = {}
@@ -145,25 +151,23 @@ for result in validation_results.values():
     categories[result.category] = categories.get(result.category, 0) + 1
 
 for category, count in categories.items():
-    print(f"  {category}: {count}")
+    logger.info(f"  {category}: {count}")
 
 # Show unrecognized names with suggestions
 unrecognized = [
-    name
-    for name, result in validation_results.items()
-    if result.category in ["custom", "invalid"]
+    name for name, result in validation_results.items() if result.category in ["custom", "invalid"]
 ]
 if unrecognized:
-    print(f"\nUnrecognized node names: {unrecognized}")
+    logger.info(f"\nUnrecognized node names: {unrecognized}")
     for name in unrecognized:
         if validation_results[name].suggestions:
-            print(f"  Suggestions for '{name}': {validation_results[name].suggestions}")
+            logger.info(f"  Suggestions for '{name}': {validation_results[name].suggestions}")
 
 # Update historical_data to use normalized names
 historical_data = normalized_historical_data
 
 # Also normalize forecast_configs keys to match
-print("\nNormalizing forecast configuration keys...")
+logger.info("\nNormalizing forecast configuration keys...")
 normalized_forecast_configs = {}
 for original_name, config in {
     "cash_and_equivalents": {"method": "simple", "config": 0.05},  # 5% growth
@@ -190,9 +194,7 @@ for original_name, config in {
         "method": "curve",
         "config": [0.10, 0.09, 0.08, 0.07, 0.06],
     },  # Declining revenue growth
-    "cost_of_goods_sold": {
-        "method": "historical_growth"
-    },  # COGS based on historical growth
+    "cost_of_goods_sold": {"method": "historical_growth"},  # COGS based on historical growth
     "operating_expenses": {
         "method": "statistical",
         "config": {
@@ -206,38 +208,36 @@ for original_name, config in {
     "interest_expense": {
         "method": "historical_growth"
     },  # Interest expense based on historical growth
-    "income_tax": {
-        "method": "historical_growth"
-    },  # Tax expense based on historical growth
+    "income_tax": {"method": "historical_growth"},  # Tax expense based on historical growth
 }.items():
     # Validate and normalize forecast config keys
     result = validator.validate(original_name)
     normalized_forecast_configs[result.standardized_name] = config
     if result.standardized_name != original_name:
-        print(f"  Forecast config: '{original_name}' -> '{result.standardized_name}'")
+        logger.info(f"  Forecast config: '{original_name}' -> '{result.standardized_name}'")
 
 forecast_configs = normalized_forecast_configs
 
-print(f"\nFinal normalized node names: {sorted(historical_data.keys())}")
+logger.info(f"\nFinal normalized node names: {sorted(historical_data.keys())}")
 
 # --- 3. Graph Creation and Initial Data Loading ---
 
 # Restore try-except block
 try:
-    print("\nCreating graph and loading initial data...")
+    logger.info("\nCreating graph and loading initial data...")
     graph = read_data(format_type="dict", source=historical_data)
-    print(f"Graph created with initial periods: {graph.periods}")
+    logger.info(f"Graph created with initial periods: {graph.periods}")
 except FinancialModelError as e:
-    print(f"Error creating graph or loading initial data: {e}", file=sys.stderr)
+    logger.error(f"Error creating graph or loading initial data: {e}", file=sys.stderr)
     sys.exit(1)
 
 # --- 3c. Post-Graph Node Validation ---
 
-print("\nValidating graph nodes with unified validator...")
+logger.info("\nValidating graph nodes with unified validator...")
 
 # Get all nodes from the graph
 graph_nodes = list(graph.nodes.values())
-print(f"Graph contains {len(graph_nodes)} nodes")
+logger.info(f"Graph contains {len(graph_nodes)} nodes")
 
 # Validate each node in the graph
 node_validation_results = {}
@@ -254,9 +254,7 @@ for node in graph_nodes:
         elif isinstance(node.inputs, list):
             parent_nodes = [n.name for n in node.inputs if hasattr(n, "name")]
 
-    result = validator.validate(
-        node.name, node_type=node_type, parent_nodes=parent_nodes
-    )
+    result = validator.validate(node.name, node_type=node_type, parent_nodes=parent_nodes)
     node_validation_results[node.name] = result
 
 # Display categorized results
@@ -275,23 +273,23 @@ for node_name, result in node_validation_results.items():
 
 for category, nodes in categories_in_graph.items():
     if nodes:  # Only show categories that have nodes
-        print(f"\n{category.upper()} nodes ({len(nodes)}):")
+        logger.info(f"\n{category.upper()} nodes ({len(nodes)}):")
         for node_info in nodes:
-            print(f"  - {node_info['name']}: {node_info['message']}")
+            logger.info(f"  - {node_info['name']}: {node_info['message']}")
 
 # Show any naming improvement suggestions
-print("\nNaming improvement suggestions:")
+logger.info("\nNaming improvement suggestions:")
 suggestions_found = False
 for node_name, result in node_validation_results.items():
     if result.suggestions:
         suggestions_found = True
-        print(f"  {node_name}: {result.suggestions}")
+        logger.info(f"  {node_name}: {result.suggestions}")
 
 if not suggestions_found:
-    print("  All node names are using standard conventions - no improvements needed!")
+    logger.info("  All node names are using standard conventions - no improvements needed!")
 
 # --- 3b. Forecasting Setup ---
-print("Setting up forecasting...")
+logger.info("Setting up forecasting...")
 
 historical_periods = sorted(list(graph.periods))
 forecast_periods = [
@@ -303,15 +301,13 @@ forecast_periods = [
 ]  # Hardcoded as per user changes
 all_periods = sorted(historical_periods + forecast_periods)
 
-print(f"Historical periods: {historical_periods}")
-print(f"Forecast periods: {forecast_periods}")
+logger.info(f"Historical periods: {historical_periods}")
+logger.info(f"Forecast periods: {forecast_periods}")
 
 # Use the StatementForecaster
 # Restore try-except block
-forecaster = StatementForecaster(
-    fsg=graph
-)  # fsg likely stands for financial statement graph
-print(f"Applying forecasts for periods: {forecast_periods}")
+forecaster = StatementForecaster(fsg=graph)  # fsg likely stands for financial statement graph
+logger.info(f"Applying forecasts for periods: {forecast_periods}")
 
 # Apply the forecasts using the defined configs
 forecaster.create_forecast(
@@ -335,7 +331,7 @@ statement_df = create_statement_dataframe(
 with pd.option_context(
     "display.max_rows", None, "display.max_columns", None, "display.width", 1000
 ):
-    print(statement_df.to_string(index=False))
+    logger.info(statement_df.to_string(index=False))
 
 # Write output data
 write_data(

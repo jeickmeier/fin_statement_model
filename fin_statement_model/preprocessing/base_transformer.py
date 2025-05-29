@@ -26,9 +26,7 @@ class DataTransformer(ABC):
             config: Optional configuration dictionary for the transformer
         """
         self.config = config or {}
-        logger.debug(
-            f"Initialized {self.__class__.__name__} with config: {self.config}"
-        )
+        logger.debug(f"Initialized {self.__class__.__name__} with config: {self.config}")
 
     @abstractmethod
     def transform(self, data: object) -> object:
@@ -105,9 +103,7 @@ class DataTransformer(ABC):
             # Perform transformation
             result = self.transform(processed_data)
             result = self._post_transform_hook(result)
-            logger.debug(
-                f"Successfully transformed data with {self.__class__.__name__}"
-            )
+            logger.debug(f"Successfully transformed data with {self.__class__.__name__}")
         except Exception as e:
             logger.exception(f"Error transforming data with {self.__class__.__name__}")
             raise ValueError("Error transforming data") from e
@@ -121,9 +117,7 @@ class CompositeTransformer(DataTransformer):
     This allows building complex transformation chains from simple steps.
     """
 
-    def __init__(
-        self, transformers: list[DataTransformer], config: Optional[dict] = None
-    ):
+    def __init__(self, transformers: list[DataTransformer], config: Optional[dict] = None):
         """Initialize with a list of transformers.
 
         Args:

@@ -29,9 +29,7 @@ class TestCalculateMetricHelper:
         """Test metric calculation with multiple inputs."""
         # Create test nodes for current ratio
         current_assets = FinancialStatementItemNode("current_assets", {"2023": 500000})
-        current_liabilities = FinancialStatementItemNode(
-            "current_liabilities", {"2023": 250000}
-        )
+        current_liabilities = FinancialStatementItemNode("current_liabilities", {"2023": 250000})
 
         data_nodes = {
             "current_assets": current_assets,
@@ -57,13 +55,9 @@ class TestCalculateMetricHelper:
     def test_missing_input_nodes_error(self):
         """Test error handling when required input nodes are missing."""
         # Only provide revenue, but gross_profit also needs cost_of_goods_sold
-        data_nodes = {
-            "revenue": FinancialStatementItemNode("revenue", {"2023": 1000000})
-        }
+        data_nodes = {"revenue": FinancialStatementItemNode("revenue", {"2023": 1000000})}
 
-        with pytest.raises(
-            ValueError, match="Missing required input nodes"
-        ) as exc_info:
+        with pytest.raises(ValueError, match="Missing required input nodes") as exc_info:
             calculate_metric("gross_profit", data_nodes, "2023")
 
         assert "cost_of_goods_sold" in str(exc_info.value)
@@ -79,9 +73,7 @@ class TestCalculateMetricHelper:
         }
 
         # Calculate with custom node name
-        result = calculate_metric(
-            "gross_profit", data_nodes, "2023", node_name="custom_gp"
-        )
+        result = calculate_metric("gross_profit", data_nodes, "2023", node_name="custom_gp")
 
         # Result should be the same regardless of node name
         assert result == 400000.0
