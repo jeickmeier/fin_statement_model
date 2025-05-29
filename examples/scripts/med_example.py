@@ -25,6 +25,8 @@ from fin_statement_model.statements import (
     export_statements_to_excel,
 )
 from fin_statement_model.forecasting.forecaster import StatementForecaster
+from fin_statement_model.core.metrics.registry import metric_registry
+from pathlib import Path as MetricPath
 
 # --- 1. Setup ---
 
@@ -290,6 +292,11 @@ except (ConfigurationError, StatementError, FinancialModelError):
     sys.exit()
 
 # --- 7. Exporting ---
+
+# Reload the special metrics directory to pick up the newly added retained_earnings metric
+special_dir = MetricPath(__file__).parent.parent.parent / "fin_statement_model/core/metrics/builtin_organized/special"
+metric_count = metric_registry.load_metrics_from_directory(special_dir)
+logger.info(f"Reloaded {metric_count} metrics from special directory to include retained_earnings")
 
 excel_output_path = OUTPUT_DIR / "financial_statements.xlsx"
 md_output_path = OUTPUT_DIR / "financial_statements.md"  # Added Markdown path

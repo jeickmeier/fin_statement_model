@@ -38,3 +38,45 @@
       - Retained earnings are a key source of internal funding for growth
 
       - Analyze trends over multiple years to assess management''s capital allocation strategy '
+
+- name: Retained Earnings
+  description: Calculates the cumulative retained earnings balance for balance sheet presentation. Represents prior retained earnings plus current period net income minus dividends.
+  inputs:
+  - prior_retained_earnings
+  - net_income
+  - dividends
+  formula: prior_retained_earnings + net_income - dividends
+  tags:
+  - equity
+  - balance_sheet
+  - cumulative_balance
+  - shareholders_equity
+  units: currency
+  category: special
+  related_metrics:
+  - retained_earnings_change
+  - net_income
+  - dividends
+  - total_equity
+  - return_on_equity
+  interpretation:
+    good_range: null
+    warning_below: null
+    warning_above: null
+    excellent_above: null
+    poor_below: null
+    notes: '- Represents cumulative earnings retained in the business over time
+
+      - Positive balance indicates accumulated profits exceeding total dividends paid
+
+      - Growing retained earnings shows profitable operations and reinvestment capacity
+
+      - Large retained earnings balance provides financial flexibility and self-funding ability
+
+      - Compare growth rate to net income to assess dividend policy consistency
+
+      - Key component of shareholders'' equity on the balance sheet
+
+      - Higher retained earnings typically strengthen the company''s financial position
+
+      - Consider the optimal balance between retention and dividend distribution to shareholders '

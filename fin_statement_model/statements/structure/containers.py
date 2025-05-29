@@ -94,10 +94,14 @@ class Section:
             StatementError: If an item with the same id already exists.
         """
         if any(existing.id == item.id for existing in self._items):
-            raise StatementError(message=f"Duplicate item ID: {item.id} in section: {self.id}")
+            raise StatementError(
+                message=f"Duplicate item ID: {item.id} in section: {self.id}"
+            )
         self._items.append(item)
 
-    def find_item_by_id(self, item_id: str) -> Optional[Union["Section", StatementItem]]:
+    def find_item_by_id(
+        self, item_id: str
+    ) -> Optional[Union["Section", StatementItem]]:
         """Recursively find an item by its identifier within this section.
 
         Args:
@@ -278,7 +282,9 @@ class StatementStructure:
                 if isinstance(item, Section):
                     _collect_items_recursive(item.items)
                     # Also collect the section's subtotal if it exists and is a StatementItem
-                    if hasattr(item, "subtotal") and isinstance(item.subtotal, StatementItem):
+                    if hasattr(item, "subtotal") and isinstance(
+                        item.subtotal, StatementItem
+                    ):
                         all_statement_items.append(item.subtotal)
                 elif isinstance(item, StatementItem):
                     all_statement_items.append(item)

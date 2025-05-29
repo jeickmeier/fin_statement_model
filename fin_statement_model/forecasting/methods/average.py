@@ -52,9 +52,7 @@ class AverageForecastMethod(BaseForecastMethod):
         # Average method doesn't need specific configuration
         # Accept None, 0, or any placeholder value
 
-    def normalize_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory.
 
         Args:
@@ -86,14 +84,10 @@ class AverageForecastMethod(BaseForecastMethod):
             ValueError: If no valid historical data is available.
         """
         if not hasattr(node, "calculate") or not callable(node.calculate):
-            raise ValueError(
-                f"Node {node.name} cannot be calculated for average method"
-            )
+            raise ValueError(f"Node {node.name} cannot be calculated for average method")
 
         if not hasattr(node, "values") or not isinstance(node.values, dict):
-            raise ValueError(
-                f"Node {node.name} does not have values dictionary for average method"
-            )
+            raise ValueError(f"Node {node.name} does not have values dictionary for average method")
 
         # Extract historical values
         historical_values = []
@@ -101,11 +95,7 @@ class AverageForecastMethod(BaseForecastMethod):
             if period in node.values:
                 try:
                     value = node.calculate(period)
-                    if (
-                        value is not None
-                        and not np.isnan(value)
-                        and not np.isinf(value)
-                    ):
+                    if value is not None and not np.isnan(value) and not np.isinf(value):
                         historical_values.append(float(value))
                 except Exception as e:
                     # Log the exception and skip this period

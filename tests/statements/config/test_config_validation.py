@@ -1,6 +1,6 @@
 """Tests for statement configuration validation logic."""
 
-from fin_statement_model.statements.config.config import StatementConfig
+from fin_statement_model.statements.configs.validator import StatementConfig
 import pytest
 
 

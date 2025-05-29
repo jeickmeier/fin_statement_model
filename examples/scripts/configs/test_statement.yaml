@@ -101,12 +101,10 @@ sections:
         sign_convention: 1
       - id: retained_earnings
         name: Retained Earnings
-        type: metric
-        metric_id: retained_earnings
-        inputs:
-          prior_retained_earnings: retained_earnings
-          net_income: net_income
-          dividends: dividends
+        type: calculated
+        calculation:
+          type: addition
+          inputs: [prior_retained_earnings, net_income, dividends]
         sign_convention: 1
     subtotal:
       id: total_equity
@@ -154,7 +152,7 @@ sections:
         metric_id: gross_profit
         inputs:
           revenue: revenue
-          cost_of_goods_sold: cost_of_goods_sold
+          cost_of_goods_sold: cogs
         sign_convention: 1
 
   - id: operating_expenses_section

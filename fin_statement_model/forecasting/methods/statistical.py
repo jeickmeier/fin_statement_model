@@ -54,9 +54,7 @@ class StatisticalForecastMethod(BaseForecastMethod):
             TypeError: If config is invalid.
         """
         if not isinstance(config, dict):
-            raise TypeError(
-                f"Statistical method requires dict configuration, got {type(config)}"
-            )
+            raise TypeError(f"Statistical method requires dict configuration, got {type(config)}")
 
         if "distribution" not in config:
             raise ValueError("Statistical method requires 'distribution' key")
@@ -66,15 +64,11 @@ class StatisticalForecastMethod(BaseForecastMethod):
 
         # Validate using StatisticalConfig dataclass
         try:
-            StatisticalConfig(
-                distribution=config["distribution"], params=config["params"]
-            )
+            StatisticalConfig(distribution=config["distribution"], params=config["params"])
         except (ValueError, TypeError) as e:
             raise ValueError(f"Invalid statistical configuration: {e}") from e
 
-    def normalize_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory.
 
         Args:
@@ -95,20 +89,14 @@ class StatisticalForecastMethod(BaseForecastMethod):
             """Generate a random growth rate from the specified distribution."""
             if stat_config.distribution == "normal":
                 return float(
-                    np.random.normal(
-                        stat_config.params["mean"], stat_config.params["std"]
-                    )
+                    np.random.normal(stat_config.params["mean"], stat_config.params["std"])
                 )
             elif stat_config.distribution == "uniform":
                 return float(
-                    np.random.uniform(
-                        stat_config.params["low"], stat_config.params["high"]
-                    )
+                    np.random.uniform(stat_config.params["low"], stat_config.params["high"])
                 )
             else:
                 # This shouldn't happen due to validation, but just in case
-                raise ValueError(
-                    f"Unsupported distribution: {stat_config.distribution}"
-                )
+                raise ValueError(f"Unsupported distribution: {stat_config.distribution}")
 
         return {"forecast_type": self.internal_type, "growth_params": generator}

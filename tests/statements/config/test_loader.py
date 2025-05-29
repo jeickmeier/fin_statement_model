@@ -1,82 +1,149 @@
-"""Tests for statement configuration loading functions."""
+"""Tests for statement configuration loading functionality.
+
+This module tests the loading of statement configurations from files and directories,
+including validation and error handling.
+"""
 
 import json
-import pytest
+import tempfile
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
-from fin_statement_model.io.readers.statement_config_reader import (
-    read_statement_config_from_path,
-    list_available_builtin_configs,
-    read_builtin_statement_config,
-)
-from fin_statement_model.statements.config.config import (
-    StatementConfig,
-)
-from fin_statement_model.io.exceptions import ReadError
+import pytest
 
-# TODO: Remove skip once refactor is complete
-# pytest.skip("Skipping tests for refactored statements config reader", allow_module_level=True)
+from fin_statement_model.statements.orchestration.loader import load_build_register_statements
+from fin_statement_model.statements.structure.builder import StatementStructureBuilder
+from fin_statement_model.statements.registry import StatementRegistry
+from fin_statement_model.core.errors import ConfigurationError
 
 
-def test_list_built_in_statements_empty(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Test listing built-in statements when the mapping directory is empty."""
-    # Point mapping dir to a temp empty directory
-    # Monkeypatching the internal _get_builtin_config_package might be complex
-    # Instead, let's mock importlib.resources.files to simulate empty/missing dir
-    with patch("importlib.resources.files") as mock_files:
-        mock_path = MagicMock(spec=Path)
-        mock_path.is_dir.return_value = False  # Simulate non-existent/non-dir path
-        mock_files.return_value = mock_path
+class TestLoadBuildRegisterStatements:
+    """Test the load_build_register_statements function."""
 
-        names = list_available_builtin_configs()
-        assert isinstance(names, list)
-        assert names == []
+    def test_load_single_file_success(self):
+        """Test loading a single valid configuration file."""
+        # Create a temporary config file
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            config_data = {"id": "test_statement", "name": "Test Statement", "sections": []}
+            json.dump(config_data, f)
+            config_path = f.name
 
-        # Test case where iterdir returns nothing
-        mock_path.is_dir.return_value = True
-        mock_path.iterdir.return_value = []
-        names_empty_iter = list_available_builtin_configs()
-        assert names_empty_iter == []
+        try:
+            registry = StatementRegistry()
+            builder = StatementStructureBuilder()
 
+            # Mock the IO functions
+            with patch(
+                "fin_statement_model.statements.orchestration.loader.read_statement_config_from_path"
+            ) as mock_read:
+                mock_read.return_value = config_data
 
-def test_load_statement_config_valid(tmp_path: Path) -> None:
-    """Test loading a valid statement config file (JSON/YAML)."""
-    # Create a minimal JSON config file
-    data = {"id": "s1", "name": "Statement 1", "sections": []}
-    cfg_file = tmp_path / "stmt.json"
-    cfg_file.write_text(json.dumps(data))
-    # read_statement_config_from_path only reads the raw data
-    raw_data = read_statement_config_from_path(str(cfg_file))
-    assert raw_data == data
+                loaded_ids = load_build_register_statements(config_path, registry, builder)
 
-    # Validation happens in StatementConfig
-    config = StatementConfig(raw_data)
-    validation_errors = config.validate_config()
-    assert not validation_errors
-    assert config.model is not None
-    assert config.model.id == "s1"
-    assert config.model.name == "Statement 1"
-    assert config.model.sections == []
+                assert loaded_ids == ["test_statement"]
+                assert registry.get("test_statement") is not None
+        finally:
+            Path(config_path).unlink()
 
+    def test_load_directory_success(self):
+        """Test loading multiple configurations from a directory."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Create test config files
+            configs = {
+                "stmt1": {"id": "statement_1", "name": "Statement 1", "sections": []},
+                "stmt2": {"id": "statement_2", "name": "Statement 2", "sections": []},
+            }
 
-def test_load_statement_config_invalid(tmp_path: Path) -> None:
-    """Test loading an invalid or non-existent config file."""
-    # Create invalid YAML/JSON
-    bad_file = tmp_path / "bad.yaml"
-    bad_file.write_text("invalid: yaml: here")
-    # read function raises ReadError for parsing issues
-    with pytest.raises(ReadError, match="Invalid YAML format"):
-        read_statement_config_from_path(str(bad_file))
+            registry = StatementRegistry()
+            builder = StatementStructureBuilder()
 
-    # Test non-existent file
-    non_existent_file = tmp_path / "nosuchfile.json"
-    with pytest.raises(ReadError, match="Configuration file not found"):
-        read_statement_config_from_path(str(non_existent_file))
+            # Mock the IO functions
+            with patch(
+                "fin_statement_model.statements.orchestration.loader.read_statement_configs_from_directory"
+            ) as mock_read:
+                mock_read.return_value = configs
 
+                loaded_ids = load_build_register_statements(temp_dir, registry, builder)
 
-def test_load_built_in_statement_not_found() -> None:
-    """Test trying to load a built-in statement that does not exist."""
-    # read_builtin raises ReadError if not found
-    with pytest.raises(ReadError, match="Built-in statement config 'nonexistent' not found"):
-        read_builtin_statement_config("nonexistent")
+                assert set(loaded_ids) == {"statement_1", "statement_2"}
+                assert registry.get("statement_1") is not None
+                assert registry.get("statement_2") is not None
+
+    def test_file_not_found(self):
+        """Test handling of non-existent file."""
+        registry = StatementRegistry()
+        builder = StatementStructureBuilder()
+
+        with pytest.raises(ConfigurationError) as exc_info:
+            load_build_register_statements("/non/existent/path.yaml", registry, builder)
+
+        assert "Failed to read config" in str(exc_info.value)
+
+    def test_validation_error(self):
+        """Test handling of validation errors."""
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            # Invalid config - missing required fields
+            config_data = {
+                "id": "test_statement"
+                # Missing 'name' and 'sections'
+            }
+            json.dump(config_data, f)
+            config_path = f.name
+
+        try:
+            registry = StatementRegistry()
+            builder = StatementStructureBuilder()
+
+            with patch(
+                "fin_statement_model.statements.orchestration.loader.read_statement_config_from_path"
+            ) as mock_read:
+                mock_read.return_value = config_data
+
+                # Should not raise but log warning
+                loaded_ids = load_build_register_statements(config_path, registry, builder)
+
+                # No statements should be loaded due to validation error
+                assert loaded_ids == []
+        finally:
+            Path(config_path).unlink()
+
+    def test_duplicate_registration(self):
+        """Test handling of duplicate statement IDs."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            configs = {
+                "stmt1": {"id": "duplicate_id", "name": "Statement 1", "sections": []},
+                "stmt2": {
+                    "id": "duplicate_id",  # Same ID
+                    "name": "Statement 2",
+                    "sections": [],
+                },
+            }
+
+            registry = StatementRegistry()
+            builder = StatementStructureBuilder()
+
+            with patch(
+                "fin_statement_model.statements.orchestration.loader.read_statement_configs_from_directory"
+            ) as mock_read:
+                mock_read.return_value = configs
+
+                loaded_ids = load_build_register_statements(temp_dir, registry, builder)
+
+                # Only one should be loaded due to duplicate ID
+                assert len(loaded_ids) == 1
+                assert loaded_ids[0] == "duplicate_id"
+
+    def test_empty_directory(self):
+        """Test loading from empty directory."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            registry = StatementRegistry()
+            builder = StatementStructureBuilder()
+
+            with patch(
+                "fin_statement_model.statements.orchestration.loader.read_statement_configs_from_directory"
+            ) as mock_read:
+                mock_read.return_value = {}
+
+                loaded_ids = load_build_register_statements(temp_dir, registry, builder)
+
+                assert loaded_ids == []

@@ -195,12 +195,16 @@ class MetricLineItem(LineItem):
             metadata=metadata,
         )
         if not metric_id or not isinstance(metric_id, str):
-            raise StatementError(message=f"Invalid metric_id '{metric_id}' for item: {id}")
+            raise StatementError(
+                message=f"Invalid metric_id '{metric_id}' for item: {id}"
+            )
         if not isinstance(inputs, dict) or not inputs:
             raise StatementError(
                 message=f"Metric inputs must be a non-empty dictionary for item: {id}"
             )
-        if not all(isinstance(k, str) and isinstance(v, str) for k, v in inputs.items()):
+        if not all(
+            isinstance(k, str) and isinstance(v, str) for k, v in inputs.items()
+        ):
             raise StatementError(
                 message=f"Metric input keys and values must be strings for item: {id}"
             )
@@ -339,7 +343,9 @@ class SubtotalLineItem(CalculatedLineItem):
             StatementError: If item_ids is empty or not a list.
         """
         if not isinstance(item_ids, list) or not item_ids:
-            raise StatementError(message=f"Invalid or empty item IDs for subtotal: {id}")
+            raise StatementError(
+                message=f"Invalid or empty item IDs for subtotal: {id}"
+            )
         calculation = {"type": "addition", "inputs": item_ids, "parameters": {}}
         super().__init__(
             id=id,

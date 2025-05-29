@@ -22,6 +22,8 @@ Key functionalities include:
   - High-level functions to streamline common workflows like generating a
     statement DataFrame or exporting statements to files (`create_statement_dataframe`,
     `export_statements_to_excel`).
+  - Centralizing ID resolution logic between statement items and graph nodes
+    (`IDResolver`).
 
 This package imports from `core` and `io` (indirectly via `factory`), but should
 not be imported by `core`.
@@ -39,25 +41,66 @@ from .structure import (
 )
 
 # Configuration related classes
-from .config.config import StatementConfig
+from .configs.validator import StatementConfig
 
 # Building
-from .builder import StatementStructureBuilder
+from .structure.builder import StatementStructureBuilder
 
 # Registry
 from .registry import StatementRegistry
 
+# ID Resolution
+from .population.id_resolver import IDResolver
+
+# Data Fetching
+from .formatting.data_fetcher import DataFetcher, FetchResult, NodeData
+
+# Item Processors
+from .population.item_processors import (
+    ProcessorResult,
+    ItemProcessor,
+    MetricItemProcessor,
+    CalculatedItemProcessor,
+    SubtotalItemProcessor,
+    ItemProcessorManager,
+)
+
+# Result Types for Error Handling
+from .utilities.result_types import (
+    Result,
+    Success,
+    Failure,
+    ErrorDetail,
+    ErrorSeverity,
+    ErrorCollector,
+    OperationResult,
+    ValidationResult,
+    ProcessingResult,
+    combine_results,
+)
+
+# Retry Handler
+from .utilities.retry_handler import (
+    RetryHandler,
+    RetryConfig,
+    RetryStrategy,
+    RetryResult,
+    BackoffStrategy,
+    ExponentialBackoff,
+    LinearBackoff,
+    ConstantBackoff,
+    retry_with_exponential_backoff,
+    retry_on_specific_errors,
+)
+
 # Populator
-from .populator import populate_graph_from_statement
+from .population.populator import populate_graph_from_statement
 
 # Formatting
-# Ensure formatter is imported correctly if it's in a sub-package
-try:
-    from .formatter import StatementFormatter  # If __init__.py exists in formatter
-except ImportError:
-    from .formatter.formatter import StatementFormatter  # Direct import
+from .formatting.formatter import StatementFormatter
+
 # High-level Orchestration functions (previously Factory)
-from .factory import (
+from .orchestration.factory import (
     create_statement_dataframe,
     export_statements_to_excel,
     export_statements_to_json,
@@ -68,9 +111,38 @@ from .errors import StatementError, ConfigurationError
 
 # Public API definition
 __all__ = [
+    "BackoffStrategy",
+    "CalculatedItemProcessor",
     "CalculatedLineItem",
     "ConfigurationError",
+    "ConstantBackoff",
+    # Data Fetching
+    "DataFetcher",
+    "ErrorCollector",
+    "ErrorDetail",
+    "ErrorSeverity",
+    "ExponentialBackoff",
+    "Failure",
+    "FetchResult",
+    "IDResolver",
+    "ItemProcessor",
+    "ItemProcessorManager",
     "LineItem",
+    "LinearBackoff",
+    "MetricItemProcessor",
+    "MetricLineItem",
+    "NodeData",
+    "OperationResult",
+    "ProcessingResult",
+    # Item Processors
+    "ProcessorResult",
+    # Result Types
+    "Result",
+    "RetryConfig",
+    # Retry Handler
+    "RetryHandler",
+    "RetryResult",
+    "RetryStrategy",
     "Section",
     "StatementConfig",
     "StatementError",
@@ -80,11 +152,17 @@ __all__ = [
     "StatementRegistry",
     "StatementStructure",
     "StatementStructureBuilder",
+    "SubtotalItemProcessor",
     "SubtotalLineItem",
+    "Success",
+    "ValidationResult",
+    "combine_results",
     "create_statement_dataframe",
     "export_statements_to_excel",
     "export_statements_to_json",
     "populate_graph_from_statement",
+    "retry_on_specific_errors",
+    "retry_with_exponential_backoff",
     # --- Removed --- #
     # "FinancialStatementGraph", (unless reintroduced)
     # "StatementFactory", (class)

@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 # Use relative paths assuming script is run from workspace root
 WORKSPACE_ROOT = Path(__file__).resolve().parents[2]  # Adjust depth if needed
-CONFIG_PATH = WORKSPACE_ROOT / "fin_statement_model/statements/config/mappings/test_statement.yaml"
+CONFIG_PATH = WORKSPACE_ROOT / "examples/scripts/configs/test_statement.yaml"
 MD_OUTPUT_PATH = WORKSPACE_ROOT / "examples/scripts/output/statement_with_adjustments.md"
 
 if not CONFIG_PATH.is_file():
@@ -44,17 +44,19 @@ MD_OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 # Sample historical data matching node_ids in test_statement.yaml
 historical_data = {
     # Node ID: { Period: Value }
-    "core.cash": {"2021": 90.0, "2022": 100.0, "2023": 120.0},
-    "core.accounts_receivable": {"2021": 180.0, "2022": 200.0, "2023": 250.0},
-    "core.ppe": {"2021": 480.0, "2022": 500.0, "2023": 550.0},
-    "core.accounts_payable": {"2021": 140.0, "2022": 150.0, "2023": 180.0},
-    "core.debt": {"2021": 290.0, "2022": 300.0, "2023": 320.0},
-    "core.common_stock": {"2021": 100.0, "2022": 100.0, "2023": 100.0},
-    "core.prior_retained_earnings": {"2021": 80.0, "2022": 100.0, "2023": 125.0},
-    "core.dividends": {"2021": -8.0, "2022": -10.0, "2023": -15.0},
-    "core.revenue": {"2021": 900.0, "2022": 1000.0, "2023": 1200.0},
-    "core.cogs": {"2021": -350.0, "2022": -400.0, "2023": -500.0},
-    "core.opex": {"2021": -280.0, "2022": -300.0, "2023": -350.0},
+    "cash_and_equivalents": {"2021": 90.0, "2022": 100.0, "2023": 120.0},
+    "accounts_receivable": {"2021": 180.0, "2022": 200.0, "2023": 250.0},
+    "property_plant_equipment": {"2021": 480.0, "2022": 500.0, "2023": 550.0},
+    "accounts_payable": {"2021": 140.0, "2022": 150.0, "2023": 180.0},
+    "total_debt": {"2021": 290.0, "2022": 300.0, "2023": 320.0},
+    "common_stock": {"2021": 100.0, "2022": 100.0, "2023": 100.0},
+    "prior_retained_earnings": {"2021": 80.0, "2022": 100.0, "2023": 125.0},
+    "dividends": {"2021": -8.0, "2022": -10.0, "2023": -15.0},
+    "revenue": {"2021": 900.0, "2022": 1000.0, "2023": 1200.0},
+    "cost_of_goods_sold": {"2021": -350.0, "2022": -400.0, "2023": -500.0},
+    "operating_expenses": {"2021": -280.0, "2022": -300.0, "2023": -350.0},
+    "interest_expense": {"2021": -20.0, "2022": -25.0, "2023": -30.0},
+    "income_tax": {"2021": -70.0, "2022": -80.0, "2023": -95.0},
 }
 
 # --- 3. Create Graph with Data ---
@@ -105,23 +107,25 @@ logger.info(f"Forecast periods: {forecast_periods}")
 
 # Define forecast configurations using node IDs from historical_data
 forecast_configs = {
-    "core.cash": {"method": "simple", "config": 0.05},
-    "core.accounts_receivable": {"method": "historical_growth"},
-    "core.ppe": {"method": "simple", "config": 0.02},
-    "core.accounts_payable": {
+    "cash_and_equivalents": {"method": "simple", "config": 0.05},
+    "accounts_receivable": {"method": "historical_growth", "config": {}},
+    "property_plant_equipment": {"method": "simple", "config": 0.02},
+    "accounts_payable": {
         "method": "curve",
         "config": [0.04, 0.03, 0.03, 0.02, 0.02],
     },
-    "core.debt": {"method": "simple", "config": 0.0},
-    "core.common_stock": {"method": "simple", "config": 0.0},
-    "core.prior_retained_earnings": {"method": "simple", "config": 0.0},
-    "core.dividends": {"method": "historical_growth"},
-    "core.revenue": {"method": "curve", "config": [0.10, 0.09, 0.08, 0.07, 0.06]},
-    "core.cogs": {"method": "historical_growth"},
-    "core.opex": {
+    "total_debt": {"method": "simple", "config": 0.0},
+    "common_stock": {"method": "simple", "config": 0.0},
+    "prior_retained_earnings": {"method": "simple", "config": 0.0},
+    "dividends": {"method": "historical_growth", "config": {}},
+    "revenue": {"method": "curve", "config": [0.10, 0.09, 0.08, 0.07, 0.06]},
+    "cost_of_goods_sold": {"method": "historical_growth", "config": {}},
+    "operating_expenses": {
         "method": "statistical",
         "config": {"distribution": "normal", "params": {"mean": 0.03, "std": 0.015}},
     },
+    "interest_expense": {"method": "historical_growth", "config": {}},
+    "income_tax": {"method": "simple", "config": 0.02},
 }
 
 # Use the StatementForecaster
@@ -144,7 +148,7 @@ logger.info("\n--- Adding Adjustments ---")
 
 try:
     adj_id_1 = graph.add_adjustment(
-        node_name="core.revenue",
+        node_name="revenue",
         period="2023",  # Adjust historical data
         value=75.0,
         adj_type=AdjustmentType.ADDITIVE,
@@ -152,10 +156,10 @@ try:
         tags={"manual", "revenue_recognition"},
         user="AnalystX",
     )
-    logger.info(f"Added additive adjustment {adj_id_1} for core.revenue 2023.")
+    logger.info(f"Added additive adjustment {adj_id_1} for revenue 2023.")
 
     adj_id_2 = graph.add_adjustment(
-        node_name="core.opex",
+        node_name="operating_expenses",
         period="2024",  # Adjust forecasted data
         value=-400.0,  # Note: OPEX is typically negative
         adj_type=AdjustmentType.REPLACEMENT,
@@ -164,7 +168,7 @@ try:
         user="AnalystY",
         priority=-10,
     )
-    logger.info(f"Added replacement adjustment {adj_id_2} for core.opex 2024.")
+    logger.info(f"Added replacement adjustment {adj_id_2} for operating_expenses 2024.")
 
 except FinancialModelError as e:
     logger.error(f"Error adding adjustments: {e}", exc_info=True)
