@@ -57,22 +57,40 @@ class UnifiedNodeValidator:
 
     def __init__(
         self,
-        strict_mode: bool = False,
-        auto_standardize: bool = True,
-        warn_on_non_standard: bool = True,
+        strict_mode: Optional[bool] = None,
+        auto_standardize: Optional[bool] = None,
+        warn_on_non_standard: Optional[bool] = None,
         enable_patterns: bool = True,
     ):
         """Initialize the unified validator.
 
         Args:
             strict_mode: If True, only standard names are allowed.
+                        If None, uses config.validation.strict_mode.
             auto_standardize: If True, convert alternate names to standard.
+                            If None, uses config.validation.auto_standardize_names.
             warn_on_non_standard: If True, log warnings for non-standard names.
+                                If None, uses config.validation.warn_on_non_standard.
             enable_patterns: If True, recognize sub-node and formula patterns.
         """
-        self.strict_mode = strict_mode
-        self.auto_standardize = auto_standardize
-        self.warn_on_non_standard = warn_on_non_standard
+        from fin_statement_model import get_config
+
+        config = get_config()
+
+        # Use config defaults if not explicitly provided
+        self.strict_mode = (
+            strict_mode if strict_mode is not None else config.validation.strict_mode
+        )
+        self.auto_standardize = (
+            auto_standardize
+            if auto_standardize is not None
+            else config.validation.auto_standardize_names
+        )
+        self.warn_on_non_standard = (
+            warn_on_non_standard
+            if warn_on_non_standard is not None
+            else config.validation.warn_on_non_standard
+        )
         self.enable_patterns = enable_patterns
         self._validation_cache: dict[str, ValidationResult] = {}
 
@@ -110,7 +128,9 @@ class UnifiedNodeValidator:
         if self.warn_on_non_standard and result.category in ["custom", "invalid"]:
             logger.warning(f"{result.message}")
             if result.suggestions:
-                logger.info(f"Suggestions for '{name}': {'; '.join(result.suggestions)}")
+                logger.info(
+                    f"Suggestions for '{name}': {'; '.join(result.suggestions)}"
+                )
 
         return result
 
@@ -121,20 +141,25 @@ class UnifiedNodeValidator:
         parent_nodes: Optional[list[str]],
     ) -> ValidationResult:
         """Perform the actual validation logic."""
-        # Check standard names first
-        if standard_node_registry.is_standard_name(name):
+        # Normalize name to lowercase for registry checks
+        normalized_name = name.lower()
+
+        # Check standard names first (using normalized name)
+        if standard_node_registry.is_standard_name(normalized_name):
+            # If original name is different case, standardize to lowercase
+            standardized = normalized_name if name != normalized_name else name
             return ValidationResult(
                 original_name=name,
-                standardized_name=name,
+                standardized_name=standardized,
                 is_valid=True,
-                message=f"Standard node: {name}",
+                message=f"Standard node: {normalized_name}",
                 category="standard",
                 confidence=1.0,
             )
 
-        # Check alternate names
-        if standard_node_registry.is_alternate_name(name):
-            standard_name = standard_node_registry.get_standard_name(name)
+        # Check alternate names (using normalized name)
+        if standard_node_registry.is_alternate_name(normalized_name):
+            standard_name = standard_node_registry.get_standard_name(normalized_name)
             return ValidationResult(
                 original_name=name,
                 standardized_name=standard_name if self.auto_standardize else name,
@@ -146,7 +171,9 @@ class UnifiedNodeValidator:
 
         # Pattern recognition if enabled
         if self.enable_patterns:
-            pattern_result = self._check_pattern_validations(name, node_type, parent_nodes)
+            pattern_result = self._check_pattern_validations(
+                name, node_type, parent_nodes
+            )
             if pattern_result:
                 return pattern_result
 
@@ -201,7 +228,10 @@ class UnifiedNodeValidator:
         pattern_result = self._check_patterns(name, self.SUBNODE_PATTERNS, "subnode")
         if pattern_result:
             base_name, suffix, pattern_type = pattern_result
-            is_base_standard = standard_node_registry.is_recognized_name(base_name)
+            # Normalize base name for registry check
+            is_base_standard = standard_node_registry.is_recognized_name(
+                base_name.lower()
+            )
 
             return ValidationResult(
                 original_name=name,
@@ -243,8 +273,13 @@ class UnifiedNodeValidator:
                 "unit",
             ]
 
-            if len(suffix) > 2 and any(keyword in suffix.lower() for keyword in segment_keywords):
-                is_base_standard = standard_node_registry.is_recognized_name(base_name)
+            if len(suffix) > 2 and any(
+                keyword in suffix.lower() for keyword in segment_keywords
+            ):
+                # Normalize base name for registry check
+                is_base_standard = standard_node_registry.is_recognized_name(
+                    base_name.lower()
+                )
 
                 return ValidationResult(
                     original_name=name,
@@ -307,8 +342,8 @@ class UnifiedNodeValidator:
                 parent_match_count += 1
 
             # Check standard name relationships
-            if standard_node_registry.is_standard_name(parent):
-                definition = standard_node_registry.get_definition(parent)
+            if standard_node_registry.is_standard_name(parent_lower):
+                definition = standard_node_registry.get_definition(parent_lower)
                 if definition:
                     for alt in definition.alternate_names:
                         if alt.lower() in name_lower:
@@ -356,12 +391,16 @@ class UnifiedNodeValidator:
             # Suggest standardizing the base
             for std_name in standard_node_registry.list_standard_names():
                 if self._is_similar(base.lower(), std_name.lower()):
-                    suggestions.append(f"Consider using '{std_name}_{parts[1]}' for consistency")
+                    suggestions.append(
+                        f"Consider using '{std_name}_{parts[1]}' for consistency"
+                    )
                     break
 
         # Generic suggestions if nothing specific found
         if not suggestions:
-            if any(suffix in name for suffix in ["_margin", "_ratio", "_growth", "_pct"]):
+            if any(
+                suffix in name for suffix in ["_margin", "_ratio", "_growth", "_pct"]
+            ):
                 suggestions.append(
                     "Formula node detected - ensure base name follows standard conventions"
                 )

@@ -5,8 +5,10 @@ This module provides the DataTransformer abstract base class and CompositeTransf
 
 from abc import ABC, abstractmethod
 import pandas as pd
-from typing import Optional
+from typing import Optional, Union
 import logging
+
+from fin_statement_model.core.errors import TransformationError
 
 logger = logging.getLogger(__name__)
 
@@ -29,18 +31,27 @@ class DataTransformer(ABC):
         logger.debug(f"Initialized {self.__class__.__name__} with config: {self.config}")
 
     @abstractmethod
-    def transform(self, data: object) -> object:
+    def transform(self, data: Union[pd.DataFrame, pd.Series]) -> Union[pd.DataFrame, pd.Series]:
         """Transform the input data.
 
         Args:
-            data: The input data to transform
+            data: The data to transform.
 
         Returns:
-            Transformed data
+            The transformed data.
 
         Raises:
-            ValueError: If the data cannot be transformed
+            TransformationError: If transformation fails.
         """
+        try:
+            self.logger.debug(f"Transforming data with {self.__class__.__name__}")
+            return self._transform_impl(data)
+        except Exception as e:
+            self.logger.exception(f"Error transforming data with {self.__class__.__name__}")
+            raise TransformationError(
+                "Error transforming data",
+                transformer_type=self.__class__.__name__,
+            ) from e
 
     def validate_input(self, data: object) -> bool:
         """Validate that the input data is a pandas DataFrame by default.
@@ -109,6 +120,20 @@ class DataTransformer(ABC):
             raise ValueError("Error transforming data") from e
         else:
             return result
+
+    def validate_config(self) -> None:
+        """Validate the transformer configuration.
+
+        This method can be overridden by subclasses to add specific validation logic.
+
+        Raises:
+            TransformationError: If the configuration is invalid.
+        """
+        if self.config is None:
+            raise TransformationError(
+                f"Invalid input data for {self.__class__.__name__}",
+                transformer_type=self.__class__.__name__,
+            )
 
 
 class CompositeTransformer(DataTransformer):

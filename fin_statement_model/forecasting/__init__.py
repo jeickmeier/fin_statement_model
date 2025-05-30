@@ -61,6 +61,15 @@ from .types import (
     ForecastResult,
 )
 
+# Error classes
+from .errors import (
+    ForecastingError,
+    ForecastMethodError,
+    ForecastConfigurationError,
+    ForecastNodeError,
+    ForecastResultError,
+)
+
 __all__ = [
     "AverageForecastMethod",
     "BaseForecastMethod",
@@ -80,4 +89,10 @@ __all__ = [
     "forecast_registry",
     "get_forecast_method",
     "register_forecast_method",
+    # Error classes
+    "ForecastingError",
+    "ForecastMethodError",
+    "ForecastConfigurationError",
+    "ForecastNodeError",
+    "ForecastResultError",
 ]

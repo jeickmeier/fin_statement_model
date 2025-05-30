@@ -109,7 +109,9 @@ logger.info(f"Demo names to validate: {demo_names}")
 
 for demo_name in demo_names:
     result = validator.validate(demo_name)
-    logger.info(f"  '{demo_name}' -> '{result.standardized_name}' [{result.category}] ({result.message})")
+    logger.info(
+        f"  '{demo_name}' -> '{result.standardized_name}' [{result.category}] ({result.message})"
+    )
 
     if result.suggestions:
         logger.info(f"    Suggestions: {result.suggestions[:2]}")  # Show first 2 suggestions
@@ -131,7 +133,9 @@ name_changes = []
 for original_name, result in validation_results.items():
     if result.standardized_name != original_name:
         name_changes.append((original_name, result.standardized_name))
-        logger.info(f"  Normalized: '{original_name}' -> '{result.standardized_name}' ({result.message})")
+        logger.info(
+            f"  Normalized: '{original_name}' -> '{result.standardized_name}' ({result.message})"
+        )
     else:
         logger.info(f"  Validated: '{original_name}' - {result.message}")
 
@@ -173,7 +177,7 @@ for original_name, config in {
     "cash_and_equivalents": {"method": "simple", "config": 0.05},  # 5% growth
     "accounts_receivable": {
         "method": "curve",
-        "config": [0.08, 0.06],
+        "config": [0.08, 0.06, 0.05, 0.04, 0.03],  # Slowing growth over 5 years
     },  # Slowing growth
     "property_plant_equipment": {"method": "simple", "config": 0.02},  # 2% growth
     "accounts_payable": {
@@ -189,12 +193,15 @@ for original_name, config in {
         "method": "simple",
         "config": 0.0,
     },  # Usually calculated, but forecast base if needed
-    "dividends": {"method": "historical_growth"},  # Grow based on historical trend
+    "dividends": {"method": "historical_growth", "config": None},  # Grow based on historical trend
     "revenue": {
         "method": "curve",
         "config": [0.10, 0.09, 0.08, 0.07, 0.06],
     },  # Declining revenue growth
-    "cost_of_goods_sold": {"method": "historical_growth"},  # COGS based on historical growth
+    "cost_of_goods_sold": {
+        "method": "historical_growth",
+        "config": None,
+    },  # COGS based on historical growth
     "operating_expenses": {
         "method": "statistical",
         "config": {
@@ -203,12 +210,17 @@ for original_name, config in {
         },
     },  # Statistical forecast with normal distribution
     "operating_income": {
-        "method": "historical_growth"
+        "method": "historical_growth",
+        "config": None,
     },  # Operating income based on historical growth
     "interest_expense": {
-        "method": "historical_growth"
+        "method": "historical_growth",
+        "config": None,
     },  # Interest expense based on historical growth
-    "income_tax": {"method": "historical_growth"},  # Tax expense based on historical growth
+    "income_tax": {
+        "method": "historical_growth",
+        "config": None,
+    },  # Tax expense based on historical growth
 }.items():
     # Validate and normalize forecast config keys
     result = validator.validate(original_name)

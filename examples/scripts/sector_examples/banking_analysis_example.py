@@ -1,7 +1,7 @@
 """Banking Analysis Example with Node Validation.
 
 This example demonstrates comprehensive banking sector analysis with node name validation.
-It shows how to create a validated financial model, calculate banking-specific metrics, 
+It shows how to create a validated financial model, calculate banking-specific metrics,
 and perform regulatory compliance checks.
 """
 
@@ -9,11 +9,13 @@ import logging
 from typing import Dict, List, Optional, Tuple, Any
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.nodes import ItemNode, CalculationNode, MetricNode
-from fin_statement_model.core.calculations import Addition, Subtraction, Division
+from fin_statement_model.core.calculations import (
+    AdditionCalculation,
+    SubtractionCalculation,
+    DivisionCalculation,
+)
 from fin_statement_model.core.metrics import metric_registry
 from fin_statement_model.io.validation import UnifiedNodeValidator, ValidationResult
-from fin_statement_model.io.validation import NodeClassification
 from dataclasses import dataclass
 from collections import defaultdict
 
@@ -651,13 +653,17 @@ def main():
 
     # Print validation summary
     if validation_report["required_missing"]:
-        logger.warning(f"⚠️  Warning: {len(validation_report['required_missing'])} required nodes missing")
+        logger.warning(
+            f"⚠️  Warning: {len(validation_report['required_missing'])} required nodes missing"
+        )
     if validation_report["completeness_score"] < 80:
         logger.warning(
             f"⚠️  Data completeness below recommended threshold: {validation_report['completeness_score']:.1f}%"
         )
     else:
-        logger.info(f"✅ Data completeness acceptable: {validation_report['completeness_score']:.1f}%")
+        logger.info(
+            f"✅ Data completeness acceptable: {validation_report['completeness_score']:.1f}%"
+        )
 
     logger.info(f"\n{'=' * 60}")
     logger.info("BANKING ANALYSIS WITH VALIDATED DATA (Node Collection)")
@@ -752,9 +758,13 @@ def main():
     logger.info(f"{'=' * 60}")
     logger.info("\nKey Takeaways:")
     logger.info("1. Node Collection: Simple, direct access, manual calculations")
-    logger.info("2. Graph Structure: Automatic calculations, dependency tracking, more complex setup")
+    logger.info(
+        "2. Graph Structure: Automatic calculations, dependency tracking, more complex setup"
+    )
     logger.info("3. Both approaches can be validated using the same validation framework")
-    logger.info("4. Graph structure provides better consistency and maintainability for complex models")
+    logger.info(
+        "4. Graph structure provides better consistency and maintainability for complex models"
+    )
 
 
 def demonstrate_validation_in_metrics(

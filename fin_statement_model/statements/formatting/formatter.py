@@ -308,8 +308,8 @@ class StatementFormatter:
     def generate_dataframe(
         self,
         graph: Graph,
-        should_apply_signs: bool = True,  # Renamed arg
-        include_empty_items: bool = False,
+        should_apply_signs: Optional[bool] = None,
+        include_empty_items: Optional[bool] = None,
         number_format: Optional[str] = None,
         include_metadata_cols: bool = False,
         # --- Adjustment Integration ---
@@ -322,7 +322,7 @@ class StatementFormatter:
         include_notes_column: bool = False,
         apply_item_scaling: bool = True,
         apply_item_formatting: bool = True,
-        respect_hide_flags: bool = True,
+        respect_hide_flags: Optional[bool] = None,
         # --- Contra Item Support ---
         contra_display_style: Optional[str] = None,
         apply_contra_formatting: bool = True,
@@ -338,8 +338,11 @@ class StatementFormatter:
         Args:
             graph: The core.graph.Graph instance containing the data.
             should_apply_signs: Whether to apply sign conventions after calculation.
+                              If None, uses config.display default.
             include_empty_items: Whether to include items with no data rows.
+                               If None, uses !config.display.hide_zero_rows.
             number_format: Optional Python format string for numbers (e.g., ',.2f').
+                          If None, uses config.display.default_number_format when formatting.
             include_metadata_cols: If True, includes hidden metadata columns
                                    (like sign_convention, node_id) in the output.
             adjustment_filter: Optional filter for applying adjustments during data fetch.
@@ -351,13 +354,35 @@ class StatementFormatter:
             apply_item_scaling: If True, applies item-specific scaling factors.
             apply_item_formatting: If True, applies item-specific number formats.
             respect_hide_flags: If True, respects hide_if_all_zero flags.
+                              If None, uses config.display.hide_zero_rows.
             contra_display_style: Optional contra display style for items
+                                If None, uses config.display.contra_display_style.
             apply_contra_formatting: If True, applies contra-specific formatting
             add_contra_indicator_column: If True, adds a column indicating contra items
 
         Returns:
             pd.DataFrame: Formatted statement DataFrame with subtotals and enhanced display control.
         """
+        # Get config defaults if not explicitly provided
+        from fin_statement_model import get_config
+
+        config = get_config()
+
+        # Apply config defaults
+        if should_apply_signs is None:
+            should_apply_signs = True  # This is a calculation default, not display
+        if include_empty_items is None:
+            include_empty_items = not config.display.hide_zero_rows
+        if respect_hide_flags is None:
+            respect_hide_flags = config.display.hide_zero_rows
+        if contra_display_style is None:
+            contra_display_style = config.display.contra_display_style
+        if number_format is None:
+            # We'll use config format when formatting values later
+            default_number_format = config.display.default_number_format
+        else:
+            default_number_format = number_format
+
         # Use DataFetcher to get data
         data_fetcher = DataFetcher(self.statement, graph)
         fetch_result = data_fetcher.fetch_all_data(

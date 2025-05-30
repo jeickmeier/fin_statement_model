@@ -1,124 +1,171 @@
-"""FMP (Financial Modeling Prep) API Example.
+"""Financial Modeling Prep API Example.
 
-This example demonstrates how to use the FMP API reader to fetch financial data
-and load it into a financial statement graph.
-
-Prerequisites:
-- Set FMP_API_KEY environment variable with your API key
-- Install requests library if not already installed
+This example demonstrates fetching financial data from the FMP API
+and using it with the fin_statement_model library.
 """
 
-import logging
 import os
-from fin_statement_model.io import read_data, write_data
+import pandas as pd
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+from fin_statement_model import get_config, update_config
+from fin_statement_model.io import read_data
+from fin_statement_model.statements import create_statement_dataframe
+
+# Get configuration
+config = get_config()
+
+# Override logging level for this example if needed
+update_config({"logging": {"level": "INFO"}})
+
+import logging
+
 logger = logging.getLogger(__name__)
 
 # Configuration
-TICKER = "AAPL"  # Stock ticker to fetch
-STATEMENT_TYPE = "income"  # Options: 'income', 'balance', 'cash'
-PERIOD_TYPE = "annual"  # Options: 'annual', 'quarter'
+TICKER = "AAPL"  # Apple Inc.
+STATEMENT_TYPE = "income_statement"  # income_statement, balance_sheet, or cash_flow
+PERIOD_TYPE = "FY"  # FY (annual) or QTR (quarterly)
+LIMIT = 5  # Number of periods to fetch
 
-# FMP API configuration
-FMP_API_KEY = os.environ.get("FMP_API_KEY")
+# API configuration from centralized config
+# The API key can be set via:
+# 1. Environment variable: FSM_API_FMP_API_KEY
+# 2. Config file: api.fmp_api_key
+# 3. Runtime: update_config({'api': {'fmp_api_key': 'your_key'}})
+if not config.api.fmp_api_key:
+    logger.error("FMP API key not configured!")
+    logger.info("Set it using one of these methods:")
+    logger.info("1. Environment variable: export FSM_API_FMP_API_KEY=your_key")
+    logger.info("2. Config file: add 'fmp_api_key: your_key' under 'api:' section")
+    logger.info("3. Runtime: update_config({'api': {'fmp_api_key': 'your_key'}})")
+    exit(1)
 
-# Example function to demonstrate FMP usage
+# FMP reader configuration using centralized settings
+fmp_config = {
+    "source": TICKER,
+    "format_type": "fmp",
+    "statement_type": STATEMENT_TYPE,
+    "period_type": PERIOD_TYPE,
+    "limit": LIMIT,
+    "api_key": config.api.fmp_api_key,  # Use API key from config
+}
+
+
 def fetch_fmp_data():
-    """Fetch financial data from FMP API and create a graph."""
-    
-    if not FMP_API_KEY:
-        logger.error("FMP_API_KEY environment variable not set.")
-        logger.error("Please set it with: export FMP_API_KEY='your_api_key'")
-        return None
-    
-    # FMP reader configuration
-    fmp_config = {
-        "ticker": TICKER,
-        "statement_type": STATEMENT_TYPE,
-        "period_type": PERIOD_TYPE,
-        "api_key": FMP_API_KEY,
-        "limit": 5,  # Number of periods to fetch
-    }
-    
+    """Fetch financial data from FMP API."""
+    logger.info(f"Fetching {STATEMENT_TYPE} data for {TICKER}...")
+
+    # Use configured timeout and retry settings
+    if hasattr(read_data, "_reader"):
+        # Apply API configuration settings if reader supports them
+        read_data._reader.timeout = config.api.api_timeout
+        read_data._reader.retry_count = config.api.api_retry_count
+
     try:
-        logger.info(f"Fetching {PERIOD_TYPE} {STATEMENT_TYPE} data for {TICKER}...")
-        
-        # Use the FMP reader to fetch data
+        # Read data from FMP API
         graph = read_data(
             format_type="fmp",
             source=fmp_config,
-            # Optional: provide custom node mappings
-            node_mappings={
-                "revenue": ["revenue", "totalRevenue"],
-                "gross_profit": ["grossProfit"],
-                "operating_income": ["operatingIncome"],
-                "net_income": ["netIncome"],
-            }
         )
-        
-        logger.info(f"Successfully fetched data. Graph has {len(graph.nodes)} nodes.")
+
+        logger.info(f"✓ Successfully fetched data for periods: {graph.periods}")
+        logger.info(f"✓ Created {len(graph.nodes)} nodes")
+
+        # Display sample data
+        sample_node = next(iter(graph.nodes.values()))
+        logger.info(f"\nSample node '{sample_node.name}':")
+        for period in sorted(graph.periods)[:3]:  # Show first 3 periods
+            value = sample_node.get_value(period)
+            if value is not None:
+                # Format using display config
+                formatted_value = f"{value * config.display.scale_factor:{config.display.default_currency_format}}"
+                logger.info(f"  {period}: {formatted_value} {config.display.default_units}")
+
         return graph
-        
-    except ValueError as e:
-        if "fmp" in str(e).lower():
-            logger.error("Error: The 'fmp' reader format is unavailable or not registered.")
-            logger.error("Please ensure the FMP reader is properly installed.")
-        else:
-            logger.error(f"Error reading data from FMP API: {e}")
+
     except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
-    
-    return None
+        logger.error(f"Error fetching data: {e}")
+        raise
 
 
 def convert_to_dataframe(graph):
-    """Convert graph to DataFrame for easy viewing."""
-    if graph is None:
-        return None
-    
-    try:
-        logger.info("Converting graph to DataFrame...")
-        df = write_data(
-            format_type="dataframe",
-            graph=graph,
-            target=None,  # Return DataFrame instead of writing to file
-        )
-        logger.info("Conversion successful.")
-        return df
-    except Exception as e:
-        logger.error(f"Error converting to DataFrame: {e}")
-        return None
+    """Convert graph data to pandas DataFrame for easy viewing."""
+    data = {}
+
+    for node in graph.nodes.values():
+        node_data = {}
+        for period in graph.periods:
+            value = node.get_value(period)
+            if value is not None:
+                # Apply scale factor from config
+                node_data[period] = value * config.display.scale_factor
+        if node_data:
+            data[node.name] = node_data
+
+    df = pd.DataFrame(data).T
+    df = df[sorted(df.columns, reverse=True)]  # Sort periods descending
+
+    return df
 
 
 def main():
-    """Main function to demonstrate FMP data fetching."""
+    """Run the FMP example."""
+    logger.info("=" * 60)
+    logger.info(f"FMP API EXAMPLE - {TICKER}")
+    logger.info("=" * 60)
+
     # Fetch data from FMP
     graph = fetch_fmp_data()
-    
-    if graph:
-        # Convert to DataFrame for display
-        df = convert_to_dataframe(graph)
-        
-        if df is not None:
-            logger.info(f"\n--- FMP Data for {TICKER} ({STATEMENT_TYPE}, {PERIOD_TYPE}) ---")
-            
-            # Display specific rows if they exist
-            if "revenue" in df.index:
-                logger.info("\nRevenue:")
-                try:
-                    # Try to format numbers nicely
-                    logger.info(df.loc[["revenue"]].map("{:,.0f}".format))
-                except:
-                    logger.info(df.loc[["revenue"]])  # Print raw if formatting fails
-            
-            logger.info("\n--- DataFrame Head ---")
-            logger.info(df.head(10))  # Print head for brevity
-    else:
-        logger.info("\nCould not generate DataFrame due to previous errors.")
+
+    # Convert to DataFrame for display
+    logger.info("\nConverting to DataFrame...")
+    df = convert_to_dataframe(graph)
+
+    # Display configuration info
+    logger.info(f"\nDisplay Configuration:")
+    logger.info(f"  Units: {config.display.default_units}")
+    logger.info(f"  Scale Factor: {config.display.scale_factor}")
+    logger.info(f"  Currency Format: {config.display.default_currency_format}")
+
+    logger.info(
+        f"\n{STATEMENT_TYPE.replace('_', ' ').title()} (in {config.display.default_units}):"
+    )
+    logger.info("-" * 80)
+
+    # Apply formatting based on config
+    pd.options.display.float_format = lambda x: f"{x:{config.display.default_currency_format}}"
+    print(df.head(10))  # Show first 10 items
+
+    # Try to create a formatted statement if config exists
+    try:
+        config_path = f"configs/{STATEMENT_TYPE}.yaml"
+        logger.info(f"\nCreating formatted statement using {config_path}...")
+
+        statement_df = create_statement_dataframe(
+            graph=graph,
+            config_path_or_dir=config_path,
+            format_kwargs={
+                "number_format": config.display.default_currency_format,
+                "should_apply_signs": True,
+                "hide_zero_rows": config.display.hide_zero_rows,
+            },
+        )
+
+        logger.info("\nFormatted Statement:")
+        logger.info(statement_df.to_string(index=False))
+
+    except Exception as e:
+        logger.warning(f"Could not create formatted statement: {e}")
+        logger.info("Note: To use statement formatting, create a statement config file")
+
+    logger.info("\n" + "=" * 60)
+    logger.info("EXAMPLE COMPLETE")
+    logger.info("=" * 60)
+
+    # Show cache info if caching is enabled
+    if config.api.cache_api_responses:
+        logger.info(f"\nNote: API responses are cached for {config.api.cache_ttl_hours} hours")
+        logger.info("To refresh data, clear cache or wait for TTL expiration")
 
 
 if __name__ == "__main__":

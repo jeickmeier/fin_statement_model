@@ -11,6 +11,8 @@ from dataclasses import dataclass
 from typing import Optional, Any
 from types import TracebackType
 
+from fin_statement_model.core.errors import FinancialModelError
+
 logger = logging.getLogger(__name__)
 
 
@@ -36,7 +38,7 @@ class LLMConfig:
     # base_url is no longer needed as the openai library handles the endpoint configuration.
 
 
-class LLMClientError(Exception):
+class LLMClientError(FinancialModelError):
     """Base exception for LLM client errors."""
 
 

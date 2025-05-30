@@ -7,6 +7,7 @@ custom, average, and historical growth).
 
 import logging
 from collections.abc import Callable
+from typing import Optional
 
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node
@@ -184,7 +185,7 @@ class FixedGrowthForecastNode(ForecastNode):
         input_node: Node,
         base_period: str,
         forecast_periods: list[str],
-        growth_rate: float,
+        growth_rate: Optional[float] = None,
     ):
         """Initialize FixedGrowthForecastNode with a constant growth rate.
 
@@ -193,8 +194,17 @@ class FixedGrowthForecastNode(ForecastNode):
             base_period: The last historical period.
             forecast_periods: List of future periods to forecast.
             growth_rate: Fixed growth rate (e.g., 0.05 for 5% growth).
+                        If None, uses config.forecasting.default_growth_rate.
         """
         super().__init__(input_node, base_period, forecast_periods)
+
+        # Use config default if not provided
+        if growth_rate is None:
+            from fin_statement_model import get_config
+
+            config = get_config()
+            growth_rate = config.forecasting.default_growth_rate
+
         self.growth_rate = float(growth_rate)  # Ensure it's a float
         logger.debug(f"Created FixedGrowthForecastNode with growth rate: {self.growth_rate}")
 

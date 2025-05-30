@@ -13,11 +13,8 @@
 11. Add ways to build up the capital structure - add bond definitions, seniorities, etc --> Calculate interest expense schedules, maturity walls, etc. 
 
 12. Check the whole library for the following consistency:
-    - Naming conventions
-    - Types 
     - Use of pydantic base models vs types and other validators
     - Use of registries 
-    - Simplify config / setup usage / de-duplication
     - Tests (>90% Converage)
     - Doc strings, with examples
 

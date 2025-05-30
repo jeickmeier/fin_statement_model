@@ -28,6 +28,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 def create_sample_graph_with_adjustments() -> Graph:
     """Create a sample graph with nodes and adjustments for demonstration."""
     graph = Graph()

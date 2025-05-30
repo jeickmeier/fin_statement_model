@@ -1,39 +1,53 @@
-"""finlib - A Python library for financial statement analysis and forecasting."""
+"""Financial Statement Model library.
+
+A comprehensive library for building and analyzing financial statement models
+using a node-based graph structure.
+"""
+
+# Import key components at package level for easier access
+from fin_statement_model.core.errors import FinancialModelError
+from fin_statement_model.core.graph import Graph
+from fin_statement_model.core.node_factory import NodeFactory
+from fin_statement_model.core.nodes import (
+    CalculationNode,
+    CustomGrowthForecastNode,
+    CurveGrowthForecastNode,
+    FinancialStatementItemNode,
+    FixedGrowthForecastNode,
+    ForecastNode,
+    MultiPeriodStatNode,
+    Node,
+    StatisticalGrowthForecastNode,
+    YoYGrowthNode,
+)
+
+# Import configuration management
+from fin_statement_model.config import get_config, update_config, reset_config
+
+# ensure our library-wide logging policy is applied immediately
+from . import logging_config  # noqa: F401
+
+__version__ = "0.1.0"
 
 __all__ = [
     "CalculationNode",
     "CurveGrowthForecastNode",
     "CustomGrowthForecastNode",
-    "FinancialStatementGraph",
+    "FinancialModelError",
     "FinancialStatementItemNode",
     "FixedGrowthForecastNode",
     "ForecastNode",
     "Graph",
-    "LLMClient",
-    "LLMConfig",
     "MultiPeriodStatNode",
     "Node",
+    "NodeFactory",
     "StatisticalGrowthForecastNode",
     "YoYGrowthNode",
+    "__version__",
+    "get_config",
+    "reset_config",
+    "update_config",
 ]
-
-from .extensions.llm.llm_client import LLMClient, LLMConfig
-from .core.graph import Graph
-from .core.nodes import (
-    Node,
-    FinancialStatementItemNode,
-    CalculationNode,
-    YoYGrowthNode,
-    MultiPeriodStatNode,
-    ForecastNode,
-    FixedGrowthForecastNode,
-    CurveGrowthForecastNode,
-    StatisticalGrowthForecastNode,
-    CustomGrowthForecastNode,
-)
-
-# ensure our library-wide logging policy is applied immediately
-from . import logging_config  # noqa: F401
 
 # --------------------------------------------------------------------------
 # Optional Extensions (via entry points / importlib.metadata)
@@ -59,5 +73,3 @@ from . import logging_config  # noqa: F401
 
 # Placeholder: Explicitly list key public API components later.
 # For now, just rely on sub-package __init__ files if they exist.
-
-__version__ = "0.1.0"  # Central version definition

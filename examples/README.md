@@ -11,7 +11,59 @@ The key principle when using this library is to **work with high-level abstracti
 3. **IO Layer** - Data readers and writers
 4. **Extensions Layer** - Optional plugins and advanced features
 
+## ⚙️ Configuration System
+
+The library uses a centralized configuration system that controls behavior across all components. Configuration can be set through multiple sources with the following precedence (highest to lowest):
+
+1. Runtime updates via `update_config()`
+2. Environment variables (FSM_* prefix)
+3. Configuration file (fsm_config.yaml)
+4. User home directory (~/.fsm_config.yaml)
+5. Default values
+
+### Basic Configuration Usage
+
+```python
+from fin_statement_model import get_config, update_config
+
+# Get current configuration
+config = get_config()
+print(f"Display units: {config.display.default_units}")
+
+# Update configuration at runtime
+update_config({
+    "display": {
+        "default_units": "USD Millions",
+        "scale_factor": 0.000001
+    }
+})
+```
+
+### Environment Variables
+
+- `FSM_LOG_LEVEL` - Logging level (DEBUG, INFO, WARNING, ERROR)
+- `FSM_API_FMP_API_KEY` - Financial Modeling Prep API key
+- `FSM_DISPLAY_UNITS` - Default display units
+- `FSM_VALIDATION_STRICT_MODE` - Enable strict validation (true/false)
+
+See `scripts/config_demo.py` for a complete demonstration of the configuration system.
+
 ## 📋 Example Scripts
+
+### Configuration Demo (`scripts/config_demo.py`)
+Complete demonstration of the configuration system:
+- Loading configuration from multiple sources
+- Runtime configuration updates
+- Environment variable usage
+- Configuration file format
+- Serialization and sharing
+
+### Clean API Demo (`scripts/clean_api_demo.py`)
+Shows how the library uses configuration internally for a clean API:
+- Before/after comparison of API usage
+- Automatic configuration defaults
+- Simplified code without manual parameter passing
+- Override capability when needed
 
 ### Simple Example (`scripts/simple_example.py`)
 The best starting point. Demonstrates:
@@ -19,42 +71,80 @@ The best starting point. Demonstrates:
 - Using statement configurations with `create_statement_dataframe()`
 - Calculating metrics using the metrics registry
 - Performing trend analysis
+- Using centralized configuration for formatting
 
 ```python
 # The recommended pattern:
+from fin_statement_model import get_config
 from fin_statement_model.io import read_data
 from fin_statement_model.statements import create_statement_dataframe
+
+# Configuration affects all operations
+config = get_config()
 
 # Load your data
 graph = read_data(format_type="dict", source=financial_data)
 
-# Build statement structure and populate calculations
+# Build statement structure with configured formatting
 df = create_statement_dataframe(
     graph=graph,
     config_path_or_dir="path/to/statement_config.yaml",
-    format_kwargs={"should_apply_signs": True}
+    format_kwargs={
+        "number_format": config.display.default_currency_format,
+        "should_apply_signs": True
+    }
 )
 ```
 
 ### Statement with Adjustments (`scripts/example_statement_with_adjustments.py`)
 Shows advanced features:
 - Building statements from configurations
-- Applying forecasts
+- Applying forecasts using config defaults
 - Adding manual adjustments
 - Regenerating statements with adjustments applied
 
 ### Banking Analysis (`scripts/sector_examples/simple_banking_graph_example.py`)
 Demonstrates sector-specific analysis:
-- Node name validation
+- Node name validation with configured strictness
 - Creating custom statement configurations
-- Banking-specific metrics
+- Banking-specific metrics with proper formatting
 - Metric interpretation and ratings
 
+### FMP API Example (`scripts/provider_examples/fmp_example.py`)
+Shows API integration:
+- Using configured API keys and timeouts
+- Applying display configuration to fetched data
+- Caching configuration for API responses
+
 ## 📁 Configuration Files
+
+### Example Configuration (`fsm_config.yaml.example`)
+Complete example showing all available configuration options:
+```yaml
+# Logging configuration
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+# Display settings
+display:
+  default_units: "USD"
+  scale_factor: 1.0
+  default_currency_format: ",.0f"
+  hide_zero_rows: false
+  
+# Validation rules
+validation:
+  strict_mode: false
+  auto_standardize_names: true
+  check_balance_sheet_balance: true
+  balance_tolerance: 1.0
+```
 
 ### Statement Configurations (`examples/`)
 - `balance_sheet.json` - Standard balance sheet structure
 - `income_statement.json` - Standard income statement structure
+- `enhanced_income_statement.yaml` - Advanced formatting example
 
 These define the hierarchical structure of financial statements, including:
 - Sections and subsections
@@ -92,24 +182,46 @@ graph.add_calculation("gross_profit", ["revenue", "cogs"], "addition")
 df = create_statement_dataframe(graph, config_path="income_statement.yaml")
 ```
 
+### ❌ DON'T: Hard-code formatting and display settings
+```python
+# WRONG - Don't hard-code formats
+print(f"Revenue: ${value:,.0f}")
+```
+
+### ✅ DO: Use configuration for consistent formatting
+```python
+# CORRECT - Use centralized configuration
+config = get_config()
+scaled_value = value * config.display.scale_factor
+print(f"Revenue: {scaled_value:{config.display.default_currency_format}} {config.display.default_units}")
+```
+
 ## 🏗️ Best Practices
 
-1. **Start with Data Loading**: Use appropriate readers (dict, excel, csv, fmp, etc.)
+1. **Configure Early**: Set up your configuration before loading data
+   ```python
+   update_config({
+       "display": {"default_units": "EUR Thousands", "scale_factor": 0.001},
+       "validation": {"strict_mode": True}
+   })
+   ```
+
+2. **Start with Data Loading**: Use appropriate readers (dict, excel, csv, fmp, etc.)
    ```python
    graph = read_data(format_type="excel", source="financials.xlsx", sheet_name="Data")
    ```
 
-2. **Define Statement Structure**: Use YAML/JSON configurations to define your statements
+3. **Define Statement Structure**: Use YAML/JSON configurations to define your statements
    - Reuse standard configurations when possible
    - Create custom configs for specialized needs
 
-3. **Let the Framework Work**: The statement layer will:
+4. **Let the Framework Work**: The statement layer will:
    - Validate your configuration
    - Build the statement structure
    - Create calculation nodes automatically
    - Handle dependencies and ordering
 
-4. **Use the Metrics Registry**: For financial analysis
+5. **Use the Metrics Registry**: For financial analysis
    ```python
    from fin_statement_model.core.metrics import calculate_metric, interpret_metric
    
@@ -117,7 +229,7 @@ df = create_statement_dataframe(graph, config_path="income_statement.yaml")
    interpretation = interpret_metric(metric_def, value)
    ```
 
-5. **Leverage Extensions**: For advanced features like LLM-powered analysis
+6. **Leverage Extensions**: For advanced features like LLM-powered analysis
    ```python
    from fin_statement_model.extensions.llm import MetricInterpreter
    ```
@@ -140,12 +252,24 @@ The library supports multiple data sources through the IO layer:
    pip install -e .
    ```
 
-2. Run any example:
+2. (Optional) Set up a configuration file:
+   ```bash
+   cp examples/fsm_config.yaml.example fsm_config.yaml
+   # Edit fsm_config.yaml with your preferences
+   ```
+
+3. (Optional) Set environment variables:
+   ```bash
+   export FSM_LOG_LEVEL=INFO
+   export FSM_API_FMP_API_KEY=your_api_key
+   ```
+
+4. Run any example:
    ```bash
    python examples/scripts/simple_example.py
    ```
 
-3. For examples that need configuration files, ensure you're running from the project root:
+5. For examples that need configuration files, ensure you're running from the project root:
    ```bash
    cd /path/to/fin_statement_model
    python examples/scripts/example_statement_with_adjustments.py
@@ -154,16 +278,17 @@ The library supports multiple data sources through the IO layer:
 ## 📚 Further Reading
 
 - See the main project README for installation and setup
-- Check `docs/` for detailed API documentation
+- Check `docs/configuration_guide.md` for detailed configuration documentation
 - Review `fin_statement_model/statements/config/mappings/` for example configurations
 - Explore the metrics registry at `fin_statement_model/core/metrics/metric_defn/`
 
 ## 💡 Tips
 
-- Use logging to debug issues: `logging.basicConfig(level=logging.DEBUG)`
+- Use logging to debug issues: `update_config({"logging": {"level": "DEBUG"}})`
 - The library validates node names - use the `NodeNameValidator` for consistency
 - Statement configurations support nested sections and complex calculations
 - Metrics come with built-in interpretations and thresholds
 - Extensions can be loaded dynamically for additional functionality
+- Configuration changes take effect immediately for new operations
 
-Remember: **Always use the high-level abstractions provided by the statements and IO layers rather than working directly with core components.** 
+Remember: **Always use the high-level abstractions provided by the statements and IO layers rather than working directly with core components.** The configuration system ensures consistent behavior across all operations. 

@@ -1,0 +1,21 @@
+# Add directories or file patterns to ignore during indexing (e.g. foo/ or *.csv)
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.vscode/
+.venv/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+dist/
+__pycache__/
+.gitignore
+concatenated_script.py 
+concatenated_code.txt
+pyproject.toml
+requirements.txt
+contra_items_demo.html
+concatenate_script.py
+.python-version

@@ -8,8 +8,8 @@ import logging
 from typing import Union
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.nodes import ItemNode, CalculationNode, MetricNode
-from fin_statement_model.core.calculations import Addition, Subtraction, Division
+from fin_statement_model.core.nodes import FinancialStatementItemNode
+from fin_statement_model.core.metrics import calculate_metric, metric_registry
 
 # Configure logging
 logging.basicConfig(
@@ -73,134 +73,115 @@ def create_real_estate_financial_model() -> Graph:
 
     # Add all items to graph
     for name, values in {**balance_sheet_items, **income_items, **debt_details}.items():
-        node = ItemNode(name)
-        for period, value in values.items():
-            node.set_value(period, value)
+        node = FinancialStatementItemNode(name, values)
         graph.add_node(node)
 
-    # === Calculated Items ===
+    # === Calculated Items using graph.add_calculation ===
 
     # Total Assets
-    total_assets = CalculationNode(
+    graph.add_calculation(
         name="total_assets",
-        inputs=[
+        input_names=[
             "investment_properties",
             "development_properties",
             "cash",
             "other_assets",
         ],
-        calculation=Addition(),
+        operation_type="addition",
     )
-    graph.add_node(total_assets)
 
     # Total Debt
-    total_debt = CalculationNode(
+    graph.add_calculation(
         name="total_debt",
-        inputs=[
+        input_names=[
             "mortgage_debt",
             "construction_loans",
             "bridge_loans",
             "mezzanine_debt",
             "credit_facility",
         ],
-        calculation=Addition(),
+        operation_type="addition",
     )
-    graph.add_node(total_debt)
 
     # Total Equity
-    total_equity = CalculationNode(
+    graph.add_calculation(
         name="total_equity",
-        inputs=["common_equity", "preferred_equity"],
-        calculation=Addition(),
+        input_names=["common_equity", "preferred_equity"],
+        operation_type="addition",
     )
-    graph.add_node(total_equity)
 
     # Net Operating Income (NOI)
-    total_income = CalculationNode(
+    graph.add_calculation(
         name="total_income",
-        inputs=["rental_income", "property_management_fees", "other_income"],
-        calculation=Addition(),
+        input_names=["rental_income", "property_management_fees", "other_income"],
+        operation_type="addition",
     )
-    graph.add_node(total_income)
 
-    noi = CalculationNode(
+    graph.add_calculation(
         name="net_operating_income",
-        inputs=["total_income", "property_operating_expenses"],
-        calculation=Subtraction(),
+        input_names=["total_income", "property_operating_expenses"],
+        operation_type="subtraction",
     )
-    graph.add_node(noi)
 
     # Total Interest Expense
-    total_interest = CalculationNode(
+    graph.add_calculation(
         name="total_interest_expense",
-        inputs=[
+        input_names=[
             "interest_expense_mortgage",
             "interest_expense_construction",
             "interest_expense_other",
         ],
-        calculation=Addition(),
+        operation_type="addition",
     )
-    graph.add_node(total_interest)
 
     # EBITDA
-    ebitda = CalculationNode(
+    graph.add_calculation(
         name="ebitda",
-        inputs=["net_operating_income", "general_admin"],
-        calculation=Subtraction(),
+        input_names=["net_operating_income", "general_admin"],
+        operation_type="subtraction",
     )
-    graph.add_node(ebitda)
 
     # === Key Debt Metrics ===
 
     # Loan-to-Value (LTV) Ratio
-    ltv_ratio = MetricNode(
+    graph.add_calculation(
         name="ltv_ratio",
-        metric_id="ltv_ratio",
-        inputs={"total_debt": "total_debt", "total_assets": "total_assets"},
+        input_names=["total_debt", "total_assets"],
+        operation_type="division",
     )
-    graph.add_node(ltv_ratio)
 
     # Debt Service Coverage Ratio (DSCR)
-    dscr = MetricNode(
+    graph.add_calculation(
         name="dscr",
-        metric_id="dscr",
-        inputs={
-            "net_operating_income": "net_operating_income",
-            "total_debt_service": "total_interest_expense",
-        },
+        input_names=["net_operating_income", "total_interest_expense"],
+        operation_type="division",
     )
-    graph.add_node(dscr)
 
     # Debt-to-Equity Ratio
-    debt_to_equity = MetricNode(
+    graph.add_calculation(
         name="debt_to_equity",
-        metric_id="debt_to_equity",
-        inputs={"total_debt": "total_debt", "total_equity": "total_equity"},
+        input_names=["total_debt", "total_equity"],
+        operation_type="division",
     )
-    graph.add_node(debt_to_equity)
 
     # Interest Coverage Ratio
-    interest_coverage = MetricNode(
+    graph.add_calculation(
         name="interest_coverage_ratio",
-        metric_id="interest_coverage_ratio",
-        inputs={"ebitda": "ebitda", "interest_expense": "total_interest_expense"},
+        input_names=["ebitda", "total_interest_expense"],
+        operation_type="division",
     )
-    graph.add_node(interest_coverage)
 
     # Weighted Average Interest Rate
-    weighted_avg_rate = CalculationNode(
+    graph.add_calculation(
         name="weighted_avg_interest_rate",
-        inputs=["total_interest_expense", "total_debt"],
-        calculation=Division(),
+        input_names=["total_interest_expense", "total_debt"],
+        operation_type="division",
     )
-    graph.add_node(weighted_avg_rate)
 
     return graph
 
 
-def calculate_debt_metrics(
-    graph: Graph, period: str = "2023"
-) -> dict[str, Union[float, None]]:
+def calculate_debt_metrics(graph: Graph, period: str = "2023") -> dict[str, Union[float, None]]:
     """Calculate and return key debt metrics for analysis."""
     metrics = {}
 
@@ -385,21 +366,16 @@ def main() -> None:
             if unit == "%":
                 if metric_key == "weighted_avg_interest_rate":
                     value *= 100  # Convert to percentage
-                else:
-                    value *= 100  # LTV is already a ratio
+                elif metric_key == "ltv_ratio":
+                    value *= 100  # LTV is a ratio, convert to percentage
                 logger.info(f"{display_name}: {value:.1f}%")
             else:
                 logger.info(f"{display_name}: {value:.2f}x")
+
+            # Add interpretation if available
+            if metric_key in interpretations:
                 logger.info(f"  → {interpretations[metric_key]['interpretation']}")
 
-            if metric_key == "ltv_ratio":
-                logger.info(f"{display_name}: {value:.2f}x")
-            elif metric_key == "weighted_avg_interest_rate":
-                logger.info(f"{display_name}: {value:.1f}%")
-            elif unit == "x":
-                logger.info(f"{display_name}: {value:.2f}x")
-            elif unit == "%":
-                logger.info(f"{display_name}: {value:.1f}%")
             logger.info("")
 
     # Analyze debt composition
@@ -436,9 +412,7 @@ def main() -> None:
     trends = calculate_debt_trends(graph)
 
     logger.info(f"LTV Change: {trends['ltv_change']:+.1f} percentage points")
-    logger.info(
-        f"Interest Rate Change: {trends['interest_rate_change']:+.1f} percentage points"
-    )
+    logger.info(f"Interest Rate Change: {trends['interest_rate_change']:+.1f} percentage points")
     logger.info(f"DSCR Change: {trends['dscr_change']:+.2f}x")
     logger.info(f"Total Debt Growth: {trends['debt_growth']:+.1f}%")
     logger.info("")

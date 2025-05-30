@@ -11,6 +11,8 @@ from typing import Optional, Union, ClassVar
 from fin_statement_model.preprocessing.base_transformer import DataTransformer
 from fin_statement_model.preprocessing.config.models import PeriodConversionConfig
 from fin_statement_model.preprocessing.config.enums import ConversionType
+from fin_statement_model.preprocessing.errors import PeriodConversionError
+from fin_statement_model.core.errors import DataValidationError
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -254,4 +256,46 @@ class PeriodConversionTransformer(DataTransformer):
         else:
             raise NotImplementedError(
                 f"Conversion type '{self.conversion_type}' is defined in ConversionType enum but not implemented in PeriodConversionTransformer."
+            )
+
+    def _transform_impl(self, data: pd.DataFrame) -> pd.DataFrame:
+        """Apply the period conversion transformation.
+
+        Args:
+            data: The DataFrame to transform.
+
+        Returns:
+            The transformed DataFrame.
+
+        Raises:
+            DataValidationError: If data is not a DataFrame.
+            PeriodConversionError: If date column not found or conversion fails.
+        """
+        if not isinstance(data, pd.DataFrame):
+            raise DataValidationError(
+                "Period conversion requires a pandas DataFrame",
+                validation_errors=[f"Got type: {type(data).__name__}"],
+            )
+
+        # Check if date column exists
+        if self.date_column not in data.columns:
+            raise PeriodConversionError(
+                f"Date column '{self.date_column}' not found in DataFrame. "
+                f"Available columns: {', '.join(data.columns.tolist())}",
+                source_period=self.source_period,
+                target_period=self.target_period,
+                date_column=self.date_column,
+            )
+
+        # Determine conversion type
+        if self.source_period == "Q" and self.target_period == "A":
+            return self._quarterly_to_annual(data)
+        elif self.source_period == "M" and self.target_period == "Q":
+            return self._monthly_to_quarterly(data)
+        else:
+            raise PeriodConversionError(
+                f"Conversion from {self.source_period} to {self.target_period} "
+                f"is not yet implemented",
+                source_period=self.source_period,
+                target_period=self.target_period,
             )

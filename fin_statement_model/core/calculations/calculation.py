@@ -12,6 +12,7 @@ from typing import Optional, ClassVar
 from collections.abc import Callable
 
 from fin_statement_model.core.nodes.base import Node  # Absolute
+from fin_statement_model.core.errors import CalculationError, StrategyError
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -144,7 +145,10 @@ class SubtractionCalculation(Calculation):
             100.0
         """
         if not inputs:
-            raise ValueError("Subtraction calculation requires at least one input node")
+            raise CalculationError(
+                "Subtraction calculation requires at least one input node",
+                details={"strategy": "SubtractionCalculation"},
+            )
 
         logger.debug(f"Applying subtraction calculation for period {period}")
         # Calculate values first to avoid multiple calls if nodes are complex
@@ -244,7 +248,10 @@ class DivisionCalculation(Calculation):
             Division by zero: Denominator product is zero
         """
         if len(inputs) < 2:
-            raise ValueError("Division calculation requires at least two input nodes")
+            raise CalculationError(
+                "Division calculation requires at least two input nodes",
+                details={"strategy": "DivisionCalculation", "input_count": len(inputs)},
+            )
 
         logger.debug(f"Applying division calculation for period {period}")
 
@@ -256,7 +263,11 @@ class DivisionCalculation(Calculation):
             denominator *= val
 
         if denominator == 0.0:
-            raise ZeroDivisionError("Division by zero: Denominator product is zero")
+            raise CalculationError(
+                "Division by zero: Denominator product is zero",
+                period=period,
+                details={"numerator": numerator, "denominator": denominator},
+            )
 
         return numerator / denominator
 
@@ -328,7 +339,10 @@ class WeightedAverageCalculation(Calculation):
             Number of weights (2) must match number of inputs (3)
         """
         if not inputs:
-            raise ValueError("Weighted average calculation requires at least one input node")
+            raise CalculationError(
+                "Weighted average calculation requires at least one input node",
+                details={"strategy": "WeightedAverageCalculation"},
+            )
 
         num_inputs = len(inputs)
         effective_weights: list[float]
@@ -344,9 +358,10 @@ class WeightedAverageCalculation(Calculation):
             effective_weights = self.weights
             logger.debug(f"Using provided weights: {effective_weights}")
         else:
-            raise ValueError(
+            raise StrategyError(
                 f"Number of weights ({len(self.weights)}) must match "
-                f"number of inputs ({num_inputs})"
+                f"number of inputs ({num_inputs})",
+                strategy_type="WeightedAverageCalculation",
             )
 
         logger.debug(f"Applying weighted average calculation for period {period}")
@@ -358,7 +373,11 @@ class WeightedAverageCalculation(Calculation):
             # Avoid division by zero. If weights are all zero, the concept is ill-defined.
             # Returning 0 might be a reasonable default, or raising an error.
             # Let's raise ValueError for clarity.
-            raise ValueError("Total weight for weighted average cannot be zero.")
+            raise CalculationError(
+                "Total weight for weighted average cannot be zero.",
+                period=period,
+                details={"weights": effective_weights},
+            )
 
         for value, weight in zip(input_values, effective_weights):
             weighted_sum += value * weight
@@ -403,7 +422,10 @@ class CustomFormulaCalculation(Calculation):
             TypeError: If `formula_function` is not callable.
         """
         if not callable(formula_function):
-            raise TypeError("formula_function must be callable")
+            raise StrategyError(
+                "formula_function must be callable",
+                strategy_type="CustomFormulaCalculation",
+            )
         self.formula_function = formula_function
         logger.info(
             f"Initialized CustomFormulaCalculation with function: {formula_function.__name__}"
@@ -467,9 +489,11 @@ class CustomFormulaCalculation(Calculation):
                 try:
                     return float(result)
                 except (ValueError, TypeError) as cast_err:
-                    raise ValueError(
+                    raise CalculationError(
                         f"Custom formula {self.formula_function.__name__} result "
-                        f"({result!r}) could not be cast to float."
+                        f"({result!r}) could not be cast to float.",
+                        period=period,
+                        details={"result": result, "result_type": type(result).__name__},
                     ) from cast_err
             return float(result)  # Ensure result is float
         except Exception as e:
@@ -478,8 +502,10 @@ class CustomFormulaCalculation(Calculation):
                 f"Error executing custom formula '{self.formula_function.__name__}': {e}",
                 exc_info=True,
             )
-            raise ValueError(
-                f"Error in custom formula '{self.formula_function.__name__}': {e}"
+            raise CalculationError(
+                f"Error in custom formula '{self.formula_function.__name__}': {e}",
+                period=period,
+                details={"original_error": str(e)},
             ) from e
 
     @property
@@ -530,7 +556,10 @@ class FormulaCalculation(Calculation):
             # Parse the formula string into an AST expression
             self._ast = ast.parse(formula, mode="eval").body
         except SyntaxError as e:
-            raise ValueError(f"Invalid formula syntax: {formula}") from e
+            raise StrategyError(
+                f"Invalid formula syntax: {formula}",
+                strategy_type="FormulaCalculation",
+            ) from e
         logger.info(
             f"Initialized FormulaCalculation with formula: {formula} and variables: {input_variable_names}"
         )
@@ -550,9 +579,10 @@ class FormulaCalculation(Calculation):
                 or if an error occurs during evaluation.
         """
         if len(inputs) != len(self.input_variable_names):
-            raise ValueError(
+            raise StrategyError(
                 f"Number of inputs ({len(inputs)}) must match number of variable names "
-                f"({len(self.input_variable_names)})"
+                f"({len(self.input_variable_names)})",
+                strategy_type="FormulaCalculation",
             )
 
         # Create mapping of variable names to nodes
@@ -562,7 +592,11 @@ class FormulaCalculation(Calculation):
         try:
             return self._evaluate(self._ast, period, variable_map)
         except (ValueError, TypeError, KeyError, ZeroDivisionError) as e:
-            raise ValueError(f"Error evaluating formula: {self.formula}. Error: {e!s}") from e
+            raise CalculationError(
+                f"Error evaluating formula: {self.formula}. Error: {e!s}",
+                period=period,
+                details={"formula": self.formula, "original_error": str(e)},
+            ) from e
 
     def _evaluate(self, node: ast.AST, period: str, variable_map: dict[str, Node]) -> float:
         """Recursively evaluate the parsed AST node for the formula.
@@ -585,23 +619,30 @@ class FormulaCalculation(Calculation):
             if isinstance(node.value, int | float):
                 return float(node.value)
             else:
-                raise TypeError(
-                    f"Unsupported constant type '{type(node.value).__name__}' in formula"
+                raise CalculationError(
+                    f"Unsupported constant type '{type(node.value).__name__}' in formula",
+                    period=period,
+                    details={"constant_type": type(node.value).__name__},
                 )
 
         # Variable reference
         elif isinstance(node, ast.Name):
             var_name = node.id
             if var_name not in variable_map:
-                raise ValueError(
-                    f"Unknown variable '{var_name}' in formula. Available: {list(variable_map.keys())}"
+                raise CalculationError(
+                    f"Unknown variable '{var_name}' in formula. Available: {list(variable_map.keys())}",
+                    period=period,
+                    details={"unknown_var": var_name, "available_vars": list(variable_map.keys())},
                 )
             input_node = variable_map[var_name]
             # Recursively calculate the value of the input node
             value = input_node.calculate(period)
             if not isinstance(value, int | float):
-                raise TypeError(
-                    f"Input node '{input_node.name}' (variable '{var_name}') did not return a numeric value for period '{period}'"
+                raise CalculationError(
+                    f"Input node '{input_node.name}' (variable '{var_name}') did not return a numeric value for period '{period}'",
+                    node_id=input_node.name,
+                    period=period,
+                    details={"value_type": type(value).__name__},
                 )
             return float(value)
 
@@ -611,7 +652,10 @@ class FormulaCalculation(Calculation):
             right_val = self._evaluate(node.right, period, variable_map)
             op_type = type(node.op)
             if op_type not in self.OPERATORS:
-                raise ValueError(f"Unsupported binary operator '{op_type.__name__}' in formula")
+                raise StrategyError(
+                    f"Unsupported binary operator '{op_type.__name__}' in formula",
+                    strategy_type="FormulaCalculation",
+                )
             # Perform the operation
             return float(self.OPERATORS[op_type](left_val, right_val))
 
@@ -620,14 +664,18 @@ class FormulaCalculation(Calculation):
             operand_val = self._evaluate(node.operand, period, variable_map)
             op_type = type(node.op)
             if op_type not in self.OPERATORS:
-                raise ValueError(f"Unsupported unary operator '{op_type.__name__}' in formula")
+                raise StrategyError(
+                    f"Unsupported unary operator '{op_type.__name__}' in formula",
+                    strategy_type="FormulaCalculation",
+                )
             # Perform the operation
             return float(self.OPERATORS[op_type](operand_val))
 
         # If the node type is unsupported
         else:
-            raise TypeError(
-                f"Unsupported syntax node type '{type(node).__name__}' in formula: {ast.dump(node)}"
+            raise StrategyError(
+                f"Unsupported syntax node type '{type(node).__name__}' in formula: {ast.dump(node)}",
+                strategy_type="FormulaCalculation",
             )
 
     @property

@@ -117,11 +117,6 @@ def create_realistic_banking_data() -> dict[str, dict[str, float]]:
             "2022": 13_750.0,
             "2023": 15_000.0,
         },
-        "interest_bearing_deposits": {
-            "2021": 45_000.0,
-            "2022": 48_750.0,
-            "2023": 52_500.0,
-        },
         "demand_deposits": {
             "2021": 15_000.0,
             "2022": 16_500.0,
@@ -768,29 +763,28 @@ def create_banking_visualizations(
                     ax.grid(True, alpha=0.3)
 
                     # Add rating zones
-                    if "ratio" in metric_name:
-                        if "capital" in metric_name:
-                            ax.axhline(
-                                y=10.5,
-                                color="green",
-                                linestyle="--",
-                                alpha=0.5,
-                                label="Well Capitalized",
-                            )
-                            ax.axhline(
-                                y=8.0,
-                                color="orange",
-                                linestyle="--",
-                                alpha=0.5,
-                                label="Adequately Capitalized",
-                            )
-                            ax.axhline(
-                                y=6.0,
-                                color="red",
-                                linestyle="--",
-                                alpha=0.5,
-                                label="Undercapitalized",
-                            )
+                    if "ratio" in metric_name and "capital" in metric_name:
+                        ax.axhline(
+                            y=10.5,
+                            color="green",
+                            linestyle="--",
+                            alpha=0.5,
+                            label="Well Capitalized",
+                        )
+                        ax.axhline(
+                            y=8.0,
+                            color="orange",
+                            linestyle="--",
+                            alpha=0.5,
+                            label="Adequately Capitalized",
+                        )
+                        ax.axhline(
+                            y=6.0,
+                            color="red",
+                            linestyle="--",
+                            alpha=0.5,
+                            label="Undercapitalized",
+                        )
 
     plt.tight_layout()
     plt.savefig(output_dir / "camels_dashboard.png", dpi=300, bbox_inches="tight")
@@ -866,9 +860,12 @@ def create_banking_visualizations(
     # Net Interest Margin trend
     nim_values = []
     for period in periods:
-        if "earnings" in metrics and period in metrics["earnings"]:
-            if "net_interest_margin" in metrics["earnings"][period]:
-                nim_values.append(metrics["earnings"][period]["net_interest_margin"]["value"])
+        if (
+            "earnings" in metrics
+            and period in metrics["earnings"]
+            and "net_interest_margin" in metrics["earnings"][period]
+        ):
+            nim_values.append(metrics["earnings"][period]["net_interest_margin"]["value"])
 
     if nim_values:
         ax2.plot(
@@ -886,11 +883,14 @@ def create_banking_visualizations(
     # Asset Quality trend
     npl_values = []
     for period in periods:
-        if "asset_quality" in metrics and period in metrics["asset_quality"]:
-            if "non_performing_loan_ratio" in metrics["asset_quality"][period]:
-                npl_values.append(
-                    metrics["asset_quality"][period]["non_performing_loan_ratio"]["value"]
-                )
+        if (
+            "asset_quality" in metrics
+            and period in metrics["asset_quality"]
+            and "non_performing_loan_ratio" in metrics["asset_quality"][period]
+        ):
+            npl_values.append(
+                metrics["asset_quality"][period]["non_performing_loan_ratio"]["value"]
+            )
 
     if npl_values:
         ax3.plot(
@@ -909,11 +909,12 @@ def create_banking_visualizations(
     # Efficiency Ratio trend
     eff_values = []
     for period in periods:
-        if "management_efficiency" in metrics and period in metrics["management_efficiency"]:
-            if "efficiency_ratio" in metrics["management_efficiency"][period]:
-                eff_values.append(
-                    metrics["management_efficiency"][period]["efficiency_ratio"]["value"]
-                )
+        if (
+            "management_efficiency" in metrics
+            and period in metrics["management_efficiency"]
+            and "efficiency_ratio" in metrics["management_efficiency"][period]
+        ):
+            eff_values.append(metrics["management_efficiency"][period]["efficiency_ratio"]["value"])
 
     if eff_values:
         ax4.plot(
@@ -970,19 +971,23 @@ def generate_banking_report(
         latest_period = graph.periods[-1]
 
         # Key metrics summary
-        if "capital_adequacy" in metrics and latest_period in metrics["capital_adequacy"]:
-            if "common_equity_tier_1_ratio" in metrics["capital_adequacy"][latest_period]:
-                cet1 = metrics["capital_adequacy"][latest_period]["common_equity_tier_1_ratio"]
-                f.write(
-                    f"- **CET1 Ratio**: {cet1['value']:.2f}% ({cet1['interpretation']['rating']})\n"
-                )
+        if (
+            "capital_adequacy" in metrics
+            and latest_period in metrics["capital_adequacy"]
+            and "common_equity_tier_1_ratio" in metrics["capital_adequacy"][latest_period]
+        ):
+            cet1 = metrics["capital_adequacy"][latest_period]["common_equity_tier_1_ratio"]
+            f.write(
+                f"- **CET1 Ratio**: {cet1['value']:.2f}% ({cet1['interpretation']['rating']})\n"
+            )
 
-        if "asset_quality" in metrics and latest_period in metrics["asset_quality"]:
-            if "non_performing_loan_ratio" in metrics["asset_quality"][latest_period]:
-                npl = metrics["asset_quality"][latest_period]["non_performing_loan_ratio"]
-                f.write(
-                    f"- **NPL Ratio**: {npl['value']:.2f}% ({npl['interpretation']['rating']})\n"
-                )
+        if (
+            "asset_quality" in metrics
+            and latest_period in metrics["asset_quality"]
+            and "non_performing_loan_ratio" in metrics["asset_quality"][latest_period]
+        ):
+            npl = metrics["asset_quality"][latest_period]["non_performing_loan_ratio"]
+            f.write(f"- **NPL Ratio**: {npl['value']:.2f}% ({npl['interpretation']['rating']})\n")
 
         if "earnings" in metrics and latest_period in metrics["earnings"]:
             if "return_on_equity_(banking)" in metrics["earnings"][latest_period]:
@@ -995,10 +1000,13 @@ def generate_banking_report(
                     f"- **Net Interest Margin**: {nim['value']:.2f}% ({nim['interpretation']['rating']})\n"
                 )
 
-        if "liquidity" in metrics and latest_period in metrics["liquidity"]:
-            if "liquidity_coverage_ratio" in metrics["liquidity"][latest_period]:
-                lcr = metrics["liquidity"][latest_period]["liquidity_coverage_ratio"]
-                f.write(f"- **LCR**: {lcr['value']:.2f}% ({lcr['interpretation']['rating']})\n")
+        if (
+            "liquidity" in metrics
+            and latest_period in metrics["liquidity"]
+            and "liquidity_coverage_ratio" in metrics["liquidity"][latest_period]
+        ):
+            lcr = metrics["liquidity"][latest_period]["liquidity_coverage_ratio"]
+            f.write(f"- **LCR**: {lcr['value']:.2f}% ({lcr['interpretation']['rating']})\n")
 
         # CAMELS Assessment
         f.write("\n## CAMELS Assessment\n\n")
@@ -1048,9 +1056,7 @@ def generate_banking_report(
                     status = (
                         "✅ Pass"
                         if cet1_ratio >= 7.0
-                        else "⚠️ Watch"
-                        if cet1_ratio >= 4.5
-                        else "❌ Fail"
+                        else "⚠️ Watch" if cet1_ratio >= 4.5 else "❌ Fail"
                     )
 
                     f.write(
@@ -1112,23 +1118,20 @@ def generate_banking_report(
             cet1_data = metrics["capital_adequacy"][latest_period].get(
                 "common_equity_tier_1_ratio", {}
             )
-            if cet1_data and "value" in cet1_data:
-                if cet1_data["value"] < 9.0:
-                    recommendations.append("Consider building additional capital buffers")
+            if cet1_data and "value" in cet1_data and cet1_data["value"] < 9.0:
+                recommendations.append("Consider building additional capital buffers")
 
         # Check asset quality
         if "asset_quality" in metrics and latest_period in metrics["asset_quality"]:
             npl_data = metrics["asset_quality"][latest_period].get("non_performing_loan_ratio", {})
-            if npl_data and "value" in npl_data:
-                if npl_data["value"] > 2.0:
-                    recommendations.append("Enhance credit underwriting and monitoring processes")
+            if npl_data and "value" in npl_data and npl_data["value"] > 2.0:
+                recommendations.append("Enhance credit underwriting and monitoring processes")
 
         # Check efficiency
         if "management_efficiency" in metrics and latest_period in metrics["management_efficiency"]:
             eff_data = metrics["management_efficiency"][latest_period].get("efficiency_ratio", {})
-            if eff_data and "value" in eff_data:
-                if eff_data["value"] > 60.0:
-                    recommendations.append("Focus on operational efficiency improvements")
+            if eff_data and "value" in eff_data and eff_data["value"] > 60.0:
+                recommendations.append("Focus on operational efficiency improvements")
 
         if recommendations:
             for i, rec in enumerate(recommendations, 1):
@@ -1144,10 +1147,9 @@ def generate_banking_report(
     # Export to Excel
     excel_path = output_dir / "banking_financial_data.xlsx"
     write_data(
-        graph=graph,
         format_type="excel",
-        output_path=str(excel_path),
-        include_metadata=True,
+        graph=graph,
+        target=str(excel_path),
     )
     print(f"  ✓ Exported data to Excel: {excel_path}")
 

@@ -13,6 +13,11 @@ import numpy as np
 # Core imports
 from fin_statement_model.core.nodes import Node
 from fin_statement_model.core.node_factory import NodeFactory
+from fin_statement_model.forecasting.errors import (
+    ForecastNodeError,
+    ForecastMethodError,
+    ForecastConfigurationError,
+)
 
 # Forecasting module imports
 from .period_manager import PeriodManager
@@ -85,18 +90,8 @@ class StatementForecaster:
             None (modifies the graph in-place)
 
         Raises:
-            ValueError: If no historical periods found, no forecast periods provided,
-                       or invalid forecasting method/configuration.
-
-        Example:
-            >>> forecaster = StatementForecaster(graph)
-            >>> forecaster.create_forecast(
-            ...     forecast_periods=['2024', '2025'],
-            ...     node_configs={
-            ...         'revenue': {'method': 'simple', 'config': 0.05},  # 5% growth
-            ...         'costs': {'method': 'curve', 'config': [0.03, 0.04]}  # Variable growth
-            ...     }
-            ... )
+            ForecastNodeError: If no historical periods found, no forecast periods provided,
+                              or invalid forecasting method/configuration.
         """
         logger.info(f"StatementForecaster: Creating forecast for periods {forecast_periods}")
         try:
@@ -119,7 +114,11 @@ class StatementForecaster:
             for node_name, config in node_configs.items():
                 node = self.fsg.get_node(node_name)
                 if node is None:
-                    raise ValueError(f"Node {node_name} not found in graph")
+                    raise ForecastNodeError(
+                        f"Node {node_name} not found in graph",
+                        node_id=node_name,
+                        available_nodes=list(self.fsg.nodes.keys()),
+                    )
 
                 # Validate node can be forecasted
                 forecast_config = ForecastValidator.validate_forecast_config(config)
@@ -132,7 +131,7 @@ class StatementForecaster:
             )
         except Exception as e:
             logger.error(f"Error creating forecast: {e}", exc_info=True)
-            raise
+            raise ForecastNodeError(f"Error creating forecast: {e}", node_id=None, reason=str(e))
 
     def _forecast_node(
         self,
@@ -163,11 +162,7 @@ class StatementForecaster:
             None (modifies the node in-place)
 
         Raises:
-            ValueError: If no historical periods provided or invalid method.
-
-        Side Effects:
-            - Modifies node.values dictionary with forecast data
-            - Clears node cache if clear_cache method exists
+            ForecastNodeError: If no historical periods provided or invalid method.
         """
         logger.debug(
             f"StatementForecaster: Forecasting node {node.name} using method {forecast_config.method}"
@@ -259,24 +254,17 @@ class StatementForecaster:
             Example: {'2024': 1050.0, '2025': 1102.5}
 
         Raises:
-            ValueError: If node not found, no historical periods available,
-                       or invalid forecast configuration.
-
-        Example:
-            >>> forecaster = StatementForecaster(graph)
-            >>> # Get forecast without modifying the graph
-            >>> values = forecaster.forecast_value(
-            ...     'revenue',
-            ...     forecast_periods=['2024', '2025'],
-            ...     forecast_config={'method': 'simple', 'config': 0.05}
-            ... )
-            >>> print(values)  # {'2024': 1050.0, '2025': 1102.5}
-            >>> # Original graph remains unchanged
+            ForecastNodeError: If node not found, no historical periods available,
+                              or invalid forecast configuration.
         """
         # Locate the node
         node = self.fsg.get_node(node_name)
         if node is None:
-            raise ValueError(f"Node {node_name} not found in graph")
+            raise ForecastNodeError(
+                f"Node {node_name} not found in graph",
+                node_id=node_name,
+                available_nodes=list(self.fsg.nodes.keys()),
+            )
 
         # Determine historical periods
         if base_period:
@@ -323,7 +311,9 @@ class StatementForecaster:
                 f"Failed to create temporary forecast node for '{node_name}': {e}",
                 exc_info=True,
             )
-            raise ValueError(f"Could not create temporary forecast node: {e}") from e
+            raise ForecastNodeError(
+                f"Could not create temporary forecast node: {e}", node_id=node_name, reason=str(e)
+            )
 
         # Calculate results using the temporary node
         results: dict[str, float] = {}
@@ -415,3 +405,104 @@ class StatementForecaster:
                 continue
 
         return results
+
+    def forecast_node(
+        self,
+        node_name: str,
+        config: ForecastConfig,
+        historical_periods: Optional[int] = None,
+    ) -> ForecastResult:
+        """Forecast values for a specific node.
+
+        Args:
+            node_name: Name of the node to forecast
+            config: Forecast configuration
+            historical_periods: Number of historical periods to use
+
+        Returns:
+            ForecastResult containing the forecasted values
+
+        Raises:
+            ForecastNodeError: If node not found in graph
+        """
+        if node_name not in self.fsg.nodes:
+            raise ForecastNodeError(
+                f"Node {node_name} not found in graph",
+                node_id=node_name,
+                available_nodes=list(self.fsg.nodes.keys()),
+            )
+
+    def forecast_all(
+        self,
+        default_config: ForecastConfig,
+        node_configs: Optional[dict[str, ForecastConfig]] = None,
+    ) -> dict[str, ForecastResult]:
+        """Forecast all forecastable nodes in the graph.
+
+        Args:
+            default_config: Default configuration for nodes without specific config
+            node_configs: Optional node-specific configurations
+
+        Returns:
+            Dictionary mapping node names to forecast results
+
+        Raises:
+            ForecastNodeError: If node not found in graph
+        """
+        node_configs = node_configs or {}
+        results = {}
+
+        for node_name, node in self.fsg.nodes.items():
+            if self._is_forecastable(node):
+                config = node_configs.get(node_name, default_config)
+                try:
+                    results[node_name] = self.forecast_node(node_name, config)
+                except Exception as e:
+                    logger.warning(f"Failed to forecast {node_name}: {e}")
+                    continue
+
+        return results
+
+    def create_forecast_node(
+        self,
+        base_node_name: str,
+        forecast_name: str,
+        config: ForecastConfig,
+    ) -> str:
+        """Create a new forecast node based on an existing node.
+
+        Args:
+            base_node_name: Name of the node to base forecast on
+            forecast_name: Name for the new forecast node
+            config: Forecast configuration
+
+        Returns:
+            Name of the created forecast node
+
+        Raises:
+            ForecastNodeError: If base node not found or forecast node creation fails
+        """
+        if base_node_name not in self.fsg.nodes:
+            raise ForecastNodeError(
+                f"Node {base_node_name} not found in graph",
+                node_id=base_node_name,
+                available_nodes=list(self.fsg.nodes.keys()),
+            )
+
+        base_node = self.fsg.nodes[base_node_name]
+
+        # Create forecast node
+        try:
+            forecast_node = NodeFactory.create_forecast_node(
+                name=forecast_name,
+                base_node=base_node,
+                forecast_config=config,
+            )
+            self.fsg.add_node(forecast_node)
+            return forecast_name
+        except Exception as e:
+            raise ForecastNodeError(
+                f"Could not create temporary forecast node: {e}",
+                node_id=forecast_name,
+                reason=str(e),
+            ) from e

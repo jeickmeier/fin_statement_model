@@ -6,60 +6,84 @@ definition, configuration, building, and processing, inheriting from the base
 """
 
 from typing import Optional
-from fin_statement_model.core.errors import FinancialModelError
+from fin_statement_model.core.errors import (
+    FinancialModelError,
+    StatementError,
+    ConfigurationError,
+)
 
-__all__ = ["ConfigurationError", "StatementError"]
+__all__ = [
+    "ConfigurationError",
+    "StatementError",
+    "StatementBuilderError",
+    "StatementValidationError",
+]
 
 
-class StatementError(FinancialModelError):
-    """Base exception for errors specific to the statements package.
+class StatementBuilderError(StatementError):
+    """Exception raised during statement structure building.
 
-    Indicates a general issue related to statement structure, processing, or
-    management (e.g., duplicate registration, invalid item type).
-    """
-
-
-class ConfigurationError(StatementError):
-    """Exception raised for errors during statement configuration processing.
-
-    This includes errors encountered while loading, parsing, validating, or
-    building statement structures from configuration files (e.g., YAML).
-
-    Attributes:
-        message (str): The main error message summarizing the issue.
-        config_path (Optional[str]): The path to the configuration file that
-            caused the error, if applicable.
-        errors (List[str]): A list of specific validation errors or details
-            related to the configuration issue.
+    This includes errors encountered while constructing nodes from statement
+    definitions or creating graph relationships.
     """
 
     def __init__(
         self,
         message: str,
-        config_path: Optional[str] = None,
-        errors: Optional[list[str]] = None,
+        item_id: Optional[str] = None,
+        statement_type: Optional[str] = None,
     ):
-        """Initialize a ConfigurationError.
+        """Initialize a StatementBuilderError.
 
         Args:
-            message: The primary error message describing the configuration issue.
-            config_path: Optional path to the configuration file involved.
-            errors: Optional list of specific validation errors or related details.
+            message: The primary error message.
+            item_id: Optional ID of the item causing the error.
+            statement_type: Optional type of statement being built.
         """
-        self.message = message
-        self.config_path = config_path
-        self.errors = errors or []
+        self.item_id = item_id
+        self.statement_type = statement_type
 
-        # Build detailed error message
         details = []
-        if config_path:
-            details.append(f"Config file: {config_path}")
-        if errors:
-            details.append("Validation errors:")
-            details.extend([f"  - {error}" for error in errors])
+        if statement_type:
+            details.append(f"Statement type: {statement_type}")
+        if item_id:
+            details.append(f"Item ID: {item_id}")
 
         full_message = message
         if details:
-            full_message = f"{message}\n" + "\n".join(details)
+            full_message = f"{message} ({', '.join(details)})"
 
         super().__init__(full_message)
+
+
+class StatementValidationError(StatementError):
+    """Exception raised during statement validation.
+
+    This includes structural validation errors, consistency checks,
+    and statement-specific rule violations.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        validation_errors: Optional[list[str]] = None,
+        statement_id: Optional[str] = None,
+    ):
+        """Initialize a StatementValidationError.
+
+        Args:
+            message: The primary error message.
+            validation_errors: Optional list of specific validation failures.
+            statement_id: Optional ID of the statement being validated.
+        """
+        self.validation_errors = validation_errors or []
+
+        full_message = message
+        if statement_id:
+            full_message = f"{message} for statement '{statement_id}'"
+        if validation_errors:
+            full_message = f"{full_message}:\n" + "\n".join(
+                f"  - {error}" for error in validation_errors
+            )
+
+        super().__init__(full_message, statement_id=statement_id)

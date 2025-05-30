@@ -8,9 +8,13 @@ import re
 import inspect
 import pkgutil
 import logging
-from typing import ClassVar, Any
+from typing import ClassVar, Any, Optional, TypeVar
 
-from .base_transformer import DataTransformer
+from fin_statement_model.preprocessing.base_transformer import DataTransformer
+from fin_statement_model.preprocessing.errors import (
+    TransformerRegistrationError,
+    TransformerConfigurationError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -33,14 +37,21 @@ class TransformerFactory:
             transformer_class: The transformer class to register
 
         Raises:
-            ValueError: If the name is already registered
-            TypeError: If transformer_class is not a subclass of DataTransformer
+            TransformerRegistrationError: If the name is already registered or if the
+                transformer_class is not a subclass of DataTransformer.
         """
         if name in cls._transformers:
-            raise ValueError(f"Transformer name '{name}' is already registered")
+            raise TransformerRegistrationError(
+                f"Transformer name '{name}' is already registered",
+                transformer_name=name,
+                existing_class=cls._transformers[name],
+            )
 
         if not issubclass(transformer_class, DataTransformer):
-            raise TypeError("Transformer class must be a subclass of DataTransformer")
+            raise TransformerRegistrationError(
+                "Transformer class must be a subclass of DataTransformer",
+                transformer_name=name,
+            )
 
         cls._transformers[name] = transformer_class
         logger.info(f"Registered transformer '{name}'")
@@ -57,10 +68,13 @@ class TransformerFactory:
             DataTransformer: An instance of the requested transformer
 
         Raises:
-            ValueError: If no transformer is registered with the given name
+            TransformerConfigurationError: If the transformer is not registered
         """
         if name not in cls._transformers:
-            raise ValueError(f"No transformer registered with name '{name}'")
+            raise TransformerConfigurationError(
+                f"No transformer registered with name '{name}'",
+                transformer_name=name,
+            )
 
         transformer_class = cls._transformers[name]
         transformer = transformer_class(**kwargs)
@@ -87,10 +101,13 @@ class TransformerFactory:
             Type[DataTransformer]: The requested transformer class
 
         Raises:
-            ValueError: If no transformer is registered with the given name
+            TransformerConfigurationError: If the transformer is not registered
         """
         if name not in cls._transformers:
-            raise ValueError(f"No transformer registered with name '{name}'")
+            raise TransformerConfigurationError(
+                f"No transformer registered with name '{name}'",
+                transformer_name=name,
+            )
 
         return cls._transformers[name]
 
