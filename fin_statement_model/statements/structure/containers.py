@@ -6,6 +6,7 @@ LineItem and CalculatedLineItem objects into nested groups.
 
 from typing import Any, Optional, Union
 
+from fin_statement_model.config import cfg_or_param
 from fin_statement_model.core.errors import StatementError
 from fin_statement_model.statements.structure.items import (
     StatementItem,
@@ -38,7 +39,7 @@ class Section:
         css_class: Optional[str] = None,
         notes_references: Optional[list[str]] = None,
         units: Optional[str] = None,
-        display_scale_factor: float = 1.0,
+        display_scale_factor: Optional[float] = None,
     ):
         """Initialize a section.
 
@@ -54,6 +55,7 @@ class Section:
             notes_references: List of footnote/note IDs referenced by this section.
             units: Optional unit description for this section.
             display_scale_factor: Factor to scale values for display in this section.
+                                If not provided, uses config default from display.scale_factor.
 
         Raises:
             StatementError: If id or name is invalid.
@@ -62,6 +64,10 @@ class Section:
             raise StatementError(f"Invalid section ID: {id}")
         if not name or not isinstance(name, str):
             raise StatementError(f"Invalid section name: {name} for ID: {id}")
+        
+        # Use config default if not provided
+        display_scale_factor = cfg_or_param("display.scale_factor", display_scale_factor)
+        
         if display_scale_factor <= 0:
             raise StatementError(f"display_scale_factor must be positive for section: {id}")
 
@@ -193,7 +199,7 @@ class StatementStructure:
         description: str = "",
         metadata: Optional[dict[str, Any]] = None,
         units: Optional[str] = None,
-        display_scale_factor: float = 1.0,
+        display_scale_factor: Optional[float] = None,
     ):
         """Initialize a statement structure.
 
@@ -204,6 +210,7 @@ class StatementStructure:
             metadata: Optional additional metadata.
             units: Optional default unit description for the statement.
             display_scale_factor: Default scale factor for displaying values.
+                                If not provided, uses config default from display.scale_factor.
 
         Raises:
             StatementError: If id or name is invalid.
@@ -212,6 +219,10 @@ class StatementStructure:
             raise StatementError(f"Invalid statement ID: {id}")
         if not name or not isinstance(name, str):
             raise StatementError(f"Invalid statement name: {name} for ID: {id}")
+        
+        # Use config default if not provided
+        display_scale_factor = cfg_or_param("display.scale_factor", display_scale_factor)
+        
         if display_scale_factor <= 0:
             raise StatementError(f"display_scale_factor must be positive for statement: {id}")
 

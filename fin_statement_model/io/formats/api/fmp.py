@@ -7,6 +7,7 @@ import numpy as np
 import yaml
 import importlib.resources
 
+from fin_statement_model.config import cfg
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.core.base import DataReader
@@ -101,7 +102,7 @@ class FmpReader(DataReader):
         try:
             # Use a cheap endpoint for validation
             test_url = f"{self.BASE_URL}/profile/AAPL?apikey={api_key}"  # Example
-            response = requests.get(test_url, timeout=10)
+            response = requests.get(test_url, timeout=cfg("api.api_timeout"))
             response.raise_for_status()  # Raises HTTPError for bad responses (4xx or 5xx)
             # Basic check on response content if needed
             if not response.json():
@@ -178,7 +179,7 @@ class FmpReader(DataReader):
             logger.info(
                 f"Fetching {period_type_arg} {statement_type} for {ticker} from FMP API (limit={limit})."
             )
-            response = requests.get(endpoint, params=params, timeout=30)  # Increased timeout
+            response = requests.get(endpoint, params=params, timeout=cfg("api.api_timeout"))
             response.raise_for_status()  # Check for HTTP errors
             api_data = response.json()
 

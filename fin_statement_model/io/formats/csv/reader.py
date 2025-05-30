@@ -5,6 +5,7 @@ from typing import Any
 
 import pandas as pd
 
+from fin_statement_model.config import cfg
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.core.mixins import (
@@ -99,7 +100,7 @@ class CsvReader(FileBasedReader, ConfigurableReaderMixin):
         """Read CSV file with configuration options."""
         # Use configuration from self.cfg, allow overrides via user_options
         read_options = {
-            "delimiter": self.get_config_value("delimiter", ","),
+            "delimiter": self.get_config_value("delimiter", cfg("io.default_csv_delimiter")),
             "header": self.get_config_value("header_row", 1) - 1,  # Convert to 0-indexed
         }
 

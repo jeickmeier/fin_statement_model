@@ -29,6 +29,26 @@ from .models import (
     DisplayConfig,
     APIConfig,
 )
+from .utils import (
+    cfg,
+    cfg_or_param,
+    get_typed_config,
+    list_config_paths,
+    ConfigurationAccessError,
+    # Convenience functions
+    default_csv_delimiter,
+    default_excel_sheet,
+    default_periods,
+    default_growth_rate,
+    api_timeout,
+    api_retry_count,
+)
+from .decorators import (
+    uses_config_default,
+    migrate_to_config,
+    config_aware_init,
+    warn_hardcoded_default,
+)
 
 __all__ = [
     # Config models
@@ -44,4 +64,22 @@ __all__ = [
     "get_config",
     "reset_config",
     "update_config",
+    # Utils
+    "cfg",
+    "cfg_or_param",
+    "get_typed_config",
+    "list_config_paths",
+    "ConfigurationAccessError",
+    # Convenience functions
+    "default_csv_delimiter",
+    "default_excel_sheet", 
+    "default_periods",
+    "default_growth_rate",
+    "api_timeout",
+    "api_retry_count",
+    # Decorators
+    "uses_config_default",
+    "migrate_to_config",
+    "config_aware_init",
+    "warn_hardcoded_default",
 ]

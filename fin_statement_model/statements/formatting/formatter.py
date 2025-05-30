@@ -10,6 +10,7 @@ import numpy as np  # Added numpy for NaN handling
 import warnings  # Added for suppressing dtype warnings
 from typing import Optional, Any, Union
 import logging
+import re
 
 from fin_statement_model.statements.structure import StatementStructure
 from fin_statement_model.statements.structure import (
@@ -38,6 +39,8 @@ from ._formatting_utils import apply_sign_convention as apply_sign_convention_fu
 # Configure logging
 logger = logging.getLogger(__name__)
 
+from fin_statement_model.config import cfg
+
 
 class StatementFormatter:
     """Formats financial statements for display or reporting.
@@ -54,25 +57,35 @@ class StatementFormatter:
             statement: The statement structure to format
         """
         self.statement = statement
-        self.config = {}  # TODO: Consider how config is passed/used
+
+        # --- Build default display formats from global config ---
+        from fin_statement_model import get_config  # Local import to avoid circular dep
+
+        cfg_display = get_config().display
+        num_format = cfg_display.default_number_format or ",.2f"
+        # Detect precision from format string like ',.2f' or '.3f'
+        precision_match = re.search(r"\.([0-9]+)f$", num_format)
+        precision = int(precision_match.group(1)) if precision_match else 2
+        use_thousands_sep = "," in num_format.split(".")[0]
+
         self.default_formats = {
-            "precision": 2,
-            "use_thousands_separator": True,
-            "show_zero_values": True,  # TODO: Check if used
-            "show_negative_sign": True,  # TODO: Check if used
-            "indent_character": "  ",
-            "subtotal_style": "bold",  # TODO: Check if used
-            "total_style": "bold",  # TODO: Check if used
-            "header_style": "bold",  # TODO: Check if used
+            "precision": precision,
+            "use_thousands_separator": use_thousands_sep,
+            "show_zero_values": not cfg_display.hide_zero_rows,
+            "show_negative_sign": cfg_display.show_negative_sign,
+            "indent_character": cfg_display.indent_character,
+            "subtotal_style": cfg_display.subtotal_style,
+            "total_style": cfg_display.total_style,
+            "header_style": cfg_display.header_style,
             # Contra item display options
-            "contra_display_style": "parentheses",  # Options: "parentheses", "negative_sign", "brackets"
-            "contra_css_class": "contra-item",  # CSS class for contra items
+            "contra_display_style": cfg_display.contra_display_style,
+            "contra_css_class": cfg_display.contra_css_class,
         }
 
     def _resolve_display_scale_factor(self, item: Union[StatementItem, Section]) -> float:
         """Resolve the display scale factor for an item, considering hierarchy.
 
-        Precedence: Item > Section > Statement > Default (1.0)
+        Precedence: Item > Section > Statement > Default (from config)
 
         Args:
             item: The item or section to get the scale factor for
@@ -101,8 +114,8 @@ class StatementFormatter:
         ):
             return self.statement.display_scale_factor
 
-        # Default
-        return 1.0
+        # Default from config
+        return cfg("display.scale_factor", 1.0)
 
     def _resolve_units(self, item: Union[StatementItem, Section]) -> Optional[str]:
         """Resolve the unit description for an item, considering hierarchy.
@@ -265,7 +278,7 @@ class StatementFormatter:
         if pd.isna(value) or value == 0:
             return ""
 
-        style = display_style or self.default_formats.get("contra_display_style", "parentheses")
+        style = display_style or self.default_formats.get("contra_display_style", cfg("display.contra_display_style", "parentheses"))
 
         # For contra items, we typically want to show the absolute value with special formatting
         # regardless of the underlying sign, since sign_convention handles calculation logic
@@ -317,7 +330,7 @@ class StatementFormatter:
         add_is_adjusted_column: bool = False,
         # --- End Adjustment Integration ---
         # --- Enhanced Display Control ---
-        include_units_column: bool = True,
+        include_units_column: bool = False,
         include_css_classes: bool = False,
         include_notes_column: bool = False,
         apply_item_scaling: bool = True,
@@ -372,16 +385,14 @@ class StatementFormatter:
         if should_apply_signs is None:
             should_apply_signs = True  # This is a calculation default, not display
         if include_empty_items is None:
-            include_empty_items = not config.display.hide_zero_rows
+            include_empty_items = False  # Preserve historical default
         if respect_hide_flags is None:
             respect_hide_flags = config.display.hide_zero_rows
         if contra_display_style is None:
             contra_display_style = config.display.contra_display_style
         if number_format is None:
-            # We'll use config format when formatting values later
-            default_number_format = config.display.default_number_format
-        else:
-            default_number_format = number_format
+            # Use global config default number format
+            number_format = config.display.default_number_format
 
         # Use DataFetcher to get data
         data_fetcher = DataFetcher(self.statement, graph)

@@ -6,7 +6,7 @@ financial statement models.
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, Union
 from collections.abc import Callable
 from uuid import UUID
 
@@ -905,19 +905,49 @@ class Graph:
         """
         return self.manipulator.get_node(name)
 
-    def add_node(self, node: Node) -> None:
-        """Add a node to the graph, replacing any existing node with the same name.
+    def add_node(self, node: Union[Node, str], *args: Any, **kwargs: Any) -> None:
+        """Add a node to the graph.
+
+        This method supports two calling conventions for backward compatibility:
+
+        1. ``add_node(node_instance)`` – Add a fully-constructed ``Node``.
+        2. ``add_node("name", values={...})`` – Convenience shorthand that
+           creates a ``FinancialStatementItemNode`` under the hood.  This form
+           matches historical test usage and avoids breaking existing code.
 
         Args:
-            node: The `Node` instance to add.
+            node: A ``Node`` instance *or* a string name when using shorthand.
+            *args: Positional arguments (used only for shorthand values).
+            **kwargs: Keyword arguments. Must contain ``values`` when using the
+                shorthand form.
 
-        Returns:
-            None
-
-        Examples:
-            >>> graph.add_node(custom_node)
+        Raises:
+            TypeError: If called with invalid argument combination.
         """
-        return self.manipulator.add_node(node)
+        # Case 1 – proper Node instance
+        from fin_statement_model.core.nodes.base import Node as _NodeBase
+        if isinstance(node, _NodeBase):
+            return self.manipulator.add_node(node)
+
+        # Case 2 – shorthand form: first arg is name (str); expect values kwarg
+        if isinstance(node, str):
+            if args:
+                # Allow positional values dict as first arg for legacy calls
+                values = args[0]
+            else:
+                values = kwargs.get("values")
+
+            from fin_statement_model.core.nodes import FinancialStatementItemNode
+
+            if not isinstance(values, dict):
+                raise TypeError(
+                    "Graph.add_node shorthand requires a 'values' dict argument"
+                )
+
+            fs_node = FinancialStatementItemNode(node, values)
+            return self.manipulator.add_node(fs_node)
+
+        raise TypeError("add_node expects a Node instance or (name, values) shorthand")
 
     def remove_node(self, node_name: str) -> None:
         """Remove a node from the graph by name, updating dependencies.

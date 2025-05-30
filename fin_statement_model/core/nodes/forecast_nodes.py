@@ -8,6 +8,7 @@ custom, average, and historical growth).
 import logging
 from collections.abc import Callable
 from typing import Optional
+from fin_statement_model.config import cfg
 
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node
@@ -126,7 +127,7 @@ class ForecastNode(Node):
         """
         # For historical periods, return the actual value
         if period <= self.base_period:
-            return self.values.get(period, 0.0)
+            return self.values.get(period, 0.0)  # 0.0 is appropriate here - not a growth rate
 
         # For forecast periods, calculate using growth rate
         if period not in self.forecast_periods:
@@ -200,10 +201,8 @@ class FixedGrowthForecastNode(ForecastNode):
 
         # Use config default if not provided
         if growth_rate is None:
-            from fin_statement_model import get_config
-
-            config = get_config()
-            growth_rate = config.forecasting.default_growth_rate
+            config = cfg.forecasting
+            growth_rate = config.default_growth_rate
 
         self.growth_rate = float(growth_rate)  # Ensure it's a float
         logger.debug(f"Created FixedGrowthForecastNode with growth rate: {self.growth_rate}")
@@ -492,15 +491,17 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
         Returns:
             float: The average growth rate across historical periods
         """
+        default_growth = cfg("forecasting.default_growth_rate")
+        
         if not self.values:
-            logger.warning(f"No historical values found for {self.name}, using 0% growth")
-            return 0.0
+            logger.warning(f"No historical values found for {self.name}, using {default_growth * 100}% growth")
+            return default_growth
 
         # Get sorted historical periods up to base period
         historical_periods = sorted([p for p in self.values if p <= self.base_period])
         if len(historical_periods) < 2:
-            logger.warning(f"Insufficient historical data for {self.name}, using 0% growth")
-            return 0.0
+            logger.warning(f"Insufficient historical data for {self.name}, using {default_growth * 100}% growth")
+            return default_growth
 
         # Calculate growth rates between consecutive periods
         growth_rates = []
@@ -520,8 +521,8 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
             growth_rates.append(growth_rate)
 
         if not growth_rates:
-            logger.warning(f"No valid growth rates calculated for {self.name}, using 0% growth")
-            return 0.0
+            logger.warning(f"No valid growth rates calculated for {self.name}, using {default_growth * 100}% growth")
+            return default_growth
 
         # Calculate and return average growth rate
         avg_growth = sum(growth_rates) / len(growth_rates)

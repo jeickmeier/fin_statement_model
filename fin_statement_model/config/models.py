@@ -20,9 +20,12 @@ class LoggingConfig(BaseModel):
         description="Log message format string",
     )
     detailed: bool = Field(False, description="Enable detailed logging with file and line numbers")
-    log_to_file: bool = Field(False, description="Enable logging to file")
     log_file_path: Optional[Path] = Field(
-        None, description="Path to log file (defaults to fsm.log in current directory)"
+        None,
+        description=(
+            "If provided, logs are written to this path (rotating handler). "
+            "If None, file logging is disabled."
+        ),
     )
 
     model_config = ConfigDict(extra="forbid")
@@ -111,6 +114,26 @@ class DisplayConfig(BaseModel):
     default_units: str = Field("USD", description="Default currency/units for display")
     scale_factor: float = Field(
         1.0, description="Default scale factor for display (e.g., 0.001 for thousands)"
+    )
+
+    # --- New advanced formatting options ---
+    indent_character: str = Field(
+        "  ", description="Indentation characters used for nested line items"
+    )
+    subtotal_style: str = Field(
+        "bold", description="CSS/markup style keyword for subtotal rows"
+    )
+    total_style: str = Field(
+        "bold", description="CSS/markup style keyword for total rows"
+    )
+    header_style: str = Field(
+        "bold", description="CSS/markup style keyword for header cells"
+    )
+    contra_css_class: str = Field(
+        "contra-item", description="Default CSS class name for contra items"
+    )
+    show_negative_sign: bool = Field(
+        True, description="Whether to prefix negative numbers with a minus sign when not using parentheses"
     )
 
     @field_validator("scale_factor")

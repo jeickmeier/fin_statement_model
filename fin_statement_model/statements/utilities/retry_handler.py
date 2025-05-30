@@ -14,6 +14,7 @@ from enum import Enum
 from typing import Generic, Optional, TypeVar
 from collections.abc import Callable
 
+from fin_statement_model.config import cfg_or_param
 from fin_statement_model.statements.utilities.result_types import (
     Result,
     Failure,
@@ -53,7 +54,8 @@ class RetryConfig:
     """Configuration for retry behavior.
 
     Attributes:
-        max_attempts: Maximum number of attempts (including initial)
+        max_attempts: Maximum number of attempts (including initial). 
+                     If not provided, uses config default from api.api_retry_count
         strategy: Retry strategy to use
         backoff: Optional backoff strategy for delays
         retryable_errors: Set of error codes that are retryable
@@ -61,7 +63,7 @@ class RetryConfig:
         collect_all_errors: Whether to collect errors from all attempts
     """
 
-    max_attempts: int = 3
+    max_attempts: Optional[int] = None
     strategy: RetryStrategy = RetryStrategy.BACKOFF
     backoff: Optional["BackoffStrategy"] = None
     retryable_errors: Optional[set[str]] = None
@@ -70,6 +72,10 @@ class RetryConfig:
 
     def __post_init__(self):
         """Validate configuration and set defaults."""
+        # Use config default if not provided
+        if self.max_attempts is None:
+            self.max_attempts = cfg_or_param("api.api_retry_count", None)
+            
         if self.max_attempts < 1:
             raise ValueError("max_attempts must be at least 1")
 
@@ -343,7 +349,7 @@ class RetryHandler:
 
 def retry_with_exponential_backoff(
     operation: Callable[[], Result[T]],
-    max_attempts: int = 3,
+    max_attempts: Optional[int] = None,
     base_delay: float = 1.0,
     operation_name: Optional[str] = None,
 ) -> RetryResult[T]:
@@ -351,13 +357,16 @@ def retry_with_exponential_backoff(
 
     Args:
         operation: The operation to retry
-        max_attempts: Maximum number of attempts
+        max_attempts: Maximum number of attempts. If not provided, uses config default from api.api_retry_count
         base_delay: Initial delay in seconds
         operation_name: Optional name for logging
 
     Returns:
         RetryResult with the final outcome
     """
+    # Use config default if not provided
+    max_attempts = cfg_or_param("api.api_retry_count", max_attempts)
+    
     config = RetryConfig(
         max_attempts=max_attempts,
         strategy=RetryStrategy.BACKOFF,
@@ -370,7 +379,7 @@ def retry_with_exponential_backoff(
 def retry_on_specific_errors(
     operation: Callable[[], Result[T]],
     retryable_errors: set[str],
-    max_attempts: int = 3,
+    max_attempts: Optional[int] = None,
     operation_name: Optional[str] = None,
 ) -> RetryResult[T]:
     """Retry an operation only for specific error codes.
@@ -378,12 +387,15 @@ def retry_on_specific_errors(
     Args:
         operation: The operation to retry
         retryable_errors: Set of error codes that trigger retry
-        max_attempts: Maximum number of attempts
+        max_attempts: Maximum number of attempts. If not provided, uses config default from api.api_retry_count
         operation_name: Optional name for logging
 
     Returns:
         RetryResult with the final outcome
     """
+    # Use config default if not provided
+    max_attempts = cfg_or_param("api.api_retry_count", max_attempts)
+    
     config = RetryConfig(
         max_attempts=max_attempts,
         strategy=RetryStrategy.CONDITIONAL,

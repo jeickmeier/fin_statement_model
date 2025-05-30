@@ -180,7 +180,6 @@ class ConfigManager:
             "FSM_LOGGING_LEVEL": ["logging", "level"],
             "FSM_LOGGING_FORMAT": ["logging", "format"],
             "FSM_LOGGING_DETAILED": ["logging", "detailed"],
-            "FSM_LOGGING_LOG_TO_FILE": ["logging", "log_to_file"],
             "FSM_LOGGING_LOG_FILE_PATH": ["logging", "log_file_path"],
             "FSM_IO_DEFAULT_EXCEL_SHEET": ["io", "default_excel_sheet"],
             "FSM_IO_DEFAULT_CSV_DELIMITER": ["io", "default_csv_delimiter"],
@@ -294,7 +293,7 @@ class ConfigManager:
                 level=self._config.logging.level,
                 format_string=self._config.logging.format,
                 detailed=self._config.logging.detailed,
-                log_to_file=(
+                log_file_path=(
                     str(self._config.logging.log_file_path)
                     if self._config.logging.log_file_path
                     else None

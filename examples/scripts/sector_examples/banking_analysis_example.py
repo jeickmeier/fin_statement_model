@@ -6,25 +6,10 @@ and perform regulatory compliance checks.
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Any
 
-from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.calculations import (
-    AdditionCalculation,
-    SubtractionCalculation,
-    DivisionCalculation,
-)
 from fin_statement_model.core.metrics import metric_registry
-from fin_statement_model.io.validation import UnifiedNodeValidator, ValidationResult
-from dataclasses import dataclass
-from collections import defaultdict
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
-
+from fin_statement_model.io.validation import UnifiedNodeValidator
 from fin_statement_model.core.metrics import (
     interpret_metric,
     calculate_metric,
@@ -35,6 +20,18 @@ from fin_statement_model.io.validation import UnifiedNodeValidator
 from fin_statement_model.core.nodes.calculation_nodes import (
     FormulaCalculationNode,
     CustomCalculationNode,
+)
+from fin_statement_model.config import get_config, update_config
+
+logger = logging.getLogger(__name__)
+
+config = get_config()
+update_config({
+    "logging": {
+        "level": "INFO", 
+        "format": "%(message)s"
+        }
+    }
 )
 
 

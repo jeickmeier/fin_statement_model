@@ -5,6 +5,7 @@ This method generates forecast values by sampling from statistical distributions
 
 from typing import Any
 import numpy as np
+from pydantic import ValidationError
 
 from .base import BaseForecastMethod
 from fin_statement_model.forecasting.types import StatisticalConfig
@@ -62,10 +63,10 @@ class StatisticalForecastMethod(BaseForecastMethod):
         if "params" not in config:
             raise ValueError("Statistical method requires 'params' key")
 
-        # Validate using StatisticalConfig dataclass
+        # Validate using StatisticalConfig model (raises ValidationError or ForecastConfigurationError)
         try:
             StatisticalConfig(distribution=config["distribution"], params=config["params"])
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError, ValidationError) as e:
             raise ValueError(f"Invalid statistical configuration: {e}") from e
 
     def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:

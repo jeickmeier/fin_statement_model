@@ -41,7 +41,7 @@ def get_logger(name: str) -> logging.Logger:
 def setup_logging(
     level: Optional[str] = None,
     format_string: Optional[str] = None,
-    log_to_file: Optional[str] = None,
+    log_file_path: Optional[str] = None,
     detailed: bool = False,
 ) -> None:
     """Configure logging for the fin_statement_model library.
@@ -55,7 +55,7 @@ def setup_logging(
                If None, uses FSM_LOG_LEVEL env var or defaults to WARNING.
         format_string: Custom format string for log messages.
                       If None, uses FSM_LOG_FORMAT env var or default format.
-        log_to_file: Optional file path to write logs to.
+        log_file_path: Optional file path to write logs to.
         detailed: If True, uses detailed format with file/line information.
 
     Example:
@@ -91,9 +91,9 @@ def setup_logging(
     root_logger.addHandler(console_handler)
 
     # Optional file handler
-    if log_to_file:
+    if log_file_path:
         file_handler = logging.handlers.RotatingFileHandler(
-            log_to_file,
+            log_file_path,
             maxBytes=10 * 1024 * 1024,  # 10MB
             backupCount=5,
         )
@@ -102,7 +102,9 @@ def setup_logging(
 
     # Set specific log levels for noisy sub-modules if needed
     # For example, reduce verbosity of certain components during normal operation
-    logging.getLogger("fin_statement_model.io.formats").setLevel(max(numeric_level, logging.INFO))
+    logging.getLogger("fin_statement_model.io.formats").setLevel(
+        max(numeric_level, logging.INFO)
+    )
     logging.getLogger("fin_statement_model.core.graph.traverser").setLevel(
         max(numeric_level, logging.INFO)
     )

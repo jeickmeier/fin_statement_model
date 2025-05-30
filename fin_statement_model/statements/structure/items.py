@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any, Optional
 
+from fin_statement_model.config import cfg_or_param
 from fin_statement_model.core.errors import StatementError
 
 __all__ = [
@@ -136,7 +137,7 @@ class LineItem(StatementItem):
         css_class: Optional[str] = None,
         notes_references: Optional[list[str]] = None,
         units: Optional[str] = None,
-        display_scale_factor: float = 1.0,
+        display_scale_factor: Optional[float] = None,
         is_contra: bool = False,
     ):
         """Initialize a basic LineItem.
@@ -156,6 +157,7 @@ class LineItem(StatementItem):
             notes_references: List of footnote/note IDs referenced by this item.
             units: Optional unit description (e.g., "USD Thousands").
             display_scale_factor: Factor to scale values for display (e.g., 0.001 for thousands).
+                                If not provided, uses config default from display.scale_factor.
             is_contra: Whether this is a contra item for special display formatting.
 
         Raises:
@@ -178,6 +180,9 @@ class LineItem(StatementItem):
 
         if sign_convention not in (1, -1):
             raise StatementError(f"Invalid sign convention {sign_convention} for item: {id}")
+
+        # Use config default if not provided
+        display_scale_factor = cfg_or_param("display.scale_factor", display_scale_factor)
 
         if display_scale_factor <= 0:
             raise StatementError(f"display_scale_factor must be positive for item: {id}")
@@ -343,7 +348,7 @@ class MetricLineItem(LineItem):
         css_class: Optional[str] = None,
         notes_references: Optional[list[str]] = None,
         units: Optional[str] = None,
-        display_scale_factor: float = 1.0,
+        display_scale_factor: Optional[float] = None,
         is_contra: bool = False,
     ):
         """Initialize a MetricLineItem referencing a registered metric.
@@ -363,6 +368,7 @@ class MetricLineItem(LineItem):
             notes_references: List of footnote/note IDs referenced by this item.
             units: Optional unit description.
             display_scale_factor: Factor to scale values for display.
+                                If not provided, uses config default from display.scale_factor.
             is_contra: Whether this is a contra item for special display formatting.
 
         Raises:
@@ -447,7 +453,7 @@ class CalculatedLineItem(LineItem):
         css_class: Optional[str] = None,
         notes_references: Optional[list[str]] = None,
         units: Optional[str] = None,
-        display_scale_factor: float = 1.0,
+        display_scale_factor: Optional[float] = None,
         is_contra: bool = False,
     ):
         """Initialize a CalculatedLineItem based on calculation specification.
@@ -466,6 +472,7 @@ class CalculatedLineItem(LineItem):
             notes_references: List of footnote/note IDs referenced by this item.
             units: Optional unit description.
             display_scale_factor: Factor to scale values for display.
+                                If not provided, uses config default from display.scale_factor.
             is_contra: Whether this is a contra item for special display formatting.
 
         Raises:
@@ -553,7 +560,7 @@ class SubtotalLineItem(CalculatedLineItem):
         css_class: Optional[str] = None,
         notes_references: Optional[list[str]] = None,
         units: Optional[str] = None,
-        display_scale_factor: float = 1.0,
+        display_scale_factor: Optional[float] = None,
         is_contra: bool = False,
     ):
         """Initialize a SubtotalLineItem summing multiple items.
@@ -572,6 +579,7 @@ class SubtotalLineItem(CalculatedLineItem):
             notes_references: List of footnote/note IDs referenced by this item.
             units: Optional unit description.
             display_scale_factor: Factor to scale values for display.
+                                If not provided, uses config default from display.scale_factor.
             is_contra: Whether this is a contra item for special display formatting.
 
         Raises:

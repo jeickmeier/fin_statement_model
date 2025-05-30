@@ -11,6 +11,7 @@ from typing import Any, Optional, cast
 import numpy as np
 
 # Core imports
+from fin_statement_model.config import cfg
 from fin_statement_model.core.nodes import Node
 from fin_statement_model.core.node_factory import NodeFactory
 from fin_statement_model.forecasting.errors import (
@@ -277,7 +278,8 @@ class StatementForecaster:
 
         # Set default config if not provided
         if forecast_config is None:
-            forecast_config = {"method": "simple", "config": 0.0}
+            default_growth = cfg("forecasting.default_growth_rate")
+            forecast_config = {"method": "simple", "config": default_growth}
 
         # Validate and create ForecastConfig
         validated_config = ForecastValidator.validate_forecast_config(forecast_config)
@@ -388,8 +390,9 @@ class StatementForecaster:
                 )
 
                 # Create ForecastResult
+                default_method = cfg("forecasting.default_method")
                 config = ForecastValidator.validate_forecast_config(
-                    node_config or {"method": "simple", "config": 0.0}
+                    node_config or {"method": default_method, "config": cfg("forecasting.default_growth_rate")}
                 )
 
                 results[node_name] = ForecastResult(

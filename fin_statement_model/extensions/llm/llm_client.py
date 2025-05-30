@@ -7,10 +7,11 @@ asynchronous interactions with OpenAI's ChatCompletion API, including retry logi
 import logging
 import openai
 import backoff
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, Any
 from types import TracebackType
 
+from fin_statement_model.config import cfg
 from fin_statement_model.core.errors import FinancialModelError
 
 logger = logging.getLogger(__name__)
@@ -33,8 +34,8 @@ class LLMConfig:
     model_name: str = "gpt-4o"
     temperature: float = 0.7
     max_tokens: int = 1500
-    timeout: int = 30
-    max_retries: int = 3
+    timeout: int = field(default_factory=lambda: cfg("api.api_timeout", 30))
+    max_retries: int = field(default_factory=lambda: cfg("api.api_retry_count", 3))
     # base_url is no longer needed as the openai library handles the endpoint configuration.
 
 
