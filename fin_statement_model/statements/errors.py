@@ -7,15 +7,14 @@ definition, configuration, building, and processing, inheriting from the base
 
 from typing import Optional
 from fin_statement_model.core.errors import (
-    FinancialModelError,
     StatementError,
     ConfigurationError,
 )
 
 __all__ = [
     "ConfigurationError",
-    "StatementError",
     "StatementBuilderError",
+    "StatementError",
     "StatementValidationError",
 ]
 

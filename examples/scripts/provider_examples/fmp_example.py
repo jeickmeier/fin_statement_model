@@ -51,7 +51,7 @@ fmp_config = {
 }
 
 
-def fetch_fmp_data():
+def fetch_fmp_data() -> object:
     """Fetch financial data from FMP API."""
     logger.info(f"Fetching {STATEMENT_TYPE} data for {TICKER}...")
 
@@ -86,11 +86,11 @@ def fetch_fmp_data():
         return graph
 
     except Exception as e:
-        logger.error(f"Error fetching data: {e}")
+        logger.exception(f"Error fetching data: {e}")
         raise
 
 
-def convert_to_dataframe(graph):
+def convert_to_dataframe(graph: object) -> pd.DataFrame:
     """Convert graph data to pandas DataFrame for easy viewing."""
     data = {}
 

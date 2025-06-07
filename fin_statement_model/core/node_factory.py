@@ -309,7 +309,7 @@ class NodeFactory:
         return node
 
     @classmethod
-    def create_from_dict(
+    def create_from_dict(  # noqa: PLR0911
         cls, data: dict[str, Any], context: Optional[dict[str, Node]] = None
     ) -> Node:
         """Create a node from its dictionary representation.

@@ -40,7 +40,7 @@ class StatisticalConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     @model_validator(mode="after")
-    def _validate_distribution(cls, values):  # noqa: N805
+    def _validate_distribution(cls, values: "StatisticalConfig") -> "StatisticalConfig":
         distribution = values.distribution
         params = values.params
 
@@ -81,7 +81,7 @@ class ForecastConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     @model_validator(mode="after")
-    def _validate_config(cls, values):  # noqa: N805
+    def _validate_config(cls, values: "ForecastConfig") -> "ForecastConfig":
         method = values.method
         cfg = values.config or {}
 

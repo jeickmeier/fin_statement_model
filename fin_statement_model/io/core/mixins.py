@@ -251,7 +251,7 @@ class ValidationMixin:
                 reader_type=getattr(self, "__class__", {}).get("__name__", "Unknown"),
             )
 
-    def validate_numeric_value(
+    def validate_numeric_value(  # noqa: PLR0911
         self,
         value: Any,
         item_name: str,

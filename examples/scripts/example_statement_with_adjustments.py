@@ -12,7 +12,6 @@ It includes:
 
 import sys
 import logging
-import pandas as pd
 from pathlib import Path
 
 from fin_statement_model.core.errors import FinancialModelError

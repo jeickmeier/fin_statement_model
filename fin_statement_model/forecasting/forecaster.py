@@ -16,8 +16,6 @@ from fin_statement_model.core.nodes import Node
 from fin_statement_model.core.node_factory import NodeFactory
 from fin_statement_model.forecasting.errors import (
     ForecastNodeError,
-    ForecastMethodError,
-    ForecastConfigurationError,
 )
 
 # Forecasting module imports

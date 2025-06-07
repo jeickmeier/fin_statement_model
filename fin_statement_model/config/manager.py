@@ -6,7 +6,7 @@ from multiple sources and merging them according to precedence rules.
 
 import os
 from pathlib import Path
-from typing import Any, Optional, List, Union, get_origin, get_args
+from typing import Any, Optional, Union, get_origin, get_args
 import logging
 from threading import Lock
 from pydantic import BaseModel
@@ -48,16 +48,16 @@ def generate_env_mappings(
             )
             if nested:
                 mappings.update(
-                    generate_env_mappings(nested, prefix, path + [field_name])
+                    generate_env_mappings(nested, prefix, [*path, field_name])
                 )
                 continue
         # Nested BaseModel
         if isinstance(annotation, type) and issubclass(annotation, BaseModel):
             mappings.update(
-                generate_env_mappings(annotation, prefix, path + [field_name])
+                generate_env_mappings(annotation, prefix, [*path, field_name])
             )
         else:
-            leaf_path = path + [field_name]
+            leaf_path = [*path, field_name]
             env_name = prefix + "_" + "_".join(p.upper() for p in leaf_path)
             mappings[env_name] = leaf_path
 

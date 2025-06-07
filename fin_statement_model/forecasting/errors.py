@@ -8,11 +8,11 @@ from typing import Optional, Any
 from fin_statement_model.core.errors import FinancialModelError
 
 __all__ = [
-    "ForecastingError",
-    "ForecastMethodError",
     "ForecastConfigurationError",
+    "ForecastMethodError",
     "ForecastNodeError",
     "ForecastResultError",
+    "ForecastingError",
 ]
 
 
