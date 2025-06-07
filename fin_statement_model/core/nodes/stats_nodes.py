@@ -11,7 +11,7 @@ import math
 import statistics
 
 # Use lowercase built-in types for annotations
-from typing import Optional, Union
+from typing import Optional, Union, Any
 from collections.abc import Callable
 from collections.abc import Sequence
 
@@ -53,7 +53,9 @@ class YoYGrowthNode(Node):
         0.2
     """
 
-    def __init__(self, name: str, input_node: Node, prior_period: str, current_period: str):
+    def __init__(
+        self, name: str, input_node: Node, prior_period: str, current_period: str
+    ):
         """Initialize the YoY Growth node.
 
         Args:
@@ -69,7 +71,9 @@ class YoYGrowthNode(Node):
         if not isinstance(input_node, Node):
             raise TypeError("YoYGrowthNode input_node must be a Node instance.")
         if not isinstance(prior_period, str) or not isinstance(current_period, str):
-            raise TypeError("YoYGrowthNode prior_period and current_period must be strings.")
+            raise TypeError(
+                "YoYGrowthNode prior_period and current_period must be strings."
+            )
 
         self.input_node = input_node
         self.prior_period = prior_period
@@ -89,7 +93,7 @@ class YoYGrowthNode(Node):
         Returns:
             float: The calculated growth rate (e.g., 0.2 for 20% growth).
                    Returns `float('nan')` if the prior period value is zero
-                   or non-numeric.
+                   or non-finite prior value.
 
         Raises:
             CalculationError: If the input node fails to provide numeric values
@@ -101,9 +105,13 @@ class YoYGrowthNode(Node):
 
             # Validate input types
             if not isinstance(prior_value, int | float):
-                raise TypeError(f"Prior period ('{self.prior_period}') value is non-numeric.")
+                raise TypeError(
+                    f"Prior period ('{self.prior_period}') value is non-numeric."
+                )
             if not isinstance(current_value, int | float):
-                raise TypeError(f"Current period ('{self.current_period}') value is non-numeric.")
+                raise TypeError(
+                    f"Current period ('{self.current_period}') value is non-numeric."
+                )
 
             # Handle division by zero or non-finite prior value
             if prior_value == 0 or not math.isfinite(prior_value):
@@ -137,6 +145,86 @@ class YoYGrowthNode(Node):
     def has_calculation(self) -> bool:
         """Indicate that this node performs a calculation."""
         return True
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize the node to a dictionary representation.
+
+        Returns:
+            Dictionary containing the node's type, name, and configuration.
+        """
+        return {
+            "type": "yoy_growth",
+            "name": self.name,
+            "input_node_name": self.input_node.name,
+            "prior_period": self.prior_period,
+            "current_period": self.current_period,
+        }
+
+    @staticmethod
+    def from_dict(data: dict[str, Any]) -> "YoYGrowthNode":
+        """Create a YoYGrowthNode from a dictionary representation.
+
+        Args:
+            data: Dictionary containing the node's serialized data.
+
+        Returns:
+            A new YoYGrowthNode instance.
+
+        Raises:
+            ValueError: If the data is invalid or missing required fields.
+            NotImplementedError: This method requires context (existing nodes) to resolve
+                input dependencies. Use from_dict_with_context instead.
+        """
+        raise NotImplementedError(
+            "YoYGrowthNode.from_dict() requires context to resolve input dependencies. "
+            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
+        )
+
+    @staticmethod
+    def from_dict_with_context(
+        data: dict[str, Any], context: dict[str, Node]
+    ) -> "YoYGrowthNode":
+        """Create a YoYGrowthNode from a dictionary with node context.
+
+        Args:
+            data: Dictionary containing the node's serialized data.
+            context: Dictionary of existing nodes to resolve dependencies.
+
+        Returns:
+            A new YoYGrowthNode instance.
+
+        Raises:
+            ValueError: If the data is invalid or missing required fields.
+        """
+        if data.get("type") != "yoy_growth":
+            raise ValueError(f"Invalid type for YoYGrowthNode: {data.get('type')}")
+
+        name = data.get("name")
+        if not name:
+            raise ValueError("Missing 'name' field in YoYGrowthNode data")
+
+        input_node_name = data.get("input_node_name")
+        if not input_node_name:
+            raise ValueError("Missing 'input_node_name' field in YoYGrowthNode data")
+
+        if input_node_name not in context:
+            raise ValueError(f"Input node '{input_node_name}' not found in context")
+
+        input_node = context[input_node_name]
+        prior_period = data.get("prior_period")
+        current_period = data.get("current_period")
+
+        if not prior_period:
+            raise ValueError("Missing 'prior_period' field in YoYGrowthNode data")
+        if not current_period:
+            raise ValueError("Missing 'current_period' field in YoYGrowthNode data")
+
+        return YoYGrowthNode(
+            name=name,
+            input_node=input_node,
+            prior_period=prior_period,
+            current_period=current_period,
+        )
 
 
 class MultiPeriodStatNode(Node):
@@ -204,7 +292,9 @@ class MultiPeriodStatNode(Node):
         if not all(isinstance(p, str) for p in periods):
             raise TypeError("MultiPeriodStatNode periods must contain only strings.")
         if not callable(stat_func):
-            raise TypeError("MultiPeriodStatNode stat_func must be a callable function.")
+            raise TypeError(
+                "MultiPeriodStatNode stat_func must be a callable function."
+            )
 
         self.input_node = input_node
         self.periods = periods
@@ -293,6 +383,114 @@ class MultiPeriodStatNode(Node):
     def has_calculation(self) -> bool:
         """Indicate that this node performs a calculation."""
         return True
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize the node to a dictionary representation.
+
+        Returns:
+            Dictionary containing the node's type, name, and configuration.
+
+        Note:
+            The stat_func cannot be serialized, so a warning is included.
+        """
+        return {
+            "type": "multi_period_stat",
+            "name": self.name,
+            "input_node_name": self.input_node.name,
+            "periods": self.periods.copy(),
+            "stat_func_name": self.stat_func.__name__,
+            "serialization_warning": (
+                "MultiPeriodStatNode uses a statistical function which may not be fully serializable. "
+                "Manual reconstruction may be required for custom functions."
+            ),
+        }
+
+    @staticmethod
+    def from_dict(data: dict[str, Any]) -> "MultiPeriodStatNode":
+        """Create a MultiPeriodStatNode from a dictionary representation.
+
+        Args:
+            data: Dictionary containing the node's serialized data.
+
+        Returns:
+            A new MultiPeriodStatNode instance.
+
+        Raises:
+            ValueError: If the data is invalid or missing required fields.
+            NotImplementedError: This method requires context (existing nodes) to resolve
+                input dependencies. Use from_dict_with_context instead.
+        """
+        raise NotImplementedError(
+            "MultiPeriodStatNode.from_dict() requires context to resolve input dependencies. "
+            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
+        )
+
+    @staticmethod
+    def from_dict_with_context(
+        data: dict[str, Any], context: dict[str, Node]
+    ) -> "MultiPeriodStatNode":
+        """Create a MultiPeriodStatNode from a dictionary with node context.
+
+        Args:
+            data: Dictionary containing the node's serialized data.
+            context: Dictionary of existing nodes to resolve dependencies.
+
+        Returns:
+            A new MultiPeriodStatNode instance.
+
+        Raises:
+            ValueError: If the data is invalid or missing required fields.
+        """
+        if data.get("type") != "multi_period_stat":
+            raise ValueError(
+                f"Invalid type for MultiPeriodStatNode: {data.get('type')}"
+            )
+
+        name = data.get("name")
+        if not name:
+            raise ValueError("Missing 'name' field in MultiPeriodStatNode data")
+
+        input_node_name = data.get("input_node_name")
+        if not input_node_name:
+            raise ValueError(
+                "Missing 'input_node_name' field in MultiPeriodStatNode data"
+            )
+
+        if input_node_name not in context:
+            raise ValueError(f"Input node '{input_node_name}' not found in context")
+
+        input_node = context[input_node_name]
+        periods = data.get("periods", [])
+        stat_func_name = data.get("stat_func_name", "stdev")
+
+        if not periods:
+            raise ValueError(
+                "Missing or empty 'periods' field in MultiPeriodStatNode data"
+            )
+
+        # Map common statistical function names to their implementations
+        stat_func_map = {
+            "mean": statistics.mean,
+            "stdev": statistics.stdev,
+            "median": statistics.median,
+            "variance": statistics.variance,
+            "pstdev": statistics.pstdev,
+            "pvariance": statistics.pvariance,
+        }
+
+        stat_func = stat_func_map.get(stat_func_name, statistics.stdev)
+        if stat_func_name not in stat_func_map:
+            logger.warning(
+                f"Unknown stat_func_name '{stat_func_name}' for MultiPeriodStatNode '{name}'. "
+                f"Using default statistics.stdev."
+            )
+
+        return MultiPeriodStatNode(
+            name=name,
+            input_node=input_node,
+            periods=periods,
+            stat_func=stat_func,
+        )
 
 
 class TwoPeriodAverageNode(Node):
@@ -399,6 +597,90 @@ class TwoPeriodAverageNode(Node):
     def has_calculation(self) -> bool:
         """Indicate that this node performs a calculation."""
         return True
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize the node to a dictionary representation.
+
+        Returns:
+            Dictionary containing the node's type, name, and configuration.
+        """
+        return {
+            "type": "two_period_average",
+            "name": self.name,
+            "input_node_name": self.input_node.name,
+            "period1": self.period1,
+            "period2": self.period2,
+        }
+
+    @staticmethod
+    def from_dict(data: dict[str, Any]) -> "TwoPeriodAverageNode":
+        """Create a TwoPeriodAverageNode from a dictionary representation.
+
+        Args:
+            data: Dictionary containing the node's serialized data.
+
+        Returns:
+            A new TwoPeriodAverageNode instance.
+
+        Raises:
+            ValueError: If the data is invalid or missing required fields.
+            NotImplementedError: This method requires context (existing nodes) to resolve
+                input dependencies. Use from_dict_with_context instead.
+        """
+        raise NotImplementedError(
+            "TwoPeriodAverageNode.from_dict() requires context to resolve input dependencies. "
+            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
+        )
+
+    @staticmethod
+    def from_dict_with_context(
+        data: dict[str, Any], context: dict[str, Node]
+    ) -> "TwoPeriodAverageNode":
+        """Create a TwoPeriodAverageNode from a dictionary with node context.
+
+        Args:
+            data: Dictionary containing the node's serialized data.
+            context: Dictionary of existing nodes to resolve dependencies.
+
+        Returns:
+            A new TwoPeriodAverageNode instance.
+
+        Raises:
+            ValueError: If the data is invalid or missing required fields.
+        """
+        if data.get("type") != "two_period_average":
+            raise ValueError(
+                f"Invalid type for TwoPeriodAverageNode: {data.get('type')}"
+            )
+
+        name = data.get("name")
+        if not name:
+            raise ValueError("Missing 'name' field in TwoPeriodAverageNode data")
+
+        input_node_name = data.get("input_node_name")
+        if not input_node_name:
+            raise ValueError(
+                "Missing 'input_node_name' field in TwoPeriodAverageNode data"
+            )
+
+        if input_node_name not in context:
+            raise ValueError(f"Input node '{input_node_name}' not found in context")
+
+        input_node = context[input_node_name]
+        period1 = data.get("period1")
+        period2 = data.get("period2")
+
+        if not period1:
+            raise ValueError("Missing 'period1' field in TwoPeriodAverageNode data")
+        if not period2:
+            raise ValueError("Missing 'period2' field in TwoPeriodAverageNode data")
+
+        return TwoPeriodAverageNode(
+            name=name,
+            input_node=input_node,
+            period1=period1,
+            period2=period2,
+        )
 
 
 __all__ = [

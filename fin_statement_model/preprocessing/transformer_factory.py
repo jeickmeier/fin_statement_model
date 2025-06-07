@@ -8,7 +8,7 @@ import re
 import inspect
 import pkgutil
 import logging
-from typing import ClassVar, Any, Optional, TypeVar
+from typing import ClassVar, Any
 
 from fin_statement_model.preprocessing.base_transformer import DataTransformer
 from fin_statement_model.preprocessing.errors import (
@@ -29,7 +29,9 @@ class TransformerFactory:
     _transformers: ClassVar[dict[str, type[DataTransformer]]] = {}
 
     @classmethod
-    def register_transformer(cls, name: str, transformer_class: type[DataTransformer]) -> None:
+    def register_transformer(
+        cls, name: str, transformer_class: type[DataTransformer]
+    ) -> None:
         """Register a transformer class with the factory.
 
         Args:
@@ -149,7 +151,9 @@ class TransformerFactory:
             logger.info(f"Discovered transformers from package '{package_name}'")
 
         except ImportError:
-            logger.exception(f"Error discovering transformers from package '{package_name}'")
+            logger.exception(
+                f"Error discovering transformers from package '{package_name}'"
+            )
 
     @classmethod
     def create_composite_transformer(
@@ -170,6 +174,8 @@ class TransformerFactory:
         from .base_transformer import CompositeTransformer
 
         # Use list comprehension for PERF401
-        transformers = [cls.create_transformer(name, **kwargs) for name in transformer_names]
+        transformers = [
+            cls.create_transformer(name, **kwargs) for name in transformer_names
+        ]
 
         return CompositeTransformer(transformers)

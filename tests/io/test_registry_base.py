@@ -2,7 +2,7 @@
 
 import pytest
 
-from fin_statement_model.io.registry_base import HandlerRegistry
+from fin_statement_model.io.core.registry import HandlerRegistry
 from fin_statement_model.io.exceptions import FormatNotSupportedError
 
 

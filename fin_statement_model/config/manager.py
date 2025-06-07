@@ -172,82 +172,16 @@ class ConfigManager:
         FSM_LOGGING_LEVEL -> logging.level
         FSM_IO_DEFAULT_EXCEL_SHEET -> io.default_excel_sheet
         FSM_API_FMP_API_KEY -> api.fmp_api_key
+
+        Mappings are now generated dynamically from the Config model.
         """
         config = {}
 
-        # Mapping of special environment variable patterns to configuration paths
-        env_mappings = {
-            "FSM_LOGGING_LEVEL": ["logging", "level"],
-            "FSM_LOGGING_FORMAT": ["logging", "format"],
-            "FSM_LOGGING_DETAILED": ["logging", "detailed"],
-            "FSM_LOGGING_LOG_FILE_PATH": ["logging", "log_file_path"],
-            "FSM_IO_DEFAULT_EXCEL_SHEET": ["io", "default_excel_sheet"],
-            "FSM_IO_DEFAULT_CSV_DELIMITER": ["io", "default_csv_delimiter"],
-            "FSM_IO_AUTO_CREATE_OUTPUT_DIRS": ["io", "auto_create_output_dirs"],
-            "FSM_IO_VALIDATE_ON_READ": ["io", "validate_on_read"],
-            "FSM_FORECASTING_DEFAULT_METHOD": ["forecasting", "default_method"],
-            "FSM_FORECASTING_DEFAULT_PERIODS": ["forecasting", "default_periods"],
-            "FSM_FORECASTING_DEFAULT_GROWTH_RATE": [
-                "forecasting",
-                "default_growth_rate",
-            ],
-            "FSM_FORECASTING_MIN_HISTORICAL_PERIODS": [
-                "forecasting",
-                "min_historical_periods",
-            ],
-            "FSM_FORECASTING_ALLOW_NEGATIVE_FORECASTS": [
-                "forecasting",
-                "allow_negative_forecasts",
-            ],
-            "FSM_PREPROCESSING_AUTO_CLEAN_DATA": ["preprocessing", "auto_clean_data"],
-            "FSM_PREPROCESSING_FILL_MISSING_WITH_ZERO": [
-                "preprocessing",
-                "fill_missing_with_zero",
-            ],
-            "FSM_PREPROCESSING_REMOVE_EMPTY_PERIODS": [
-                "preprocessing",
-                "remove_empty_periods",
-            ],
-            "FSM_PREPROCESSING_STANDARDIZE_PERIOD_FORMAT": [
-                "preprocessing",
-                "standardize_period_format",
-            ],
-            "FSM_DISPLAY_DEFAULT_NUMBER_FORMAT": ["display", "default_number_format"],
-            "FSM_DISPLAY_DEFAULT_CURRENCY_FORMAT": [
-                "display",
-                "default_currency_format",
-            ],
-            "FSM_DISPLAY_DEFAULT_PERCENTAGE_FORMAT": [
-                "display",
-                "default_percentage_format",
-            ],
-            "FSM_DISPLAY_HIDE_ZERO_ROWS": ["display", "hide_zero_rows"],
-            "FSM_DISPLAY_CONTRA_DISPLAY_STYLE": ["display", "contra_display_style"],
-            "FSM_DISPLAY_SCALE_FACTOR": ["display", "scale_factor"],
-            "FSM_API_FMP_API_KEY": ["api", "fmp_api_key"],
-            "FSM_API_FMP_BASE_URL": ["api", "fmp_base_url"],
-            "FSM_API_API_TIMEOUT": ["api", "api_timeout"],
-            "FSM_API_API_RETRY_COUNT": ["api", "api_retry_count"],
-            "FSM_API_CACHE_API_RESPONSES": ["api", "cache_api_responses"],
-            "FSM_API_CACHE_TTL_HOURS": ["api", "cache_ttl_hours"],
-            "FSM_VALIDATION_STRICT_MODE": ["validation", "strict_mode"],
-            "FSM_VALIDATION_CHECK_BALANCE_SHEET_EQUATION": [
-                "validation",
-                "check_balance_sheet_equation",
-            ],
-            "FSM_VALIDATION_MAX_ACCEPTABLE_VARIANCE": [
-                "validation",
-                "max_acceptable_variance",
-            ],
-            "FSM_VALIDATION_WARN_ON_NEGATIVE_ASSETS": [
-                "validation",
-                "warn_on_negative_assets",
-            ],
-            "FSM_VALIDATION_VALIDATE_SIGN_CONVENTIONS": [
-                "validation",
-                "validate_sign_conventions",
-            ],
-        }
+        # Generate mappings dynamically from the Config model
+        from .introspection import generate_env_mappings
+        from .models import Config
+
+        env_mappings = generate_env_mappings(Config, self.ENV_PREFIX.rstrip("_"))
 
         for env_key, config_path in env_mappings.items():
             if env_key in os.environ:

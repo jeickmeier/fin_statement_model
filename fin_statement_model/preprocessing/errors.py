@@ -8,16 +8,15 @@ from typing import Optional, Any
 from fin_statement_model.core.errors import (
     FinancialModelError,
     TransformationError,
-    DataValidationError,
 )
 
 __all__ = [
-    "PreprocessingError",
-    "TransformerRegistrationError",
-    "TransformerConfigurationError",
-    "PeriodConversionError",
     "NormalizationError",
+    "PeriodConversionError",
+    "PreprocessingError",
     "TimeSeriesError",
+    "TransformerConfigurationError",
+    "TransformerRegistrationError",
 ]
 
 
@@ -52,7 +51,9 @@ class TransformerRegistrationError(PreprocessingError):
         if transformer_name:
             full_message = f"{message} for transformer '{transformer_name}'"
         if existing_class:
-            full_message = f"{full_message} (already registered as {existing_class.__name__})"
+            full_message = (
+                f"{full_message} (already registered as {existing_class.__name__})"
+            )
 
         super().__init__(full_message)
 

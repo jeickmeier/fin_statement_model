@@ -33,6 +33,7 @@ class DictWriter(DataFrameBasedWriter, ConfigurableReaderMixin):
             cfg: Optional validated `DictWriterConfig` instance.
                  Currently unused but kept for registry symmetry.
         """
+        super().__init__()
         self.cfg = cfg
 
     @handle_write_errors()
@@ -58,7 +59,9 @@ class DictWriter(DataFrameBasedWriter, ConfigurableReaderMixin):
         logger.info(f"Starting export of graph '{graph}' to dictionary format.")
 
         if not graph.periods:
-            logger.warning("Graph has no periods defined. Exported dictionary will be empty.")
+            logger.warning(
+                "Graph has no periods defined. Exported dictionary will be empty."
+            )
             return {}
 
         # Use base class method to extract all data

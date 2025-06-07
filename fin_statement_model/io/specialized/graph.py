@@ -11,18 +11,6 @@ from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.adjustments.models import Adjustment
 from fin_statement_model.core.nodes import (
     Node,
-    FinancialStatementItemNode,
-    CalculationNode,
-    FormulaCalculationNode,
-)
-from fin_statement_model.core.nodes.forecast_nodes import (
-    ForecastNode,
-    FixedGrowthForecastNode,
-    CurveGrowthForecastNode,
-    StatisticalGrowthForecastNode,
-    AverageValueForecastNode,
-    AverageHistoricalGrowthForecastNode,
-    CustomGrowthForecastNode,
 )
 from fin_statement_model.core.errors import NodeError, ConfigurationError
 from fin_statement_model.core.node_factory import NodeFactory
@@ -56,7 +44,9 @@ class GraphDefinitionReader(DataReader):
         """Initialize the GraphDefinitionReader. Config currently unused."""
         self.cfg = cfg
 
-    def _add_nodes_iteratively(self, graph: Graph, nodes_dict: dict[str, SerializedNode]) -> None:
+    def _add_nodes_iteratively(
+        self, graph: Graph, nodes_dict: dict[str, SerializedNode]
+    ) -> None:
         """Add nodes to the graph, handling potential dependency order issues."""
         nodes_to_add = nodes_dict.copy()
         added_nodes: set[str] = set()
@@ -69,184 +59,39 @@ class GraphDefinitionReader(DataReader):
             nodes_to_add = {}
 
             for node_name, node_def in pending_nodes.items():
-                node_type = node_def.get("type")
-                # Get actual dependency names (might differ from formula vars)
-                dependency_names = node_def.get("inputs", [])
-
-                # For forecast nodes, the dependency is the base node
-                if node_type == "forecast":
-                    base_node_name = node_def.get("base_node_name")
-                    if base_node_name:
-                        dependency_names = [base_node_name]
+                # Get dependency names using the new get_dependencies approach
+                dependency_names = self._get_node_dependencies(node_def)
 
                 # Check if all dependencies are already added
-                dependencies_met = all(dep_name in added_nodes for dep_name in dependency_names)
+                dependencies_met = all(
+                    dep_name in added_nodes for dep_name in dependency_names
+                )
 
                 if dependencies_met:
                     try:
-                        # Logic to add the node based on its type
-                        if node_type == "financial_statement_item":
-                            graph.add_financial_statement_item(
-                                name=node_name, values=node_def.get("values", {})
-                            )
-                        elif node_type == "formula_calculation":
-                            # Always reconstruct using add_calculation for formula type.
-                            # The metric_name attribute will be preserved if present.
-                            formula_str = node_def.get("formula")
-                            if not formula_str:
-                                logger.error(
-                                    f"Cannot reconstruct FormulaCalculationNode '{node_name}': missing formula string."
-                                )
-                                continue  # Skip node
+                        # Use NodeFactory.create_from_dict for unified deserialization
+                        # Build context from nodes that have already been added to the graph
+                        existing_nodes = {
+                            name: graph.nodes[name]
+                            for name in added_nodes
+                            if name in graph.nodes
+                        }
+                        node = NodeFactory.create_from_dict(
+                            node_def, context=existing_nodes
+                        )
 
-                            graph.add_calculation(
-                                name=node_name,
-                                input_names=dependency_names,
-                                operation_type="formula",
-                                formula_variable_names=node_def.get("formula_variable_names"),
-                                formula=formula_str,
-                                metric_name=node_def.get("metric_name"),
-                                metric_description=node_def.get("metric_description"),
-                            )
-                        elif node_type == "calculation":
-                            # Reconstruct generic CalculationNode using the saved type key
-                            calc_type_key = node_def.get("calculation_type")
-                            if not calc_type_key:
-                                logger.error(
-                                    f"Missing 'calculation_type' key for node '{node_name}'. Skipping."
-                                )
-                                continue
-
-                            # Retrieve calculation_args if they were saved
-                            calculation_args = node_def.get("calculation_args", {})
-
-                            # Special handling for formula type to ensure formula_variable_names is passed correctly
-                            if calc_type_key == "formula" and "formula_variable_names" in node_def:
-                                # Pass formula_variable_names as a separate parameter, not in calculation_args
-                                formula_variable_names = node_def.get("formula_variable_names")
-                                logger.debug(
-                                    f"Reconstructing CalculationNode '{node_name}' with type '{calc_type_key}', "
-                                    f"formula_variable_names: {formula_variable_names}, and args: {calculation_args}"
-                                )
-                                graph.add_calculation(
-                                    name=node_name,
-                                    input_names=dependency_names,
-                                    operation_type=calc_type_key,
-                                    formula_variable_names=formula_variable_names,
-                                    **calculation_args,
-                                )
-                            else:
-                                logger.debug(
-                                    f"Reconstructing CalculationNode '{node_name}' with type '{calc_type_key}' and args: {calculation_args}"
-                                )
-                                graph.add_calculation(
-                                    name=node_name,
-                                    input_names=dependency_names,
-                                    operation_type=calc_type_key,
-                                    **calculation_args,
-                                )
-                        elif node_type == "forecast":
-                            # Reconstruct ForecastNode
-                            base_node_name = node_def.get("base_node_name")
-                            base_period = node_def.get("base_period")
-                            forecast_periods = node_def.get("forecast_periods")
-                            forecast_type = node_def.get("forecast_type")
-                            growth_params = node_def.get(
-                                "growth_params", 0.0
-                            )  # Default to 0.0 if not provided
-
-                            if not all(
-                                [
-                                    base_node_name,
-                                    base_period,
-                                    forecast_periods,
-                                    forecast_type,
-                                ]
-                            ):
-                                logger.error(
-                                    f"Missing required fields for forecast node '{node_name}'. Skipping."
-                                )
-                                continue
-
-                            # Get the base node from the graph
-                            base_node = graph.nodes.get(base_node_name) if base_node_name else None
-                            if not base_node:
-                                logger.error(
-                                    f"Base node '{base_node_name}' not found for forecast node '{node_name}'. Skipping."
-                                )
-                                continue
-
-                            # Handle special cases where growth_params might not be serializable
-                            if forecast_type in ["statistical", "custom"]:
-                                logger.warning(
-                                    f"Forecast node '{node_name}' of type '{forecast_type}' uses non-serializable "
-                                    f"parameters. Using default values. Manual reconstruction may be needed."
-                                )
-                                if forecast_type == "statistical":
-                                    # Use a default function that returns 0 growth
-                                    def default_statistical_growth() -> float:
-                                        return 0.0
-
-                                    growth_params = default_statistical_growth
-                                elif forecast_type == "custom":
-                                    # Use a default function that returns 0 growth
-                                    def default_custom_growth(
-                                        period: str, prev_period: str, prev_value: float
-                                    ) -> float:
-                                        return 0.0
-
-                                    growth_params = default_custom_growth
-                            elif forecast_type in ["average", "historical_growth"]:
-                                # These types don't need growth_params
-                                growth_params = None
-
-                            # Create the forecast node
-                            try:
-                                # Ensure all required parameters are not None
-                                if (
-                                    not isinstance(base_period, str)
-                                    or not isinstance(forecast_periods, list)
-                                    or not isinstance(forecast_type, str)
-                                ):
-                                    logger.error(
-                                        f"Invalid types for forecast node '{node_name}' parameters. Skipping."
-                                    )
-                                    continue
-
-                                forecast_node = NodeFactory.create_forecast_node(
-                                    name=node_name,
-                                    base_node=base_node,
-                                    base_period=base_period,
-                                    forecast_periods=forecast_periods,
-                                    forecast_type=forecast_type,
-                                    growth_params=growth_params,
-                                )
-                                graph.add_node(forecast_node)
-                                logger.debug(
-                                    f"Added forecast node '{node_name}' of type '{forecast_type}'."
-                                )
-                            except Exception:
-                                logger.exception(
-                                    f"Failed to create forecast node '{node_name}'. Skipping."
-                                )
-                                continue
-                        else:
-                            logger.warning(
-                                f"Unknown node type '{node_type}' for node '{node_name}' during deserialization. Skipping."
-                            )
-                            # Don't add to added_nodes if skipped
-                            continue
-
+                        # Add the node to the graph
+                        graph.add_node(node)
                         added_nodes.add(node_name)
                         added_in_pass += 1
                         logger.debug(f"Added node '{node_name}' in pass {passes + 1}.")
 
                     except (NodeError, ConfigurationError, ValueError, TypeError):
                         # Log error but try to continue with other nodes
-                        logger.exception(f"Failed to add node '{node_name}' during iterative build")
+                        logger.exception(
+                            f"Failed to add node '{node_name}' during iterative build"
+                        )
                         # Keep it in nodes_to_add to potentially retry if it was a temporary dependency issue
-                        # or if error handling allows partial graph load.
-                        # For now, let's keep it for retry, but could decide to fail hard.
                         nodes_to_add[node_name] = node_def
                 else:
                     # Dependencies not met, keep for next pass
@@ -256,9 +101,7 @@ class GraphDefinitionReader(DataReader):
                 # No progress made in this pass, indicates missing nodes or cycle
                 missing_deps = set()
                 for node_name, node_def in nodes_to_add.items():
-                    deps = node_def.get("inputs", [])
-                    if node_def.get("type") == "forecast":
-                        deps = [node_def.get("base_node_name", "")]
+                    deps = self._get_node_dependencies(node_def)
                     for dep in deps:
                         if (
                             dep not in added_nodes and dep not in nodes_to_add
@@ -279,6 +122,30 @@ class GraphDefinitionReader(DataReader):
                 source="graph_definition_dict",
             )
 
+    def _get_node_dependencies(self, node_def: dict[str, Any]) -> list[str]:
+        """Extract dependency names from a node definition.
+
+        Args:
+            node_def: Dictionary containing node definition.
+
+        Returns:
+            List of dependency node names.
+        """
+        node_type = node_def.get("type")
+
+        if node_type == "financial_statement_item":
+            return []  # No dependencies
+        elif node_type in ["calculation", "formula_calculation"]:
+            return node_def.get("inputs", [])
+        elif node_type == "forecast":
+            base_node_name = node_def.get("base_node_name")
+            return [base_node_name] if base_node_name else []
+        elif node_type == "custom_calculation":
+            return node_def.get("inputs", [])
+        else:
+            # Default: check for inputs field
+            return node_def.get("inputs", [])
+
     def read(self, source: dict[str, Any], **kwargs: Any) -> Graph:
         """Reconstruct a Graph instance from its definition dictionary.
 
@@ -294,7 +161,11 @@ class GraphDefinitionReader(DataReader):
         """
         logger.info("Starting graph reconstruction from definition dictionary.")
 
-        if not isinstance(source, dict) or "periods" not in source or "nodes" not in source:
+        if (
+            not isinstance(source, dict)
+            or "periods" not in source
+            or "nodes" not in source
+        ):
             raise ReadError(
                 message="Invalid source format for GraphDefinitionReader. Expected dict with 'periods' and 'nodes' keys.",
                 source="graph_definition_dict",
@@ -318,7 +189,9 @@ class GraphDefinitionReader(DataReader):
             adjustments_list = source.get("adjustments")  # Optional
             if adjustments_list is not None:
                 if not isinstance(adjustments_list, list):
-                    raise ReadError("Invalid format: 'adjustments' must be a list if present.")
+                    raise ReadError(
+                        "Invalid format: 'adjustments' must be a list if present."
+                    )
 
                 deserialized_adjustments = []
                 for i, adj_dict in enumerate(adjustments_list):
@@ -339,13 +212,17 @@ class GraphDefinitionReader(DataReader):
                         f"Loaded {len(deserialized_adjustments)} adjustments into the graph."
                     )
 
-            logger.info(f"Successfully reconstructed graph with {len(graph.nodes)} nodes.")
+            logger.info(
+                f"Successfully reconstructed graph with {len(graph.nodes)} nodes."
+            )
             return graph
 
         except ReadError:  # Re-raise ReadErrors directly
             raise
         except Exception as e:
-            logger.error(f"Failed to reconstruct graph from definition: {e}", exc_info=True)
+            logger.error(
+                f"Failed to reconstruct graph from definition: {e}", exc_info=True
+            )
             raise ReadError(
                 message=f"Failed to reconstruct graph from definition: {e}",
                 source="graph_definition_dict",
@@ -370,123 +247,24 @@ class GraphDefinitionWriter(DataWriter):
         self.cfg = cfg
 
     def _serialize_node(self, node: Node) -> Optional[SerializedNode]:
-        """Serialize a single node into a dictionary definition."""
-        node_def: SerializedNode = {"name": node.name}
+        """Serialize a single node using its to_dict() method.
 
-        if isinstance(node, FinancialStatementItemNode):
-            node_def["type"] = "financial_statement_item"
-            # Store values directly, assuming they are serializable (float)
-            node_def["values"] = node.values.copy()
-            # Add other relevant attributes if needed (e.g., sign_convention)
-        elif isinstance(node, FormulaCalculationNode):
-            node_def["type"] = "formula_calculation"
-            # Store the *actual* dependency node names
-            node_def["inputs"] = node.get_dependencies()  # Store actual dependency names
-            # Store the variable names used in the formula
-            node_def["formula_variable_names"] = list(
-                node.inputs_dict.keys()  # Use inputs_dict instead of inputs for FormulaCalculationNode
-            )  # Store input names (which are keys in formula node)
-            node_def["formula"] = node.formula
-            # Include metric info if it's a metric node
-            if getattr(node, "metric_name", None):
-                node_def["metric_name"] = node.metric_name
-                node_def["metric_description"] = getattr(node, "metric_description", None)
-            # Explicitly set the calculation type key for formula nodes
-            node_def["calculation_type"] = "formula"
-        elif isinstance(
-            node, CalculationNode
-        ):  # Catch general CalculationNodes after specific ones
-            node_def["type"] = "calculation"
-            # Assuming inputs are stored as a list of Nodes:
-            node_def["inputs"] = node.get_dependencies()
-            calc_instance = getattr(node, "calculation", None)
-            if calc_instance:
-                node_def["calculation_type_class"] = type(calc_instance).__name__
-                # Find and save the type key
-                inv_map = {v: k for k, v in NodeFactory._calculation_methods.items()}
-                type_key = inv_map.get(type(calc_instance).__name__)
-                if type_key:
-                    node_def["calculation_type"] = type_key  # Save the type key
+        Args:
+            node: The node to serialize.
 
-                    # Extract calculation arguments based on the calculation type
-                    calculation_args = {}
+        Returns:
+            Dictionary representation of the node, or None if serialization fails.
+        """
+        try:
+            return node.to_dict()
+        except Exception:
+            logger.exception(f"Failed to serialize node '{node.name}'")
+            logger.warning(f"Skipping node '{node.name}' due to serialization error.")
+            return None
 
-                    # WeightedAverageCalculation has weights attribute
-                    if type_key == "weighted_average" and hasattr(calc_instance, "weights"):
-                        calculation_args["weights"] = calc_instance.weights
-
-                    # FormulaCalculation has formula and input_variable_names
-                    elif type_key == "formula" and hasattr(calc_instance, "formula"):
-                        calculation_args["formula"] = calc_instance.formula
-                        if hasattr(calc_instance, "input_variable_names"):
-                            # Store input_variable_names at the node level for proper deserialization
-                            node_def["formula_variable_names"] = calc_instance.input_variable_names
-
-                    # CustomFormulaCalculation has formula_function (not easily serializable)
-                    elif type_key == "custom_formula":
-                        logger.warning(
-                            f"CustomFormulaCalculation for node '{node.name}' uses a Python function "
-                            "which cannot be serialized. This node will need manual reconstruction."
-                        )
-
-                    # Store calculation args if any were extracted
-                    if calculation_args:
-                        node_def["calculation_args"] = calculation_args
-                else:
-                    logger.warning(
-                        f"Could not find type key in NodeFactory._calculation_methods for calculation class {type(calc_instance).__name__}"
-                    )
-            else:
-                logger.warning(
-                    f"CalculationNode '{node.name}' has no internal calculation instance to serialize type."
-                )
-        elif isinstance(node, ForecastNode):
-            node_def["type"] = "forecast"
-            node_def["base_node_name"] = node.input_node.name
-            node_def["base_period"] = node.base_period
-            node_def["forecast_periods"] = node.forecast_periods
-
-            # Determine the forecast type based on the node class
-            if isinstance(node, FixedGrowthForecastNode):
-                node_def["forecast_type"] = "simple"
-                node_def["growth_params"] = node.growth_rate
-            elif isinstance(node, CurveGrowthForecastNode):
-                node_def["forecast_type"] = "curve"
-                node_def["growth_params"] = node.growth_rates
-            elif isinstance(node, StatisticalGrowthForecastNode):
-                node_def["forecast_type"] = "statistical"
-                logger.warning(
-                    f"StatisticalGrowthForecastNode '{node.name}' uses a distribution callable "
-                    "which cannot be serialized. This node will need manual reconstruction."
-                )
-                # We can't serialize the callable, so we'll skip growth_params
-            elif isinstance(node, AverageValueForecastNode):
-                node_def["forecast_type"] = "average"
-                # No growth_params needed for average value
-            elif isinstance(node, AverageHistoricalGrowthForecastNode):
-                node_def["forecast_type"] = "historical_growth"
-                # No growth_params needed for historical growth
-            elif isinstance(node, CustomGrowthForecastNode):
-                node_def["forecast_type"] = "custom"
-                logger.warning(
-                    f"CustomGrowthForecastNode '{node.name}' uses a growth function "
-                    "which cannot be serialized. This node will need manual reconstruction."
-                )
-                # We can't serialize the callable, so we'll skip growth_params
-            else:
-                logger.warning(
-                    f"Unknown ForecastNode subclass '{type(node).__name__}' for node '{node.name}'. "
-                    "Using generic forecast serialization."
-                )
-        else:
-            logger.warning(
-                f"Node type '{type(node).__name__}' for node '{node.name}' is not explicitly handled by GraphDefinitionWriter. Skipping."
-            )
-            return None  # Skip nodes we don't know how to serialize
-
-        return node_def
-
-    def write(self, graph: Graph, target: Any = None, **kwargs: dict[str, Any]) -> dict[str, Any]:
+    def write(
+        self, graph: Graph, target: Any = None, **kwargs: dict[str, Any]
+    ) -> dict[str, Any]:
         """Export the full graph definition to a dictionary.
 
         Args:
@@ -512,12 +290,16 @@ class GraphDefinitionWriter(DataWriter):
             # 1. Serialize Periods
             graph_definition["periods"] = list(graph.periods)
 
-            # 2. Serialize Nodes
+            # 2. Serialize Nodes using their to_dict() methods
             serialized_nodes: dict[str, SerializedNode] = {}
             for node_name, node in graph.nodes.items():
                 node_dict = self._serialize_node(node)
                 if node_dict:
                     serialized_nodes[node_name] = node_dict
+                else:
+                    logger.warning(
+                        f"Node '{node_name}' was not serialized due to errors."
+                    )
             graph_definition["nodes"] = serialized_nodes
 
             # 3. Serialize Adjustments
@@ -528,7 +310,9 @@ class GraphDefinitionWriter(DataWriter):
                     # Use model_dump for Pydantic V2, ensure mode='json' for types like UUID/datetime
                     serialized_adjustments.append(adj.model_dump(mode="json"))
                 except Exception as e:
-                    logger.warning(f"Failed to serialize adjustment {adj.id}: {e}. Skipping.")
+                    logger.warning(
+                        f"Failed to serialize adjustment {adj.id}: {e}. Skipping."
+                    )
             graph_definition["adjustments"] = serialized_adjustments
 
             logger.info(
@@ -537,7 +321,9 @@ class GraphDefinitionWriter(DataWriter):
             return graph_definition
 
         except Exception as e:
-            logger.error(f"Failed to create graph definition dictionary: {e}", exc_info=True)
+            logger.error(
+                f"Failed to create graph definition dictionary: {e}", exc_info=True
+            )
             raise WriteError(
                 message=f"Failed to create graph definition dictionary: {e}",
                 target="graph_definition_dict",

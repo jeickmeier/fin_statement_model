@@ -78,8 +78,8 @@ def populate_graph_from_statement(
         >>>
         >>> # Create graph with data nodes
         >>> graph = Graph()
-        >>> graph.add_node('revenue_node', values={'2023': 1000})
-        >>> graph.add_node('cogs_node', values={'2023': 600})
+        >>> graph.add_financial_statement_item('revenue_node', {'2023': 1000})
+        >>> graph.add_financial_statement_item('cogs_node', {'2023': 600})
         >>>
         >>> # Create statement with calculations
         >>> statement = StatementStructure(id="IS", name="Income Statement")

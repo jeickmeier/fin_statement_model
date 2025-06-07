@@ -9,20 +9,24 @@ from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.core.mixins import (
     FileBasedReader,
-    ConfigurableReaderMixin,
+    ConfigurationMixin,
+    MappingAwareMixin,
+    ValidationMixin,
     handle_read_errors,
     ValidationResultCollector,
 )
 from fin_statement_model.io.core.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
-from fin_statement_model.io.core.utils import normalize_mapping
+
 from fin_statement_model.io.config.models import ExcelReaderConfig
 
 logger = logging.getLogger(__name__)
 
 
 @register_reader("excel")
-class ExcelReader(FileBasedReader, ConfigurableReaderMixin):
+class ExcelReader(
+    FileBasedReader, ConfigurationMixin, MappingAwareMixin, ValidationMixin
+):
     """Reads financial statement data from an Excel file into a Graph.
 
     Expects data in a tabular format where rows typically represent items
@@ -43,14 +47,6 @@ class ExcelReader(FileBasedReader, ConfigurableReaderMixin):
                  `source`, `sheet_name`, `items_col`, `periods_row`, and `mapping_config`.
         """
         self.cfg = cfg
-
-    def _get_mapping(self, statement_type: Optional[str]) -> dict[str, str]:
-        """Get the appropriate mapping based on statement type and the stored config."""
-        # Use the mapping config stored in the validated Pydantic config object
-        config = self.get_config_value("mapping_config")
-        # Normalize and overlay user-provided mappings
-        mapping = normalize_mapping(config, context_key=statement_type)
-        return mapping
 
     @handle_read_errors()
     def read(self, source: str, **kwargs: dict[str, Any]) -> Graph:
@@ -79,10 +75,17 @@ class ExcelReader(FileBasedReader, ConfigurableReaderMixin):
         self.validate_file_exists(file_path)
         self.validate_file_extension(file_path, (".xls", ".xlsx", ".xlsm"))
 
-        # Get configuration values
-        sheet_name = self.require_config_value("sheet_name")
-        periods_row = self.require_config_value("periods_row")
-        items_col = self.require_config_value("items_col")
+        # Set configuration context for better error reporting
+        self.set_config_context(file_path=file_path, operation="read")
+
+        # Get configuration values with validation
+        sheet_name = self.require_config_value("sheet_name", value_type=str)
+        periods_row = self.require_config_value(
+            "periods_row", value_type=int, validator=lambda x: x >= 1
+        )
+        items_col = self.require_config_value(
+            "items_col", value_type=int, validator=lambda x: x >= 1
+        )
 
         # Runtime options from kwargs
         statement_type = kwargs.get("statement_type")
@@ -103,7 +106,9 @@ class ExcelReader(FileBasedReader, ConfigurableReaderMixin):
         graph_periods = self._extract_periods(period_headers, items_col)
 
         # Create and populate graph
-        return self._create_graph(df, graph_periods, items_col, mapping, file_path, sheet_name)
+        return self._create_graph(
+            df, graph_periods, items_col, mapping, file_path, sheet_name
+        )
 
     def _read_excel_data(
         self,
@@ -145,14 +150,10 @@ class ExcelReader(FileBasedReader, ConfigurableReaderMixin):
             # Periods are in the main header row
             period_headers = df.columns.astype(str).tolist()
 
-        # Validate items column index
-        if items_col_0idx >= len(df.columns):
-            raise ReadError(
-                f"items_col index ({items_col}) is out of bounds for sheet '{sheet_name}'. "
-                f"Found {len(df.columns)} columns.",
-                source=file_path,
-                reader_type=self.__class__.__name__,
-            )
+        # Validate items column index using ValidationMixin
+        self.validate_column_bounds(
+            df, items_col_0idx, file_path, f"items_col ({items_col})"
+        )
 
         return df, period_headers
 
@@ -162,16 +163,13 @@ class ExcelReader(FileBasedReader, ConfigurableReaderMixin):
 
         # Filter period headers: exclude the item column and empty values
         graph_periods = [
-            p for i, p in enumerate(period_headers) if i > items_col_0idx and p and p.strip()
+            p
+            for i, p in enumerate(period_headers)
+            if i > items_col_0idx and p and p.strip()
         ]
 
-        if not graph_periods:
-            raise ReadError(
-                f"Could not identify period columns after column {items_col}. "
-                f"Headers found: {period_headers}",
-                source="Excel file",
-                reader_type=self.__class__.__name__,
-            )
+        # Validate periods using ValidationMixin
+        self.validate_periods_exist(graph_periods, "Excel file")
 
         logger.info(f"Identified periods: {graph_periods}")
         return graph_periods
@@ -200,7 +198,7 @@ class ExcelReader(FileBasedReader, ConfigurableReaderMixin):
                 continue
 
             item_name_excel = str(item_name_excel).strip()
-            node_name = mapping.get(item_name_excel, item_name_excel)
+            node_name = self._apply_mapping(item_name_excel, mapping)
 
             # Extract values for all periods
             period_values = self._extract_row_values(
@@ -214,7 +212,9 @@ class ExcelReader(FileBasedReader, ConfigurableReaderMixin):
                         "Overwriting data is not standard for readers."
                     )
                 else:
-                    new_node = FinancialStatementItemNode(name=node_name, values=period_values)
+                    new_node = FinancialStatementItemNode(
+                        name=node_name, values=period_values
+                    )
                     graph.add_node(new_node)
                     nodes_added += 1
 
@@ -258,22 +258,12 @@ class ExcelReader(FileBasedReader, ConfigurableReaderMixin):
             if pd.isna(value):
                 continue  # Skip NaN values
 
-            if isinstance(value, int | float):
-                period_values[period] = float(value)
-            else:
-                # Try to convert to float
-                try:
-                    period_values[period] = float(value)
-                    logger.warning(
-                        f"Converted non-numeric value '{value}' to float for "
-                        f"node '{node_name}' period '{period}'"
-                    )
-                except (ValueError, TypeError):
-                    validator.add_result(
-                        f"Row {row_index}",
-                        False,
-                        f"Non-numeric value '{value}' for node '{node_name}' "
-                        f"(from '{item_name_excel}') period '{period}'",
-                    )
+            # Use ValidationMixin for numeric validation
+            is_valid, converted_value = self.validate_numeric_value(
+                value, node_name, period, validator, allow_conversion=True
+            )
+
+            if is_valid and converted_value is not None:
+                period_values[period] = converted_value
 
         return period_values

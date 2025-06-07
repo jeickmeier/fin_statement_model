@@ -10,7 +10,9 @@ from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.core.mixins import (
     FileBasedReader,
-    ConfigurableReaderMixin,
+    ConfigurationMixin,
+    MappingAwareMixin,
+    ValidationMixin,
     handle_read_errors,
     ValidationResultCollector,
 )
@@ -22,7 +24,9 @@ logger = logging.getLogger(__name__)
 
 
 @register_reader("csv")
-class CsvReader(FileBasedReader, ConfigurableReaderMixin):
+class CsvReader(
+    FileBasedReader, ConfigurationMixin, MappingAwareMixin, ValidationMixin
+):
     """Reads financial statement data from a CSV file into a Graph.
 
     Assumes a 'long' format where each row represents a single data point
@@ -71,6 +75,9 @@ class CsvReader(FileBasedReader, ConfigurableReaderMixin):
         file_path = source
         logger.info(f"Starting import from CSV file: {file_path}")
 
+        # Set configuration context for better error reporting
+        self.set_config_context(file_path=file_path, operation="read")
+
         # Use base class validation
         self.validate_file_exists(file_path)
         self.validate_file_extension(file_path, (".csv", ".txt"))
@@ -94,18 +101,36 @@ class CsvReader(FileBasedReader, ConfigurableReaderMixin):
         self._validate_columns(df, item_col, period_col, value_col, file_path)
 
         # Process data
-        return self._process_dataframe(df, item_col, period_col, value_col, file_path)
+        return self._process_dataframe(
+            df, item_col, period_col, value_col, file_path, kwargs
+        )
 
-    def _read_csv_file(self, file_path: str, user_options: dict[str, Any]) -> pd.DataFrame:
+    def _read_csv_file(
+        self, file_path: str, user_options: dict[str, Any]
+    ) -> pd.DataFrame:
         """Read CSV file with configuration options."""
-        # Use configuration from self.cfg, allow overrides via user_options
+        # Use configuration from self.cfg with enhanced validation
+        delimiter = self.get_config_value(
+            "delimiter",
+            default=cfg("io.default_csv_delimiter"),
+            value_type=str,
+            validator=lambda x: len(x) >= 1,
+        )
+        header_row = self.get_config_value(
+            "header_row", default=1, value_type=int, validator=lambda x: x >= 1
+        )
+
         read_options = {
-            "delimiter": self.get_config_value("delimiter", cfg("io.default_csv_delimiter")),
-            "header": self.get_config_value("header_row", 1) - 1,  # Convert to 0-indexed
+            "delimiter": delimiter,
+            "header": header_row - 1,  # Convert to 0-indexed
         }
 
-        # Handle optional index_col
-        index_col = self.get_config_value("index_col")
+        # Handle optional index_col with validation
+        index_col = self.get_config_value(
+            "index_col",
+            value_type=(int, type(None)),
+            validator=lambda x: x is None or x >= 1,
+        )
         if index_col is not None:
             read_options["index_col"] = index_col - 1  # Convert to 0-indexed
 
@@ -123,14 +148,8 @@ class CsvReader(FileBasedReader, ConfigurableReaderMixin):
         file_path: str,
     ) -> None:
         """Validate that required columns exist in the DataFrame."""
-        required_cols = {item_col, period_col, value_col}
-        missing_cols = required_cols - set(df.columns)
-        if missing_cols:
-            raise ReadError(
-                f"Missing required columns in CSV: {missing_cols}",
-                source=file_path,
-                reader_type=self.__class__.__name__,
-            )
+        # Use ValidationMixin for column validation
+        self.validate_required_columns(df, [item_col, period_col, value_col], file_path)
 
     def _process_dataframe(
         self,
@@ -139,18 +158,15 @@ class CsvReader(FileBasedReader, ConfigurableReaderMixin):
         period_col: str,
         value_col: str,
         file_path: str,
+        kwargs: dict[str, Any],
     ) -> Graph:
         """Process the DataFrame and create a Graph."""
         # Convert period column to string
         df[period_col] = df[period_col].astype(str)
         all_periods = sorted(df[period_col].unique().tolist())
 
-        if not all_periods:
-            raise ReadError(
-                "No periods found in the specified period column.",
-                source=file_path,
-                reader_type=self.__class__.__name__,
-            )
+        # Use ValidationMixin for periods validation
+        self.validate_periods_exist(all_periods, file_path)
 
         logger.info(f"Identified periods: {all_periods}")
         graph = Graph(periods=all_periods)
@@ -162,10 +178,9 @@ class CsvReader(FileBasedReader, ConfigurableReaderMixin):
         grouped = df.groupby(item_col)
         nodes_added = 0
 
-        # Get mapping config
-        mapping_config = self.get_config_value("mapping_config", {})
-        if mapping_config is None:
-            mapping_config = {}
+        # Get mapping using mixin method
+        context_key = kwargs.get("statement_type")
+        mapping = self._get_mapping(context_key)
 
         for item_name_csv, group in grouped:
             if pd.isna(item_name_csv) or not item_name_csv:
@@ -173,7 +188,7 @@ class CsvReader(FileBasedReader, ConfigurableReaderMixin):
                 continue
 
             item_name_csv_str = str(item_name_csv).strip()
-            node_name = mapping_config.get(item_name_csv_str, item_name_csv_str)
+            node_name = self._apply_mapping(item_name_csv_str, mapping)
 
             period_values = self._extract_period_values(
                 group, period_col, value_col, item_name_csv_str, node_name, validator
@@ -186,7 +201,9 @@ class CsvReader(FileBasedReader, ConfigurableReaderMixin):
                         "Overwriting data is not standard for readers."
                     )
                 else:
-                    new_node = FinancialStatementItemNode(name=node_name, values=period_values)
+                    new_node = FinancialStatementItemNode(
+                        name=node_name, values=period_values
+                    )
                     graph.add_node(new_node)
                     nodes_added += 1
 
@@ -199,7 +216,9 @@ class CsvReader(FileBasedReader, ConfigurableReaderMixin):
                 reader_type=self.__class__.__name__,
             )
 
-        logger.info(f"Successfully created graph with {nodes_added} nodes from {file_path}.")
+        logger.info(
+            f"Successfully created graph with {nodes_added} nodes from {file_path}."
+        )
         return graph
 
     def _extract_period_values(
@@ -221,21 +240,15 @@ class CsvReader(FileBasedReader, ConfigurableReaderMixin):
             if pd.isna(value):
                 continue  # Skip missing values
 
-            # Validate and convert value
-            if not isinstance(value, int | float):
-                try:
-                    value = float(value)
-                    logger.warning(
-                        f"Converted non-numeric value '{row[value_col]}' to float "
-                        f"for node '{node_name}' period '{period}'"
-                    )
-                except (ValueError, TypeError):
-                    validator.add_result(
-                        item_name_csv,
-                        False,
-                        f"Non-numeric value '{value}' for period '{period}'",
-                    )
-                    continue
+            # Use ValidationMixin for numeric validation
+            is_valid, converted_value = self.validate_numeric_value(
+                value, item_name_csv, period, validator, allow_conversion=True
+            )
+
+            if not is_valid or converted_value is None:
+                continue
+
+            value = converted_value
 
             if period in period_values:
                 logger.warning(

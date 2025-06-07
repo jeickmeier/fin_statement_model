@@ -80,7 +80,9 @@ class NormalizationTransformer(DataTransformer):
 
     def __init__(
         self,
-        normalization_type: Union[str, NormalizationType] = NormalizationType.PERCENT_OF,
+        normalization_type: Union[
+            str, NormalizationType
+        ] = NormalizationType.PERCENT_OF,
         reference: Optional[str] = None,
         scale_factor: Optional[float] = None,
         config: Optional[NormalizationConfig] = None,
@@ -124,13 +126,19 @@ class NormalizationTransformer(DataTransformer):
         self.scale_factor = scale_factor
 
         # Validation
-        if self.normalization_type == NormalizationType.PERCENT_OF.value and not reference:
+        if (
+            self.normalization_type == NormalizationType.PERCENT_OF.value
+            and not reference
+        ):
             raise NormalizationError(
                 "Reference field must be provided for percent_of normalization",
                 method=self.normalization_type,
             )
 
-        if self.normalization_type == NormalizationType.SCALE_BY.value and scale_factor is None:
+        if (
+            self.normalization_type == NormalizationType.SCALE_BY.value
+            and scale_factor is None
+        ):
             raise NormalizationError(
                 "Scale factor must be provided for scale_by normalization",
                 method=self.normalization_type,
@@ -158,67 +166,7 @@ class NormalizationTransformer(DataTransformer):
                 f"Unsupported data type: {type(data)}. Expected pandas.DataFrame",
                 validation_errors=[f"Got type: {type(data).__name__}"],
             )
-        return self._transform_dataframe(data)
-
-    def _transform_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Transform a DataFrame with the selected normalization method.
-
-        For 'percent_of' normalization, if a reference value is 0 or NaN,
-        the corresponding output for that row will be NaN.
-        """
-        result = df.copy()
-
-        if self.normalization_type == NormalizationType.PERCENT_OF.value:
-            if self.reference not in df.columns:
-                raise NormalizationError(
-                    f"Reference column '{self.reference}' not found in DataFrame",
-                    method=self.normalization_type,
-                    reference_field=self.reference,
-                )
-
-            for col in df.columns:
-                if col != self.reference:
-                    # Replace 0 with NaN in the denominator to ensure division by zero results in NaN
-                    reference_series = df[self.reference].replace(0, np.nan)
-                    if (
-                        reference_series.isnull().all()
-                    ):  # If all reference values are NaN (or were 0)
-                        result[col] = np.nan
-                        logger.warning(
-                            f"All reference values for '{self.reference}' are zero or NaN. '{col}' will be NaN."
-                        )
-                    else:
-                        result[col] = (df[col] / reference_series) * 100
-
-        elif self.normalization_type == NormalizationType.MINMAX.value:  # pragma: no cover
-            for col in df.columns:
-                min_val = df[col].min()
-                max_val = df[col].max()
-
-                if max_val > min_val:
-                    result[col] = (df[col] - min_val) / (max_val - min_val)  # pragma: no cover
-                elif max_val == min_val:  # Handles constant columns
-                    result[col] = (
-                        0.0  # Or np.nan, depending on desired behavior for constant series
-                    )
-                # else: max_val < min_val (should not happen with .min()/.max())
-
-        elif self.normalization_type == NormalizationType.STANDARD.value:
-            for col in df.columns:
-                mean = df[col].mean()
-                std = df[col].std()
-
-                if std > 0:
-                    result[col] = (df[col] - mean) / std
-                elif std == 0:  # Handles constant columns
-                    result[col] = 0.0  # Or np.nan, depending on desired behavior
-                # else: std < 0 (not possible)
-
-        elif self.normalization_type == NormalizationType.SCALE_BY.value:
-            for col in df.columns:
-                result[col] = df[col] * self.scale_factor
-
-        return result
+        return super().transform(data)
 
     def validate_config(self) -> None:
         """Validate the transformer configuration.
@@ -235,7 +183,10 @@ class NormalizationTransformer(DataTransformer):
                 method=self.normalization_type,
             )
 
-        if self.normalization_type == NormalizationType.PERCENT_OF.value and not self.reference:
+        if (
+            self.normalization_type == NormalizationType.PERCENT_OF.value
+            and not self.reference
+        ):
             raise NormalizationError(
                 "Reference field must be provided for percent_of normalization",
                 method=self.normalization_type,
@@ -265,37 +216,46 @@ class NormalizationTransformer(DataTransformer):
             DataValidationError: If the data type is not supported.
             NormalizationError: If there are issues during normalization.
         """
-        if not isinstance(data, (pd.DataFrame, pd.Series)):
+        if not isinstance(data, pd.DataFrame | pd.Series):
             raise DataValidationError(
                 f"Unsupported data type: {type(data)}. Expected pandas.DataFrame or pandas.Series",
                 validation_errors=[f"Got type: {type(data).__name__}"],
             )
 
-        if isinstance(data, pd.DataFrame):
-            # Apply normalization to selected columns
-            result = data.copy()
-            if (
-                self.normalization_type == NormalizationType.PERCENT_OF.value
-                and self.reference not in data.columns
-            ):
-                raise NormalizationError(
-                    f"Reference column '{self.reference}' not found in DataFrame",
-                    method=self.normalization_type,
-                    reference_field=self.reference,
-                )
+        # Handle Series by converting to DataFrame temporarily
+        if isinstance(data, pd.Series):
+            temp_df = data.to_frame()
+            result_df = self._normalize_dataframe(temp_df)
+            return result_df.iloc[:, 0]  # Return as Series
+        else:
+            return self._normalize_dataframe(data)
+
+    def _normalize_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Apply normalization to a DataFrame.
+
+        Args:
+            df: DataFrame to normalize.
+
+        Returns:
+            Normalized DataFrame.
+
+        Raises:
+            NormalizationError: If reference column is not found or other normalization issues.
+        """
+        result = df.copy()
 
         if self.normalization_type == NormalizationType.PERCENT_OF.value:
-            if self.reference not in data.columns:
+            if self.reference not in df.columns:
                 raise NormalizationError(
                     f"Reference column '{self.reference}' not found in DataFrame",
                     method=self.normalization_type,
                     reference_field=self.reference,
                 )
 
-            for col in data.columns:
+            for col in df.columns:
                 if col != self.reference:
                     # Replace 0 with NaN in the denominator to ensure division by zero results in NaN
-                    reference_series = data[self.reference].replace(0, np.nan)
+                    reference_series = df[self.reference].replace(0, np.nan)
                     if (
                         reference_series.isnull().all()
                     ):  # If all reference values are NaN (or were 0)
@@ -304,15 +264,19 @@ class NormalizationTransformer(DataTransformer):
                             f"All reference values for '{self.reference}' are zero or NaN. '{col}' will be NaN."
                         )
                     else:
-                        result[col] = (data[col] / reference_series) * 100
+                        result[col] = (df[col] / reference_series) * 100
 
-        elif self.normalization_type == NormalizationType.MINMAX.value:  # pragma: no cover
-            for col in data.columns:
-                min_val = data[col].min()
-                max_val = data[col].max()
+        elif (
+            self.normalization_type == NormalizationType.MINMAX.value
+        ):  # pragma: no cover
+            for col in df.columns:
+                min_val = df[col].min()
+                max_val = df[col].max()
 
                 if max_val > min_val:
-                    result[col] = (data[col] - min_val) / (max_val - min_val)  # pragma: no cover
+                    result[col] = (df[col] - min_val) / (
+                        max_val - min_val
+                    )  # pragma: no cover
                 elif max_val == min_val:  # Handles constant columns
                     result[col] = (
                         0.0  # Or np.nan, depending on desired behavior for constant series
@@ -320,18 +284,18 @@ class NormalizationTransformer(DataTransformer):
                 # else: max_val < min_val (should not happen with .min()/.max())
 
         elif self.normalization_type == NormalizationType.STANDARD.value:
-            for col in data.columns:
-                mean = data[col].mean()
-                std = data[col].std()
+            for col in df.columns:
+                mean = df[col].mean()
+                std = df[col].std()
 
                 if std > 0:
-                    result[col] = (data[col] - mean) / std
+                    result[col] = (df[col] - mean) / std
                 elif std == 0:  # Handles constant columns
                     result[col] = 0.0  # Or np.nan, depending on desired behavior
                 # else: std < 0 (not possible)
 
         elif self.normalization_type == NormalizationType.SCALE_BY.value:
-            for col in data.columns:
-                result[col] = data[col] * self.scale_factor
+            for col in df.columns:
+                result[col] = df[col] * self.scale_factor
 
         return result

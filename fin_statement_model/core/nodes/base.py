@@ -5,6 +5,10 @@ attribute access, and optional caching behavior.
 """
 
 from abc import ABC, abstractmethod
+from typing import Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    pass
 
 
 class Node(ABC):
@@ -40,7 +44,9 @@ class Node(ABC):
             raise ValueError("Node name must be a non-empty string.")
         # Check for invalid characters (including newline, tab)
         if "\n" in name or "\t" in name:
-            raise ValueError(f"Invalid node name: '{name}'. Contains invalid characters.")
+            raise ValueError(
+                f"Invalid node name: '{name}'. Contains invalid characters."
+            )
         # Check for leading/trailing whitespace
         if name != name.strip():
             raise ValueError(
@@ -119,7 +125,9 @@ class Node(ABC):
         try:
             return getattr(self, attribute_name)
         except AttributeError:
-            raise AttributeError(f"Node '{self.name}' has no attribute '{attribute_name}'")
+            raise AttributeError(
+                f"Node '{self.name}' has no attribute '{attribute_name}'"
+            )
 
     def has_value(self, period: str) -> bool:
         """Indicate whether the node stores a direct value for a period.
@@ -170,3 +178,56 @@ class Node(ABC):
             False
         """
         return False
+
+    @abstractmethod
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize the node to a dictionary representation.
+
+        This method should return a dictionary containing all information
+        necessary to reconstruct the node, including:
+        - node type
+        - name
+        - any configuration parameters
+        - values (for data nodes)
+        - input references (for calculation nodes)
+
+        Returns:
+            Dictionary representation of the node.
+
+        Examples:
+            >>> node_dict = node.to_dict()
+            >>> node_dict['type']
+            'financial_statement_item'
+        """
+
+    @staticmethod
+    @abstractmethod
+    def from_dict(data: dict[str, Any]) -> "Node":
+        """Create a node instance from a dictionary representation.
+
+        This static method should be implemented by each concrete node class
+        to reconstruct an instance from its serialized form.
+
+        Args:
+            data: Dictionary containing the node's serialized data.
+
+        Returns:
+            A new instance of the node.
+
+        Raises:
+            ValueError: If the data is invalid or missing required fields.
+
+        Examples:
+            >>> data = {'type': 'financial_statement_item', 'name': 'Revenue', 'values': {'2023': 1000}}
+            >>> node = FinancialStatementItemNode.from_dict(data)
+        """
+
+    def get_dependencies(self) -> list[str]:
+        """Get the names of nodes this node depends on.
+
+        Default implementation returns empty list. Override in nodes that have dependencies.
+
+        Returns:
+            List of node names this node depends on.
+        """
+        return []

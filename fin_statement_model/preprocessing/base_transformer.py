@@ -28,10 +28,13 @@ class DataTransformer(ABC):
             config: Optional configuration dictionary for the transformer
         """
         self.config = config or {}
-        logger.debug(f"Initialized {self.__class__.__name__} with config: {self.config}")
+        logger.debug(
+            f"Initialized {self.__class__.__name__} with config: {self.config}"
+        )
 
-    @abstractmethod
-    def transform(self, data: Union[pd.DataFrame, pd.Series]) -> Union[pd.DataFrame, pd.Series]:
+    def transform(
+        self, data: Union[pd.DataFrame, pd.Series]
+    ) -> Union[pd.DataFrame, pd.Series]:
         """Transform the input data.
 
         Args:
@@ -44,14 +47,33 @@ class DataTransformer(ABC):
             TransformationError: If transformation fails.
         """
         try:
-            self.logger.debug(f"Transforming data with {self.__class__.__name__}")
+            logger.debug(f"Transforming data with {self.__class__.__name__}")
             return self._transform_impl(data)
         except Exception as e:
-            self.logger.exception(f"Error transforming data with {self.__class__.__name__}")
+            logger.exception(f"Error transforming data with {self.__class__.__name__}")
             raise TransformationError(
                 "Error transforming data",
                 transformer_type=self.__class__.__name__,
             ) from e
+
+    @abstractmethod
+    def _transform_impl(
+        self, data: Union[pd.DataFrame, pd.Series]
+    ) -> Union[pd.DataFrame, pd.Series]:
+        """Apply the transformation logic.
+
+        This method must be implemented by subclasses to define the specific
+        transformation logic.
+
+        Args:
+            data: The data to transform.
+
+        Returns:
+            The transformed data.
+
+        Raises:
+            TransformationError: If transformation fails.
+        """
 
     def validate_input(self, data: object) -> bool:
         """Validate that the input data is a pandas DataFrame by default.
@@ -114,7 +136,9 @@ class DataTransformer(ABC):
             # Perform transformation
             result = self.transform(processed_data)
             result = self._post_transform_hook(result)
-            logger.debug(f"Successfully transformed data with {self.__class__.__name__}")
+            logger.debug(
+                f"Successfully transformed data with {self.__class__.__name__}"
+            )
         except Exception as e:
             logger.exception(f"Error transforming data with {self.__class__.__name__}")
             raise ValueError("Error transforming data") from e
@@ -142,7 +166,9 @@ class CompositeTransformer(DataTransformer):
     This allows building complex transformation chains from simple steps.
     """
 
-    def __init__(self, transformers: list[DataTransformer], config: Optional[dict] = None):
+    def __init__(
+        self, transformers: list[DataTransformer], config: Optional[dict] = None
+    ):
         """Initialize with a list of transformers.
 
         Args:
@@ -152,7 +178,9 @@ class CompositeTransformer(DataTransformer):
         super().__init__(config)
         self.transformers = transformers
 
-    def transform(self, data: object) -> object:
+    def _transform_impl(
+        self, data: Union[pd.DataFrame, pd.Series]
+    ) -> Union[pd.DataFrame, pd.Series]:
         """Apply each transformer in sequence.
 
         Args:

@@ -32,7 +32,6 @@ Standard nodes are organized by category:
 """
 
 import logging
-from pathlib import Path
 
 # Import all node classes using actual file names
 from .base import Node
@@ -62,45 +61,16 @@ from .standard_registry import standard_node_registry
 
 logger = logging.getLogger(__name__)
 
-# Load standard nodes - prefer organized structure, fallback to flat file
-_nodes_loaded = False
-
-if not _nodes_loaded:
-    try:
-        # First try to load from organized structure
-        organized_path = Path(__file__).parent / "standard_nodes_defn"
-        if organized_path.exists() and (organized_path / "__init__.py").exists():
-            logger.info("Loading standard nodes from organized structure")
-            from .standard_nodes_defn import load_all_standard_nodes
-
-            organized_count = load_all_standard_nodes()
-            logger.info(
-                f"Successfully loaded {organized_count} standard nodes from organized structure"
-            )
-            _nodes_loaded = True
-        else:
-            # Fallback to flat structure if organized doesn't exist
-            logger.info("Organized structure not found, loading from flat standard_nodes.yaml")
-            flat_file = Path(__file__).parent / "standard_nodes.yaml"
-            if flat_file.exists():
-                flat_count = standard_node_registry.load_from_yaml(flat_file)
-                logger.info(f"Successfully loaded {flat_count} standard nodes from flat file")
-                _nodes_loaded = True
-            else:
-                logger.warning("No standard node files found in either organized or flat structure")
-
-    except Exception:
-        logger.exception("Failed to load standard nodes")
-        # Try fallback to flat structure only if organized loading failed
-        if not _nodes_loaded:
-            try:
-                flat_file = Path(__file__).parent / "standard_nodes.yaml"
-                if flat_file.exists():
-                    flat_count = standard_node_registry.load_from_yaml(flat_file)
-                    logger.info(f"Fallback: loaded {flat_count} standard nodes from flat file")
-                    _nodes_loaded = True
-            except Exception:
-                logger.exception("Fallback loading also failed")
+# Initialize standard nodes using the registry's built-in fallback mechanism
+try:
+    count = standard_node_registry.initialize_default_nodes()
+    if count == 0:
+        logger.warning(
+            "No standard nodes were loaded. The registry is empty. "
+            "This may cause issues with metrics and node validation."
+        )
+except Exception:
+    logger.exception("Failed to initialize standard nodes")
 
 __all__ = [
     "AverageHistoricalGrowthForecastNode",

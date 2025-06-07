@@ -416,7 +416,7 @@ class TestNodeValidationIntegration:
 
         # Create a simple graph
         graph = Graph()
-        graph.add_node("revenue", values={"2023": 1000})
+        graph.add_financial_statement_item("revenue", {"2023": 1000})
 
         config_data = {
             "id": "simple_statement",

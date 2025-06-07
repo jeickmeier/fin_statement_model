@@ -50,7 +50,9 @@ class CalculationNode(Node):
         30.0
     """
 
-    def __init__(self, name: str, inputs: list[Node], calculation: Calculation, **kwargs: Any):
+    def __init__(
+        self, name: str, inputs: list[Node], calculation: Calculation, **kwargs: Any
+    ):
         """Initialize the CalculationNode.
 
         Args:
@@ -67,8 +69,12 @@ class CalculationNode(Node):
         super().__init__(name)
         if not isinstance(inputs, list) or not all(isinstance(n, Node) for n in inputs):
             raise TypeError("CalculationNode inputs must be a list of Node instances.")
-        if not hasattr(calculation, "calculate") or not callable(getattr(calculation, "calculate")):
-            raise TypeError("Calculation object must have a callable 'calculate' method.")
+        if not hasattr(calculation, "calculate") or not callable(
+            getattr(calculation, "calculate")
+        ):
+            raise TypeError(
+                "Calculation object must have a callable 'calculate' method."
+            )
 
         self.inputs = inputs
         self.calculation = calculation
@@ -129,8 +135,12 @@ class CalculationNode(Node):
         Raises:
             TypeError: If the new calculation is invalid.
         """
-        if not hasattr(calculation, "calculate") or not callable(getattr(calculation, "calculate")):
-            raise TypeError("New calculation object must have a callable 'calculate' method.")
+        if not hasattr(calculation, "calculate") or not callable(
+            getattr(calculation, "calculate")
+        ):
+            raise TypeError(
+                "New calculation object must have a callable 'calculate' method."
+            )
         self.calculation = calculation
         self.clear_cache()  # Clear cache as logic has changed
 
@@ -157,6 +167,151 @@ class CalculationNode(Node):
             True, as CalculationNode performs calculations.
         """
         return True
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize the node to a dictionary representation.
+
+        Returns:
+            Dictionary containing the node's type, name, inputs, and calculation info.
+
+        Note:
+            This method requires access to NodeFactory's calculation registry
+            to properly serialize the calculation type. Some calculation types
+            with non-serializable parameters may include warnings.
+        """
+        # Import here to avoid circular imports
+        from fin_statement_model.core.node_factory import NodeFactory
+
+        node_dict = {
+            "type": "calculation",
+            "name": self.name,
+            "inputs": self.get_dependencies(),
+        }
+
+        # Add calculation type information
+        calc_class_name = type(self.calculation).__name__
+        node_dict["calculation_type_class"] = calc_class_name
+
+        # Find the calculation type key from NodeFactory registry
+        inv_map = {v: k for k, v in NodeFactory._calculation_methods.items()}
+        type_key = inv_map.get(calc_class_name)
+        if type_key:
+            node_dict["calculation_type"] = type_key
+
+            # Extract calculation-specific arguments
+            calculation_args = {}
+
+            # Handle specific calculation types
+            if type_key == "weighted_average" and hasattr(self.calculation, "weights"):
+                calculation_args["weights"] = self.calculation.weights
+            elif type_key == "formula" and hasattr(self.calculation, "formula"):
+                calculation_args["formula"] = self.calculation.formula
+                if hasattr(self.calculation, "input_variable_names"):
+                    node_dict["formula_variable_names"] = (
+                        self.calculation.input_variable_names
+                    )
+            elif type_key == "custom_formula":
+                node_dict["serialization_warning"] = (
+                    "CustomFormulaCalculation uses a Python function which cannot be serialized. "
+                    "Manual reconstruction required."
+                )
+
+            if calculation_args:
+                node_dict["calculation_args"] = calculation_args
+
+        # Add any additional attributes (like metric info)
+        if hasattr(self, "metric_name") and self.metric_name:
+            node_dict["metric_name"] = self.metric_name
+        if hasattr(self, "metric_description") and self.metric_description:
+            node_dict["metric_description"] = self.metric_description
+
+        return node_dict
+
+    @staticmethod
+    def from_dict(data: dict[str, Any]) -> "CalculationNode":
+        """Create a CalculationNode from a dictionary representation.
+
+        Args:
+            data: Dictionary containing the node's serialized data.
+
+        Returns:
+            A new CalculationNode instance.
+
+        Raises:
+            ValueError: If the data is invalid or missing required fields.
+            NotImplementedError: This method requires context (existing nodes) to resolve
+                input dependencies. Use from_dict_with_context instead.
+
+        Note:
+            This method cannot resolve input node dependencies without context.
+            Use NodeFactory.create_from_dict() or from_dict_with_context() instead.
+        """
+        raise NotImplementedError(
+            "CalculationNode.from_dict() requires context to resolve input dependencies. "
+            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
+        )
+
+    @staticmethod
+    def from_dict_with_context(
+        data: dict[str, Any], context: dict[str, Node]
+    ) -> "CalculationNode":
+        """Create a CalculationNode from a dictionary with node context.
+
+        Args:
+            data: Dictionary containing the node's serialized data.
+            context: Dictionary of existing nodes to resolve dependencies.
+
+        Returns:
+            A new CalculationNode instance.
+
+        Raises:
+            ValueError: If the data is invalid or missing required fields.
+        """
+        # Import here to avoid circular imports
+        from fin_statement_model.core.node_factory import NodeFactory
+
+        if data.get("type") != "calculation":
+            raise ValueError(f"Invalid type for CalculationNode: {data.get('type')}")
+
+        name = data.get("name")
+        if not name:
+            raise ValueError("Missing 'name' field in CalculationNode data")
+
+        input_names = data.get("inputs", [])
+        if not isinstance(input_names, list):
+            raise TypeError("'inputs' field must be a list")
+
+        # Resolve input nodes from context
+        input_nodes = []
+        for input_name in input_names:
+            if input_name not in context:
+                raise ValueError(f"Input node '{input_name}' not found in context")
+            input_nodes.append(context[input_name])
+
+        calculation_type = data.get("calculation_type")
+        if not calculation_type:
+            raise ValueError("Missing 'calculation_type' field in CalculationNode data")
+
+        # Get calculation arguments
+        calculation_args = data.get("calculation_args", {})
+
+        # Handle formula variable names for formula calculations
+        formula_variable_names = data.get("formula_variable_names")
+
+        # Extract metric information
+        metric_name = data.get("metric_name")
+        metric_description = data.get("metric_description")
+
+        # Create the node using NodeFactory
+        return NodeFactory.create_calculation_node(
+            name=name,
+            inputs=input_nodes,
+            calculation_type=calculation_type,
+            formula_variable_names=formula_variable_names,
+            metric_name=metric_name,
+            metric_description=metric_description,
+            **calculation_args,
+        )
 
 
 # === FormulaCalculationNode ===
@@ -213,8 +368,12 @@ class FormulaCalculationNode(CalculationNode):
             ValueError: If the formula string has invalid syntax.
             TypeError: If any value in `inputs` is not a Node instance.
         """
-        if not isinstance(inputs, dict) or not all(isinstance(n, Node) for n in inputs.values()):
-            raise TypeError("FormulaCalculationNode inputs must be a dict of Node instances.")
+        if not isinstance(inputs, dict) or not all(
+            isinstance(n, Node) for n in inputs.values()
+        ):
+            raise TypeError(
+                "FormulaCalculationNode inputs must be a dict of Node instances."
+            )
 
         # Store the formula and metric attributes
         self.formula = formula
@@ -249,6 +408,99 @@ class FormulaCalculationNode(CalculationNode):
             True, as FormulaCalculationNode performs calculations.
         """
         return True
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize the node to a dictionary representation.
+
+        Returns:
+            Dictionary containing the node's type, name, inputs, and formula info.
+        """
+        return {
+            "type": "formula_calculation",
+            "name": self.name,
+            "inputs": self.get_dependencies(),
+            "formula_variable_names": list(self.inputs_dict.keys()),
+            "formula": self.formula,
+            "calculation_type": "formula",
+            "metric_name": self.metric_name,
+            "metric_description": self.metric_description,
+        }
+
+    @staticmethod
+    def from_dict(data: dict[str, Any]) -> "FormulaCalculationNode":
+        """Create a FormulaCalculationNode from a dictionary representation.
+
+        Args:
+            data: Dictionary containing the node's serialized data.
+
+        Returns:
+            A new FormulaCalculationNode instance.
+
+        Raises:
+            ValueError: If the data is invalid or missing required fields.
+            NotImplementedError: This method requires context (existing nodes) to resolve
+                input dependencies. Use from_dict_with_context instead.
+        """
+        raise NotImplementedError(
+            "FormulaCalculationNode.from_dict() requires context to resolve input dependencies. "
+            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
+        )
+
+    @staticmethod
+    def from_dict_with_context(
+        data: dict[str, Any], context: dict[str, Node]
+    ) -> "FormulaCalculationNode":
+        """Create a FormulaCalculationNode from a dictionary with node context.
+
+        Args:
+            data: Dictionary containing the node's serialized data.
+            context: Dictionary of existing nodes to resolve dependencies.
+
+        Returns:
+            A new FormulaCalculationNode instance.
+
+        Raises:
+            ValueError: If the data is invalid or missing required fields.
+        """
+        if data.get("type") != "formula_calculation":
+            raise ValueError(
+                f"Invalid type for FormulaCalculationNode: {data.get('type')}"
+            )
+
+        name = data.get("name")
+        if not name:
+            raise ValueError("Missing 'name' field in FormulaCalculationNode data")
+
+        formula = data.get("formula")
+        if not formula:
+            raise ValueError("Missing 'formula' field in FormulaCalculationNode data")
+
+        input_names = data.get("inputs", [])
+        formula_variable_names = data.get("formula_variable_names", [])
+
+        if len(input_names) != len(formula_variable_names):
+            raise ValueError(
+                "Mismatch between inputs and formula_variable_names in FormulaCalculationNode data"
+            )
+
+        # Resolve input nodes from context and create inputs dict
+        inputs_dict = {}
+        for var_name, input_name in zip(formula_variable_names, input_names):
+            if input_name not in context:
+                raise ValueError(f"Input node '{input_name}' not found in context")
+            inputs_dict[var_name] = context[input_name]
+
+        # Extract metric information
+        metric_name = data.get("metric_name")
+        metric_description = data.get("metric_description")
+
+        return FormulaCalculationNode(
+            name=name,
+            inputs=inputs_dict,
+            formula=formula,
+            metric_name=metric_name,
+            metric_description=metric_description,
+        )
 
 
 # === CustomCalculationNode ===
@@ -301,9 +553,13 @@ class CustomCalculationNode(Node):
         """
         super().__init__(name)
         if not isinstance(inputs, list) or not all(isinstance(n, Node) for n in inputs):
-            raise TypeError("CustomCalculationNode inputs must be a list of Node instances")
+            raise TypeError(
+                "CustomCalculationNode inputs must be a list of Node instances"
+            )
         if not callable(formula_func):
-            raise TypeError("CustomCalculationNode formula_func must be a callable function")
+            raise TypeError(
+                "CustomCalculationNode formula_func must be a callable function"
+            )
 
         self.inputs = inputs
         self.formula_func = formula_func
@@ -371,3 +627,43 @@ class CustomCalculationNode(Node):
             True, as CustomCalculationNode performs calculations.
         """
         return True
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize the node to a dictionary representation.
+
+        Returns:
+            Dictionary containing the node's type, name, inputs, and description.
+
+        Note:
+            The formula_func cannot be serialized, so a warning is included.
+        """
+        return {
+            "type": "custom_calculation",
+            "name": self.name,
+            "inputs": self.get_dependencies(),
+            "description": self.description,
+            "serialization_warning": (
+                "CustomCalculationNode uses a Python function which cannot be serialized. "
+                "Manual reconstruction required."
+            ),
+        }
+
+    @staticmethod
+    def from_dict(data: dict[str, Any]) -> "CustomCalculationNode":
+        """Create a CustomCalculationNode from a dictionary representation.
+
+        Args:
+            data: Dictionary containing the node's serialized data.
+
+        Returns:
+            A new CustomCalculationNode instance.
+
+        Raises:
+            ValueError: If the data is invalid or missing required fields.
+            NotImplementedError: CustomCalculationNode cannot be fully deserialized
+                because the formula_func cannot be serialized.
+        """
+        raise NotImplementedError(
+            "CustomCalculationNode cannot be fully deserialized because the formula_func "
+            "cannot be serialized. Manual reconstruction required."
+        )

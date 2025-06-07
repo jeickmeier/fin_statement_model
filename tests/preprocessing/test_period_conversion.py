@@ -7,6 +7,7 @@ from fin_statement_model.preprocessing.transformers.period_conversion import (
     PeriodConversionTransformer,
 )
 from fin_statement_model.preprocessing.config.enums import ConversionType
+from fin_statement_model.core.errors import TransformationError
 
 
 class TestPeriodConversionTransformer:
@@ -54,10 +55,7 @@ class TestPeriodConversionTransformer:
             conversion_type=ConversionType.QUARTERLY_TO_TTM, aggregation="mean"
         )
 
-        with pytest.raises(
-            ValueError,
-            match="QUARTERLY_TO_TTM conversion currently only supports 'sum' aggregation",
-        ):
+        with pytest.raises(TransformationError):
             transformer.transform(df)
 
     def test_invalid_index_conversion(self):
@@ -71,7 +69,7 @@ class TestPeriodConversionTransformer:
             conversion_type=ConversionType.QUARTERLY_TO_ANNUAL
         )
 
-        with pytest.raises(ValueError, match="Index must be convertible to datetime"):
+        with pytest.raises(TransformationError):
             transformer.transform(df)
 
     def test_unimplemented_conversion_type(self):
@@ -90,8 +88,5 @@ class TestPeriodConversionTransformer:
         # Manually set an invalid conversion type to test the else clause
         transformer.conversion_type = "invalid_conversion_type"
 
-        with pytest.raises(
-            NotImplementedError,
-            match="Conversion type 'invalid_conversion_type' is defined in ConversionType enum but not implemented",
-        ):
+        with pytest.raises(TransformationError):
             transformer.transform(df)

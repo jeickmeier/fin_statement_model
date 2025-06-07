@@ -1,6 +1,7 @@
 """Define a node representing a basic financial statement item."""
 
 import logging
+from typing import Any
 
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node
@@ -42,9 +43,7 @@ class FinancialStatementItemNode(Node):
             name (str): The name of the financial statement item.
             values (Dict[str, float]): Dictionary of period-value pairs.
         """
-        # Call base Node init if it requires name
-        # super().__init__(name)  # Assuming base Node init takes name
-        self.name = name
+        super().__init__(name)
         self.values = values
 
     def calculate(self, period: str) -> float:
@@ -92,3 +91,62 @@ class FinancialStatementItemNode(Node):
             float: The stored value, defaulting to 0.0 if the period is not found.
         """
         return self.values.get(period, 0.0)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize the node to a dictionary representation.
+
+        Returns:
+            Dictionary containing the node's type, name, and values.
+
+        Examples:
+            >>> node = FinancialStatementItemNode("Revenue", {"2023": 1000.0})
+            >>> data = node.to_dict()
+            >>> data['type']
+            'financial_statement_item'
+            >>> data['name']
+            'Revenue'
+        """
+        return {
+            "type": "financial_statement_item",
+            "name": self.name,
+            "values": self.values.copy(),
+        }
+
+    @staticmethod
+    def from_dict(data: dict[str, Any]) -> "FinancialStatementItemNode":
+        """Create a FinancialStatementItemNode from a dictionary representation.
+
+        Args:
+            data: Dictionary containing the node's serialized data.
+                Must include 'type', 'name', and 'values' fields.
+
+        Returns:
+            A new FinancialStatementItemNode instance.
+
+        Raises:
+            ValueError: If the data is invalid or missing required fields.
+
+        Examples:
+            >>> data = {
+            ...     'type': 'financial_statement_item',
+            ...     'name': 'Revenue',
+            ...     'values': {'2023': 1000.0}
+            ... }
+            >>> node = FinancialStatementItemNode.from_dict(data)
+            >>> node.name
+            'Revenue'
+        """
+        if data.get("type") != "financial_statement_item":
+            raise ValueError(
+                f"Invalid type for FinancialStatementItemNode: {data.get('type')}"
+            )
+
+        name = data.get("name")
+        if not name:
+            raise ValueError("Missing 'name' field in FinancialStatementItemNode data")
+
+        values = data.get("values", {})
+        if not isinstance(values, dict):
+            raise TypeError("'values' field must be a dictionary")
+
+        return FinancialStatementItemNode(name, values)

@@ -4,11 +4,14 @@ This module defines the GraphTraverser class, encapsulating read-only graph trav
 """
 
 import logging
-from typing import Optional, Any
+from typing import Optional, Any, TYPE_CHECKING
 from collections import deque
 
 from fin_statement_model.core.errors import NodeError
 from fin_statement_model.core.nodes import Node
+
+if TYPE_CHECKING:
+    from fin_statement_model.core.nodes.base import Node
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +92,9 @@ class GraphTraverser:
                 elif isinstance(node.inputs, dict):
                     input_nodes = list(node.inputs.values())
 
-                if any(inp.name == node_id for inp in input_nodes if hasattr(inp, "name")):
+                if any(
+                    inp.name == node_id for inp in input_nodes if hasattr(inp, "name")
+                ):
                     successors.append(other_id)
         return successors
 
@@ -144,7 +149,9 @@ class GraphTraverser:
                 if in_degree[nbr] == 0:
                     queue.append(nbr)
         if len(topo_order) != len(self.nodes):
-            raise ValueError("Cycle detected in graph, can't do a valid topological sort.")
+            raise ValueError(
+                "Cycle detected in graph, can't do a valid topological sort."
+            )
         return topo_order
 
     def get_calculation_nodes(self) -> list[str]:
@@ -156,7 +163,9 @@ class GraphTraverser:
         Examples:
             >>> traverser.get_calculation_nodes()
         """
-        return [node_id for node_id, node in self.nodes.items() if node.has_calculation()]
+        return [
+            node_id for node_id, node in self.nodes.items() if node.has_calculation()
+        ]
 
     def get_dependencies(self, node_id: str) -> list[str]:
         """Retrieve the direct dependencies (inputs) of a specific node.
@@ -247,7 +256,8 @@ class GraphTraverser:
             >>> traverser.validate()
         """
         errors: list[str] = [
-            f"Circular dependency detected: {' -> '.join(cycle)}" for cycle in self.detect_cycles()
+            f"Circular dependency detected: {' -> '.join(cycle)}"
+            for cycle in self.detect_cycles()
         ]
         errors.extend(
             f"Node '{node_id}' depends on non-existent node '{inp.name}'"
@@ -258,7 +268,9 @@ class GraphTraverser:
         )
         return errors
 
-    def breadth_first_search(self, start_node: str, direction: str = "successors") -> list[str]:
+    def breadth_first_search(
+        self, start_node: str, direction: str = "successors"
+    ) -> list[str]:
         """Perform a breadth-first search (BFS) traversal of the graph.
 
         Args:
@@ -304,3 +316,89 @@ class GraphTraverser:
             traversal_order.append(current_level)
 
         return traversal_order
+
+    def would_create_cycle(self, new_node: "Node") -> bool:
+        """Check if adding a node would create a cycle.
+
+        Args:
+            new_node: The node to be added (must have 'inputs' attribute)
+
+        Returns:
+            True if adding the node would create a cycle
+        """
+        if not hasattr(new_node, "inputs") or not new_node.inputs:
+            return False
+
+        # For each input, check if new_node is reachable from it
+        for input_node in new_node.inputs:
+            if hasattr(input_node, "name") and self._is_reachable(
+                input_node.name, new_node.name
+            ):
+                return True
+        return False
+
+    def _is_reachable(self, from_node: str, to_node: str) -> bool:
+        """Check if to_node is reachable from from_node.
+
+        Args:
+            from_node: Starting node name
+            to_node: Target node name
+
+        Returns:
+            True if to_node is reachable from from_node via successors
+        """
+        # If from_node doesn't exist, no reachability
+        if from_node not in self.graph._nodes:
+            return False
+
+        # If to_node doesn't exist yet, check temporary reachability
+        if to_node not in self.graph._nodes:
+            return False
+
+        try:
+            bfs_levels = self.breadth_first_search(
+                start_node=from_node, direction="successors"
+            )
+            reachable_nodes = {n for level in bfs_levels for n in level}
+            return to_node in reachable_nodes
+        except (ValueError, KeyError):
+            # Handle cases where BFS fails (e.g., invalid node)
+            return False
+
+    def find_cycle_path(self, from_node: str, to_node: str) -> Optional[list[str]]:
+        """Find the actual cycle path if one exists.
+
+        Args:
+            from_node: Starting node name
+            to_node: Target node name that would complete the cycle
+
+        Returns:
+            List of node names forming the cycle path, or None if no cycle
+        """
+        if not self._is_reachable(from_node, to_node):
+            return None
+
+        # Use DFS to find the actual path
+        visited = set()
+        path = []
+
+        def dfs_find_path(current: str, target: str) -> bool:
+            if current == target and len(path) > 0:
+                return True
+            if current in visited:
+                return False
+
+            visited.add(current)
+            path.append(current)
+
+            # Get successors of current node
+            for successor in self.get_direct_successors(current):
+                if dfs_find_path(successor, target):
+                    return True
+
+            path.pop()
+            return False
+
+        if dfs_find_path(from_node, to_node):
+            return [*path, to_node]  # Complete the cycle
+        return None

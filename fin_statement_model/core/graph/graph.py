@@ -6,7 +6,7 @@ financial statement models.
 """
 
 import logging
-from typing import Any, Optional, Union
+from typing import Any, Optional
 from collections.abc import Callable
 from uuid import UUID
 
@@ -53,7 +53,6 @@ class Graph:
         _nodes: A dict mapping node names (str) to Node objects.
         _periods: A list of time period identifiers (str) managed by the graph.
         _cache: A nested dict caching calculated values per node per period.
-        _metric_names: A set of node names (str) corresponding to metric nodes.
         _node_factory: An instance of NodeFactory for creating new nodes.
     """
 
@@ -86,10 +85,9 @@ class Graph:
 
         self._nodes: dict[str, Node] = {}
 
-        # Initialize core attributes for periods, cache, metrics, and node factory
+        # Initialize core attributes for periods, cache, and node factory
         self._periods: list[str] = []
         self._cache: dict[str, dict[str, float]] = {}
-        self._metric_names: set[str] = set()
         self._node_factory: NodeFactory = NodeFactory()
 
         # Handle initial periods directly
@@ -182,25 +180,15 @@ class Graph:
             NodeError: If any input node name does not exist.
             ValueError: If the name is invalid or creation fails.
             TypeError: If inputs are invalid.
+            CircularDependencyError: If adding the node would create a cycle.
         """
-        # Validate name
-        if not name or not isinstance(name, str):
-            raise ValueError("Calculation node name must be a non-empty string.")
-        # Resolve input node names
+        # Validate inputs
         if not isinstance(input_names, list):
             raise TypeError("input_names must be a list of node names.")
-        resolved_inputs: list[Node] = []
-        missing = []
-        for nm in input_names:
-            nd = self._nodes.get(nm)
-            if nd is None:
-                missing.append(nm)
-            else:
-                resolved_inputs.append(nd)
-        if missing:
-            raise NodeError(
-                f"Cannot create calculation node '{name}': missing input nodes {missing}",
-            )
+
+        # Resolve input node names to Node objects
+        resolved_inputs = self._resolve_input_nodes(input_names)
+
         # Create the node via factory
         try:
             node = self._node_factory.create_calculation_node(
@@ -216,52 +204,13 @@ class Graph:
             )
             raise
 
-        # --- Cycle Detection ---
-        for input_node in resolved_inputs:
-            try:
-                bfs_levels = self.traverser.breadth_first_search(
-                    start_node=input_node.name, direction="successors"
-                )
-                reachable_nodes = {n for level in bfs_levels for n in level}
-                if name in reachable_nodes:
-                    cycle_path_guess = [
-                        input_node.name,
-                        "...",
-                        name,
-                    ]  # Simplified guess
-                    raise CircularDependencyError(
-                        message=f"Adding calculation node '{name}' would create a cycle from input '{input_node.name}'",
-                        node_id=name,
-                        cycle=cycle_path_guess,
-                    )
-            except NodeError:
-                # Should not happen if inputs were resolved, but handle defensively
-                logger.warning(
-                    f"NodeError during cycle check pre-computation for {name} from {input_node.name}"
-                )
-                # Or potentially re-raise depending on desired strictness
-            except Exception as e:
-                # Catch broader errors during traversal if needed
-                logger.error(
-                    f"Unexpected error during cycle detection for node {name}: {e}",
-                    exc_info=True,
-                )
-                # Optionally re-raise as a different error type or handle
-                raise CalculationError(
-                    message=f"Error during cycle detection for {name}",
-                    node_id=name,
-                    details={"original_error": str(e)},
-                ) from e
-        # --- End Cycle Detection ---
+        # Add with validation (includes cycle detection)
+        added_node = self._add_node_with_validation(node)
 
-        # Register node in graph
-        if name in self._nodes:
-            logger.warning(f"Overwriting existing node '{name}' in graph.")
-        self._nodes[name] = node
         logger.info(
             f"Added calculation node '{name}' of type '{operation_type}' with inputs {input_names}"
         )
-        return node
+        return added_node
 
     def add_metric(
         self,
@@ -386,27 +335,19 @@ class Graph:
         Raises:
             NodeError: If any specified input nodes are missing.
             TypeError: If calculation_func is not callable.
+            CircularDependencyError: If adding the node would create a cycle.
         """
-        # Validate inputs list
+        # Validate callable
+        if not callable(calculation_func):
+            raise TypeError("calculation_func must be callable.")
+
+        # Resolve inputs if provided
         resolved_inputs: list[Node] = []
         if inputs is not None:
             if not isinstance(inputs, list):
                 raise TypeError("inputs must be a list of node names.")
-            missing = []
-            for nm in inputs:
-                nd = self._nodes.get(nm)
-                if nd is None:
-                    missing.append(nm)
-                else:
-                    resolved_inputs.append(nd)
-            if missing:
-                raise NodeError(
-                    f"Cannot create custom calculation '{name}': missing input nodes {missing}",
-                    node_id=name,
-                )
-        # Validate callable
-        if not callable(calculation_func):
-            raise TypeError("calculation_func must be callable.")
+            resolved_inputs = self._resolve_input_nodes(inputs)
+
         # Create custom node via factory
         try:
             custom_node = self._node_factory._create_custom_node_from_callable(
@@ -418,12 +359,12 @@ class Graph:
         except (ValueError, TypeError):
             logger.exception(f"Failed to create custom calculation node '{name}'")
             raise
-        # Register custom node
-        if name in self._nodes:
-            logger.warning(f"Overwriting existing node '{name}' in graph.")
-        self._nodes[name] = custom_node
+
+        # Add with validation (includes cycle detection)
+        added_node = self._add_node_with_validation(custom_node)
+
         logger.info(f"Added custom calculation node '{name}' with inputs {inputs}")
-        return custom_node
+        return added_node
 
     def change_calculation_method(
         self,
@@ -706,17 +647,16 @@ class Graph:
         logger.debug("Cleared graph calculation cache.")
 
     def clear(self) -> None:
-        """Reset the graph by clearing nodes, periods, metrics, adjustments, and caches."""
+        """Reset the graph by clearing nodes, periods, adjustments, and caches."""
         self._nodes = {}
         self._periods = []
         self._cache = {}
-        self._metric_names = set()  # This seems redundant now, metrics identified by attribute
 
         # --- Adjustment Manager Integration ---
         self.adjustment_manager.clear_all()
         # --- End Adjustment Manager Integration ---
 
-        logger.info("Graph cleared: nodes, periods, metrics, adjustments, and caches reset.")
+        logger.info("Graph cleared: nodes, periods, adjustments, and caches reset.")
 
     def add_financial_statement_item(
         self, name: str, values: dict[str, float]
@@ -731,7 +671,7 @@ class Graph:
             The newly created `FinancialStatementItemNode`.
 
         Raises:
-            NodeError: If a node with the same name already exists.
+            ValueError: If node name is invalid.
             TypeError: If `values` is not a dict or contains invalid types.
 
         Examples:
@@ -739,19 +679,24 @@ class Graph:
             >>> item_node.get_value("2023")
             50.0
         """
-        if name in self._nodes:
-            raise NodeError("Node with name already exists", node_id=name)
+        # Validate inputs
         if not isinstance(values, dict):
             raise TypeError("Values must be provided as a dict[str, float]")
+
         # Create a new financial statement item node
         new_node = self._node_factory.create_financial_statement_item(
             name=name, values=values.copy()
         )
-        self._nodes[name] = new_node
-        # Update periods from node values
-        self.add_periods(list(values.keys()))
+
+        # Add with validation (no cycle detection needed for data nodes)
+        added_node = self._add_node_with_validation(
+            new_node,
+            check_cycles=False,  # Data nodes don't have inputs, so no cycles possible
+            validate_inputs=False,  # Data nodes don't have inputs to validate
+        )
+
         logger.info(f"Added FinancialStatementItemNode '{name}' with periods {list(values.keys())}")
-        return new_node
+        return added_node
 
     def update_financial_statement_item(
         self, name: str, values: dict[str, float], replace_existing: bool = False
@@ -872,9 +817,9 @@ class Graph:
     def has_cycle(self, source_node: Node, target_node: Node) -> bool:
         """Check if a cycle exists from a source node to a target node.
 
-        This method delegates to GraphTraverser.breadth_first_search to determine
-        if `target_node` is reachable from `source_node` via dependencies, indicating
-        that adding an edge from `target_node` to `source_node` would create a cycle.
+        This method delegates to GraphTraverser to determine if `target_node` is
+        reachable from `source_node` via successors, indicating that adding an edge
+        from `target_node` to `source_node` would create a cycle.
 
         Args:
             source_node: The starting node for cycle detection.
@@ -886,10 +831,8 @@ class Graph:
         if source_node.name not in self._nodes or target_node.name not in self._nodes:
             return False
 
-        # Use BFS to check reachability via predecessors (dependencies)
-        bfs_levels = self.traverser.breadth_first_search(source_node.name, direction="predecessors")
-        reachable_nodes = {n for level in bfs_levels for n in level}
-        return target_node.name in reachable_nodes
+        # Use GraphTraverser's reachability check
+        return self.traverser._is_reachable(source_node.name, target_node.name)
 
     def get_node(self, name: str) -> Optional[Node]:
         """Retrieve a node from the graph by its name.
@@ -905,49 +848,141 @@ class Graph:
         """
         return self.manipulator.get_node(name)
 
-    def add_node(self, node: Union[Node, str], *args: Any, **kwargs: Any) -> None:
-        """Add a node to the graph.
-
-        This method supports two calling conventions for backward compatibility:
-
-        1. ``add_node(node_instance)`` – Add a fully-constructed ``Node``.
-        2. ``add_node("name", values={...})`` – Convenience shorthand that
-           creates a ``FinancialStatementItemNode`` under the hood.  This form
-           matches historical test usage and avoids breaking existing code.
+    def _add_node_with_validation(
+        self, node: Node, check_cycles: bool = True, validate_inputs: bool = True
+    ) -> Node:
+        """Internal method for adding nodes with common validation logic.
 
         Args:
-            node: A ``Node`` instance *or* a string name when using shorthand.
-            *args: Positional arguments (used only for shorthand values).
-            **kwargs: Keyword arguments. Must contain ``values`` when using the
-                shorthand form.
+            node: The Node instance to add
+            check_cycles: Whether to perform cycle detection
+            validate_inputs: Whether to validate input node references
+
+        Returns:
+            The added node
 
         Raises:
-            TypeError: If called with invalid argument combination.
+            ValueError: If node name is invalid
+            NodeError: If input validation fails
+            CircularDependencyError: If adding the node would create a cycle
         """
-        # Case 1 – proper Node instance
-        from fin_statement_model.core.nodes.base import Node as _NodeBase
-        if isinstance(node, _NodeBase):
-            return self.manipulator.add_node(node)
+        # 1. Name validation
+        if not node.name or not isinstance(node.name, str):
+            raise ValueError("Node name must be a non-empty string")
 
-        # Case 2 – shorthand form: first arg is name (str); expect values kwarg
-        if isinstance(node, str):
-            if args:
-                # Allow positional values dict as first arg for legacy calls
-                values = args[0]
+        # 2. Check for existing node
+        if node.name in self._nodes:
+            logger.warning(f"Overwriting existing node '{node.name}'")
+
+        # 3. Input validation (if applicable)
+        if validate_inputs and hasattr(node, "inputs") and node.inputs:
+            self._validate_node_inputs(node)
+
+        # 4. Cycle detection (if applicable)
+        if (
+            check_cycles
+            and hasattr(node, "inputs")
+            and node.inputs
+            and self.traverser.would_create_cycle(node)
+        ):
+            # Try to find the actual cycle path for better error message
+            cycle_path = None
+            for input_node in node.inputs:
+                if hasattr(input_node, "name"):
+                    path = self.traverser.find_cycle_path(input_node.name, node.name)
+                    if path:
+                        cycle_path = path
+                        break
+
+            raise CircularDependencyError(
+                message=f"Adding node '{node.name}' would create a cycle",
+                node_id=node.name,
+                cycle=cycle_path or [node.name, "...", node.name],
+            )
+
+        # 5. Register node
+        self._nodes[node.name] = node
+
+        # 6. Update periods if applicable
+        if hasattr(node, "values") and isinstance(node.values, dict):
+            self.add_periods(list(node.values.keys()))
+
+        logger.debug(f"Added node '{node.name}' to graph")
+        return node
+
+    def _validate_node_inputs(self, node: Node) -> None:
+        """Validate that all input nodes exist in the graph.
+
+        Args:
+            node: The node whose inputs to validate
+
+        Raises:
+            NodeError: If any input node is missing
+        """
+        missing_inputs = []
+
+        if hasattr(node, "inputs") and node.inputs:
+            for input_node in node.inputs:
+                if hasattr(input_node, "name"):
+                    if input_node.name not in self._nodes:
+                        missing_inputs.append(input_node.name)
+                # Handle case where inputs might be strings instead of Node objects
+                elif isinstance(input_node, str) and input_node not in self._nodes:
+                    missing_inputs.append(input_node)
+
+        if missing_inputs:
+            raise NodeError(
+                f"Cannot add node '{node.name}': missing required input nodes {missing_inputs}",
+                node_id=node.name,
+            )
+
+    def _resolve_input_nodes(self, input_names: list[str]) -> list[Node]:
+        """Resolve input node names to Node objects.
+
+        Args:
+            input_names: List of node names to resolve
+
+        Returns:
+            List of resolved Node objects
+
+        Raises:
+            NodeError: If any input node name does not exist
+        """
+        resolved_inputs: list[Node] = []
+        missing = []
+
+        for name in input_names:
+            node = self._nodes.get(name)
+            if node is None:
+                missing.append(name)
             else:
-                values = kwargs.get("values")
+                resolved_inputs.append(node)
 
-            from fin_statement_model.core.nodes import FinancialStatementItemNode
+        if missing:
+            raise NodeError(f"Cannot resolve input nodes: missing nodes {missing}")
 
-            if not isinstance(values, dict):
-                raise TypeError(
-                    "Graph.add_node shorthand requires a 'values' dict argument"
-                )
+        return resolved_inputs
 
-            fs_node = FinancialStatementItemNode(node, values)
-            return self.manipulator.add_node(fs_node)
+    def add_node(self, node: Node) -> None:
+        """Add a node to the graph.
 
-        raise TypeError("add_node expects a Node instance or (name, values) shorthand")
+        Args:
+            node: A ``Node`` instance to add to the graph.
+
+        Raises:
+            TypeError: If the provided object is not a Node instance.
+
+        Examples:
+            >>> from fin_statement_model.core.nodes import FinancialStatementItemNode
+            >>> node = FinancialStatementItemNode("Revenue", {"2023": 1000})
+            >>> graph.add_node(node)
+        """
+        from fin_statement_model.core.nodes.base import Node as _NodeBase
+
+        if not isinstance(node, _NodeBase):
+            raise TypeError(f"Expected Node instance, got {type(node).__name__}")
+
+        return self.manipulator.add_node(node)
 
     def remove_node(self, node_name: str) -> None:
         """Remove a node from the graph by name, updating dependencies.

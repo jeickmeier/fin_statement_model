@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import Mock, patch
 from pydantic import ValidationError
 
-from fin_statement_model.io.registry import (
+from fin_statement_model.io.core.registry import (
     _get_handler,
     get_reader,
     get_writer,
@@ -18,9 +18,9 @@ from fin_statement_model.io.registry import (
     _writer_registry,
     _READER_SCHEMA_MAP,
     _WRITER_SCHEMA_MAP,
+    HandlerRegistry,
 )
-from fin_statement_model.io.registry_base import HandlerRegistry
-from fin_statement_model.io.base import DataReader, DataWriter
+from fin_statement_model.io.core.base import DataReader, DataWriter
 from fin_statement_model.io.exceptions import (
     FormatNotSupportedError,
     ReadError,
@@ -310,7 +310,7 @@ class TestGetReaderWriter:
 
     def test_get_reader_uses_get_handler(self):
         """Test get_reader delegates to _get_handler with correct parameters."""
-        with patch("fin_statement_model.io.registry._get_handler") as mock_get_handler:
+        with patch("fin_statement_model.io.core.registry._get_handler") as mock_get_handler:
             mock_get_handler.return_value = "reader_instance"
 
             result = get_reader("excel", source="test.xlsx", sheet_name="Sheet1")
@@ -328,7 +328,7 @@ class TestGetReaderWriter:
 
     def test_get_writer_uses_get_handler(self):
         """Test get_writer delegates to _get_handler with correct parameters."""
-        with patch("fin_statement_model.io.registry._get_handler") as mock_get_handler:
+        with patch("fin_statement_model.io.core.registry._get_handler") as mock_get_handler:
             mock_get_handler.return_value = "writer_instance"
 
             result = get_writer("excel", target="output.xlsx", sheet_name="Results")

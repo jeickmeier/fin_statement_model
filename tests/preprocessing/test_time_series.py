@@ -7,6 +7,7 @@ from fin_statement_model.preprocessing.transformers.time_series import (
     TimeSeriesTransformer,
 )
 from fin_statement_model.preprocessing.config.enums import TransformationType
+from fin_statement_model.core.errors import TransformationError
 
 
 class TestTimeSeriesTransformer:
@@ -137,8 +138,5 @@ class TestTimeSeriesTransformer:
         # Manually set an invalid transformation type
         transformer.transformation_type = "invalid_transformation"
 
-        with pytest.raises(
-            NotImplementedError,
-            match="Transformation type 'invalid_transformation' is defined in TransformationType enum but not implemented",
-        ):
+        with pytest.raises(TransformationError):
             transformer.transform(df)

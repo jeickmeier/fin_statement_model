@@ -104,7 +104,9 @@ class TimeSeriesTransformer(DataTransformer):
 
     def __init__(
         self,
-        transformation_type: Union[str, TransformationType] = TransformationType.GROWTH_RATE,
+        transformation_type: Union[
+            str, TransformationType
+        ] = TransformationType.GROWTH_RATE,
         periods: int = 1,
         window_size: int = 3,
         config: Optional[TimeSeriesConfig] = None,
@@ -191,14 +193,37 @@ class TimeSeriesTransformer(DataTransformer):
             # 3      130            8.33
         """
         if not isinstance(data, pd.DataFrame):
-            raise TypeError(f"Unsupported data type: {type(data)}. Expected pandas.DataFrame")
-        return self._transform_dataframe(data)
+            raise TypeError(
+                f"Unsupported data type: {type(data)}. Expected pandas.DataFrame"
+            )
+        return super().transform(data)
+
+    def _transform_impl(
+        self, data: Union[pd.DataFrame, pd.Series]
+    ) -> Union[pd.DataFrame, pd.Series]:
+        """Transform time series data.
+
+        Internal method that performs the actual transformation based on
+        the configured transformation type.
+
+        Args:
+            data: DataFrame or Series containing time series data.
+
+        Returns:
+            Transformed data with the same type as input.
+        """
+        # Handle Series by converting to DataFrame temporarily
+        if isinstance(data, pd.Series):
+            temp_df = data.to_frame()
+            result_df = self._transform_dataframe(temp_df)
+            return result_df.iloc[:, 0]  # Return as Series
+        else:
+            return self._transform_dataframe(data)
 
     def _transform_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
         """Transform a DataFrame with time series data.
 
-        Internal method that performs the actual transformation based on
-        the configured transformation type.
+        Internal method that performs the actual transformation on DataFrames.
         """
         result = df.copy()
 
@@ -217,7 +242,9 @@ class TimeSeriesTransformer(DataTransformer):
             n_periods_for_cagr = len(df) - 1
 
             if n_periods_for_cagr < 1:
-                logger.warning("CAGR requires at least 2 periods. Returning NaN for all columns.")
+                logger.warning(
+                    "CAGR requires at least 2 periods. Returning NaN for all columns."
+                )
                 for col in df.columns:
                     result[f"{col}_cagr"] = pd.NA
             else:
@@ -237,7 +264,9 @@ class TimeSeriesTransformer(DataTransformer):
                         try:
                             # Ensure result is float, np.power can handle negative base if exponent is integer
                             power_val = np.power(ratio, (1 / n_periods_for_cagr))
-                            if np.iscomplex(power_val):  # Should be caught by above, but defensive
+                            if np.iscomplex(
+                                power_val
+                            ):  # Should be caught by above, but defensive
                                 result[f"{col}_cagr"] = pd.NA
                             else:
                                 result[f"{col}_cagr"] = (float(power_val) - 1) * 100

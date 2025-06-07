@@ -37,6 +37,7 @@ class ExcelWriter(DataWriter, ConfigurableReaderMixin):
         Args:
             cfg: Optional validated `ExcelWriterConfig` instance.
         """
+        super().__init__()
         self.cfg = cfg
 
     @handle_write_errors()

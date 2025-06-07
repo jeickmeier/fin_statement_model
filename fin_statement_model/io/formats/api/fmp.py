@@ -2,25 +2,28 @@
 
 import logging
 import requests
-from typing import Optional, ClassVar, Any
+from typing import Optional, Any
 import numpy as np
-import yaml
-import importlib.resources
+
 
 from fin_statement_model.config import cfg
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.core.base import DataReader
+from fin_statement_model.io.core.mixins import (
+    MappingAwareMixin,
+    ConfigurationMixin,
+)
 from fin_statement_model.io.core.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
-from fin_statement_model.io.core.utils import normalize_mapping
+
 from fin_statement_model.io.config.models import FmpReaderConfig
 
 logger = logging.getLogger(__name__)
 
 
 @register_reader("fmp")
-class FmpReader(DataReader):
+class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
     """Reads financial statement data from the FMP API into a Graph.
 
     Fetches data for a specific ticker and statement type.
@@ -42,27 +45,10 @@ class FmpReader(DataReader):
 
     BASE_URL = "https://financialmodelingprep.com/api/v3"
 
-    # Load default mappings from YAML configuration
-    DEFAULT_MAPPINGS: ClassVar[dict[str, dict[str, str]]] = {}
-
     @classmethod
-    def _load_default_mappings(cls) -> None:
-        """Load default mapping configurations from YAML file into DEFAULT_MAPPINGS."""
-        # Load mapping YAML from config directory relative to this file
-        try:
-            # Use importlib.resources for robust package data loading
-            yaml_content = (
-                importlib.resources.files("fin_statement_model.io.config.mappings")
-                .joinpath("fmp_default_mappings.yaml")
-                .read_text(encoding="utf-8")
-            )
-            cls.DEFAULT_MAPPINGS = yaml.safe_load(yaml_content)
-        except FileNotFoundError:
-            logger.error("Default FMP mapping file not found.", exc_info=True)
-            # Keep DEFAULT_MAPPINGS as empty dict if file is missing
-        except Exception as e:
-            logger.error(f"Error loading default FMP mapping file: {e}", exc_info=True)
-            # Keep DEFAULT_MAPPINGS as empty dict on other errors
+    def _get_default_mapping_path(cls) -> Optional[str]:
+        """Specify the default mapping file for FMP."""
+        return "fmp_default_mappings.yaml"
 
     def __init__(self, cfg: FmpReaderConfig) -> None:
         """Initialize the FmpReader with validated configuration.
@@ -73,21 +59,6 @@ class FmpReader(DataReader):
                  `limit`, and `mapping_config`.
         """
         self.cfg = cfg
-
-    def _get_mapping(
-        self,
-        statement_type: Optional[str],
-    ) -> dict[str, str]:
-        """Get the appropriate mapping based on statement type and the stored config."""
-        # Start with defaults based on statement type loaded from config
-        mapping = dict(self.DEFAULT_MAPPINGS.get(statement_type, {}))
-
-        # Use mapping config from the validated Pydantic config object
-        config = self.cfg.mapping_config
-        # Normalize and overlay user-provided mappings
-        user_map = normalize_mapping(config, context_key=statement_type)
-        mapping.update(user_map)
-        return mapping
 
     def _validate_api_key(self):
         """Perform a simple check if the API key seems valid."""
@@ -136,11 +107,19 @@ class FmpReader(DataReader):
             ReadError: If API key is missing/invalid, API request fails, or data format is unexpected.
         """
         ticker = source
-        # Parameters now come directly from the validated config
-        statement_type = self.cfg.statement_type
-        period_type_arg = self.cfg.period_type
-        limit = self.cfg.limit
-        api_key = self.cfg.api_key
+
+        # Set configuration context for better error reporting
+        self.set_config_context(ticker=ticker, operation="api_read")
+
+        # Parameters now come directly from the validated config with enhanced access
+        statement_type = self.require_config_value("statement_type", value_type=str)
+        period_type_arg = self.require_config_value("period_type", value_type=str)
+        limit = self.get_config_value(
+            "limit", default=5, value_type=int, validator=lambda x: x > 0
+        )
+        api_key = self.get_config_with_env_fallback(
+            "api_key", "FMP_API_KEY", value_type=str
+        )
 
         # --- Validate Inputs ---
         if not ticker or not isinstance(ticker, str):
@@ -179,7 +158,9 @@ class FmpReader(DataReader):
             logger.info(
                 f"Fetching {period_type_arg} {statement_type} for {ticker} from FMP API (limit={limit})."
             )
-            response = requests.get(endpoint, params=params, timeout=cfg("api.api_timeout"))
+            response = requests.get(
+                endpoint, params=params, timeout=cfg("api.api_timeout")
+            )
             response.raise_for_status()  # Check for HTTP errors
             api_data = response.json()
 
@@ -190,7 +171,9 @@ class FmpReader(DataReader):
                     reader_type="FmpReader",
                 )
             if not api_data:
-                logger.warning(f"FMP API returned empty list for {ticker} {statement_type}.")
+                logger.warning(
+                    f"FMP API returned empty list for {ticker} {statement_type}."
+                )
                 # Return empty graph or raise? Returning empty for now.
                 return Graph(periods=[])
 
@@ -239,11 +222,13 @@ class FmpReader(DataReader):
                     continue  # Skip records without a date
 
                 for api_field, value in period_data.items():
-                    node_name = mapping.get(api_field, api_field)  # Use mapping or fallback
+                    node_name = self._apply_mapping(api_field, mapping)
 
                     # Initialize node data dict if first time seeing this node
                     if node_name not in all_item_data:
-                        all_item_data[node_name] = {p: np.nan for p in periods}  # Pre-fill with NaN
+                        all_item_data[node_name] = {
+                            p: np.nan for p in periods
+                        }  # Pre-fill with NaN
 
                     # Store value for this period
                     if isinstance(value, int | float):
@@ -253,7 +238,9 @@ class FmpReader(DataReader):
             nodes_added = 0
             for node_name, period_values in all_item_data.items():
                 # Filter out periods that only have NaN
-                valid_period_values = {p: v for p, v in period_values.items() if not np.isnan(v)}
+                valid_period_values = {
+                    p: v for p, v in period_values.items() if not np.isnan(v)
+                }
                 if valid_period_values:
                     new_node = FinancialStatementItemNode(
                         name=node_name, values=valid_period_values
@@ -267,14 +254,12 @@ class FmpReader(DataReader):
             return graph
 
         except Exception as e:
-            logger.error(f"Failed to parse FMP data and build graph: {e}", exc_info=True)
+            logger.error(
+                f"Failed to parse FMP data and build graph: {e}", exc_info=True
+            )
             raise ReadError(
                 message=f"Failed to parse FMP data: {e}",
                 source=f"FMP API ({ticker})",
                 reader_type="FmpReader",
                 original_error=e,
             ) from e
-
-
-# After class definition, load default mappings
-FmpReader._load_default_mappings()
