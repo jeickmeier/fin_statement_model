@@ -9,8 +9,9 @@ import os
 from pathlib import Path
 import tempfile
 
-from fin_statement_model import get_config, update_config, reset_config
+from fin_statement_model.config import get_config, update_config, reset_config, cfg
 from fin_statement_model.io import read_data
+from fin_statement_model.config.manager import generate_env_mappings
 
 logger = logging.getLogger(__name__)
 
@@ -28,18 +29,18 @@ def demo_config_basics() -> None:
     print(f"  Loaded from: {getattr(config, '_source', 'defaults')}")
 
     print("\nLogging Configuration:")
-    print(f"  Level: {config.logging.level}")
-    print(f"  Format: {config.logging.format[:50]}...")
-    print(f"  Detailed: {config.logging.detailed}")
+    print(f"  Level: {cfg('logging.level')}")
+    print(f"  Format: {cfg('logging.format')[:50]}...")
+    print(f"  Detailed: {cfg('logging.detailed')}")
 
     print("\nDisplay Configuration:")
-    print(f"  Units: {config.display.default_units}")
-    print(f"  Currency Format: {config.display.default_currency_format}")
-    print(f"  Scale Factor: {config.display.scale_factor}")
+    print(f"  Units: {cfg('display.default_units')}")
+    print(f"  Currency Format: {cfg('display.default_currency_format')}")
+    print(f"  Scale Factor: {cfg('display.scale_factor')}")
 
     print("\nValidation Configuration:")
-    print(f"  Strict Mode: {config.validation.strict_mode}")
-    print(f"  Auto Standardize: {config.validation.auto_standardize_names}")
+    print(f"  Strict Mode: {cfg('validation.strict_mode')}")
+    print(f"  Auto Standardize: {cfg('validation.auto_standardize_names')}")
 
 
 def demo_runtime_updates() -> None:
@@ -88,20 +89,10 @@ def demo_environment_variables() -> None:
     print("ENVIRONMENT VARIABLE CONFIGURATION")
     print("=" * 60)
 
-    print("Supported environment variables:")
-    env_vars = [
-        ("FSM_LOG_LEVEL", "Set logging level (DEBUG, INFO, WARNING, ERROR)"),
-        ("FSM_LOG_FORMAT", "Set log message format"),
-        ("FSM_API_FMP_API_KEY", "Financial Modeling Prep API key"),
-        ("FSM_API_TIMEOUT", "API request timeout in seconds"),
-        ("FSM_DISPLAY_UNITS", "Default display units"),
-        ("FSM_VALIDATION_STRICT_MODE", "Enable/disable strict validation (true/false)"),
-    ]
-
-    for var, desc in env_vars:
-        current = os.environ.get(var, "<not set>")
-        print(f"  {var}: {current}")
-        print(f"    → {desc}")
+    print("Supported environment variables (sample):")
+    env_mappings = generate_env_mappings(get_config().__class__)
+    for env_key, path in sorted(env_mappings.items())[:8]:
+        print(f"  {env_key} -> {'.'.join(path)}")
 
     # Demonstrate setting an environment variable
     print("\nDemo: Setting FSM_DISPLAY_UNITS...")
@@ -126,7 +117,7 @@ def demo_config_file() -> None:
 
     # Create a sample config file
     config_content = """
-# Financial Statement Model Configuration
+# Example fin_statement_model.config settings
 logging:
   level: INFO
   detailed: true
@@ -164,7 +155,7 @@ forecasting:
     print(config_content[:300] + "...")
 
     # Load from file
-    from fin_statement_model.config.models import Config
+    from fin_statement_model.config import Config
 
     loaded_config = Config.from_file(Path(config_path))
     file_config = loaded_config.to_dict()
@@ -202,8 +193,7 @@ def demo_config_in_action() -> None:
 
     # Test 1: Default configuration
     print("Test 1: Default Configuration")
-    config = get_config()
-    print(f"  Units: {config.display.default_units}")
+    print(f"  Units: {cfg('display.default_units')}")
 
     graph = read_data(format_type="dict", source=sample_data)
     revenue_node = graph.get_node("revenue")
@@ -227,9 +217,8 @@ def demo_config_in_action() -> None:
         }
     )
 
-    config = get_config()
-    scaled_revenue = revenue_2023 * config.display.scale_factor
-    print(f"  Revenue 2023: {scaled_revenue:,.2f} {config.display.default_units}")
+    scaled_revenue = revenue_2023 * cfg("display.scale_factor")
+    print(f"  Revenue 2023: {scaled_revenue:,.2f} {cfg('display.default_units')}")
 
     # Test 3: Validation configuration
     print("\nTest 3: Validation Configuration")
@@ -239,12 +228,12 @@ def demo_config_in_action() -> None:
     from fin_statement_model.io.validation import UnifiedNodeValidator
 
     validator = UnifiedNodeValidator(
-        strict_mode=config.validation.strict_mode,
-        warn_on_non_standard=config.validation.warn_on_non_standard,
+        strict_mode=cfg("validation.strict_mode"),
+        warn_on_non_standard=cfg("validation.warn_on_non_standard"),
     )
 
     test_names = ["Revenue 2023!", "net_income", "EBITDA"]
-    print(f"  Validating node names with strict={config.validation.strict_mode}:")
+    print(f"  Validating node names with strict={cfg('validation.strict_mode')}:")
     for name in test_names:
         result = validator.validate(name)
         print(f"    {name}: {'✓' if result.is_valid else '✗'} {result.message}")
@@ -291,7 +280,7 @@ def demo_config_serialization() -> None:
     print(f"\nSaved configuration to: {saved_path}")
 
     # Load it back
-    from fin_statement_model.config.models import Config
+    from fin_statement_model.config import Config
 
     loaded_config = Config.from_file(Path(saved_path))
 
@@ -301,6 +290,9 @@ def demo_config_serialization() -> None:
     # Clean up
     os.unlink(saved_path)
     reset_config()
+
+    print("• Configurations can be serialized and shared")
+    print("• Slim config API under fin_statement_model.config for concise access")
 
 
 def main() -> None:
@@ -326,6 +318,7 @@ def main() -> None:
     print("• Configuration files enable reproducible setups")
     print("• All subsystems respect the centralized configuration")
     print("• Configurations can be serialized and shared")
+    print("• Slim config API under fin_statement_model.config for concise access")
 
 
 if __name__ == "__main__":

@@ -3,8 +3,8 @@
 This example demonstrates fetching financial data from the FMP API
 and using it with the fin_statement_model library.
 """
-
-import os
+import logging
+import sys
 import pandas as pd
 
 from fin_statement_model import get_config, update_config
@@ -17,7 +17,7 @@ config = get_config()
 # Override logging level for this example if needed
 update_config({"logging": {"level": "INFO"}})
 
-import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ if not config.api.fmp_api_key:
     logger.info("1. Environment variable: export FSM_API_FMP_API_KEY=your_key")
     logger.info("2. Config file: add 'fmp_api_key: your_key' under 'api:' section")
     logger.info("3. Runtime: update_config({'api': {'fmp_api_key': 'your_key'}})")
-    exit(1)
+    sys.exit(1)
 
 # FMP reader configuration using centralized settings
 fmp_config = {
@@ -122,7 +122,7 @@ def main():
     df = convert_to_dataframe(graph)
 
     # Display configuration info
-    logger.info(f"\nDisplay Configuration:")
+    logger.info("\nDisplay Configuration:")
     logger.info(f"  Units: {config.display.default_units}")
     logger.info(f"  Scale Factor: {config.display.scale_factor}")
     logger.info(f"  Currency Format: {config.display.default_currency_format}")

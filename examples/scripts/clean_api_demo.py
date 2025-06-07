@@ -5,7 +5,7 @@ to provide a clean, simple API without requiring constant parameter passing.
 """
 
 import logging
-from fin_statement_model import get_config, update_config
+from fin_statement_model.config import get_config, update_config, reset_config, cfg, cfg_or_param
 from fin_statement_model.io import read_data
 from fin_statement_model.io.validation import UnifiedNodeValidator
 from fin_statement_model.statements import create_statement_dataframe

@@ -3,7 +3,7 @@
 from __future__ import annotations
 from typing import Any, Optional, TypeVar, overload
 from collections.abc import Sequence
-from fin_statement_model.config import get_config
+from .manager import get_config
 from fin_statement_model.core.errors import FinancialModelError
 
 class ConfigurationAccessError(FinancialModelError):

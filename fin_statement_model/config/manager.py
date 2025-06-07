@@ -13,7 +13,6 @@ from pydantic import BaseModel
 
 from .models import Config
 from fin_statement_model.core.errors import FinancialModelError
-from .helpers import parse_env_value
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +34,8 @@ def generate_env_mappings(
 
     mappings: dict[str, list[str]] = {}
     for field_name, field in model.model_fields.items():
-        annotation = getattr(field, 'annotation', field.outer_type_)
+        # Field annotation gives the declared type
+        annotation = field.annotation
         origin = get_origin(annotation)
         # Handle Optional or Union types
         if origin is Union:
@@ -222,7 +222,8 @@ class ConfigManager:
 
         # Generate mappings dynamically from the Config model
         env_mappings = generate_env_mappings(Config)
-
+        # Import helper to parse raw environment variable values
+        from .helpers import parse_env_value
         for env_key, config_path in env_mappings.items():
             if env_key in os.environ:
                 # Parse the raw environment variable string into proper type
