@@ -47,9 +47,7 @@ class MarkdownWriter(DataWriter):
 
     def __init__(self, config: Optional[MarkdownWriterConfig] = None):
         """Initializes the MarkdownWriter."""
-        self.config = config or MarkdownWriterConfig(
-            format_type="markdown", target=None
-        )
+        self.config = config or MarkdownWriterConfig(format_type="markdown", target=None)
         logger.debug(f"Initialized MarkdownWriter with config: {self.config}")
 
     def _format_value(self, value: Union[float, int, str, None]) -> str:
@@ -80,14 +78,10 @@ class MarkdownWriter(DataWriter):
             with open(statement_config_path) as f:
                 config_data = yaml.safe_load(f)
             if not config_data or not isinstance(config_data, dict):
-                raise WriteError(
-                    f"Invalid or empty YAML structure in {statement_config_path}"
-                )
+                raise WriteError(f"Invalid or empty YAML structure in {statement_config_path}")
 
         except FileNotFoundError:
-            logger.exception(
-                f"Statement configuration file not found: {statement_config_path}"
-            )
+            logger.exception(f"Statement configuration file not found: {statement_config_path}")
             raise WriteError(
                 f"Statement configuration file not found: {statement_config_path}"
             ) from None
@@ -103,9 +97,7 @@ class MarkdownWriter(DataWriter):
         )
 
         # Define the recursive processing function within the scope
-        def process_level(
-            items_or_sections: list[Any], level: int
-        ) -> Iterable[StatementItem]:
+        def process_level(items_or_sections: list[Any], level: int) -> Iterable[StatementItem]:
             for config_item in items_or_sections:
                 # Check if this dictionary represents a section container
                 # by seeing if it has an 'items' list.
@@ -129,9 +121,9 @@ class MarkdownWriter(DataWriter):
                     section_subtotal_config = config_item.get("subtotal")
                     if section_subtotal_config:
                         # Ensure subtotal has correct type and id before processing
-                        if section_subtotal_config.get(
-                            "id"
-                        ) and section_subtotal_config.get("type"):
+                        if section_subtotal_config.get("id") and section_subtotal_config.get(
+                            "type"
+                        ):
                             subtotal_item = process_item(
                                 section_subtotal_config,
                                 level + 1,  # Indent subtotal
@@ -160,9 +152,7 @@ class MarkdownWriter(DataWriter):
                         yield item_data
 
         # Define the process_item function (handles non-section items)
-        def process_item(
-            item_config: dict[str, Any], level: int
-        ) -> Union[StatementItem, None]:
+        def process_item(item_config: dict[str, Any], level: int) -> Union[StatementItem, None]:
             item_id = item_config.get("id")
             item_name = item_config.get("name", "Unknown Item")
             item_type = item_config.get("type")
@@ -210,9 +200,7 @@ class MarkdownWriter(DataWriter):
             try:
                 node = graph.get_node(node_id)
                 if node is None:
-                    logger.warning(
-                        f"Node '{node_id}' returned None for item: {item_name}"
-                    )
+                    logger.warning(f"Node '{node_id}' returned None for item: {item_name}")
                     for period in periods:
                         values[period] = None
                     return StatementItem(
@@ -309,7 +297,9 @@ class MarkdownWriter(DataWriter):
                 statement_config_path = kwargs.get("statement_config_path")
                 if statement_config_path and isinstance(statement_config_path, str):
                     # Remove statement_config_path from kwargs to avoid duplicate argument
-                    filtered_kwargs = {k: v for k, v in kwargs.items() if k != "statement_config_path"}
+                    filtered_kwargs = {
+                        k: v for k, v in kwargs.items() if k != "statement_config_path"
+                    }
                     return self._write_with_yaml_config(
                         graph, statement_config_path, **filtered_kwargs
                     )
@@ -403,9 +393,7 @@ class MarkdownWriter(DataWriter):
             # Fall back to the original implementation
             return self._write_legacy(graph, statement_config_path, **kwargs)
 
-    def _load_structure_from_yaml(
-        self, statement_config_path: str
-    ) -> StatementStructure:
+    def _load_structure_from_yaml(self, statement_config_path: str) -> StatementStructure:
         """Load StatementStructure from YAML config file.
 
         Args:
@@ -419,13 +407,9 @@ class MarkdownWriter(DataWriter):
         """
         # TODO: Implement this when StatementStructure builder is available
         # For now, raise an exception to fall back to legacy method
-        raise NotImplementedError(
-            "StatementStructure loading from YAML not yet implemented"
-        )
+        raise NotImplementedError("StatementStructure loading from YAML not yet implemented")
 
-    def _write_legacy(
-        self, graph: Graph, statement_config_path: str, **kwargs: Any
-    ) -> str:
+    def _write_legacy(self, graph: Graph, statement_config_path: str, **kwargs: Any) -> str:
         """Legacy implementation for backward compatibility.
 
         This preserves the original YAML-based implementation.
@@ -443,9 +427,7 @@ class MarkdownWriter(DataWriter):
         historical_periods = set(
             kwargs.get("historical_periods", [])
         )  # Get from kwargs if provided
-        forecast_periods = set(
-            kwargs.get("forecast_periods", [])
-        )  # Get from kwargs if provided
+        forecast_periods = set(kwargs.get("forecast_periods", []))  # Get from kwargs if provided
 
         # Simple inference if not provided fully
         if not historical_periods and not forecast_periods:
@@ -513,9 +495,7 @@ class MarkdownWriter(DataWriter):
 
         # Add separator line
         separator_parts = ["-" * max_desc_width]
-        separator_parts.extend(
-            "-" * period_max_value_widths[period] for period in periods
-        )
+        separator_parts.extend("-" * period_max_value_widths[period] for period in periods)
         output_lines.append(f"| {(' | ').join(separator_parts)} |")
 
         # Build data rows
@@ -524,9 +504,7 @@ class MarkdownWriter(DataWriter):
             row_parts = [name_str.ljust(max_desc_width)]
             for period in periods:
                 values_dict = line_data.get("values", {})
-                value = (
-                    values_dict.get(period, "") if isinstance(values_dict, dict) else ""
-                )
+                value = values_dict.get(period, "") if isinstance(values_dict, dict) else ""
                 value_str = str(value)
                 row_parts.append(value_str.rjust(period_max_value_widths[period]))
             # Join with | and add start/end |
@@ -575,9 +553,7 @@ class MarkdownWriter(DataWriter):
             # Create a filter instance based on the input
             filt: AdjustmentFilter
             if isinstance(adj_filter_input, AdjustmentFilter):
-                filt = adj_filter_input.model_copy(
-                    update={"period": None}
-                )  # Ignore period context
+                filt = adj_filter_input.model_copy(update={"period": None})  # Ignore period context
             elif isinstance(adj_filter_input, set):
                 filt = AdjustmentFilter(
                     include_tags=adj_filter_input,
@@ -587,9 +563,7 @@ class MarkdownWriter(DataWriter):
                     period=None,
                 )
             else:  # Includes None or other types
-                filt = AdjustmentFilter(
-                    include_scenarios={DEFAULT_SCENARIO}, period=None
-                )
+                filt = AdjustmentFilter(include_scenarios={DEFAULT_SCENARIO}, period=None)
 
             # Apply the filter
             filtered_adjustments = [adj for adj in all_adjustments if filt.matches(adj)]

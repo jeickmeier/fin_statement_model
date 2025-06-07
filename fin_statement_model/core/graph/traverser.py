@@ -92,9 +92,7 @@ class GraphTraverser:
                 elif isinstance(node.inputs, dict):
                     input_nodes = list(node.inputs.values())
 
-                if any(
-                    inp.name == node_id for inp in input_nodes if hasattr(inp, "name")
-                ):
+                if any(inp.name == node_id for inp in input_nodes if hasattr(inp, "name")):
                     successors.append(other_id)
         return successors
 
@@ -149,9 +147,7 @@ class GraphTraverser:
                 if in_degree[nbr] == 0:
                     queue.append(nbr)
         if len(topo_order) != len(self.nodes):
-            raise ValueError(
-                "Cycle detected in graph, can't do a valid topological sort."
-            )
+            raise ValueError("Cycle detected in graph, can't do a valid topological sort.")
         return topo_order
 
     def get_calculation_nodes(self) -> list[str]:
@@ -163,9 +159,7 @@ class GraphTraverser:
         Examples:
             >>> traverser.get_calculation_nodes()
         """
-        return [
-            node_id for node_id, node in self.nodes.items() if node.has_calculation()
-        ]
+        return [node_id for node_id, node in self.nodes.items() if node.has_calculation()]
 
     def get_dependencies(self, node_id: str) -> list[str]:
         """Retrieve the direct dependencies (inputs) of a specific node.
@@ -256,8 +250,7 @@ class GraphTraverser:
             >>> traverser.validate()
         """
         errors: list[str] = [
-            f"Circular dependency detected: {' -> '.join(cycle)}"
-            for cycle in self.detect_cycles()
+            f"Circular dependency detected: {' -> '.join(cycle)}" for cycle in self.detect_cycles()
         ]
         errors.extend(
             f"Node '{node_id}' depends on non-existent node '{inp.name}'"
@@ -268,9 +261,7 @@ class GraphTraverser:
         )
         return errors
 
-    def breadth_first_search(
-        self, start_node: str, direction: str = "successors"
-    ) -> list[str]:
+    def breadth_first_search(self, start_node: str, direction: str = "successors") -> list[str]:
         """Perform a breadth-first search (BFS) traversal of the graph.
 
         Args:
@@ -331,9 +322,7 @@ class GraphTraverser:
 
         # For each input, check if new_node is reachable from it
         for input_node in new_node.inputs:
-            if hasattr(input_node, "name") and self._is_reachable(
-                input_node.name, new_node.name
-            ):
+            if hasattr(input_node, "name") and self._is_reachable(input_node.name, new_node.name):
                 return True
         return False
 
@@ -356,9 +345,7 @@ class GraphTraverser:
             return False
 
         try:
-            bfs_levels = self.breadth_first_search(
-                start_node=from_node, direction="successors"
-            )
+            bfs_levels = self.breadth_first_search(start_node=from_node, direction="successors")
             reachable_nodes = {n for level in bfs_levels for n in level}
             return to_node in reachable_nodes
         except (ValueError, KeyError):

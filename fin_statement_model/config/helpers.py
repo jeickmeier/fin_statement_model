@@ -3,22 +3,27 @@
 from __future__ import annotations
 from typing import Any, Optional, TypeVar, overload
 from collections.abc import Sequence
-from .manager import get_config
 from fin_statement_model.core.errors import FinancialModelError
+
 
 class ConfigurationAccessError(FinancialModelError):
     """Raised when there's an error accessing configuration values."""
 
+
 T = TypeVar("T")
+
 
 @overload
 def cfg(path: str) -> Any: ...
 
+
 @overload
 def cfg(path: str, default: T) -> T: ...
 
+
 @overload
 def cfg(path: Sequence[str]) -> Any: ...
+
 
 @overload
 def cfg(path: Sequence[str], default: T) -> T: ...
@@ -26,6 +31,7 @@ def cfg(path: Sequence[str], default: T) -> T: ...
 
 def cfg(path: str | Sequence[str], default: Any = None) -> Any:
     """Get a configuration value by dotted path."""
+    from .manager import get_config
     # Convert string path to sequence
     if isinstance(path, str):
         if not path:
@@ -39,7 +45,7 @@ def cfg(path: str | Sequence[str], default: Any = None) -> Any:
 
     obj = get_config()
     for i, part in enumerate(parts):
-        full_path = ".".join(parts[:i+1])
+        full_path = ".".join(parts[: i + 1])
         if not hasattr(obj, part):
             if default is not None:
                 return default
@@ -92,4 +98,3 @@ def parse_env_value(value: str) -> bool | int | float | str:
         pass
     # Fallback to string
     return val
-

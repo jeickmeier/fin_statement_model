@@ -244,7 +244,7 @@ class TestUnifiedNodeValidator:
     def test_automatic_case_handling(self):
         """Test that validator automatically handles case variations."""
         validator = UnifiedNodeValidator(auto_standardize=True)
-        
+
         # Test standard names in different cases
         test_cases = [
             ("revenue", "revenue", "standard"),
@@ -252,36 +252,36 @@ class TestUnifiedNodeValidator:
             ("REVENUE", "revenue", "standard"),
             ("ReVeNuE", "revenue", "standard"),
         ]
-        
+
         for original, expected_std, expected_cat in test_cases:
             result = validator.validate(original)
             assert result.standardized_name == expected_std
             assert result.category == expected_cat
             assert result.is_valid is True
-            
+
         # Test alternate names in different cases
         alt_cases = [
             ("sales", "revenue", "alternate"),
-            ("Sales", "revenue", "alternate"), 
+            ("Sales", "revenue", "alternate"),
             ("SALES", "revenue", "alternate"),
             ("cogs", "cost_of_goods_sold", "alternate"),
             ("COGS", "cost_of_goods_sold", "alternate"),
             ("Cogs", "cost_of_goods_sold", "alternate"),
         ]
-        
+
         for original, expected_std, expected_cat in alt_cases:
             result = validator.validate(original)
             assert result.standardized_name == expected_std
             assert result.category == expected_cat
             assert result.is_valid is True
-            
+
         # Test sub-nodes with uppercase bases
         subnode_cases = [
             ("Revenue_Q1", "Revenue_Q1", "subnode"),
             ("REVENUE_2023", "REVENUE_2023", "subnode"),
             ("Gross_Profit_Margin", "Gross_Profit_Margin", "formula"),
         ]
-        
+
         for original, expected_std, expected_cat in subnode_cases:
             result = validator.validate(original)
             assert result.standardized_name == expected_std

@@ -17,12 +17,10 @@ from fin_statement_model.core.errors import FinancialModelError
 logger = logging.getLogger(__name__)
 
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Environment variable mapping utility
 def generate_env_mappings(
-    model: type[BaseModel],
-    prefix: Optional[str] = None,
-    path: list[str] | None = None
+    model: type[BaseModel], prefix: Optional[str] = None, path: list[str] | None = None
 ) -> dict[str, list[str]]:
     """Generate environment variable mappings for a Pydantic model."""
     from .manager import ConfigManager
@@ -41,8 +39,7 @@ def generate_env_mappings(
         if origin is Union:
             args = get_args(annotation)
             nested = next(
-                (arg for arg in args if isinstance(arg, type) and issubclass(arg, BaseModel)),
-                None
+                (arg for arg in args if isinstance(arg, type) and issubclass(arg, BaseModel)), None
             )
             if nested:
                 mappings.update(generate_env_mappings(nested, prefix, path + [field_name]))
@@ -57,7 +54,9 @@ def generate_env_mappings(
 
     logger.debug(f"Generated {len(mappings)} environment variable mappings")
     return mappings
-#----------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------
 
 
 class ConfigurationError(FinancialModelError):
@@ -224,6 +223,7 @@ class ConfigManager:
         env_mappings = generate_env_mappings(Config)
         # Import helper to parse raw environment variable values
         from .helpers import parse_env_value
+
         for env_key, config_path in env_mappings.items():
             if env_key in os.environ:
                 # Parse the raw environment variable string into proper type

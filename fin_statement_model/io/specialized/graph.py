@@ -44,9 +44,7 @@ class GraphDefinitionReader(DataReader):
         """Initialize the GraphDefinitionReader. Config currently unused."""
         self.cfg = cfg
 
-    def _add_nodes_iteratively(
-        self, graph: Graph, nodes_dict: dict[str, SerializedNode]
-    ) -> None:
+    def _add_nodes_iteratively(self, graph: Graph, nodes_dict: dict[str, SerializedNode]) -> None:
         """Add nodes to the graph, handling potential dependency order issues."""
         nodes_to_add = nodes_dict.copy()
         added_nodes: set[str] = set()
@@ -63,22 +61,16 @@ class GraphDefinitionReader(DataReader):
                 dependency_names = self._get_node_dependencies(node_def)
 
                 # Check if all dependencies are already added
-                dependencies_met = all(
-                    dep_name in added_nodes for dep_name in dependency_names
-                )
+                dependencies_met = all(dep_name in added_nodes for dep_name in dependency_names)
 
                 if dependencies_met:
                     try:
                         # Use NodeFactory.create_from_dict for unified deserialization
                         # Build context from nodes that have already been added to the graph
                         existing_nodes = {
-                            name: graph.nodes[name]
-                            for name in added_nodes
-                            if name in graph.nodes
+                            name: graph.nodes[name] for name in added_nodes if name in graph.nodes
                         }
-                        node = NodeFactory.create_from_dict(
-                            node_def, context=existing_nodes
-                        )
+                        node = NodeFactory.create_from_dict(node_def, context=existing_nodes)
 
                         # Add the node to the graph
                         graph.add_node(node)
@@ -88,9 +80,7 @@ class GraphDefinitionReader(DataReader):
 
                     except (NodeError, ConfigurationError, ValueError, TypeError):
                         # Log error but try to continue with other nodes
-                        logger.exception(
-                            f"Failed to add node '{node_name}' during iterative build"
-                        )
+                        logger.exception(f"Failed to add node '{node_name}' during iterative build")
                         # Keep it in nodes_to_add to potentially retry if it was a temporary dependency issue
                         nodes_to_add[node_name] = node_def
                 else:
@@ -161,11 +151,7 @@ class GraphDefinitionReader(DataReader):
         """
         logger.info("Starting graph reconstruction from definition dictionary.")
 
-        if (
-            not isinstance(source, dict)
-            or "periods" not in source
-            or "nodes" not in source
-        ):
+        if not isinstance(source, dict) or "periods" not in source or "nodes" not in source:
             raise ReadError(
                 message="Invalid source format for GraphDefinitionReader. Expected dict with 'periods' and 'nodes' keys.",
                 source="graph_definition_dict",
@@ -189,9 +175,7 @@ class GraphDefinitionReader(DataReader):
             adjustments_list = source.get("adjustments")  # Optional
             if adjustments_list is not None:
                 if not isinstance(adjustments_list, list):
-                    raise ReadError(
-                        "Invalid format: 'adjustments' must be a list if present."
-                    )
+                    raise ReadError("Invalid format: 'adjustments' must be a list if present.")
 
                 deserialized_adjustments = []
                 for i, adj_dict in enumerate(adjustments_list):
@@ -212,17 +196,13 @@ class GraphDefinitionReader(DataReader):
                         f"Loaded {len(deserialized_adjustments)} adjustments into the graph."
                     )
 
-            logger.info(
-                f"Successfully reconstructed graph with {len(graph.nodes)} nodes."
-            )
+            logger.info(f"Successfully reconstructed graph with {len(graph.nodes)} nodes.")
             return graph
 
         except ReadError:  # Re-raise ReadErrors directly
             raise
         except Exception as e:
-            logger.error(
-                f"Failed to reconstruct graph from definition: {e}", exc_info=True
-            )
+            logger.error(f"Failed to reconstruct graph from definition: {e}", exc_info=True)
             raise ReadError(
                 message=f"Failed to reconstruct graph from definition: {e}",
                 source="graph_definition_dict",
@@ -262,9 +242,7 @@ class GraphDefinitionWriter(DataWriter):
             logger.warning(f"Skipping node '{node.name}' due to serialization error.")
             return None
 
-    def write(
-        self, graph: Graph, target: Any = None, **kwargs: dict[str, Any]
-    ) -> dict[str, Any]:
+    def write(self, graph: Graph, target: Any = None, **kwargs: dict[str, Any]) -> dict[str, Any]:
         """Export the full graph definition to a dictionary.
 
         Args:
@@ -297,9 +275,7 @@ class GraphDefinitionWriter(DataWriter):
                 if node_dict:
                     serialized_nodes[node_name] = node_dict
                 else:
-                    logger.warning(
-                        f"Node '{node_name}' was not serialized due to errors."
-                    )
+                    logger.warning(f"Node '{node_name}' was not serialized due to errors.")
             graph_definition["nodes"] = serialized_nodes
 
             # 3. Serialize Adjustments
@@ -310,9 +286,7 @@ class GraphDefinitionWriter(DataWriter):
                     # Use model_dump for Pydantic V2, ensure mode='json' for types like UUID/datetime
                     serialized_adjustments.append(adj.model_dump(mode="json"))
                 except Exception as e:
-                    logger.warning(
-                        f"Failed to serialize adjustment {adj.id}: {e}. Skipping."
-                    )
+                    logger.warning(f"Failed to serialize adjustment {adj.id}: {e}. Skipping.")
             graph_definition["adjustments"] = serialized_adjustments
 
             logger.info(
@@ -321,9 +295,7 @@ class GraphDefinitionWriter(DataWriter):
             return graph_definition
 
         except Exception as e:
-            logger.error(
-                f"Failed to create graph definition dictionary: {e}", exc_info=True
-            )
+            logger.error(f"Failed to create graph definition dictionary: {e}", exc_info=True)
             raise WriteError(
                 message=f"Failed to create graph definition dictionary: {e}",
                 target="graph_definition_dict",

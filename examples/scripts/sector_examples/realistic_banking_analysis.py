@@ -1056,7 +1056,9 @@ def generate_banking_report(
                     status = (
                         "✅ Pass"
                         if cet1_ratio >= 7.0
-                        else "⚠️ Watch" if cet1_ratio >= 4.5 else "❌ Fail"
+                        else "⚠️ Watch"
+                        if cet1_ratio >= 4.5
+                        else "❌ Fail"
                     )
 
                     f.write(

@@ -64,10 +64,10 @@ class Section:
             raise StatementError(f"Invalid section ID: {id}")
         if not name or not isinstance(name, str):
             raise StatementError(f"Invalid section name: {name} for ID: {id}")
-        
+
         # Use config default if not provided
         display_scale_factor = cfg_or_param("display.scale_factor", display_scale_factor)
-        
+
         if display_scale_factor <= 0:
             raise StatementError(f"display_scale_factor must be positive for section: {id}")
 
@@ -219,10 +219,10 @@ class StatementStructure:
             raise StatementError(f"Invalid statement ID: {id}")
         if not name or not isinstance(name, str):
             raise StatementError(f"Invalid statement name: {name} for ID: {id}")
-        
+
         # Use config default if not provided
         display_scale_factor = cfg_or_param("display.scale_factor", display_scale_factor)
-        
+
         if display_scale_factor <= 0:
             raise StatementError(f"display_scale_factor must be positive for statement: {id}")
 

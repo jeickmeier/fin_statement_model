@@ -104,9 +104,7 @@ class TimeSeriesTransformer(DataTransformer):
 
     def __init__(
         self,
-        transformation_type: Union[
-            str, TransformationType
-        ] = TransformationType.GROWTH_RATE,
+        transformation_type: Union[str, TransformationType] = TransformationType.GROWTH_RATE,
         periods: int = 1,
         window_size: int = 3,
         config: Optional[TimeSeriesConfig] = None,
@@ -193,9 +191,7 @@ class TimeSeriesTransformer(DataTransformer):
             # 3      130            8.33
         """
         if not isinstance(data, pd.DataFrame):
-            raise TypeError(
-                f"Unsupported data type: {type(data)}. Expected pandas.DataFrame"
-            )
+            raise TypeError(f"Unsupported data type: {type(data)}. Expected pandas.DataFrame")
         return super().transform(data)
 
     def _transform_impl(
@@ -242,9 +238,7 @@ class TimeSeriesTransformer(DataTransformer):
             n_periods_for_cagr = len(df) - 1
 
             if n_periods_for_cagr < 1:
-                logger.warning(
-                    "CAGR requires at least 2 periods. Returning NaN for all columns."
-                )
+                logger.warning("CAGR requires at least 2 periods. Returning NaN for all columns.")
                 for col in df.columns:
                     result[f"{col}_cagr"] = pd.NA
             else:
@@ -264,9 +258,7 @@ class TimeSeriesTransformer(DataTransformer):
                         try:
                             # Ensure result is float, np.power can handle negative base if exponent is integer
                             power_val = np.power(ratio, (1 / n_periods_for_cagr))
-                            if np.iscomplex(
-                                power_val
-                            ):  # Should be caught by above, but defensive
+                            if np.iscomplex(power_val):  # Should be caught by above, but defensive
                                 result[f"{col}_cagr"] = pd.NA
                             else:
                                 result[f"{col}_cagr"] = (float(power_val) - 1) * 100

@@ -50,9 +50,7 @@ class CalculationNode(Node):
         30.0
     """
 
-    def __init__(
-        self, name: str, inputs: list[Node], calculation: Calculation, **kwargs: Any
-    ):
+    def __init__(self, name: str, inputs: list[Node], calculation: Calculation, **kwargs: Any):
         """Initialize the CalculationNode.
 
         Args:
@@ -69,12 +67,8 @@ class CalculationNode(Node):
         super().__init__(name)
         if not isinstance(inputs, list) or not all(isinstance(n, Node) for n in inputs):
             raise TypeError("CalculationNode inputs must be a list of Node instances.")
-        if not hasattr(calculation, "calculate") or not callable(
-            getattr(calculation, "calculate")
-        ):
-            raise TypeError(
-                "Calculation object must have a callable 'calculate' method."
-            )
+        if not hasattr(calculation, "calculate") or not callable(getattr(calculation, "calculate")):
+            raise TypeError("Calculation object must have a callable 'calculate' method.")
 
         self.inputs = inputs
         self.calculation = calculation
@@ -135,12 +129,8 @@ class CalculationNode(Node):
         Raises:
             TypeError: If the new calculation is invalid.
         """
-        if not hasattr(calculation, "calculate") or not callable(
-            getattr(calculation, "calculate")
-        ):
-            raise TypeError(
-                "New calculation object must have a callable 'calculate' method."
-            )
+        if not hasattr(calculation, "calculate") or not callable(getattr(calculation, "calculate")):
+            raise TypeError("New calculation object must have a callable 'calculate' method.")
         self.calculation = calculation
         self.clear_cache()  # Clear cache as logic has changed
 
@@ -207,9 +197,7 @@ class CalculationNode(Node):
             elif type_key == "formula" and hasattr(self.calculation, "formula"):
                 calculation_args["formula"] = self.calculation.formula
                 if hasattr(self.calculation, "input_variable_names"):
-                    node_dict["formula_variable_names"] = (
-                        self.calculation.input_variable_names
-                    )
+                    node_dict["formula_variable_names"] = self.calculation.input_variable_names
             elif type_key == "custom_formula":
                 node_dict["serialization_warning"] = (
                     "CustomFormulaCalculation uses a Python function which cannot be serialized. "
@@ -252,9 +240,7 @@ class CalculationNode(Node):
         )
 
     @staticmethod
-    def from_dict_with_context(
-        data: dict[str, Any], context: dict[str, Node]
-    ) -> "CalculationNode":
+    def from_dict_with_context(data: dict[str, Any], context: dict[str, Node]) -> "CalculationNode":
         """Create a CalculationNode from a dictionary with node context.
 
         Args:
@@ -368,12 +354,8 @@ class FormulaCalculationNode(CalculationNode):
             ValueError: If the formula string has invalid syntax.
             TypeError: If any value in `inputs` is not a Node instance.
         """
-        if not isinstance(inputs, dict) or not all(
-            isinstance(n, Node) for n in inputs.values()
-        ):
-            raise TypeError(
-                "FormulaCalculationNode inputs must be a dict of Node instances."
-            )
+        if not isinstance(inputs, dict) or not all(isinstance(n, Node) for n in inputs.values()):
+            raise TypeError("FormulaCalculationNode inputs must be a dict of Node instances.")
 
         # Store the formula and metric attributes
         self.formula = formula
@@ -463,9 +445,7 @@ class FormulaCalculationNode(CalculationNode):
             ValueError: If the data is invalid or missing required fields.
         """
         if data.get("type") != "formula_calculation":
-            raise ValueError(
-                f"Invalid type for FormulaCalculationNode: {data.get('type')}"
-            )
+            raise ValueError(f"Invalid type for FormulaCalculationNode: {data.get('type')}")
 
         name = data.get("name")
         if not name:
@@ -553,13 +533,9 @@ class CustomCalculationNode(Node):
         """
         super().__init__(name)
         if not isinstance(inputs, list) or not all(isinstance(n, Node) for n in inputs):
-            raise TypeError(
-                "CustomCalculationNode inputs must be a list of Node instances"
-            )
+            raise TypeError("CustomCalculationNode inputs must be a list of Node instances")
         if not callable(formula_func):
-            raise TypeError(
-                "CustomCalculationNode formula_func must be a callable function"
-            )
+            raise TypeError("CustomCalculationNode formula_func must be a callable function")
 
         self.inputs = inputs
         self.formula_func = formula_func

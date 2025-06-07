@@ -50,7 +50,7 @@ def demo_runtime_updates() -> None:
     print("=" * 60)
 
     # Save original config
-    original_units = get_config().display.default_units
+    original_units = cfg("display.default_units")
 
     # Update configuration
     print("Updating display configuration...")
@@ -64,19 +64,18 @@ def demo_runtime_updates() -> None:
         }
     )
 
-    config = get_config()
     print("\nUpdated Display Config:")
-    print(f"  Units: {config.display.default_units}")
-    print(f"  Scale Factor: {config.display.scale_factor}")
-    print(f"  Format: {config.display.default_currency_format}")
+    print(f"  Units: {cfg('display.default_units')}")
+    print(f"  Scale Factor: {cfg('display.scale_factor')}")
+    print(f"  Format: {cfg('display.default_currency_format')}")
 
     # Demonstrate effect on data display
     sample_value = 1234567.89
-    scaled_value = sample_value * config.display.scale_factor
+    scaled_value = sample_value * cfg("display.scale_factor")
     print("\nExample value formatting:")
     print(f"  Original: ${sample_value:,.2f}")
     print(
-        f"  Scaled: {scaled_value:{config.display.default_currency_format}} {config.display.default_units}"
+        f"  Scaled: {scaled_value:{cfg('display.default_currency_format')}} {cfg('display.default_units')}"
     )
 
     # Reset to original
@@ -166,12 +165,11 @@ forecasting:
 
     # Apply the file config
     update_config(file_config)
-    config = get_config()
 
     print("\nApplied configuration:")
-    print(f"  Display units: {config.display.default_units}")
-    print(f"  Validation strict mode: {config.validation.strict_mode}")
-    print(f"  Default forecast method: {config.forecasting.default_method}")
+    print(f"  Display units: {cfg('display.default_units')}")
+    print(f"  Validation strict mode: {cfg('validation.strict_mode')}")
+    print(f"  Default forecast method: {cfg('forecasting.default_method')}")
 
     # Clean up
     os.unlink(config_path)

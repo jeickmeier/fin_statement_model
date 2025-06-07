@@ -16,9 +16,7 @@ from .errors import (
 )
 
 ## Trigger transformer discovery on package import
-TransformerFactory.discover_transformers(
-    "fin_statement_model.preprocessing.transformers"
-)
+TransformerFactory.discover_transformers("fin_statement_model.preprocessing.transformers")
 
 __all__ = [
     "CompositeTransformer",

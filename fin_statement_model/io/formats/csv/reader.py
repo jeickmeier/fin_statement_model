@@ -24,9 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 @register_reader("csv")
-class CsvReader(
-    FileBasedReader, ConfigurationMixin, MappingAwareMixin, ValidationMixin
-):
+class CsvReader(FileBasedReader, ConfigurationMixin, MappingAwareMixin, ValidationMixin):
     """Reads financial statement data from a CSV file into a Graph.
 
     Assumes a 'long' format where each row represents a single data point
@@ -101,13 +99,9 @@ class CsvReader(
         self._validate_columns(df, item_col, period_col, value_col, file_path)
 
         # Process data
-        return self._process_dataframe(
-            df, item_col, period_col, value_col, file_path, kwargs
-        )
+        return self._process_dataframe(df, item_col, period_col, value_col, file_path, kwargs)
 
-    def _read_csv_file(
-        self, file_path: str, user_options: dict[str, Any]
-    ) -> pd.DataFrame:
+    def _read_csv_file(self, file_path: str, user_options: dict[str, Any]) -> pd.DataFrame:
         """Read CSV file with configuration options."""
         # Use configuration from self.cfg with enhanced validation
         delimiter = self.get_config_value(
@@ -201,9 +195,7 @@ class CsvReader(
                         "Overwriting data is not standard for readers."
                     )
                 else:
-                    new_node = FinancialStatementItemNode(
-                        name=node_name, values=period_values
-                    )
+                    new_node = FinancialStatementItemNode(name=node_name, values=period_values)
                     graph.add_node(new_node)
                     nodes_added += 1
 
@@ -216,9 +208,7 @@ class CsvReader(
                 reader_type=self.__class__.__name__,
             )
 
-        logger.info(
-            f"Successfully created graph with {nodes_added} nodes from {file_path}."
-        )
+        logger.info(f"Successfully created graph with {nodes_added} nodes from {file_path}.")
         return graph
 
     def _extract_period_values(

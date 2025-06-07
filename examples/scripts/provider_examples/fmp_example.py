@@ -3,11 +3,12 @@
 This example demonstrates fetching financial data from the FMP API
 and using it with the fin_statement_model library.
 """
+
 import logging
 import sys
 import pandas as pd
 
-from fin_statement_model import get_config, update_config
+from fin_statement_model.config import get_config, update_config
 from fin_statement_model.io import read_data
 from fin_statement_model.statements import create_statement_dataframe
 
@@ -16,7 +17,6 @@ config = get_config()
 
 # Override logging level for this example if needed
 update_config({"logging": {"level": "INFO"}})
-
 
 
 logger = logging.getLogger(__name__)

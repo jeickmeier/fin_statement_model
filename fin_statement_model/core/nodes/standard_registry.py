@@ -72,9 +72,7 @@ class StandardNodeRegistry:
             ValueError: If node definitions are invalid or contain duplicates
         """
         if not isinstance(data, dict):
-            raise TypeError(
-                f"Expected dict at root of {source_description}, got {type(data)}"
-            )
+            raise TypeError(f"Expected dict at root of {source_description}, got {type(data)}")
 
         nodes_loaded = 0
 
@@ -123,12 +121,8 @@ class StandardNodeRegistry:
                 nodes_loaded += 1
 
             except Exception as e:
-                logger.exception(
-                    f"Error loading node '{node_name}' from {source_description}"
-                )
-                raise ValueError(
-                    f"Invalid node definition for '{node_name}': {e}"
-                ) from e
+                logger.exception(f"Error loading node '{node_name}' from {source_description}")
+                raise ValueError(f"Invalid node definition for '{node_name}': {e}") from e
 
         return nodes_loaded
 
@@ -160,9 +154,7 @@ class StandardNodeRegistry:
         self._categories.clear()
 
         # Process the data
-        nodes_loaded = self._load_nodes_from_data(
-            data, str(yaml_path), overwrite_existing=False
-        )
+        nodes_loaded = self._load_nodes_from_data(data, str(yaml_path), overwrite_existing=False)
 
         logger.info(
             f"Loaded {nodes_loaded} standard node definitions "
@@ -193,9 +185,7 @@ class StandardNodeRegistry:
             raise ValueError(f"Invalid YAML in {yaml_path}: {e}") from e
 
         # Process the data without clearing existing
-        nodes_loaded = self._load_nodes_from_data(
-            data, str(yaml_path), overwrite_existing=True
-        )
+        nodes_loaded = self._load_nodes_from_data(data, str(yaml_path), overwrite_existing=True)
 
         logger.debug(f"Loaded {nodes_loaded} nodes from {yaml_path}")
         return nodes_loaded
@@ -282,9 +272,7 @@ class StandardNodeRegistry:
         """
         if category:
             names = [
-                name
-                for name, defn in self._standard_nodes.items()
-                if defn.category == category
+                name for name, defn in self._standard_nodes.items() if defn.category == category
             ]
         else:
             names = list(self._standard_nodes.keys())
@@ -385,29 +373,22 @@ class StandardNodeRegistry:
             if count > 0:
                 self._initialized = True
                 self._loaded_from = f"organized structure at {organized_path}"
-                logger.info(
-                    f"Successfully loaded {count} standard nodes from organized structure"
-                )
+                logger.info(f"Successfully loaded {count} standard nodes from organized structure")
                 return count
         except Exception as e:
             logger.warning(
-                f"Failed to load from organized structure: {e}. "
-                f"Attempting fallback loading..."
+                f"Failed to load from organized structure: {e}. Attempting fallback loading..."
             )
 
         # Try fallback loading from flat file
         if fallback_path.exists():
             try:
-                logger.info(
-                    f"Loading standard nodes from fallback file: {fallback_path}"
-                )
+                logger.info(f"Loading standard nodes from fallback file: {fallback_path}")
                 count = self.load_from_yaml(fallback_path)
                 if count > 0:
                     self._initialized = True
                     self._loaded_from = f"fallback file at {fallback_path}"
-                    logger.info(
-                        f"Successfully loaded {count} standard nodes from fallback file"
-                    )
+                    logger.info(f"Successfully loaded {count} standard nodes from fallback file")
                     return count
             except Exception:
                 logger.exception("Failed to load from fallback file")
@@ -440,9 +421,7 @@ class StandardNodeRegistry:
         # Check if it has the expected structure (contains __init__.py)
         init_file = base_path / "__init__.py"
         if not init_file.exists():
-            raise ValueError(
-                f"Invalid organized structure: missing __init__.py in {base_path}"
-            )
+            raise ValueError(f"Invalid organized structure: missing __init__.py in {base_path}")
 
         # Import and use the load_all_standard_nodes function
         import importlib.util
@@ -463,9 +442,7 @@ class StandardNodeRegistry:
         if hasattr(module, "load_all_standard_nodes"):
             return module.load_all_standard_nodes(base_path)
         else:
-            raise AttributeError(
-                f"Module at {init_file} missing load_all_standard_nodes function"
-            )
+            raise AttributeError(f"Module at {init_file} missing load_all_standard_nodes function")
 
     def is_initialized(self) -> bool:
         """Check if the registry has been initialized with default nodes."""

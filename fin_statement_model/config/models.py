@@ -120,20 +120,15 @@ class DisplayConfig(BaseModel):
     indent_character: str = Field(
         "  ", description="Indentation characters used for nested line items"
     )
-    subtotal_style: str = Field(
-        "bold", description="CSS/markup style keyword for subtotal rows"
-    )
-    total_style: str = Field(
-        "bold", description="CSS/markup style keyword for total rows"
-    )
-    header_style: str = Field(
-        "bold", description="CSS/markup style keyword for header cells"
-    )
+    subtotal_style: str = Field("bold", description="CSS/markup style keyword for subtotal rows")
+    total_style: str = Field("bold", description="CSS/markup style keyword for total rows")
+    header_style: str = Field("bold", description="CSS/markup style keyword for header cells")
     contra_css_class: str = Field(
         "contra-item", description="Default CSS class name for contra items"
     )
     show_negative_sign: bool = Field(
-        True, description="Whether to prefix negative numbers with a minus sign when not using parentheses"
+        True,
+        description="Whether to prefix negative numbers with a minus sign when not using parentheses",
     )
 
     @field_validator("scale_factor")

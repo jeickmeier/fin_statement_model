@@ -137,9 +137,7 @@ class FinancialStatementItemNode(Node):
             'Revenue'
         """
         if data.get("type") != "financial_statement_item":
-            raise ValueError(
-                f"Invalid type for FinancialStatementItemNode: {data.get('type')}"
-            )
+            raise ValueError(f"Invalid type for FinancialStatementItemNode: {data.get('type')}")
 
         name = data.get("name")
         if not name:

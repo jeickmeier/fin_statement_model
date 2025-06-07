@@ -135,9 +135,7 @@ def read_statement_configs_from_directory(
     config_files = list(path.glob("*.json")) + list(path.glob("*.y*ml"))
 
     if not config_files:
-        logger.warning(
-            f"No configuration files (.json, .yaml, .yml) found in {directory_path}"
-        )
+        logger.warning(f"No configuration files (.json, .yaml, .yml) found in {directory_path}")
         return {}
 
     for file_path in config_files:
@@ -194,9 +192,7 @@ def list_available_builtin_configs() -> list[str]:
         resource_path = importlib.resources.files(package_path)
         # Check if the resource exists and is a container (directory)
         if not resource_path.is_dir():
-            logger.warning(
-                f"Built-in config package path is not a directory: {package_path}"
-            )
+            logger.warning(f"Built-in config package path is not a directory: {package_path}")
             return []
 
         names = [
@@ -236,9 +232,7 @@ def read_builtin_statement_config(name: str) -> dict[str, Any]:
     for ext in (".yaml", ".yml", ".json"):
         resource_name = f"{name}{ext}"
         try:
-            resource_path = importlib.resources.files(package_path).joinpath(
-                resource_name
-            )
+            resource_path = importlib.resources.files(package_path).joinpath(resource_name)
             if resource_path.is_file():
                 resource_content = resource_path.read_text(encoding="utf-8")
                 found_resource_name = resource_name
@@ -248,9 +242,7 @@ def read_builtin_statement_config(name: str) -> dict[str, Any]:
             continue  # Try next extension or handle package not found below
         except Exception as e:
             # Catch other potential errors during resource access
-            logger.exception(
-                f"Error accessing resource {resource_name} in {package_path}"
-            )
+            logger.exception(f"Error accessing resource {resource_name} in {package_path}")
             raise ReadError(
                 message=f"Error accessing built-in config resource '{name}'",
                 source=f"{package_path}/{resource_name}",
@@ -286,9 +278,7 @@ def read_builtin_statement_config(name: str) -> dict[str, Any]:
                 original_error=e,
             ) from e
     else:
-        logger.warning(
-            f"Built-in statement config '{name}' not found in package {package_path}"
-        )
+        logger.warning(f"Built-in statement config '{name}' not found in package {package_path}")
         raise ReadError(
             message=f"Built-in statement config '{name}' not found in package {package_path}",
             source=package_path,

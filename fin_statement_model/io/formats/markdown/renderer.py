@@ -62,9 +62,7 @@ class MarkdownStatementRenderer:
         logger.debug(f"Rendered {len(items)} items from structure")
         return items
 
-    def _render_section(
-        self, section: Section, level: int
-    ) -> list[MarkdownStatementItem]:
+    def _render_section(self, section: Section, level: int) -> list[MarkdownStatementItem]:
         """Recursively render a section and its contents.
 
         Args:
@@ -95,9 +93,7 @@ class MarkdownStatementRenderer:
 
         return items
 
-    def _render_item(
-        self, item: StatementItem, level: int
-    ) -> Optional[MarkdownStatementItem]:
+    def _render_item(self, item: StatementItem, level: int) -> Optional[MarkdownStatementItem]:
         """Render a single statement item with values from graph.
 
         Args:
@@ -126,9 +122,7 @@ class MarkdownStatementRenderer:
             logger.warning(f"Failed to render item {item.id}: {e}")
             return None
 
-    def _extract_values(
-        self, item: StatementItem
-    ) -> dict[str, Union[float, int, str, None]]:
+    def _extract_values(self, item: StatementItem) -> dict[str, Union[float, int, str, None]]:
         """Extract values for an item from the graph.
 
         Args:
@@ -157,9 +151,7 @@ class MarkdownStatementRenderer:
                 if isinstance(item, LineItem):
                     # Direct value from node
                     raw_value = node.get_value(period)
-                elif isinstance(
-                    item, CalculatedLineItem | SubtotalLineItem | MetricLineItem
-                ):
+                elif isinstance(item, CalculatedLineItem | SubtotalLineItem | MetricLineItem):
                     # Calculate value
                     try:
                         raw_value = self.graph.calculate(node_id, period)
@@ -169,9 +161,7 @@ class MarkdownStatementRenderer:
                         )
                         raw_value = "CALC_ERR"  # type: ignore[assignment]
                 else:
-                    logger.warning(
-                        f"Unsupported item type: {type(item)} for item: {item.id}"
-                    )
+                    logger.warning(f"Unsupported item type: {type(item)} for item: {item.id}")
                     raw_value = None
 
                 # Apply sign convention and scaling

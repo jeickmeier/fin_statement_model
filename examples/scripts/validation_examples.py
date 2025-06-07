@@ -26,7 +26,7 @@ Example normalization:
 """
 
 import logging
-from fin_statement_model.config import get_config, update_config, reset_config, cfg, cfg_or_param
+from fin_statement_model.config import get_config, update_config
 from fin_statement_model.io.validation import UnifiedNodeValidator
 
 # Get configuration
@@ -109,7 +109,9 @@ def example_case_sensitivity_handling():
     name_with_spaces = "Cost of Goods Sold"
     preprocessed = name_with_spaces.replace(" ", "_")
     result = validator.validate(preprocessed)
-    logger.info(f"'{name_with_spaces}' -> '{preprocessed}' -> '{result.standardized_name}' ({result.category})")
+    logger.info(
+        f"'{name_with_spaces}' -> '{preprocessed}' -> '{result.standardized_name}' ({result.category})"
+    )
 
 
 def example_context_aware_validation():
@@ -340,6 +342,7 @@ if __name__ == "__main__":
 
     # Check if standard nodes are loaded
     from fin_statement_model.core.nodes import standard_node_registry
+
     logger.info(f"Standard nodes loaded: {len(standard_node_registry)}")
     if len(standard_node_registry) == 0:
         logger.warning("No standard nodes loaded! The registry is empty.")
@@ -348,7 +351,7 @@ if __name__ == "__main__":
         sample_names = list(standard_node_registry.list_standard_names())[:5]
         logger.info(f"Sample standard node names: {sample_names}")
 
-    logger.info("\n" + "="*60 + "\n")
+    logger.info("\n" + "=" * 60 + "\n")
 
     example_basic_validation()
     example_case_sensitivity_handling()

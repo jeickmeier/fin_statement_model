@@ -99,7 +99,9 @@ class ForecastConfig(BaseModel):
         if method == "statistical":
             # Delegate validation to StatisticalConfig for detailed checks
             try:
-                StatisticalConfig(**cfg) if isinstance(cfg, dict) else StatisticalConfig.model_validate(cfg)
+                StatisticalConfig(**cfg) if isinstance(
+                    cfg, dict
+                ) else StatisticalConfig.model_validate(cfg)
             except (ForecastConfigurationError, ValidationError) as exc:
                 # Re-raise as ForecastConfigurationError for consistency
                 raise ForecastConfigurationError(

@@ -54,7 +54,7 @@ class RetryConfig:
     """Configuration for retry behavior.
 
     Attributes:
-        max_attempts: Maximum number of attempts (including initial). 
+        max_attempts: Maximum number of attempts (including initial).
                      If not provided, uses config default from api.api_retry_count
         strategy: Retry strategy to use
         backoff: Optional backoff strategy for delays
@@ -75,7 +75,7 @@ class RetryConfig:
         # Use config default if not provided
         if self.max_attempts is None:
             self.max_attempts = cfg_or_param("api.api_retry_count", None)
-            
+
         if self.max_attempts < 1:
             raise ValueError("max_attempts must be at least 1")
 
@@ -366,7 +366,7 @@ def retry_with_exponential_backoff(
     """
     # Use config default if not provided
     max_attempts = cfg_or_param("api.api_retry_count", max_attempts)
-    
+
     config = RetryConfig(
         max_attempts=max_attempts,
         strategy=RetryStrategy.BACKOFF,
@@ -395,7 +395,7 @@ def retry_on_specific_errors(
     """
     # Use config default if not provided
     max_attempts = cfg_or_param("api.api_retry_count", max_attempts)
-    
+
     config = RetryConfig(
         max_attempts=max_attempts,
         strategy=RetryStrategy.CONDITIONAL,

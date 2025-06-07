@@ -21,38 +21,38 @@ class TestListAllConfigPaths:
 
     def test_simple_model(self):
         """Test listing paths for a simple model."""
-        
+
         class SimpleConfig(BaseModel):
             name: str = "test"
             count: int = 5
             enabled: bool = True
-        
+
         paths = list_all_config_paths(SimpleConfig)
         expected = ["count", "enabled", "name"]  # Should be sorted
         assert paths == expected
 
     def test_nested_model(self):
         """Test listing paths for nested models."""
-        
+
         class DatabaseConfig(BaseModel):
             host: str = "localhost"
             port: int = 5432
-        
+
         class AppConfig(BaseModel):
             debug: bool = False
             database: DatabaseConfig = Field(default_factory=DatabaseConfig)
-        
+
         paths = list_all_config_paths(AppConfig)
         expected = ["database.host", "database.port", "debug"]
         assert paths == expected
 
     def test_optional_fields(self):
         """Test listing paths for models with optional fields."""
-        
+
         class ConfigWithOptional(BaseModel):
             required_field: str
             optional_field: Optional[str] = None
-        
+
         paths = list_all_config_paths(ConfigWithOptional)
         expected = ["optional_field", "required_field"]
         assert paths == expected
@@ -60,13 +60,13 @@ class TestListAllConfigPaths:
     def test_real_config_model(self):
         """Test listing paths for the actual Config model."""
         paths = list_all_config_paths(Config)
-        
+
         # Check that some expected paths exist
         assert "logging.level" in paths
         assert "io.default_excel_sheet" in paths
         assert "forecasting.default_periods" in paths
         assert "api.fmp_api_key" in paths
-        
+
         # Should have many paths
         assert len(paths) > 20
 
@@ -82,16 +82,16 @@ class TestGenerateEnvVarDocumentation:
 
     def test_simple_model_documentation(self):
         """Test documentation generation for a simple model."""
-        
+
         class SimpleConfig(BaseModel):
             name: str = "test"
             count: int = 5
-        
+
         doc = generate_env_var_documentation(SimpleConfig)
-        
+
         # Should contain header
         assert "# Environment Variables" in doc
-        
+
         # Should contain the mappings (uses default FSM prefix)
         assert "FSM_NAME" in doc
         assert "FSM_COUNT" in doc
@@ -100,15 +100,15 @@ class TestGenerateEnvVarDocumentation:
 
     def test_nested_model_documentation(self):
         """Test documentation generation for nested models."""
-        
+
         class DatabaseConfig(BaseModel):
             host: str = "localhost"
-        
+
         class AppConfig(BaseModel):
             database: DatabaseConfig = Field(default_factory=DatabaseConfig)
-        
+
         doc = generate_env_var_documentation(AppConfig)
-        
+
         # Should contain nested mapping (uses default FSM prefix)
         assert "FSM_DATABASE_HOST" in doc
         assert "database.host" in doc
@@ -116,7 +116,7 @@ class TestGenerateEnvVarDocumentation:
     def test_real_config_documentation(self):
         """Test documentation generation for the real Config model."""
         doc = generate_env_var_documentation(Config)
-        
+
         # Should contain expected sections
         assert "# Environment Variables" in doc
         assert "FSM_LOGGING_LEVEL" in doc
@@ -135,16 +135,16 @@ class TestGenerateParamMappingDocumentation:
     def test_param_mapping_documentation(self):
         """Test parameter mapping documentation generation."""
         doc = generate_param_mapping_documentation()
-        
+
         # Should contain header
         assert "# Parameter Mappings" in doc
-        
+
         # Should contain some known mappings
         assert "delimiter" in doc
         assert "io.default_csv_delimiter" in doc
         assert "sheet_name" in doc
         assert "io.default_excel_sheet" in doc
-        
+
         # Should contain convention section
         assert "## Convention-Based Mappings" in doc
         assert "default_*" in doc
@@ -156,19 +156,19 @@ class TestGetConfigFieldInfo:
 
     def test_simple_field_info(self):
         """Test getting field info for simple fields."""
-        
+
         class TestConfig(BaseModel):
             string_field: str = "default"
             int_field: int = 42
             optional_field: Optional[str] = None
-        
+
         # Test string field
         info = get_config_field_info("string_field", TestConfig)
         assert info["path"] == "string_field"
         assert info["type"] == str
         assert not info["is_optional"]
         assert info["default"] == "default"
-        
+
         # Test optional field
         info = get_config_field_info("optional_field", TestConfig)
         assert info["type"] == str
@@ -177,13 +177,13 @@ class TestGetConfigFieldInfo:
 
     def test_nested_field_info(self):
         """Test getting field info for nested fields."""
-        
+
         class NestedConfig(BaseModel):
             nested_value: int = 100
-        
+
         class MainConfig(BaseModel):
             nested: NestedConfig = Field(default_factory=NestedConfig)
-        
+
         info = get_config_field_info("nested.nested_value", MainConfig)
         assert info["path"] == "nested.nested_value"
         assert info["type"] == int
@@ -196,7 +196,7 @@ class TestGetConfigFieldInfo:
         info = get_config_field_info("logging.level")
         assert info["path"] == "logging.level"
         assert not info["is_optional"]
-        
+
         # Test optional API key
         info = get_config_field_info("api.fmp_api_key")
         assert info["path"] == "api.fmp_api_key"
@@ -219,21 +219,21 @@ class TestFindConfigPathsByType:
 
     def test_find_by_type_simple_model(self):
         """Test finding paths by type in a simple model."""
-        
+
         class TestConfig(BaseModel):
             string_field: str = "test"
             int_field: int = 42
             bool_field: bool = True
             another_string: str = "another"
-        
+
         # Find string fields
         string_paths = find_config_paths_by_type(str, TestConfig)
         assert set(string_paths) == {"another_string", "string_field"}
-        
+
         # Find int fields
         int_paths = find_config_paths_by_type(int, TestConfig)
         assert int_paths == ["int_field"]
-        
+
         # Find bool fields
         bool_paths = find_config_paths_by_type(bool, TestConfig)
         assert bool_paths == ["bool_field"]
@@ -244,16 +244,16 @@ class TestFindConfigPathsByType:
         bool_paths = find_config_paths_by_type(bool)
         assert "logging.detailed" in bool_paths
         assert "io.validate_on_read" in bool_paths
-        
+
         # Should have multiple fields
         assert len(bool_paths) > 5
 
     def test_find_nonexistent_type(self):
         """Test finding paths for a type that doesn't exist."""
-        
+
         class TestConfig(BaseModel):
             string_field: str = "test"
-        
+
         # Find float fields (none exist)
         float_paths = find_config_paths_by_type(float, TestConfig)
         assert float_paths == []
@@ -270,19 +270,19 @@ class TestValidateConfigCompleteness:
 
     def test_validate_simple_model(self):
         """Test validation for a simple model."""
-        
+
         class SimpleConfig(BaseModel):
             name: str = "test"
             count: int = 5
             auto_clean: bool = True
             default_timeout: int = 30
             some_custom_field: str = "custom"
-        
+
         results = validate_config_completeness(SimpleConfig)
-        
+
         # All fields should have env vars generated automatically
         assert isinstance(results["missing_env_vars"], list)
-        
+
         # Should return proper structure
         assert isinstance(results["missing_param_mappings"], list)
         # Note: auto_clean and default_timeout might already have mappings
@@ -291,7 +291,7 @@ class TestValidateConfigCompleteness:
     def test_validate_real_config(self):
         """Test validation for the real Config model."""
         results = validate_config_completeness()
-        
+
         # Should return proper structure
         assert "missing_env_vars" in results
         assert "missing_param_mappings" in results
@@ -310,19 +310,19 @@ class TestGenerateConfigSummary:
 
     def test_summary_simple_model(self):
         """Test summary generation for a simple model."""
-        
+
         class SimpleConfig(BaseModel):
             name: str = "test"
             count: int = 5
             enabled: bool = True
-        
+
         summary = generate_config_summary(SimpleConfig)
-        
+
         # Should contain basic information
         assert "# Configuration System Summary" in summary
         assert "**Model**: SimpleConfig" in summary
         assert "**Total Configuration Fields**: 3" in summary
-        
+
         # Should contain type breakdown
         assert "## Field Types" in summary
         assert "str: 1 fields" in summary
@@ -332,7 +332,7 @@ class TestGenerateConfigSummary:
     def test_summary_real_config(self):
         """Test summary generation for the real Config model."""
         summary = generate_config_summary()
-        
+
         # Should contain basic information
         assert "# Configuration System Summary" in summary
         assert "**Model**: Config" in summary
@@ -342,10 +342,10 @@ class TestGenerateConfigSummary:
     def test_summary_includes_validation(self):
         """Test that summary includes validation results."""
         summary = generate_config_summary()
-        
+
         # Should contain validation section
         assert "## Validation Results" in summary
-        
+
         # Should show either success or specific issues
         assert ("✅" in summary) or ("Missing Environment Variables" in summary)
 
@@ -364,23 +364,23 @@ class TestIntegrationWithRealConfig:
         # These should all run without errors
         paths = list_all_config_paths()
         assert len(paths) > 0
-        
+
         env_doc = generate_env_var_documentation()
         assert len(env_doc) > 0
-        
+
         param_doc = generate_param_mapping_documentation()
         assert len(param_doc) > 0
-        
+
         field_info = get_config_field_info("logging.level")
         assert field_info["path"] == "logging.level"
-        
+
         bool_paths = find_config_paths_by_type(bool)
         assert len(bool_paths) > 0
-        
+
         validation = validate_config_completeness()
         assert "missing_env_vars" in validation
         assert "missing_param_mappings" in validation
-        
+
         summary = generate_config_summary()
         assert len(summary) > 0
 
@@ -388,16 +388,16 @@ class TestIntegrationWithRealConfig:
         """Test consistency between different discovery functions."""
         # Paths from list_all_config_paths should match those found by type
         all_paths = set(list_all_config_paths())
-        
+
         str_paths = set(find_config_paths_by_type(str))
         int_paths = set(find_config_paths_by_type(int))
         bool_paths = set(find_config_paths_by_type(bool))
         float_paths = set(find_config_paths_by_type(float))
-        
+
         # Union of typed paths should be subset of all paths
         typed_paths = str_paths | int_paths | bool_paths | float_paths
         assert typed_paths.issubset(all_paths)
-        
+
         # Should cover most paths (some might be complex types)
         coverage = len(typed_paths) / len(all_paths)
         assert coverage > 0.7, f"Type coverage is only {coverage:.1%}"
@@ -405,10 +405,10 @@ class TestIntegrationWithRealConfig:
     def test_field_info_consistency(self):
         """Test that get_config_field_info is consistent with other functions."""
         paths = list_all_config_paths()
-        
+
         # Test a sample of paths
         sample_paths = paths[:10] if len(paths) > 10 else paths
-        
+
         for path in sample_paths:
             # Should be able to get field info for each path
             try:
@@ -418,4 +418,4 @@ class TestIntegrationWithRealConfig:
                 assert "is_optional" in info
                 assert "default" in info
             except ValueError:
-                pytest.fail(f"Could not get field info for path: {path}") 
+                pytest.fail(f"Could not get field info for path: {path}")

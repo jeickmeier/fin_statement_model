@@ -392,7 +392,8 @@ class StatementForecaster:
                 # Create ForecastResult
                 default_method = cfg("forecasting.default_method")
                 config = ForecastValidator.validate_forecast_config(
-                    node_config or {"method": default_method, "config": cfg("forecasting.default_growth_rate")}
+                    node_config
+                    or {"method": default_method, "config": cfg("forecasting.default_growth_rate")}
                 )
 
                 results[node_name] = ForecastResult(

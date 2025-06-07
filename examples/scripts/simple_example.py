@@ -8,7 +8,7 @@ import logging
 import sys
 from pathlib import Path
 
-from fin_statement_model.config import get_config, update_config, reset_config, cfg, cfg_or_param
+from fin_statement_model.config import get_config, update_config
 from fin_statement_model.io import read_data
 from fin_statement_model.statements import create_statement_dataframe
 from fin_statement_model.core.metrics.registry import metric_registry

@@ -359,9 +359,7 @@ class ValidationMixin:
         if not validator.has_errors():
             return f"Successfully completed {operation} {source_identifier}"
 
-        error_summary = (
-            f"Validation errors occurred during {operation} {source_identifier}: "
-        )
+        error_summary = f"Validation errors occurred during {operation} {source_identifier}: "
         error_details = "; ".join(summary["errors"][:5])  # Limit to first 5 errors
 
         if len(summary["errors"]) > 5:
@@ -486,9 +484,7 @@ class FileBasedReader(DataReader):
                 reader_type=self.__class__.__name__,
             )
 
-    def validate_file_extension(
-        self, path: str, valid_extensions: tuple[str, ...]
-    ) -> None:
+    def validate_file_extension(self, path: str, valid_extensions: tuple[str, ...]) -> None:
         """Validate file has correct extension.
 
         Args:
@@ -609,11 +605,7 @@ class ConfigurationMixin:
             )
 
         # Type validation
-        if (
-            value is not None
-            and value_type is not None
-            and not isinstance(value, value_type)
-        ):
+        if value is not None and value_type is not None and not isinstance(value, value_type):
             try:
                 # Attempt type conversion
                 value = value_type(value)
@@ -661,9 +653,7 @@ class ConfigurationMixin:
         Raises:
             ReadError: If the configuration value is missing or invalid.
         """
-        return self.get_config_value(
-            key, required=True, value_type=value_type, validator=validator
-        )
+        return self.get_config_value(key, required=True, value_type=value_type, validator=validator)
 
     def get_config_with_env_fallback(
         self,
@@ -699,11 +689,7 @@ class ConfigurationMixin:
             value = default
 
         # Type conversion if needed
-        if (
-            value is not None
-            and value_type is not None
-            and not isinstance(value, value_type)
-        ):
+        if value is not None and value_type is not None and not isinstance(value, value_type):
             try:
                 value = value_type(value)
             except (ValueError, TypeError):
@@ -1025,9 +1011,7 @@ class ValidationResultCollector:
         Args:
             context: Optional context information for validation.
         """
-        self.results: list[tuple[str, bool, str, str]] = (
-            []
-        )  # item, valid, message, category
+        self.results: list[tuple[str, bool, str, str]] = []  # item, valid, message, category
         self.errors: list[str] = []
         self.warnings: list[str] = []
         self.context = context or {}
@@ -1061,9 +1045,7 @@ class ValidationResultCollector:
         elif "warning" in message.lower():
             self.warnings.append(f"{item_name}: {message}")
 
-    def add_warning(
-        self, item_name: str, message: str, category: str = "warning"
-    ) -> None:
+    def add_warning(self, item_name: str, message: str, category: str = "warning") -> None:
         """Add a warning (non-blocking validation issue).
 
         Args:
@@ -1115,9 +1097,7 @@ class ValidationResultCollector:
                 "total": category_total,
                 "errors": error_count,
                 "success_rate": (
-                    (category_total - error_count) / category_total
-                    if category_total > 0
-                    else 1.0
+                    (category_total - error_count) / category_total if category_total > 0 else 1.0
                 ),
             }
 

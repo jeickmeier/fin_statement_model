@@ -5,7 +5,7 @@ to provide a clean, simple API without requiring constant parameter passing.
 """
 
 import logging
-from fin_statement_model.config import get_config, update_config, reset_config, cfg, cfg_or_param
+from fin_statement_model.config import get_config, update_config
 from fin_statement_model.io import read_data
 from fin_statement_model.io.validation import UnifiedNodeValidator
 from fin_statement_model.statements import create_statement_dataframe
@@ -37,7 +37,7 @@ def main():
     )
 
     config = get_config()
-    print(f"\nCurrent Configuration:")
+    print("\nCurrent Configuration:")
     print(f"  Display units: {config.display.default_units}")
     print(f"  Hide zero rows: {config.display.hide_zero_rows}")
     print(f"  Validation strict mode: {config.validation.strict_mode}")

@@ -26,13 +26,7 @@ from fin_statement_model.config import get_config, update_config
 logger = logging.getLogger(__name__)
 
 config = get_config()
-update_config({
-    "logging": {
-        "level": "INFO", 
-        "format": "%(message)s"
-        }
-    }
-)
+update_config({"logging": {"level": "INFO", "format": "%(message)s"}})
 
 
 def validate_node_names_example() -> dict[str, str]:

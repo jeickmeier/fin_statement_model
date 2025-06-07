@@ -156,9 +156,7 @@ class TestConfigurationMixin:
         with pytest.raises(ReadError) as exc_info:
             reader.require_config_value("nonexistent")
 
-        assert "Required configuration value 'nonexistent' is missing" in str(
-            exc_info.value
-        )
+        assert "Required configuration value 'nonexistent' is missing" in str(exc_info.value)
 
     def test_require_config_value_with_validation(self):
         """Test required configuration value with type and custom validation."""
@@ -190,9 +188,7 @@ class TestConfigurationMixin:
             assert value == "env_value"
 
         # Both missing, use default
-        value = reader.get_config_with_env_fallback(
-            "nonexistent", "MISSING_ENV", "default"
-        )
+        value = reader.get_config_with_env_fallback("nonexistent", "MISSING_ENV", "default")
         assert value == "default"
 
     def test_get_config_with_env_fallback_type_conversion(self):
