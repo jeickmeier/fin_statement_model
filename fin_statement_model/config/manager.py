@@ -6,15 +6,58 @@ from multiple sources and merging them according to precedence rules.
 
 import os
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, List, Union, get_origin, get_args
 import logging
 from threading import Lock
-from contextlib import suppress
+from pydantic import BaseModel
 
 from .models import Config
 from fin_statement_model.core.errors import FinancialModelError
+from .helpers import parse_env_value
 
 logger = logging.getLogger(__name__)
+
+
+#----------------------------------------------------------------------
+# Environment variable mapping utility
+def generate_env_mappings(
+    model: type[BaseModel],
+    prefix: Optional[str] = None,
+    path: list[str] | None = None
+) -> dict[str, list[str]]:
+    """Generate environment variable mappings for a Pydantic model."""
+    from .manager import ConfigManager
+
+    if prefix is None:
+        prefix = ConfigManager.ENV_PREFIX.rstrip("_")
+    if path is None:
+        path = []
+
+    mappings: dict[str, list[str]] = {}
+    for field_name, field in model.model_fields.items():
+        annotation = getattr(field, 'annotation', field.outer_type_)
+        origin = get_origin(annotation)
+        # Handle Optional or Union types
+        if origin is Union:
+            args = get_args(annotation)
+            nested = next(
+                (arg for arg in args if isinstance(arg, type) and issubclass(arg, BaseModel)),
+                None
+            )
+            if nested:
+                mappings.update(generate_env_mappings(nested, prefix, path + [field_name]))
+                continue
+        # Nested BaseModel
+        if isinstance(annotation, type) and issubclass(annotation, BaseModel):
+            mappings.update(generate_env_mappings(annotation, prefix, path + [field_name]))
+        else:
+            leaf_path = path + [field_name]
+            env_name = prefix + "_" + "_".join(p.upper() for p in leaf_path)
+            mappings[env_name] = leaf_path
+
+    logger.debug(f"Generated {len(mappings)} environment variable mappings")
+    return mappings
+#----------------------------------------------------------------------
 
 
 class ConfigurationError(FinancialModelError):
@@ -178,25 +221,15 @@ class ConfigManager:
         config = {}
 
         # Generate mappings dynamically from the Config model
-        from .introspection import generate_env_mappings
-        from .models import Config
-
-        env_mappings = generate_env_mappings(Config, self.ENV_PREFIX.rstrip("_"))
+        env_mappings = generate_env_mappings(Config)
 
         for env_key, config_path in env_mappings.items():
             if env_key in os.environ:
-                value = os.environ[env_key]
+                # Parse the raw environment variable string into proper type
+                raw_value = os.environ[env_key]
+                value = parse_env_value(raw_value)
 
-                # Convert string values to appropriate types
-                if value.lower() in ["true", "false"]:
-                    value = value.lower() == "true"
-                elif value.isdigit():
-                    value = int(value)
-                else:
-                    with suppress(ValueError):
-                        value = float(value)
-
-                # Build nested dictionary
+                # Build nested dictionary with the parsed value
                 current = config
                 for key in config_path[:-1]:
                     if key not in current:
