@@ -24,15 +24,13 @@ import logging
 import sys
 import pandas as pd
 from fin_statement_model.core.errors import FinancialModelError
-from typing import Dict, Any, Optional
 
-from fin_statement_model.core.graph import Graph
 from fin_statement_model.io import read_data, write_data
 from fin_statement_model.statements import create_statement_dataframe
 from fin_statement_model.forecasting.forecaster import StatementForecaster
 
 # Import unified validator
-from fin_statement_model.io.validation import UnifiedNodeValidator, ValidationResult
+from fin_statement_model.io.validation import UnifiedNodeValidator
 
 # Configure logging
 logging.basicConfig(
@@ -239,8 +237,8 @@ try:
     logger.info("\nCreating graph and loading initial data...")
     graph = read_data(format_type="dict", source=historical_data)
     logger.info(f"Graph created with initial periods: {graph.periods}")
-except FinancialModelError as e:
-    logger.error(f"Error creating graph or loading initial data: {e}", file=sys.stderr)
+except FinancialModelError:
+    logger.exception("Error creating graph or loading initial data", file=sys.stderr)
     sys.exit(1)
 
 # --- 3c. Post-Graph Node Validation ---

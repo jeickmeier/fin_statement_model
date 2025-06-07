@@ -13,6 +13,9 @@ from fin_statement_model.core.adjustments.models import (
     AdjustmentFilterInput,
 )
 
+# NEW pull project-wide defaults from the central config
+from fin_statement_model.config.helpers import cfg
+
 # Define MappingConfig locally to avoid circular import
 MappingConfig = Union[dict[str, str], dict[Optional[str], dict[str, str]]]
 
@@ -31,7 +34,11 @@ class BaseReaderConfig(BaseModel):
 class CsvReaderConfig(BaseReaderConfig):
     """CSV reader options."""
 
-    delimiter: str = Field(",", description="Field delimiter for CSV files.")
+    # Falls back to cfg("io.default_csv_delimiter") when not supplied
+    delimiter: str = Field(
+        default_factory=lambda: cfg("io.default_csv_delimiter"),
+        description="Field delimiter for CSV files.",
+    )
     header_row: int = Field(1, description="Row number containing column names (1-indexed).")
     index_col: Optional[int] = Field(None, description="1-indexed column for row labels.")
     mapping_config: Optional[MappingConfig] = Field(
@@ -49,7 +56,11 @@ class CsvReaderConfig(BaseReaderConfig):
 class ExcelReaderConfig(BaseReaderConfig):
     """Excel reader options."""
 
-    sheet_name: Optional[str] = Field(None, description="Worksheet name or index.")
+    # Uses cfg("io.default_excel_sheet") unless caller overrides
+    sheet_name: Optional[str] = Field(
+        default_factory=lambda: cfg("io.default_excel_sheet"),
+        description="Worksheet name or index.",
+    )
     items_col: int = Field(1, description="1-indexed column where item names reside.")
     periods_row: int = Field(1, description="1-indexed row where periods reside.")
     mapping_config: Optional[MappingConfig] = Field(
@@ -72,19 +83,23 @@ class FmpReaderConfig(BaseReaderConfig):
     )
     period_type: Literal["FY", "QTR"] = Field("FY", description="Period type: 'FY' or 'QTR'.")
     limit: int = Field(5, description="Number of periods to fetch.")
-    api_key: Optional[str] = Field(None, description="Financial Modeling Prep API key.")
+    # Caller value → env var → cfg("api.fmp_api_key")
+    api_key: Optional[str] = Field(
+        default=None,
+        description="Financial Modeling Prep API key.",
+    )
     mapping_config: Optional[MappingConfig] = Field(
         None, description="Optional configuration for mapping source item names."
     )
 
     @field_validator("api_key", mode="before")
     def load_api_key_env(cls, value: Optional[str]) -> Optional[str]:
-        """Load api_key from FMP_API_KEY env var if not provided."""
-        if not value:
-            import os
+        """Cascade lookup: explicit param → env → global config."""
+        if value:
+            return value
+        import os
 
-            return os.getenv("FMP_API_KEY")
-        return value
+        return os.getenv("FMP_API_KEY") or cfg("api.fmp_api_key", None)
 
     @model_validator(mode="after")
     def check_api_key(cls, cfg: FmpReaderConfig) -> FmpReaderConfig:
@@ -139,7 +154,11 @@ class BaseWriterConfig(BaseModel):
 class ExcelWriterConfig(BaseWriterConfig):
     """Excel writer options."""
 
-    sheet_name: str = Field("Sheet1", description="Name of the sheet to write to.")
+    # Default comes from cfg("io.default_excel_sheet")
+    sheet_name: str = Field(
+        default_factory=lambda: cfg("io.default_excel_sheet"),
+        description="Name of the sheet to write to.",
+    )
     recalculate: bool = Field(True, description="Whether to recalculate graph before export.")
     include_nodes: Optional[list[str]] = Field(
         None, description="Optional list of node names to include in export."

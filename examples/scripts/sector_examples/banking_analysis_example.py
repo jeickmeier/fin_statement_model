@@ -6,7 +6,6 @@ and perform regulatory compliance checks.
 """
 
 import logging
-from typing import Dict, List, Any
 
 from fin_statement_model.core.metrics import metric_registry
 from fin_statement_model.io.validation import UnifiedNodeValidator
@@ -16,7 +15,6 @@ from fin_statement_model.core.metrics import (
 )
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.core.nodes.base import Node
-from fin_statement_model.io.validation import UnifiedNodeValidator
 from fin_statement_model.core.nodes.calculation_nodes import (
     FormulaCalculationNode,
     CustomCalculationNode,
@@ -460,7 +458,7 @@ def analyze_asset_quality(data_nodes: dict[str, FinancialStatementItemNode], per
             logger.info(f"  {interpretation['interpretation_message']}")
 
         except Exception as e:
-            logger.error(f"Could not calculate {metric_name}: {e}")
+            logger.exception(f"Could not calculate {metric_name}")
             results[metric_name] = {"error": str(e)}
 
     return results
@@ -494,7 +492,7 @@ def analyze_capital_adequacy(
             logger.info(f"  {interpretation['interpretation_message']}")
 
         except Exception as e:
-            logger.error(f"Could not calculate {metric_name}: {e}")
+            logger.exception(f"Could not calculate {metric_name}")
             results[metric_name] = {"error": str(e)}
 
     return results
@@ -527,7 +525,7 @@ def analyze_profitability(data_nodes: dict[str, FinancialStatementItemNode], per
             logger.info(f"  {interpretation['interpretation_message']}")
 
         except Exception as e:
-            logger.error(f"Could not calculate {metric_name}: {e}")
+            logger.exception(f"Could not calculate {metric_name}")
             results[metric_name] = {"error": str(e)}
 
     return results
@@ -560,7 +558,7 @@ def analyze_liquidity(data_nodes: dict[str, FinancialStatementItemNode], period:
             logger.info(f"  {interpretation['interpretation_message']}")
 
         except Exception as e:
-            logger.error(f"Could not calculate {metric_name}: {e}")
+            logger.exception(f"Could not calculate {metric_name}")
             results[metric_name] = {"error": str(e)}
 
     return results
@@ -733,8 +731,8 @@ def main():
             try:
                 value = calculate_metric(metric_name, bank_data, period)
                 logger.info(f"  {period}: {value:.2f}%")
-            except Exception as e:
-                logger.error(f"  {period}: Error - {e}")
+            except Exception:
+                logger.exception(f"  {period}: Error")
 
     # Step 7: Demonstrate validation in metric calculation workflow
     logger.info(f"\n{'=' * 60}")
@@ -808,8 +806,8 @@ def demonstrate_validation_in_metrics(
                 f"Interpretation: {interpretation['rating']} - {interpretation['interpretation_message']}"
             )
 
-        except Exception as e:
-            logger.error(f"Error calculating metric: {e}")
+        except Exception:
+            logger.exception("Error calculating metric")
 
     # Show validation benefits
     logger.info("\n--- Validation Benefits ---")

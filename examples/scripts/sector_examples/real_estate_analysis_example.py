@@ -5,11 +5,10 @@ for analyzing REIT financial performance.
 """
 
 import logging
-from typing import Dict, List, Optional
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
-from fin_statement_model.core.metrics import calculate_metric, metric_registry
+from fin_statement_model.core.metrics import metric_registry
 
 # Configure logging
 logging.basicConfig(
@@ -18,7 +17,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def create_reit_financial_model():
+def create_reit_financial_model() -> Graph:
     """Create a financial model for a REIT with specialized metrics."""
     graph = Graph()
 
@@ -171,7 +170,7 @@ def create_reit_financial_model():
     return graph
 
 
-def analyze_reit_performance(graph, period="2023"):
+def analyze_reit_performance(graph: Graph, period: str = "2023") -> None:
     """Analyze REIT performance using specialized metrics."""
     logger.info("=== REIT Analysis Example ===\n")
 
@@ -197,9 +196,9 @@ def analyze_reit_performance(graph, period="2023"):
             else:
                 logger.info(f"{display_name}: {value:.2f}")
 
-        except Exception as e:
-            logger.error(f"Could not calculate {display_name}: {e}")
-        logger.info("")
+        except Exception:
+            logger.exception(f"Could not calculate {display_name}")
+            logger.info("")
 
     # Calculate additional real estate metrics using the helper function
     logger.info("Additional Analysis:")
@@ -218,8 +217,8 @@ def analyze_reit_performance(graph, period="2023"):
             logger.info("  → High cap rate - good income yield but check property quality")
         else:
             logger.info("  → Cap rate within typical range for quality properties")
-    except Exception as e:
-        logger.error(f"Could not calculate cap rate: {e}")
+    except Exception:
+        logger.exception("Could not calculate cap rate")
 
     # Debt Service Coverage
     try:
@@ -233,8 +232,8 @@ def analyze_reit_performance(graph, period="2023"):
             logger.info("  → Strong debt coverage")
         else:
             logger.info("  → Adequate debt coverage")
-    except Exception as e:
-        logger.error(f"Could not calculate DSCR: {e}")
+    except Exception:
+        logger.exception("Could not calculate DSCR")
 
     # Growth analysis
     logger.info("\nGrowth Analysis:")
@@ -252,8 +251,8 @@ def analyze_reit_performance(graph, period="2023"):
         ffo_2023 = graph.calculate("funds_from_operations", "2023")
         ffo_growth = ((ffo_2023 - ffo_2022) / ffo_2022) * 100
         logger.info(f"FFO Growth (2022-2023): {ffo_growth:.1f}%")
-    except Exception as e:
-        logger.error(f"Could not calculate growth metrics: {e}")
+    except Exception:
+        logger.exception("Could not calculate growth metrics")
 
     logger.info("\n=== Analysis Complete ===")
 

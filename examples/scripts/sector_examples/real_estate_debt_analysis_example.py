@@ -9,7 +9,6 @@ from typing import Union
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
-from fin_statement_model.core.metrics import calculate_metric, metric_registry
 
 # Configure logging
 logging.basicConfig(

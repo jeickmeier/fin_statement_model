@@ -858,14 +858,15 @@ def create_banking_visualizations(
             ax1.grid(True, alpha=0.3)
 
     # Net Interest Margin trend
-    nim_values = []
-    for period in periods:
+    nim_values = [
+        metrics["earnings"][period]["net_interest_margin"]["value"]
+        for period in periods
         if (
             "earnings" in metrics
             and period in metrics["earnings"]
             and "net_interest_margin" in metrics["earnings"][period]
-        ):
-            nim_values.append(metrics["earnings"][period]["net_interest_margin"]["value"])
+        )
+    ]
 
     if nim_values:
         ax2.plot(
@@ -881,16 +882,15 @@ def create_banking_visualizations(
         ax2.grid(True, alpha=0.3)
 
     # Asset Quality trend
-    npl_values = []
-    for period in periods:
+    npl_values = [
+        metrics["asset_quality"][period]["non_performing_loan_ratio"]["value"]
+        for period in periods
         if (
             "asset_quality" in metrics
             and period in metrics["asset_quality"]
             and "non_performing_loan_ratio" in metrics["asset_quality"][period]
-        ):
-            npl_values.append(
-                metrics["asset_quality"][period]["non_performing_loan_ratio"]["value"]
-            )
+        )
+    ]
 
     if npl_values:
         ax3.plot(
@@ -907,14 +907,15 @@ def create_banking_visualizations(
         ax3.invert_yaxis()  # Lower is better
 
     # Efficiency Ratio trend
-    eff_values = []
-    for period in periods:
+    eff_values = [
+        metrics["management_efficiency"][period]["efficiency_ratio"]["value"]
+        for period in periods
         if (
             "management_efficiency" in metrics
             and period in metrics["management_efficiency"]
             and "efficiency_ratio" in metrics["management_efficiency"][period]
-        ):
-            eff_values.append(metrics["management_efficiency"][period]["efficiency_ratio"]["value"])
+        )
+    ]
 
     if eff_values:
         ax4.plot(
