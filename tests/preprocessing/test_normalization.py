@@ -5,7 +5,7 @@ import pandas as pd
 from fin_statement_model.preprocessing.transformers.normalization import (
     NormalizationTransformer,
 )
-from fin_statement_model.preprocessing.config.enums import NormalizationType
+from fin_statement_model.preprocessing.config import NormalizationType
 
 
 class TestNormalizationTransformer:
@@ -44,7 +44,9 @@ class TestNormalizationTransformer:
         """Test minmax normalization handles constant columns correctly."""
         df = pd.DataFrame({"constant": [5, 5, 5, 5], "variable": [1, 2, 3, 4]})
 
-        transformer = NormalizationTransformer(normalization_type=NormalizationType.MINMAX)
+        transformer = NormalizationTransformer(
+            normalization_type=NormalizationType.MINMAX
+        )
 
         result = transformer.transform(df)
 
@@ -59,7 +61,9 @@ class TestNormalizationTransformer:
         """Test standard normalization handles constant columns correctly."""
         df = pd.DataFrame({"constant": [10, 10, 10, 10], "variable": [1, 2, 3, 4]})
 
-        transformer = NormalizationTransformer(normalization_type=NormalizationType.STANDARD)
+        transformer = NormalizationTransformer(
+            normalization_type=NormalizationType.STANDARD
+        )
 
         result = transformer.transform(df)
 

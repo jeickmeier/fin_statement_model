@@ -79,7 +79,9 @@ def fetch_fmp_data():
             if value is not None:
                 # Format using display config
                 formatted_value = f"{value * config.display.scale_factor:{config.display.default_currency_format}}"
-                logger.info(f"  {period}: {formatted_value} {config.display.default_units}")
+                logger.info(
+                    f"  {period}: {formatted_value} {config.display.default_units}"
+                )
 
         return graph
 
@@ -133,7 +135,9 @@ def main():
     logger.info("-" * 80)
 
     # Apply formatting based on config
-    pd.options.display.float_format = lambda x: f"{x:{config.display.default_currency_format}}"
+    pd.options.display.float_format = (
+        lambda x: f"{x:{config.display.default_currency_format}}"
+    )
     print(df.head(10))  # Show first 10 items
 
     # Try to create a formatted statement if config exists
@@ -164,7 +168,9 @@ def main():
 
     # Show cache info if caching is enabled
     if config.api.cache_api_responses:
-        logger.info(f"\nNote: API responses are cached for {config.api.cache_ttl_hours} hours")
+        logger.info(
+            f"\nNote: API responses are cached for {config.api.cache_ttl_hours} hours"
+        )
         logger.info("To refresh data, clear cache or wait for TTL expiration")
 
 

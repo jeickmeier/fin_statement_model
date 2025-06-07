@@ -59,7 +59,9 @@ def populate_graph(registry: StatementRegistry, graph: Graph) -> list[tuple[str,
             )
 
     if all_populator_errors:
-        logger.warning(f"Encountered {len(all_populator_errors)} errors during graph population.")
+        logger.warning(
+            f"Encountered {len(all_populator_errors)} errors during graph population."
+        )
         # Log details if needed: logger.warning(f"Population errors: {all_populator_errors}")
 
     return [
@@ -179,7 +181,9 @@ def create_statement_dataframe(
         node_validation_strict=node_validation_strict,
     )
     if not loaded_ids:
-        raise StatementError(f"No valid statements could be loaded from {config_path_or_dir}")
+        raise StatementError(
+            f"No valid statements could be loaded from {config_path_or_dir}"
+        )
 
     # Step 2: Populate Graph (handles errors internally, logs warnings)
     populate_graph(registry, graph)
@@ -193,7 +197,9 @@ def create_statement_dataframe(
             logger.error(
                 f"Internal error: Statement '{stmt_id}' was loaded but not found in registry."
             )
-            formatting_errors.append((stmt_id, "Statement not found in registry after loading"))
+            formatting_errors.append(
+                (stmt_id, "Statement not found in registry after loading")
+            )
             continue
         try:
             formatter = StatementFormatter(statement)
@@ -206,7 +212,9 @@ def create_statement_dataframe(
     if formatting_errors:
         # Decide policy: raise error, or return partial results?
         # For now, log warning and return what succeeded.
-        logger.warning(f"Encountered {len(formatting_errors)} errors during formatting.")
+        logger.warning(
+            f"Encountered {len(formatting_errors)} errors during formatting."
+        )
 
     # Return single DF or Dict based on input type
     is_single_file = Path(config_path_or_dir).is_file()

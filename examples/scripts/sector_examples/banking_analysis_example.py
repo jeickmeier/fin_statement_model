@@ -65,7 +65,9 @@ def validate_node_names_example() -> dict[str, str]:
     logger.info("\n--- Basic Validation Results ---")
     standardized_mapping = {}
     for original_name, result in validation_results.items():
-        logger.info(f"'{original_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})")
+        logger.info(
+            f"'{original_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})"
+        )
         logger.info(f"  Category: {result.category}")
         logger.info(f"  Message: {result.message}")
         if result.suggestions:
@@ -125,7 +127,9 @@ def context_aware_validation_example():
 
     logger.info("--- Context-Aware Validation Results ---")
     for node_name, node_type, parent_nodes in test_nodes:
-        result = validator.validate(node_name, node_type=node_type, parent_nodes=parent_nodes)
+        result = validator.validate(
+            node_name, node_type=node_type, parent_nodes=parent_nodes
+        )
 
         logger.info(f"Node: '{node_name}' (Type: {node_type})")
         logger.info(f"  Standardized: '{result.standardized_name}'")
@@ -169,7 +173,9 @@ def create_validated_bank_data() -> dict[str, FinancialStatementItemNode]:
         # Validate and standardize the name
         result = validator.validate(raw_name)
 
-        logger.info(f"  '{raw_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})")
+        logger.info(
+            f"  '{raw_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})"
+        )
         if result.message:
             logger.info(f"    Note: {result.message}")
 
@@ -413,17 +419,23 @@ def validate_data_completeness(
 
     # Print validation results
     logger.info(f"Total nodes available: {validation_report['total_nodes']}")
-    logger.info(f"Data completeness score: {validation_report['completeness_score']:.1f}%")
+    logger.info(
+        f"Data completeness score: {validation_report['completeness_score']:.1f}%"
+    )
 
     if validation_report["required_missing"]:
-        logger.info(f"Missing required nodes ({len(validation_report['required_missing'])}):")
+        logger.info(
+            f"Missing required nodes ({len(validation_report['required_missing'])}):"
+        )
         for node in validation_report["required_missing"]:
             logger.info(f"  - {node}")
     else:
         logger.info("✓ All required nodes present")
 
     if validation_report["recommended_missing"]:
-        logger.info(f"Missing recommended nodes ({len(validation_report['recommended_missing'])}):")
+        logger.info(
+            f"Missing recommended nodes ({len(validation_report['recommended_missing'])}):"
+        )
         for node in validation_report["recommended_missing"]:
             logger.info(f"  - {node}")
     else:
@@ -432,7 +444,9 @@ def validate_data_completeness(
     return validation_report
 
 
-def analyze_asset_quality(data_nodes: dict[str, FinancialStatementItemNode], period: str) -> dict:
+def analyze_asset_quality(
+    data_nodes: dict[str, FinancialStatementItemNode], period: str
+) -> dict:
     """Analyze asset quality metrics for the bank."""
     logger.info(f"\n=== Asset Quality Analysis for {period} ===")
 
@@ -498,7 +512,9 @@ def analyze_capital_adequacy(
     return results
 
 
-def analyze_profitability(data_nodes: dict[str, FinancialStatementItemNode], period: str) -> dict:
+def analyze_profitability(
+    data_nodes: dict[str, FinancialStatementItemNode], period: str
+) -> dict:
     """Analyze profitability metrics for the bank."""
     logger.info(f"\n=== Profitability Analysis for {period} ===")
 
@@ -531,7 +547,9 @@ def analyze_profitability(data_nodes: dict[str, FinancialStatementItemNode], per
     return results
 
 
-def analyze_liquidity(data_nodes: dict[str, FinancialStatementItemNode], period: str) -> dict:
+def analyze_liquidity(
+    data_nodes: dict[str, FinancialStatementItemNode], period: str
+) -> dict:
     """Analyze liquidity metrics for the bank."""
     logger.info(f"\n=== Liquidity Analysis for {period} ===")
 
@@ -703,7 +721,9 @@ def main():
         node for node in graph_data.values() if hasattr(node, "inputs") and node.inputs
     ]
     data_nodes = [
-        node for node in graph_data.values() if not (hasattr(node, "inputs") and node.inputs)
+        node
+        for node in graph_data.values()
+        if not (hasattr(node, "inputs") and node.inputs)
     ]
 
     logger.info(f"  Total nodes: {len(graph_data)}")
@@ -750,7 +770,9 @@ def main():
     logger.info(
         "2. Graph Structure: Automatic calculations, dependency tracking, more complex setup"
     )
-    logger.info("3. Both approaches can be validated using the same validation framework")
+    logger.info(
+        "3. Both approaches can be validated using the same validation framework"
+    )
     logger.info(
         "4. Graph structure provides better consistency and maintainability for complex models"
     )
@@ -764,7 +786,9 @@ def demonstrate_validation_in_metrics(
 
     # Example: Try to calculate a metric with potentially problematic node names
     test_metric_inputs = {
-        "loan_loss_allowance": data_nodes.get("allowance_for_loan_losses"),  # Using alternate name
+        "loan_loss_allowance": data_nodes.get(
+            "allowance_for_loan_losses"
+        ),  # Using alternate name
         "npl": data_nodes.get("non_performing_loans"),  # Using alternate name
         "total_loans": data_nodes.get("total_loans"),  # Standard name
     }
@@ -786,17 +810,24 @@ def demonstrate_validation_in_metrics(
 
     # Calculate provision coverage ratio with validated inputs
     if all(
-        key in standardized_inputs for key in ["allowance_for_loan_losses", "non_performing_loans"]
+        key in standardized_inputs
+        for key in ["allowance_for_loan_losses", "non_performing_loans"]
     ):
         try:
             # Use standardized names for metric calculation
             metric_data = {
-                "allowance_for_loan_losses": standardized_inputs["allowance_for_loan_losses"],
+                "allowance_for_loan_losses": standardized_inputs[
+                    "allowance_for_loan_losses"
+                ],
                 "non_performing_loans": standardized_inputs["non_performing_loans"],
             }
 
-            provision_coverage = calculate_metric("provision_coverage_ratio", metric_data, "2023")
-            logger.info(f"\nCalculated Provision Coverage Ratio (2023): {provision_coverage:.2f}%")
+            provision_coverage = calculate_metric(
+                "provision_coverage_ratio", metric_data, "2023"
+            )
+            logger.info(
+                f"\nCalculated Provision Coverage Ratio (2023): {provision_coverage:.2f}%"
+            )
 
             # Interpret the result
             interpretation = interpret_metric(
@@ -965,7 +996,10 @@ def create_banking_graph_example() -> dict[str, FinancialStatementItemNode]:
     total_assets = CustomCalculationNode(
         name="total_assets",
         inputs=[cash_and_equivalents, total_securities, net_loans, other_assets],
-        formula_func=lambda cash, securities, loans, other: cash + securities + loans + other,
+        formula_func=lambda cash, securities, loans, other: cash
+        + securities
+        + loans
+        + other,
         description="Total bank assets",
     )
 
@@ -1027,8 +1061,12 @@ def create_banking_graph_example() -> dict[str, FinancialStatementItemNode]:
         return []
 
     logger.info(f"  total_assets depends on: {get_input_names(total_assets)}")
-    logger.info(f"  net_interest_income depends on: {get_input_names(net_interest_income)}")
-    logger.info(f"  total_interest_income depends on: {get_input_names(total_interest_income)}")
+    logger.info(
+        f"  net_interest_income depends on: {get_input_names(net_interest_income)}"
+    )
+    logger.info(
+        f"  total_interest_income depends on: {get_input_names(total_interest_income)}"
+    )
     logger.info(f"  total_securities depends on: {get_input_names(total_securities)}")
     logger.info(f"  net_loans depends on: {get_input_names(net_loans)}")
 

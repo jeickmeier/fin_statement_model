@@ -49,13 +49,17 @@ class CurveForecastMethod(BaseForecastMethod):
                 raise ValueError("Curve method: empty list provided")
             for i, value in enumerate(config):
                 if not isinstance(value, int | float):
-                    raise TypeError(f"Curve method: non-numeric value at index {i}: {type(value)}")
+                    raise TypeError(
+                        f"Curve method: non-numeric value at index {i}: {type(value)}"
+                    )
         elif not isinstance(config, int | float):
             raise TypeError(
                 f"Curve method requires numeric or list of numeric values, got {type(config)}"
             )
 
-    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
+    def normalize_params(
+        self, config: Any, forecast_periods: list[str]
+    ) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory.
 
         Args:

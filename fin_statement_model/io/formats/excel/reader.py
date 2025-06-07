@@ -24,7 +24,9 @@ logger = logging.getLogger(__name__)
 
 
 @register_reader("excel")
-class ExcelReader(FileBasedReader, ConfigurationMixin, MappingAwareMixin, ValidationMixin):
+class ExcelReader(
+    FileBasedReader, ConfigurationMixin, MappingAwareMixin, ValidationMixin
+):
     """Reads financial statement data from an Excel file into a Graph.
 
     Expects data in a tabular format where rows typically represent items
@@ -104,7 +106,9 @@ class ExcelReader(FileBasedReader, ConfigurationMixin, MappingAwareMixin, Valida
         graph_periods = self._extract_periods(period_headers, items_col)
 
         # Create and populate graph
-        return self._create_graph(df, graph_periods, items_col, mapping, file_path, sheet_name)
+        return self._create_graph(
+            df, graph_periods, items_col, mapping, file_path, sheet_name
+        )
 
     def _read_excel_data(
         self,
@@ -147,7 +151,9 @@ class ExcelReader(FileBasedReader, ConfigurationMixin, MappingAwareMixin, Valida
             period_headers = df.columns.astype(str).tolist()
 
         # Validate items column index using ValidationMixin
-        self.validate_column_bounds(df, items_col_0idx, file_path, f"items_col ({items_col})")
+        self.validate_column_bounds(
+            df, items_col_0idx, file_path, f"items_col ({items_col})"
+        )
 
         return df, period_headers
 
@@ -157,7 +163,9 @@ class ExcelReader(FileBasedReader, ConfigurationMixin, MappingAwareMixin, Valida
 
         # Filter period headers: exclude the item column and empty values
         graph_periods = [
-            p for i, p in enumerate(period_headers) if i > items_col_0idx and p and p.strip()
+            p
+            for i, p in enumerate(period_headers)
+            if i > items_col_0idx and p and p.strip()
         ]
 
         # Validate periods using ValidationMixin
@@ -204,7 +212,9 @@ class ExcelReader(FileBasedReader, ConfigurationMixin, MappingAwareMixin, Valida
                         "Overwriting data is not standard for readers."
                     )
                 else:
-                    new_node = FinancialStatementItemNode(name=node_name, values=period_values)
+                    new_node = FinancialStatementItemNode(
+                        name=node_name, values=period_values
+                    )
                     graph.add_node(new_node)
                     nodes_added += 1
 

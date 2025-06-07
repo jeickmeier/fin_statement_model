@@ -183,7 +183,9 @@ class StatementStructureBuilder:
                 # Handle validation results
                 if error_collector.has_errors() and self.node_validation_strict:
                     # Fail build on validation errors in strict mode
-                    error_messages = [str(error) for error in error_collector.get_errors()]
+                    error_messages = [
+                        str(error) for error in error_collector.get_errors()
+                    ]
                     raise ConfigurationError(
                         message=f"Node validation failed for statement '{stmt_model.id}'",
                         errors=error_messages,
@@ -207,7 +209,9 @@ class StatementStructureBuilder:
             for sec_model in stmt_model.sections:
                 section = self._build_section_model(sec_model)
                 statement.add_section(section)
-            logger.info(f"Successfully built StatementStructure for ID '{statement.id}'")
+            logger.info(
+                f"Successfully built StatementStructure for ID '{statement.id}'"
+            )
             return statement
         except Exception as e:
             # Catch potential errors during the building process itself
@@ -253,11 +257,17 @@ class StatementStructureBuilder:
                             )
                         )
                 elif isinstance(item, CalculatedItemModel):
-                    collected_node_refs.add((item.id, "calculated_node", f"item.{item.id}.id"))
+                    collected_node_refs.add(
+                        (item.id, "calculated_node", f"item.{item.id}.id")
+                    )
                 elif isinstance(item, MetricItemModel):
-                    collected_node_refs.add((item.id, "metric_node", f"item.{item.id}.id"))
+                    collected_node_refs.add(
+                        (item.id, "metric_node", f"item.{item.id}.id")
+                    )
                 elif isinstance(item, SubtotalModel):
-                    collected_node_refs.add((item.id, "subtotal_node", f"item.{item.id}.id"))
+                    collected_node_refs.add(
+                        (item.id, "subtotal_node", f"item.{item.id}.id")
+                    )
                 elif isinstance(item, SectionModel):
                     collect_node_refs(item.items)
                     collect_node_refs(item.subsections)
@@ -276,7 +286,9 @@ class StatementStructureBuilder:
 
         # Validate collected references
         for node_id, node_type, context in collected_node_refs:
-            self._validate_single_build_node_id(node_id, node_type, context, error_collector)
+            self._validate_single_build_node_id(
+                node_id, node_type, context, error_collector
+            )
 
     def _validate_single_build_node_id(
         self,
@@ -306,7 +318,9 @@ class StatementStructureBuilder:
             # Only report significant issues during build
             if not validation_result.is_valid:
                 severity = (
-                    ErrorSeverity.ERROR if self.node_validation_strict else ErrorSeverity.WARNING
+                    ErrorSeverity.ERROR
+                    if self.node_validation_strict
+                    else ErrorSeverity.WARNING
                 )
                 message = f"Build validation: Invalid {node_type} '{node_id}': {validation_result.message}"
 
@@ -326,7 +340,9 @@ class StatementStructureBuilder:
                     )
 
         except Exception as e:
-            logger.exception(f"Error during build-time validation of node ID '{node_id}'")
+            logger.exception(
+                f"Error during build-time validation of node ID '{node_id}'"
+            )
             error_collector.add_warning(
                 code="build_node_validation_error",
                 message=f"Build validation error for {node_type} '{node_id}': {e}",
@@ -346,7 +362,9 @@ class StatementStructureBuilder:
             A `Section` instance corresponding to the model.
         """
         # Convert adjustment filter
-        adjustment_filter = self._convert_adjustment_filter(section_model.default_adjustment_filter)
+        adjustment_filter = self._convert_adjustment_filter(
+            section_model.default_adjustment_filter
+        )
 
         section = Section(
             id=section_model.id,
@@ -392,7 +410,9 @@ class StatementStructureBuilder:
                 encountered.
         """
         # Convert adjustment filter for all item types
-        adjustment_filter = self._convert_adjustment_filter(item_model.default_adjustment_filter)
+        adjustment_filter = self._convert_adjustment_filter(
+            item_model.default_adjustment_filter
+        )
 
         # Dispatch by model instance type
         if isinstance(item_model, SectionModel):
@@ -462,7 +482,9 @@ class StatementStructureBuilder:
         )
         raise ConfigurationError(
             message=f"Unknown item model type: {type(item_model).__name__}",
-            errors=[f"Item '{getattr(item_model, 'id', '<unknown>')}' has invalid model type."],
+            errors=[
+                f"Item '{getattr(item_model, 'id', '<unknown>')}' has invalid model type."
+            ],
         )
 
     def _build_subtotal_model(self, subtotal_model: SubtotalModel) -> SubtotalLineItem:

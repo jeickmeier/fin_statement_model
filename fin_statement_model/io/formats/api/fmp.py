@@ -114,8 +114,12 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
         # Parameters now come directly from the validated config with enhanced access
         statement_type = self.require_config_value("statement_type", value_type=str)
         period_type_arg = self.require_config_value("period_type", value_type=str)
-        limit = self.get_config_value("limit", default=5, value_type=int, validator=lambda x: x > 0)
-        api_key = self.get_config_with_env_fallback("api_key", "FMP_API_KEY", value_type=str)
+        limit = self.get_config_value(
+            "limit", default=5, value_type=int, validator=lambda x: x > 0
+        )
+        api_key = self.get_config_with_env_fallback(
+            "api_key", "FMP_API_KEY", value_type=str
+        )
 
         # --- Validate Inputs ---
         if not ticker or not isinstance(ticker, str):
@@ -154,7 +158,9 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
             logger.info(
                 f"Fetching {period_type_arg} {statement_type} for {ticker} from FMP API (limit={limit})."
             )
-            response = requests.get(endpoint, params=params, timeout=cfg("api.api_timeout"))
+            response = requests.get(
+                endpoint, params=params, timeout=cfg("api.api_timeout")
+            )
             response.raise_for_status()  # Check for HTTP errors
             api_data = response.json()
 
@@ -165,7 +171,9 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
                     reader_type="FmpReader",
                 )
             if not api_data:
-                logger.warning(f"FMP API returned empty list for {ticker} {statement_type}.")
+                logger.warning(
+                    f"FMP API returned empty list for {ticker} {statement_type}."
+                )
                 # Return empty graph or raise? Returning empty for now.
                 return Graph(periods=[])
 
@@ -218,7 +226,9 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
 
                     # Initialize node data dict if first time seeing this node
                     if node_name not in all_item_data:
-                        all_item_data[node_name] = {p: np.nan for p in periods}  # Pre-fill with NaN
+                        all_item_data[node_name] = {
+                            p: np.nan for p in periods
+                        }  # Pre-fill with NaN
 
                     # Store value for this period
                     if isinstance(value, int | float):
@@ -228,7 +238,9 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
             nodes_added = 0
             for node_name, period_values in all_item_data.items():
                 # Filter out periods that only have NaN
-                valid_period_values = {p: v for p, v in period_values.items() if not np.isnan(v)}
+                valid_period_values = {
+                    p: v for p, v in period_values.items() if not np.isnan(v)
+                }
                 if valid_period_values:
                     new_node = FinancialStatementItemNode(
                         name=node_name, values=valid_period_values
@@ -242,7 +254,9 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
             return graph
 
         except Exception as e:
-            logger.error(f"Failed to parse FMP data and build graph: {e}", exc_info=True)
+            logger.error(
+                f"Failed to parse FMP data and build graph: {e}", exc_info=True
+            )
             raise ReadError(
                 message=f"Failed to parse FMP data: {e}",
                 source=f"FMP API ({ticker})",

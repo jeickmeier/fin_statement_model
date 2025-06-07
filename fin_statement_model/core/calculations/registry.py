@@ -42,7 +42,9 @@ class Registry:
                          The class's __name__ attribute will be used as the key.
         """
         if not issubclass(calculation, Calculation):
-            raise TypeError(f"Can only register subclasses of Calculation, not {calculation}")
+            raise TypeError(
+                f"Can only register subclasses of Calculation, not {calculation}"
+            )
         cls._strategies[calculation.__name__] = calculation
         logger.debug(f"Registered calculation: {calculation.__name__}")
 

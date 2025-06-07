@@ -237,7 +237,9 @@ class TestGetHandler:
         )
 
         assert result == "handler_instance"
-        mock_handler_class.assert_called_once_with(target="output.txt", custom_param="value")
+        mock_handler_class.assert_called_once_with(
+            target="output.txt", custom_param="value"
+        )
 
     def test_get_handler_error_context_for_reader(self):
         """Test _get_handler sets correct error context for readers."""
@@ -310,7 +312,9 @@ class TestGetReaderWriter:
 
     def test_get_reader_uses_get_handler(self):
         """Test get_reader delegates to _get_handler with correct parameters."""
-        with patch("fin_statement_model.io.core.registry._get_handler") as mock_get_handler:
+        with patch(
+            "fin_statement_model.io.core.registry._get_handler"
+        ) as mock_get_handler:
             mock_get_handler.return_value = "reader_instance"
 
             result = get_reader("excel", source="test.xlsx", sheet_name="Sheet1")
@@ -328,7 +332,9 @@ class TestGetReaderWriter:
 
     def test_get_writer_uses_get_handler(self):
         """Test get_writer delegates to _get_handler with correct parameters."""
-        with patch("fin_statement_model.io.core.registry._get_handler") as mock_get_handler:
+        with patch(
+            "fin_statement_model.io.core.registry._get_handler"
+        ) as mock_get_handler:
             mock_get_handler.return_value = "writer_instance"
 
             result = get_writer("excel", target="output.xlsx", sheet_name="Results")

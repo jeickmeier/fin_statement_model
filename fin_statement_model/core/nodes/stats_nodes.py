@@ -53,7 +53,9 @@ class YoYGrowthNode(Node):
         0.2
     """
 
-    def __init__(self, name: str, input_node: Node, prior_period: str, current_period: str):
+    def __init__(
+        self, name: str, input_node: Node, prior_period: str, current_period: str
+    ):
         """Initialize the YoY Growth node.
 
         Args:
@@ -69,7 +71,9 @@ class YoYGrowthNode(Node):
         if not isinstance(input_node, Node):
             raise TypeError("YoYGrowthNode input_node must be a Node instance.")
         if not isinstance(prior_period, str) or not isinstance(current_period, str):
-            raise TypeError("YoYGrowthNode prior_period and current_period must be strings.")
+            raise TypeError(
+                "YoYGrowthNode prior_period and current_period must be strings."
+            )
 
         self.input_node = input_node
         self.prior_period = prior_period
@@ -101,9 +105,13 @@ class YoYGrowthNode(Node):
 
             # Validate input types
             if not isinstance(prior_value, int | float):
-                raise TypeError(f"Prior period ('{self.prior_period}') value is non-numeric.")
+                raise TypeError(
+                    f"Prior period ('{self.prior_period}') value is non-numeric."
+                )
             if not isinstance(current_value, int | float):
-                raise TypeError(f"Current period ('{self.current_period}') value is non-numeric.")
+                raise TypeError(
+                    f"Current period ('{self.current_period}') value is non-numeric."
+                )
 
             # Handle division by zero or non-finite prior value
             if prior_value == 0 or not math.isfinite(prior_value):
@@ -173,7 +181,9 @@ class YoYGrowthNode(Node):
         )
 
     @staticmethod
-    def from_dict_with_context(data: dict[str, Any], context: dict[str, Node]) -> "YoYGrowthNode":
+    def from_dict_with_context(
+        data: dict[str, Any], context: dict[str, Node]
+    ) -> "YoYGrowthNode":
         """Create a YoYGrowthNode from a dictionary with node context.
 
         Args:
@@ -282,7 +292,9 @@ class MultiPeriodStatNode(Node):
         if not all(isinstance(p, str) for p in periods):
             raise TypeError("MultiPeriodStatNode periods must contain only strings.")
         if not callable(stat_func):
-            raise TypeError("MultiPeriodStatNode stat_func must be a callable function.")
+            raise TypeError(
+                "MultiPeriodStatNode stat_func must be a callable function."
+            )
 
         self.input_node = input_node
         self.periods = periods
@@ -430,7 +442,9 @@ class MultiPeriodStatNode(Node):
             ValueError: If the data is invalid or missing required fields.
         """
         if data.get("type") != "multi_period_stat":
-            raise ValueError(f"Invalid type for MultiPeriodStatNode: {data.get('type')}")
+            raise ValueError(
+                f"Invalid type for MultiPeriodStatNode: {data.get('type')}"
+            )
 
         name = data.get("name")
         if not name:
@@ -438,7 +452,9 @@ class MultiPeriodStatNode(Node):
 
         input_node_name = data.get("input_node_name")
         if not input_node_name:
-            raise ValueError("Missing 'input_node_name' field in MultiPeriodStatNode data")
+            raise ValueError(
+                "Missing 'input_node_name' field in MultiPeriodStatNode data"
+            )
 
         if input_node_name not in context:
             raise ValueError(f"Input node '{input_node_name}' not found in context")
@@ -448,7 +464,9 @@ class MultiPeriodStatNode(Node):
         stat_func_name = data.get("stat_func_name", "stdev")
 
         if not periods:
-            raise ValueError("Missing or empty 'periods' field in MultiPeriodStatNode data")
+            raise ValueError(
+                "Missing or empty 'periods' field in MultiPeriodStatNode data"
+            )
 
         # Map common statistical function names to their implementations
         stat_func_map = {
@@ -631,7 +649,9 @@ class TwoPeriodAverageNode(Node):
             ValueError: If the data is invalid or missing required fields.
         """
         if data.get("type") != "two_period_average":
-            raise ValueError(f"Invalid type for TwoPeriodAverageNode: {data.get('type')}")
+            raise ValueError(
+                f"Invalid type for TwoPeriodAverageNode: {data.get('type')}"
+            )
 
         name = data.get("name")
         if not name:
@@ -639,7 +659,9 @@ class TwoPeriodAverageNode(Node):
 
         input_node_name = data.get("input_node_name")
         if not input_node_name:
-            raise ValueError("Missing 'input_node_name' field in TwoPeriodAverageNode data")
+            raise ValueError(
+                "Missing 'input_node_name' field in TwoPeriodAverageNode data"
+            )
 
         if input_node_name not in context:
             raise ValueError(f"Input node '{input_node_name}' not found in context")

@@ -64,7 +64,11 @@ def create_reit_financial_model() -> Graph:
     }
 
     # Add all items to graph
-    for name, values in {**income_items, **balance_sheet_items, **cash_flow_items}.items():
+    for name, values in {
+        **income_items,
+        **balance_sheet_items,
+        **cash_flow_items,
+    }.items():
         node = FinancialStatementItemNode(name, values)
         graph.add_node(node)
 
@@ -214,7 +218,9 @@ def analyze_reit_performance(graph: Graph, period: str = "2023") -> None:
         if cap_rate < 4:
             logger.info("  → Low cap rate - properties may be overvalued")
         elif cap_rate > 8:
-            logger.info("  → High cap rate - good income yield but check property quality")
+            logger.info(
+                "  → High cap rate - good income yield but check property quality"
+            )
         else:
             logger.info("  → Cap rate within typical range for quality properties")
     except Exception:

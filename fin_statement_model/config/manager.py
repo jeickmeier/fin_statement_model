@@ -39,14 +39,23 @@ def generate_env_mappings(
         if origin is Union:
             args = get_args(annotation)
             nested = next(
-                (arg for arg in args if isinstance(arg, type) and issubclass(arg, BaseModel)), None
+                (
+                    arg
+                    for arg in args
+                    if isinstance(arg, type) and issubclass(arg, BaseModel)
+                ),
+                None,
             )
             if nested:
-                mappings.update(generate_env_mappings(nested, prefix, path + [field_name]))
+                mappings.update(
+                    generate_env_mappings(nested, prefix, path + [field_name])
+                )
                 continue
         # Nested BaseModel
         if isinstance(annotation, type) and issubclass(annotation, BaseModel):
-            mappings.update(generate_env_mappings(annotation, prefix, path + [field_name]))
+            mappings.update(
+                generate_env_mappings(annotation, prefix, path + [field_name])
+            )
         else:
             leaf_path = path + [field_name]
             env_name = prefix + "_" + "_".join(p.upper() for p in leaf_path)
@@ -203,7 +212,9 @@ class ConfigManager:
 
                 return json.loads(path.read_text())
             else:
-                raise ConfigurationError(f"Unsupported config file format: {path.suffix}")
+                raise ConfigurationError(
+                    f"Unsupported config file format: {path.suffix}"
+                )
         except Exception as e:
             raise ConfigurationError(f"Failed to load config from {path}: {e}") from e
 
@@ -240,12 +251,18 @@ class ConfigManager:
 
         return config
 
-    def _deep_merge(self, base: dict[str, Any], update: dict[str, Any]) -> dict[str, Any]:
+    def _deep_merge(
+        self, base: dict[str, Any], update: dict[str, Any]
+    ) -> dict[str, Any]:
         """Deep merge two dictionaries."""
         result = base.copy()
 
         for key, value in update.items():
-            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            if (
+                key in result
+                and isinstance(result[key], dict)
+                and isinstance(value, dict)
+            ):
                 result[key] = self._deep_merge(result[key], value)
             else:
                 result[key] = value

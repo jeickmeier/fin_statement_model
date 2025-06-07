@@ -159,7 +159,9 @@ class DataFetcher:
             # Check direct items
             for item in section.items:
                 if item is target_item or (
-                    hasattr(item, "id") and hasattr(target_item, "id") and item.id == target_item.id
+                    hasattr(item, "id")
+                    and hasattr(target_item, "id")
+                    and item.id == target_item.id
                 ):
                     return section
                 # Check nested sections
@@ -209,7 +211,9 @@ class DataFetcher:
                 message=f"Graph has no periods defined for statement '{self.statement.id}'",
                 source=self.statement.id,
             )
-            return FetchResult(data={}, errors=error_collector, node_count=0, missing_nodes=[])
+            return FetchResult(
+                data={}, errors=error_collector, node_count=0, missing_nodes=[]
+            )
 
         logger.debug(
             f"Fetching data for statement '{self.statement.id}' across {len(periods)} periods"
@@ -241,7 +245,9 @@ class DataFetcher:
             item_filter = self._resolve_adjustment_filter(item, adjustment_filter)
 
             # Fetch data for this node
-            node_result = self._fetch_node_data(node_id, periods, item_filter, item_id=item.id)
+            node_result = self._fetch_node_data(
+                node_id, periods, item_filter, item_id=item.id
+            )
 
             if node_result.is_success():
                 node_data = node_result.get_value()
@@ -328,7 +334,9 @@ class DataFetcher:
 
             except (NodeError, CalculationError) as e:
                 # Expected errors - log as warning
-                logger.warning(f"Error calculating node '{node_id}' for period '{period}': {e}")
+                logger.warning(
+                    f"Error calculating node '{node_id}' for period '{period}': {e}"
+                )
                 values[period] = np.nan
                 is_adjusted[period] = False
                 errors.append(
@@ -343,7 +351,9 @@ class DataFetcher:
 
             except TypeError as e:
                 # Filter/adjustment errors
-                logger.warning(f"Type error for node '{node_id}', period '{period}': {e}")
+                logger.warning(
+                    f"Type error for node '{node_id}', period '{period}': {e}"
+                )
                 values[period] = np.nan
                 is_adjusted[period] = False
                 errors.append(
@@ -375,7 +385,9 @@ class DataFetcher:
                 )
 
         return Success(
-            NodeData(node_id=node_id, values=values, is_adjusted=is_adjusted, errors=errors)
+            NodeData(
+                node_id=node_id, values=values, is_adjusted=is_adjusted, errors=errors
+            )
         )
 
     def check_adjustments(
@@ -404,10 +416,14 @@ class DataFetcher:
             period_results = {}
             for period in periods:
                 try:
-                    was_adjusted = self.graph.was_adjusted(node_id, period, adjustment_filter)
+                    was_adjusted = self.graph.was_adjusted(
+                        node_id, period, adjustment_filter
+                    )
                     period_results[period] = bool(was_adjusted)
                 except Exception as e:
-                    logger.warning(f"Error checking adjustments for {node_id}/{period}: {e}")
+                    logger.warning(
+                        f"Error checking adjustments for {node_id}/{period}: {e}"
+                    )
                     period_results[period] = False
 
             results[node_id] = period_results

@@ -34,7 +34,9 @@ class TestConfigManager:
         reset_config()
 
         # Update configuration
-        update_config({"logging": {"level": "DEBUG"}, "forecasting": {"default_periods": 10}})
+        update_config(
+            {"logging": {"level": "DEBUG"}, "forecasting": {"default_periods": 10}}
+        )
 
         config = get_config()
         assert config.logging.level == "DEBUG"
@@ -163,7 +165,9 @@ class TestConfigManager:
         reset_config()
 
         # First update
-        update_config({"display": {"scale_factor": 0.001, "default_units": "Thousands"}})
+        update_config(
+            {"display": {"scale_factor": 0.001, "default_units": "Thousands"}}
+        )
 
         # Second update (should merge, not replace)
         update_config({"display": {"hide_zero_rows": True}})

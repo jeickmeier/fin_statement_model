@@ -102,7 +102,9 @@ def example_case_sensitivity_handling():
     logger.info("Automatic case normalization:")
     for name, description in test_cases:
         result = validator.validate(name)
-        logger.info(f"{name} ({description}): {result.category} -> '{result.standardized_name}'")
+        logger.info(
+            f"{name} ({description}): {result.category} -> '{result.standardized_name}'"
+        )
     logger.info("\n--- Names with spaces still need preprocessing ---")
     logger.info("Example: 'Cost of Goods Sold' needs to become 'cost_of_goods_sold'")
     # Show preprocessing for names with spaces
@@ -132,7 +134,9 @@ def example_context_aware_validation():
     ]
 
     for name, node_type, parent_nodes in test_cases:
-        result = validator.validate(name, node_type=node_type, parent_nodes=parent_nodes)
+        result = validator.validate(
+            name, node_type=node_type, parent_nodes=parent_nodes
+        )
         logger.info(f"\nNode: '{name}' (Type: {node_type})")
         logger.info(f"  Parents: {parent_nodes}")
         logger.info(f"  Category: {result.category}")
@@ -176,7 +180,9 @@ def example_graph_building():
 
             # Add node with standardized name
             node_name = (
-                result.standardized_name if config.validation.auto_standardize_names else name
+                result.standardized_name
+                if config.validation.auto_standardize_names
+                else name
             )
             node = FinancialStatementItemNode(node_name, values)
             graph.add_node(node)
@@ -296,7 +302,9 @@ def example_excel_reader_integration():
         elif config.io.strict_validation:
             logger.error(f"Invalid column name '{excel_name}' - {result.message}")
         else:
-            logger.warning(f"No mapping found for '{excel_name}', using normalized: '{normalized}'")
+            logger.warning(
+                f"No mapping found for '{excel_name}', using normalized: '{normalized}'"
+            )
             mapping[excel_name] = normalized
 
     logger.info(f"\nFinal mapping: {mapping}")
@@ -338,7 +346,9 @@ def demonstrate_config_override():
 
 if __name__ == "__main__":
     # Show initial config source
-    logger.info(f"Configuration loaded from: {getattr(config, '_source', 'defaults')}\n")
+    logger.info(
+        f"Configuration loaded from: {getattr(config, '_source', 'defaults')}\n"
+    )
 
     # Check if standard nodes are loaded
     from fin_statement_model.core.nodes import standard_node_registry

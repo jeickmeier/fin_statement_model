@@ -32,6 +32,7 @@ def cfg(path: Sequence[str], default: T) -> T: ...
 def cfg(path: str | Sequence[str], default: Any = None) -> Any:
     """Get a configuration value by dotted path."""
     from .manager import get_config
+
     # Convert string path to sequence
     if isinstance(path, str):
         if not path:
@@ -49,7 +50,9 @@ def cfg(path: str | Sequence[str], default: Any = None) -> Any:
         if not hasattr(obj, part):
             if default is not None:
                 return default
-            raise ConfigurationAccessError(f"Configuration key '{full_path}' does not exist")
+            raise ConfigurationAccessError(
+                f"Configuration key '{full_path}' does not exist"
+            )
         obj = getattr(obj, part)
     return obj if obj is not None else default
 

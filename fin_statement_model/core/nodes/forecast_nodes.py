@@ -136,18 +136,24 @@ class ForecastNode(Node):
         """
         # For historical periods, return the actual value
         if period <= self.base_period:
-            return self.values.get(period, 0.0)  # 0.0 is appropriate here - not a growth rate
+            return self.values.get(
+                period, 0.0
+            )  # 0.0 is appropriate here - not a growth rate
 
         # For forecast periods, calculate using growth rate
         if period not in self.forecast_periods:
-            raise ValueError(f"Period '{period}' not in forecast periods for {self.name}")
+            raise ValueError(
+                f"Period '{period}' not in forecast periods for {self.name}"
+            )
 
         # Get the previous period's value
         prev_period = self._get_previous_period(period)
         prev_value = self.calculate(prev_period)
 
         # Get the growth rate for this period
-        growth_factor = self._get_growth_factor_for_period(period, prev_period, prev_value)
+        growth_factor = self._get_growth_factor_for_period(
+            period, prev_period, prev_value
+        )
 
         # Calculate the new value
         return prev_value * (1 + growth_factor)
@@ -202,7 +208,9 @@ class ForecastNode(Node):
         )
 
     @staticmethod
-    def from_dict_with_context(data: dict[str, Any], context: dict[str, Node]) -> "ForecastNode":
+    def from_dict_with_context(
+        data: dict[str, Any], context: dict[str, Node]
+    ) -> "ForecastNode":
         """Create a ForecastNode from a dictionary with node context.
 
         Args:
@@ -269,7 +277,9 @@ class FixedGrowthForecastNode(ForecastNode):
             growth_rate = cfg("forecasting.default_growth_rate")
 
         self.growth_rate = float(growth_rate)  # Ensure it's a float
-        logger.debug(f"Created FixedGrowthForecastNode with growth rate: {self.growth_rate}")
+        logger.debug(
+            f"Created FixedGrowthForecastNode with growth rate: {self.growth_rate}"
+        )
 
     def _get_growth_factor_for_period(
         self, period: str, prev_period: str, prev_value: float
@@ -316,7 +326,9 @@ class FixedGrowthForecastNode(ForecastNode):
 
         base_node_name = data.get("base_node_name")
         if not base_node_name:
-            raise ValueError("Missing 'base_node_name' field in FixedGrowthForecastNode data")
+            raise ValueError(
+                "Missing 'base_node_name' field in FixedGrowthForecastNode data"
+            )
 
         if base_node_name not in context:
             raise ValueError(f"Base node '{base_node_name}' not found in context")
@@ -327,7 +339,9 @@ class FixedGrowthForecastNode(ForecastNode):
         growth_params = data.get("growth_params")
 
         if not base_period:
-            raise ValueError("Missing 'base_period' field in FixedGrowthForecastNode data")
+            raise ValueError(
+                "Missing 'base_period' field in FixedGrowthForecastNode data"
+            )
 
         node = FixedGrowthForecastNode(
             input_node=base_node,
@@ -386,8 +400,12 @@ class CurveGrowthForecastNode(ForecastNode):
         super().__init__(input_node, base_period, forecast_periods)
         if len(growth_rates) != len(forecast_periods):
             raise ValueError("Number of growth rates must match forecast periods.")
-        self.growth_rates = [float(rate) for rate in growth_rates]  # Ensure all are floats
-        logger.debug(f"Created CurveGrowthForecastNode with growth rates: {self.growth_rates}")
+        self.growth_rates = [
+            float(rate) for rate in growth_rates
+        ]  # Ensure all are floats
+        logger.debug(
+            f"Created CurveGrowthForecastNode with growth rates: {self.growth_rates}"
+        )
         logger.debug(f"  Base period: {base_period}")
         logger.debug(f"  Forecast periods: {forecast_periods}")
         logger.debug(f"  Base value: {input_node.calculate(base_period)}")
@@ -442,7 +460,9 @@ class CurveGrowthForecastNode(ForecastNode):
 
         base_node_name = data.get("base_node_name")
         if not base_node_name:
-            raise ValueError("Missing 'base_node_name' field in CurveGrowthForecastNode data")
+            raise ValueError(
+                "Missing 'base_node_name' field in CurveGrowthForecastNode data"
+            )
 
         if base_node_name not in context:
             raise ValueError(f"Base node '{base_node_name}' not found in context")
@@ -453,10 +473,14 @@ class CurveGrowthForecastNode(ForecastNode):
         growth_params = data.get("growth_params", [])
 
         if not base_period:
-            raise ValueError("Missing 'base_period' field in CurveGrowthForecastNode data")
+            raise ValueError(
+                "Missing 'base_period' field in CurveGrowthForecastNode data"
+            )
 
         if not isinstance(growth_params, list):
-            raise TypeError("'growth_params' must be a list for CurveGrowthForecastNode")
+            raise TypeError(
+                "'growth_params' must be a list for CurveGrowthForecastNode"
+            )
 
         node = CurveGrowthForecastNode(
             input_node=base_node,
@@ -692,7 +716,9 @@ class AverageValueForecastNode(ForecastNode):
         """
         super().__init__(input_node, base_period, forecast_periods)
         self.average_value = self._calculate_average_value()
-        logger.debug(f"Created AverageValueForecastNode with average value: {self.average_value}")
+        logger.debug(
+            f"Created AverageValueForecastNode with average value: {self.average_value}"
+        )
 
     def _calculate_average_value(self) -> float:
         """Calculate the average historical value up to the base period.
@@ -700,9 +726,13 @@ class AverageValueForecastNode(ForecastNode):
         Returns:
             float: The average of historical values or 0.0 if none.
         """
-        values = [value for period, value in self.values.items() if period <= self.base_period]
+        values = [
+            value for period, value in self.values.items() if period <= self.base_period
+        ]
         if not values:
-            logger.warning(f"No historical values found for {self.name}, using 0.0 as average")
+            logger.warning(
+                f"No historical values found for {self.name}, using 0.0 as average"
+            )
             return 0.0
         return sum(values) / len(values)
 
@@ -714,7 +744,9 @@ class AverageValueForecastNode(ForecastNode):
 
         # For forecast periods, return the constant average value
         if period not in self.forecast_periods:
-            raise ValueError(f"Period '{period}' not in forecast periods for {self.name}")
+            raise ValueError(
+                f"Period '{period}' not in forecast periods for {self.name}"
+            )
 
         return self.average_value
 
@@ -761,7 +793,9 @@ class AverageValueForecastNode(ForecastNode):
 
         base_node_name = data.get("base_node_name")
         if not base_node_name:
-            raise ValueError("Missing 'base_node_name' field in AverageValueForecastNode data")
+            raise ValueError(
+                "Missing 'base_node_name' field in AverageValueForecastNode data"
+            )
 
         if base_node_name not in context:
             raise ValueError(f"Base node '{base_node_name}' not found in context")
@@ -771,7 +805,9 @@ class AverageValueForecastNode(ForecastNode):
         forecast_periods = data.get("forecast_periods", [])
 
         if not base_period:
-            raise ValueError("Missing 'base_period' field in AverageValueForecastNode data")
+            raise ValueError(
+                "Missing 'base_period' field in AverageValueForecastNode data"
+            )
 
         node = AverageValueForecastNode(
             input_node=base_node,
@@ -844,7 +880,9 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
                 growth_rates.append(growth_rate)
 
         if not growth_rates:
-            logger.warning(f"No valid growth rates calculated for {self.name}, using 0.0")
+            logger.warning(
+                f"No valid growth rates calculated for {self.name}, using 0.0"
+            )
             return 0.0
 
         return sum(growth_rates) / len(growth_rates)
@@ -887,7 +925,9 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
         """
         name = data.get("name")
         if not name:
-            raise ValueError("Missing 'name' field in AverageHistoricalGrowthForecastNode data")
+            raise ValueError(
+                "Missing 'name' field in AverageHistoricalGrowthForecastNode data"
+            )
 
         base_node_name = data.get("base_node_name")
         if not base_node_name:

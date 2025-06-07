@@ -44,7 +44,9 @@ class Node(ABC):
             raise ValueError("Node name must be a non-empty string.")
         # Check for invalid characters (including newline, tab)
         if "\n" in name or "\t" in name:
-            raise ValueError(f"Invalid node name: '{name}'. Contains invalid characters.")
+            raise ValueError(
+                f"Invalid node name: '{name}'. Contains invalid characters."
+            )
         # Check for leading/trailing whitespace
         if name != name.strip():
             raise ValueError(
@@ -123,7 +125,9 @@ class Node(ABC):
         try:
             return getattr(self, attribute_name)
         except AttributeError:
-            raise AttributeError(f"Node '{self.name}' has no attribute '{attribute_name}'")
+            raise AttributeError(
+                f"Node '{self.name}' has no attribute '{attribute_name}'"
+            )
 
     def has_value(self, period: str) -> bool:
         """Indicate whether the node stores a direct value for a period.

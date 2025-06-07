@@ -19,7 +19,9 @@ class LoggingConfig(BaseModel):
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         description="Log message format string",
     )
-    detailed: bool = Field(False, description="Enable detailed logging with file and line numbers")
+    detailed: bool = Field(
+        False, description="Enable detailed logging with file and line numbers"
+    )
     log_file_path: Optional[Path] = Field(
         None,
         description=(
@@ -37,7 +39,9 @@ class IOConfig(BaseModel):
     default_excel_sheet: str = Field(
         "Sheet1", description="Default sheet name for Excel operations"
     )
-    default_csv_delimiter: str = Field(",", description="Default delimiter for CSV files")
+    default_csv_delimiter: str = Field(
+        ",", description="Default delimiter for CSV files"
+    )
     auto_create_output_dirs: bool = Field(
         True, description="Automatically create output directories if they don't exist"
     )
@@ -51,7 +55,9 @@ class IOConfig(BaseModel):
     skip_invalid_rows: bool = Field(
         False, description="Skip rows with invalid data instead of raising errors"
     )
-    strict_validation: bool = Field(False, description="Use strict validation when reading data")
+    strict_validation: bool = Field(
+        False, description="Use strict validation when reading data"
+    )
 
     model_config = ConfigDict(extra="forbid")
 
@@ -59,9 +65,9 @@ class IOConfig(BaseModel):
 class ForecastingConfig(BaseModel):
     """Forecasting configuration settings."""
 
-    default_method: Literal["simple", "historical_growth", "curve", "statistical", "ml"] = Field(
-        "simple", description="Default forecasting method"
-    )
+    default_method: Literal[
+        "simple", "historical_growth", "curve", "statistical", "ml"
+    ] = Field("simple", description="Default forecasting method")
     default_periods: int = Field(5, description="Default number of periods to forecast")
     default_growth_rate: float = Field(
         0.0, description="Default growth rate for simple forecasting"
@@ -69,7 +75,9 @@ class ForecastingConfig(BaseModel):
     min_historical_periods: int = Field(
         3, description="Minimum historical periods required for forecasting"
     )
-    allow_negative_forecasts: bool = Field(True, description="Allow negative values in forecasts")
+    allow_negative_forecasts: bool = Field(
+        True, description="Allow negative values in forecasts"
+    )
 
     @field_validator("default_periods")
     def validate_periods(cls, v: int) -> int:
@@ -84,11 +92,15 @@ class ForecastingConfig(BaseModel):
 class PreprocessingConfig(BaseModel):
     """Data preprocessing configuration settings."""
 
-    auto_clean_data: bool = Field(True, description="Automatically clean data on import")
+    auto_clean_data: bool = Field(
+        True, description="Automatically clean data on import"
+    )
     fill_missing_with_zero: bool = Field(
         False, description="Fill missing values with zero instead of None"
     )
-    remove_empty_periods: bool = Field(True, description="Remove periods with all empty values")
+    remove_empty_periods: bool = Field(
+        True, description="Remove periods with all empty values"
+    )
     standardize_period_format: bool = Field(
         True, description="Standardize period names to consistent format"
     )
@@ -102,10 +114,18 @@ class PreprocessingConfig(BaseModel):
 class DisplayConfig(BaseModel):
     """Display and formatting configuration settings."""
 
-    default_number_format: str = Field(",.2f", description="Default number format string")
-    default_currency_format: str = Field(",.2f", description="Default currency format string")
-    default_percentage_format: str = Field(".1%", description="Default percentage format string")
-    hide_zero_rows: bool = Field(False, description="Hide rows where all values are zero")
+    default_number_format: str = Field(
+        ",.2f", description="Default number format string"
+    )
+    default_currency_format: str = Field(
+        ",.2f", description="Default currency format string"
+    )
+    default_percentage_format: str = Field(
+        ".1%", description="Default percentage format string"
+    )
+    hide_zero_rows: bool = Field(
+        False, description="Hide rows where all values are zero"
+    )
     contra_display_style: Literal["parentheses", "brackets", "negative"] = Field(
         "parentheses", description="How to display contra items"
     )
@@ -120,9 +140,15 @@ class DisplayConfig(BaseModel):
     indent_character: str = Field(
         "  ", description="Indentation characters used for nested line items"
     )
-    subtotal_style: str = Field("bold", description="CSS/markup style keyword for subtotal rows")
-    total_style: str = Field("bold", description="CSS/markup style keyword for total rows")
-    header_style: str = Field("bold", description="CSS/markup style keyword for header cells")
+    subtotal_style: str = Field(
+        "bold", description="CSS/markup style keyword for subtotal rows"
+    )
+    total_style: str = Field(
+        "bold", description="CSS/markup style keyword for total rows"
+    )
+    header_style: str = Field(
+        "bold", description="CSS/markup style keyword for header cells"
+    )
     contra_css_class: str = Field(
         "contra-item", description="Default CSS class name for contra items"
     )
@@ -144,13 +170,19 @@ class DisplayConfig(BaseModel):
 class APIConfig(BaseModel):
     """API and external service configuration."""
 
-    fmp_api_key: Optional[str] = Field(None, description="Financial Modeling Prep API key")
+    fmp_api_key: Optional[str] = Field(
+        None, description="Financial Modeling Prep API key"
+    )
     fmp_base_url: str = Field(
         "https://financialmodelingprep.com/api/v3", description="FMP API base URL"
     )
     api_timeout: int = Field(30, description="API request timeout in seconds")
-    api_retry_count: int = Field(3, description="Number of retries for failed API requests")
-    cache_api_responses: bool = Field(True, description="Cache API responses to reduce API calls")
+    api_retry_count: int = Field(
+        3, description="Number of retries for failed API requests"
+    )
+    cache_api_responses: bool = Field(
+        True, description="Cache API responses to reduce API calls"
+    )
     cache_ttl_hours: int = Field(24, description="Cache time-to-live in hours")
 
     @field_validator("api_timeout", "api_retry_count", "cache_ttl_hours")
@@ -169,7 +201,9 @@ class MetricsConfig(BaseModel):
     custom_metrics_dir: Optional[Path] = Field(
         None, description="Directory containing custom metric definitions"
     )
-    validate_metric_inputs: bool = Field(True, description="Validate metric inputs exist in graph")
+    validate_metric_inputs: bool = Field(
+        True, description="Validate metric inputs exist in graph"
+    )
     auto_register_metrics: bool = Field(
         True, description="Automatically register metrics from definition files"
     )
@@ -184,14 +218,18 @@ class ValidationConfig(BaseModel):
     auto_standardize_names: bool = Field(
         True, description="Automatically standardize node names to canonical form"
     )
-    warn_on_non_standard: bool = Field(True, description="Warn when using non-standard node names")
+    warn_on_non_standard: bool = Field(
+        True, description="Warn when using non-standard node names"
+    )
     check_balance_sheet_balance: bool = Field(
         True, description="Validate that Assets = Liabilities + Equity"
     )
     balance_tolerance: float = Field(
         1.0, description="Maximum acceptable difference for balance sheet validation"
     )
-    warn_on_negative_assets: bool = Field(True, description="Warn when asset values are negative")
+    warn_on_negative_assets: bool = Field(
+        True, description="Warn when asset values are negative"
+    )
     validate_sign_conventions: bool = Field(
         True, description="Validate that items follow expected sign conventions"
     )
@@ -213,7 +251,9 @@ class Config(BaseModel):
     logging: LoggingConfig = Field(
         default_factory=LoggingConfig, description="Logging configuration"
     )
-    io: IOConfig = Field(default_factory=IOConfig, description="Input/Output configuration")
+    io: IOConfig = Field(
+        default_factory=IOConfig, description="Input/Output configuration"
+    )
     forecasting: ForecastingConfig = Field(
         default_factory=ForecastingConfig, description="Forecasting configuration"
     )
@@ -236,8 +276,12 @@ class Config(BaseModel):
     )
 
     # Global settings
-    project_name: str = Field("fin_statement_model", description="Project name for identification")
-    config_file_path: Optional[Path] = Field(None, description="Path to user configuration file")
+    project_name: str = Field(
+        "fin_statement_model", description="Project name for identification"
+    )
+    config_file_path: Optional[Path] = Field(
+        None, description="Path to user configuration file"
+    )
     auto_save_config: bool = Field(
         False, description="Automatically save configuration changes to file"
     )

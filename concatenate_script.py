@@ -66,7 +66,9 @@ def concatenate_files(output_filename="concatenated_code.txt"):
         # Verify the output file was created
         output_path = Path(output_filename)
         if output_path.exists():
-            logger.info(f"Successfully concatenated {len(file_paths)} files into {output_filename}")
+            logger.info(
+                f"Successfully concatenated {len(file_paths)} files into {output_filename}"
+            )
     except Exception as e:
         logger.error(f"Error writing to output file {output_filename}: {e}")
 

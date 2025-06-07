@@ -58,7 +58,9 @@ class IDResolver:
                 if resolved_node_id:
                     # LineItems map their ID to their resolved node_id
                     self._item_to_node_cache[item.id] = resolved_node_id
-                    self._node_to_items_cache.setdefault(resolved_node_id, []).append(item.id)
+                    self._node_to_items_cache.setdefault(resolved_node_id, []).append(
+                        item.id
+                    )
 
                     # Log if using standard node reference for debugging
                     if item.standard_node_ref:

@@ -135,7 +135,9 @@ class ExponentialBackoff(BackoffStrategy):
 
     def get_delay(self, attempt: int) -> float:
         """Calculate exponential backoff delay."""
-        delay = min(self.base_delay * (self.multiplier ** (attempt - 1)), self.max_delay)
+        delay = min(
+            self.base_delay * (self.multiplier ** (attempt - 1)), self.max_delay
+        )
 
         if self.jitter:
             # Add up to 20% jitter
@@ -253,7 +255,9 @@ class RetryHandler:
 
         for attempt in range(1, self.config.max_attempts + 1):
             if attempt > 1 and self.config.log_retries:
-                logger.info(f"Retrying {op_name} (attempt {attempt}/{self.config.max_attempts})")
+                logger.info(
+                    f"Retrying {op_name} (attempt {attempt}/{self.config.max_attempts})"
+                )
 
             # Execute the operation
             try:
@@ -297,7 +301,8 @@ class RetryHandler:
             # Check if errors are retryable
             if self.config.strategy == RetryStrategy.CONDITIONAL:
                 retryable = any(
-                    is_retryable_error(error, self.config.retryable_errors) for error in errors
+                    is_retryable_error(error, self.config.retryable_errors)
+                    for error in errors
                 )
                 if not retryable:
                     if self.config.log_retries:

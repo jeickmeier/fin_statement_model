@@ -6,7 +6,7 @@ import pytest
 from fin_statement_model.preprocessing.transformers.period_conversion import (
     PeriodConversionTransformer,
 )
-from fin_statement_model.preprocessing.config.enums import ConversionType
+from fin_statement_model.preprocessing.config import ConversionType
 from fin_statement_model.core.errors import TransformationError
 
 

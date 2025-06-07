@@ -85,7 +85,10 @@ class TestGenerateEnvMappings:
         assert mappings["FSM_IO_DEFAULT_EXCEL_SHEET"] == ["io", "default_excel_sheet"]
 
         assert "FSM_FORECASTING_DEFAULT_PERIODS" in mappings
-        assert mappings["FSM_FORECASTING_DEFAULT_PERIODS"] == ["forecasting", "default_periods"]
+        assert mappings["FSM_FORECASTING_DEFAULT_PERIODS"] == [
+            "forecasting",
+            "default_periods",
+        ]
 
         # Check that we have a reasonable number of mappings
         assert len(mappings) > 20  # Should have many config fields

@@ -46,8 +46,8 @@ node_base_class = Node
 calculation_base_class = CalculationNode
 forecast_base_class = ForecastNode
 # Module size limits
-max_module_lines = 300
-max_class_lines = 300
+max_module_lines = 500
+max_class_lines = 500
 
 # Financial metric conventions
 [metrics]

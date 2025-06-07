@@ -94,7 +94,9 @@ class StatementForecaster:
             ForecastNodeError: If no historical periods found, no forecast periods provided,
                               or invalid forecasting method/configuration.
         """
-        logger.info(f"StatementForecaster: Creating forecast for periods {forecast_periods}")
+        logger.info(
+            f"StatementForecaster: Creating forecast for periods {forecast_periods}"
+        )
         try:
             # Use PeriodManager to infer historical periods
             historical_periods = PeriodManager.infer_historical_periods(
@@ -107,7 +109,9 @@ class StatementForecaster:
             )
 
             # Ensure forecast periods exist in the graph
-            PeriodManager.ensure_periods_exist(self.fsg, forecast_periods, add_missing=True)
+            PeriodManager.ensure_periods_exist(
+                self.fsg, forecast_periods, add_missing=True
+            )
 
             if node_configs is None:
                 node_configs = {}
@@ -123,16 +127,22 @@ class StatementForecaster:
 
                 # Validate node can be forecasted
                 forecast_config = ForecastValidator.validate_forecast_config(config)
-                ForecastValidator.validate_node_for_forecast(node, forecast_config.method)
+                ForecastValidator.validate_node_for_forecast(
+                    node, forecast_config.method
+                )
 
-                self._forecast_node(node, historical_periods, forecast_periods, forecast_config)
+                self._forecast_node(
+                    node, historical_periods, forecast_periods, forecast_config
+                )
 
             logger.info(
                 f"Created forecast for {len(forecast_periods)} periods and {len(node_configs)} nodes"
             )
         except Exception as e:
             logger.error(f"Error creating forecast: {e}", exc_info=True)
-            raise ForecastNodeError(f"Error creating forecast: {e}", node_id=None, reason=str(e))
+            raise ForecastNodeError(
+                f"Error creating forecast: {e}", node_id=None, reason=str(e)
+            )
 
     def _forecast_node(
         self,
@@ -178,7 +188,9 @@ class StatementForecaster:
         # Get normalized parameters for NodeFactory
         # All built-in methods extend BaseForecastMethod which has get_forecast_params
         base_method = cast(BaseForecastMethod, method)
-        params = base_method.get_forecast_params(forecast_config.config, forecast_periods)
+        params = base_method.get_forecast_params(
+            forecast_config.config, forecast_periods
+        )
 
         # Create a temporary node to perform calculations
         tmp_node = NodeFactory.create_forecast_node(
@@ -208,7 +220,9 @@ class StatementForecaster:
                     val = 0.0
                 node.values[period] = float(val)  # Update the original node
             except Exception as e:
-                logger.error(f"Error forecasting {node.name}@{period}: {e}", exc_info=True)
+                logger.error(
+                    f"Error forecasting {node.name}@{period}: {e}", exc_info=True
+                )
                 node.values[period] = 0.0  # Set default on error
 
         # Clear cache of the original node as its values have changed
@@ -271,7 +285,9 @@ class StatementForecaster:
         if base_period:
             historical_periods = [base_period]
         else:
-            historical_periods = PeriodManager.infer_historical_periods(self.fsg, forecast_periods)
+            historical_periods = PeriodManager.infer_historical_periods(
+                self.fsg, forecast_periods
+            )
 
         # Validate inputs
         ForecastValidator.validate_forecast_inputs(historical_periods, forecast_periods)
@@ -296,7 +312,9 @@ class StatementForecaster:
         # Get normalized parameters for NodeFactory
         # All built-in methods extend BaseForecastMethod which has get_forecast_params
         base_method = cast(BaseForecastMethod, method)
-        params = base_method.get_forecast_params(validated_config.config, forecast_periods)
+        params = base_method.get_forecast_params(
+            validated_config.config, forecast_periods
+        )
 
         # Create a temporary forecast node (DO NOT add to graph)
         try:
@@ -314,7 +332,9 @@ class StatementForecaster:
                 exc_info=True,
             )
             raise ForecastNodeError(
-                f"Could not create temporary forecast node: {e}", node_id=node_name, reason=str(e)
+                f"Could not create temporary forecast node: {e}",
+                node_id=node_name,
+                reason=str(e),
             )
 
         # Calculate results using the temporary node
@@ -393,7 +413,10 @@ class StatementForecaster:
                 default_method = cfg("forecasting.default_method")
                 config = ForecastValidator.validate_forecast_config(
                     node_config
-                    or {"method": default_method, "config": cfg("forecasting.default_growth_rate")}
+                    or {
+                        "method": default_method,
+                        "config": cfg("forecasting.default_growth_rate"),
+                    }
                 )
 
                 results[node_name] = ForecastResult(

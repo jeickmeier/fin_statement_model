@@ -180,7 +180,9 @@ def create_real_estate_financial_model() -> Graph:
     return graph
 
 
-def calculate_debt_metrics(graph: Graph, period: str = "2023") -> dict[str, Union[float, None]]:
+def calculate_debt_metrics(
+    graph: Graph, period: str = "2023"
+) -> dict[str, Union[float, None]]:
     """Calculate and return key debt metrics for analysis."""
     metrics = {}
 
@@ -411,7 +413,9 @@ def main() -> None:
     trends = calculate_debt_trends(graph)
 
     logger.info(f"LTV Change: {trends['ltv_change']:+.1f} percentage points")
-    logger.info(f"Interest Rate Change: {trends['interest_rate_change']:+.1f} percentage points")
+    logger.info(
+        f"Interest Rate Change: {trends['interest_rate_change']:+.1f} percentage points"
+    )
     logger.info(f"DSCR Change: {trends['dscr_change']:+.2f}x")
     logger.info(f"Total Debt Growth: {trends['debt_growth']:+.1f}%")
     logger.info("")

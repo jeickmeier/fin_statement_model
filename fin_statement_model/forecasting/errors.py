@@ -52,7 +52,9 @@ class ForecastMethodError(ForecastingError):
         if node_id:
             full_message = f"{full_message} for node '{node_id}'"
         if supported_methods:
-            full_message = f"{full_message}. Supported methods: {', '.join(supported_methods)}"
+            full_message = (
+                f"{full_message}. Supported methods: {', '.join(supported_methods)}"
+            )
 
         super().__init__(full_message)
 
@@ -127,7 +129,9 @@ class ForecastNodeError(ForecastingError):
         if reason:
             full_message = f"{full_message}: {reason}"
         if available_nodes and len(available_nodes) < 10:  # Only show if list is small
-            full_message = f"{full_message}. Available nodes: {', '.join(available_nodes)}"
+            full_message = (
+                f"{full_message}. Available nodes: {', '.join(available_nodes)}"
+            )
 
         super().__init__(full_message)
 
@@ -168,6 +172,8 @@ class ForecastResultError(ForecastingError):
         if context:
             full_message = f"{message} for {' and '.join(context)}"
         if available_periods and len(available_periods) < 10:
-            full_message = f"{full_message}. Available periods: {', '.join(available_periods)}"
+            full_message = (
+                f"{full_message}. Available periods: {', '.join(available_periods)}"
+            )
 
         super().__init__(full_message)

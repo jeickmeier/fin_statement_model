@@ -124,11 +124,15 @@ class TestConventionMapping:
     def test_find_config_field(self):
         """Test finding config fields by name."""
         # Test finding a field that exists
-        path = ParamMapper._find_config_field(ParamMapper._get_config_model(), "default_periods")
+        path = ParamMapper._find_config_field(
+            ParamMapper._get_config_model(), "default_periods"
+        )
         assert path == "forecasting.default_periods"
 
         # Test finding a field that doesn't exist
-        path = ParamMapper._find_config_field(ParamMapper._get_config_model(), "nonexistent_field")
+        path = ParamMapper._find_config_field(
+            ParamMapper._get_config_model(), "nonexistent_field"
+        )
         assert path is None
 
     def test_field_exists(self):
@@ -295,9 +299,9 @@ class TestIntegrationWithRealConfig:
 
         for param, expected_path in convention_params:
             actual_path = ParamMapper.get_config_path(param)
-            assert actual_path == expected_path, (
-                f"Parameter '{param}' should map to '{expected_path}'"
-            )
+            assert (
+                actual_path == expected_path
+            ), f"Parameter '{param}' should map to '{expected_path}'"
 
     def test_all_base_mappings_are_valid(self):
         """Test that all base parameter mappings point to valid config paths."""

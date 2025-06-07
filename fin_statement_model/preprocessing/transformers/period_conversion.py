@@ -9,8 +9,10 @@ import pandas as pd
 from typing import Optional, Union, ClassVar
 
 from fin_statement_model.preprocessing.base_transformer import DataTransformer
-from fin_statement_model.preprocessing.config.models import PeriodConversionConfig
-from fin_statement_model.preprocessing.config.enums import ConversionType
+from fin_statement_model.preprocessing.config import (
+    ConversionType,
+    PeriodConversionConfig,
+)
 from fin_statement_model.core.errors import DataValidationError
 
 # Configure logging
@@ -119,7 +121,9 @@ class PeriodConversionTransformer(DataTransformer):
 
     def __init__(
         self,
-        conversion_type: Union[str, ConversionType] = ConversionType.QUARTERLY_TO_ANNUAL,
+        conversion_type: Union[
+            str, ConversionType
+        ] = ConversionType.QUARTERLY_TO_ANNUAL,
         aggregation: str = "sum",
         config: Optional[PeriodConversionConfig] = None,
     ):

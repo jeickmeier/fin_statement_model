@@ -89,7 +89,9 @@ class MarkdownNotesBuilder:
                         for k, v in params_dict.items()
                     ]
                 )
-                desc += f" (using '{dist_name}' distribution with params: {params_str})."
+                desc += (
+                    f" (using '{dist_name}' distribution with params: {params_str})."
+                )
             else:
                 desc += "."
 
@@ -114,7 +116,9 @@ class MarkdownNotesBuilder:
             return []
 
         # Apply filter to adjustments
-        filtered_adjustments = self._filter_adjustments(all_adjustments, adjustment_filter)
+        filtered_adjustments = self._filter_adjustments(
+            all_adjustments, adjustment_filter
+        )
         if not filtered_adjustments:
             return []
 
@@ -156,11 +160,15 @@ class MarkdownNotesBuilder:
         filt: AdjustmentFilter
 
         if isinstance(adjustment_filter, AdjustmentFilter):
-            filt = adjustment_filter.model_copy(update={"period": None})  # Ignore period context
+            filt = adjustment_filter.model_copy(
+                update={"period": None}
+            )  # Ignore period context
         elif isinstance(adjustment_filter, set):
             filt = AdjustmentFilter(
                 include_tags=adjustment_filter,
-                include_scenarios={DEFAULT_SCENARIO},  # Assume default scenario for tag shorthand
+                include_scenarios={
+                    DEFAULT_SCENARIO
+                },  # Assume default scenario for tag shorthand
                 period=None,
             )
         else:  # Includes None or other types

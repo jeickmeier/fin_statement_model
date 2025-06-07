@@ -41,12 +41,8 @@ logger = logging.getLogger(__name__)
 # --- 1. Setup ---
 
 # Hardcoded paths (as modified by user)
-md_output_path = (
-    "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/output/test_statement.md"
-)
-TEST_CONFIG_PATH = (
-    "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/configs/test_statement.yaml"
-)
+md_output_path = "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/output/test_statement.md"
+TEST_CONFIG_PATH = "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/configs/test_statement.yaml"
 
 # --- 2. Sample Data ---
 
@@ -112,7 +108,9 @@ for demo_name in demo_names:
     )
 
     if result.suggestions:
-        logger.info(f"    Suggestions: {result.suggestions[:2]}")  # Show first 2 suggestions
+        logger.info(
+            f"    Suggestions: {result.suggestions[:2]}"
+        )  # Show first 2 suggestions
     logger.info("")
 
 logger.info("=== END DEMONSTRATION ===\n")
@@ -138,7 +136,9 @@ for original_name, result in validation_results.items():
         logger.info(f"  Validated: '{original_name}' - {result.message}")
 
     # Copy data with standardized name
-    normalized_historical_data[result.standardized_name] = historical_data[original_name]
+    normalized_historical_data[result.standardized_name] = historical_data[
+        original_name
+    ]
 
 # Show validation summary
 logger.info("\nValidation Summary:")
@@ -157,13 +157,17 @@ for category, count in categories.items():
 
 # Show unrecognized names with suggestions
 unrecognized = [
-    name for name, result in validation_results.items() if result.category in ["custom", "invalid"]
+    name
+    for name, result in validation_results.items()
+    if result.category in ["custom", "invalid"]
 ]
 if unrecognized:
     logger.info(f"\nUnrecognized node names: {unrecognized}")
     for name in unrecognized:
         if validation_results[name].suggestions:
-            logger.info(f"  Suggestions for '{name}': {validation_results[name].suggestions}")
+            logger.info(
+                f"  Suggestions for '{name}': {validation_results[name].suggestions}"
+            )
 
 # Update historical_data to use normalized names
 historical_data = normalized_historical_data
@@ -191,7 +195,10 @@ for original_name, config in {
         "method": "simple",
         "config": 0.0,
     },  # Usually calculated, but forecast base if needed
-    "dividends": {"method": "historical_growth", "config": None},  # Grow based on historical trend
+    "dividends": {
+        "method": "historical_growth",
+        "config": None,
+    },  # Grow based on historical trend
     "revenue": {
         "method": "curve",
         "config": [0.10, 0.09, 0.08, 0.07, 0.06],
@@ -224,7 +231,9 @@ for original_name, config in {
     result = validator.validate(original_name)
     normalized_forecast_configs[result.standardized_name] = config
     if result.standardized_name != original_name:
-        logger.info(f"  Forecast config: '{original_name}' -> '{result.standardized_name}'")
+        logger.info(
+            f"  Forecast config: '{original_name}' -> '{result.standardized_name}'"
+        )
 
 forecast_configs = normalized_forecast_configs
 
@@ -264,7 +273,9 @@ for node in graph_nodes:
         elif isinstance(node.inputs, list):
             parent_nodes = [n.name for n in node.inputs if hasattr(n, "name")]
 
-    result = validator.validate(node.name, node_type=node_type, parent_nodes=parent_nodes)
+    result = validator.validate(
+        node.name, node_type=node_type, parent_nodes=parent_nodes
+    )
     node_validation_results[node.name] = result
 
 # Display categorized results
@@ -296,7 +307,9 @@ for node_name, result in node_validation_results.items():
         logger.info(f"  {node_name}: {result.suggestions}")
 
 if not suggestions_found:
-    logger.info("  All node names are using standard conventions - no improvements needed!")
+    logger.info(
+        "  All node names are using standard conventions - no improvements needed!"
+    )
 
 # --- 3b. Forecasting Setup ---
 logger.info("Setting up forecasting...")
@@ -316,7 +329,9 @@ logger.info(f"Forecast periods: {forecast_periods}")
 
 # Use the StatementForecaster
 # Restore try-except block
-forecaster = StatementForecaster(fsg=graph)  # fsg likely stands for financial statement graph
+forecaster = StatementForecaster(
+    fsg=graph
+)  # fsg likely stands for financial statement graph
 logger.info(f"Applying forecasts for periods: {forecast_periods}")
 
 # Apply the forecasts using the defined configs

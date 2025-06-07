@@ -148,9 +148,13 @@ def demo_calculation_accuracy():
     net_2023 = graph.calculate("net_ppe", "2023")
 
     logger.info(f"  Gross PP&E:                    ${gross_2023:,.0f}")
-    logger.info(f"  Accumulated Depreciation:      ${accum_2023:,.0f} (stored as negative)")
+    logger.info(
+        f"  Accumulated Depreciation:      ${accum_2023:,.0f} (stored as negative)"
+    )
     logger.info(f"  Net PP&E (calculated):         ${net_2023:,.0f}")
-    logger.info(f"  Verification: {gross_2023:,.0f} + ({accum_2023:,.0f}) = {net_2023:,.0f}")
+    logger.info(
+        f"  Verification: {gross_2023:,.0f} + ({accum_2023:,.0f}) = {net_2023:,.0f}"
+    )
 
     # Show Revenue calculation
     logger.info("\nRevenue Calculation:")
@@ -161,8 +165,12 @@ def demo_calculation_accuracy():
     net_rev_2023 = graph.calculate("net_revenue", "2023")
 
     logger.info(f"  Gross Revenue:                 ${gross_rev_2023:,.0f}")
-    logger.info(f"  Sales Returns:                 ${returns_2023:,.0f} (stored as negative)")
-    logger.info(f"  Sales Discounts:               ${discounts_2023:,.0f} (stored as negative)")
+    logger.info(
+        f"  Sales Returns:                 ${returns_2023:,.0f} (stored as negative)"
+    )
+    logger.info(
+        f"  Sales Discounts:               ${discounts_2023:,.0f} (stored as negative)"
+    )
     logger.info(f"  Net Revenue (calculated):      ${net_rev_2023:,.0f}")
     logger.info(
         f"  Verification: {gross_rev_2023:,.0f} + ({returns_2023:,.0f}) + ({discounts_2023:,.0f}) = {net_rev_2023:,.0f}"
@@ -277,7 +285,9 @@ def demo_dataframe_output():
     df_display = df.apply(format_value, axis=1)
 
     logger.info("Financial Statement with Contra Items:")
-    logger.info(df_display[["Section", "Line Item", "2023", "2024"]].to_string(index=False))
+    logger.info(
+        df_display[["Section", "Line Item", "2023", "2024"]].to_string(index=False)
+    )
 
 
 def main():
@@ -295,7 +305,9 @@ def main():
         logger.info("\nKey takeaways:")
         logger.info("1. Contra items are stored as negative values in the graph")
         logger.info("2. Display formatting is separate from calculation logic")
-        logger.info("3. Multiple display styles are supported (parentheses, brackets, etc.)")
+        logger.info(
+            "3. Multiple display styles are supported (parentheses, brackets, etc.)"
+        )
         logger.info("4. Calculations work correctly with negative values")
         logger.info("5. DataFrames can show contra items with appropriate formatting")
 

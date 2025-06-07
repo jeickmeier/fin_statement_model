@@ -193,7 +193,9 @@ class MultiplicationCalculation(Calculation):
         # Multiplication calculation should ideally return 1.0 for empty inputs.
         # Raising error if empty seems less conventional for multiplication.
         if not inputs:
-            logger.warning("Multiplication calculation called with empty inputs, returning 1.0")
+            logger.warning(
+                "Multiplication calculation called with empty inputs, returning 1.0"
+            )
             return 1.0
 
         logger.debug(f"Applying multiplication calculation for period {period}")
@@ -493,7 +495,10 @@ class CustomFormulaCalculation(Calculation):
                         f"Custom formula {self.formula_function.__name__} result "
                         f"({result!r}) could not be cast to float.",
                         period=period,
-                        details={"result": result, "result_type": type(result).__name__},
+                        details={
+                            "result": result,
+                            "result_type": type(result).__name__,
+                        },
                     ) from cast_err
             return float(result)  # Ensure result is float
         except Exception as e:
@@ -598,7 +603,9 @@ class FormulaCalculation(Calculation):
                 details={"formula": self.formula, "original_error": str(e)},
             ) from e
 
-    def _evaluate(self, node: ast.AST, period: str, variable_map: dict[str, Node]) -> float:
+    def _evaluate(
+        self, node: ast.AST, period: str, variable_map: dict[str, Node]
+    ) -> float:
         """Recursively evaluate the parsed AST node for the formula.
 
         Args:
@@ -632,7 +639,10 @@ class FormulaCalculation(Calculation):
                 raise CalculationError(
                     f"Unknown variable '{var_name}' in formula. Available: {list(variable_map.keys())}",
                     period=period,
-                    details={"unknown_var": var_name, "available_vars": list(variable_map.keys())},
+                    details={
+                        "unknown_var": var_name,
+                        "available_vars": list(variable_map.keys()),
+                    },
                 )
             input_node = variable_map[var_name]
             # Recursively calculate the value of the input node

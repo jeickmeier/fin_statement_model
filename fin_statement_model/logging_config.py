@@ -102,7 +102,9 @@ def setup_logging(
 
     # Set specific log levels for noisy sub-modules if needed
     # For example, reduce verbosity of certain components during normal operation
-    logging.getLogger("fin_statement_model.io.formats").setLevel(max(numeric_level, logging.INFO))
+    logging.getLogger("fin_statement_model.io.formats").setLevel(
+        max(numeric_level, logging.INFO)
+    )
     logging.getLogger("fin_statement_model.core.graph.traverser").setLevel(
         max(numeric_level, logging.INFO)
     )

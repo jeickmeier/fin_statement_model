@@ -22,7 +22,9 @@ from fin_statement_model.core.adjustments.models import (
 def test_adjustment_creation_defaults():
     """Test basic Adjustment creation and default values."""
     now = datetime.now(UTC)
-    adj = Adjustment(node_name="Revenue", period="2023", value=100.0, reason="Test reason")
+    adj = Adjustment(
+        node_name="Revenue", period="2023", value=100.0, reason="Test reason"
+    )
 
     assert isinstance(adj.id, UUID)
     assert adj.node_name == "Revenue"
@@ -38,7 +40,9 @@ def test_adjustment_creation_defaults():
     assert isinstance(adj.timestamp, datetime)
     # Make naive timestamp aware for comparison
     assert (
-        now - timedelta(seconds=5) < adj.timestamp.replace(tzinfo=UTC) < now + timedelta(seconds=5)
+        now - timedelta(seconds=5)
+        < adj.timestamp.replace(tzinfo=UTC)
+        < now + timedelta(seconds=5)
     )
     assert adj.start_period is None
     assert adj.end_period is None
@@ -218,8 +222,12 @@ def create_test_adj(**kwargs: Any) -> Adjustment:
             False,
             id="period_match_before_start",
         ),
-        pytest.param({"period": "P06"}, {"end_period": "P12"}, True, id="period_match_before_end"),
-        pytest.param({"period": "P06"}, {"end_period": "P05"}, False, id="period_match_after_end"),
+        pytest.param(
+            {"period": "P06"}, {"end_period": "P12"}, True, id="period_match_before_end"
+        ),
+        pytest.param(
+            {"period": "P06"}, {"end_period": "P05"}, False, id="period_match_after_end"
+        ),
         pytest.param(
             {"period": "P06"},
             {"start_period": "P01", "end_period": "P12"},

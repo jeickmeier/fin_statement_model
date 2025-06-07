@@ -12,8 +12,10 @@ import numpy as np
 import pandas as pd
 
 from fin_statement_model.preprocessing.base_transformer import DataTransformer
-from fin_statement_model.preprocessing.config.enums import NormalizationType
-from fin_statement_model.preprocessing.config.models import NormalizationConfig
+from fin_statement_model.preprocessing.config import (
+    NormalizationConfig,
+    NormalizationType,
+)
 from fin_statement_model.preprocessing.errors import NormalizationError
 from fin_statement_model.core.errors import DataValidationError
 
@@ -80,7 +82,9 @@ class NormalizationTransformer(DataTransformer):
 
     def __init__(
         self,
-        normalization_type: Union[str, NormalizationType] = NormalizationType.PERCENT_OF,
+        normalization_type: Union[
+            str, NormalizationType
+        ] = NormalizationType.PERCENT_OF,
         reference: Optional[str] = None,
         scale_factor: Optional[float] = None,
         config: Optional[NormalizationConfig] = None,
@@ -124,13 +128,19 @@ class NormalizationTransformer(DataTransformer):
         self.scale_factor = scale_factor
 
         # Validation
-        if self.normalization_type == NormalizationType.PERCENT_OF.value and not reference:
+        if (
+            self.normalization_type == NormalizationType.PERCENT_OF.value
+            and not reference
+        ):
             raise NormalizationError(
                 "Reference field must be provided for percent_of normalization",
                 method=self.normalization_type,
             )
 
-        if self.normalization_type == NormalizationType.SCALE_BY.value and scale_factor is None:
+        if (
+            self.normalization_type == NormalizationType.SCALE_BY.value
+            and scale_factor is None
+        ):
             raise NormalizationError(
                 "Scale factor must be provided for scale_by normalization",
                 method=self.normalization_type,
@@ -175,7 +185,10 @@ class NormalizationTransformer(DataTransformer):
                 method=self.normalization_type,
             )
 
-        if self.normalization_type == NormalizationType.PERCENT_OF.value and not self.reference:
+        if (
+            self.normalization_type == NormalizationType.PERCENT_OF.value
+            and not self.reference
+        ):
             raise NormalizationError(
                 "Reference field must be provided for percent_of normalization",
                 method=self.normalization_type,
@@ -255,13 +268,17 @@ class NormalizationTransformer(DataTransformer):
                     else:
                         result[col] = (df[col] / reference_series) * 100
 
-        elif self.normalization_type == NormalizationType.MINMAX.value:  # pragma: no cover
+        elif (
+            self.normalization_type == NormalizationType.MINMAX.value
+        ):  # pragma: no cover
             for col in df.columns:
                 min_val = df[col].min()
                 max_val = df[col].max()
 
                 if max_val > min_val:
-                    result[col] = (df[col] - min_val) / (max_val - min_val)  # pragma: no cover
+                    result[col] = (df[col] - min_val) / (
+                        max_val - min_val
+                    )  # pragma: no cover
                 elif max_val == min_val:  # Handles constant columns
                     result[col] = (
                         0.0  # Or np.nan, depending on desired behavior for constant series

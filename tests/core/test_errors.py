@@ -135,7 +135,9 @@ def test_missing_input_error_instantiation(
     expected_str: str,
 ) -> None:
     """Test MissingInputError instantiation and message formatting."""
-    err = MissingInputError(message, node_id=node_id, input_name=input_name, period=period)
+    err = MissingInputError(
+        message, node_id=node_id, input_name=input_name, period=period
+    )
     assert err.node_id == node_id
     assert err.input_name == input_name
     assert err.period == period
@@ -360,7 +362,9 @@ def test_transformation_error_instantiation(
     expected_str: str,
 ) -> None:
     """Test TransformationError instantiation and message formatting."""
-    err = TransformationError(message, transformer_type=transformer_name, parameters=parameters)
+    err = TransformationError(
+        message, transformer_type=transformer_name, parameters=parameters
+    )
     assert err.transformer_type == transformer_name
     assert err.parameters == (parameters or {})
     assert message in str(err)

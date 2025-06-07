@@ -94,14 +94,18 @@ class ForecastConfig(BaseModel):
         }
 
         if method not in valid_methods:
-            raise ForecastMethodError(method=method, supported_methods=list(valid_methods))
+            raise ForecastMethodError(
+                method=method, supported_methods=list(valid_methods)
+            )
 
         if method == "statistical":
             # Delegate validation to StatisticalConfig for detailed checks
             try:
-                StatisticalConfig(**cfg) if isinstance(
-                    cfg, dict
-                ) else StatisticalConfig.model_validate(cfg)
+                (
+                    StatisticalConfig(**cfg)
+                    if isinstance(cfg, dict)
+                    else StatisticalConfig.model_validate(cfg)
+                )
             except (ForecastConfigurationError, ValidationError) as exc:
                 # Re-raise as ForecastConfigurationError for consistency
                 raise ForecastConfigurationError(

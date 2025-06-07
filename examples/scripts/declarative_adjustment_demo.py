@@ -43,7 +43,9 @@ def create_sample_graph_with_adjustments() -> Graph:
     graph.add_financial_statement_item(
         "cogs_materials", {"2023Q1": 300, "2023Q2": 330, "2023Q3": 360}
     )
-    graph.add_financial_statement_item("cogs_labor", {"2023Q1": 200, "2023Q2": 220, "2023Q3": 240})
+    graph.add_financial_statement_item(
+        "cogs_labor", {"2023Q1": 200, "2023Q2": 220, "2023Q3": 240}
+    )
     graph.add_financial_statement_item(
         "opex_salaries", {"2023Q1": 150, "2023Q2": 155, "2023Q3": 160}
     )
@@ -307,8 +309,11 @@ def demonstrate_declarative_adjustments():
         {
             "Period": period,
             "Gross Revenue (Default)": (
-                df_with_defaults.loc[df_with_defaults["ID"] == "gross_revenue", period].iloc[0]
-                if len(df_with_defaults.loc[df_with_defaults["ID"] == "gross_revenue"]) > 0
+                df_with_defaults.loc[
+                    df_with_defaults["ID"] == "gross_revenue", period
+                ].iloc[0]
+                if len(df_with_defaults.loc[df_with_defaults["ID"] == "gross_revenue"])
+                > 0
                 else "N/A"
             ),
             "Gross Revenue (Raw)": (
@@ -317,13 +322,19 @@ def demonstrate_declarative_adjustments():
                 else "N/A"
             ),
             "Labor Costs (Default)": (
-                df_with_defaults.loc[df_with_defaults["ID"] == "labor_costs", period].iloc[0]
-                if len(df_with_defaults.loc[df_with_defaults["ID"] == "labor_costs"]) > 0
+                df_with_defaults.loc[
+                    df_with_defaults["ID"] == "labor_costs", period
+                ].iloc[0]
+                if len(df_with_defaults.loc[df_with_defaults["ID"] == "labor_costs"])
+                > 0
                 else "N/A"
             ),
             "Labor Costs (Management)": (
-                df_with_override.loc[df_with_override["ID"] == "labor_costs", period].iloc[0]
-                if len(df_with_override.loc[df_with_override["ID"] == "labor_costs"]) > 0
+                df_with_override.loc[
+                    df_with_override["ID"] == "labor_costs", period
+                ].iloc[0]
+                if len(df_with_override.loc[df_with_override["ID"] == "labor_costs"])
+                > 0
                 else "N/A"
             ),
         }

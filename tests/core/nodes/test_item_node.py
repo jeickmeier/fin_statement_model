@@ -22,7 +22,9 @@ def item_node(sample_values: dict[str, float]) -> FinancialStatementItemNode:
 # --- Test Cases ---
 
 
-def test_item_node_init(item_node: FinancialStatementItemNode, sample_values: dict[str, float]):
+def test_item_node_init(
+    item_node: FinancialStatementItemNode, sample_values: dict[str, float]
+):
     """Test successful initialization of FinancialStatementItemNode."""
     assert item_node.name == "Revenue"
     assert item_node.values == sample_values

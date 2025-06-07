@@ -30,9 +30,7 @@ def main():
                 "hide_zero_rows": True,
             },
             "validation": {"strict_mode": False, "auto_standardize_names": True},
-            "forecasting": {
-                "default_growth_rate": 0.05  # 5% default growth
-            },
+            "forecasting": {"default_growth_rate": 0.05},  # 5% default growth
         }
     )
 
@@ -55,7 +53,8 @@ def main():
     print("=" * 60)
 
     # The OLD way - passing config values everywhere
-    print("""
+    print(
+        """
 # OLD: Create validator with all config values
 validator = UnifiedNodeValidator(
     strict_mode=config.validation.strict_mode,
@@ -80,7 +79,8 @@ forecast = FixedGrowthForecastNode(
     revenue_node, "2023", ["2024", "2025"], 
     config.forecasting.default_growth_rate
 )
-""")
+"""
+    )
 
     print("\n" + "=" * 60)
     print("AFTER: Clean API with automatic config usage")
@@ -131,7 +131,12 @@ forecast = FixedGrowthForecastNode(
                 "id": "main",
                 "name": "Income",
                 "items": [
-                    {"type": "line_item", "id": "revenue", "name": "Revenue", "node_id": "revenue"},
+                    {
+                        "type": "line_item",
+                        "id": "revenue",
+                        "name": "Revenue",
+                        "node_id": "revenue",
+                    },
                     {
                         "type": "line_item",
                         "id": "expenses",
@@ -178,7 +183,8 @@ forecast = FixedGrowthForecastNode(
     print("\n" + "=" * 80)
     print("SUMMARY")
     print("=" * 80)
-    print("""
+    print(
+        """
 The library now provides a much cleaner API by:
 
 1. Using configuration defaults automatically
@@ -191,7 +197,8 @@ Benefits:
 ✓ Consistent behavior across the application
 ✓ Easy to change defaults globally
 ✓ Still flexible when you need overrides
-""")
+"""
+    )
 
 
 if __name__ == "__main__":

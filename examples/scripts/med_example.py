@@ -299,7 +299,9 @@ special_dir = (
     / "fin_statement_model/core/metrics/metric_defn/special"
 )
 metric_count = metric_registry.load_metrics_from_directory(special_dir)
-logger.info(f"Reloaded {metric_count} metrics from special directory to include retained_earnings")
+logger.info(
+    f"Reloaded {metric_count} metrics from special directory to include retained_earnings"
+)
 
 excel_output_path = OUTPUT_DIR / "financial_statements.xlsx"
 md_output_path = OUTPUT_DIR / "financial_statements.md"  # Added Markdown path
@@ -444,7 +446,9 @@ sections:
     }
 
     # Function to generate data across all periods with simple growth
-    def generate_data(node_id: str, start_val: float, growth_rate: float) -> dict[str, float]:
+    def generate_data(
+        node_id: str, start_val: float, growth_rate: float
+    ) -> dict[str, float]:
         """Generate data for a node across periods with simple growth."""
         data: dict[str, float] = {}
         current_val = start_val
@@ -460,14 +464,18 @@ sections:
     )
     graph.add_financial_statement_item(
         "core.accounts_receivable",
-        generate_data("core.accounts_receivable", 100.0, bs_forecasts["core.accounts_receivable"]),
+        generate_data(
+            "core.accounts_receivable", 100.0, bs_forecasts["core.accounts_receivable"]
+        ),
     )
     graph.add_financial_statement_item(
         "core.ppe", generate_data("core.ppe", 300.0, bs_forecasts["core.ppe"])
     )
     graph.add_financial_statement_item(
         "core.accounts_payable",
-        generate_data("core.accounts_payable", 80.0, bs_forecasts["core.accounts_payable"]),
+        generate_data(
+            "core.accounts_payable", 80.0, bs_forecasts["core.accounts_payable"]
+        ),
     )
     graph.add_financial_statement_item(
         "core.debt", generate_data("core.debt", 150.0, bs_forecasts["core.debt"])
@@ -492,7 +500,9 @@ sections:
 
     graph.add_financial_statement_item(
         "core.dividends",
-        generate_data("core.dividends", -10.0, bs_forecasts["core.dividends"]),  # Negative value
+        generate_data(
+            "core.dividends", -10.0, bs_forecasts["core.dividends"]
+        ),  # Negative value
     )
 
     # Use the high-level export function
@@ -502,7 +512,9 @@ sections:
         graph=graph,
         config_path_or_dir=str(CONFIG_DIR),  # Process all YAML files in the dir
         output_dir=str(excel_output_path),  # Specify the single output Excel file path
-        format_kwargs={"number_format": ",.0f"},  # Formatting for the DataFrames before export
+        format_kwargs={
+            "number_format": ",.0f"
+        },  # Formatting for the DataFrames before export
         # writer_kwargs={'freeze_panes': (1, 1)} # Example: Pass args to pandas.to_excel
     )
     logger.info(f"Successfully exported statements to {excel_output_path}")

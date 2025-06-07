@@ -42,14 +42,18 @@ class ForecastValidator:
             raise ValueError("No historical periods provided for forecasting")
 
         if not isinstance(historical_periods, list):
-            raise TypeError(f"Historical periods must be a list, got {type(historical_periods)}")
+            raise TypeError(
+                f"Historical periods must be a list, got {type(historical_periods)}"
+            )
 
         # Validate forecast periods
         if not forecast_periods:
             raise ValueError("No forecast periods provided")
 
         if not isinstance(forecast_periods, list):
-            raise TypeError(f"Forecast periods must be a list, got {type(forecast_periods)}")
+            raise TypeError(
+                f"Forecast periods must be a list, got {type(forecast_periods)}"
+            )
 
         # Check for overlapping periods
         historical_set = set(historical_periods)
@@ -64,7 +68,9 @@ class ForecastValidator:
         # Validate node configs if provided
         if node_configs is not None:
             if not isinstance(node_configs, dict):
-                raise TypeError(f"Node configs must be a dict, got {type(node_configs)}")
+                raise TypeError(
+                    f"Node configs must be a dict, got {type(node_configs)}"
+                )
 
             for node_name, config in node_configs.items():
                 ForecastValidator.validate_node_config(node_name, config)
@@ -88,7 +94,9 @@ class ForecastValidator:
 
         # Validate method
         if "method" not in config:
-            raise ValueError(f"Configuration for node '{node_name}' missing required 'method' key")
+            raise ValueError(
+                f"Configuration for node '{node_name}' missing required 'method' key"
+            )
 
         method = config["method"]
         valid_methods: list[ForecastMethodType] = [
@@ -106,7 +114,9 @@ class ForecastValidator:
 
         # Validate config exists (can be None for some methods)
         if "config" not in config:
-            raise ValueError(f"Configuration for node '{node_name}' missing required 'config' key")
+            raise ValueError(
+                f"Configuration for node '{node_name}' missing required 'config' key"
+            )
 
     @staticmethod
     def validate_node_for_forecast(node: Node, method: str) -> None:

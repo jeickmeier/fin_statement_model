@@ -42,7 +42,9 @@ try:
         from .metric_defn import load_organized_metrics
 
         organized_count = load_organized_metrics()
-        logger.info(f"Successfully loaded {organized_count} metrics from organized structure")
+        logger.info(
+            f"Successfully loaded {organized_count} metrics from organized structure"
+        )
     else:
         logger.warning("Organized metric structure not found - no metrics loaded")
 

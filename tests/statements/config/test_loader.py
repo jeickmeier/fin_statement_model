@@ -44,7 +44,9 @@ class TestLoadBuildRegisterStatements:
             ) as mock_read:
                 mock_read.return_value = config_data
 
-                loaded_ids = load_build_register_statements(config_path, registry, builder)
+                loaded_ids = load_build_register_statements(
+                    config_path, registry, builder
+                )
 
                 assert loaded_ids == ["test_statement"]
                 assert registry.get("test_statement") is not None
@@ -106,7 +108,9 @@ class TestLoadBuildRegisterStatements:
                 mock_read.return_value = config_data
 
                 # Should not raise but log warning
-                loaded_ids = load_build_register_statements(config_path, registry, builder)
+                loaded_ids = load_build_register_statements(
+                    config_path, registry, builder
+                )
 
                 # No statements should be loaded due to validation error
                 assert loaded_ids == []

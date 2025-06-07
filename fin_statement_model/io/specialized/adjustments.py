@@ -88,7 +88,9 @@ def read_excel(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
         # Read the first sheet by default
         df = pd.read_excel(file_path, sheet_name=0)
     except FileNotFoundError:
-        raise ReadError(f"Adjustment Excel file not found: {file_path}", source=str(file_path))
+        raise ReadError(
+            f"Adjustment Excel file not found: {file_path}", source=str(file_path)
+        )
     except Exception as e:
         # Catch other potential pandas read errors (e.g., bad format, permissions)
         raise ReadError(
@@ -143,7 +145,9 @@ def read_excel(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
                             # Default to string conversion for others (node_name, period, etc.)
                             adj_data[field_name] = str(value)
                     except ValueError as e:
-                        parse_errors.append(f"Column '{col_name}': Invalid value '{value}' ({e})")
+                        parse_errors.append(
+                            f"Column '{col_name}': Invalid value '{value}' ({e})"
+                        )
                     except Exception as e:
                         parse_errors.append(
                             f"Column '{col_name}': Error parsing value '{value}' ({e})"
@@ -261,7 +265,9 @@ def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:
                 df.to_excel(writer, sheet_name=safe_scenario_name, index=False)
         logger.info(f"Successfully wrote adjustments to {file_path}")
     except Exception as e:
-        logger.error(f"Failed to write adjustments to Excel file {file_path}: {e}", exc_info=True)
+        logger.error(
+            f"Failed to write adjustments to Excel file {file_path}: {e}", exc_info=True
+        )
         raise WriteError(
             f"Failed to write adjustments to Excel: {e}",
             target=str(file_path),
@@ -286,7 +292,9 @@ def load_adjustments_from_excel(
         pd.DataFrame: The error report DataFrame from `read_excel`.
                    Empty if no errors occurred.
     """
-    logger.info(f"Loading adjustments from Excel ({path}) into graph. Replace={replace}")
+    logger.info(
+        f"Loading adjustments from Excel ({path}) into graph. Replace={replace}"
+    )
     valid_adjustments, error_report_df = read_excel(path)
 
     if replace:
@@ -299,7 +307,9 @@ def load_adjustments_from_excel(
             graph.adjustment_manager.add_adjustment(adj)
             added_count += 1
         except Exception as e:
-            logger.error(f"Failed to add valid adjustment {adj.id} to graph: {e}", exc_info=True)
+            logger.error(
+                f"Failed to add valid adjustment {adj.id} to graph: {e}", exc_info=True
+            )
             # Optionally add this failure to the error report?
             error_row = adj.model_dump(mode="json")
             error_row["error"] = f"Failed to add to graph: {e}"
@@ -308,7 +318,9 @@ def load_adjustments_from_excel(
 
     logger.info(f"Added {added_count} adjustments to the graph from {path}.")
     if not error_report_df.empty:
-        logger.warning(f"Encountered {len(error_report_df)} errors during Excel read process.")
+        logger.warning(
+            f"Encountered {len(error_report_df)} errors during Excel read process."
+        )
 
     return error_report_df
 

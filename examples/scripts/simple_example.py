@@ -34,7 +34,11 @@ logger = logging.getLogger(__name__)
 
 # Load metric definitions
 metrics_dir = (
-    Path(__file__).parent.parent.parent / "fin_statement_model" / "core" / "metrics" / "metric_defn"
+    Path(__file__).parent.parent.parent
+    / "fin_statement_model"
+    / "core"
+    / "metrics"
+    / "metric_defn"
 )
 if metrics_dir.exists():
     # Load metrics from all subdirectories
@@ -52,7 +56,9 @@ INCOME_STATEMENT_CONFIG = Path(__file__).parent / "configs" / "income_statement.
 # If config doesn't exist, provide a helpful error message
 if not INCOME_STATEMENT_CONFIG.exists():
     logger.error(f"Configuration file not found: {INCOME_STATEMENT_CONFIG}")
-    logger.error("Please ensure the income_statement.yaml file exists in the configs directory")
+    logger.error(
+        "Please ensure the income_statement.yaml file exists in the configs directory"
+    )
     sys.exit(1)
 
 logger.info("=" * 60)
@@ -155,9 +161,7 @@ for metric_name in key_metrics:
         # Format based on metric type and config
         if "margin" in metric_name or metric_name == "return_on_equity":
             # Use percentage format from config
-            value_str = (
-                f"{value:.1f}%"  # Show value without * 100 since metric already returns percentage
-            )
+            value_str = f"{value:.1f}%"  # Show value without * 100 since metric already returns percentage
         else:
             # Use number format from config
             value_str = f"{value:.2f}"
@@ -168,7 +172,9 @@ for metric_name in key_metrics:
         elif metric_name == "debt_to_equity_ratio":
             rating = "Conservative" if value < 1.0 else "Leveraged"
         elif "margin" in metric_name or metric_name == "return_on_equity":
-            rating = "Healthy" if value > 10 else "Review needed"  # For percentage metrics
+            rating = (
+                "Healthy" if value > 10 else "Review needed"
+            )  # For percentage metrics
         else:
             rating = "Healthy" if value > 0.1 else "Review needed"
 

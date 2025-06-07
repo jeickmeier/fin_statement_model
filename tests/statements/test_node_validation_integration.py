@@ -249,7 +249,9 @@ class TestNodeValidationIntegration:
         assert errors == []
 
         # Test create_validated_statement_builder
-        builder = create_validated_statement_builder(enable_node_validation=True, strict_mode=False)
+        builder = create_validated_statement_builder(
+            enable_node_validation=True, strict_mode=False
+        )
         statement = builder.build(config)
         assert statement is not None
 
@@ -276,7 +278,9 @@ class TestNodeValidationIntegration:
         }
 
         # Test with dictionary input
-        config, errors = validate_statement_config_with_nodes(config_data, strict_mode=False)
+        config, errors = validate_statement_config_with_nodes(
+            config_data, strict_mode=False
+        )
         assert errors == []
         assert config.model is not None
 

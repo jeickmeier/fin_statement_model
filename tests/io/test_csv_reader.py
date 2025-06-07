@@ -31,7 +31,9 @@ class TestCsvReader:
         reader = CsvReader(config)
 
         # Read the file
-        graph = reader.read(str(csv_file), item_col="item", period_col="period", value_col="value")
+        graph = reader.read(
+            str(csv_file), item_col="item", period_col="period", value_col="value"
+        )
 
         # Verify results
         assert isinstance(graph, Graph)
@@ -72,7 +74,9 @@ class TestCsvReader:
         reader = CsvReader(config)
 
         # Read the file
-        graph = reader.read(str(csv_file), item_col="item", period_col="period", value_col="value")
+        graph = reader.read(
+            str(csv_file), item_col="item", period_col="period", value_col="value"
+        )
 
         # Verify mapped names
         assert graph.has_node("revenue")
@@ -106,7 +110,9 @@ class TestCsvReader:
         reader = CsvReader(config)
 
         with pytest.raises(ReadError) as exc_info:
-            reader.read(str(wrong_file), item_col="item", period_col="period", value_col="value")
+            reader.read(
+                str(wrong_file), item_col="item", period_col="period", value_col="value"
+            )
 
         assert "Invalid file extension" in str(exc_info.value)
 
@@ -126,7 +132,9 @@ class TestCsvReader:
         reader = CsvReader(config)
 
         with pytest.raises(ReadError) as exc_info:
-            reader.read(str(csv_file), item_col="item", period_col="period", value_col="value")
+            reader.read(
+                str(csv_file), item_col="item", period_col="period", value_col="value"
+            )
 
         assert "Missing required columns" in str(exc_info.value)
 
@@ -146,7 +154,9 @@ class TestCsvReader:
         reader = CsvReader(config)
 
         with pytest.raises(ReadError) as exc_info:
-            reader.read(str(csv_file), item_col="item", period_col="period", value_col="value")
+            reader.read(
+                str(csv_file), item_col="item", period_col="period", value_col="value"
+            )
 
         assert "Validation errors occurred" in str(exc_info.value)
         assert "Non-numeric value" in str(exc_info.value)
@@ -166,7 +176,9 @@ class TestCsvReader:
         config = CsvReaderConfig(source=str(csv_file), format_type="csv")
         reader = CsvReader(config)
 
-        graph = reader.read(str(csv_file), item_col="item", period_col="period", value_col="value")
+        graph = reader.read(
+            str(csv_file), item_col="item", period_col="period", value_col="value"
+        )
 
         # Verify periods
         assert sorted(graph.periods) == ["2022", "2023"]

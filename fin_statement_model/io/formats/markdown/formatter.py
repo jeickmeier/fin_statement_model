@@ -50,8 +50,8 @@ class MarkdownTableFormatter:
         forecast_set = set(forecast_periods or [])
 
         # Calculate column widths and format data
-        max_desc_width, period_max_widths, formatted_lines = self._calculate_widths_and_format(
-            items, periods
+        max_desc_width, period_max_widths, formatted_lines = (
+            self._calculate_widths_and_format(items, periods)
         )
 
         # Build the table
@@ -130,7 +130,9 @@ class MarkdownTableFormatter:
                     value_str = f"_{value_str}_"  # Italic for contra items
 
                 values_formatted[period] = value_str
-                period_max_widths[period] = max(period_max_widths[period], len(value_str))
+                period_max_widths[period] = max(
+                    period_max_widths[period], len(value_str)
+                )
 
             formatted_lines.append(
                 {

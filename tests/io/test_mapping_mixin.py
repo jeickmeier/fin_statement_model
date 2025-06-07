@@ -102,7 +102,9 @@ class TestMappingAwareMixin:
     @patch("importlib.resources.files")
     def test_load_default_mappings_file_not_found(self, mock_files):
         """Test handling of missing default mapping file."""
-        mock_files.return_value.joinpath.return_value.read_text.side_effect = FileNotFoundError()
+        mock_files.return_value.joinpath.return_value.read_text.side_effect = (
+            FileNotFoundError()
+        )
 
         reader = self.TestReader()
         mappings = reader._load_default_mappings()

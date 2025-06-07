@@ -338,7 +338,9 @@ def step_2_build_graph() -> tuple[Graph, str]:
     # Add nodes to graph using validated names
     from fin_statement_model.core.nodes import FinancialStatementItemNode
 
-    logger.info(f"Adding banking data nodes (values in {config.display.default_units})...")
+    logger.info(
+        f"Adding banking data nodes (values in {config.display.default_units})..."
+    )
     for node_name, periods_data in banking_data.items():
         node = FinancialStatementItemNode(node_name, {})  # Initialize with empty values
         for period, value in periods_data.items():
@@ -453,7 +455,9 @@ def step_3_analyze_structure(graph: Graph) -> None:
         CalculationNode,
     )
 
-    item_nodes = sum(1 for n in graph.nodes.values() if isinstance(n, FinancialStatementItemNode))
+    item_nodes = sum(
+        1 for n in graph.nodes.values() if isinstance(n, FinancialStatementItemNode)
+    )
     calc_nodes = sum(1 for n in graph.nodes.values() if isinstance(n, CalculationNode))
 
     logger.info("\nNode types:")
@@ -529,7 +533,9 @@ def analyze_key_banking_metrics(graph: Graph, period: str = "2023") -> None:
                     f"  Interpretation: {interpretation.get('message', 'No interpretation available')}"
                 )
                 if interpretation.get("peer_comparison"):
-                    logger.info(f"  Peer Comparison: {interpretation['peer_comparison']}")
+                    logger.info(
+                        f"  Peer Comparison: {interpretation['peer_comparison']}"
+                    )
             else:
                 logger.info(f"  Rating: {interpretation.rating}")
                 logger.info(f"  Interpretation: {interpretation.message}")
@@ -554,7 +560,9 @@ def explore_metrics_registry() -> None:
     # Filter banking-specific metrics
     banking_keywords = ["bank", "loan", "deposit", "tier", "capital", "interest"]
     banking_metrics = [
-        m for m in all_metrics if any(keyword in m.lower() for keyword in banking_keywords)
+        m
+        for m in all_metrics
+        if any(keyword in m.lower() for keyword in banking_keywords)
     ]
 
     logger.info(f"Found {len(banking_metrics)} banking-related metrics:")
@@ -578,7 +586,9 @@ def main() -> None:
     logger.info("\nUsing configuration:")
     logger.info(f"  Units: {config.display.default_units}")
     logger.info(f"  Format: {config.display.default_currency_format}")
-    logger.info(f"  Validation: {'Strict' if config.validation.strict_mode else 'Flexible'}")
+    logger.info(
+        f"  Validation: {'Strict' if config.validation.strict_mode else 'Flexible'}"
+    )
 
     # Step 1: Validate node names
     step_1_validate_node_names()

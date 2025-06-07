@@ -204,7 +204,9 @@ class TestGetConfigFieldInfo:
 
     def test_invalid_config_path(self):
         """Test error handling for invalid config paths."""
-        with pytest.raises(ValueError, match="Configuration path 'invalid.path' not found"):
+        with pytest.raises(
+            ValueError, match="Configuration path 'invalid.path' not found"
+        ):
             get_config_field_info("invalid.path")
 
     def test_default_model_parameter(self):

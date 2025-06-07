@@ -26,6 +26,8 @@ from fin_statement_model.core.adjustments.helpers import tag_matches
         ({"TAG1"}, {"TAG2"}, False),  # No match single tags
     ],
 )
-def test_tag_matches(target_tags: set[str], prefixes: Union[str, set[str]], expected: bool) -> None:
+def test_tag_matches(
+    target_tags: set[str], prefixes: Union[str, set[str]], expected: bool
+) -> None:
     """Test the tag_matches function with various inputs."""
     assert tag_matches(target_tags, prefixes) == expected

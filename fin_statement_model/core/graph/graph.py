@@ -250,13 +250,17 @@ class Graph:
             raise TypeError("Metric node name must be a non-empty string.")
         # Check for name conflict
         if node_name in self._nodes:
-            raise ValueError(f"A node with name '{node_name}' already exists in the graph.")
+            raise ValueError(
+                f"A node with name '{node_name}' already exists in the graph."
+            )
 
         # Load metric definition (Pydantic model)
         try:
             metric_def = metric_registry.get(metric_name)
         except KeyError as e:
-            raise ConfigurationError(f"Unknown metric definition: '{metric_name}'") from e
+            raise ConfigurationError(
+                f"Unknown metric definition: '{metric_name}'"
+            ) from e
 
         # Extract required fields from definition
         required_inputs = metric_def.inputs
@@ -283,7 +287,9 @@ class Graph:
                 missing.append(target_node_name)  # Report the name we looked for
             else:
                 input_node_names.append(target_node_name)
-                formula_variable_names.append(req_input_name)  # Use the metric's variable name
+                formula_variable_names.append(
+                    req_input_name
+                )  # Use the metric's variable name
 
         if missing:
             raise NodeError(
@@ -307,7 +313,9 @@ class Graph:
                 f"Failed to create calculation node for metric '{metric_name}' as node '{node_name}'"
             )
             # Re-raise as ConfigurationError or keep original, depending on desired error reporting
-            raise ConfigurationError(f"Error creating node for metric '{metric_name}': {e}") from e
+            raise ConfigurationError(
+                f"Error creating node for metric '{metric_name}': {e}"
+            ) from e
 
         logger.info(
             f"Added metric '{metric_name}' as calculation node '{node_name}' with inputs {input_node_names}"
@@ -394,7 +402,9 @@ class Graph:
         if node is None:
             raise NodeError("Node not found for calculation change", node_id=node_name)
         if not isinstance(node, CalculationNode):
-            raise NodeError(f"Node '{node_name}' is not a CalculationNode", node_id=node_name)
+            raise NodeError(
+                f"Node '{node_name}' is not a CalculationNode", node_id=node_name
+            )
         # Map method key to registry name
         if new_method_key not in self._node_factory._calculation_methods:
             raise ValueError(f"Calculation '{new_method_key}' is not recognized.")
@@ -408,7 +418,9 @@ class Graph:
         try:
             calculation_instance = calculation_cls(**kwargs)
         except TypeError as e:
-            raise TypeError(f"Failed to instantiate calculation '{new_method_key}': {e}")
+            raise TypeError(
+                f"Failed to instantiate calculation '{new_method_key}': {e}"
+            )
         # Apply new calculation
         node.set_calculation(calculation_instance)
         # Clear cached calculations for this node
@@ -509,7 +521,9 @@ class Graph:
                 f"Error retrieving info for metric node '{metric_id}': {e}",
                 exc_info=True,
             )
-            raise ValueError(f"Failed to retrieve metric info for '{metric_id}': {e}") from e
+            raise ValueError(
+                f"Failed to retrieve metric info for '{metric_id}': {e}"
+            ) from e
 
         return {
             "id": metric_id,
@@ -599,7 +613,9 @@ class Graph:
         elif isinstance(periods, list):
             periods_to_use = periods
         else:
-            raise TypeError("Periods must be a list of strings, a single string, or None.")
+            raise TypeError(
+                "Periods must be a list of strings, a single string, or None."
+            )
         # Clear all caches (node-level and central) to force full recalculation
         self.clear_all_caches()
         if not periods_to_use:
@@ -695,7 +711,9 @@ class Graph:
             validate_inputs=False,  # Data nodes don't have inputs to validate
         )
 
-        logger.info(f"Added FinancialStatementItemNode '{name}' with periods {list(values.keys())}")
+        logger.info(
+            f"Added FinancialStatementItemNode '{name}' with periods {list(values.keys())}"
+        )
         return added_node
 
     def update_financial_statement_item(
@@ -749,7 +767,9 @@ class Graph:
         )  # Keep import local as it's specific
 
         return [
-            node for node in self.nodes.values() if isinstance(node, FinancialStatementItemNode)
+            node
+            for node in self.nodes.values()
+            if isinstance(node, FinancialStatementItemNode)
         ]
 
     def __repr__(self) -> str:
@@ -792,13 +812,17 @@ class Graph:
                     try:
                         if isinstance(node.inputs, list):
                             # Ensure inputs are nodes with names
-                            dep_names = [inp.name for inp in node.inputs if hasattr(inp, "name")]
+                            dep_names = [
+                                inp.name for inp in node.inputs if hasattr(inp, "name")
+                            ]
                             dependencies_count += len(dep_names)
                         elif isinstance(node.inputs, dict):
                             # Assume keys are dependency names for dict inputs
                             dependencies_count += len(node.inputs)
                     except Exception as e:
-                        logger.warning(f"Error processing inputs for node '{node.name}': {e}")
+                        logger.warning(
+                            f"Error processing inputs for node '{node.name}': {e}"
+                        )
             else:
                 other_node_count += 1
 
@@ -1120,7 +1144,9 @@ class Graph:
         """
         return self.traverser.validate()
 
-    def breadth_first_search(self, start_node: str, direction: str = "successors") -> list[str]:
+    def breadth_first_search(
+        self, start_node: str, direction: str = "successors"
+    ) -> list[str]:
         """Perform a breadth-first search (BFS) traversal of the graph.
 
         Args:
@@ -1216,7 +1242,9 @@ class Graph:
                             f"Could not merge values for node '{node_name}' due to missing 'values' attribute despite hasattr check."
                         )
                     except Exception as e:
-                        logger.warning(f"Could not merge values for node '{node_name}': {e}")
+                        logger.warning(
+                            f"Could not merge values for node '{node_name}': {e}"
+                        )
                 else:
                     # Nodes exist but cannot merge values (e.g., calculation nodes without stored values)
                     logger.debug(
@@ -1230,7 +1258,9 @@ class Graph:
                     self.add_node(other_node)
                     nodes_added += 1
                 except Exception:
-                    logger.exception(f"Failed to add new node '{node_name}' during merge:")
+                    logger.exception(
+                        f"Failed to add new node '{node_name}' during merge:"
+                    )
 
         logger.info(
             f"Merge complete. Nodes added: {nodes_added}, Nodes updated (values merged): {nodes_updated}"
@@ -1359,7 +1389,9 @@ class Graph:
             return []
         # Assign default scenario if None was passed
         actual_scenario = scenario if scenario is not None else DEFAULT_SCENARIO
-        return self.adjustment_manager.get_adjustments(node_name, period, scenario=actual_scenario)
+        return self.adjustment_manager.get_adjustments(
+            node_name, period, scenario=actual_scenario
+        )
 
     def list_all_adjustments(self) -> list[Adjustment]:
         """Returns a list of all adjustments currently managed by the graph.
@@ -1405,7 +1437,9 @@ class Graph:
             base_value = self.calculate(node_name, period)
         except (NodeError, CalculationError, TypeError):
             # Propagate errors from base calculation
-            logger.exception(f"Error getting base value for '{node_name}' in period '{period}'")
+            logger.exception(
+                f"Error getting base value for '{node_name}' in period '{period}'"
+            )
             raise
 
         # 2. Get filtered adjustments from the manager
