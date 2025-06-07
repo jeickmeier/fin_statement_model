@@ -50,7 +50,7 @@ def concatenate_files(output_filename="concatenated_code.txt"):
             output_file.write(f"{'=' * 80}\n\n")
 
             try:
-                with open(file_path, "r", encoding="utf-8") as input_file:
+                with open(file_path, encoding="utf-8") as input_file:
                     content = input_file.read()
                     output_file.write(content)
                     output_file.write("\n\n")

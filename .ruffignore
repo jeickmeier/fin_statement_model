@@ -1,0 +1,9 @@
+.cursor/**
+.mypy_cache/**
+.pytest_cache/**
+.ruff_cache/**
+docs/**
+.coverage
+dist/**
+.venv/**
+concatenate_script.py 
