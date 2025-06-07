@@ -2,6 +2,9 @@
 
 This module provides a generic registry implementation and specific registries
 for readers and writers, along with registration decorators and access functions.
+
+Internal registry dictionaries `_readers` and `_writers` are no longer exposed;
+use `list_readers()` and `list_writers()` for a readonly view of registered handlers.
 """
 
 import logging
@@ -373,14 +376,6 @@ def list_readers() -> dict[str, type[DataReader]]:
 def list_writers() -> dict[str, type[DataWriter]]:
     """Return a copy of the registered writer classes."""
     return _writer_registry.list_formats()
-
-
-# ===== Backward Compatibility =====
-
-# Expose internal registries for backward compatibility with tests
-# These should be considered deprecated and may be removed in future versions
-_readers = _reader_registry._registry
-_writers = _writer_registry._registry
 
 
 __all__ = [
