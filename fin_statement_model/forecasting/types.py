@@ -39,7 +39,7 @@ class StatisticalConfig(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    @model_validator(mode="after")
+    @model_validator(mode="after")  # type: ignore[arg-type]
     def _validate_distribution(cls, values: "StatisticalConfig") -> "StatisticalConfig":
         distribution = values.distribution
         params = values.params
@@ -80,7 +80,7 @@ class ForecastConfig(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    @model_validator(mode="after")
+    @model_validator(mode="after")  # type: ignore[arg-type]
     def _validate_config(cls, values: "ForecastConfig") -> "ForecastConfig":
         method = values.method
         cfg = values.config or {}
@@ -95,7 +95,9 @@ class ForecastConfig(BaseModel):
 
         if method not in valid_methods:
             raise ForecastMethodError(
-                method=method, supported_methods=list(valid_methods)
+                "Invalid forecast method",
+                method=method,
+                supported_methods=list(valid_methods),
             )
 
         if method == "statistical":

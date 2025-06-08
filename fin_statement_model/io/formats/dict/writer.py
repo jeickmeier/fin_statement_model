@@ -15,7 +15,7 @@ from fin_statement_model.io.config.models import DictWriterConfig
 logger = logging.getLogger(__name__)
 
 
-@register_writer("dict")
+@register_writer("dict")  # type: ignore[arg-type]
 class DictWriter(DataFrameBasedWriter, ConfigurableReaderMixin):
     """Writes graph data to a Python dictionary.
 

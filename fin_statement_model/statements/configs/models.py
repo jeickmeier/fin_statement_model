@@ -343,7 +343,7 @@ class SectionModel(BaseItemModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     @model_validator(mode="after")
-    def check_unique_item_ids(cls, section: SectionModel) -> SectionModel:
+    def check_unique_item_ids(section: SectionModel) -> SectionModel:
         """Ensure that item and subsection IDs within a section are unique and subtotal refs valid."""
         ids = [item.id for item in section.items] + [
             sub.id for sub in section.subsections
@@ -420,7 +420,7 @@ class StatementModel(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     @model_validator(mode="after")
-    def check_unique_section_ids(cls, model: StatementModel) -> StatementModel:
+    def check_unique_section_ids(model: StatementModel) -> StatementModel:
         """Ensure that top-level section IDs are unique."""
         ids = [section.id for section in model.sections]
         duplicates = {sec_id for sec_id in ids if ids.count(sec_id) > 1}

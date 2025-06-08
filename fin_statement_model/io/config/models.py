@@ -23,7 +23,7 @@ MappingConfig = Union[dict[str, str], dict[Optional[str], dict[str, str]]]
 class BaseReaderConfig(BaseModel):
     """Base configuration for IO readers."""
 
-    source: str = Field(
+    source: Any = Field(
         ..., description="URI or path to data source (file path, ticker, etc.)"
     )
     format_type: Literal["csv", "excel", "dataframe", "dict", "fmp"] = Field(
@@ -51,7 +51,7 @@ class CsvReaderConfig(BaseReaderConfig):
         None, description="Optional configuration for mapping source item names."
     )
 
-    @model_validator(mode="after")
+    @model_validator(mode="after")  # type: ignore[arg-type]
     def check_header_row(cls, cfg: CsvReaderConfig) -> CsvReaderConfig:
         """Ensure header_row is at least 1."""
         if cfg.header_row < 1:
@@ -73,7 +73,7 @@ class ExcelReaderConfig(BaseReaderConfig):
         None, description="Optional configuration for mapping source item names."
     )
 
-    @model_validator(mode="after")
+    @model_validator(mode="after")  # type: ignore[arg-type]
     def check_indices(cls, cfg: ExcelReaderConfig) -> ExcelReaderConfig:
         """Ensure items_col and periods_row are at least 1."""
         if cfg.items_col < 1 or cfg.periods_row < 1:
@@ -109,7 +109,7 @@ class FmpReaderConfig(BaseReaderConfig):
 
         return os.getenv("FMP_API_KEY") or cfg("api.fmp_api_key", None)
 
-    @model_validator(mode="after")
+    @model_validator(mode="after")  # type: ignore[arg-type]
     def check_api_key(cls, cfg: FmpReaderConfig) -> FmpReaderConfig:
         """Ensure an API key is provided."""
         if not cfg.api_key:
@@ -218,7 +218,7 @@ class MarkdownWriterConfig(BaseWriterConfig):
     adjustment_filter: Optional[AdjustmentFilterInput] = Field(
         None, description="Adjustment filter to apply."
     )
-    forecast_configs: Optional[dict] = Field(
+    forecast_configs: Optional[dict[str, Any]] = Field(
         None,
         description="Dictionary mapping node IDs to forecast configurations for notes.",
     )

@@ -37,7 +37,7 @@ class StatementRegistry:
                      corresponding `StatementStructure` objects.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize an empty statement registry."""
         self._statements: dict[str, StatementStructure] = {}
         logger.debug("StatementRegistry initialized.")

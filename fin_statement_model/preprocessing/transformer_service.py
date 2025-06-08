@@ -120,17 +120,17 @@ class TransformerFactory:
 class TransformationService:
     """Service for managing and applying data transformations."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the transformation service."""
         logger.info("TransformationService initialized")
 
     def normalize_data(
         self,
-        data: Union[pd.DataFrame, dict],
+        data: Union[pd.DataFrame, dict[str, Any]],
         normalization_type: str = "percent_of",
         reference: Optional[str] = None,
         scale_factor: Optional[float] = None,
-    ) -> Union[pd.DataFrame, dict]:
+    ) -> Union[pd.DataFrame, dict[str, Any]]:
         """Normalize financial data."""
         transformer = TransformerFactory.create_transformer(
             "normalization",
@@ -142,11 +142,11 @@ class TransformationService:
 
     def transform_time_series(
         self,
-        data: Union[pd.DataFrame, dict],
+        data: Union[pd.DataFrame, dict[str, Any]],
         transformation_type: str = "growth_rate",
         periods: int = 1,
         window_size: int = 3,
-    ) -> Union[pd.DataFrame, dict]:
+    ) -> Union[pd.DataFrame, dict[str, Any]]:
         """Apply time series transformations to financial data."""
         transformer = TransformerFactory.create_transformer(
             "time_series",
@@ -184,7 +184,7 @@ class TransformationService:
         return transformer.execute(data)
 
     def create_transformation_pipeline(
-        self, transformers_config: list[dict[str, object]]
+        self, transformers_config: list[dict[str, Any]]
     ) -> DataTransformer:
         """Create a composite transformer from configurations."""
         transformers = []
@@ -199,7 +199,7 @@ class TransformationService:
         return CompositeTransformer(transformers)
 
     def apply_transformation_pipeline(
-        self, data: object, transformers_config: list[dict[str, object]]
+        self, data: object, transformers_config: list[dict[str, Any]]
     ) -> object:
         """Apply a transformation pipeline to data."""
         pipeline = self.create_transformation_pipeline(transformers_config)

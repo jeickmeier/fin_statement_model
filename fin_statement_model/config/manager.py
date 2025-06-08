@@ -6,7 +6,7 @@ from multiple sources and merging them according to precedence rules.
 
 import os
 from pathlib import Path
-from typing import Any, Optional, Union, get_origin, get_args
+from typing import Any, Optional, Union, get_origin, get_args, cast
 import logging
 from threading import Lock
 from pydantic import BaseModel
@@ -119,6 +119,7 @@ class ConfigManager:
         with self._lock:
             if self._config is None:
                 self._load_config()
+            assert self._config is not None
             return self._config
 
     def update(self, updates: dict[str, Any]) -> None:
@@ -141,7 +142,11 @@ class ConfigManager:
     def _load_config(self) -> None:
         """Load and merge configuration from all sources."""
         # Start with defaults
-        config_dict = Config().to_dict()
+        config_dict = Config(
+            project_name="fin_statement_model",
+            config_file_path=None,
+            auto_save_config=False,
+        ).to_dict()
 
         # Layer 1: Project config file
         project_config = self._find_project_config()
@@ -206,11 +211,13 @@ class ConfigManager:
             if path.suffix in [".yaml", ".yml"]:
                 import yaml
 
-                return yaml.safe_load(path.read_text()) or {}
+                result = yaml.safe_load(path.read_text()) or {}
+                return cast(dict[str, Any], result)
             elif path.suffix == ".json":
                 import json
 
-                return json.loads(path.read_text())
+                result = json.loads(path.read_text())
+                return cast(dict[str, Any], result)
             else:
                 raise ConfigurationError(
                     f"Unsupported config file format: {path.suffix}"
@@ -228,7 +235,7 @@ class ConfigManager:
 
         Mappings are now generated dynamically from the Config model.
         """
-        config = {}
+        config: dict[str, Any] = {}
 
         # Generate mappings dynamically from the Config model
         env_mappings = generate_env_mappings(Config)

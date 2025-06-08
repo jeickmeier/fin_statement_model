@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Optional, cast
 
 from fin_statement_model.config import cfg_or_param
 from fin_statement_model.core.errors import StatementError
@@ -184,8 +184,9 @@ class LineItem(StatementItem):
             )
 
         # Use config default if not provided
-        display_scale_factor = cfg_or_param(
-            "display.scale_factor", display_scale_factor
+        display_scale_factor = cast(
+            float,
+            cfg_or_param("display.scale_factor", display_scale_factor),
         )
 
         if display_scale_factor <= 0:
@@ -312,7 +313,10 @@ class LineItem(StatementItem):
                 standard_registry = standard_node_registry
 
             # Try to get the standard name (handles alternate names too)
-            return standard_registry.get_standard_name(self._standard_node_ref)
+            return cast(
+                str,
+                standard_registry.get_standard_name(self._standard_node_ref),
+            )
 
         return None
 
@@ -522,17 +526,17 @@ class CalculatedLineItem(LineItem):
     @property
     def calculation_type(self) -> str:
         """Get the calculation operation type (e.g., 'addition')."""
-        return self._calculation["type"]
+        return cast(str, self._calculation["type"])
 
     @property
     def input_ids(self) -> list[str]:
         """Get the list of input item IDs for this calculation."""
-        return self._calculation["inputs"]
+        return cast(list[str], self._calculation["inputs"])
 
     @property
     def parameters(self) -> dict[str, Any]:
         """Get optional parameters for the calculation."""
-        return self._calculation.get("parameters", {})
+        return cast(dict[str, Any], self._calculation.get("parameters", {}))
 
     @property
     def item_type(self) -> StatementItemType:

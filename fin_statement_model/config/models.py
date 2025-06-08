@@ -249,30 +249,30 @@ class Config(BaseModel):
 
     # Sub-configurations
     logging: LoggingConfig = Field(
-        default_factory=LoggingConfig, description="Logging configuration"
+        default=LoggingConfig.model_validate({}), description="Logging configuration"
     )
     io: IOConfig = Field(
-        default_factory=IOConfig, description="Input/Output configuration"
+        default=IOConfig.model_validate({}), description="Input/Output configuration"
     )
     forecasting: ForecastingConfig = Field(
-        default_factory=ForecastingConfig, description="Forecasting configuration"
+        default=ForecastingConfig.model_validate({}), description="Forecasting configuration"
     )
     preprocessing: PreprocessingConfig = Field(
-        default_factory=PreprocessingConfig,
+        default=PreprocessingConfig.model_validate({}),
         description="Data preprocessing configuration",
     )
     display: DisplayConfig = Field(
-        default_factory=DisplayConfig,
+        default=DisplayConfig.model_validate({}),
         description="Display and formatting configuration",
     )
     api: APIConfig = Field(
-        default_factory=APIConfig, description="API and external service configuration"
+        default=APIConfig.model_validate({}), description="API and external service configuration"
     )
     metrics: MetricsConfig = Field(
-        default_factory=MetricsConfig, description="Metrics configuration"
+        default=MetricsConfig.model_validate({}), description="Metrics configuration"
     )
     validation: ValidationConfig = Field(
-        default_factory=ValidationConfig, description="Data validation configuration"
+        default=ValidationConfig.model_validate({}), description="Data validation configuration"
     )
 
     # Global settings

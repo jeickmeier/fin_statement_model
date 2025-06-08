@@ -95,7 +95,7 @@ class ProcessorResult:
                     )
                 )
 
-        return Failure(errors=errors if errors else None)
+        return Failure(errors=errors)
 
 
 class ItemProcessor(ABC):

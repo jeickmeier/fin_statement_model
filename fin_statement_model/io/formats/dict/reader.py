@@ -63,7 +63,7 @@ class DictReader(DataReader):
 
         # Validate data structure and collect all periods
         all_periods = set()
-        validation_errors = []
+        validation_errors: list[str] = []
         try:
             for node_name, period_values in source.items():
                 if not isinstance(period_values, dict):

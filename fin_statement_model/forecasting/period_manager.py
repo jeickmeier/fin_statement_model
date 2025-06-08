@@ -54,7 +54,7 @@ class PeriodManager:
         ):
             historical = graph.get_historical_periods()
             logger.debug(f"Using graph's get_historical_periods method: {historical}")
-            return historical
+            return historical  # type: ignore[no-any-return]
 
         # Otherwise, infer from graph periods and forecast periods
         if not hasattr(graph, "periods") or not graph.periods:
@@ -91,7 +91,7 @@ class PeriodManager:
                 "the first forecast period."
             )
 
-        return historical_periods
+        return historical_periods  # type: ignore[no-any-return]
 
     @staticmethod
     def determine_base_period(

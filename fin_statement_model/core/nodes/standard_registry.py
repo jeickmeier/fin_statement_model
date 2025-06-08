@@ -460,7 +460,8 @@ class StandardNodeRegistry:
 
         # Call the loading function
         if hasattr(module, "load_all_standard_nodes"):
-            return module.load_all_standard_nodes(base_path)
+            loaded_count = module.load_all_standard_nodes(base_path)
+            return int(loaded_count)
         else:
             raise AttributeError(
                 f"Module at {init_file} missing load_all_standard_nodes function"

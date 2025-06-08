@@ -456,6 +456,8 @@ class StatementForecaster:
                 node_id=node_name,
                 available_nodes=list(self.fsg.nodes.keys()),
             )
+        # TODO: implement detailed forecasting logic for a single node
+        raise NotImplementedError("forecast_node is not implemented")
 
     def forecast_all(
         self,
@@ -488,6 +490,10 @@ class StatementForecaster:
 
         return results
 
+    def _is_forecastable(self, node: Node) -> bool:
+        """Determine if a node is forecastable (has a 'values' dictionary)."""
+        return hasattr(node, "values") and isinstance(node.values, dict)
+
     def create_forecast_node(
         self,
         base_node_name: str,
@@ -518,7 +524,7 @@ class StatementForecaster:
 
         # Create forecast node
         try:
-            forecast_node = NodeFactory.create_forecast_node(
+            forecast_node = NodeFactory.create_forecast_node(  # type: ignore[call-arg]
                 name=forecast_name,
                 base_node=base_node,
                 forecast_config=config,

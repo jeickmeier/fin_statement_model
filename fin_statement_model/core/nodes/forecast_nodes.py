@@ -47,6 +47,8 @@ class ForecastNode(Node):
         fy2024_revenue = node.calculate("FY2024")
     """
 
+    _cache: dict[str, float]
+
     def __init__(self, input_node: Node, base_period: str, forecast_periods: list[str]):
         """Initialize ForecastNode with input node and forecast periods.
 
@@ -95,7 +97,7 @@ class ForecastNode(Node):
             self._cache[period] = self._calculate_value(period)
         return self._cache[period]
 
-    def clear_cache(self):
+    def clear_cache(self) -> None:
         """Clear the calculation cache.
 
         This method clears any cached calculation results, forcing future calls to

@@ -49,7 +49,7 @@ class ExcelReader(
         self.cfg = cfg
 
     @handle_read_errors()
-    def read(self, source: str, **kwargs: dict[str, Any]) -> Graph:
+    def read(self, source: str, **kwargs: Any) -> Graph:
         """Read data from an Excel file sheet into a new Graph based on instance config.
 
         Args:

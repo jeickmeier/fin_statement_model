@@ -11,7 +11,7 @@ import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-from typing import Generic, Optional, TypeVar
+from typing import Generic, Optional, TypeVar, cast
 from collections.abc import Callable
 
 from fin_statement_model.config import cfg_or_param
@@ -70,7 +70,7 @@ class RetryConfig:
     log_retries: bool = True
     collect_all_errors: bool = False
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Validate configuration and set defaults."""
         # Use config default if not provided
         if self.max_attempts is None:
@@ -251,12 +251,14 @@ class RetryHandler:
         """
         error_collector = ErrorCollector() if self.config.collect_all_errors else None
         total_delay = 0.0
+        # Ensure max_attempts is int
+        max_attempts = cast(int, self.config.max_attempts)
         op_name = operation_name or operation.__name__
 
-        for attempt in range(1, self.config.max_attempts + 1):
+        for attempt in range(1, max_attempts + 1):
             if attempt > 1 and self.config.log_retries:
                 logger.info(
-                    f"Retrying {op_name} (attempt {attempt}/{self.config.max_attempts})"
+                    f"Retrying {op_name} (attempt {attempt}/{max_attempts})"
                 )
 
             # Execute the operation
@@ -289,7 +291,7 @@ class RetryHandler:
                     )
 
             # Check if we should retry
-            if attempt >= self.config.max_attempts:
+            if attempt >= max_attempts:
                 # No more retries
                 if self.config.log_retries:
                     logger.warning(
@@ -300,8 +302,10 @@ class RetryHandler:
 
             # Check if errors are retryable
             if self.config.strategy == RetryStrategy.CONDITIONAL:
+                # Safe cast retryable_errors to non-nullable set
+                retryable_errors = cast(set[str], self.config.retryable_errors)
                 retryable = any(
-                    is_retryable_error(error, self.config.retryable_errors)
+                    is_retryable_error(error, retryable_errors)
                     for error in errors
                 )
                 if not retryable:

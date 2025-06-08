@@ -7,8 +7,7 @@ public API functions for exporting statements.
 
 import logging
 from pathlib import Path
-from typing import Any, Optional
-from collections.abc import Callable
+from typing import Any, Callable, Optional
 
 import pandas as pd
 
@@ -30,9 +29,9 @@ def export_statements(
     graph: Graph,
     config_path_or_dir: str,
     output_dir: str,
-    format_kwargs: Optional[dict[str, Any]],
-    writer_func: Callable,
-    writer_kwargs: Optional[dict[str, Any]],
+    format_kwargs: dict[str, Any],
+    writer_func: Callable[..., None],
+    writer_kwargs: dict[str, Any],
     file_suffix: str,
 ) -> None:
     """Generate and export statement DataFrames using a specific writer function.

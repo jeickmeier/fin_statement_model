@@ -1,7 +1,7 @@
 """Data reader for CSV files."""
 
 import logging
-from typing import Any
+from typing import Any, cast
 
 import pandas as pd
 
@@ -53,7 +53,7 @@ class CsvReader(
         self.cfg = cfg
 
     @handle_read_errors()
-    def read(self, source: str, **kwargs: dict[str, Any]) -> Graph:
+    def read(self, source: str, **kwargs: Any) -> Graph:
         """Read data from a CSV file into a new Graph.
 
         Args:
@@ -94,15 +94,19 @@ class CsvReader(
                 reader_type=self.__class__.__name__,
             )
 
+        # Cast columns to str after validation
+        item_col_str = cast(str, item_col)
+        period_col_str = cast(str, period_col)
+        value_col_str = cast(str, value_col)
         # Read CSV Data
         df = self._read_csv_file(file_path, kwargs.get("pandas_read_csv_kwargs", {}))
 
         # Validate columns
-        self._validate_columns(df, item_col, period_col, value_col, file_path)
+        self._validate_columns(df, item_col_str, period_col_str, value_col_str, file_path)
 
         # Process data
         return self._process_dataframe(
-            df, item_col, period_col, value_col, file_path, kwargs
+            df, item_col_str, period_col_str, value_col_str, file_path, kwargs
         )
 
     def _read_csv_file(
@@ -128,7 +132,7 @@ class CsvReader(
         # Handle optional index_col with validation
         index_col = self.get_config_value(
             "index_col",
-            value_type=(int, type(None)),
+            value_type=int,
             validator=lambda x: x is None or x >= 1,
         )
         if index_col is not None:

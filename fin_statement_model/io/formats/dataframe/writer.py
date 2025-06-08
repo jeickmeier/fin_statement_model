@@ -17,7 +17,7 @@ from fin_statement_model.io.config.models import DataFrameWriterConfig
 logger = logging.getLogger(__name__)
 
 
-@register_writer("dataframe")
+@register_writer("dataframe")  # type: ignore[arg-type]
 class DataFrameWriter(DataFrameBasedWriter, ConfigurableReaderMixin):
     """Writes graph data to a pandas DataFrame.
 
@@ -38,7 +38,7 @@ class DataFrameWriter(DataFrameBasedWriter, ConfigurableReaderMixin):
 
     @handle_write_errors()
     def write(
-        self, graph: Graph, target: Any = None, **kwargs: dict[str, object]
+        self, graph: Graph, target: Any = None, **kwargs: Any
     ) -> pd.DataFrame:
         """Convert the graph data to a pandas DataFrame based on instance configuration.
 

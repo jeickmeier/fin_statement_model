@@ -19,9 +19,11 @@ class Node(ABC):
 
     Attributes:
     name (str): Unique identifier for the node instance.
+    values: dict[str, Any]
     """
 
     name: str
+    values: dict[str, Any]
 
     def __init__(self, name: str):
         """Initialize the Node instance with a unique name.
@@ -78,7 +80,7 @@ class Node(ABC):
             100.0
         """
 
-    def clear_cache(self):
+    def clear_cache(self) -> None:
         """Clear cached calculation results for this node.
 
         Subclasses with caching should override this method to clear their internal cache.

@@ -7,7 +7,7 @@ item IDs to node IDs and fetching values with proper error handling.
 
 import logging
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, cast
 
 import numpy as np
 import pandas as pd
@@ -130,7 +130,7 @@ class DataFetcher:
             hasattr(item, "default_adjustment_filter")
             and item.default_adjustment_filter is not None
         ):
-            return item.default_adjustment_filter
+            return cast(AdjustmentFilterInput, item.default_adjustment_filter)
 
         # Check parent section's default filter
         # We need to find which section contains this item
@@ -140,7 +140,7 @@ class DataFetcher:
             and hasattr(parent_section, "default_adjustment_filter")
             and parent_section.default_adjustment_filter is not None
         ):
-            return parent_section.default_adjustment_filter
+            return cast(AdjustmentFilterInput, parent_section.default_adjustment_filter)
 
         # No filter
         return None
@@ -250,7 +250,7 @@ class DataFetcher:
             )
 
             if node_result.is_success():
-                node_data = node_result.get_value()
+                node_data = cast(NodeData, node_result.get_value())
                 if node_data.has_data or include_missing:
                     data[node_id] = node_data.values
 
@@ -322,12 +322,12 @@ class DataFetcher:
         for period in periods:
             try:
                 # Fetch value with optional adjustments
-                value = self.graph.get_adjusted_value(
+                value = cast(float, self.graph.get_adjusted_value(
                     node_id,
                     period,
                     filter_input=adjustment_filter,
                     return_flag=False,  # Only need the value
-                )
+                ))
                 # Ensure value is float or NaN
                 values[period] = float(value) if pd.notna(value) else np.nan
                 is_adjusted[period] = bool(value)

@@ -4,7 +4,8 @@ This module provides Section and StatementStructure, which organize
 LineItem and CalculatedLineItem objects into nested groups.
 """
 
-from typing import Any, Optional, Union
+from __future__ import annotations
+from typing import Any, Optional, Union, Sequence, cast
 
 from fin_statement_model.config import cfg_or_param
 from fin_statement_model.core.errors import StatementError
@@ -66,8 +67,9 @@ class Section:
             raise StatementError(f"Invalid section name: {name} for ID: {id}")
 
         # Use config default if not provided
-        display_scale_factor = cfg_or_param(
-            "display.scale_factor", display_scale_factor
+        display_scale_factor = cast(
+            float,
+            cfg_or_param("display.scale_factor", display_scale_factor),
         )
 
         if display_scale_factor <= 0:
@@ -87,6 +89,8 @@ class Section:
         self._units = units
         self._display_scale_factor = display_scale_factor
         self._items: list[Union[Section, StatementItem]] = []
+        # Optional subtotal for this section (may be set by builder)
+        self.subtotal: Optional[StatementItem] = None
 
     @property
     def id(self) -> str:
@@ -227,8 +231,9 @@ class StatementStructure:
             raise StatementError(f"Invalid statement name: {name} for ID: {id}")
 
         # Use config default if not provided
-        display_scale_factor = cfg_or_param(
-            "display.scale_factor", display_scale_factor
+        display_scale_factor = cast(
+            float,
+            cfg_or_param("display.scale_factor", display_scale_factor),
         )
 
         if display_scale_factor <= 0:
@@ -324,7 +329,7 @@ class StatementStructure:
         """
         calculation_items = []
 
-        def collect_calculation_items(items: list[Union["Section", "StatementItem"]]):
+        def collect_calculation_items(items: Sequence[Union[Section, StatementItem]]) -> None:
             for item in items:
                 if isinstance(item, CalculatedLineItem | SubtotalLineItem):
                     calculation_items.append(item)
@@ -347,7 +352,7 @@ class StatementStructure:
         """
         metric_items = []
 
-        def collect_metric_items(items: list[Union["Section", "StatementItem"]]):
+        def collect_metric_items(items: Sequence[Union[Section, StatementItem]]) -> None:
             for item in items:
                 if isinstance(item, MetricLineItem):
                     metric_items.append(item)
@@ -371,7 +376,7 @@ class StatementStructure:
         all_statement_items: list[StatementItem] = []
 
         def _collect_items_recursive(
-            items_or_sections: list[Union[Section, StatementItem]],
+            items_or_sections: Sequence[Union[Section, StatementItem]],
         ) -> None:
             for item in items_or_sections:
                 if isinstance(item, Section):

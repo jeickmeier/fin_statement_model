@@ -167,7 +167,7 @@ class CompositeTransformer(DataTransformer):
     """
 
     def __init__(
-        self, transformers: list[DataTransformer], config: Optional[dict] = None
+        self, transformers: list[DataTransformer], config: Optional[dict[str, object]] = None
     ):
         """Initialize with a list of transformers.
 

@@ -10,7 +10,7 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Generic, Optional, TypeVar
+from typing import Generic, Optional, TypeVar, Any, cast
 
 logger = logging.getLogger(__name__)
 
@@ -98,11 +98,11 @@ class Result(ABC, Generic[T]):
         if self.is_failure():
             errors_str = "\n".join(str(e) for e in self.get_errors())
             raise ValueError(f"Cannot unwrap failed result:\n{errors_str}")
-        return self.get_value()  # type: ignore
+        return cast(T, self.get_value())
 
     def unwrap_or(self, default: T) -> T:
         """Get the value or return a default if failed."""
-        return self.get_value() if self.is_success() else default
+        return cast(T, self.get_value()) if self.is_success() else default
 
 
 @dataclass(frozen=True)
@@ -134,7 +134,7 @@ class Failure(Result[T]):
 
     errors: list[ErrorDetail] = field(default_factory=list)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Ensure at least one error is present."""
         if not self.errors:
             # Add a default error if none provided
@@ -187,7 +187,7 @@ class ErrorCollector:
     rather than failing fast on the first error.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize an empty error collector."""
         self._errors: list[ErrorDetail] = []
         self._warnings: list[ErrorDetail] = []
@@ -228,7 +228,7 @@ class ErrorCollector:
             )
         )
 
-    def add_from_result(self, result: Result, source: Optional[str] = None) -> None:
+    def add_from_result(self, result: Result[Any], source: Optional[str] = None) -> None:
         """Add errors from a Result object."""
         if result.is_failure():
             for error in result.get_errors():
@@ -270,7 +270,7 @@ class ErrorCollector:
         """Get all collected errors and warnings."""
         return self._errors + self._warnings
 
-    def to_result(self, value: T = None) -> Result[T]:
+    def to_result(self, value: Optional[T] = None) -> Result[T]:
         """Convert collector state to a Result.
 
         If there are errors, returns Failure.
@@ -278,7 +278,8 @@ class ErrorCollector:
         """
         if self.has_errors():
             return Failure(errors=self._errors)
-        return Success(value=value)
+        # Cast value to T for Success
+        return Success(value=cast(T, value))
 
     def log_all(self, prefix: str = "") -> None:
         """Log all collected errors and warnings."""
@@ -293,7 +294,7 @@ OperationResult = Result[
     bool
 ]  # For operations that succeed/fail without returning data
 ValidationResult = Result[bool]  # For validation operations
-ProcessingResult = Result[dict[str, any]]  # For processing operations that return data
+ProcessingResult = Result[dict[str, Any]]  # For processing operations that return data
 
 
 def combine_results(*results: Result[T]) -> Result[list[T]]:
@@ -307,7 +308,7 @@ def combine_results(*results: Result[T]) -> Result[list[T]]:
 
     for result in results:
         if result.is_success():
-            values.append(result.get_value())
+            values.append(cast(T, result.get_value()))
         else:
             for error in result.get_errors():
                 if error.severity == ErrorSeverity.WARNING:

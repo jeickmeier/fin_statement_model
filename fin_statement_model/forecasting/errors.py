@@ -109,7 +109,7 @@ class ForecastNodeError(ForecastingError):
     def __init__(
         self,
         message: str,
-        node_id: str,
+        node_id: Optional[str],
         available_nodes: Optional[list[str]] = None,
         reason: Optional[str] = None,
     ):

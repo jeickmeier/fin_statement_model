@@ -12,8 +12,7 @@ import statistics
 
 # Use lowercase built-in types for annotations
 from typing import Optional, Union, Any
-from collections.abc import Callable
-from collections.abc import Sequence
+from typing import Callable
 
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node
@@ -23,7 +22,7 @@ from fin_statement_model.core.errors import CalculationError
 logger = logging.getLogger(__name__)
 
 Numeric = Union[int, float]
-StatFunc = Callable[[Sequence[Numeric]], Numeric]
+StatFunc = Callable[..., Any]  # Widen callable type to accept any callable returning Numeric
 
 
 class YoYGrowthNode(Node):
@@ -469,7 +468,7 @@ class MultiPeriodStatNode(Node):
             )
 
         # Map common statistical function names to their implementations
-        stat_func_map = {
+        stat_func_map: dict[str, StatFunc] = {
             "mean": statistics.mean,
             "stdev": statistics.stdev,
             "median": statistics.median,

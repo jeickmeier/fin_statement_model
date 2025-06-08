@@ -73,6 +73,8 @@ class StatementConfig:
         self.enable_node_validation = enable_node_validation
         self.node_validation_strict = node_validation_strict
 
+        # Initialize node_validator attribute
+        self.node_validator: Optional[UnifiedNodeValidator] = None
         if enable_node_validation:
             if node_validator is not None:
                 self.node_validator = node_validator
@@ -84,8 +86,6 @@ class StatementConfig:
                     warn_on_non_standard=True,
                     enable_patterns=True,
                 )
-        else:
-            self.node_validator = None
 
     def validate_config(self) -> list[str]:
         """Validate the configuration data using Pydantic models and optional node validation.
@@ -105,7 +105,7 @@ class StatementConfig:
                 self._validate_node_ids(self.model, error_collector)
 
             # Convert warnings and errors to string list for backward compatibility
-            validation_errors = []
+            validation_errors: list[str] = []
 
             # Add errors (always included)
             validation_errors.extend(

@@ -123,7 +123,7 @@ class PeriodConversionError(TransformationError):
         self.target_period = target_period
         self.date_column = date_column
 
-        details = {}
+        details: dict[str, Any] = {}
         if source_period and target_period:
             details["conversion"] = f"{source_period} -> {target_period}"
         if date_column:
@@ -162,7 +162,7 @@ class NormalizationError(TransformationError):
         self.reference_field = reference_field
         self.scale_factor = scale_factor
 
-        params = {}
+        params: dict[str, Any] = {}
         if method:
             params["method"] = method
         if reference_field:
@@ -203,7 +203,7 @@ class TimeSeriesError(TransformationError):
         self.window_size = window_size
         self.column = column
 
-        params = {}
+        params: dict[str, Any] = {}
         if operation:
             params["operation"] = operation
         if window_size is not None:

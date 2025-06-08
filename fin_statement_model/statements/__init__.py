@@ -109,6 +109,7 @@ from .orchestration.factory import (
 
 # Errors specific to statements
 from .errors import StatementError, ConfigurationError
+from typing import Any, Optional
 
 # Import UnifiedNodeValidator for convenience
 from fin_statement_model.io.validation import UnifiedNodeValidator
@@ -116,10 +117,10 @@ from fin_statement_model.io.validation import UnifiedNodeValidator
 
 # Node validation convenience functions
 def create_validated_statement_config(
-    config_data: dict,
+    config_data: dict[str, Any],
     enable_node_validation: bool = True,
     strict_mode: bool = False,
-    node_validator: UnifiedNodeValidator = None,
+    node_validator: Optional[UnifiedNodeValidator] = None,
 ) -> StatementConfig:
     """Create a StatementConfig with optional node validation enabled.
 
@@ -154,7 +155,7 @@ def create_validated_statement_config(
 def create_validated_statement_builder(
     enable_node_validation: bool = True,
     strict_mode: bool = False,
-    node_validator: UnifiedNodeValidator = None,
+    node_validator: Optional[UnifiedNodeValidator] = None,
 ) -> StatementStructureBuilder:
     """Create a StatementStructureBuilder with optional node validation enabled.
 
@@ -181,7 +182,7 @@ def create_validated_statement_builder(
 
 
 def validate_statement_config_with_nodes(
-    config_path_or_data: str | dict,
+    config_path_or_data: str | dict[str, Any],
     strict_mode: bool = False,
     auto_standardize: bool = True,
 ) -> tuple[StatementConfig, list[str]]:
@@ -239,7 +240,7 @@ def validate_statement_config_with_nodes(
 
 
 def build_validated_statement_from_config(
-    config_path_or_data: str | dict,
+    config_path_or_data: str | dict[str, Any],
     strict_mode: bool = False,
     auto_standardize: bool = True,
 ) -> StatementStructure:

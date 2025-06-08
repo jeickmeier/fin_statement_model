@@ -60,7 +60,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
         """
         self.cfg = cfg
 
-    def _validate_api_key(self):
+    def _validate_api_key(self) -> None:
         """Perform a simple check if the API key seems valid."""
         # API key is now guaranteed by FmpReaderConfig validation
         api_key = self.cfg.api_key
@@ -92,7 +92,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
                 original_error=e,
             )
 
-    def read(self, source: str, **kwargs: dict[str, Any]) -> Graph:
+    def read(self, source: str, **kwargs: Any) -> Graph:
         """Fetch data from FMP API and return a Graph.
 
         Args:

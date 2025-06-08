@@ -225,9 +225,9 @@ class UnifiedNodeValidator:
             )
 
         # Check specific sub-node patterns
-        pattern_result = self._check_patterns(name, self.SUBNODE_PATTERNS, "subnode")
-        if pattern_result:
-            base_name, suffix, pattern_type = pattern_result
+        subnode_match = self._check_patterns(name, self.SUBNODE_PATTERNS, "subnode")
+        if subnode_match:
+            base_name, suffix, pattern_type = subnode_match
             # Normalize base name for registry check
             is_base_standard = standard_node_registry.is_recognized_name(
                 base_name.lower()
@@ -317,7 +317,7 @@ class UnifiedNodeValidator:
             match = re.match(pattern, name_lower)
             if match:
                 base_name = match.group(1)
-                suffix = match.group(2) if match.lastindex > 1 else ""
+                suffix = match.group(2) if (match.lastindex is not None and match.lastindex > 1) else ""
                 return base_name, suffix, pattern_type
 
         return None
@@ -496,33 +496,32 @@ class UnifiedNodeValidator:
         node_names = [node.name for node in nodes]
         results = self.validate_batch(node_names, node_types, parent_map)
 
-        # Categorize results
-        report = {
-            "total": len(results),
-            "by_category": {},
-            "by_validity": {"valid": 0, "invalid": 0},
-            "suggestions": {},
-            "details": results,
-        }
-
+        # Build summarized report
+        by_category: dict[str, list[str]] = {}
+        by_validity: dict[str, int] = {"valid": 0, "invalid": 0}
+        suggestions: dict[str, list[str]] = {}
+        # Populate report sections
         for name, result in results.items():
             # Count by category
-            category = result.category
-            if category not in report["by_category"]:
-                report["by_category"][category] = []
-            report["by_category"][category].append(name)
-
+            cat = result.category
+            if cat not in by_category:
+                by_category[cat] = []
+            by_category[cat].append(name)
             # Count by validity
             if result.is_valid:
-                report["by_validity"]["valid"] += 1
+                by_validity["valid"] += 1
             else:
-                report["by_validity"]["invalid"] += 1
-
+                by_validity["invalid"] += 1
             # Collect suggestions
             if result.suggestions:
-                report["suggestions"][name] = result.suggestions
-
-        return report
+                suggestions[name] = result.suggestions
+        return {
+            "total": len(results),
+            "by_category": by_category,
+            "by_validity": by_validity,
+            "suggestions": suggestions,
+            "details": results,
+        }
 
     def clear_cache(self) -> None:
         """Clear the validation cache."""

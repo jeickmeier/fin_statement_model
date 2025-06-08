@@ -36,6 +36,8 @@ class FinancialStatementItemNode(Node):
         False
     """
 
+    values: dict[str, float]
+
     def __init__(self, name: str, values: dict[str, float]):
         """Initialize the financial statement item node.
 

@@ -8,7 +8,7 @@ use `list_readers()` and `list_writers()` for a readonly view of registered hand
 """
 
 import logging
-from typing import TypeVar, Generic, Optional, Any, Union
+from typing import TypeVar, Generic, Optional, Any, Union, cast
 from collections.abc import Callable
 
 from pydantic import ValidationError
@@ -235,8 +235,8 @@ def register_writer(format_type: str) -> Callable[[type[DataWriter]], type[DataW
 
 def _get_handler(
     format_type: str,
-    registry: HandlerRegistry[Union[DataReader, DataWriter]],
-    schema_map: dict[str, type],
+    registry: HandlerRegistry[Any],
+    schema_map: dict[str, Any],
     handler_type: str,
     error_class: type[Union[ReadError, WriteError]],
     **kwargs: Any,
@@ -288,7 +288,7 @@ def _get_handler(
 
         # Instantiate handler with validated config
         try:
-            return handler_class(cfg)
+            return cast(Union[DataReader, DataWriter], handler_class(cfg))
         except Exception as e:
             logger.error(
                 f"Failed to instantiate {handler_type}er for format '{format_type}' "
@@ -303,7 +303,7 @@ def _get_handler(
 
     # Fallback for handlers without config schema (legacy support)
     try:
-        return handler_class(**kwargs)
+        return cast(Union[DataReader, DataWriter], handler_class(**kwargs))
     except Exception as e:
         logger.error(
             f"Failed to instantiate {handler_type}er for format '{format_type}' "
@@ -334,14 +334,14 @@ def get_reader(format_type: str, **kwargs: Any) -> DataReader:
         FormatNotSupportedError: If no reader is registered for the format type.
         ReadError: If validation fails for known reader types.
     """
-    return _get_handler(
+    return cast(DataReader, _get_handler(
         format_type=format_type,
         registry=_reader_registry,
         schema_map=_READER_SCHEMA_MAP,
         handler_type="read",
         error_class=ReadError,
         **kwargs,
-    )
+    ))
 
 
 def get_writer(format_type: str, **kwargs: Any) -> DataWriter:
@@ -358,14 +358,14 @@ def get_writer(format_type: str, **kwargs: Any) -> DataWriter:
         FormatNotSupportedError: If no writer is registered for the format type.
         WriteError: If validation fails for known writer types.
     """
-    return _get_handler(
+    return cast(DataWriter, _get_handler(
         format_type=format_type,
         registry=_writer_registry,
         schema_map=_WRITER_SCHEMA_MAP,
         handler_type="write",
         error_class=WriteError,
         **kwargs,
-    )
+    ))
 
 
 def list_readers() -> dict[str, type[DataReader]]:

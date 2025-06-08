@@ -41,7 +41,7 @@ class ExcelWriter(DataWriter, ConfigurableReaderMixin):
         self.cfg = cfg
 
     @handle_write_errors()
-    def write(self, graph: Graph, target: str, **kwargs: dict[str, Any]) -> None:
+    def write(self, graph: Graph, target: str, **kwargs: Any) -> None:
         """Write graph data to an Excel file, converting via DataFrame first.
 
         Args:
@@ -85,6 +85,7 @@ class ExcelWriter(DataWriter, ConfigurableReaderMixin):
         """
         # Create a config for DataFrameWriter
         df_config = DataFrameWriterConfig(
+            target=None,
             format_type="dataframe",
             recalculate=recalculate,
             include_nodes=include_nodes,

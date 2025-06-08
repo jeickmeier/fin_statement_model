@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 import ast
 import logging
 import operator
-from typing import Optional, ClassVar
+from typing import Optional, ClassVar, Any
 from collections.abc import Callable
 
 from fin_statement_model.core.nodes.base import Node  # Absolute
@@ -535,12 +535,12 @@ class FormulaCalculation(Calculation):
     """
 
     # Supported AST operators mapping to Python operator functions
-    OPERATORS: ClassVar[dict[type, Callable[[float, float], float]]] = {
+    OPERATORS: ClassVar[dict[type[Any], Callable[..., float]]] = {
         ast.Add: operator.add,
         ast.Sub: operator.sub,
         ast.Mult: operator.mul,
         ast.Div: operator.truediv,
-        ast.USub: operator.neg,  # type: ignore[dict-item]
+        ast.USub: operator.neg,
     }
 
     def __init__(self, formula: str, input_variable_names: list[str]):

@@ -8,7 +8,7 @@ statement.
 """
 
 import logging
-from typing import Union, Optional, Any
+from typing import Union, Optional, Any, cast
 
 # Assuming config and structure modules are accessible
 from fin_statement_model.statements.configs.validator import StatementConfig
@@ -74,6 +74,8 @@ class StatementStructureBuilder:
         self.enable_node_validation = enable_node_validation
         self.node_validation_strict = node_validation_strict
 
+        # Initialize node_validator
+        self.node_validator: Optional[UnifiedNodeValidator] = None
         if enable_node_validation:
             if node_validator is not None:
                 self.node_validator = node_validator
@@ -101,14 +103,13 @@ class StatementStructureBuilder:
         """
         if filter_input is None:
             return None
-
-        if isinstance(filter_input, list):
-            # Simple list of tags - convert to set
+        # Simple list of tags - convert to set
+        elif isinstance(filter_input, list):
             return set(filter_input)
-
-        if isinstance(filter_input, AdjustmentFilterSpec):
+        # Configuration spec to core filter conversion
+        elif isinstance(filter_input, AdjustmentFilterSpec):
             # Convert AdjustmentFilterSpec to AdjustmentFilter
-            kwargs = {}
+            kwargs: dict[str, Any] = {}
 
             # Convert list fields to sets
             if filter_input.include_scenarios:
@@ -124,18 +125,21 @@ class StatementStructureBuilder:
 
             # Convert string types to AdjustmentType enums
             if filter_input.include_types:
-                kwargs["include_types"] = {
-                    AdjustmentType(type_str) for type_str in filter_input.include_types
-                }
+                kwargs["include_types"] = cast(
+                    set[AdjustmentType],
+                    {AdjustmentType(type_str) for type_str in filter_input.include_types},
+                )
             if filter_input.exclude_types:
-                kwargs["exclude_types"] = {
-                    AdjustmentType(type_str) for type_str in filter_input.exclude_types
-                }
+                kwargs["exclude_types"] = cast(
+                    set[AdjustmentType],
+                    {AdjustmentType(type_str) for type_str in filter_input.exclude_types},
+                )
 
             # Pass through period
             if filter_input.period:
                 kwargs["period"] = filter_input.period
 
+            # Create AdjustmentFilter from kwargs
             return AdjustmentFilter(**kwargs)
 
         # Unknown type - log warning and return None
@@ -201,7 +205,7 @@ class StatementStructureBuilder:
             statement = StatementStructure(
                 id=stmt_model.id,
                 name=stmt_model.name,
-                description=stmt_model.description,
+                description=cast(str, stmt_model.description),
                 metadata=stmt_model.metadata,
                 units=stmt_model.units,
                 display_scale_factor=stmt_model.display_scale_factor,
@@ -369,7 +373,7 @@ class StatementStructureBuilder:
         section = Section(
             id=section_model.id,
             name=section_model.name,
-            description=section_model.description,
+            description=cast(str, section_model.description),
             metadata=section_model.metadata,
             default_adjustment_filter=adjustment_filter,
             display_format=section_model.display_format,
@@ -424,7 +428,7 @@ class StatementStructureBuilder:
                 name=item_model.name,
                 node_id=item_model.node_id,
                 standard_node_ref=item_model.standard_node_ref,
-                description=item_model.description,
+                description=cast(str, item_model.description),
                 sign_convention=item_model.sign_convention,
                 metadata=item_model.metadata,
                 default_adjustment_filter=adjustment_filter,
@@ -442,8 +446,8 @@ class StatementStructureBuilder:
                 id=item_model.id,
                 name=item_model.name,
                 # Pass the nested Pydantic model if structure expects dict
-                calculation=item_model.calculation.model_dump(),  # Assuming structure expects dict
-                description=item_model.description,
+                calculation=item_model.calculation.model_dump(),
+                description=cast(str, item_model.description),
                 sign_convention=item_model.sign_convention,
                 metadata=item_model.metadata,
                 default_adjustment_filter=adjustment_filter,
@@ -461,7 +465,7 @@ class StatementStructureBuilder:
                 name=item_model.name,
                 metric_id=item_model.metric_id,
                 inputs=item_model.inputs,
-                description=item_model.description,
+                description=cast(str, item_model.description),
                 sign_convention=item_model.sign_convention,
                 metadata=item_model.metadata,
                 default_adjustment_filter=adjustment_filter,
@@ -521,7 +525,7 @@ class StatementStructureBuilder:
             id=subtotal_model.id,
             name=subtotal_model.name,
             item_ids=item_ids or [],  # Ensure it's a list
-            description=subtotal_model.description,
+            description=cast(str, subtotal_model.description),
             sign_convention=subtotal_model.sign_convention,
             metadata=subtotal_model.metadata,
             default_adjustment_filter=adjustment_filter,

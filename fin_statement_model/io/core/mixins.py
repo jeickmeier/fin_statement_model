@@ -16,7 +16,7 @@ from collections.abc import Callable
 from fin_statement_model.core.graph import Graph
 from .base import DataReader
 from fin_statement_model.io.exceptions import ReadError, WriteError
-from fin_statement_model.io.core.utils import normalize_mapping
+from fin_statement_model.io.core.utils import normalize_mapping, MappingConfig
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ class MappingAwareMixin:
     """
 
     # Class variable to store default mappings per reader type
-    _default_mappings_cache: ClassVar[dict[str, dict]] = {}
+    _default_mappings_cache: ClassVar[dict[str, MappingConfig]] = {}
 
     @classmethod
     def _get_default_mapping_path(cls) -> Optional[str]:
@@ -51,7 +51,7 @@ class MappingAwareMixin:
         return None
 
     @classmethod
-    def _load_default_mappings(cls) -> dict[str, dict[str, str]]:
+    def _load_default_mappings(cls) -> MappingConfig:
         """Load default mapping configurations from YAML file.
 
         Returns:
@@ -123,6 +123,17 @@ class MappingAwareMixin:
             Canonical name (mapped name or original if no mapping exists)
         """
         return mapping.get(source_name, source_name)
+
+    def get_config_value(
+        self,
+        key: str,
+        default: Any = None,
+        required: bool = False,
+        value_type: Optional[type] = None,
+        validator: Optional[Callable[[Any], bool]] = None,
+    ) -> Any:
+        """Stub for configuration value retrieval; overridden by ConfigurationMixin."""
+        ...
 
 
 # ===== Validation Mixins =====
@@ -575,7 +586,7 @@ class ConfigurationMixin:
         default: Any = None,
         required: bool = False,
         value_type: Optional[type] = None,
-        validator: Optional[callable] = None,
+        validator: Optional[Callable[[Any], bool]] = None,
     ) -> Any:
         """Get a configuration value with comprehensive validation and fallback.
 
@@ -646,7 +657,7 @@ class ConfigurationMixin:
         self,
         key: str,
         value_type: Optional[type] = None,
-        validator: Optional[callable] = None,
+        validator: Optional[Callable[[Any], bool]] = None,
     ) -> Any:
         """Get a required configuration value with validation.
 
@@ -966,8 +977,8 @@ class BatchProcessingMixin:
     def process_in_batches(
         self,
         items: list[Any],
-        process_func: callable,
-        progress_callback: Optional[callable] = None,
+        process_func: Callable[[list[Any]], list[Any]],
+        progress_callback: Optional[Callable[[int, int], Any]] = None,
     ) -> list[Any]:
         """Process items in batches.
 
