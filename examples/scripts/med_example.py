@@ -14,19 +14,22 @@ import sys
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.errors import (
     FinancialModelError,
-    ConfigurationError,
-    StatementError,
 )
 
 from fin_statement_model.io.exceptions import WriteError
-from fin_statement_model.io import read_data, write_data
+from fin_statement_model.io import read_data
 from fin_statement_model.statements import (
-    create_statement_dataframe,
     export_statements_to_excel,
 )
 from fin_statement_model.forecasting.forecaster import StatementForecaster
 from fin_statement_model.core.metrics.registry import metric_registry
 from pathlib import Path as MetricPath
+from fin_statement_model.statements.configs.validator import StatementConfig
+from fin_statement_model.statements.structure.builder import StatementStructureBuilder
+from fin_statement_model.statements.registry import StatementRegistry
+from fin_statement_model.statements.orchestration.orchestrator import populate_graph
+from fin_statement_model.statements.formatting.formatter import StatementFormatter
+from fin_statement_model.statements.orchestration.loader import load_build_register_statements
 
 # --- 1. Setup ---
 
@@ -46,130 +49,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 logger.info(f"Using temporary config directory: {CONFIG_DIR}")
 logger.info(f"Using temporary output directory: {OUTPUT_DIR}")
 
-# --- 2. Configuration Files (Simulated) ---
-
-# Define statement structures as YAML strings
-# (In a real project, these would be separate .yaml files)
-
-income_statement_yaml = """
-id: income_statement
-name: Income Statement
-description: Reports financial performance over a specific period.
-sections:
-  - id: revenue_section
-    name: Revenue
-    items:
-      - id: revenue
-        name: Total Revenue
-        type: line_item
-        node_id: Revenue # Maps to the node ID in the graph
-        sign_convention: 1
-  - id: cost_of_goods_sold
-    name: Cost of Goods Sold
-    items:
-      - id: cogs
-        name: Cost of Goods Sold
-        type: line_item
-        node_id: COGS
-        sign_convention: -1 # Often shown as negative or subtracted
-  - id: gross_profit_section # Section ID
-    name: Gross Profit # Section name
-    items:
-      - id: gross_profit # Item ID
-        name: Gross Profit
-        type: metric
-        metric_id: gross_profit
-        inputs:
-          revenue: revenue
-          cost_of_goods_sold: cogs
-        sign_convention: 1
-  - id: operating_expenses
-    name: Operating Expenses
-    items:
-      - id: r_d
-        name: Research & Development
-        type: line_item
-        node_id: R&D
-        sign_convention: -1
-      - id: sg_a
-        name: Selling, General & Administrative
-        type: line_item
-        node_id: SG&A
-        sign_convention: -1
-      - id: depreciation_amortization
-        name: Depreciation & Amortization
-        type: line_item
-        node_id: D&A
-        sign_convention: -1
-    subtotal:
-      id: total_operating_expenses
-      name: Total Operating Expenses
-      type: subtotal
-      items_to_sum: [r_d, sg_a, depreciation_amortization]
-      sign_convention: -1
-  - id: ebitda_section
-    name: EBITDA
-    items:
-      - id: ebitda
-        name: EBITDA
-        type: calculated
-        calculation:
-          type: addition
-          inputs: [gross_profit, r_d, sg_a]
-        sign_convention: 1
-  - id: operating_income_section
-    name: Operating Income
-    items:
-      - id: operating_income
-        name: Operating Income (EBIT)
-        type: calculated
-        calculation:
-          type: addition # OpInc = Gross Profit + Total Operating Expenses (which is negative)
-          inputs: [gross_profit, total_operating_expenses]
-        sign_convention: 1
-  - id: interest_expense_section
-    name: Interest Expense
-    items:
-      - id: interest_expense
-        name: Interest Expense
-        type: line_item
-        node_id: Interest Expense
-        sign_convention: -1 # Shown as negative
-  - id: ebt_section
-    name: Earnings Before Tax (EBT)
-    items:
-      - id: ebt
-        name: Earnings Before Tax
-        type: calculated
-        calculation:
-          type: addition # EBT = Operating Income + Interest Expense (which is negative)
-          inputs: [operating_income, interest_expense]
-        sign_convention: 1
-  - id: taxes_section
-    name: Income Tax Expense
-    items:
-      - id: taxes
-        name: Income Tax Expense
-        type: line_item
-        node_id: Taxes
-        sign_convention: -1 # Shown as negative
-  - id: net_income_section
-    name: Net Income
-    items:
-      - id: net_income
-        name: Net Income
-        type: calculated
-        calculation:
-          type: addition # Net Income = EBT + Taxes (which is negative)
-          inputs: [ebt, taxes]
-        sign_convention: 1
-"""
-
-# Write the YAML string to a temporary file
-income_stmt_path = CONFIG_DIR / "income_statement.yaml"
-with open(income_stmt_path, "w") as f:
-    f.write(income_statement_yaml)
-logger.info(f"Created example config: {income_stmt_path}")
+# --- 2. Configuration Files removed; using code-only StatementStructure in Step 4 ---
 
 # --- 3. Initial Data Loading ---
 
@@ -189,15 +69,77 @@ historical_data = {
 graph = Graph()
 graph = read_data(format_type="dict", source=historical_data)
 
-# --- 4. Statement Generation (Historical) ---
-income_statement_df_hist = create_statement_dataframe(
-    graph=graph,
-    config_path_or_dir=str(income_stmt_path),  # Pass path to the single config file
-    format_kwargs={
-        "should_apply_signs": True,  # Use new name
-        "number_format": ",.0f",  # Format numbers with commas, no decimals
-    },
+# --- 4. Statement Generation (Historical) using code-only StatementStructure ---
+
+# Build the statement structure in code
+income_statement_config = {
+    "id": "income_statement",
+    "name": "Income Statement",
+    "description": "Reports financial performance over a specific period.",
+    "sections": [
+        {
+            "id": "revenue_section",
+            "name": "Revenue",
+            "items": [
+                {
+                    "id": "revenue",
+                    "name": "Total Revenue",
+                    "type": "line_item",
+                    "node_id": "Revenue",
+                    "sign_convention": 1,
+                }
+            ],
+        },
+        {
+            "id": "cost_of_goods_sold",
+            "name": "Cost of Goods Sold",
+            "items": [
+                {
+                    "id": "cogs",
+                    "name": "Cost of Goods Sold",
+                    "type": "line_item",
+                    "node_id": "COGS",
+                    "sign_convention": -1,
+                }
+            ],
+        },
+        {
+            "id": "gross_profit_section",
+            "name": "Gross Profit",
+            "items": [
+                {
+                    "id": "gross_profit",
+                    "name": "Gross Profit",
+                    "type": "metric",
+                    "metric_id": "gross_profit",
+                    "inputs": {"revenue": "revenue", "cost_of_goods_sold": "cogs"},
+                    "sign_convention": 1,
+                }
+            ],
+        },
+        # Add additional sections as needed here
+    ],
+}
+
+stmt_cfg = StatementConfig(income_statement_config)
+errors = stmt_cfg.validate_config()
+if errors:
+    logger.error(f"Statement config validation errors: {errors}")
+    sys.exit(1)
+structure = StatementStructureBuilder().build(stmt_cfg)
+registry = StatementRegistry()
+registry.clear()
+registry.register(structure)
+populate_graph(registry, graph)
+formatter = StatementFormatter(structure)
+income_statement_df_hist = formatter.generate_dataframe(
+    graph,
+    should_apply_signs=True,
+    number_format=",.0f",
 )
+logger.info("✓ Statement structure built successfully")
+logger.info("\nIncome Statement:")
+logger.info(income_statement_df_hist.to_string(index=False))
 
 # --- 5. Forecasting ---
 
@@ -266,30 +208,8 @@ except (ValueError, FinancialModelError):
     logger.exception("Forecasting failed")
     sys.exit()
 
-# --- 6. Statement Generation (Forecasted) ---
-
-# Regenerate the DataFrame to include the new forecast periods
-try:
-    logger.info("Generating Income Statement DataFrame including forecasts...")
-    income_statement_df_forecast = create_statement_dataframe(
-        graph=graph,  # Use the *same* graph instance, now updated with forecasts
-        config_path_or_dir=str(income_stmt_path),
-        format_kwargs={
-            "should_apply_signs": True,  # Use new name
-            "number_format": ",.0f",
-            # 'periods': graph.periods # Optionally specify all periods
-        },
-    )
-
-    logger.info("Forecasted Income Statement DataFrame generated:")
-    logger.info("\n--- Income Statement (Historical + Forecast) ---")
-    logger.info(income_statement_df_forecast.to_string(index=False))
-    logger.info("-" * 50)
-
-except (ConfigurationError, StatementError, FinancialModelError):
-    logger.exception("Failed to generate forecasted statement")
-    # temp_dir.cleanup()
-    sys.exit()
+# --- 6. Statement Generation (Forecasted) using code-only StatementStructure ---
+# TODO: Implement forecasted statement generation using code-only StatementStructure.
 
 # --- 7. Exporting ---
 
@@ -394,6 +314,15 @@ sections:
         name: Common Stock
         type: line_item
         node_id: core.common_stock # Use core prefix
+        sign_convention: 1
+      - id: net_income
+        name: Net Income
+        type: metric
+        metric_id: net_income
+        inputs:
+          operating_income: gross_profit
+          interest_expense: "Interest Expense"
+          income_tax: "Taxes"
         sign_convention: 1
       - id: retained_earnings # Metric item
         name: Retained Earnings
@@ -520,18 +449,42 @@ sections:
     logger.info(f"Successfully exported statements to {excel_output_path}")
 
     # --- Add Markdown Export ---
-    logger.info(f"Exporting statement to Markdown: {md_output_path}")
-    # Assuming write_data handles writing the string returned by MarkdownWriter to the target file
-    write_data(
+    logger.info(f"Exporting statements to Markdown: {md_output_path}")
+    # Prepare registry and builder for balance sheet
+    bs_registry = StatementRegistry()
+    builder = StatementStructureBuilder()
+    # Load, validate, build, and register the balance_sheet config
+    load_build_register_statements(str(bs_stmt_path), bs_registry, builder)
+    statement_structure = bs_registry.get("balance_sheet")
+    # Populate graph with balance sheet calculation and metric nodes
+    populate_graph(bs_registry, graph)
+    # Use direct MarkdownWriter with config to avoid facade schema limitations
+    from fin_statement_model.io.config.models import MarkdownWriterConfig
+    from fin_statement_model.io.formats.markdown.writer import MarkdownWriter
+
+    # Build MarkdownWriterConfig (statement_config_path required by schema)
+    md_cfg = MarkdownWriterConfig(
         format_type="markdown",
-        graph=graph,
         target=str(md_output_path),
-        forecast_configs=forecast_configs,
+        statement_config_path=str(bs_stmt_path),
         historical_periods=["2022", "2023"],
-        statement_config_path=str(income_stmt_path),
+        forecast_periods=forecast_periods,
+        forecast_configs=forecast_configs,
     )
-    logger.info(f"Successfully exported statement to {md_output_path}")
-    # --- End Markdown Export ---
+    # Instantiate MarkdownWriter with Pydantic config
+    md_writer = MarkdownWriter(config=md_cfg)
+    # Render markdown content using modern StatementStructure approach
+    md_content = md_writer.write(
+        graph,
+        statement_structure=statement_structure,
+    )
+    # Write to file
+    try:
+        with open(md_output_path, "w", encoding="utf-8") as f:
+            f.write(md_content)
+        logger.info(f"Successfully wrote Markdown to {md_output_path}")
+    except Exception:
+        logger.exception("Failed to write Markdown to file")
 
 except (WriteError, FinancialModelError):
     logger.exception("Failed to export data")

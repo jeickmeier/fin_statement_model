@@ -82,6 +82,15 @@ sections:
         type: line_item
         node_id: core.common_stock # Use core prefix
         sign_convention: 1
+      - id: net_income
+        name: Net Income
+        type: metric
+        metric_id: net_income
+        inputs:
+          operating_income: gross_profit
+          interest_expense: "Interest Expense"
+          income_tax: "Taxes"
+        sign_convention: 1
       - id: retained_earnings # Metric item
         name: Retained Earnings
         type: metric

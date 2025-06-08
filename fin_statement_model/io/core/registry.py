@@ -2,9 +2,6 @@
 
 This module provides a generic registry implementation and specific registries
 for readers and writers, along with registration decorators and access functions.
-
-Internal registry dictionaries `_readers` and `_writers` are no longer exposed;
-use `list_readers()` and `list_writers()` for a readonly view of registered handlers.
 """
 
 import logging
@@ -301,20 +298,12 @@ def _get_handler(
                 **error_context,
             ) from e
 
-    # Fallback for handlers without config schema (legacy support)
-    try:
-        return cast(Union[DataReader, DataWriter], handler_class(**kwargs))
-    except Exception as e:
-        logger.error(
-            f"Failed to instantiate {handler_type}er for format '{format_type}' "
-            f"({handler_class.__name__}): {e}",
-            exc_info=True,
-        )
-        raise error_class(
-            message=f"Failed to initialize {handler_type}er",
-            original_error=e,
-            **error_context,
-        ) from e
+    # Only Pydantic-schema path is supported
+    from fin_statement_model.core.errors import ConfigurationError
+
+    raise ConfigurationError(
+        f"No configuration schema available for format '{format_type}'"
+    )
 
 
 # ===== Registry Access Functions =====

@@ -154,13 +154,9 @@ class MarkdownStatementRenderer:
             for period in self.periods:
                 raw_value = None
 
-                if isinstance(item, LineItem):
-                    # Direct value from node
-                    raw_value = node.get_value(period)
-                elif isinstance(
-                    item, CalculatedLineItem | SubtotalLineItem | MetricLineItem
-                ):
-                    # Calculate value
+                # Calculation items use graph.calculate, pure line items use node.get_value
+                if isinstance(item, (CalculatedLineItem, SubtotalLineItem, MetricLineItem)):
+                    # Calculate value for derived items
                     try:
                         raw_value = self.graph.calculate(node_id, period)
                     except Exception as calc_error:
@@ -168,6 +164,9 @@ class MarkdownStatementRenderer:
                             f"Calculation failed for node '{node_id}' period '{period}': {calc_error}"
                         )
                         raw_value = "CALC_ERR"  # type: ignore[assignment]
+                elif isinstance(item, LineItem):
+                    # Direct value from node for basic line items
+                    raw_value = node.get_value(period)
                 else:
                     logger.warning(
                         f"Unsupported item type: {type(item)} for item: {item.id}"

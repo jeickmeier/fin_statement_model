@@ -1,24 +1,15 @@
-| Description                           |    2022 (H) |    2023 (H) |    2024 (F) |    2025 (F) |    2026 (F) |
-| ------------------------------------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-|     Total Revenue                     |    1,000.00 |    1,200.00 |    1,320.00 |    1,452.00 |    1,597.20 |
-|     Cost of Goods Sold                |      400.00 |      500.00 |      625.00 |      781.25 |      976.56 |
-|     Gross Profit                      |    1,400.00 |    1,700.00 |    1,945.00 |    2,233.25 |    2,573.76 |
-|     Research & Development            |      100.00 |      120.00 |      129.60 |      137.38 |      157.98 |
-|     Selling, General & Administrative |      200.00 |      250.00 |      239.11 |      251.10 |      243.20 |
-|     Depreciation & Amortization       |       30.00 |       35.00 |       36.05 |       37.13 |       38.25 |
-| **    Total Operating Expenses**      | **-330.00** | **-405.00** | **-404.76** | **-425.60** | **-439.42** |
-|     EBITDA                            |    1,700.00 |    2,070.00 |    2,313.71 |    2,621.72 |    2,974.94 |
-|     Operating Income (EBIT)           |    1,070.00 |    1,295.00 |    1,540.24 |    1,807.65 |    2,134.34 |
-|     Interest Expense                  |       50.00 |       60.00 |       63.00 |       66.15 |       69.46 |
-|     Earnings Before Tax               |    1,120.00 |    1,355.00 |    1,603.24 |    1,873.80 |    2,203.80 |
-|     Income Tax Expense                |       75.00 |       90.00 |      108.00 |      129.60 |      155.52 |
-|     Net Income                        |    1,195.00 |    1,445.00 |    1,711.24 |    2,003.40 |    2,359.32 |
-
-## Forecast Notes
-- **Revenue**: Forecasted using method 'simple' (e.g., simple growth rate: 10.0%).
-- **COGS**: Forecasted using method 'historical_growth' (based on average historical growth).
-- **R&D**: Forecasted using method 'curve' (e.g., specific growth rates: [8.0%, 6.0%, 15.0%]).
-- **SG&A**: Forecasted using method 'statistical' (using 'normal' distribution with params: mean=0.020, std=0.050).
-- **Interest Expense**: Forecasted using method 'simple' (e.g., simple growth rate: 5.0%).
-- **Taxes**: Forecasted using method 'historical_growth' (based on average historical growth).
-- **D&A**: Forecasted using method 'simple' (e.g., simple growth rate: 3.0%).
+| Description                     |         2022 |         2023 |         2024 |         2025 |         2026 |
+| ------------------------------- | ------------ | ------------ | ------------ | ------------ | ------------ |
+|     Cash & Equivalents          |        50.00 |        50.00 |        55.00 |        60.50 |        66.55 |
+|     Accounts Receivable         |       100.00 |       100.00 |       112.00 |       125.44 |       140.49 |
+| **    Total Current Assets**    |   **150.00** |   **150.00** |   **167.00** |   **185.94** |   **207.04** |
+|     Property, Plant & Equipment |       300.00 |       300.00 |       315.00 |       330.75 |       347.29 |
+|     Total Assets                |       450.00 |       450.00 |       482.00 |       516.69 |       554.33 |
+|     Accounts Payable            |        80.00 |        80.00 |        86.40 |        93.31 |       100.78 |
+|     Long-Term Debt              |       150.00 |       150.00 |       153.00 |       156.06 |       159.18 |
+|     Total Liabilities           |       230.00 |       230.00 |       239.40 |       249.37 |       259.96 |
+|     Common Stock                |       100.00 |       100.00 |       100.00 |       100.00 |       100.00 |
+|     Net Income                  |     1,525.00 |     1,850.00 |     2,116.00 |     2,429.00 |     2,798.74 |
+|     Retained Earnings           |     1,635.00 |     2,905.00 |     4,316.50 |     5,984.02 |     7,982.32 |
+| **    Total Equity**            | **1,735.00** | **3,005.00** | **4,416.50** | **6,084.02** | **8,082.32** |
+|     Total Liabilities & Equity  |     1,965.00 |     3,235.00 |     4,655.90 |     6,333.40 |     8,342.27 |

@@ -10,7 +10,6 @@ from pathlib import Path
 
 from fin_statement_model.config import get_config, update_config
 from fin_statement_model.io import read_data
-from fin_statement_model.statements import create_statement_dataframe
 from fin_statement_model.core.metrics.registry import metric_registry
 from fin_statement_model.core.metrics.models import MetricDefinition
 from fin_statement_model.core.metrics import calculate_metric
@@ -51,15 +50,15 @@ if metrics_dir.exists():
                 logger.warning(f"Failed to load metrics from {subdir}: {e}")
 
 # Example configuration path (you would replace with your actual path)
-INCOME_STATEMENT_CONFIG = Path(__file__).parent / "configs" / "income_statement.yaml"
+# INCOME_STATEMENT_CONFIG = Path(__file__).parent / "configs" / "income_statement.yaml"
 
 # If config doesn't exist, provide a helpful error message
-if not INCOME_STATEMENT_CONFIG.exists():
-    logger.error(f"Configuration file not found: {INCOME_STATEMENT_CONFIG}")
-    logger.error(
-        "Please ensure the income_statement.yaml file exists in the configs directory"
-    )
-    sys.exit(1)
+# if not INCOME_STATEMENT_CONFIG.exists():
+#     logger.error(f"Configuration file not found: {INCOME_STATEMENT_CONFIG}")
+#     logger.error(
+#         "Please ensure the income_statement.yaml file exists in the configs directory"
+#     )
+#     sys.exit(1)
 
 logger.info("=" * 60)
 logger.info("SIMPLE FINANCIAL STATEMENT MODEL EXAMPLE")
@@ -71,7 +70,6 @@ sample_data = {
     "Revenue": {"2022": 1000000, "2023": 1200000},
     "revenue": {"2022": 1000000, "2023": 1200000},  # Alias for metrics
     "COGS": {"2022": 600000, "2023": 700000},
-    "cost_of_goods_sold": {"2022": 600000, "2023": 700000},  # Alias for metrics
     "R&D": {"2022": 100000, "2023": 120000},
     "SG&A": {"2022": 150000, "2023": 180000},
     "D&A": {"2022": 50000, "2023": 60000},
@@ -85,9 +83,9 @@ sample_data = {
     "current_assets": {"2022": 500000, "2023": 600000},
     "current_liabilities": {"2022": 300000, "2023": 350000},
     "total_liabilities": {"2022": 800000, "2023": 1000000},
-    "total_debt": {"2022": 800000, "2023": 1000000},  # Alias for metrics
+    "total_debt": {"2022": 800000, "2023": 1000000},  
     "shareholders_equity": {"2022": 1200000, "2023": 1500000},
-    "total_equity": {"2022": 1200000, "2023": 1500000},  # Alias for metrics
+    "total_equity": {"2022": 1200000, "2023": 1500000}, 
     "inventory": {"2022": 150000, "2023": 180000},
     "accounts_receivable": {"2022": 120000, "2023": 150000},
     "accounts_payable": {"2022": 80000, "2023": 95000},
@@ -95,6 +93,8 @@ sample_data = {
     "depreciation": {"2022": 50000, "2023": 60000},
     "capex": {"2022": 100000, "2023": 120000},
     "dividends": {"2022": 50000, "2023": 60000},
+    "cost_of_goods_sold": {"2022": 600000, "2023": 700000},  # Alias for metrics
+    "gross_profit": {"2022": 400000, "2023": 500000},  # Computed as Revenue - COGS
 }
 
 # Step 1: Load the data into a graph
@@ -104,30 +104,8 @@ graph = read_data(format_type="dict", source=sample_data)
 logger.info(f"✓ Loaded data for periods: {graph.periods}")
 logger.info(f"✓ Created {len(graph.nodes)} data nodes")
 
-# Step 2: Create statement DataFrame
-# The library now uses config defaults automatically!
-try:
-    logger.info("\nStep 2: Building statement structure...")
-
-    # If scale factor is set, mention it
-    if config.display.scale_factor != 1.0:
-        logger.info(
-            f"Note: Values will be scaled by {config.display.scale_factor} ({config.display.default_units})"
-        )
-
-    # Much cleaner - library uses config defaults internally
-    income_df = create_statement_dataframe(
-        graph=graph,
-        config_path_or_dir=str(INCOME_STATEMENT_CONFIG),
-        # Only specify overrides if needed, otherwise config defaults are used
-    )
-
-    logger.info("✓ Statement structure built successfully")
-    logger.info("\nIncome Statement:")
-    logger.info(income_df.to_string(index=False))
-except Exception:
-    logger.warning("Could not load statement config")
-    logger.warning("⚠ Using simplified analysis instead")
+# Step 2: Statement generation is disabled (YAML configs removed).
+logger.info("\nStep 2: Statement generation is disabled (YAML configs removed).")
 
 # Step 3: Calculate key financial metrics
 logger.info("\nStep 3: Calculating financial metrics...")
