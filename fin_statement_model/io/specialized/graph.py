@@ -44,84 +44,6 @@ class GraphDefinitionReader(DataReader):
         """Initialize the GraphDefinitionReader. Config currently unused."""
         self.cfg = cfg
 
-    def _add_nodes_iteratively(
-        self, graph: Graph, nodes_dict: dict[str, SerializedNode]
-    ) -> None:
-        """Add nodes to the graph, handling potential dependency order issues."""
-        nodes_to_add = nodes_dict.copy()
-        added_nodes: set[str] = set()
-        max_passes = len(nodes_to_add) + 1  # Failsafe against infinite loops
-        passes = 0
-
-        while nodes_to_add and passes < max_passes:
-            added_in_pass = 0
-            pending_nodes = nodes_to_add.copy()
-            nodes_to_add = {}
-
-            for node_name, node_def in pending_nodes.items():
-                # Get dependency names using the new get_dependencies approach
-                dependency_names = self._get_node_dependencies(node_def)
-
-                # Check if all dependencies are already added
-                dependencies_met = all(
-                    dep_name in added_nodes for dep_name in dependency_names
-                )
-
-                if dependencies_met:
-                    try:
-                        # Use NodeFactory.create_from_dict for unified deserialization
-                        # Build context from nodes that have already been added to the graph
-                        existing_nodes = {
-                            name: graph.nodes[name]
-                            for name in added_nodes
-                            if name in graph.nodes
-                        }
-                        node = NodeFactory.create_from_dict(
-                            node_def, context=existing_nodes
-                        )
-
-                        # Add the node to the graph
-                        graph.add_node(node)
-                        added_nodes.add(node_name)
-                        added_in_pass += 1
-                        logger.debug(f"Added node '{node_name}' in pass {passes + 1}.")
-
-                    except (NodeError, ConfigurationError, ValueError, TypeError):
-                        # Log error but try to continue with other nodes
-                        logger.exception(
-                            f"Failed to add node '{node_name}' during iterative build"
-                        )
-                        # Keep it in nodes_to_add to potentially retry if it was a temporary dependency issue
-                        nodes_to_add[node_name] = node_def
-                else:
-                    # Dependencies not met, keep for next pass
-                    nodes_to_add[node_name] = node_def
-
-            if added_in_pass == 0 and nodes_to_add:
-                # No progress made in this pass, indicates missing nodes or cycle
-                missing_deps = set()
-                for node_name, node_def in nodes_to_add.items():
-                    deps = self._get_node_dependencies(node_def)
-                    for dep in deps:
-                        if (
-                            dep not in added_nodes and dep not in nodes_to_add
-                        ):  # Check if dep itself is missing entirely
-                            missing_deps.add(dep)
-                error_msg = f"Failed to add all nodes. Possible missing dependencies ({missing_deps}) or circular dependency in definition for nodes: {list(nodes_to_add.keys())}"
-                logger.error(error_msg)
-                raise ReadError(error_msg, source="graph_definition_dict")
-
-            passes += 1
-
-        if nodes_to_add:
-            logger.error(
-                f"Failed to add the following nodes after {max_passes} passes: {list(nodes_to_add.keys())}"
-            )
-            raise ReadError(
-                f"Failed to reconstruct graph, could not add nodes: {list(nodes_to_add.keys())}",
-                source="graph_definition_dict",
-            )
-
     def _get_node_dependencies(self, node_def: dict[str, Any]) -> list[str]:
         """Extract dependency names from a node definition.
 
@@ -179,11 +101,46 @@ class GraphDefinitionReader(DataReader):
                 raise ReadError("Invalid format: 'periods' must be a list.")
             graph = Graph(periods=periods)
 
-            # 2. Reconstruct Nodes iteratively
+            # 2. Reconstruct Nodes using topological sort of definitions
             nodes_dict = source.get("nodes", {})
             if not isinstance(nodes_dict, dict):
                 raise ReadError("Invalid format: 'nodes' must be a dictionary.")
-            self._add_nodes_iteratively(graph, nodes_dict)
+            # Build dependency graph from definitions
+            dep_graph: dict[str, list[str]] = {
+                name: self._get_node_dependencies(defn) for name, defn in nodes_dict.items()
+            }
+            # Perform topological sort
+            in_degree = {n: 0 for n in dep_graph}
+            adjacency: dict[str, list[str]] = {n: [] for n in dep_graph}
+            for n, deps in dep_graph.items():
+                for dep in deps:
+                    if dep not in dep_graph:
+                        raise ReadError(
+                            f"Dependency '{dep}' for node '{n}' not found in definitions.",
+                            source="graph_definition_dict",
+                        )
+                    adjacency[dep].append(n)
+                    in_degree[n] += 1
+            queue = [n for n, d in in_degree.items() if d == 0]
+            sorted_names: list[str] = []
+            while queue:
+                current = queue.pop()
+                sorted_names.append(current)
+                for neighbor in adjacency[current]:
+                    in_degree[neighbor] -= 1
+                    if in_degree[neighbor] == 0:
+                        queue.append(neighbor)
+            if len(sorted_names) != len(dep_graph):
+                raise ReadError(
+                    f"Circular dependency detected among nodes: {set(dep_graph) - set(sorted_names)}",
+                    source="graph_definition_dict",
+                )
+            # Create and add nodes in sorted order
+            for node_name in sorted_names:
+                node_def = nodes_dict[node_name]
+                existing_nodes = {name: graph.nodes[name] for name in graph.nodes}
+                node = NodeFactory.create_from_dict(node_def, context=existing_nodes)
+                graph.add_node(node)
 
             # 3. Load Adjustments
             adjustments_list = source.get("adjustments")  # Optional

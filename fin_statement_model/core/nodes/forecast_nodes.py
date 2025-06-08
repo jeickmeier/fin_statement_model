@@ -189,26 +189,6 @@ class ForecastNode(Node):
         }
 
     @staticmethod
-    def from_dict(data: dict[str, Any]) -> "ForecastNode":
-        """Create a ForecastNode from a dictionary representation.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-
-        Returns:
-            A new ForecastNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: This method requires context (existing nodes) to resolve
-                the base node dependency. Use from_dict_with_context instead.
-        """
-        raise NotImplementedError(
-            "ForecastNode.from_dict() requires context to resolve base node dependency. "
-            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
-        )
-
-    @staticmethod
     def from_dict_with_context(
         data: dict[str, Any], context: dict[str, Node]
     ) -> "ForecastNode":
