@@ -49,40 +49,6 @@ def main():
     }
 
     print("\n" + "=" * 60)
-    print("BEFORE: Verbose API with manual config passing")
-    print("=" * 60)
-
-    # The OLD way - passing config values everywhere
-    print(
-        """
-# OLD: Create validator with all config values
-validator = UnifiedNodeValidator(
-    strict_mode=config.validation.strict_mode,
-    auto_standardize=config.validation.auto_standardize_names,
-    warn_on_non_standard=config.validation.warn_on_non_standard
-)
-
-# OLD: Create statement with format kwargs
-df = create_statement_dataframe(
-    graph=graph,
-    config_path_or_dir="income_statement.yaml",
-    format_kwargs={
-        "number_format": config.display.default_number_format,
-        "hide_zero_rows": config.display.hide_zero_rows,
-        "contra_display_style": config.display.contra_display_style,
-        "should_apply_signs": True
-    }
-)
-
-# OLD: Create forecast with growth rate
-forecast = FixedGrowthForecastNode(
-    revenue_node, "2023", ["2024", "2025"], 
-    config.forecasting.default_growth_rate
-)
-"""
-    )
-
-    print("\n" + "=" * 60)
     print("AFTER: Clean API with automatic config usage")
     print("=" * 60)
 
