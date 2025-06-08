@@ -1,0 +1,126 @@
+id: reit_statement
+name: REIT Statement
+sections:
+  - id: income
+    name: Income
+    items:
+      - type: line_item
+        id: rental_income
+        name: Rental Income
+        node_id: rental_income
+      - type: line_item
+        id: property_management_fees
+        name: Property Management Fees
+        node_id: property_management_fees
+      - type: line_item
+        id: other_income
+        name: Other Income
+        node_id: other_income
+    subtotal:
+      type: subtotal
+      id: total_revenue
+      name: Total Revenue
+      items_to_sum:
+        - rental_income
+        - property_management_fees
+        - other_income
+  - id: expenses
+    name: Operating Expenses
+    items:
+      - type: line_item
+        id: property_operating_expenses
+        name: Property Operating Expenses
+        node_id: property_operating_expenses
+      - type: line_item
+        id: property_management_expenses
+        name: Property Management Expenses
+        node_id: property_management_expenses
+      - type: line_item
+        id: general_admin_expenses
+        name: General & Administrative Expenses
+        node_id: general_admin_expenses
+      - type: line_item
+        id: depreciation_expense
+        name: Depreciation Expense
+        node_id: depreciation_expense
+      - type: line_item
+        id: interest_expense
+        name: Interest Expense
+        node_id: interest_expense
+    subtotal:
+      type: subtotal
+      id: total_operating_expenses
+      name: Total Operating Expenses
+      items_to_sum:
+        - property_operating_expenses
+        - property_management_expenses
+        - general_admin_expenses
+  - id: gains
+    name: Gains & Others
+    items:
+      - type: line_item
+        id: gain_on_property_sales
+        name: Gain on Property Sales
+        node_id: gain_on_property_sales
+  - id: calculations
+    name: Calculations & Metrics
+    items:
+      - type: calculated
+        id: net_operating_income
+        name: Net Operating Income
+        calculation:
+          type: subtraction
+          inputs:
+            - total_revenue
+            - total_operating_expenses
+      - type: calculated
+        id: net_income
+        name: Net Income
+        calculation:
+          type: addition
+          inputs:
+            - net_operating_income
+            - gain_on_property_sales
+            - interest_expense
+            - depreciation_expense
+      - type: calculated
+        id: funds_from_operations
+        name: Funds From Operations (FFO)
+        calculation:
+          type: addition
+          inputs:
+            - net_income
+            - depreciation_expense
+      - type: calculated
+        id: ffo_per_share
+        name: FFO per Share
+        calculation:
+          type: division
+          inputs:
+            - funds_from_operations
+            - shares_outstanding
+  - id: share_data
+    name: Share Data
+    items:
+      - type: line_item
+        id: shares_outstanding
+        name: Shares Outstanding
+        node_id: shares_outstanding
+  - id: balance_sheet
+    name: Balance Sheet
+    items:
+      - type: line_item
+        id: mortgages_payable
+        name: Mortgages Payable
+        node_id: mortgages_payable
+      - type: line_item
+        id: bonds_payable
+        name: Bonds Payable
+        node_id: bonds_payable
+    subtotal:
+      type: subtotal
+      id: total_debt
+      name: Total Debt
+      items_to_sum:
+        - mortgages_payable
+        - bonds_payable 

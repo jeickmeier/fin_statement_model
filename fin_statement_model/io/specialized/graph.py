@@ -12,7 +12,6 @@ from fin_statement_model.core.adjustments.models import Adjustment
 from fin_statement_model.core.nodes import (
     Node,
 )
-from fin_statement_model.core.errors import NodeError, ConfigurationError
 from fin_statement_model.core.node_factory import NodeFactory
 from fin_statement_model.io.core import (
     DataReader,
@@ -107,7 +106,8 @@ class GraphDefinitionReader(DataReader):
                 raise ReadError("Invalid format: 'nodes' must be a dictionary.")
             # Build dependency graph from definitions
             dep_graph: dict[str, list[str]] = {
-                name: self._get_node_dependencies(defn) for name, defn in nodes_dict.items()
+                name: self._get_node_dependencies(defn)
+                for name, defn in nodes_dict.items()
             }
             # Perform topological sort
             in_degree = {n: 0 for n in dep_graph}

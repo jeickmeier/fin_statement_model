@@ -7,8 +7,7 @@ This package provides the main public API for:
 """
 
 from .exporter import export_statements_to_excel, export_statements_to_json
-from .factory import create_statement_dataframe
-from .orchestrator import populate_graph
+from .orchestrator import create_statement_dataframe, populate_graph
 
 __all__ = [
     # Main API

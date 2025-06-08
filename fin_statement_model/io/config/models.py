@@ -17,6 +17,7 @@ from fin_statement_model.core.adjustments.models import (
 # Define MappingConfig locally to avoid circular import
 MappingConfig = Union[dict[str, str], dict[Optional[str], dict[str, str]]]
 
+
 class BaseReaderConfig(BaseModel):
     """Base configuration for IO readers."""
 

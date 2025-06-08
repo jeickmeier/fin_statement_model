@@ -4,11 +4,6 @@ import logging
 from typing import Any, Optional, TypedDict, Union
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.adjustments.models import (
-    Adjustment,
-    AdjustmentFilter,
-    DEFAULT_SCENARIO,
-)
 from fin_statement_model.io.core.base import DataWriter
 from fin_statement_model.io.config.models import BaseWriterConfig
 from fin_statement_model.io.exceptions import WriteError
@@ -82,8 +77,12 @@ class MarkdownWriter(DataWriter):
             statement_structure = kwargs.get("statement_structure")
             if statement_structure is None:
                 raise WriteError("Must provide 'statement_structure' argument.")
-            filtered_kwargs = {k: v for k, v in kwargs.items() if k != "statement_structure"}
-            return self._write_with_structure(graph, statement_structure, **filtered_kwargs)
+            filtered_kwargs = {
+                k: v for k, v in kwargs.items() if k != "statement_structure"
+            }
+            return self._write_with_structure(
+                graph, statement_structure, **filtered_kwargs
+            )
         except NotImplementedError as nie:
             logger.exception("Markdown write failed")
             raise WriteError(

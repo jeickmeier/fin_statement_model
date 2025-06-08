@@ -7,7 +7,7 @@ from typing import Any, Optional
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.base import DataWriter
 from fin_statement_model.io.core.mixins import (
-    ConfigurableReaderMixin,
+    ConfigurationMixin,
     handle_write_errors,
 )
 from fin_statement_model.io.core.registry import register_writer
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 @register_writer("excel")
-class ExcelWriter(DataWriter, ConfigurableReaderMixin):
+class ExcelWriter(DataWriter, ConfigurationMixin):
     """Writes graph data to an Excel file.
 
     Converts the graph data to a pandas DataFrame first (using `DataFrameWriter`),

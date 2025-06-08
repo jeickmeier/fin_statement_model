@@ -5,10 +5,13 @@ for analyzing REIT financial performance.
 """
 
 import logging
+from pathlib import Path
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
-from fin_statement_model.core.metrics import metric_registry
+from fin_statement_model.statements.orchestration.orchestrator import (
+    create_statement_dataframe,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -72,104 +75,8 @@ def create_reit_financial_model() -> Graph:
         node = FinancialStatementItemNode(name, values)
         graph.add_node(node)
 
-    # === Add REIT-Specific Calculated Nodes using graph.add_calculation ===
-
-    # Total Revenue
-    graph.add_calculation(
-        name="total_revenue",
-        input_names=["rental_income", "property_management_fees", "other_income"],
-        operation_type="addition",
-    )
-
-    # Total Operating Expenses (before interest and depreciation)
-    graph.add_calculation(
-        name="total_operating_expenses",
-        input_names=[
-            "property_operating_expenses",
-            "property_management_expenses",
-            "general_admin_expenses",
-        ],
-        operation_type="addition",
-    )
-
-    # Net Operating Income (NOI) - Revenue minus operating expenses
-    graph.add_calculation(
-        name="net_operating_income",
-        input_names=["total_revenue", "total_operating_expenses"],
-        operation_type="subtraction",
-    )
-
-    # EBITDA - for REITs, NOI is essentially EBITDA
-    # Just pass through the value by adding zero (workaround)
-    graph.add_financial_statement_item("zero_value", {"2022": 0, "2023": 0})
-    graph.add_calculation(
-        name="ebitda",
-        input_names=["net_operating_income", "zero_value"],
-        operation_type="addition",
-    )
-
-    # Net Income calculation components
-    graph.add_calculation(
-        name="net_income_adjustments",
-        input_names=["interest_expense", "depreciation_expense"],
-        operation_type="addition",
-    )
-
-    graph.add_calculation(
-        name="pre_gain_income",
-        input_names=["net_operating_income", "net_income_adjustments"],
-        operation_type="subtraction",
-    )
-
-    graph.add_calculation(
-        name="net_income",
-        input_names=["pre_gain_income", "gain_on_property_sales"],
-        operation_type="addition",
-    )
-
-    # Total Debt
-    graph.add_calculation(
-        name="total_debt",
-        input_names=["mortgages_payable", "bonds_payable"],
-        operation_type="addition",
-    )
-
-    # Funds From Operations (FFO) calculations
-    graph.add_calculation(
-        name="ffo_adjustments",
-        input_names=["depreciation_expense", "gain_on_property_sales"],
-        operation_type="subtraction",
-    )
-
-    graph.add_calculation(
-        name="funds_from_operations",
-        input_names=["net_income", "ffo_adjustments"],
-        operation_type="addition",
-    )
-
-    # FFO per Share
-    graph.add_calculation(
-        name="ffo_per_share",
-        input_names=["funds_from_operations", "shares_outstanding"],
-        operation_type="division",
-    )
-
-    # Add standard metrics using the graph's add_metric method
-    # Note: These metrics must exist in the metric registry
-
-    # Try to add real estate-specific metrics if they exist in the registry
-    try:
-        # Debt Service Coverage Ratio
-        if "debt_service_coverage_ratio" in metric_registry.list_metrics():
-            graph.add_metric(
-                "debt_service_coverage_ratio",
-                input_node_map={
-                    "net_operating_income": "net_operating_income",
-                    "total_debt_service": "interest_expense",
-                },
-            )
-    except Exception as e:
-        logger.warning(f"Could not add DSCR metric: {e}")
+    # Calculations and metrics will be created later via the statement
+    # configuration processed by `create_statement_dataframe`.
 
     return graph
 
@@ -265,10 +172,14 @@ def analyze_reit_performance(graph: Graph, period: str = "2023") -> None:
 
 def main():
     """Run the REIT analysis example."""
-    # Create the REIT financial model
+    # Build the base graph with raw data nodes
     graph = create_reit_financial_model()
 
-    # Analyze performance
+    # Generate calculation nodes via statement orchestration
+    config_path = Path(__file__).resolve().parents[2] / "configs" / "reit_statement.yaml"
+    create_statement_dataframe(graph, str(config_path))
+
+    # Analyze performance using the populated graph
     analyze_reit_performance(graph)
 
 

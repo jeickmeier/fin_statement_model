@@ -29,7 +29,9 @@ from fin_statement_model.statements.structure.builder import StatementStructureB
 from fin_statement_model.statements.registry import StatementRegistry
 from fin_statement_model.statements.orchestration.orchestrator import populate_graph
 from fin_statement_model.statements.formatting.formatter import StatementFormatter
-from fin_statement_model.statements.orchestration.loader import load_build_register_statements
+from fin_statement_model.statements.orchestration.loader import (
+    load_build_register_statements,
+)
 
 # --- 1. Setup ---
 

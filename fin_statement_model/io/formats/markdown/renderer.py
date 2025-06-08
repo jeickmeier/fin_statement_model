@@ -155,7 +155,9 @@ class MarkdownStatementRenderer:
                 raw_value = None
 
                 # Calculation items use graph.calculate, pure line items use node.get_value
-                if isinstance(item, (CalculatedLineItem, SubtotalLineItem, MetricLineItem)):
+                if isinstance(
+                    item, (CalculatedLineItem, SubtotalLineItem, MetricLineItem)
+                ):
                     # Calculate value for derived items
                     try:
                         raw_value = self.graph.calculate(node_id, period)

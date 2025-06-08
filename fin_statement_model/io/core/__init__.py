@@ -4,7 +4,7 @@ from .base import DataReader, DataWriter
 from .facade import read_data, write_data
 from .mixins import (
     FileBasedReader,
-    ConfigurableReaderMixin,
+    ConfigurationMixin,
     DataFrameBasedWriter,
     ValueExtractionMixin,
     BatchProcessingMixin,
@@ -25,7 +25,7 @@ from .registry import (
 __all__ = [
     # Mixins and utilities
     "BatchProcessingMixin",
-    "ConfigurableReaderMixin",
+    "ConfigurationMixin",
     "DataFrameBasedWriter",
     # Base classes
     "DataReader",

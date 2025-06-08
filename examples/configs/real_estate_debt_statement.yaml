@@ -1,0 +1,198 @@
+id: real_estate_debt_statement
+name: Real Estate Debt Statement
+sections:
+  - id: assets
+    name: Assets
+    items:
+      - type: line_item
+        id: investment_properties
+        name: Investment Properties
+        node_id: investment_properties
+      - type: line_item
+        id: development_properties
+        name: Development Properties
+        node_id: development_properties
+      - type: line_item
+        id: cash
+        name: Cash
+        node_id: cash
+      - type: line_item
+        id: other_assets
+        name: Other Assets
+        node_id: other_assets
+    subtotal:
+      type: subtotal
+      id: total_assets
+      name: Total Assets
+      items_to_sum:
+        - investment_properties
+        - development_properties
+        - cash
+        - other_assets
+  - id: debt_components
+    name: Debt Components
+    items:
+      - type: line_item
+        id: mortgage_debt
+        name: Mortgage Debt
+        node_id: mortgage_debt
+      - type: line_item
+        id: construction_loans
+        name: Construction Loans
+        node_id: construction_loans
+      - type: line_item
+        id: bridge_loans
+        name: Bridge Loans
+        node_id: bridge_loans
+      - type: line_item
+        id: mezzanine_debt
+        name: Mezzanine Debt
+        node_id: mezzanine_debt
+      - type: line_item
+        id: credit_facility
+        name: Credit Facility Utilized
+        node_id: credit_facility
+    subtotal:
+      type: subtotal
+      id: total_debt
+      name: Total Debt
+      items_to_sum:
+        - mortgage_debt
+        - construction_loans
+        - bridge_loans
+        - mezzanine_debt
+        - credit_facility
+  - id: equity
+    name: Equity
+    items:
+      - type: line_item
+        id: common_equity
+        name: Common Equity
+        node_id: common_equity
+      - type: line_item
+        id: preferred_equity
+        name: Preferred Equity
+        node_id: preferred_equity
+    subtotal:
+      type: subtotal
+      id: total_equity
+      name: Total Equity
+      items_to_sum:
+        - common_equity
+        - preferred_equity
+  - id: income
+    name: Income Statement Items
+    items:
+      - type: line_item
+        id: rental_income
+        name: Rental Income
+        node_id: rental_income
+      - type: line_item
+        id: property_management_fees
+        name: Property Management Fees
+        node_id: property_management_fees
+      - type: line_item
+        id: other_income
+        name: Other Income
+        node_id: other_income
+      - type: line_item
+        id: property_operating_expenses
+        name: Property Operating Expenses
+        node_id: property_operating_expenses
+      - type: line_item
+        id: general_admin
+        name: General & Administrative
+        node_id: general_admin
+      - type: line_item
+        id: depreciation
+        name: Depreciation
+        node_id: depreciation
+      - type: line_item
+        id: interest_expense_mortgage
+        name: Interest Expense - Mortgage
+        node_id: interest_expense_mortgage
+      - type: line_item
+        id: interest_expense_construction
+        name: Interest Expense - Construction
+        node_id: interest_expense_construction
+      - type: line_item
+        id: interest_expense_other
+        name: Interest Expense - Other
+        node_id: interest_expense_other
+  - id: calculations
+    name: Calculations
+    items:
+      - type: calculated
+        id: total_interest_expense
+        name: Total Interest Expense
+        calculation:
+          type: addition
+          inputs:
+            - interest_expense_mortgage
+            - interest_expense_construction
+            - interest_expense_other
+      - type: calculated
+        id: total_income
+        name: Total Income
+        calculation:
+          type: addition
+          inputs:
+            - rental_income
+            - property_management_fees
+            - other_income
+      - type: calculated
+        id: net_operating_income
+        name: Net Operating Income
+        calculation:
+          type: subtraction
+          inputs:
+            - total_income
+            - property_operating_expenses
+      - type: calculated
+        id: ebitda
+        name: EBITDA
+        calculation:
+          type: subtraction
+          inputs:
+            - net_operating_income
+            - general_admin
+      - type: calculated
+        id: ltv_ratio
+        name: Loan-to-Value Ratio
+        calculation:
+          type: division
+          inputs:
+            - total_debt
+            - total_assets
+      - type: calculated
+        id: dscr
+        name: Debt Service Coverage Ratio
+        calculation:
+          type: division
+          inputs:
+            - net_operating_income
+            - total_interest_expense
+      - type: calculated
+        id: debt_to_equity
+        name: Debt-to-Equity Ratio
+        calculation:
+          type: division
+          inputs:
+            - total_debt
+            - total_equity
+      - type: calculated
+        id: interest_coverage_ratio
+        name: Interest Coverage Ratio
+        calculation:
+          type: division
+          inputs:
+            - ebitda
+            - total_interest_expense
+      - type: calculated
+        id: weighted_avg_interest_rate
+        name: Weighted Avg Interest Rate
+        calculation:
+          type: division
+          inputs:
+            - total_interest_expense
+            - total_debt 

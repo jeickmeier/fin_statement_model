@@ -8,7 +8,7 @@ import pandas as pd
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.mixins import (
     DataFrameBasedWriter,
-    ConfigurableReaderMixin,
+    ConfigurationMixin,
     handle_write_errors,
 )
 from fin_statement_model.io.core.registry import register_writer
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 @register_writer("dataframe")  # type: ignore[arg-type]
-class DataFrameWriter(DataFrameBasedWriter, ConfigurableReaderMixin):
+class DataFrameWriter(DataFrameBasedWriter, ConfigurationMixin):
     """Writes graph data to a pandas DataFrame.
 
     Converts the graph to a DataFrame with node names as index and periods as columns.

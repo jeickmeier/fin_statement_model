@@ -5,10 +5,14 @@ including loan portfolios, maturity schedules, and covenant calculations.
 """
 
 import logging
+from pathlib import Path
 from typing import Union
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
+from fin_statement_model.statements.orchestration.orchestrator import (
+    create_statement_dataframe,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -75,107 +79,8 @@ def create_real_estate_financial_model() -> Graph:
         node = FinancialStatementItemNode(name, values)
         graph.add_node(node)
 
-    # === Calculated Items using graph.add_calculation ===
-
-    # Total Assets
-    graph.add_calculation(
-        name="total_assets",
-        input_names=[
-            "investment_properties",
-            "development_properties",
-            "cash",
-            "other_assets",
-        ],
-        operation_type="addition",
-    )
-
-    # Total Debt
-    graph.add_calculation(
-        name="total_debt",
-        input_names=[
-            "mortgage_debt",
-            "construction_loans",
-            "bridge_loans",
-            "mezzanine_debt",
-            "credit_facility",
-        ],
-        operation_type="addition",
-    )
-
-    # Total Equity
-    graph.add_calculation(
-        name="total_equity",
-        input_names=["common_equity", "preferred_equity"],
-        operation_type="addition",
-    )
-
-    # Net Operating Income (NOI)
-    graph.add_calculation(
-        name="total_income",
-        input_names=["rental_income", "property_management_fees", "other_income"],
-        operation_type="addition",
-    )
-
-    graph.add_calculation(
-        name="net_operating_income",
-        input_names=["total_income", "property_operating_expenses"],
-        operation_type="subtraction",
-    )
-
-    # Total Interest Expense
-    graph.add_calculation(
-        name="total_interest_expense",
-        input_names=[
-            "interest_expense_mortgage",
-            "interest_expense_construction",
-            "interest_expense_other",
-        ],
-        operation_type="addition",
-    )
-
-    # EBITDA
-    graph.add_calculation(
-        name="ebitda",
-        input_names=["net_operating_income", "general_admin"],
-        operation_type="subtraction",
-    )
-
-    # === Key Debt Metrics ===
-
-    # Loan-to-Value (LTV) Ratio
-    graph.add_calculation(
-        name="ltv_ratio",
-        input_names=["total_debt", "total_assets"],
-        operation_type="division",
-    )
-
-    # Debt Service Coverage Ratio (DSCR)
-    graph.add_calculation(
-        name="dscr",
-        input_names=["net_operating_income", "total_interest_expense"],
-        operation_type="division",
-    )
-
-    # Debt-to-Equity Ratio
-    graph.add_calculation(
-        name="debt_to_equity",
-        input_names=["total_debt", "total_equity"],
-        operation_type="division",
-    )
-
-    # Interest Coverage Ratio
-    graph.add_calculation(
-        name="interest_coverage_ratio",
-        input_names=["ebitda", "total_interest_expense"],
-        operation_type="division",
-    )
-
-    # Weighted Average Interest Rate
-    graph.add_calculation(
-        name="weighted_avg_interest_rate",
-        input_names=["total_interest_expense", "total_debt"],
-        operation_type="division",
-    )
+    # Calculations and ratio metrics will be automatically generated later when
+    # the statement configuration is processed via `create_statement_dataframe`.
 
     return graph
 
@@ -340,8 +245,16 @@ def main() -> None:
     """Run the real estate debt analysis example."""
     logger.info("=== Real Estate Debt Analysis Example ===\n")
 
-    # Create the financial model
+    # Create the base financial model with raw data nodes
     graph = create_real_estate_financial_model()
+
+    # Generate calculation nodes based on the statement configuration
+    config_path = (
+        Path(__file__).resolve().parents[2]
+        / "configs"
+        / "real_estate_debt_statement.yaml"
+    )
+    create_statement_dataframe(graph, str(config_path))
 
     # Calculate key metrics
     metrics = calculate_debt_metrics(graph)

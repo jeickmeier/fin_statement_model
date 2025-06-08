@@ -6,7 +6,6 @@ and using it with the fin_statement_model library.
 
 import logging
 import sys
-import pandas as pd
 
 from fin_statement_model.config import get_config, update_config
 from fin_statement_model.io import read_data
@@ -90,26 +89,6 @@ def fetch_fmp_data() -> object:
         raise
 
 
-def convert_to_dataframe(graph: object) -> pd.DataFrame:
-    """Convert graph data to pandas DataFrame for easy viewing."""
-    data = {}
-
-    for node in graph.nodes.values():
-        node_data = {}
-        for period in graph.periods:
-            value = node.get_value(period)
-            if value is not None:
-                # Apply scale factor from config
-                node_data[period] = value * config.display.scale_factor
-        if node_data:
-            data[node.name] = node_data
-
-    df = pd.DataFrame(data).T
-    df = df[sorted(df.columns, reverse=True)]  # Sort periods descending
-
-    return df
-
-
 def main():
     """Run the FMP example."""
     logger.info("=" * 60)
@@ -118,27 +97,6 @@ def main():
 
     # Fetch data from FMP
     graph = fetch_fmp_data()
-
-    # Convert to DataFrame for display
-    logger.info("\nConverting to DataFrame...")
-    df = convert_to_dataframe(graph)
-
-    # Display configuration info
-    logger.info("\nDisplay Configuration:")
-    logger.info(f"  Units: {config.display.default_units}")
-    logger.info(f"  Scale Factor: {config.display.scale_factor}")
-    logger.info(f"  Currency Format: {config.display.default_currency_format}")
-
-    logger.info(
-        f"\n{STATEMENT_TYPE.replace('_', ' ').title()} (in {config.display.default_units}):"
-    )
-    logger.info("-" * 80)
-
-    # Apply formatting based on config
-    pd.options.display.float_format = (
-        lambda x: f"{x:{config.display.default_currency_format}}"
-    )
-    print(df.head(10))  # Show first 10 items
 
     # Try to create a formatted statement if config exists
     try:

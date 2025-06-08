@@ -54,40 +54,6 @@ def main():
     }
 
     print("\n" + "=" * 60)
-    print("BEFORE: Verbose API with manual config passing")
-    print("=" * 60)
-
-    # The OLD way - passing config values everywhere
-    print(
-        """
-# OLD: Create validator with all config values
-validator = UnifiedNodeValidator(
-    strict_mode=config.validation.strict_mode,
-    auto_standardize=config.validation.auto_standardize_names,
-    warn_on_non_standard=config.validation.warn_on_non_standard
-)
-
-# OLD: Create statement with format kwargs
-df = create_statement_dataframe(
-    graph=graph,
-    config_path_or_dir="income_statement.yaml",
-    format_kwargs={
-        "number_format": config.display.default_number_format,
-        "hide_zero_rows": config.display.hide_zero_rows,
-        "contra_display_style": config.display.contra_display_style,
-        "should_apply_signs": True
-    }
-)
-
-# OLD: Create forecast with growth rate
-forecast = FixedGrowthForecastNode(
-    revenue_node, "2023", ["2024", "2025"], 
-    config.forecasting.default_growth_rate
-)
-"""
-    )
-
-    print("\n" + "=" * 60)
     print("AFTER: Clean API with automatic config usage")
     print("=" * 60)
 
@@ -534,332 +500,6 @@ def main() -> None:
     print("• All subsystems respect the centralized configuration")
     print("• Configurations can be serialized and shared")
     print("• Slim config API under fin_statement_model.config for concise access")
-
-
-if __name__ == "__main__":
-    main()
-
-
-
-================================================================================
-File: examples/scripts/contra_items_demo_simple.py
-================================================================================
-
-"""Simple Contra Items Demo.
-
-This example demonstrates how contra items work in financial statements
-without using the full statement framework.
-"""
-
-import logging
-import pandas as pd
-from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.nodes import FinancialStatementItemNode, CalculationNode
-from fin_statement_model.core.calculations import AdditionCalculation
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
-
-
-def create_graph_with_contra_items() -> Graph:
-    """Create a graph with contra items for demonstration."""
-    graph = Graph()
-
-    # Regular asset items
-    gross_ppe = FinancialStatementItemNode("gross_ppe", {})
-    gross_ppe.set_value("2023", 1000000)
-    gross_ppe.set_value("2024", 1200000)
-    graph.add_node(gross_ppe)
-
-    # Contra asset item (Accumulated Depreciation)
-    accum_depreciation = FinancialStatementItemNode("accumulated_depreciation", {})
-    accum_depreciation.set_value("2023", -300000)  # Negative value
-    accum_depreciation.set_value("2024", -400000)
-    graph.add_node(accum_depreciation)
-
-    # Net PP&E calculation
-    net_ppe = CalculationNode(
-        name="net_ppe",
-        inputs=[gross_ppe, accum_depreciation],
-        calculation=AdditionCalculation(),  # Since accum_dep is already negative
-    )
-    graph.add_node(net_ppe)
-
-    # Revenue items
-    gross_revenue = FinancialStatementItemNode("gross_revenue", {})
-    gross_revenue.set_value("2023", 2000000)
-    gross_revenue.set_value("2024", 2500000)
-    graph.add_node(gross_revenue)
-
-    # Contra revenue items
-    sales_returns = FinancialStatementItemNode("sales_returns", {})
-    sales_returns.set_value("2023", -100000)
-    sales_returns.set_value("2024", -125000)
-    graph.add_node(sales_returns)
-
-    sales_discounts = FinancialStatementItemNode("sales_discounts", {})
-    sales_discounts.set_value("2023", -50000)
-    sales_discounts.set_value("2024", -75000)
-    graph.add_node(sales_discounts)
-
-    # Net Revenue calculation
-    net_revenue = CalculationNode(
-        name="net_revenue",
-        inputs=[gross_revenue, sales_returns, sales_discounts],
-        calculation=AdditionCalculation(),
-    )
-    graph.add_node(net_revenue)
-
-    return graph
-
-
-def format_contra_value(value: float, style: str = "parentheses") -> str:
-    """Format a contra item value based on display style."""
-    abs_value = abs(value)
-    formatted = f"{abs_value:,.0f}"
-
-    if style == "parentheses":  # noqa: SIM116
-        return f"({formatted})"
-    elif style == "brackets":
-        return f"[{formatted}]"
-    elif style == "negative":
-        return f"-{formatted}"
-    elif style == "indented":
-        return f"    {formatted}"
-    else:
-        return formatted
-
-
-def demo_contra_display_styles():
-    """Demonstrate different contra item display styles."""
-    logger.info("=== Contra Items Display Styles Demo ===\n")
-
-    graph = create_graph_with_contra_items()
-
-    # Define the financial statement structure
-    statement_items = [
-        ("Assets", None, False),
-        ("Property, Plant & Equipment (Gross)", "gross_ppe", False),
-        ("Less: Accumulated Depreciation", "accumulated_depreciation", True),
-        ("Property, Plant & Equipment (Net)", "net_ppe", False),
-        ("", None, False),  # Blank line
-        ("Revenue", None, False),
-        ("Gross Revenue", "gross_revenue", False),
-        ("Less: Sales Returns", "sales_returns", True),
-        ("Less: Sales Discounts", "sales_discounts", True),
-        ("Net Revenue", "net_revenue", False),
-    ]
-
-    # Different display styles
-    display_styles = ["parentheses", "brackets", "negative", "indented"]
-
-    for style in display_styles:
-        logger.info(f"\n--- Contra Display Style: {style} ---")
-        logger.info(f"{'Line Item':<40} {'2023':>15} {'2024':>15}")
-        logger.info("-" * 70)
-
-        for item_name, node_id, is_contra in statement_items:
-            if node_id is None:
-                # Section header or blank line
-                logger.info(f"{item_name:<40}")
-            else:
-                # Get values - use calculate for all nodes to be safe
-                val_2023 = graph.calculate(node_id, "2023")
-                val_2024 = graph.calculate(node_id, "2024")
-
-                # Format values
-                if is_contra and val_2023 < 0:
-                    fmt_2023 = format_contra_value(val_2023, style)
-                    fmt_2024 = format_contra_value(val_2024, style)
-                else:
-                    fmt_2023 = f"{val_2023:,.0f}"
-                    fmt_2024 = f"{val_2024:,.0f}"
-
-                logger.info(f"{item_name:<40} {fmt_2023:>15} {fmt_2024:>15}")
-
-
-def demo_calculation_accuracy():
-    """Demonstrate that calculations remain accurate regardless of display."""
-    logger.info("\n=== Calculation Accuracy Demo ===\n")
-
-    graph = create_graph_with_contra_items()
-
-    # Show PP&E calculation
-    logger.info("Property, Plant & Equipment Calculation:")
-
-    gross_2023 = graph.get_node("gross_ppe").get_value("2023")
-    accum_2023 = graph.get_node("accumulated_depreciation").get_value("2023")
-    net_2023 = graph.calculate("net_ppe", "2023")
-
-    logger.info(f"  Gross PP&E:                    ${gross_2023:,.0f}")
-    logger.info(
-        f"  Accumulated Depreciation:      ${accum_2023:,.0f} (stored as negative)"
-    )
-    logger.info(f"  Net PP&E (calculated):         ${net_2023:,.0f}")
-    logger.info(
-        f"  Verification: {gross_2023:,.0f} + ({accum_2023:,.0f}) = {net_2023:,.0f}"
-    )
-
-    # Show Revenue calculation
-    logger.info("\nRevenue Calculation:")
-
-    gross_rev_2023 = graph.get_node("gross_revenue").get_value("2023")
-    returns_2023 = graph.get_node("sales_returns").get_value("2023")
-    discounts_2023 = graph.get_node("sales_discounts").get_value("2023")
-    net_rev_2023 = graph.calculate("net_revenue", "2023")
-
-    logger.info(f"  Gross Revenue:                 ${gross_rev_2023:,.0f}")
-    logger.info(
-        f"  Sales Returns:                 ${returns_2023:,.0f} (stored as negative)"
-    )
-    logger.info(
-        f"  Sales Discounts:               ${discounts_2023:,.0f} (stored as negative)"
-    )
-    logger.info(f"  Net Revenue (calculated):      ${net_rev_2023:,.0f}")
-    logger.info(
-        f"  Verification: {gross_rev_2023:,.0f} + ({returns_2023:,.0f}) + ({discounts_2023:,.0f}) = {net_rev_2023:,.0f}"
-    )
-
-
-def demo_dataframe_output():
-    """Demonstrate creating a DataFrame with contra items."""
-    logger.info("\n=== DataFrame Output Demo ===\n")
-
-    graph = create_graph_with_contra_items()
-
-    # Create data for DataFrame
-    data = []
-
-    # PP&E Section
-    data.append(
-        {
-            "Section": "Assets",
-            "Line Item": "Property, Plant & Equipment (Gross)",
-            "2023": graph.get_node("gross_ppe").get_value("2023"),
-            "2024": graph.get_node("gross_ppe").get_value("2024"),
-            "Is Contra": False,
-        }
-    )
-
-    accum_dep_2023 = graph.get_node("accumulated_depreciation").get_value("2023")
-    accum_dep_2024 = graph.get_node("accumulated_depreciation").get_value("2024")
-    data.append(
-        {
-            "Section": "Assets",
-            "Line Item": "Less: Accumulated Depreciation",
-            "2023": abs(accum_dep_2023),  # Show as positive in display
-            "2024": abs(accum_dep_2024),
-            "Is Contra": True,
-        }
-    )
-
-    data.append(
-        {
-            "Section": "Assets",
-            "Line Item": "Property, Plant & Equipment (Net)",
-            "2023": graph.calculate("net_ppe", "2023"),
-            "2024": graph.calculate("net_ppe", "2024"),
-            "Is Contra": False,
-        }
-    )
-
-    # Revenue Section
-    data.append(
-        {
-            "Section": "Revenue",
-            "Line Item": "Gross Revenue",
-            "2023": graph.get_node("gross_revenue").get_value("2023"),
-            "2024": graph.get_node("gross_revenue").get_value("2024"),
-            "Is Contra": False,
-        }
-    )
-
-    returns_2023 = graph.get_node("sales_returns").get_value("2023")
-    returns_2024 = graph.get_node("sales_returns").get_value("2024")
-    data.append(
-        {
-            "Section": "Revenue",
-            "Line Item": "Less: Sales Returns",
-            "2023": abs(returns_2023),
-            "2024": abs(returns_2024),
-            "Is Contra": True,
-        }
-    )
-
-    discounts_2023 = graph.get_node("sales_discounts").get_value("2023")
-    discounts_2024 = graph.get_node("sales_discounts").get_value("2024")
-    data.append(
-        {
-            "Section": "Revenue",
-            "Line Item": "Less: Sales Discounts",
-            "2023": abs(discounts_2023),
-            "2024": abs(discounts_2024),
-            "Is Contra": True,
-        }
-    )
-
-    data.append(
-        {
-            "Section": "Revenue",
-            "Line Item": "Net Revenue",
-            "2023": graph.calculate("net_revenue", "2023"),
-            "2024": graph.calculate("net_revenue", "2024"),
-            "Is Contra": False,
-        }
-    )
-
-    # Create DataFrame
-    df = pd.DataFrame(data)
-
-    # Format the display
-    def format_value(row: pd.Series) -> pd.Series:
-        value_2023 = row["2023"]
-        value_2024 = row["2024"]
-
-        if row["Is Contra"]:
-            # Show contra items in parentheses
-            row["2023"] = f"({value_2023:,.0f})"
-            row["2024"] = f"({value_2024:,.0f})"
-        else:
-            row["2023"] = f"{value_2023:,.0f}"
-            row["2024"] = f"{value_2024:,.0f}"
-
-        return row
-
-    df_display = df.apply(format_value, axis=1)
-
-    logger.info("Financial Statement with Contra Items:")
-    logger.info(
-        df_display[["Section", "Line Item", "2023", "2024"]].to_string(index=False)
-    )
-
-
-def main():
-    """Run all contra item demonstrations."""
-    try:
-        logger.info("Financial Statement Model - Simple Contra Items Demo")
-        logger.info("=" * 70)
-
-        # Run demonstrations
-        demo_contra_display_styles()
-        demo_calculation_accuracy()
-        demo_dataframe_output()
-
-        logger.info("\n=== Demo Complete ===")
-        logger.info("\nKey takeaways:")
-        logger.info("1. Contra items are stored as negative values in the graph")
-        logger.info("2. Display formatting is separate from calculation logic")
-        logger.info(
-            "3. Multiple display styles are supported (parentheses, brackets, etc.)"
-        )
-        logger.info("4. Calculations work correctly with negative values")
-        logger.info("5. DataFrames can show contra items with appropriate formatting")
-
-    except Exception:
-        logger.exception("Error during demo")
 
 
 if __name__ == "__main__":
@@ -1507,14 +1147,11 @@ import sys
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.errors import (
     FinancialModelError,
-    ConfigurationError,
-    StatementError,
 )
 
 from fin_statement_model.io.exceptions import WriteError
-from fin_statement_model.io import read_data, write_data
+from fin_statement_model.io import read_data
 from fin_statement_model.statements import (
-    create_statement_dataframe,
     export_statements_to_excel,
 )
 from fin_statement_model.forecasting.forecaster import StatementForecaster
@@ -1525,6 +1162,9 @@ from fin_statement_model.statements.structure.builder import StatementStructureB
 from fin_statement_model.statements.registry import StatementRegistry
 from fin_statement_model.statements.orchestration.orchestrator import populate_graph
 from fin_statement_model.statements.formatting.formatter import StatementFormatter
+from fin_statement_model.statements.orchestration.loader import (
+    load_build_register_statements,
+)
 
 # --- 1. Setup ---
 
@@ -1810,6 +1450,15 @@ sections:
         type: line_item
         node_id: core.common_stock # Use core prefix
         sign_convention: 1
+      - id: net_income
+        name: Net Income
+        type: metric
+        metric_id: net_income
+        inputs:
+          operating_income: gross_profit
+          interest_expense: "Interest Expense"
+          income_tax: "Taxes"
+        sign_convention: 1
       - id: retained_earnings # Metric item
         name: Retained Earnings
         type: metric
@@ -1935,8 +1584,42 @@ sections:
     logger.info(f"Successfully exported statements to {excel_output_path}")
 
     # --- Add Markdown Export ---
-    logger.info(f"Exporting statement to Markdown: {md_output_path}")
-    # Markdown export using code-only StatementStructure to be implemented.
+    logger.info(f"Exporting statements to Markdown: {md_output_path}")
+    # Prepare registry and builder for balance sheet
+    bs_registry = StatementRegistry()
+    builder = StatementStructureBuilder()
+    # Load, validate, build, and register the balance_sheet config
+    load_build_register_statements(str(bs_stmt_path), bs_registry, builder)
+    statement_structure = bs_registry.get("balance_sheet")
+    # Populate graph with balance sheet calculation and metric nodes
+    populate_graph(bs_registry, graph)
+    # Use direct MarkdownWriter with config to avoid facade schema limitations
+    from fin_statement_model.io.config.models import MarkdownWriterConfig
+    from fin_statement_model.io.formats.markdown.writer import MarkdownWriter
+
+    # Build MarkdownWriterConfig (statement_config_path required by schema)
+    md_cfg = MarkdownWriterConfig(
+        format_type="markdown",
+        target=str(md_output_path),
+        statement_config_path=str(bs_stmt_path),
+        historical_periods=["2022", "2023"],
+        forecast_periods=forecast_periods,
+        forecast_configs=forecast_configs,
+    )
+    # Instantiate MarkdownWriter with Pydantic config
+    md_writer = MarkdownWriter(config=md_cfg)
+    # Render markdown content using modern StatementStructure approach
+    md_content = md_writer.write(
+        graph,
+        statement_structure=statement_structure,
+    )
+    # Write to file
+    try:
+        with open(md_output_path, "w", encoding="utf-8") as f:
+            f.write(md_content)
+        logger.info(f"Successfully wrote Markdown to {md_output_path}")
+    except Exception:
+        logger.exception("Failed to write Markdown to file")
 
 except (WriteError, FinancialModelError):
     logger.exception("Failed to export data")
@@ -2668,7 +2351,6 @@ and using it with the fin_statement_model library.
 
 import logging
 import sys
-import pandas as pd
 
 from fin_statement_model.config import get_config, update_config
 from fin_statement_model.io import read_data
@@ -2752,26 +2434,6 @@ def fetch_fmp_data() -> object:
         raise
 
 
-def convert_to_dataframe(graph: object) -> pd.DataFrame:
-    """Convert graph data to pandas DataFrame for easy viewing."""
-    data = {}
-
-    for node in graph.nodes.values():
-        node_data = {}
-        for period in graph.periods:
-            value = node.get_value(period)
-            if value is not None:
-                # Apply scale factor from config
-                node_data[period] = value * config.display.scale_factor
-        if node_data:
-            data[node.name] = node_data
-
-    df = pd.DataFrame(data).T
-    df = df[sorted(df.columns, reverse=True)]  # Sort periods descending
-
-    return df
-
-
 def main():
     """Run the FMP example."""
     logger.info("=" * 60)
@@ -2780,27 +2442,6 @@ def main():
 
     # Fetch data from FMP
     graph = fetch_fmp_data()
-
-    # Convert to DataFrame for display
-    logger.info("\nConverting to DataFrame...")
-    df = convert_to_dataframe(graph)
-
-    # Display configuration info
-    logger.info("\nDisplay Configuration:")
-    logger.info(f"  Units: {config.display.default_units}")
-    logger.info(f"  Scale Factor: {config.display.scale_factor}")
-    logger.info(f"  Currency Format: {config.display.default_currency_format}")
-
-    logger.info(
-        f"\n{STATEMENT_TYPE.replace('_', ' ').title()} (in {config.display.default_units}):"
-    )
-    logger.info("-" * 80)
-
-    # Apply formatting based on config
-    pd.options.display.float_format = (
-        lambda x: f"{x:{config.display.default_currency_format}}"
-    )
-    print(df.head(10))  # Show first 10 items
 
     # Try to create a formatted statement if config exists
     try:
@@ -3032,179 +2673,6 @@ def create_validated_bank_data() -> dict[str, FinancialStatementItemNode]:
         )
 
     return validated_nodes
-
-
-def create_sample_bank_data() -> dict[str, FinancialStatementItemNode]:
-    """Create sample bank financial data for analysis."""
-    # Asset data
-    total_loans = FinancialStatementItemNode(
-        "total_loans",
-        {"2021": 45_000_000_000, "2022": 48_000_000_000, "2023": 52_000_000_000},
-    )
-
-    allowance_for_loan_losses = FinancialStatementItemNode(
-        "allowance_for_loan_losses",
-        {"2021": 675_000_000, "2022": 720_000_000, "2023": 780_000_000},
-    )
-
-    non_performing_loans = FinancialStatementItemNode(
-        "non_performing_loans",
-        {"2021": 450_000_000, "2022": 480_000_000, "2023": 520_000_000},
-    )
-
-    total_securities = FinancialStatementItemNode(
-        "total_securities",
-        {"2021": 12_000_000_000, "2022": 13_000_000_000, "2023": 14_000_000_000},
-    )
-
-    total_assets = FinancialStatementItemNode(
-        "total_assets",
-        {"2021": 65_000_000_000, "2022": 70_000_000_000, "2023": 75_000_000_000},
-    )
-
-    # Liability and equity data
-    total_deposits = FinancialStatementItemNode(
-        "total_deposits",
-        {"2021": 52_000_000_000, "2022": 56_000_000_000, "2023": 60_000_000_000},
-    )
-
-    total_shareholders_equity = FinancialStatementItemNode(
-        "total_shareholders_equity",
-        {"2021": 6_500_000_000, "2022": 7_000_000_000, "2023": 7_500_000_000},
-    )
-
-    # Income statement data
-    net_interest_income = FinancialStatementItemNode(
-        "net_interest_income",
-        {"2021": 2_100_000_000, "2022": 2_300_000_000, "2023": 2_600_000_000},
-    )
-
-    total_non_interest_income = FinancialStatementItemNode(
-        "total_non_interest_income",
-        {"2021": 800_000_000, "2022": 850_000_000, "2023": 900_000_000},
-    )
-
-    total_non_interest_expense = FinancialStatementItemNode(
-        "total_non_interest_expense",
-        {"2021": 1_800_000_000, "2022": 1_900_000_000, "2023": 2_000_000_000},
-    )
-
-    provision_for_credit_losses = FinancialStatementItemNode(
-        "provision_for_credit_losses",
-        {"2021": 200_000_000, "2022": 250_000_000, "2023": 300_000_000},
-    )
-
-    net_income = FinancialStatementItemNode(
-        "net_income", {"2021": 650_000_000, "2022": 700_000_000, "2023": 750_000_000}
-    )
-
-    # Regulatory capital data
-    common_equity_tier_1 = FinancialStatementItemNode(
-        "common_equity_tier_1",
-        {"2021": 5_200_000_000, "2022": 5_600_000_000, "2023": 6_000_000_000},
-    )
-
-    total_tier_1_capital = FinancialStatementItemNode(
-        "total_tier_1_capital",
-        {"2021": 5_500_000_000, "2022": 5_900_000_000, "2023": 6_300_000_000},
-    )
-
-    total_capital = FinancialStatementItemNode(
-        "total_capital",
-        {"2021": 6_200_000_000, "2022": 6_600_000_000, "2023": 7_000_000_000},
-    )
-
-    total_risk_weighted_assets = FinancialStatementItemNode(
-        "total_risk_weighted_assets",
-        {"2021": 42_000_000_000, "2022": 45_000_000_000, "2023": 48_000_000_000},
-    )
-
-    # Additional calculated nodes for metrics
-    average_total_assets = FinancialStatementItemNode(
-        "average_total_assets",
-        {"2021": 63_000_000_000, "2022": 67_500_000_000, "2023": 72_500_000_000},
-    )
-
-    average_total_equity = FinancialStatementItemNode(
-        "average_total_equity",
-        {"2021": 6_250_000_000, "2022": 6_750_000_000, "2023": 7_250_000_000},
-    )
-
-    average_earning_assets = FinancialStatementItemNode(
-        "average_earning_assets",
-        {"2021": 58_000_000_000, "2022": 62_000_000_000, "2023": 66_000_000_000},
-    )
-
-    net_charge_offs = FinancialStatementItemNode(
-        "net_charge_offs",
-        {"2021": 180_000_000, "2022": 200_000_000, "2023": 250_000_000},
-    )
-
-    average_total_loans = FinancialStatementItemNode(
-        "average_total_loans",
-        {"2021": 44_000_000_000, "2022": 46_500_000_000, "2023": 50_000_000_000},
-    )
-
-    # Liquidity-specific data for new metrics
-    high_quality_liquid_assets = FinancialStatementItemNode(
-        "high_quality_liquid_assets",
-        {"2021": 8_000_000_000, "2022": 8_500_000_000, "2023": 9_000_000_000},
-    )
-
-    net_cash_outflows_30_days = FinancialStatementItemNode(
-        "net_cash_outflows_30_days",
-        {"2021": 7_000_000_000, "2022": 7_200_000_000, "2023": 7_500_000_000},
-    )
-
-    available_stable_funding = FinancialStatementItemNode(
-        "available_stable_funding",
-        {"2021": 55_000_000_000, "2022": 59_000_000_000, "2023": 63_000_000_000},
-    )
-
-    required_stable_funding = FinancialStatementItemNode(
-        "required_stable_funding",
-        {"2021": 50_000_000_000, "2022": 53_000_000_000, "2023": 56_000_000_000},
-    )
-
-    liquid_assets = FinancialStatementItemNode(
-        "liquid_assets",
-        {"2021": 15_000_000_000, "2022": 16_000_000_000, "2023": 17_000_000_000},
-    )
-
-    return {
-        # Assets
-        "total_loans": total_loans,
-        "allowance_for_loan_losses": allowance_for_loan_losses,
-        "non_performing_loans": non_performing_loans,
-        "total_securities": total_securities,
-        "total_assets": total_assets,
-        # Liabilities and equity
-        "total_deposits": total_deposits,
-        "total_shareholders_equity": total_shareholders_equity,
-        # Income statement
-        "net_interest_income": net_interest_income,
-        "total_non_interest_income": total_non_interest_income,
-        "total_non_interest_expense": total_non_interest_expense,
-        "provision_for_credit_losses": provision_for_credit_losses,
-        "net_income": net_income,
-        # Regulatory capital
-        "common_equity_tier_1": common_equity_tier_1,
-        "total_tier_1_capital": total_tier_1_capital,
-        "total_capital": total_capital,
-        "total_risk_weighted_assets": total_risk_weighted_assets,
-        # Calculated/average items
-        "average_total_assets": average_total_assets,
-        "average_total_equity": average_total_equity,
-        "average_earning_assets": average_earning_assets,
-        "net_charge_offs": net_charge_offs,
-        "average_total_loans": average_total_loans,
-        # Liquidity items
-        "high_quality_liquid_assets": high_quality_liquid_assets,
-        "net_cash_outflows_30_days": net_cash_outflows_30_days,
-        "available_stable_funding": available_stable_funding,
-        "required_stable_funding": required_stable_funding,
-        "liquid_assets": liquid_assets,
-    }
 
 
 def validate_data_completeness(
@@ -3483,217 +2951,9 @@ def generate_banking_dashboard(
 
 
 def main():
-    """Run the banking analysis example with node name validation."""
-    logger.info("Banking Analysis Example with Node Name Validation")
-    logger.info("=" * 60)
-
-    # Step 1: Demonstrate node name validation
-    validate_node_names_example()
-
-    # Step 2: Demonstrate context-aware validation
-    context_aware_validation_example()
-
-    # Step 3: Create validated bank data
-    validated_data = create_validated_bank_data()
-
-    # Step 4: Create complete sample data (merge with validated data)
-    bank_data = create_sample_bank_data()
-
-    # Merge validated data into complete dataset
-    bank_data.update(validated_data)
-
-    # Step 5: Validate data completeness
-    validation_report = validate_data_completeness(bank_data)
-
-    # Print validation summary
-    if validation_report["required_missing"]:
-        logger.warning(
-            f"⚠️  Warning: {len(validation_report['required_missing'])} required nodes missing"
-        )
-    if validation_report["completeness_score"] < 80:
-        logger.warning(
-            f"⚠️  Data completeness below recommended threshold: {validation_report['completeness_score']:.1f}%"
-        )
-    else:
-        logger.info(
-            f"✅ Data completeness acceptable: {validation_report['completeness_score']:.1f}%"
-        )
-
-    logger.info(f"\n{'=' * 60}")
-    logger.info("BANKING ANALYSIS WITH VALIDATED DATA (Node Collection)")
-    logger.info(f"{'=' * 60}")
-
-    # Analyze multiple periods using the simple node collection approach
-    periods = ["2021", "2022", "2023"]
-
-    all_results = {}
-    for period in periods:
-        results = generate_banking_dashboard(bank_data, period)
-        all_results[period] = results
-
-    # Step 6: Demonstrate comprehensive graph structure
-    logger.info(f"\n{'=' * 60}")
-    logger.info("COMPREHENSIVE GRAPH STRUCTURE DEMONSTRATION")
-    logger.info(f"{'=' * 60}")
-
-    # Create and demonstrate the graph-based approach
-    graph_data = create_banking_graph_example()
-
-    # Compare approaches
-    logger.info(f"\n{'=' * 60}")
-    logger.info("COMPARISON: Node Collection vs Graph Structure")
-    logger.info(f"{'=' * 60}")
-
-    logger.info("\n--- Node Collection Approach ---")
-    logger.info("✓ Simple dictionary of independent nodes")
-    logger.info("✓ Easy to understand and implement")
-    logger.info("✓ Direct data access")
-    logger.info("✗ No automatic calculations")
-    logger.info("✗ No dependency tracking")
-    logger.info("✗ Manual metric calculations required")
-    logger.info(f"  Total nodes: {len(bank_data)}")
-    logger.info("  Calculation nodes: 0")
-    logger.info(f"  Data nodes: {len(bank_data)}")
-
-    logger.info("\n--- Graph Structure Approach ---")
-    logger.info("✓ Automatic calculations based on dependencies")
-    logger.info("✓ Clear relationship modeling")
-    logger.info("✓ Dependency tracking and validation")
-    logger.info("✓ Consistent calculations across periods")
-    logger.info("✗ More complex to set up initially")
-    logger.info("✗ Requires understanding of graph concepts")
-
-    # Count different node types in graph
-    calculation_nodes = [
-        node for node in graph_data.values() if hasattr(node, "inputs") and node.inputs
-    ]
-    data_nodes = [
-        node
-        for node in graph_data.values()
-        if not (hasattr(node, "inputs") and node.inputs)
-    ]
-
-    logger.info(f"  Total nodes: {len(graph_data)}")
-    logger.info(f"  Calculation nodes: {len(calculation_nodes)}")
-    logger.info(f"  Data nodes: {len(data_nodes)}")
-
-    # Trend analysis using simple approach
-    logger.info(f"\n{'=' * 60}")
-    logger.info("TREND ANALYSIS (Node Collection Approach)")
-    logger.info(f"{'=' * 60}")
-
-    # Example: Track key metrics over time
-    key_metrics = [
-        "non_performing_loan_ratio",
-        "common_equity_tier_1_ratio",
-        "return_on_assets_(banking)",
-        "efficiency_ratio",
-        "liquidity_coverage_ratio",
-        "deposits_to_loans_ratio",
-    ]
-
-    for metric_name in key_metrics:
-        logger.info(f"\n{metric_name} Trend:")
-        for period in periods:
-            try:
-                value = calculate_metric(metric_name, bank_data, period)
-                logger.info(f"  {period}: {value:.2f}%")
-            except Exception:
-                logger.exception(f"  {period}: Error")
-
-    # Step 7: Demonstrate validation in metric calculation workflow
-    logger.info(f"\n{'=' * 60}")
-    logger.info("VALIDATION-ENHANCED METRIC CALCULATION")
-    logger.info(f"{'=' * 60}")
-
-    # Show how validation helps with metric calculation
-    demonstrate_validation_in_metrics(bank_data)
-
-    logger.info(f"\n{'=' * 60}")
-    logger.info("Analysis Complete")
-    logger.info(f"{'=' * 60}")
-    logger.info("\nKey Takeaways:")
-    logger.info("1. Node Collection: Simple, direct access, manual calculations")
-    logger.info(
-        "2. Graph Structure: Automatic calculations, dependency tracking, more complex setup"
-    )
-    logger.info(
-        "3. Both approaches can be validated using the same validation framework"
-    )
-    logger.info(
-        "4. Graph structure provides better consistency and maintainability for complex models"
-    )
-
-
-def demonstrate_validation_in_metrics(
-    data_nodes: dict[str, FinancialStatementItemNode],
-):
-    """Demonstrate how validation helps with metric calculation."""
-    logger.info("\n=== Validation-Enhanced Metric Calculation ===")
-
-    # Example: Try to calculate a metric with potentially problematic node names
-    test_metric_inputs = {
-        "loan_loss_allowance": data_nodes.get(
-            "allowance_for_loan_losses"
-        ),  # Using alternate name
-        "npl": data_nodes.get("non_performing_loans"),  # Using alternate name
-        "total_loans": data_nodes.get("total_loans"),  # Standard name
-    }
-
-    # Create validator to check metric inputs
-    validator = UnifiedNodeValidator(auto_standardize=True)
-
-    logger.info("Checking metric input node names:")
-    standardized_inputs = {}
-    for input_name, node in test_metric_inputs.items():
-        if node is not None:
-            result = validator.validate(input_name)
-            logger.info(
-                f"  Input '{input_name}' -> '{result.standardized_name}' (Valid: {result.is_valid})"
-            )
-            standardized_inputs[result.standardized_name] = node
-        else:
-            logger.info(f"  Input '{input_name}' -> Node not found in data")
-
-    # Calculate provision coverage ratio with validated inputs
-    if all(
-        key in standardized_inputs
-        for key in ["allowance_for_loan_losses", "non_performing_loans"]
-    ):
-        try:
-            # Use standardized names for metric calculation
-            metric_data = {
-                "allowance_for_loan_losses": standardized_inputs[
-                    "allowance_for_loan_losses"
-                ],
-                "non_performing_loans": standardized_inputs["non_performing_loans"],
-            }
-
-            provision_coverage = calculate_metric(
-                "provision_coverage_ratio", metric_data, "2023"
-            )
-            logger.info(
-                f"\nCalculated Provision Coverage Ratio (2023): {provision_coverage:.2f}%"
-            )
-
-            # Interpret the result
-            interpretation = interpret_metric(
-                metric_registry.get("provision_coverage_ratio"), provision_coverage
-            )
-            logger.info(
-                f"Interpretation: {interpretation['rating']} - {interpretation['interpretation_message']}"
-            )
-
-        except Exception:
-            logger.exception("Error calculating metric")
-
-    # Show validation benefits
-    logger.info("\n--- Validation Benefits ---")
-    logger.info("1. Automatic standardization of node names")
-    logger.info("2. Early detection of missing or misnamed data")
-    logger.info("3. Consistent metric calculations across different data sources")
-    logger.info("4. Improved data quality and reliability")
-    logger.info("5. Better error messages and debugging information")
+    """Run the banking analysis example showcasing graph capabilities."""
+    # Create and demonstrate the graph-based banking example
+    create_banking_graph_example()
 
 
 def create_banking_graph_example() -> dict[str, FinancialStatementItemNode]:
@@ -4456,10 +3716,13 @@ for analyzing REIT financial performance.
 """
 
 import logging
+from pathlib import Path
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
-from fin_statement_model.core.metrics import metric_registry
+from fin_statement_model.statements.orchestration.orchestrator import (
+    create_statement_dataframe,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -4523,104 +3786,8 @@ def create_reit_financial_model() -> Graph:
         node = FinancialStatementItemNode(name, values)
         graph.add_node(node)
 
-    # === Add REIT-Specific Calculated Nodes using graph.add_calculation ===
-
-    # Total Revenue
-    graph.add_calculation(
-        name="total_revenue",
-        input_names=["rental_income", "property_management_fees", "other_income"],
-        operation_type="addition",
-    )
-
-    # Total Operating Expenses (before interest and depreciation)
-    graph.add_calculation(
-        name="total_operating_expenses",
-        input_names=[
-            "property_operating_expenses",
-            "property_management_expenses",
-            "general_admin_expenses",
-        ],
-        operation_type="addition",
-    )
-
-    # Net Operating Income (NOI) - Revenue minus operating expenses
-    graph.add_calculation(
-        name="net_operating_income",
-        input_names=["total_revenue", "total_operating_expenses"],
-        operation_type="subtraction",
-    )
-
-    # EBITDA - for REITs, NOI is essentially EBITDA
-    # Just pass through the value by adding zero (workaround)
-    graph.add_financial_statement_item("zero_value", {"2022": 0, "2023": 0})
-    graph.add_calculation(
-        name="ebitda",
-        input_names=["net_operating_income", "zero_value"],
-        operation_type="addition",
-    )
-
-    # Net Income calculation components
-    graph.add_calculation(
-        name="net_income_adjustments",
-        input_names=["interest_expense", "depreciation_expense"],
-        operation_type="addition",
-    )
-
-    graph.add_calculation(
-        name="pre_gain_income",
-        input_names=["net_operating_income", "net_income_adjustments"],
-        operation_type="subtraction",
-    )
-
-    graph.add_calculation(
-        name="net_income",
-        input_names=["pre_gain_income", "gain_on_property_sales"],
-        operation_type="addition",
-    )
-
-    # Total Debt
-    graph.add_calculation(
-        name="total_debt",
-        input_names=["mortgages_payable", "bonds_payable"],
-        operation_type="addition",
-    )
-
-    # Funds From Operations (FFO) calculations
-    graph.add_calculation(
-        name="ffo_adjustments",
-        input_names=["depreciation_expense", "gain_on_property_sales"],
-        operation_type="subtraction",
-    )
-
-    graph.add_calculation(
-        name="funds_from_operations",
-        input_names=["net_income", "ffo_adjustments"],
-        operation_type="addition",
-    )
-
-    # FFO per Share
-    graph.add_calculation(
-        name="ffo_per_share",
-        input_names=["funds_from_operations", "shares_outstanding"],
-        operation_type="division",
-    )
-
-    # Add standard metrics using the graph's add_metric method
-    # Note: These metrics must exist in the metric registry
-
-    # Try to add real estate-specific metrics if they exist in the registry
-    try:
-        # Debt Service Coverage Ratio
-        if "debt_service_coverage_ratio" in metric_registry.list_metrics():
-            graph.add_metric(
-                "debt_service_coverage_ratio",
-                input_node_map={
-                    "net_operating_income": "net_operating_income",
-                    "total_debt_service": "interest_expense",
-                },
-            )
-    except Exception as e:
-        logger.warning(f"Could not add DSCR metric: {e}")
+    # Calculations and metrics will be created later via the statement
+    # configuration processed by `create_statement_dataframe`.
 
     return graph
 
@@ -4716,10 +3883,14 @@ def analyze_reit_performance(graph: Graph, period: str = "2023") -> None:
 
 def main():
     """Run the REIT analysis example."""
-    # Create the REIT financial model
+    # Build the base graph with raw data nodes
     graph = create_reit_financial_model()
 
-    # Analyze performance
+    # Generate calculation nodes via statement orchestration
+    config_path = Path(__file__).resolve().parents[2] / "configs" / "reit_statement.yaml"
+    create_statement_dataframe(graph, str(config_path))
+
+    # Analyze performance using the populated graph
     analyze_reit_performance(graph)
 
 
@@ -4739,10 +3910,14 @@ including loan portfolios, maturity schedules, and covenant calculations.
 """
 
 import logging
+from pathlib import Path
 from typing import Union
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
+from fin_statement_model.statements.orchestration.orchestrator import (
+    create_statement_dataframe,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -4809,107 +3984,8 @@ def create_real_estate_financial_model() -> Graph:
         node = FinancialStatementItemNode(name, values)
         graph.add_node(node)
 
-    # === Calculated Items using graph.add_calculation ===
-
-    # Total Assets
-    graph.add_calculation(
-        name="total_assets",
-        input_names=[
-            "investment_properties",
-            "development_properties",
-            "cash",
-            "other_assets",
-        ],
-        operation_type="addition",
-    )
-
-    # Total Debt
-    graph.add_calculation(
-        name="total_debt",
-        input_names=[
-            "mortgage_debt",
-            "construction_loans",
-            "bridge_loans",
-            "mezzanine_debt",
-            "credit_facility",
-        ],
-        operation_type="addition",
-    )
-
-    # Total Equity
-    graph.add_calculation(
-        name="total_equity",
-        input_names=["common_equity", "preferred_equity"],
-        operation_type="addition",
-    )
-
-    # Net Operating Income (NOI)
-    graph.add_calculation(
-        name="total_income",
-        input_names=["rental_income", "property_management_fees", "other_income"],
-        operation_type="addition",
-    )
-
-    graph.add_calculation(
-        name="net_operating_income",
-        input_names=["total_income", "property_operating_expenses"],
-        operation_type="subtraction",
-    )
-
-    # Total Interest Expense
-    graph.add_calculation(
-        name="total_interest_expense",
-        input_names=[
-            "interest_expense_mortgage",
-            "interest_expense_construction",
-            "interest_expense_other",
-        ],
-        operation_type="addition",
-    )
-
-    # EBITDA
-    graph.add_calculation(
-        name="ebitda",
-        input_names=["net_operating_income", "general_admin"],
-        operation_type="subtraction",
-    )
-
-    # === Key Debt Metrics ===
-
-    # Loan-to-Value (LTV) Ratio
-    graph.add_calculation(
-        name="ltv_ratio",
-        input_names=["total_debt", "total_assets"],
-        operation_type="division",
-    )
-
-    # Debt Service Coverage Ratio (DSCR)
-    graph.add_calculation(
-        name="dscr",
-        input_names=["net_operating_income", "total_interest_expense"],
-        operation_type="division",
-    )
-
-    # Debt-to-Equity Ratio
-    graph.add_calculation(
-        name="debt_to_equity",
-        input_names=["total_debt", "total_equity"],
-        operation_type="division",
-    )
-
-    # Interest Coverage Ratio
-    graph.add_calculation(
-        name="interest_coverage_ratio",
-        input_names=["ebitda", "total_interest_expense"],
-        operation_type="division",
-    )
-
-    # Weighted Average Interest Rate
-    graph.add_calculation(
-        name="weighted_avg_interest_rate",
-        input_names=["total_interest_expense", "total_debt"],
-        operation_type="division",
-    )
+    # Calculations and ratio metrics will be automatically generated later when
+    # the statement configuration is processed via `create_statement_dataframe`.
 
     return graph
 
@@ -5074,8 +4150,16 @@ def main() -> None:
     """Run the real estate debt analysis example."""
     logger.info("=== Real Estate Debt Analysis Example ===\n")
 
-    # Create the financial model
+    # Create the base financial model with raw data nodes
     graph = create_real_estate_financial_model()
+
+    # Generate calculation nodes based on the statement configuration
+    config_path = (
+        Path(__file__).resolve().parents[2]
+        / "configs"
+        / "real_estate_debt_statement.yaml"
+    )
+    create_statement_dataframe(graph, str(config_path))
 
     # Calculate key metrics
     metrics = calculate_debt_metrics(graph)
@@ -7134,205 +6218,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-
-================================================================================
-File: examples/scripts/simple_example.py
-================================================================================
-
-"""Simplified Financial Statement Model Example.
-
-This example demonstrates the most straightforward way to use the library
-for basic financial analysis tasks without complex configurations.
-"""
-
-import logging
-import sys
-from pathlib import Path
-
-from fin_statement_model.config import get_config, update_config
-from fin_statement_model.io import read_data
-from fin_statement_model.core.metrics.registry import metric_registry
-from fin_statement_model.core.metrics.models import MetricDefinition
-from fin_statement_model.core.metrics import calculate_metric
-
-# Set up logging before importing other modules
-logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
-
-# Get configuration
-config = get_config()
-
-# Configure logging using centralized config
-# Note: This is now handled automatically by the library, but you can override
-if config.logging.detailed:
-    # The library already sets up logging based on config
-    pass
-else:
-    # For this example, we'll ensure INFO level is set
-    update_config({"logging": {"level": "INFO"}})
-
-logger = logging.getLogger(__name__)
-
-# Load metric definitions
-metrics_dir = (
-    Path(__file__).parent.parent.parent
-    / "fin_statement_model"
-    / "core"
-    / "metrics"
-    / "metric_defn"
-)
-if metrics_dir.exists():
-    # Load metrics from all subdirectories
-    for subdir in metrics_dir.iterdir():
-        if subdir.is_dir():
-            try:
-                count = metric_registry.load_metrics_from_directory(subdir)
-                logger.info(f"Loaded {count} metrics from {subdir.name}")
-            except Exception as e:
-                logger.warning(f"Failed to load metrics from {subdir}: {e}")
-
-# Example configuration path (you would replace with your actual path)
-# INCOME_STATEMENT_CONFIG = Path(__file__).parent / "configs" / "income_statement.yaml"
-
-# If config doesn't exist, provide a helpful error message
-# if not INCOME_STATEMENT_CONFIG.exists():
-#     logger.error(f"Configuration file not found: {INCOME_STATEMENT_CONFIG}")
-#     logger.error(
-#         "Please ensure the income_statement.yaml file exists in the configs directory"
-#     )
-#     sys.exit(1)
-
-logger.info("=" * 60)
-logger.info("SIMPLE FINANCIAL STATEMENT MODEL EXAMPLE")
-logger.info("=" * 60)
-
-# Sample data - in practice, you'd load from Excel/CSV/API
-sample_data = {
-    # Income Statement items with realistic values
-    "Revenue": {"2022": 1000000, "2023": 1200000},
-    "COGS": {"2022": 600000, "2023": 700000},
-    "R&D": {"2022": 100000, "2023": 120000},
-    "SG&A": {"2022": 150000, "2023": 180000},
-    "D&A": {"2022": 50000, "2023": 60000},
-    "Interest Expense": {"2022": 20000, "2023": 25000},
-    "Taxes": {"2022": 32500, "2023": 43750},
-    # Add operating income and net income for metrics
-    "operating_income": {"2022": 200000, "2023": 240000},
-    "net_income": {"2022": 147500, "2023": 175250},
-    # Balance Sheet items for ratio calculations
-    "total_assets": {"2022": 2000000, "2023": 2500000},
-    "current_assets": {"2022": 500000, "2023": 600000},
-    "current_liabilities": {"2022": 300000, "2023": 350000},
-    "total_liabilities": {"2022": 800000, "2023": 1000000},
-    "total_debt": {"2022": 800000, "2023": 1000000},  
-    "shareholders_equity": {"2022": 1200000, "2023": 1500000},
-    "total_equity": {"2022": 1200000, "2023": 1500000}, 
-    "inventory": {"2022": 150000, "2023": 180000},
-    "accounts_receivable": {"2022": 120000, "2023": 150000},
-    "accounts_payable": {"2022": 80000, "2023": 95000},
-    # Additional items for comprehensive analysis
-    "depreciation": {"2022": 50000, "2023": 60000},
-    "capex": {"2022": 100000, "2023": 120000},
-    "dividends": {"2022": 50000, "2023": 60000},
-    "cost_of_goods_sold": {"2022": 600000, "2023": 700000},  # Alias for metrics
-    "gross_profit": {"2022": 400000, "2023": 500000},  # Computed as Revenue - COGS
-}
-
-# Step 1: Load the data into a graph
-logger.info("\nStep 1: Loading financial data...")
-graph = read_data(format_type="dict", source=sample_data)
-
-logger.info(f"✓ Loaded data for periods: {graph.periods}")
-logger.info(f"✓ Created {len(graph.nodes)} data nodes")
-
-# Step 2: Statement generation is disabled (YAML configs removed).
-logger.info("\nStep 2: Statement generation is disabled (YAML configs removed).")
-
-# Step 3: Calculate key financial metrics
-logger.info("\nStep 3: Calculating financial metrics...")
-
-# Define which metrics to calculate
-key_metrics = [
-    "gross_profit_margin",
-    "operating_profit_margin",
-    "net_profit_margin",
-    "return_on_equity",
-    "current_ratio",
-    "debt_to_equity_ratio",
-]
-
-# Calculate and display metrics
-logger.info("\nKey Financial Metrics (2023):")
-logger.info("-" * 40)
-
-# Prepare data nodes for metric calculations
-# Get all nodes from the graph
-data_nodes = graph.nodes  # Just use the nodes property directly
-
-for metric_name in key_metrics:
-    try:
-        # Get metric definition
-        metric_def: MetricDefinition = metric_registry.get(metric_name)
-
-        # Calculate value using the helper function
-        value = calculate_metric(metric_name, data_nodes, "2023")
-
-        # Format based on metric type and config
-        if "margin" in metric_name or metric_name == "return_on_equity":
-            # Use percentage format from config
-            value_str = f"{value:.1f}%"  # Show value without * 100 since metric already returns percentage
-        else:
-            # Use number format from config
-            value_str = f"{value:.2f}"
-
-        # Simple rating system
-        if metric_name == "current_ratio":
-            rating = "Good" if value > 1.5 else "Needs attention"
-        elif metric_name == "debt_to_equity_ratio":
-            rating = "Conservative" if value < 1.0 else "Leveraged"
-        elif "margin" in metric_name or metric_name == "return_on_equity":
-            rating = (
-                "Healthy" if value > 10 else "Review needed"
-            )  # For percentage metrics
-        else:
-            rating = "Healthy" if value > 0.1 else "Review needed"
-
-        status = "✓" if rating in ["Good", "Conservative", "Healthy"] else "⚠"
-        logger.info(f"{status} {metric_def.name}: {value_str} ({rating})")
-
-    except:  # noqa: E722
-        logger.exception(f"❌ {metric_name}: Could not calculate")
-
-# Step 4: Simple trend analysis
-logger.info("\nStep 4: Trend Analysis (Revenue Growth):")
-logger.info("-" * 40)
-
-try:
-    # Calculate year-over-year growth
-    periods = sorted(graph.periods)
-    for i in range(1, len(periods)):
-        prev_year = periods[i - 1]
-        curr_year = periods[i]
-
-        prev_revenue = graph.get_node("Revenue").get_value(prev_year)
-        curr_revenue = graph.get_node("Revenue").get_value(curr_year)
-
-        growth = ((curr_revenue - prev_revenue) / prev_revenue) * 100
-        logger.info(f"{prev_year} → {curr_year}: {growth:.1f}% growth")
-except Exception:
-    logger.exception("Could not perform trend analysis")
-
-logger.info("\n" + "=" * 60)
-logger.info("EXAMPLE COMPLETE")
-logger.info("=" * 60)
-logger.info("\nKey Takeaways:")
-logger.info("• Use read_data() to load financial data from various sources")
-logger.info("• Use create_statement_dataframe() to build proper statement structures")
-logger.info("• Statement configurations automatically handle calculation nodes")
-logger.info("• The metrics registry provides comprehensive financial analysis")
-logger.info("• Always work with the high-level abstractions, not core directly")
-logger.info("• The centralized config system controls formatting and display settings")
 
 
 
@@ -15478,26 +14363,6 @@ class ForecastNode(Node):
         }
 
     @staticmethod
-    def from_dict(data: dict[str, Any]) -> "ForecastNode":
-        """Create a ForecastNode from a dictionary representation.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-
-        Returns:
-            A new ForecastNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: This method requires context (existing nodes) to resolve
-                the base node dependency. Use from_dict_with_context instead.
-        """
-        raise NotImplementedError(
-            "ForecastNode.from_dict() requires context to resolve base node dependency. "
-            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
-        )
-
-    @staticmethod
     def from_dict_with_context(
         data: dict[str, Any], context: dict[str, Node]
     ) -> "ForecastNode":
@@ -20459,13 +19324,11 @@ from __future__ import annotations
 from typing import Optional, Literal, Any, Union
 from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
 
-# Import the type used in MarkdownWriterConfig
+from fin_statement_model.config.helpers import cfg
 from fin_statement_model.core.adjustments.models import (
     AdjustmentFilterInput,
 )
 
-# NEW pull project-wide defaults from the central config
-from fin_statement_model.config.helpers import cfg
 
 # Define MappingConfig locally to avoid circular import
 MappingConfig = Union[dict[str, str], dict[Optional[str], dict[str, str]]]
@@ -20690,7 +19553,7 @@ from .base import DataReader, DataWriter
 from .facade import read_data, write_data
 from .mixins import (
     FileBasedReader,
-    ConfigurableReaderMixin,
+    ConfigurationMixin,
     DataFrameBasedWriter,
     ValueExtractionMixin,
     BatchProcessingMixin,
@@ -20711,7 +19574,7 @@ from .registry import (
 __all__ = [
     # Mixins and utilities
     "BatchProcessingMixin",
-    "ConfigurableReaderMixin",
+    "ConfigurationMixin",
     "DataFrameBasedWriter",
     # Base classes
     "DataReader",
@@ -21808,10 +20671,6 @@ class ConfigurationMixin:
         return merged
 
 
-# Maintain backward compatibility
-ConfigurableReaderMixin = ConfigurationMixin
-
-
 # ===== Writer Mixins =====
 
 
@@ -22190,6 +21049,9 @@ class ValidationResultCollector:
                 report_lines.append(f"  ... and {len(self.warnings) - 5} more warnings")
 
         return "\n".join(report_lines)
+
+# Provide backward compatibility for legacy mixin name
+#ConfigurableReaderMixin = ConfigurationMixin
 
 
 
@@ -23549,7 +22411,7 @@ import pandas as pd
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.mixins import (
     DataFrameBasedWriter,
-    ConfigurableReaderMixin,
+    ConfigurationMixin,
     handle_write_errors,
 )
 from fin_statement_model.io.core.registry import register_writer
@@ -23559,7 +22421,7 @@ logger = logging.getLogger(__name__)
 
 
 @register_writer("dataframe")  # type: ignore[arg-type]
-class DataFrameWriter(DataFrameBasedWriter, ConfigurableReaderMixin):
+class DataFrameWriter(DataFrameBasedWriter, ConfigurationMixin):
     """Writes graph data to a pandas DataFrame.
 
     Converts the graph to a DataFrame with node names as index and periods as columns.
@@ -23824,7 +22686,7 @@ from typing import Any, Optional
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.mixins import (
     DataFrameBasedWriter,
-    ConfigurableReaderMixin,
+    ConfigurationMixin,
     handle_write_errors,
 )
 from fin_statement_model.io.core.registry import register_writer
@@ -23834,7 +22696,7 @@ logger = logging.getLogger(__name__)
 
 
 @register_writer("dict")  # type: ignore[arg-type]
-class DictWriter(DataFrameBasedWriter, ConfigurableReaderMixin):
+class DictWriter(DataFrameBasedWriter, ConfigurationMixin):
     """Writes graph data to a Python dictionary.
 
     Extracts values for each node and period in the graph, attempting to
@@ -24193,7 +23055,7 @@ from typing import Any, Optional
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.base import DataWriter
 from fin_statement_model.io.core.mixins import (
-    ConfigurableReaderMixin,
+    ConfigurationMixin,
     handle_write_errors,
 )
 from fin_statement_model.io.core.registry import register_writer
@@ -24207,7 +23069,7 @@ logger = logging.getLogger(__name__)
 
 
 @register_writer("excel")
-class ExcelWriter(DataWriter, ConfigurableReaderMixin):
+class ExcelWriter(DataWriter, ConfigurationMixin):
     """Writes graph data to an Excel file.
 
     Converts the graph data to a pandas DataFrame first (using `DataFrameWriter`),
@@ -24893,13 +23755,11 @@ class MarkdownStatementRenderer:
             for period in self.periods:
                 raw_value = None
 
-                if isinstance(item, LineItem):
-                    # Direct value from node
-                    raw_value = node.get_value(period)
-                elif isinstance(
-                    item, CalculatedLineItem | SubtotalLineItem | MetricLineItem
+                # Calculation items use graph.calculate, pure line items use node.get_value
+                if isinstance(
+                    item, (CalculatedLineItem, SubtotalLineItem, MetricLineItem)
                 ):
-                    # Calculate value
+                    # Calculate value for derived items
                     try:
                         raw_value = self.graph.calculate(node_id, period)
                     except Exception as calc_error:
@@ -24907,6 +23767,9 @@ class MarkdownStatementRenderer:
                             f"Calculation failed for node '{node_id}' period '{period}': {calc_error}"
                         )
                         raw_value = "CALC_ERR"  # type: ignore[assignment]
+                elif isinstance(item, LineItem):
+                    # Direct value from node for basic line items
+                    raw_value = node.get_value(period)
                 else:
                     logger.warning(
                         f"Unsupported item type: {type(item)} for item: {item.id}"
@@ -24988,16 +23851,9 @@ File: fin_statement_model/io/formats/markdown/writer.py
 """Writes a financial statement graph to a Markdown table."""
 
 import logging
-import yaml  # Added for parsing statement config
 from typing import Any, Optional, TypedDict, Union
-from collections.abc import Iterable
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.adjustments.models import (
-    Adjustment,
-    AdjustmentFilter,
-    DEFAULT_SCENARIO,
-)
 from fin_statement_model.io.core.base import DataWriter
 from fin_statement_model.io.config.models import BaseWriterConfig
 from fin_statement_model.io.exceptions import WriteError
@@ -25048,217 +23904,6 @@ class MarkdownWriter(DataWriter):
             return f"{value:,.2f}" if isinstance(value, float) else str(value)
         return str(value)
 
-    def _get_statement_items(
-        self, graph: Graph, statement_config_path: str
-    ) -> Iterable[StatementItem]:
-        """Dynamically extracts and orders statement items based on YAML config and graph data.
-
-        Args:
-            graph: The financial statement graph containing node values.
-            statement_config_path: Path to the statement definition YAML file.
-
-        Returns:
-            An iterable of StatementItem dictionaries.
-
-        Raises:
-            WriteError: If the config file is not found, invalid, or nodes are missing.
-        """
-        try:
-            with open(statement_config_path) as f:
-                config_data = yaml.safe_load(f)
-            if not config_data or not isinstance(config_data, dict):
-                raise WriteError(
-                    f"Invalid or empty YAML structure in {statement_config_path}"
-                )
-
-        except FileNotFoundError:
-            logger.exception(
-                f"Statement configuration file not found: {statement_config_path}"
-            )
-            raise WriteError(
-                f"Statement configuration file not found: {statement_config_path}"
-            ) from None
-        except yaml.YAMLError as e:
-            logger.exception(
-                f"Error parsing statement configuration YAML '{statement_config_path}'"
-            )
-            raise WriteError(f"Error parsing statement configuration YAML: {e}") from e
-
-        periods = sorted(list(graph.periods))
-        logger.debug(
-            f"Extracting statement items for periods: {periods} using config: {statement_config_path}"
-        )
-
-        # Define the recursive processing function within the scope
-        def process_level(
-            items_or_sections: list[Any], level: int
-        ) -> Iterable[StatementItem]:
-            for config_item in items_or_sections:
-                # Check if this dictionary represents a section container
-                # by seeing if it has an 'items' list.
-                inner_items = config_item.get("items")
-                if isinstance(inner_items, list):
-                    # It's a section-like structure. Process its inner items.
-                    # Optionally, yield a header for the section here if needed
-                    # section_name = config_item.get("name", "Unnamed Section")
-                    # yield StatementItem(name=f"**{section_name}**", values={p: "" for p in periods}, level=level, is_subtotal=True) # Treat as subtotal for bolding?
-
-                    yield from process_level(
-                        inner_items, level + 1
-                    )  # Process items within the section
-
-                    # Also process any nested subsections
-                    subsections = config_item.get("subsections")
-                    if isinstance(subsections, list):
-                        yield from process_level(subsections, level + 1)
-
-                    # Process subtotal for this section if it exists
-                    section_subtotal_config = config_item.get("subtotal")
-                    if section_subtotal_config:
-                        # Ensure subtotal has correct type and id before processing
-                        if section_subtotal_config.get(
-                            "id"
-                        ) and section_subtotal_config.get("type"):
-                            subtotal_item = process_item(
-                                section_subtotal_config,
-                                level + 1,  # Indent subtotal
-                            )
-                            if subtotal_item:
-                                yield subtotal_item
-                        else:
-                            logger.warning(
-                                f"Skipping section subtotal due to missing 'id' or 'type': {section_subtotal_config}"
-                            )
-
-                else:
-                    # This is likely a direct item (line_item, metric, etc.)
-                    # Check for required fields before processing
-                    item_id = config_item.get("id")
-                    item_type = config_item.get("type")
-                    if not item_id or not item_type:
-                        logger.warning(
-                            f"Skipping item due to missing 'id' or 'type' in config: {config_item}"
-                        )
-                        continue  # Skip this malformed item
-
-                    # Process the item using the existing function
-                    item_data = process_item(config_item, level)
-                    if item_data:
-                        yield item_data
-
-        # Define the process_item function (handles non-section items)
-        def process_item(
-            item_config: dict[str, Any], level: int
-        ) -> Union[StatementItem, None]:
-            item_id = item_config.get("id")
-            item_name = item_config.get("name", "Unknown Item")
-            item_type = item_config.get("type")
-            sign_convention = item_config.get("sign_convention", 1)
-
-            # No need for the redundant check here as it's done in process_level now
-            # if not item_id or not item_type:
-            #     logger.warning(
-            #         f"Skipping item due to missing 'id' or 'type' in config: {item_config}"
-            #     )
-            #     return None
-
-            values: dict[str, Union[float, int, str, None]] = {}
-            is_subtotal = item_type == "subtotal"
-            node_id = None
-
-            if item_type == "line_item":
-                node_id = item_config.get("node_id")
-                if not node_id:
-                    logger.warning(
-                        f"Skipping line_item '{item_name}' (ID: {item_id}) - missing 'node_id' in config."
-                    )
-                    return None
-            elif item_type in ["calculated", "subtotal", "metric"]:
-                node_id = item_id
-            else:
-                logger.warning(
-                    f"Unsupported item type '{item_type}' for item '{item_name}'. Skipping."
-                )
-                return None
-
-            # Check if node_id could be determined (might be None if type wasn't handled)
-            if node_id is None:
-                logger.warning(
-                    f"Could not determine node ID for item '{item_name}' (Type: {item_type}). Skipping value fetch."
-                )
-                for period in periods:
-                    values[period] = None
-                # Still return the item structure but with None values
-                return StatementItem(
-                    name=item_name, values=values, level=level, is_subtotal=is_subtotal
-                )
-
-            # Fetch values from the graph node
-            try:
-                node = graph.get_node(node_id)
-                if node is None:
-                    logger.warning(
-                        f"Node '{node_id}' returned None for item: {item_name}"
-                    )
-                    for period in periods:
-                        values[period] = None
-                    return StatementItem(
-                        name=item_name,
-                        values=values,
-                        level=level,
-                        is_subtotal=is_subtotal,
-                    )
-                for period in periods:
-                    raw_value = None
-                    if item_type == "line_item":
-                        # For line items, get the stored value directly
-                        raw_value = node.get_value(period)
-                    elif item_type in ["calculated", "subtotal", "metric"]:
-                        # For calculated/subtotal/metric items, use the graph's calculation engine
-                        try:
-                            raw_value = graph.calculate(node_id, period)
-                        except Exception:  # Catch potential calculation errors
-                            logger.exception(
-                                f"Calculation failed for node '{node_id}' period '{period}'"
-                            )
-                            raw_value = "CALC_ERR"  # type: ignore[assignment]
-                    else:
-                        # Should not happen based on earlier check, but as a safeguard
-                        logger.warning(
-                            f"Unexpected item type '{item_type}' during value fetch for '{item_name}'."
-                        )
-                        raw_value = None
-
-                    # Apply sign convention
-                    # Handle potential string values from errors
-                    if isinstance(raw_value, int | float):
-                        values[period] = raw_value * sign_convention
-                    elif raw_value is None:
-                        values[period] = None
-                    else:  # Keep error strings as is
-                        values[period] = raw_value
-
-            except KeyError:
-                logger.warning(
-                    f"Node '{node_id}' for item '{item_name}' (Type: {item_type}) not found in graph. Values will be missing."
-                )
-                for period in periods:
-                    values[period] = None  # Fill with None if node is missing
-            except Exception as e:
-                logger.error(
-                    f"Error fetching value for node '{node_id}' (Item: '{item_name}'): {e}",
-                    exc_info=True,
-                )
-                for period in periods:
-                    values[period] = "ERROR"  # Indicate error in output
-
-            return StatementItem(
-                name=item_name, values=values, level=level, is_subtotal=is_subtotal
-            )
-
-        # Start processing from the top-level sections
-        yield from process_level(config_data.get("sections", []), level=0)
-
     def write(self, graph: Graph, target: Any = None, **kwargs: Any) -> str:
         """Write financial statement to markdown.
 
@@ -25266,51 +23911,28 @@ class MarkdownWriter(DataWriter):
             graph: The Graph object containing the financial data.
             target: Ignored by this writer (returns string).
             **kwargs: Additional options including:
-                - statement_structure: The StatementStructure to render (new approach)
-                - statement_config_path: Path to YAML config (for backward compatibility)
-                - historical_periods: List of historical period names
-                - forecast_periods: List of forecast period names
-                - forecast_configs: Maps node IDs to forecast methods
-                - adjustment_filter: Filter for adjustments to include
+                - statement_structure: The StatementStructure to render
 
         Returns:
             String containing the formatted statement in Markdown.
 
         Raises:
-            WriteError: If neither statement_structure nor statement_config_path provided.
+            WriteError: If 'statement_structure' is not provided.
         """
         logger.info(
             f"Writing graph to Markdown format (target ignored: {target}) using kwargs: {kwargs.keys()}"
         )
 
         try:
-            # Determine which approach to use
             statement_structure = kwargs.get("statement_structure")
-            if statement_structure is not None:
-                # New approach: use StatementStructure directly
-                # Remove statement_structure from kwargs to avoid duplicate argument
-                filtered_kwargs = {
-                    k: v for k, v in kwargs.items() if k != "statement_structure"
-                }
-                return self._write_with_structure(
-                    graph, statement_structure, **filtered_kwargs
-                )
-            else:
-                # Backward compatibility: check for YAML config path
-                statement_config_path = kwargs.get("statement_config_path")
-                if statement_config_path and isinstance(statement_config_path, str):
-                    # Remove statement_config_path from kwargs to avoid duplicate argument
-                    filtered_kwargs = {
-                        k: v for k, v in kwargs.items() if k != "statement_config_path"
-                    }
-                    return self._write_with_yaml_config(
-                        graph, statement_config_path, **filtered_kwargs
-                    )
-                else:
-                    raise WriteError(
-                        "Must provide either 'statement_structure' or 'statement_config_path' argument."
-                    )
-
+            if statement_structure is None:
+                raise WriteError("Must provide 'statement_structure' argument.")
+            filtered_kwargs = {
+                k: v for k, v in kwargs.items() if k != "statement_structure"
+            }
+            return self._write_with_structure(
+                graph, statement_structure, **filtered_kwargs
+            )
         except NotImplementedError as nie:
             logger.exception("Markdown write failed")
             raise WriteError(
@@ -25371,239 +23993,6 @@ class MarkdownWriter(DataWriter):
         )
 
         return "\n".join(table_lines + notes_lines)
-
-    def _write_with_yaml_config(
-        self, graph: Graph, statement_config_path: str, **kwargs: Any
-    ) -> str:
-        """Write using the legacy YAML config approach.
-
-        Args:
-            graph: The Graph object containing financial data.
-            statement_config_path: Path to the statement definition YAML file.
-            **kwargs: Additional options.
-
-        Returns:
-            Formatted markdown string.
-        """
-        # For backward compatibility, load structure from YAML
-        try:
-            statement_structure = self._load_structure_from_yaml(statement_config_path)
-            return self._write_with_structure(graph, statement_structure, **kwargs)
-        except Exception as e:
-            logger.warning(
-                f"Failed to load StatementStructure from YAML, falling back to legacy method: {e}"
-            )
-            # Fall back to the original implementation
-            return self._write_legacy(graph, statement_config_path, **kwargs)
-
-    def _load_structure_from_yaml(
-        self, statement_config_path: str
-    ) -> StatementStructure:
-        """Load StatementStructure from YAML config file.
-
-        Args:
-            statement_config_path: Path to the YAML config file.
-
-        Returns:
-            StatementStructure object.
-
-        Raises:
-            WriteError: If the config file cannot be loaded or parsed.
-        """
-        # TODO: Implement this when StatementStructure builder is available
-        # For now, raise an exception to fall back to legacy method
-        raise NotImplementedError(
-            "StatementStructure loading from YAML not yet implemented"
-        )
-
-    def _write_legacy(
-        self, graph: Graph, statement_config_path: str, **kwargs: Any
-    ) -> str:
-        """Legacy implementation for backward compatibility.
-
-        This preserves the original YAML-based implementation.
-        """
-        items = list(self._get_statement_items(graph, statement_config_path))
-        if not items:
-            logger.warning("No statement items generated from config and graph.")
-            return ""  # Return empty string
-
-        # --- Get periods and determine historical/forecast ---
-        # Get periods from graph, ensuring order
-        periods = sorted(list(graph.periods))
-        # Default historical/forecast periods if not provided - attempt to infer or use all
-        all_periods = set(periods)
-        historical_periods = set(
-            kwargs.get("historical_periods", [])
-        )  # Get from kwargs if provided
-        forecast_periods = set(
-            kwargs.get("forecast_periods", [])
-        )  # Get from kwargs if provided
-
-        # Simple inference if not provided fully
-        if not historical_periods and not forecast_periods:
-            # Assume all periods are historical if no forecast info given (basic fallback)
-            logger.warning(
-                "No historical/forecast period info provided; assuming all periods are historical for formatting."
-            )
-            historical_periods = all_periods
-        elif not historical_periods:
-            historical_periods = all_periods - forecast_periods
-        elif not forecast_periods:
-            forecast_periods = all_periods - historical_periods
-
-        # --- Calculate dynamic padding ---
-        max_desc_width = 0
-        period_max_value_widths: dict[str, int] = {p: 0 for p in periods}
-        formatted_lines = []
-
-        # First pass: format data and calculate max widths
-        for item in items:
-            indent = " " * (item["level"] * self.config.indent_spaces)
-            name = f"{indent}{item['name']}"
-            is_subtotal = item["is_subtotal"]
-            values_formatted: dict[str, str] = {}
-
-            if is_subtotal:
-                name = f"**{name}**"
-
-            max_desc_width = max(max_desc_width, len(name))
-
-            for period in periods:
-                raw_value = item["values"].get(period)
-                value_str = self._format_value(raw_value)
-                if is_subtotal:
-                    value_str = f"**{value_str}**"
-                values_formatted[period] = value_str
-                period_max_value_widths[period] = max(
-                    period_max_value_widths[period], len(value_str)
-                )
-
-            formatted_lines.append(
-                {
-                    "name": name,
-                    "values": values_formatted,
-                    "is_subtotal": is_subtotal,
-                }
-            )
-
-        # Add some spacing between columns
-
-        # --- Build the final string ---
-        output_lines = []
-
-        # Build header row
-        header_parts = ["Description".ljust(max_desc_width)]
-        for period in periods:
-            period_label = period
-            if period in historical_periods:
-                period_label += " (H)"
-            elif period in forecast_periods:
-                period_label += " (F)"
-            header_parts.append(period_label.rjust(period_max_value_widths[period]))
-        # Join with | and add start/end |
-        output_lines.append(f"| {(' | ').join(header_parts)} |")
-
-        # Add separator line
-        separator_parts = ["-" * max_desc_width]
-        separator_parts.extend(
-            "-" * period_max_value_widths[period] for period in periods
-        )
-        output_lines.append(f"| {(' | ').join(separator_parts)} |")
-
-        # Build data rows
-        for line_data in formatted_lines:
-            name_str = str(line_data["name"])
-            row_parts = [name_str.ljust(max_desc_width)]
-            for period in periods:
-                values_dict = line_data.get("values", {})
-                value = (
-                    values_dict.get(period, "") if isinstance(values_dict, dict) else ""
-                )
-                value_str = str(value)
-                row_parts.append(value_str.rjust(period_max_value_widths[period]))
-            # Join with | and add start/end |
-            output_lines.append(f"| {(' | ').join(row_parts)} |")
-
-        # --- Add Forecast Notes ---
-        forecast_configs = kwargs.get("forecast_configs")
-        if forecast_configs:
-            notes = ["", "## Forecast Notes"]  # Add blank line before header
-            for node_id, config in forecast_configs.items():
-                method = config.get("method", "N/A")
-                cfg_details = config.get("config")
-                desc = f"- **{node_id}**: Forecasted using method '{method}'"
-                if method == "simple" and cfg_details is not None:
-                    desc += f" (e.g., simple growth rate: {cfg_details:.1%})."
-                elif method == "curve" and cfg_details:
-                    rates_str = ", ".join([f"{r:.1%}" for r in cfg_details])
-                    desc += f" (e.g., specific growth rates: [{rates_str}])."
-                elif method == "historical_growth":
-                    desc += " (based on average historical growth)."
-                elif method == "average":
-                    desc += " (based on historical average value)."
-                elif method == "statistical":
-                    dist_name = cfg_details.get("distribution", "unknown")
-                    params_dict = cfg_details.get("params", {})
-                    params_str = ", ".join(
-                        [
-                            f"{k}={v:.3f}" if isinstance(v, float) else f"{k}={v}"
-                            for k, v in params_dict.items()
-                        ]
-                    )
-                    desc += f" (using '{dist_name}' distribution with params: {params_str})."
-                else:
-                    desc += "."
-                notes.append(desc)
-            # Append notes if any were generated
-            if len(notes) > 2:  # Header + at least one note
-                output_lines.extend(notes)
-
-        # --- Add Adjustment Notes --- #
-        adj_filter_input = kwargs.get("adjustment_filter")
-        all_adjustments: list[Adjustment] = graph.list_all_adjustments()
-        filtered_adjustments: list[Adjustment] = []
-
-        if all_adjustments:
-            # Create a filter instance based on the input
-            filt: AdjustmentFilter
-            if isinstance(adj_filter_input, AdjustmentFilter):
-                filt = adj_filter_input.model_copy(
-                    update={"period": None}
-                )  # Ignore period context
-            elif isinstance(adj_filter_input, set):
-                filt = AdjustmentFilter(
-                    include_tags=adj_filter_input,
-                    include_scenarios={
-                        DEFAULT_SCENARIO
-                    },  # Assume default scenario for tag shorthand
-                    period=None,
-                )
-            else:  # Includes None or other types
-                filt = AdjustmentFilter(
-                    include_scenarios={DEFAULT_SCENARIO}, period=None
-                )
-
-            # Apply the filter
-            filtered_adjustments = [adj for adj in all_adjustments if filt.matches(adj)]
-
-        if filtered_adjustments:
-            output_lines.append("")  # Blank line
-            output_lines.append("## Adjustment Notes (Matching Filter)")
-            for adj in sorted(
-                filtered_adjustments,
-                key=lambda x: (x.node_name, x.period, x.priority, x.timestamp),
-            ):
-                tags_str = ", ".join(sorted(adj.tags)) if adj.tags else "None"
-                details = (
-                    f"- **{adj.node_name}** ({adj.period}, Scenario: {adj.scenario}, Prio: {adj.priority}): "
-                    f"{adj.type.name.capitalize()} adjustment of {adj.value:.2f}. "
-                    f"Reason: {adj.reason}. Tags: [{tags_str}]. (ID: {adj.id})"
-                )
-                output_lines.append(details)
-        # --- End Adjustment Notes --- #
-
-        return "\n".join(output_lines)
 
 
 
@@ -26096,7 +24485,6 @@ from fin_statement_model.core.adjustments.models import Adjustment
 from fin_statement_model.core.nodes import (
     Node,
 )
-from fin_statement_model.core.errors import NodeError, ConfigurationError
 from fin_statement_model.core.node_factory import NodeFactory
 from fin_statement_model.io.core import (
     DataReader,
@@ -26127,84 +24515,6 @@ class GraphDefinitionReader(DataReader):
     def __init__(self, cfg: Optional[Any] = None) -> None:
         """Initialize the GraphDefinitionReader. Config currently unused."""
         self.cfg = cfg
-
-    def _add_nodes_iteratively(
-        self, graph: Graph, nodes_dict: dict[str, SerializedNode]
-    ) -> None:
-        """Add nodes to the graph, handling potential dependency order issues."""
-        nodes_to_add = nodes_dict.copy()
-        added_nodes: set[str] = set()
-        max_passes = len(nodes_to_add) + 1  # Failsafe against infinite loops
-        passes = 0
-
-        while nodes_to_add and passes < max_passes:
-            added_in_pass = 0
-            pending_nodes = nodes_to_add.copy()
-            nodes_to_add = {}
-
-            for node_name, node_def in pending_nodes.items():
-                # Get dependency names using the new get_dependencies approach
-                dependency_names = self._get_node_dependencies(node_def)
-
-                # Check if all dependencies are already added
-                dependencies_met = all(
-                    dep_name in added_nodes for dep_name in dependency_names
-                )
-
-                if dependencies_met:
-                    try:
-                        # Use NodeFactory.create_from_dict for unified deserialization
-                        # Build context from nodes that have already been added to the graph
-                        existing_nodes = {
-                            name: graph.nodes[name]
-                            for name in added_nodes
-                            if name in graph.nodes
-                        }
-                        node = NodeFactory.create_from_dict(
-                            node_def, context=existing_nodes
-                        )
-
-                        # Add the node to the graph
-                        graph.add_node(node)
-                        added_nodes.add(node_name)
-                        added_in_pass += 1
-                        logger.debug(f"Added node '{node_name}' in pass {passes + 1}.")
-
-                    except (NodeError, ConfigurationError, ValueError, TypeError):
-                        # Log error but try to continue with other nodes
-                        logger.exception(
-                            f"Failed to add node '{node_name}' during iterative build"
-                        )
-                        # Keep it in nodes_to_add to potentially retry if it was a temporary dependency issue
-                        nodes_to_add[node_name] = node_def
-                else:
-                    # Dependencies not met, keep for next pass
-                    nodes_to_add[node_name] = node_def
-
-            if added_in_pass == 0 and nodes_to_add:
-                # No progress made in this pass, indicates missing nodes or cycle
-                missing_deps = set()
-                for node_name, node_def in nodes_to_add.items():
-                    deps = self._get_node_dependencies(node_def)
-                    for dep in deps:
-                        if (
-                            dep not in added_nodes and dep not in nodes_to_add
-                        ):  # Check if dep itself is missing entirely
-                            missing_deps.add(dep)
-                error_msg = f"Failed to add all nodes. Possible missing dependencies ({missing_deps}) or circular dependency in definition for nodes: {list(nodes_to_add.keys())}"
-                logger.error(error_msg)
-                raise ReadError(error_msg, source="graph_definition_dict")
-
-            passes += 1
-
-        if nodes_to_add:
-            logger.error(
-                f"Failed to add the following nodes after {max_passes} passes: {list(nodes_to_add.keys())}"
-            )
-            raise ReadError(
-                f"Failed to reconstruct graph, could not add nodes: {list(nodes_to_add.keys())}",
-                source="graph_definition_dict",
-            )
 
     def _get_node_dependencies(self, node_def: dict[str, Any]) -> list[str]:
         """Extract dependency names from a node definition.
@@ -26263,11 +24573,47 @@ class GraphDefinitionReader(DataReader):
                 raise ReadError("Invalid format: 'periods' must be a list.")
             graph = Graph(periods=periods)
 
-            # 2. Reconstruct Nodes iteratively
+            # 2. Reconstruct Nodes using topological sort of definitions
             nodes_dict = source.get("nodes", {})
             if not isinstance(nodes_dict, dict):
                 raise ReadError("Invalid format: 'nodes' must be a dictionary.")
-            self._add_nodes_iteratively(graph, nodes_dict)
+            # Build dependency graph from definitions
+            dep_graph: dict[str, list[str]] = {
+                name: self._get_node_dependencies(defn)
+                for name, defn in nodes_dict.items()
+            }
+            # Perform topological sort
+            in_degree = {n: 0 for n in dep_graph}
+            adjacency: dict[str, list[str]] = {n: [] for n in dep_graph}
+            for n, deps in dep_graph.items():
+                for dep in deps:
+                    if dep not in dep_graph:
+                        raise ReadError(
+                            f"Dependency '{dep}' for node '{n}' not found in definitions.",
+                            source="graph_definition_dict",
+                        )
+                    adjacency[dep].append(n)
+                    in_degree[n] += 1
+            queue = [n for n, d in in_degree.items() if d == 0]
+            sorted_names: list[str] = []
+            while queue:
+                current = queue.pop()
+                sorted_names.append(current)
+                for neighbor in adjacency[current]:
+                    in_degree[neighbor] -= 1
+                    if in_degree[neighbor] == 0:
+                        queue.append(neighbor)
+            if len(sorted_names) != len(dep_graph):
+                raise ReadError(
+                    f"Circular dependency detected among nodes: {set(dep_graph) - set(sorted_names)}",
+                    source="graph_definition_dict",
+                )
+            # Create and add nodes in sorted order
+            for node_name in sorted_names:
+                node_def = nodes_dict[node_name]
+                existing_nodes = {name: graph.nodes[name] for name in graph.nodes}
+                node = NodeFactory.create_from_dict(node_def, context=existing_nodes)
+                graph.add_node(node)
 
             # 3. Load Adjustments
             adjustments_list = source.get("adjustments")  # Optional
@@ -29468,12 +27814,9 @@ from .population.populator import populate_graph_from_statement
 # Formatting
 from .formatting.formatter import StatementFormatter
 
-# High-level Orchestration functions (previously Factory)
-from .orchestration.factory import (
-    create_statement_dataframe,
-    export_statements_to_excel,
-    export_statements_to_json,
-)
+# High-level orchestration functions
+from .orchestration.orchestrator import create_statement_dataframe
+from .orchestration.exporter import export_statements_to_excel, export_statements_to_json
 
 # Errors specific to statements
 from .errors import StatementError, ConfigurationError
@@ -32568,8 +30911,7 @@ This package provides the main public API for:
 """
 
 from .exporter import export_statements_to_excel, export_statements_to_json
-from .factory import create_statement_dataframe
-from .orchestrator import populate_graph
+from .orchestrator import create_statement_dataframe, populate_graph
 
 __all__ = [
     # Main API
@@ -32827,38 +31169,6 @@ def export_statements_to_json(
         writer_kwargs=final_writer_kwargs,
         file_suffix=".json",
     )
-
-
-
-================================================================================
-File: fin_statement_model/statements/orchestration/factory.py
-================================================================================
-
-"""Statement processing facade.
-
-This module provides the main public API for statement processing,
-delegating to specialized modules for specific functionality.
-
-The factory module serves as a convenient entry point that maintains
-backward compatibility while the actual implementation is split across:
-- orchestrator.py: Main workflow coordination
-- loader.py: Configuration loading and validation
-- exporter.py: Export functionality
-"""
-
-from fin_statement_model.statements.orchestration.exporter import (
-    export_statements_to_excel,
-    export_statements_to_json,
-)
-from fin_statement_model.statements.orchestration.orchestrator import (
-    create_statement_dataframe,
-)
-
-__all__ = [
-    "create_statement_dataframe",
-    "export_statements_to_excel",
-    "export_statements_to_json",
-]
 
 
 

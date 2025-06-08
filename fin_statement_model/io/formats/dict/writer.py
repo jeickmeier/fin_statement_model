@@ -6,7 +6,7 @@ from typing import Any, Optional
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.mixins import (
     DataFrameBasedWriter,
-    ConfigurableReaderMixin,
+    ConfigurationMixin,
     handle_write_errors,
 )
 from fin_statement_model.io.core.registry import register_writer
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 @register_writer("dict")  # type: ignore[arg-type]
-class DictWriter(DataFrameBasedWriter, ConfigurableReaderMixin):
+class DictWriter(DataFrameBasedWriter, ConfigurationMixin):
     """Writes graph data to a Python dictionary.
 
     Extracts values for each node and period in the graph, attempting to

@@ -100,12 +100,9 @@ from .population.populator import populate_graph_from_statement
 # Formatting
 from .formatting.formatter import StatementFormatter
 
-# High-level Orchestration functions (previously Factory)
-from .orchestration.factory import (
-    create_statement_dataframe,
-    export_statements_to_excel,
-    export_statements_to_json,
-)
+# High-level orchestration functions
+from .orchestration.orchestrator import create_statement_dataframe
+from .orchestration.exporter import export_statements_to_excel, export_statements_to_json
 
 # Errors specific to statements
 from .errors import StatementError, ConfigurationError
