@@ -24,7 +24,7 @@ def import_from_cells(cells_info: list[dict[str, Any]]) -> Graph:  # Changed ret
     """
     # Group cells by row_name to aggregate values per financial statement item
     items: dict[str, dict[str, Any]] = {}
-    unique_periods: set = set()
+    unique_periods: set[str] = set()
 
     for cell in cells_info:
         # Clean the item name and period

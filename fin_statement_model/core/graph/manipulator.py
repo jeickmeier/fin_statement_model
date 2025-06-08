@@ -4,7 +4,7 @@ This module defines the GraphManipulator class, encapsulating node-level mutatio
 """
 
 import logging
-from typing import Optional, Any
+from typing import Optional, Any, cast
 from fin_statement_model.core.errors import NodeError
 from fin_statement_model.core.nodes import Node
 
@@ -89,7 +89,7 @@ class GraphManipulator:
         Examples:
             >>> manipulator.get_node("Revenue")
         """
-        return self.graph._nodes.get(name)
+        return cast(Optional[Node], self.graph._nodes.get(name))
 
     def replace_node(self, node_name: str, new_node: Node) -> None:
         """Replace an existing node with a new one, ensuring consistency.

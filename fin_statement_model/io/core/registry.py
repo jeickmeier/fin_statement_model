@@ -334,14 +334,17 @@ def get_reader(format_type: str, **kwargs: Any) -> DataReader:
         FormatNotSupportedError: If no reader is registered for the format type.
         ReadError: If validation fails for known reader types.
     """
-    return cast(DataReader, _get_handler(
-        format_type=format_type,
-        registry=_reader_registry,
-        schema_map=_READER_SCHEMA_MAP,
-        handler_type="read",
-        error_class=ReadError,
-        **kwargs,
-    ))
+    return cast(
+        DataReader,
+        _get_handler(
+            format_type=format_type,
+            registry=_reader_registry,
+            schema_map=_READER_SCHEMA_MAP,
+            handler_type="read",
+            error_class=ReadError,
+            **kwargs,
+        ),
+    )
 
 
 def get_writer(format_type: str, **kwargs: Any) -> DataWriter:
@@ -358,14 +361,17 @@ def get_writer(format_type: str, **kwargs: Any) -> DataWriter:
         FormatNotSupportedError: If no writer is registered for the format type.
         WriteError: If validation fails for known writer types.
     """
-    return cast(DataWriter, _get_handler(
-        format_type=format_type,
-        registry=_writer_registry,
-        schema_map=_WRITER_SCHEMA_MAP,
-        handler_type="write",
-        error_class=WriteError,
-        **kwargs,
-    ))
+    return cast(
+        DataWriter,
+        _get_handler(
+            format_type=format_type,
+            registry=_writer_registry,
+            schema_map=_WRITER_SCHEMA_MAP,
+            handler_type="write",
+            error_class=WriteError,
+            **kwargs,
+        ),
+    )
 
 
 def list_readers() -> dict[str, type[DataReader]]:

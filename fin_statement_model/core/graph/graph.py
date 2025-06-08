@@ -6,7 +6,7 @@ financial statement models.
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, overload, Literal
 from collections.abc import Callable
 from uuid import UUID
 
@@ -472,7 +472,7 @@ class Graph:
         ]
         return sorted(metric_node_names)
 
-    def get_metric_info(self, metric_id: str) -> dict:
+    def get_metric_info(self, metric_id: str) -> dict[str, Any]:
         """Return detailed information for a specific metric node.
 
         Args:
@@ -531,6 +531,87 @@ class Graph:
             "description": description,
             "inputs": inputs,
         }
+
+    @overload
+    def get_adjusted_value(
+        self,
+        node_name: str,
+        period: str,
+        filter_input: "AdjustmentFilterInput" = None,
+        *,
+        return_flag: Literal[True],
+    ) -> tuple[float, bool]: ...
+
+    @overload
+    def get_adjusted_value(
+        self,
+        node_name: str,
+        period: str,
+        filter_input: "AdjustmentFilterInput" = None,
+        *,
+        return_flag: Literal[False] = False,
+    ) -> float: ...
+
+    def get_adjusted_value(
+        self,
+        node_name: str,
+        period: str,
+        filter_input: "AdjustmentFilterInput" = None,
+        *,
+        return_flag: bool = False,
+    ) -> float | tuple[float, bool]:
+        """Calculates the value of a node for a period, applying selected adjustments.
+
+        Fetches the base calculated value, retrieves adjustments matching the filter,
+        applies them in order, and returns the result.
+
+        Args:
+            node_name: The name of the node to calculate.
+            period: The time period identifier.
+            filter_input: Criteria for selecting which adjustments to apply.
+                          Can be an AdjustmentFilter instance, a set of tags (for include_tags),
+                          a callable predicate `fn(adj: Adjustment) -> bool`, or None
+                          (applies all adjustments in the default scenario).
+            return_flag: If True, return a tuple (adjusted_value, was_adjusted_flag).
+                         If False (default), return only the adjusted_value.
+
+        Returns:
+            The adjusted float value, or a tuple (value, flag) if return_flag is True.
+
+        Raises:
+            NodeError: If the specified node does not exist.
+            CalculationError: If an error occurs during the base calculation or adjustment application.
+            TypeError: If filter_input is an invalid type.
+        """
+        # 1. Get the base value (result of underlying node calculation)
+        try:
+            base_value = self.calculate(node_name, period)
+        except (NodeError, CalculationError, TypeError):
+            # Propagate errors from base calculation
+            logger.exception(
+                f"Error getting base value for '{node_name}' in period '{period}'"
+            )
+            raise
+
+        # 2. Get filtered adjustments from the manager
+        try:
+            adjustments_to_apply = self.adjustment_manager.get_filtered_adjustments(
+                node_name=node_name, period=period, filter_input=filter_input
+            )
+        except TypeError:
+            logger.exception("Invalid filter type provided for get_adjusted_value")
+            raise
+
+        # 3. Apply the adjustments
+        adjusted_value, was_adjusted = self.adjustment_manager.apply_adjustments(
+            base_value, adjustments_to_apply
+        )
+
+        # 4. Return result based on flag
+        if return_flag:
+            return adjusted_value, was_adjusted
+        else:
+            return adjusted_value
 
     def calculate(self, node_name: str, period: str) -> float:
         """Calculate and return the value of a specific node for a given period.
@@ -705,10 +786,16 @@ class Graph:
         )
 
         # Add with validation (no cycle detection needed for data nodes)
-        added_node = self._add_node_with_validation(
-            new_node,
-            check_cycles=False,  # Data nodes don't have inputs, so no cycles possible
-            validate_inputs=False,  # Data nodes don't have inputs to validate
+        # Cast to FinancialStatementItemNode for correct return type
+        from typing import cast
+
+        added_node = cast(
+            FinancialStatementItemNode,
+            self._add_node_with_validation(
+                new_node,
+                check_cycles=False,  # Data nodes don't have inputs, so no cycles possible
+                validate_inputs=False,  # Data nodes don't have inputs to validate
+            ),
         )
 
         logger.info(
@@ -919,8 +1006,7 @@ class Graph:
                         break
 
             raise CircularDependencyError(
-                message=f"Adding node '{node.name}' would create a cycle",
-                node_id=node.name,
+                f"Adding node '{node.name}' would create a cycle",
                 cycle=cycle_path or [node.name, "...", node.name],
             )
 
@@ -1146,7 +1232,7 @@ class Graph:
 
     def breadth_first_search(
         self, start_node: str, direction: str = "successors"
-    ) -> list[str]:
+    ) -> list[list[str]]:
         """Perform a breadth-first search (BFS) traversal of the graph.
 
         Args:
@@ -1232,7 +1318,7 @@ class Graph:
                 ):
                     try:
                         # Perform the update
-                        existing_node.values.update(other_node.values)  # type: ignore
+                        existing_node.values.update(other_node.values)
                         nodes_updated += 1
                         logger.debug(f"Merged values into existing node '{node_name}'")
                         # No need to call self.add_node(existing_node) as it's already there
@@ -1400,69 +1486,6 @@ class Graph:
             A list containing all Adjustment objects across all nodes, periods, and scenarios.
         """
         return self.adjustment_manager.get_all_adjustments()
-
-    def get_adjusted_value(
-        self,
-        node_name: str,
-        period: str,
-        filter_input: "AdjustmentFilterInput" = None,
-        *,
-        return_flag: bool = False,
-    ) -> float | tuple[float, bool]:
-        """Calculates the value of a node for a period, applying selected adjustments.
-
-        Fetches the base calculated value, retrieves adjustments matching the filter,
-        applies them in order, and returns the result.
-
-        Args:
-            node_name: The name of the node to calculate.
-            period: The time period identifier.
-            filter_input: Criteria for selecting which adjustments to apply.
-                          Can be an AdjustmentFilter instance, a set of tags (for include_tags),
-                          a callable predicate `fn(adj: Adjustment) -> bool`, or None
-                          (applies all adjustments in the default scenario).
-            return_flag: If True, return a tuple (adjusted_value, was_adjusted_flag).
-                         If False (default), return only the adjusted_value.
-
-        Returns:
-            The adjusted float value, or a tuple (value, flag) if return_flag is True.
-
-        Raises:
-            NodeError: If the specified node does not exist.
-            CalculationError: If an error occurs during the base calculation or adjustment application.
-            TypeError: If filter_input is an invalid type.
-        """
-        # 1. Get the base value (result of underlying node calculation)
-        try:
-            base_value = self.calculate(node_name, period)
-        except (NodeError, CalculationError, TypeError):
-            # Propagate errors from base calculation
-            logger.exception(
-                f"Error getting base value for '{node_name}' in period '{period}'"
-            )
-            raise
-
-        # 2. Get filtered adjustments from the manager
-        # The manager handles filter normalization and matching logic.
-        # It needs the period context for effective window checks.
-        try:
-            adjustments_to_apply = self.adjustment_manager.get_filtered_adjustments(
-                node_name=node_name, period=period, filter_input=filter_input
-            )
-        except TypeError:
-            logger.exception("Invalid filter type provided for get_adjusted_value")
-            raise
-
-        # 3. Apply the adjustments
-        adjusted_value, was_adjusted = self.adjustment_manager.apply_adjustments(
-            base_value, adjustments_to_apply
-        )
-
-        # 4. Return result based on flag
-        if return_flag:
-            return adjusted_value, was_adjusted
-        else:
-            return adjusted_value
 
     def was_adjusted(
         self, node_name: str, period: str, filter_input: "AdjustmentFilterInput" = None

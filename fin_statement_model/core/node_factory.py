@@ -5,8 +5,7 @@ for different types of nodes used in the financial statement model.
 """
 
 import logging
-from typing import Any, Union, Optional, ClassVar
-from collections.abc import Callable
+from typing import Any, Union, Optional, ClassVar, Callable, cast
 
 # Force import of strategies package to ensure registration happens
 
@@ -279,16 +278,29 @@ class NodeFactory:
             ...     growth_params=0.05
             ... )
         """
-        # Instantiate the appropriate forecast node
+        # Prepare placeholder to unify forecast node type
+        node: ForecastNode
+        # Instantiate the appropriate forecast node with proper type checking
         if forecast_type == "simple":
+            if not isinstance(growth_params, (int, float)):
+                raise TypeError("growth_params must be a float for 'simple' forecast")
             node = FixedGrowthForecastNode(
-                base_node, base_period, forecast_periods, growth_params
+                base_node, base_period, forecast_periods, float(growth_params)
             )
         elif forecast_type == "curve":
+            if not isinstance(growth_params, list):
+                raise TypeError(
+                    "growth_params must be a list of floats for 'curve' forecast"
+                )
+            rates: list[float] = [float(r) for r in growth_params]
             node = CurveGrowthForecastNode(
-                base_node, base_period, forecast_periods, growth_params
+                base_node, base_period, forecast_periods, rates
             )
         elif forecast_type == "statistical":
+            if not callable(growth_params):
+                raise TypeError(
+                    "growth_params must be a callable returning float for 'statistical' forecast"
+                )
             node = StatisticalGrowthForecastNode(
                 base_node, base_period, forecast_periods, growth_params
             )
@@ -369,9 +381,11 @@ class NodeFactory:
 
         # For calculation nodes, use the appropriate from_dict_with_context method
         if node_type == "calculation":
-            return CalculationNode.from_dict_with_context(data, context)
+            return cast(Node, CalculationNode.from_dict_with_context(data, context))
         elif node_type == "formula_calculation":
-            return FormulaCalculationNode.from_dict_with_context(data, context)
+            return cast(
+                Node, FormulaCalculationNode.from_dict_with_context(data, context)
+            )
         elif node_type == "custom_calculation":
             raise ConfigurationError(
                 "CustomCalculationNode cannot be deserialized because it contains "
@@ -415,7 +429,7 @@ class NodeFactory:
         elif node_type in cls._node_type_registry:
             node_class = cls._node_type_registry[node_type]
             if hasattr(node_class, "from_dict_with_context"):
-                return node_class.from_dict_with_context(data, context)
+                return cast(Node, node_class.from_dict_with_context(data, context))
             else:
                 return node_class.from_dict(data)
 
@@ -430,7 +444,7 @@ class NodeFactory:
         cls,
         name: str,
         inputs: list[Node],
-        formula: Callable,
+        formula: Callable[..., Any],
         description: Optional[str] = None,
     ) -> CustomCalculationNode:
         """Create a CustomCalculationNode using a Python callable for the calculation logic.

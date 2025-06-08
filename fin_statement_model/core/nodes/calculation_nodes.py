@@ -6,8 +6,7 @@ This module defines the different types of calculation nodes available in the sy
 - CustomCalculationNode: Calculates using a Python callable/function
 """
 
-from typing import Optional, Any
-from collections.abc import Callable
+from typing import Optional, Any, Callable
 
 from fin_statement_model.core.calculations.calculation import (
     Calculation,
@@ -182,7 +181,7 @@ class CalculationNode(Node):
         # Import here to avoid circular imports
         from fin_statement_model.core.node_factory import NodeFactory
 
-        node_dict = {
+        node_dict: dict[str, Any] = {
             "type": "calculation",
             "name": self.name,
             "inputs": self.get_dependencies(),
@@ -537,9 +536,9 @@ class CustomCalculationNode(Node):
         self,
         name: str,
         inputs: list[Node],
-        formula_func: Callable,
+        formula_func: Callable[..., float],
         description: Optional[str] = None,
-    ):
+    ) -> None:
         """Initialize the CustomCalculationNode.
 
         Args:

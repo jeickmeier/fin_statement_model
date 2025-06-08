@@ -138,9 +138,8 @@ class ForecastNode(Node):
         """
         # For historical periods, return the actual value
         if period <= self.base_period:
-            return self.values.get(
-                period, 0.0
-            )  # 0.0 is appropriate here - not a growth rate
+            # Return historical value, ensuring float type
+            return float(self.values.get(period, 0.0))
 
         # For forecast periods, calculate using growth rate
         if period not in self.forecast_periods:
@@ -736,13 +735,15 @@ class AverageValueForecastNode(ForecastNode):
                 f"No historical values found for {self.name}, using 0.0 as average"
             )
             return 0.0
-        return sum(values) / len(values)
+        # Compute average and ensure float type
+        return float(sum(values)) / len(values)
 
     def _calculate_value(self, period: str) -> float:
         """Calculate the value for a specific period using the computed average value."""
         # For historical periods, return the actual value
         if period <= self.base_period:
-            return self.values.get(period, 0.0)
+            # Return historical value, ensuring float type
+            return float(self.values.get(period, 0.0))
 
         # For forecast periods, return the constant average value
         if period not in self.forecast_periods:
@@ -887,7 +888,8 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
             )
             return 0.0
 
-        return sum(growth_rates) / len(growth_rates)
+        # Compute average growth rate and ensure float type
+        return float(sum(growth_rates)) / len(growth_rates)
 
     def _get_growth_factor_for_period(
         self, period: str, prev_period: str, prev_value: float

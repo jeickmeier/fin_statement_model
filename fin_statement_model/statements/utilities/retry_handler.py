@@ -257,9 +257,7 @@ class RetryHandler:
 
         for attempt in range(1, max_attempts + 1):
             if attempt > 1 and self.config.log_retries:
-                logger.info(
-                    f"Retrying {op_name} (attempt {attempt}/{max_attempts})"
-                )
+                logger.info(f"Retrying {op_name} (attempt {attempt}/{max_attempts})")
 
             # Execute the operation
             try:
@@ -305,8 +303,7 @@ class RetryHandler:
                 # Safe cast retryable_errors to non-nullable set
                 retryable_errors = cast(set[str], self.config.retryable_errors)
                 retryable = any(
-                    is_retryable_error(error, retryable_errors)
-                    for error in errors
+                    is_retryable_error(error, retryable_errors) for error in errors
                 )
                 if not retryable:
                     if self.config.log_retries:

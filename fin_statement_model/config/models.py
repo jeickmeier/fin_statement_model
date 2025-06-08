@@ -255,7 +255,8 @@ class Config(BaseModel):
         default=IOConfig.model_validate({}), description="Input/Output configuration"
     )
     forecasting: ForecastingConfig = Field(
-        default=ForecastingConfig.model_validate({}), description="Forecasting configuration"
+        default=ForecastingConfig.model_validate({}),
+        description="Forecasting configuration",
     )
     preprocessing: PreprocessingConfig = Field(
         default=PreprocessingConfig.model_validate({}),
@@ -266,13 +267,15 @@ class Config(BaseModel):
         description="Display and formatting configuration",
     )
     api: APIConfig = Field(
-        default=APIConfig.model_validate({}), description="API and external service configuration"
+        default=APIConfig.model_validate({}),
+        description="API and external service configuration",
     )
     metrics: MetricsConfig = Field(
         default=MetricsConfig.model_validate({}), description="Metrics configuration"
     )
     validation: ValidationConfig = Field(
-        default=ValidationConfig.model_validate({}), description="Data validation configuration"
+        default=ValidationConfig.model_validate({}),
+        description="Data validation configuration",
     )
 
     # Global settings

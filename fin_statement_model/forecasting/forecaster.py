@@ -225,7 +225,7 @@ class StatementForecaster:
 
         # Clear cache of the original node as its values have changed
         if hasattr(node, "clear_cache") and callable(node.clear_cache):
-            node.clear_cache()  # type: ignore[no-untyped-call]
+            node.clear_cache()
             logger.debug(f"Cleared cache for node {node.name} after forecast update.")
 
     def forecast_value(

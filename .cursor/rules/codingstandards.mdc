@@ -31,30 +31,6 @@ group_by_package = true
 local_package_imports_first = false
 alphabetical_within_groups = true
 
-# Project-specific patterns
-[fin_statement_model]
-# Node naming convention
-node_class_suffix = Node
-calculation_class_suffix = CalculationNode
-forecast_class_suffix = ForecastNode
-# Standard method names
-calculation_method = calculate
-forecast_method = forecast_value
-standard_init_params = name, inputs
-# Required base classes
-node_base_class = Node
-calculation_base_class = CalculationNode
-forecast_base_class = ForecastNode
-# Module size limits
-max_module_lines = 500
-max_class_lines = 500
-
-# Financial metric conventions
-[metrics]
-metric_definitions_file = metrics.yaml
-standard_metric_format = lowercase_with_underscores
-required_metric_fields = inputs, formula, description
-
 # Testing standards
 [tests]
 test_file_pattern = test_*.py

@@ -68,7 +68,8 @@ class AdjustmentManager:
     def _apply_one(self, base_value: float, adj: Adjustment) -> float:
         """Applies a single adjustment to a value based on its type and scale."""
         if adj.type == AdjustmentType.ADDITIVE:
-            return base_value + adj.value * adj.scale
+            # Ensuring result is float
+            return float(base_value + adj.value * adj.scale)
         elif adj.type == AdjustmentType.MULTIPLICATIVE:
             # Ensure base_value is not zero to avoid issues with 0**(negative scale)
             # If base is 0, multiplicative adjustment usually results in 0 unless value is 0.
@@ -79,10 +80,12 @@ class AdjustmentManager:
             if base_value == 0:
                 return 0.0
             # Consider adding checks or specific handling for negative base + fractional scale if needed.
-            return base_value * (adj.value**adj.scale)
+            # Cast to float after exponentiation and multiplication
+            return float(base_value * (adj.value**adj.scale))
         elif adj.type == AdjustmentType.REPLACEMENT:
             # Scale is ignored for replacement type as per spec
-            return adj.value
+            # Cast to float to satisfy return type
+            return float(adj.value)
         else:
             # Should not happen with Enum, but defensively return base value
             return base_value  # pragma: no cover

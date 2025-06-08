@@ -102,7 +102,9 @@ class CsvReader(
         df = self._read_csv_file(file_path, kwargs.get("pandas_read_csv_kwargs", {}))
 
         # Validate columns
-        self._validate_columns(df, item_col_str, period_col_str, value_col_str, file_path)
+        self._validate_columns(
+            df, item_col_str, period_col_str, value_col_str, file_path
+        )
 
         # Process data
         return self._process_dataframe(

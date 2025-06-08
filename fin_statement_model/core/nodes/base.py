@@ -167,6 +167,13 @@ class Node(ABC):
         """
         raise NotImplementedError(f"Node {self.name} does not implement get_value")
 
+    def set_value(self, period: str, value: float) -> None:
+        """Optional: Set a value for a specific period on data-bearing nodes.
+
+        Default implementation raises NotImplementedError if not overridden.
+        """
+        raise NotImplementedError(f"Node '{self.name}' does not support set_value")
+
     def has_calculation(self) -> bool:
         """Indicate whether this node performs calculation.
 

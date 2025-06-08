@@ -5,7 +5,7 @@ including all nodes, periods, and adjustments.
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, cast
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.adjustments.models import Adjustment
@@ -136,15 +136,15 @@ class GraphDefinitionReader(DataReader):
         if node_type == "financial_statement_item":
             return []  # No dependencies
         elif node_type in ["calculation", "formula_calculation"]:
-            return node_def.get("inputs", [])
+            return cast(list[str], node_def.get("inputs", []))
         elif node_type == "forecast":
-            base_node_name = node_def.get("base_node_name")
-            return [base_node_name] if base_node_name else []
+            base_node_name = cast(Optional[str], node_def.get("base_node_name"))
+            return [base_node_name] if base_node_name is not None else []
         elif node_type == "custom_calculation":
-            return node_def.get("inputs", [])
+            return cast(list[str], node_def.get("inputs", []))
         else:
-            # Default: check for inputs field
-            return node_def.get("inputs", [])
+            # Default: inputs should be list[str]
+            return cast(list[str], node_def.get("inputs", []))
 
     def read(self, source: dict[str, Any], **kwargs: Any) -> Graph:
         """Reconstruct a Graph instance from its definition dictionary.

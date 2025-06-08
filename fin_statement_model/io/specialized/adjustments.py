@@ -1,7 +1,7 @@
 """Functions for bulk import and export of adjustments via Excel files."""
 
 import logging
-from typing import Optional, Any
+from typing import Optional, Any, cast
 from pathlib import Path
 from collections import defaultdict
 
@@ -227,13 +227,15 @@ def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:
     logger.info(f"Writing {len(adjustments)} adjustments to Excel file: {file_path}")
 
     # Group adjustments by scenario
-    grouped_by_scenario: dict[str, list[dict]] = defaultdict(list)
+    grouped_by_scenario: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for adj in adjustments:
         # Use model_dump for serialization, exclude fields we don't usually export
         adj_dict = adj.model_dump(exclude={"timestamp"})  # Exclude timestamp by default
         # Convert complex types to simple types for Excel
         adj_dict["id"] = str(adj_dict.get("id"))
-        adj_dict["type"] = adj_dict.get("type").value if adj_dict.get("type") else None
+        raw_type = adj_dict.get("type")
+        # Cast to AdjustmentType to access .value safely if present
+        adj_dict["type"] = cast(AdjustmentType, raw_type).value if raw_type else None
         adj_dict["tags"] = ",".join(sorted(adj_dict.get("tags", set())))
         grouped_by_scenario[adj.scenario].append(adj_dict)
 
@@ -340,5 +342,5 @@ def export_adjustments_to_excel(graph: Graph, path: str | Path) -> None:
 # Add convenience methods to Graph class directly?
 # This uses module patching which can sometimes be debated, but keeps the Graph API clean.
 # Alternatively, users would call fin_statement_model.io.adjustments_excel.load_adjustments_from_excel(graph, path)
-Graph.load_adjustments_from_excel = load_adjustments_from_excel
-Graph.export_adjustments_to_excel = export_adjustments_to_excel
+setattr(Graph, "load_adjustments_from_excel", load_adjustments_from_excel)
+setattr(Graph, "export_adjustments_to_excel", export_adjustments_to_excel)

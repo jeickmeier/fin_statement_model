@@ -37,9 +37,7 @@ class DataFrameWriter(DataFrameBasedWriter, ConfigurableReaderMixin):
         self.cfg = cfg
 
     @handle_write_errors()
-    def write(
-        self, graph: Graph, target: Any = None, **kwargs: Any
-    ) -> pd.DataFrame:
+    def write(self, graph: Graph, target: Any = None, **kwargs: Any) -> pd.DataFrame:
         """Convert the graph data to a pandas DataFrame based on instance configuration.
 
         Args:

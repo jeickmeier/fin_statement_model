@@ -10,7 +10,7 @@ import logging
 import importlib.resources
 import importlib.util  # Needed for checking resource type
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, cast
 
 import pandas as pd
 
@@ -56,9 +56,8 @@ def read_statement_config_from_path(config_path: str) -> dict[str, Any]:
                 config_data = yaml.safe_load(f)
             else:
                 raise ReadError(
-                    message="Unsupported file extension for statement config",
+                    message=f"Unsupported file extension '{extension}' for statement config; use .json, .yaml, or .yml",
                     source=config_path,
-                    details=f"Use .json, .yaml, or .yml instead of {extension}",
                 )
         logger.debug(f"Successfully read and parsed config file: {config_path}")
         return config_data
@@ -66,10 +65,9 @@ def read_statement_config_from_path(config_path: str) -> dict[str, Any]:
     except json.JSONDecodeError as e:
         logger.exception(f"Error parsing JSON configuration file {config_path}")
         raise ReadError(
-            message="Invalid JSON format in configuration file",
+            message=f"Invalid JSON format in configuration file: JSON decode error at line {e.lineno}, column {e.colno}: {e.msg}",
             source=config_path,
             original_error=e,
-            details=f"JSON decode error at line {e.lineno}, column {e.colno}: {e.msg}",
         ) from e
     except yaml.YAMLError as e:
         logger.exception(f"Error parsing YAML configuration file {config_path}")
@@ -166,9 +164,8 @@ def read_statement_configs_from_directory(
     # If no configs loaded AND errors occurred, maybe raise an aggregate error.
     if not configs and errors:
         raise ReadError(
-            message=f"Failed to load any valid configurations from directory {directory_path}",
+            message=f"Failed to load any valid configurations from directory {directory_path}: {'; '.join(errors)}",
             source=directory_path,
-            details="\n".join(errors),
         )
     elif errors:
         # Log that some files failed if others succeeded
@@ -200,9 +197,10 @@ def list_available_builtin_configs() -> list[str]:
             return []
 
         names = [
-            res.name.split(".")[0]  # Get filename stem
+            Path(res.name).stem
             for res in resource_path.iterdir()
-            if res.is_file() and res.suffix.lower() in (".yaml", ".yml", ".json")
+            if res.is_file()
+            and Path(res.name).suffix.lower() in (".yaml", ".yml", ".json")
         ]
         return sorted(names)
     except (
@@ -270,7 +268,7 @@ def read_builtin_statement_config(name: str) -> dict[str, Any]:
                 config_data = json.loads(resource_content)
             else:  # .yaml or .yml
                 config_data = yaml.safe_load(resource_content)
-            return config_data
+            return cast(dict[str, Any], config_data)
         except json.JSONDecodeError as e:
             logger.exception(f"Error parsing JSON for built-in config '{name}'")
             raise ReadError(
@@ -301,7 +299,7 @@ def read_builtin_statement_config(name: str) -> dict[str, Any]:
 def write_statement_to_excel(
     statement_df: pd.DataFrame,
     file_path: str,
-    **kwargs: dict[str, object],
+    **kwargs: Any,
 ) -> None:
     """Write a statement DataFrame to an Excel file.
 
@@ -323,7 +321,7 @@ def write_statement_to_excel(
         raise WriteError(
             message="Failed to export statement DataFrame to Excel",
             target=file_path,
-            format_type="excel",  # Corrected parameter name
+            writer_type="excel",
             original_error=e,
         ) from e
 
@@ -353,7 +351,7 @@ def write_statement_to_json(
         raise WriteError(
             message="Failed to export statement DataFrame to JSON",
             target=file_path,
-            format_type="json",  # Corrected parameter name
+            writer_type="json",
             original_error=e,
         ) from e
 

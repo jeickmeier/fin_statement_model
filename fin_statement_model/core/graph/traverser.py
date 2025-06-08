@@ -4,7 +4,7 @@ This module defines the GraphTraverser class, encapsulating read-only graph trav
 """
 
 import logging
-from typing import Optional, Any, TYPE_CHECKING
+from typing import Optional, Any, TYPE_CHECKING, cast
 from collections import deque
 
 from fin_statement_model.core.errors import NodeError
@@ -43,7 +43,7 @@ class GraphTraverser:
         Examples:
             >>> traverser.get_node("Revenue")
         """
-        return self.graph.manipulator.get_node(name)
+        return cast(Optional[Node], self.graph.manipulator.get_node(name))
 
     def has_node(self, node_id: str) -> bool:
         """Check if a node exists in the graph.
@@ -57,7 +57,7 @@ class GraphTraverser:
         Examples:
             >>> traverser.has_node("Revenue")
         """
-        return self.graph.manipulator.has_node(node_id)
+        return cast(bool, self.graph.manipulator.has_node(node_id))
 
     @property
     def nodes(self) -> dict[str, Node]:
@@ -69,7 +69,7 @@ class GraphTraverser:
         Examples:
             >>> list(traverser.nodes.keys())
         """
-        return self.graph.nodes
+        return cast(dict[str, Node], self.graph.nodes)
 
     def get_direct_successors(self, node_id: str) -> list[str]:
         """Get immediate successor node IDs for a given node.
@@ -270,7 +270,7 @@ class GraphTraverser:
 
     def breadth_first_search(
         self, start_node: str, direction: str = "successors"
-    ) -> list[str]:
+    ) -> list[list[str]]:
         """Perform a breadth-first search (BFS) traversal of the graph.
 
         Args:
@@ -380,7 +380,7 @@ class GraphTraverser:
 
         # Use DFS to find the actual path
         visited = set()
-        path = []
+        path: list[str] = []
 
         def dfs_find_path(current: str, target: str) -> bool:
             if current == target and len(path) > 0:

@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 import ast
 import logging
 import operator
-from typing import Optional, ClassVar, Any
+from typing import Optional, ClassVar, Any, Type
 from collections.abc import Callable
 
 from fin_statement_model.core.nodes.base import Node  # Absolute
@@ -535,7 +535,7 @@ class FormulaCalculation(Calculation):
     """
 
     # Supported AST operators mapping to Python operator functions
-    OPERATORS: ClassVar[dict[type[Any], Callable[..., float]]] = {
+    OPERATORS: ClassVar[dict[Type[Any], Callable[..., float]]] = {
         ast.Add: operator.add,
         ast.Sub: operator.sub,
         ast.Mult: operator.mul,
@@ -660,7 +660,7 @@ class FormulaCalculation(Calculation):
         elif isinstance(node, ast.BinOp):
             left_val = self._evaluate(node.left, period, variable_map)
             right_val = self._evaluate(node.right, period, variable_map)
-            op_type = type(node.op)
+            op_type = type(node.op)  # type: Type[Any]
             if op_type not in self.OPERATORS:
                 raise StrategyError(
                     f"Unsupported binary operator '{op_type.__name__}' in formula",
@@ -672,14 +672,14 @@ class FormulaCalculation(Calculation):
         # Unary operation (e.g., -a)
         elif isinstance(node, ast.UnaryOp):
             operand_val = self._evaluate(node.operand, period, variable_map)
-            op_type = type(node.op)
-            if op_type not in self.OPERATORS:
+            unary_op_type = type(node.op)
+            if unary_op_type not in self.OPERATORS:
                 raise StrategyError(
-                    f"Unsupported unary operator '{op_type.__name__}' in formula",
+                    f"Unsupported unary operator '{unary_op_type.__name__}' in formula",
                     strategy_type="FormulaCalculation",
                 )
             # Perform the operation
-            return float(self.OPERATORS[op_type](operand_val))
+            return float(self.OPERATORS[unary_op_type](operand_val))
 
         # If the node type is unsupported
         else:

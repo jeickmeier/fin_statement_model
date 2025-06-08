@@ -329,7 +329,9 @@ class StatementStructure:
         """
         calculation_items = []
 
-        def collect_calculation_items(items: Sequence[Union[Section, StatementItem]]) -> None:
+        def collect_calculation_items(
+            items: Sequence[Union[Section, StatementItem]],
+        ) -> None:
             for item in items:
                 if isinstance(item, CalculatedLineItem | SubtotalLineItem):
                     calculation_items.append(item)
@@ -352,7 +354,9 @@ class StatementStructure:
         """
         metric_items = []
 
-        def collect_metric_items(items: Sequence[Union[Section, StatementItem]]) -> None:
+        def collect_metric_items(
+            items: Sequence[Union[Section, StatementItem]],
+        ) -> None:
             for item in items:
                 if isinstance(item, MetricLineItem):
                     metric_items.append(item)

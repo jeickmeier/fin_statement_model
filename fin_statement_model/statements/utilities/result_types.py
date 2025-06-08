@@ -228,7 +228,9 @@ class ErrorCollector:
             )
         )
 
-    def add_from_result(self, result: Result[Any], source: Optional[str] = None) -> None:
+    def add_from_result(
+        self, result: Result[Any], source: Optional[str] = None
+    ) -> None:
         """Add errors from a Result object."""
         if result.is_failure():
             for error in result.get_errors():

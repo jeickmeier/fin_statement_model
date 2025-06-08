@@ -14,3 +14,5 @@ The Financial Statement Model library provides tools for:
 - Supporting extensible financial calculations and custom metrics
 
 The library uses a node-based graph structure where financial items are nodes and calculations define relationships between these nodes.
+
+This library is currently pre-alpha, you don't need to create depreciation warnings or shims when changing or removing code. 

@@ -6,9 +6,10 @@ asynchronous interactions with OpenAI's ChatCompletion API, including retry logi
 
 import logging
 import openai
+from openai.api_resources.chat_completion import ChatCompletion
 import backoff
 from dataclasses import dataclass, field
-from typing import Optional, Any
+from typing import Optional, Any, cast
 from types import TracebackType
 
 from fin_statement_model.config import cfg
@@ -85,7 +86,7 @@ class LLMClient:
             logger.debug(
                 f"Sending async request to OpenAI API with model {self.config.model_name}"
             )
-            response = await openai.ChatCompletion.acreate(
+            response = await ChatCompletion.acreate(
                 model=self.config.model_name,
                 messages=messages,
                 temperature=self.config.temperature,
@@ -97,7 +98,7 @@ class LLMClient:
                 logger.error("No suggestions received from OpenAI API")
                 raise LLMClientError("No suggestions received from API")
 
-            return response
+            return cast(dict[str, Any], response)
         except Exception as e:
             if "timeout" in str(e).lower():
                 logger.exception("Async request timed out")
@@ -120,7 +121,7 @@ class LLMClient:
         try:
             logger.info("Requesting completion from OpenAI async API")
             response = await self._make_api_call(messages)
-            completion = response["choices"][0]["message"]["content"].strip()
+            completion = cast(str, response["choices"][0]["message"]["content"]).strip()
             logger.info("Successfully received completion")
             return completion
         except Exception as e:

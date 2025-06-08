@@ -127,12 +127,18 @@ class StatementStructureBuilder:
             if filter_input.include_types:
                 kwargs["include_types"] = cast(
                     set[AdjustmentType],
-                    {AdjustmentType(type_str) for type_str in filter_input.include_types},
+                    {
+                        AdjustmentType(type_str)
+                        for type_str in filter_input.include_types
+                    },
                 )
             if filter_input.exclude_types:
                 kwargs["exclude_types"] = cast(
                     set[AdjustmentType],
-                    {AdjustmentType(type_str) for type_str in filter_input.exclude_types},
+                    {
+                        AdjustmentType(type_str)
+                        for type_str in filter_input.exclude_types
+                    },
                 )
 
             # Pass through period

@@ -322,12 +322,12 @@ class DataFetcher:
         for period in periods:
             try:
                 # Fetch value with optional adjustments
-                value = cast(float, self.graph.get_adjusted_value(
+                value = self.graph.get_adjusted_value(
                     node_id,
                     period,
                     filter_input=adjustment_filter,
                     return_flag=False,  # Only need the value
-                ))
+                )
                 # Ensure value is float or NaN
                 values[period] = float(value) if pd.notna(value) else np.nan
                 is_adjusted[period] = bool(value)

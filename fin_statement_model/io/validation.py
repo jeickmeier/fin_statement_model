@@ -317,7 +317,11 @@ class UnifiedNodeValidator:
             match = re.match(pattern, name_lower)
             if match:
                 base_name = match.group(1)
-                suffix = match.group(2) if (match.lastindex is not None and match.lastindex > 1) else ""
+                suffix = (
+                    match.group(2)
+                    if (match.lastindex is not None and match.lastindex > 1)
+                    else ""
+                )
                 return base_name, suffix, pattern_type
 
         return None

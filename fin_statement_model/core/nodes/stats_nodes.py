@@ -22,7 +22,9 @@ from fin_statement_model.core.errors import CalculationError
 logger = logging.getLogger(__name__)
 
 Numeric = Union[int, float]
-StatFunc = Callable[..., Any]  # Widen callable type to accept any callable returning Numeric
+StatFunc = Callable[
+    ..., Any
+]  # Widen callable type to accept any callable returning Numeric
 
 
 class YoYGrowthNode(Node):
