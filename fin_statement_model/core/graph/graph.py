@@ -375,6 +375,43 @@ class Graph:
         logger.info(f"Added custom calculation node '{name}' with inputs {inputs}")
         return added_node
 
+    def ensure_signed_nodes(
+        self, base_node_ids: list[str], *, suffix: str = "_signed"
+    ) -> list[str]:
+        """Ensure signed calculation nodes (-1 * input) exist for each base node.
+
+        Args:
+            base_node_ids: List of existing node names to sign.
+            suffix: Suffix to append for signed node names.
+
+        Returns:
+            List of names of newly created signed nodes.
+        """
+        created: list[str] = []
+        for base_id in base_node_ids:
+            signed_id = f"{base_id}{suffix}"
+            # Skip if already present
+            if signed_id in self._nodes:
+                continue
+            # Ensure base node exists
+            if base_id not in self._nodes:
+                from fin_statement_model.core.errors import NodeError
+
+                raise NodeError(
+                    f"Cannot create signed node for missing base node '{base_id}'",
+                    node_id=base_id,
+                )
+            # Create formula node that multiplies by -1
+            self.add_calculation(
+                name=signed_id,
+                input_names=[base_id],
+                operation_type="formula",
+                formula="-input_0",
+                formula_variable_names=["input_0"],
+            )
+            created.append(signed_id)
+        return created
+
     def change_calculation_method(
         self,
         node_name: str,

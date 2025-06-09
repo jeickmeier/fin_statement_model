@@ -333,8 +333,19 @@ class CalculatedItemProcessor(ItemProcessor):
         if self.graph.has_node(item.id):
             return ProcessorResult(success=True, node_added=False)
 
-        # Resolve inputs with sign conventions
-        resolved_inputs, missing = self._resolve_inputs_with_sign_conventions(item)
+        # Command: create any needed signed nodes
+        neg_base_ids: list[str] = []
+        for input_id in item.input_ids:
+            input_item = self.statement.find_item_by_id(input_id)
+            if input_item and getattr(input_item, "sign_convention", 1) == -1:
+                node_id = self.id_resolver.resolve(input_id, self.graph)
+                if node_id:
+                    neg_base_ids.append(node_id)
+        if neg_base_ids:
+            self.graph.ensure_signed_nodes(neg_base_ids)
+
+        # Query: resolve inputs without mutating graph
+        resolved_inputs, missing = self._resolve_inputs(item)
         if missing:
             return self._handle_missing_inputs(item, missing, is_retry)
 
@@ -365,12 +376,10 @@ class CalculatedItemProcessor(ItemProcessor):
             return ProcessorResult(success=False, error_message=error_message)
         return ProcessorResult(success=True, node_added=True)
 
-    def _resolve_inputs_with_sign_conventions(
+    def _resolve_inputs(
         self, item: CalculatedLineItem
     ) -> tuple[list[str], list[tuple[str, Optional[str]]]]:
-        """Resolve input IDs to graph node IDs, applying sign conventions.
-
-        Creates intermediate signed nodes for inputs that have sign_convention = -1.
+        """Resolve input IDs to graph node or signed-node IDs without side effects.
 
         Args:
             item: The CalculatedLineItem being processed.
@@ -378,56 +387,27 @@ class CalculatedItemProcessor(ItemProcessor):
         Returns:
             Tuple of (resolved_node_ids, missing_details).
         """
-        resolved = []
-        missing = []
+        resolved: list[str] = []
+        missing: list[tuple[str, Optional[str]]] = []
 
         for input_id in item.input_ids:
-            # Get the input item to check its sign convention
-            input_item = self.statement.find_item_by_id(input_id)
-            if not input_item:
-                # Try to resolve as a node ID
-                node_id = self.id_resolver.resolve(input_id, self.graph)
-                if node_id and self.graph.has_node(node_id):
-                    resolved.append(node_id)
-                else:
-                    missing.append((input_id, node_id))
-                continue
-
-            # Resolve the node ID for this input item
             node_id = self.id_resolver.resolve(input_id, self.graph)
+            # Missing base node
             if not node_id or not self.graph.has_node(node_id):
                 missing.append((input_id, node_id))
                 continue
-
-            # Check if we need to apply sign convention
-            sign_convention = getattr(input_item, "sign_convention", 1)
-            if sign_convention == -1:
-                # Create a signed version of this node using formula calculation
-                signed_node_id = f"{node_id}_signed"
-                if not self.graph.has_node(signed_node_id):
-                    try:
-                        # Create a formula node that multiplies by -1
-                        self.graph.add_calculation(
-                            name=signed_node_id,
-                            input_names=[node_id],
-                            operation_type="formula",
-                            formula="-input_0",
-                            formula_variable_names=["input_0"],
-                        )
-                        logger.debug(
-                            f"Created signed node '{signed_node_id}' for input '{input_id}' with sign_convention=-1"
-                        )
-                    except Exception:
-                        logger.exception(
-                            f"Failed to create signed node for '{input_id}'"
-                        )
-                        missing.append((input_id, node_id))
-                        continue
-                resolved.append(signed_node_id)
+            # Determine sign
+            input_item = self.statement.find_item_by_id(input_id)
+            sign = getattr(input_item, "sign_convention", 1) if input_item else 1
+            if sign == -1:
+                signed_id = f"{node_id}_signed"
+                # Represent signed node if exists, else missing
+                if signed_id in self.graph.nodes:
+                    resolved.append(signed_id)
+                else:
+                    missing.append((input_id, signed_id))
             else:
-                # Use the node directly (sign_convention = 1 or default)
                 resolved.append(node_id)
-
         return resolved, missing
 
 
