@@ -61,6 +61,7 @@ def main():
 
     # 1. Validation - automatically uses config defaults
     print("\n1. Node Validation (auto-uses config):")
+    # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
     validator = UnifiedNodeValidator()  # That's it!
 
     result = validator.validate("gross revenue")
@@ -90,51 +91,50 @@ def main():
     # 4. Statement formatting - automatically uses display config
     print("\n4. Statement Formatting (auto-uses display config):")
 
-    # Create a simple statement config
-    import tempfile
-    import yaml
-
+    # Define in-memory statement configuration
     statement_config = {
-        "id": "simple_income",
-        "name": "Simple Income Statement",
-        "sections": [
-            {
-                "id": "main",
-                "name": "Income",
-                "items": [
-                    {
-                        "type": "line_item",
-                        "id": "revenue",
-                        "name": "Revenue",
-                        "node_id": "revenue",
-                    },
-                    {
-                        "type": "line_item",
-                        "id": "expenses",
-                        "name": "Expenses",
-                        "node_id": "expenses",
-                    },
-                    {
-                        "type": "line_item",
-                        "id": "net_income",
-                        "name": "Net Income",
-                        "node_id": "net_income",
-                    },
-                ],
-            }
-        ],
+        "simple_income": {
+            "id": "simple_income",
+            "name": "Simple Income Statement",
+            "sections": [
+                {
+                    "id": "main",
+                    "name": "Income",
+                    "items": [
+                        {
+                            "type": "line_item",
+                            "id": "revenue",
+                            "name": "Revenue",
+                            "node_id": "revenue",
+                        },
+                        {
+                            "type": "line_item",
+                            "id": "expenses",
+                            "name": "Expenses",
+                            "node_id": "expenses",
+                        },
+                        {
+                            "type": "line_item",
+                            "id": "net_income",
+                            "name": "Net Income",
+                            "node_id": "net_income",
+                        },
+                    ],
+                }
+            ],
+        }
     }
 
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
-        yaml.dump(statement_config, f)
-        config_path = f.name
-
-    # Create statement - no format_kwargs needed!
-    df = create_statement_dataframe(
+    # Create statement using in-memory config
+    df_map = create_statement_dataframe(
         graph=graph,
-        config_path_or_dir=config_path,
-        # That's it! Uses all config defaults automatically
+        raw_configs=statement_config,
+        format_kwargs={
+            "should_apply_signs": True,
+            "number_format": None,
+        },
     )
+    df = df_map["simple_income"]
 
     print("   Statement created with automatic config usage:")
     print(
@@ -145,11 +145,6 @@ def main():
 
     print("\n   Statement Output:")
     print(df.to_string(index=False))
-
-    # Clean up
-    import os
-
-    os.unlink(config_path)
 
     print("\n" + "=" * 80)
     print("SUMMARY")
@@ -408,6 +403,7 @@ def demo_config_in_action() -> None:
     # Try to add a node with non-standard name
     from fin_statement_model.io.validation import UnifiedNodeValidator
 
+    # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
     validator = UnifiedNodeValidator(
         strict_mode=cfg("validation.strict_mode"),
         warn_on_non_standard=cfg("validation.warn_on_non_standard"),
@@ -897,6 +893,7 @@ It includes:
 import sys
 import logging
 from pathlib import Path
+import yaml
 
 from fin_statement_model.core.errors import FinancialModelError
 from fin_statement_model.core.adjustments.models import AdjustmentType
@@ -904,6 +901,7 @@ from fin_statement_model.core.adjustments.models import AdjustmentType
 from fin_statement_model.io import read_data
 from fin_statement_model.statements import create_statement_dataframe
 from fin_statement_model.forecasting.forecaster import StatementForecaster
+from fin_statement_model.statements.orchestration import export_statements_to_excel
 
 # Configure logging
 logging.basicConfig(
@@ -964,19 +962,18 @@ try:
         "Building statement structure and populating graph with calculation nodes..."
     )
 
-    # This will:
-    # 1. Load and validate the statement configuration
-    # 2. Build the statement structure
-    # 3. Populate the graph with calculation nodes (like gross_profit)
-    # 4. Generate a dataframe (which we'll use later after adjustments)
-    initial_df = create_statement_dataframe(
+    # Load statement config into memory
+    raw_config = yaml.safe_load(CONFIG_PATH.read_text(encoding="utf-8"))
+    raw_configs = {raw_config.get("id", "statement"): raw_config}
+    initial_df_map = create_statement_dataframe(
         graph=graph,
-        config_path_or_dir=str(CONFIG_PATH),
+        raw_configs=raw_configs,
         format_kwargs={
             "should_apply_signs": True,
             "number_format": ",.1f",
         },
     )
+    initial_df = initial_df_map.get(list(raw_configs.keys())[0])
 
     logger.info("Statement structure built and graph populated with calculation nodes.")
 
@@ -1067,33 +1064,36 @@ except FinancialModelError as e:
 logger.info("\n--- Generating Statement with Adjustments Applied ---")
 
 try:
-    # Regenerate the statement dataframe with adjustments applied
-    statement_df = create_statement_dataframe(
+    # Regenerate with adjustments using same raw_configs
+    statement_df_map = create_statement_dataframe(
         graph=graph,
-        config_path_or_dir=str(CONFIG_PATH),
+        raw_configs=raw_configs,
         format_kwargs={
             "should_apply_signs": True,
             "number_format": ",.1f",
-            "adjustment_filter": None,  # Apply default scenario adjustments
-            "add_is_adjusted_column": True,  # Show which values were adjusted
+            "adjustment_filter": None,
+            "add_is_adjusted_column": True,
         },
     )
+    statement_df = statement_df_map.get(list(raw_configs.keys())[0])
 
     logger.info("Statement DataFrame generated successfully.")
     # Display the results
     logger.info("\n--- Statement DataFrame with Adjustments ---")
     logger.info(statement_df.to_string(index=False))
 
-    # Export the statement to Excel with formatting
-    # write_data(
-    #     format_type="excel",
-    #     graph=graph,
-    #     target=str(MD_OUTPUT_PATH),
-    #     historical_periods=historical_periods,
-    #     forecast_periods=forecast_periods,
-    #     adjustment_filter=None,
-    #     forecast_configs=forecast_configs,
-    # )
+    # Export the statement to Excel using the modern helper function
+    export_statements_to_excel(
+        graph=graph,
+        config_path_or_dir=raw_configs,
+        output_dir=str(MD_OUTPUT_PATH.parent),
+        format_kwargs={
+            "should_apply_signs": True,
+            "number_format": ",.1f",
+            "adjustment_filter": None,
+            "add_is_adjusted_column": True,
+        },
+    )
 except FinancialModelError as e:
     logger.error(f"Error generating statement dataframe: {e}", exc_info=True)
     sys.exit(1)
@@ -1102,26 +1102,6 @@ except FileNotFoundError:
         f"Statement configuration file not found: {CONFIG_PATH}", exc_info=True
     )
     sys.exit(1)
-
-# --- 8. Write Output Data ---
-logger.info(f"\nWriting output markdown to: {MD_OUTPUT_PATH}")
-try:
-    # Note: The markdown writer currently has schema issues with statement_config_path
-    # For now, we'll skip this part or use a different approach
-    logger.info(
-        "Markdown output writing is currently disabled due to writer configuration issues."
-    )
-    # write_data(
-    #     format_type="markdown",
-    #     graph=graph,
-    #     target=str(MD_OUTPUT_PATH),
-    #     historical_periods=historical_periods,
-    #     forecast_periods=forecast_periods,
-    #     adjustment_filter=None,
-    #     forecast_configs=forecast_configs,
-    # )
-except Exception as e:
-    logger.error(f"Error writing markdown output: {e}", exc_info=True)
 
 logger.info("\nExample complete.")
 
@@ -1569,6 +1549,67 @@ sections:
         ),  # Negative value
     )
 
+    # ------------------------------------------------------------------
+    # Additional nodes required by 'test_statement.yaml' configuration
+    # ------------------------------------------------------------------
+
+    # Helper to clone data from an existing node if present, otherwise generate
+    def _clone_or_generate(
+        source_id: str,
+        target_id: str,
+        fallback_start: float,
+        growth_rate: float,
+    ) -> None:
+        """Clone data from `source_id` node to a new `target_id` or generate if missing.
+
+        Args:
+            source_id: Existing node ID to clone from.
+            target_id: New node ID to create/overwrite.
+            fallback_start: Starting value if source node is not available.
+            growth_rate: Growth rate to apply when generating fallback series.
+        """
+
+        if graph.has_node(source_id):
+            src_node = graph.get_node(source_id)
+            data_map: dict[str, float] = {
+                period: src_node.get_value(period) for period in all_periods_list
+            }
+        else:
+            data_map = generate_data(target_id, fallback_start, growth_rate)
+
+        graph.add_financial_statement_item(target_id, data_map)
+
+    # Map of (source_id, target_id, fallback_start, growth_rate)
+    mapping_specs = [
+        ("Revenue", "revenue", 1000.0, 0.10),
+        ("COGS", "cost_of_goods_sold", -400.0, 0.08),
+        ("R&D", "operating_expenses", -300.0, 0.05),
+        ("Interest Expense", "interest_expense", -50.0, 0.05),
+        ("Taxes", "income_tax", -75.0, 0.05),
+    ]
+
+    for src, tgt, start_val, gr in mapping_specs:
+        _clone_or_generate(src, tgt, start_val, gr)
+
+    # Balance-sheet-specific nodes (if not already present without the 'core.' prefix)
+    bs_specs = {
+        "cash_and_equivalents": (50.0, 0.10),
+        "accounts_receivable": (100.0, 0.12),
+        "property_plant_equipment": (300.0, 0.05),
+        "accounts_payable": (80.0, 0.08),
+        "total_debt": (150.0, 0.02),
+        "common_stock": (100.0, 0.0),
+        "prior_retained_earnings": (100.0, 0.0),
+        "dividends": (-10.0, 0.05),
+    }
+
+    for node_id, (start_val, gr) in bs_specs.items():
+        if not graph.has_node(node_id):
+            graph.add_financial_statement_item(
+                node_id,
+                generate_data(node_id, start_val, gr),
+            )
+
     # Use the high-level export function
     # This will internally call create_statement_dataframe for all configs in CONFIG_DIR
     # and write each resulting DataFrame to a separate sheet in the Excel file.
@@ -2012,6 +2053,7 @@ def example_custom_validator_configuration():
     print("\n=== Custom Validator Configuration Example ===")
 
     # Create a custom validator with specific settings
+    # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
     custom_validator = UnifiedNodeValidator(
         strict_mode=False,
         auto_standardize=True,  # Convert alternate names to standard
@@ -2406,11 +2448,8 @@ def fetch_fmp_data() -> object:
         read_data._reader.retry_count = config.api.api_retry_count
 
     try:
-        # Read data from FMP API
-        graph = read_data(
-            format_type="fmp",
-            source=fmp_config,
-        )
+        # Pass validated configuration directly to the IO facade
+        graph = read_data(**fmp_config)
 
         logger.info(f"✓ Successfully fetched data for periods: {graph.periods}")
         logger.info(f"✓ Created {len(graph.nodes)} nodes")
@@ -2445,18 +2484,24 @@ def main():
 
     # Try to create a formatted statement if config exists
     try:
-        config_path = f"configs/{STATEMENT_TYPE}.yaml"
-        logger.info(f"\nCreating formatted statement using {config_path}...")
+        # Use built-in statement configuration
+        from fin_statement_model.io.specialized.statements import (
+            read_builtin_statement_config,
+        )
 
-        statement_df = create_statement_dataframe(
+        raw_config = read_builtin_statement_config(STATEMENT_TYPE)
+        raw_configs = {STATEMENT_TYPE: raw_config}
+        logger.info(f"\nCreating formatted statement for {STATEMENT_TYPE}...")
+        df_map = create_statement_dataframe(
             graph=graph,
-            config_path_or_dir=config_path,
+            raw_configs=raw_configs,
             format_kwargs={
                 "number_format": config.display.default_currency_format,
                 "should_apply_signs": True,
                 "hide_zero_rows": config.display.hide_zero_rows,
             },
         )
+        statement_df = df_map.get(STATEMENT_TYPE)
 
         logger.info("\nFormatted Statement:")
         logger.info(statement_df.to_string(index=False))
@@ -2540,11 +2585,13 @@ def validate_node_names_example() -> dict[str, str]:
 
     logger.info(f"Raw node names to validate: {raw_node_names}")
 
-    # Create unified validator
+    # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
+    # Create unified validator for demo
     validator = UnifiedNodeValidator(
         strict_mode=False,  # Allow alternate names
         auto_standardize=True,  # Convert to standard names
         warn_on_non_standard=True,  # Log warnings for non-standard names
+        enable_patterns=True,  # Enable pattern recognition for sub-nodes and formulas
     )
 
     # Validate and standardize names
@@ -3240,6 +3287,8 @@ The validators help ensure:
 
 import logging
 import sys
+import yaml
+from pathlib import Path
 import pandas as pd
 from fin_statement_model.core.errors import FinancialModelError
 
@@ -3259,8 +3308,9 @@ logger = logging.getLogger(__name__)
 # --- 1. Setup ---
 
 # Hardcoded paths (as modified by user)
-md_output_path = "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/output/test_statement.md"
-TEST_CONFIG_PATH = "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/configs/test_statement.yaml"
+SCRIPT_DIR = Path(__file__).parent
+md_output_path = SCRIPT_DIR / "output" / "test_statement.md"
+TEST_CONFIG_PATH = SCRIPT_DIR.parent / "configs" / "test_statement.yaml"
 
 # --- 2. Sample Data ---
 
@@ -3293,7 +3343,8 @@ historical_data = {
 
 logger.info("Validating and normalizing node names...")
 
-# Create unified validator
+# Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
+# Create unified validator for demo
 validator = UnifiedNodeValidator(
     strict_mode=False,  # Allow alternate names
     auto_standardize=True,  # Automatically convert to standard names
@@ -3561,15 +3612,21 @@ forecaster.create_forecast(
 
 # --- 4. Statement Generation ---
 
-# Restore try-except block
-statement_df = create_statement_dataframe(
+# Load corporate statement config from YAML into memory
+raw_config = yaml.safe_load(Path(TEST_CONFIG_PATH).read_text(encoding="utf-8"))
+stmt_id = raw_config.get("id", "test_statement")
+raw_configs = {stmt_id: raw_config}
+
+# Generate the statement DataFrame
+df_map = create_statement_dataframe(
     graph=graph,
-    config_path_or_dir=str(TEST_CONFIG_PATH),  # Pass the path to the config file
+    raw_configs=raw_configs,
     format_kwargs={
-        "should_apply_signs": True,  # Apply sign conventions from config
-        "number_format": ",.1f",  # Format numbers with commas, 1 decimal place
+        "should_apply_signs": True,
+        "number_format": ",.1f",
     },
 )
+statement_df = df_map[stmt_id]
 
 with pd.option_context(
     "display.max_rows", None, "display.max_columns", None, "display.width", 1000
@@ -3581,7 +3638,7 @@ write_data(
     format_type="markdown",
     graph=graph,
     target=str(md_output_path),
-    statement_config_path=str(TEST_CONFIG_PATH),
+    raw_configs=raw_configs,
     historical_periods=historical_periods,
     forecast_configs=forecast_configs,
 )
@@ -3717,6 +3774,7 @@ for analyzing REIT financial performance.
 
 import logging
 from pathlib import Path
+import yaml
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
@@ -3886,9 +3944,14 @@ def main():
     # Build the base graph with raw data nodes
     graph = create_reit_financial_model()
 
+    # Load REIT statement configuration from YAML into memory
+    config_path = (
+        Path(__file__).resolve().parents[2] / "configs" / "reit_statement.yaml"
+    )
+    raw_config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    raw_configs = {raw_config.get("id", "reit_statement"): raw_config}
     # Generate calculation nodes via statement orchestration
-    config_path = Path(__file__).resolve().parents[2] / "configs" / "reit_statement.yaml"
-    create_statement_dataframe(graph, str(config_path))
+    create_statement_dataframe(graph, raw_configs)
 
     # Analyze performance using the populated graph
     analyze_reit_performance(graph)
@@ -3912,6 +3975,7 @@ including loan portfolios, maturity schedules, and covenant calculations.
 import logging
 from pathlib import Path
 from typing import Union
+import yaml
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
@@ -4153,13 +4217,16 @@ def main() -> None:
     # Create the base financial model with raw data nodes
     graph = create_real_estate_financial_model()
 
-    # Generate calculation nodes based on the statement configuration
+    # Load statement configuration from YAML into memory
     config_path = (
         Path(__file__).resolve().parents[2]
         / "configs"
         / "real_estate_debt_statement.yaml"
     )
-    create_statement_dataframe(graph, str(config_path))
+    raw_config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    raw_configs = {raw_config.get("id", "real_estate_debt"): raw_config}
+    # Build statement structure and calculation nodes
+    create_statement_dataframe(graph, raw_configs)
 
     # Calculate key metrics
     metrics = calculate_debt_metrics(graph)
@@ -4643,7 +4710,8 @@ def validate_banking_data(
     print("BANKING DATA VALIDATION AND STANDARDIZATION")
     print("=" * 60)
 
-    # Create validator with banking-specific settings
+    # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
+    # Create validator with banking-specific settings (demo)
     validator = UnifiedNodeValidator(
         strict_mode=False,
         auto_standardize=True,
@@ -5616,7 +5684,8 @@ def step_1_validate_node_names() -> dict[str, str]:
     logger.info("STEP 1: NODE NAME VALIDATION")
     logger.info("=" * 60)
 
-    # Create validator using config settings
+    # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
+    # Create validator using config settings (demo)
     validator = UnifiedNodeValidator(
         strict_mode=config.validation.strict_mode,
         auto_standardize=config.validation.auto_standardize_names,
@@ -6176,31 +6245,28 @@ def main() -> None:
     logger.info("=" * 60)
 
     try:
-        # Save config to temp file
-        import tempfile
+        # Build in-memory banking statement config
+        import yaml
 
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
-            f.write(create_banking_statement_config())
-            config_path = f.name
+        config_yaml = create_banking_statement_config()
+        raw_config = yaml.safe_load(config_yaml)
+        stmt_id = raw_config.get("id", "banking_statement")
+        raw_configs = {stmt_id: raw_config}
 
-        # Create statement
-        statement_df = create_statement_dataframe(
+        # Create statement using in-memory config
+        statement_df_map = create_statement_dataframe(
             graph=graph,
-            config_path_or_dir=config_path,
+            raw_configs=raw_configs,
             format_kwargs={
                 "number_format": config.display.default_currency_format,
                 "should_apply_signs": True,
                 "include_empty_items": not config.display.hide_zero_rows,
             },
         )
+        statement_df = statement_df_map[stmt_id]
 
         logger.info("Banking Income Statement:")
         logger.info(statement_df.to_string(index=False))
-
-        # Clean up
-        import os
-
-        os.unlink(config_path)
 
     except Exception:
         logger.exception("Could not create statement")
@@ -6240,16 +6306,6 @@ any case variation:
 
 Note: Names with spaces still need preprocessing (replace spaces with underscores).
 
-IMPORTANT NOTE ON CASE SENSITIVITY:
-The standard node registry is case-sensitive. All standard node names are stored
-in lowercase (e.g., "revenue", "cost_of_goods_sold", "ebitda"). When validating
-node names from external sources (like Excel), you should normalize them to
-lowercase and replace spaces with underscores before validation.
-
-Example normalization:
-  "Revenue" -> "revenue"
-  "Cost of Goods Sold" -> "cost_of_goods_sold"
-  "EBITDA" -> "ebitda"
 """
 
 import logging
@@ -6267,8 +6323,10 @@ def example_basic_validation():
     """Show basic node name validation using config settings."""
     logger.info("=== Basic Validation Example ===")
 
-    # Create validator - automatically uses config settings!
-    validator = UnifiedNodeValidator()
+    # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
+    validator = (
+        UnifiedNodeValidator()
+    )  # Demo only: demonstrates direct validator instantiation
 
     # The validator now uses these config defaults internally:
     # - config.validation.strict_mode
@@ -6315,7 +6373,11 @@ def example_basic_validation():
 def example_case_sensitivity_handling():
     """Show automatic case handling in action."""
     logger.info("\n=== Automatic Case Handling ===")
-    validator = UnifiedNodeValidator()
+
+    # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
+    validator = (
+        UnifiedNodeValidator()
+    )  # Demo only: demonstrates direct validator instantiation
     # Test cases showing automatic case handling
     test_cases = [
         ("revenue", "Standard lowercase"),
@@ -6347,10 +6409,11 @@ def example_context_aware_validation():
     """Show context-aware validation with node types and relationships."""
     logger.info("\n=== Context-Aware Validation Example ===")
 
+    # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
     validator = UnifiedNodeValidator(
         enable_patterns=True,
         strict_mode=config.validation.strict_mode,
-    )
+    )  # Demo only: demonstrates direct validator instantiation
 
     # Test nodes with context
     test_cases = [
@@ -6375,15 +6438,15 @@ def example_graph_building():
     """Show validation during graph building with config settings."""
     logger.info("\n=== Graph Building with Validation ===")
 
-    from fin_statement_model.core.graph import Graph
-    from fin_statement_model.core.nodes import FinancialStatementItemNode
-
-    # Use config settings for validation
+    # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
     validator = UnifiedNodeValidator(
         auto_standardize=config.validation.auto_standardize_names,
         warn_on_non_standard=config.validation.warn_on_non_standard,
         strict_mode=config.validation.strict_mode,
-    )
+    )  # Demo only: demonstrates direct validator instantiation
+
+    from fin_statement_model.core.graph import Graph
+    from fin_statement_model.core.nodes import FinancialStatementItemNode
 
     graph = Graph()
 
@@ -6468,6 +6531,15 @@ def example_flexible_vs_strict():
     """Show difference between flexible and strict validation modes using config."""
     logger.info("\n=== Strict vs Flexible Validation ===")
 
+    # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
+    strict_validator = UnifiedNodeValidator(
+        strict_mode=config.validation.strict_mode
+    )  # Demo only
+    # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
+    flexible_validator = UnifiedNodeValidator(
+        strict_mode=config.validation.strict_mode
+    )  # Demo only
+
     # Save current config
     current_strict = config.validation.strict_mode
 
@@ -6499,11 +6571,11 @@ def example_excel_reader_integration():
     """Show how validation integrates with Excel reading using config."""
     logger.info("\n=== Reader Integration Example ===")
 
-    # Create validator with IO config settings
+    # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
     validator = UnifiedNodeValidator(
         auto_standardize=config.io.auto_standardize_columns,
         enable_patterns=True,
-    )
+    )  # Demo only: demonstrates direct validator instantiation
 
     # Simulate Excel column headers (often in mixed case)
     excel_headers = [
@@ -6655,21 +6727,6 @@ __all__ = [
     "update_config",
 ]
 
-# --------------------------------------------------------------------------
-# Optional Extensions (via entry points / importlib.metadata)
-# --------------------------------------------------------------------------
-# Extensions are optional modules that add functionality without modifying
-# the core library. They might depend on heavy libraries (e.g., LLMs,
-# ML frameworks) and should be lazy-loaded.
-# Example entry point group: 'fin_statement_model.extensions.reporting'
-# Expected interface: TBD (e.g., a class with specific methods)
-# Note: Avoid hard imports from extensions into core/statements/io.
-# Goal: Keep core library lean, allow users to install extras like:
-# pip install fin-statement-model[openai]
-# pip install fin-statement-model[reporting-tools]
-# --------------------------------------------------------------------------
-
-
 # Core API Exports (ensure essential classes/functions are accessible)
 # Example:
 # from .core.graph import Graph
@@ -6707,9 +6764,14 @@ Example:
     ... })
 """
 
+from .helpers import cfg, cfg_or_param, get_typed_config
+
+# Importing helpers first ensures that "cfg" is available early, avoiding
+# circular import issues when other modules import fin_statement_model.config
+# during the initialization of sub-packages (e.g., io.formats.api.fmp).
+
 from .models import Config
 from .manager import get_config, update_config, reset_config
-from .helpers import cfg, cfg_or_param, get_typed_config
 
 __all__ = [
     "Config",
@@ -6980,6 +7042,13 @@ class ConfigManager:
 
     def _load_config(self) -> None:
         """Load and merge configuration from all sources."""
+        # Load environment variables from a .env file (if present) before any
+        # configuration layers are processed. This allows users to keep secrets
+        # like API keys in a `.env` file without explicitly exporting them in
+        # the shell. Values already present in the process environment are NOT
+        # overwritten.
+        self._load_dotenv()
+
         # Start with defaults
         config_dict = Config(
             project_name="fin_statement_model",
@@ -7131,6 +7200,70 @@ class ConfigManager:
                 ),
             )
 
+    # ------------------------------------------------------------------
+    # .env loading utilities
+
+    def _load_dotenv(self) -> None:
+        """Populate os.environ with variables from a ``.env`` file, if found.
+
+        The search starts in the current working directory and ascends parent
+        directories until it reaches the filesystem root (similar to how Git
+        discovers its repository root). The first ``.env`` file encountered is
+        used. Existing environment variables **are not** overwritten—this
+        preserves any values the user has explicitly exported.
+        """
+        try:
+            import os
+            from pathlib import Path
+
+            current = Path.cwd()
+            while True:
+                candidate = current / ".env"
+                if candidate.exists() and candidate.is_file():
+                    try:
+                        for raw_line in candidate.read_text().splitlines():
+                            line = raw_line.strip()
+                            # Skip blanks and comments
+                            if not line or line.startswith("#"):
+                                continue
+                            if "=" not in line:
+                                continue
+                            key, value = line.split("=", 1)
+                            key = key.strip()
+                            # Remove any surrounding quotes from the value
+                            value = value.strip().strip("'\"")
+                            if key and key not in os.environ:
+                                os.environ[key] = value
+                        logger.debug("Loaded environment variables from %s", candidate)
+
+                        # Special fallback: if a generic FMP_API_KEY is defined, expose it
+                        # via the namespaced FSM_API_FMP_API_KEY expected by the Config
+                        # model. This provides compatibility with existing environment
+                        # setups without forcing users to duplicate variables.
+                        if (
+                            "FMP_API_KEY" in os.environ
+                            and "FSM_API_FMP_API_KEY" not in os.environ
+                        ):
+                            os.environ["FSM_API_FMP_API_KEY"] = os.environ[
+                                "FMP_API_KEY"
+                            ]
+                            logger.debug(
+                                "Mapped FMP_API_KEY → FSM_API_FMP_API_KEY for config integration"
+                            )
+                        break  # Stop searching after the first .env file
+                    except Exception as err:  # noqa: BLE001  (broad but safe here)
+                        logger.warning(
+                            "Failed to load .env file %s: %s", candidate, err
+                        )
+                else:
+                    # Ascend to parent directory, stop at filesystem root
+                    if current.parent == current:
+                        break
+                    current = current.parent
+        except Exception as err:  # noqa: BLE001
+            # Never fail config loading due to .env issues
+            logger.debug("_load_dotenv encountered an error: %s", err, exc_info=False)
+
 
 # Global configuration instance
 _config_manager = ConfigManager()
@@ -7170,9 +7303,14 @@ This module defines the configuration schema using Pydantic models,
 providing validation and type safety for all configuration options.
 """
 
-from typing import Optional, Literal, Any
+from typing import Optional, Literal, Any, Union
 from pathlib import Path
 from pydantic import BaseModel, Field, field_validator, ConfigDict
+from fin_statement_model.statements.configs.models import AdjustmentFilterSpec
+from fin_statement_model.preprocessing.config import (
+    StatementFormattingConfig,
+    TransformationType,
+)
 
 
 class LoggingConfig(BaseModel):
@@ -7244,6 +7382,34 @@ class ForecastingConfig(BaseModel):
     allow_negative_forecasts: bool = Field(
         True, description="Allow negative values in forecasts"
     )
+    add_missing_periods: bool = Field(
+        True, description="Whether to add missing forecast periods to the graph"
+    )
+    default_bad_forecast_value: float = Field(
+        0.0, description="Default value to use for NaN, Inf, or error forecasts"
+    )
+    continue_on_error: bool = Field(
+        True,
+        description="Whether to continue forecasting other nodes if one node fails",
+    )
+    historical_growth_aggregation: Literal["mean", "median"] = Field(
+        "mean",
+        description="Aggregation method for historical growth rate: 'mean' or 'median'",
+    )
+    random_seed: Optional[int] = Field(
+        None,
+        description="Random seed for statistical forecasting to ensure reproducible results",
+    )
+    base_period_strategy: Literal[
+        "preferred_then_most_recent", "most_recent", "last_historical"
+    ] = Field(
+        "preferred_then_most_recent",
+        description=(
+            "Strategy for selecting base period: 'preferred_then_most_recent' (default), "
+            "'most_recent' (ignore preferred, pick most recent with data), or "
+            "'last_historical' (always use last historical period)."
+        ),
+    )
 
     @field_validator("default_periods")
     def validate_periods(cls, v: int) -> int:
@@ -7273,6 +7439,23 @@ class PreprocessingConfig(BaseModel):
     default_normalization_type: Optional[
         Literal["percent_of", "minmax", "standard", "scale_by"]
     ] = Field(None, description="Default normalization method")
+    default_transformation_type: TransformationType = Field(
+        TransformationType.GROWTH_RATE,
+        description="Default time series transformation type",
+    )
+    default_time_series_periods: int = Field(
+        1, description="Default number of periods for time series transformations"
+    )
+    default_time_series_window_size: int = Field(
+        3, description="Default window size for time series transformations"
+    )
+    default_conversion_aggregation: str = Field(
+        "sum", description="Default aggregation method for period conversion"
+    )
+    statement_formatting: StatementFormattingConfig = Field(
+        default=StatementFormattingConfig.model_validate({}),
+        description="Default statement formatting configuration for preprocessing",
+    )
 
     model_config = ConfigDict(extra="forbid")
 
@@ -7321,6 +7504,40 @@ class DisplayConfig(BaseModel):
     show_negative_sign: bool = Field(
         True,
         description="Whether to prefix negative numbers with a minus sign when not using parentheses",
+    )
+    # Statement formatting defaults
+    apply_sign_conventions: bool = Field(
+        True, description="Whether to apply sign conventions by default"
+    )
+    include_empty_items: bool = Field(
+        False, description="Whether to include items with no data by default"
+    )
+    include_metadata_cols: bool = Field(
+        False, description="Whether to include metadata columns by default"
+    )
+    add_is_adjusted_column: bool = Field(
+        False, description="Whether to add an 'is_adjusted' column by default"
+    )
+    include_units_column: bool = Field(
+        False, description="Whether to include units column by default"
+    )
+    include_css_classes: bool = Field(
+        False, description="Whether to include CSS class column by default"
+    )
+    include_notes_column: bool = Field(
+        False, description="Whether to include notes column by default"
+    )
+    apply_item_scaling: bool = Field(
+        True, description="Whether to apply item-specific scaling by default"
+    )
+    apply_item_formatting: bool = Field(
+        True, description="Whether to apply item-specific formatting by default"
+    )
+    apply_contra_formatting: bool = Field(
+        True, description="Whether to apply contra-specific formatting by default"
+    )
+    add_contra_indicator_column: bool = Field(
+        False, description="Whether to add a contra indicator column by default"
     )
 
     @field_validator("scale_factor")
@@ -7410,6 +7627,25 @@ class ValidationConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+class StatementsConfig(BaseModel):
+    """Statement formatting and building configuration settings."""
+
+    default_adjustment_filter: Optional[Union[AdjustmentFilterSpec, list[str]]] = Field(
+        None,
+        description="Default adjustment filter spec or list of tags to apply when building statements",
+    )
+    enable_node_validation: bool = Field(
+        False,
+        description="Whether to enable node ID validation during statement building by default",
+    )
+    node_validation_strict: bool = Field(
+        False,
+        description="Whether to treat node validation failures as errors (strict) by default",
+    )
+
+    model_config = ConfigDict(extra="forbid")
+
+
 class Config(BaseModel):
     """Main configuration container for fin_statement_model."""
 
@@ -7443,6 +7679,10 @@ class Config(BaseModel):
         default=ValidationConfig.model_validate({}),
         description="Data validation configuration",
     )
+    statements: StatementsConfig = Field(
+        default=StatementsConfig.model_validate({}),
+        description="Statement structure and formatting configuration",
+    )
 
     # Global settings
     project_name: str = Field(
@@ -7458,8 +7698,16 @@ class Config(BaseModel):
     model_config = ConfigDict(extra="forbid", validate_assignment=True)
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert configuration to dictionary."""
-        return self.model_dump(exclude_none=True)
+        """Convert configuration to a JSON-serializable dictionary.
+
+        The default ``model_dump`` output may include complex Python objects
+        such as ``Enum`` instances.  Passing ``mode='json'`` ensures that
+        those objects are converted to their JSON representation (e.g. raw
+        strings for ``Enum`` values), allowing the resulting dictionary to be
+        safely serialized via ``yaml.dump`` or ``json.dumps`` without emitting
+        Python-specific YAML tags that require an *unsafe* loader.
+        """
+        return self.model_dump(exclude_none=True, mode="json")
 
     def to_yaml(self) -> str:
         """Convert configuration to YAML string."""
@@ -7582,8 +7830,6 @@ File: fin_statement_model/core/adjustments/__init__.py
 ================================================================================
 
 """Core adjustment models and filters."""
-
-# from .manager import AdjustmentManager # Remove unused import
 
 from .models import (
     Adjustment,
@@ -13212,7 +13458,7 @@ from .standard_registry import standard_node_registry
 
 logger = logging.getLogger(__name__)
 
-# Initialize standard nodes using the registry's built-in fallback mechanism
+# Initialize standard nodes from the organized definition directory
 try:
     count = standard_node_registry.initialize_default_nodes()
     if count == 0:
@@ -14182,7 +14428,6 @@ custom, average, and historical growth).
 import logging
 from collections.abc import Callable
 from typing import Optional, Any
-from fin_statement_model.config import cfg
 
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node
@@ -14381,6 +14626,31 @@ class ForecastNode(Node):
         """
         raise NotImplementedError("Subclasses must implement from_dict_with_context")
 
+    @staticmethod
+    def from_dict(data: dict[str, Any]) -> "ForecastNode":
+        """Create a ForecastNode from a dictionary representation.
+
+        Note:
+            Forecast nodes require access to the existing node context to correctly
+            resolve dependencies (e.g., the base node that the forecast is built
+            upon). Therefore, plain deserialization via this method is **not**
+            supported.  Instead, use :py:meth:`from_dict_with_context` on the
+            appropriate concrete subclass where you can also supply the required
+            *context* mapping.
+
+        Args:
+            data: Serialized node representation.
+
+        Raises:
+            NotImplementedError: Always – plain deserialization without context is
+                not supported for forecast nodes.
+        """
+        raise NotImplementedError(
+            "ForecastNode deserialization requires node context. "
+            "Use the `from_dict_with_context` method of the concrete subclass "
+            "and provide a mapping of existing nodes."
+        )
+
 
 class FixedGrowthForecastNode(ForecastNode):
     """A forecast node that applies a constant growth rate to all forecast periods.
@@ -14427,8 +14697,10 @@ class FixedGrowthForecastNode(ForecastNode):
         """
         super().__init__(input_node, base_period, forecast_periods)
 
-        # Use config default if not provided
+        # Use config default if not provided (import inside to avoid circular import)
         if growth_rate is None:
+            from fin_statement_model.config.helpers import cfg
+
             growth_rate = cfg("forecasting.default_growth_rate")
 
         self.growth_rate = float(growth_rate)  # Ensure it's a float
@@ -15601,74 +15873,6 @@ class StandardNodeRegistry:
 
         return nodes_loaded
 
-    def load_from_yaml(self, yaml_path: Path) -> int:
-        """Load standard node definitions from a YAML file.
-
-        Args:
-            yaml_path: Path to the YAML file containing node definitions.
-
-        Returns:
-            Number of nodes loaded.
-
-        Raises:
-            ValueError: If the YAML file has invalid structure or duplicate names.
-            FileNotFoundError: If the YAML file doesn't exist.
-        """
-        if not yaml_path.exists():
-            raise FileNotFoundError(f"Standard nodes file not found: {yaml_path}")
-
-        try:
-            with open(yaml_path, encoding="utf-8") as f:
-                data = yaml.safe_load(f)
-        except yaml.YAMLError as e:
-            raise ValueError(f"Invalid YAML in {yaml_path}: {e}") from e
-
-        # Clear existing data (unique behavior of this method)
-        self._standard_nodes.clear()
-        self._alternate_to_standard.clear()
-        self._categories.clear()
-
-        # Process the data
-        nodes_loaded = self._load_nodes_from_data(
-            data, str(yaml_path), overwrite_existing=False
-        )
-
-        logger.info(
-            f"Loaded {nodes_loaded} standard node definitions "
-            f"with {len(self._alternate_to_standard)} alternate names"
-        )
-        return nodes_loaded
-
-    def load_from_yaml_file(self, yaml_path: Path) -> int:
-        """Load standard node definitions from a single YAML file without clearing existing data.
-
-        Args:
-            yaml_path: Path to the YAML file containing node definitions.
-
-        Returns:
-            Number of nodes loaded from this file.
-
-        Raises:
-            ValueError: If the YAML file has invalid structure or duplicate names.
-            FileNotFoundError: If the YAML file doesn't exist.
-        """
-        if not yaml_path.exists():
-            raise FileNotFoundError(f"Standard nodes file not found: {yaml_path}")
-
-        try:
-            with open(yaml_path, encoding="utf-8") as f:
-                data = yaml.safe_load(f)
-        except yaml.YAMLError as e:
-            raise ValueError(f"Invalid YAML in {yaml_path}: {e}") from e
-
-        # Process the data without clearing existing
-        nodes_loaded = self._load_nodes_from_data(
-            data, str(yaml_path), overwrite_existing=True
-        )
-
-        logger.debug(f"Loaded {nodes_loaded} nodes from {yaml_path}")
-        return nodes_loaded
-
     def get_standard_name(self, name: str) -> str:
         """Get the standard name for a given node name.
 
@@ -15814,81 +16018,34 @@ class StandardNodeRegistry:
     def initialize_default_nodes(
         self,
         organized_path: Optional[Path] = None,
-        fallback_path: Optional[Path] = None,
         force_reload: bool = False,
     ) -> int:
-        """Initialize the registry with default standard nodes.
-
-        This method implements a two-tier loading strategy:
-        1. Primary: Load from organized structure (multiple YAML files)
-        2. Fallback: Load from flat structure (single YAML file)
+        """Initialize the registry with default standard nodes from organized structure only.
 
         Args:
-            organized_path: Path to organized structure directory.
+            organized_path: Base directory to load organized YAML files from.
                 Defaults to standard_nodes_defn/ relative to this module.
-            fallback_path: Path to fallback flat YAML file.
-                Defaults to standard_nodes.yaml relative to this module.
             force_reload: If True, reload even if already initialized.
 
         Returns:
-            Number of nodes loaded (0 if loading failed).
+            Number of nodes loaded.
         """
-        # Check if already initialized
         if self._initialized and not force_reload:
             logger.debug(
-                f"Standard nodes already initialized from {self._loaded_from}, "
-                f"skipping reload. Use force_reload=True to reload."
+                f"Standard nodes already initialized from {self._loaded_from}, skipping reload."
             )
             return len(self._standard_nodes)
 
-        # Set default paths
         if organized_path is None:
             organized_path = Path(__file__).parent / "standard_nodes_defn"
-        if fallback_path is None:
-            fallback_path = Path(__file__).parent / "standard_nodes.yaml"
 
-        # Try primary loading from organized structure
-        try:
-            logger.info("Attempting to load standard nodes from organized structure")
-            count = self._load_from_organized_structure(organized_path)
-            if count > 0:
-                self._initialized = True
-                self._loaded_from = f"organized structure at {organized_path}"
-                logger.info(
-                    f"Successfully loaded {count} standard nodes from organized structure"
-                )
-                return count
-        except Exception as e:
-            logger.warning(
-                f"Failed to load from organized structure: {e}. Attempting fallback loading..."
-            )
-
-        # Try fallback loading from flat file
-        if fallback_path.exists():
-            try:
-                logger.info(
-                    f"Loading standard nodes from fallback file: {fallback_path}"
-                )
-                count = self.load_from_yaml(fallback_path)
-                if count > 0:
-                    self._initialized = True
-                    self._loaded_from = f"fallback file at {fallback_path}"
-                    logger.info(
-                        f"Successfully loaded {count} standard nodes from fallback file"
-                    )
-                    return count
-            except Exception:
-                logger.exception("Failed to load from fallback file")
-        else:
-            logger.warning(f"Fallback file not found: {fallback_path}")
-
-        # Both loading attempts failed
-        logger.error(
-            "Failed to load standard nodes from both organized structure and fallback file"
+        count = self._load_from_organized_structure(organized_path)
+        self._initialized = True
+        self._loaded_from = f"organized structure at {organized_path}"
+        logger.info(
+            f"Successfully loaded {count} standard nodes from organized structure"
         )
-        self._initialized = False
-        self._loaded_from = None
-        return 0
+        return count
 
     def _load_from_organized_structure(self, base_path: Path) -> int:
         """Load nodes from organized directory structure.
@@ -15952,35 +16109,45 @@ class StandardNodeRegistry:
         """Return the number of standard nodes in the registry."""
         return len(self._standard_nodes)
 
+    def load_from_yaml_file(self, yaml_path: Path) -> int:
+        """Load standard node definitions from a single YAML file without clearing existing data.
+
+        Args:
+            yaml_path: Path to the YAML file containing node definitions.
+
+        Returns:
+            Number of nodes loaded from this file.
+
+        Raises:
+            ValueError: If the YAML file has invalid structure or duplicate names.
+            FileNotFoundError: If the YAML file doesn't exist.
+        """
+        if not yaml_path.exists():
+            raise FileNotFoundError(f"Standard nodes file not found: {yaml_path}")
+
+        try:
+            with open(yaml_path, encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+        except yaml.YAMLError as e:
+            raise ValueError(f"Invalid YAML in {yaml_path}: {e}") from e
+
+        # Process the data without clearing existing
+        nodes_loaded = self._load_nodes_from_data(
+            data, str(yaml_path), overwrite_existing=True
+        )
+        if nodes_loaded:
+            self._initialized = True
+            self._loaded_from = str(yaml_path)
+        logger.debug(f"Loaded {nodes_loaded} nodes from {yaml_path}")
+        return nodes_loaded
+
 
 # Global registry instance
 standard_node_registry = StandardNodeRegistry()
 
 
-def load_standard_nodes(yaml_path: Optional[Path] = None) -> None:
-    """Load standard nodes into the global registry.
-
-    Args:
-        yaml_path: Path to YAML file. If None, uses default location.
-    """
-    if yaml_path is None:
-        # Default location relative to this file
-        yaml_path = Path(__file__).parent / "standard_nodes.yaml"
-
-    count = standard_node_registry.load_from_yaml(yaml_path)
-    logger.info(f"Loaded {count} standard node definitions")
-
-
 # NOTE: Auto-loading is disabled to prevent conflicts with organized structure
 # The nodes/__init__.py will handle loading from the appropriate source
-#
-# # Auto-load standard nodes on import if file exists
-# default_yaml = Path(__file__).parent / "standard_nodes.yaml"
-# if default_yaml.exists():
-#     try:
-#         load_standard_nodes(default_yaml)
-#     except Exception as e:
-#         logger.warning(f"Failed to auto-load standard nodes: {e}")
 
 
 
@@ -17233,7 +17400,8 @@ class StatementForecaster:
                 - 'config': Method-specific parameters (growth rate, distribution, etc.)
             historical_periods: Optional list of historical periods to use as base.
                 If not provided, will be inferred from the graph's existing periods.
-            **kwargs: Additional arguments passed to the forecasting logic.
+            **kwargs: Additional arguments passed to the forecasting logic:
+                add_missing_periods (bool): Whether to add missing forecast periods to the graph.
 
         Returns:
             None (modifies the graph in-place)
@@ -17256,9 +17424,12 @@ class StatementForecaster:
                 historical_periods, forecast_periods, node_configs
             )
 
-            # Ensure forecast periods exist in the graph
+            # Ensure forecast periods exist in the graph (override via add_missing_periods)
+            add_missing = kwargs.get(
+                "add_missing_periods", cfg("forecasting.add_missing_periods")
+            )
             PeriodManager.ensure_periods_exist(
-                self.fsg, forecast_periods, add_missing=True
+                self.fsg, forecast_periods, add_missing=add_missing
             )
 
             if node_configs is None:
@@ -17361,17 +17532,37 @@ class StatementForecaster:
         for period in forecast_periods:
             try:
                 val = tmp_node.calculate(period)
+                # Default fallback for bad forecasts, overrideable via bad_forecast_value kwarg
+                bad_value = kwargs.get(
+                    "bad_forecast_value", cfg("forecasting.default_bad_forecast_value")
+                )
                 if np.isnan(val) or np.isinf(val):
                     logger.warning(
-                        f"Bad forecast {val} for {node.name}@{period}; defaulting to 0.0"
+                        f"Bad forecast {val} for {node.name}@{period}; defaulting to {bad_value}"
                     )
-                    val = 0.0
+                    val = bad_value
+                # Clamp negative values if disallowed
+                allow_neg = kwargs.get(
+                    "allow_negative_forecasts",
+                    cfg("forecasting.allow_negative_forecasts"),
+                )
+                if not allow_neg and val < 0:
+                    # Ensure bad_value is non-negative when clamping negative values
+                    if bad_value < 0:
+                        logger.warning(
+                            f"bad_forecast_value ({bad_value}) is negative but allow_negative_forecasts is False. Using 0.0 instead."
+                        )
+                        bad_value = 0.0
+                    logger.warning(
+                        f"Negative forecast {val} for {node.name}@{period}; clamping to {bad_value}"
+                    )
+                    val = bad_value
                 node.values[period] = float(val)  # Update the original node
             except Exception as e:
                 logger.error(
                     f"Error forecasting {node.name}@{period}: {e}", exc_info=True
                 )
-                node.values[period] = 0.0  # Set default on error
+                node.values[period] = bad_value  # Set default on error
 
         # Clear cache of the original node as its values have changed
         if hasattr(node, "clear_cache") and callable(node.clear_cache):
@@ -17409,8 +17600,10 @@ class StatementForecaster:
                 - 'method': Forecasting method ('simple', 'curve', 'statistical',
                            'average', 'historical_growth')
                 - 'config': Method-specific parameters
-                If not provided, defaults to simple method with 0% growth.
+                If not provided, uses global forecasting defaults.
             **kwargs: Additional arguments passed to the internal forecasting logic.
+                bad_forecast_value (float): Default to use for NaN/Inf or errors (overrides config)
+                allow_negative_forecasts (bool): Whether to allow negative forecast values (overrides config)
 
         Returns:
             A dictionary mapping forecast periods to their calculated values.
@@ -17420,6 +17613,10 @@ class StatementForecaster:
             ForecastNodeError: If node not found, no historical periods available,
                               or invalid forecast configuration.
         """
+        # Optional override for bad forecast fallback
+        bad_value = kwargs.get(
+            "bad_forecast_value", cfg("forecasting.default_bad_forecast_value")
+        )
         # Locate the node
         node = self.fsg.get_node(node_name)
         if node is None:
@@ -17440,10 +17637,15 @@ class StatementForecaster:
         # Validate inputs
         ForecastValidator.validate_forecast_inputs(historical_periods, forecast_periods)
 
-        # Set default config if not provided
+        # Set default config if not provided, using global forecasting defaults
         if forecast_config is None:
-            default_growth = cfg("forecasting.default_growth_rate")
-            forecast_config = {"method": "simple", "config": default_growth}
+            default_method = cfg("forecasting.default_method")
+            # Use method-appropriate default config
+            if default_method == "simple":
+                forecast_config = {"method": default_method, "config": cfg("forecasting.default_growth_rate")}
+            else:
+                # For other methods, use empty config and let the method handle defaults
+                forecast_config = {"method": default_method, "config": {}}
 
         # Validate and create ForecastConfig
         validated_config = ForecastValidator.validate_forecast_config(forecast_config)
@@ -17491,12 +17693,22 @@ class StatementForecaster:
             try:
                 value = temp_forecast_node.calculate(period)
                 # Handle potential NaN/Inf results from calculation
-                results[period] = 0.0 if not np.isfinite(value) else float(value)
+                results[period] = bad_value if not np.isfinite(value) else float(value)
+                # Clamp negative values if disallowed
+                allow_neg = kwargs.get(
+                    "allow_negative_forecasts",
+                    cfg("forecasting.allow_negative_forecasts"),
+                )
+                if not allow_neg and results[period] < 0:
+                    logger.warning(
+                        f"Negative forecast {results[period]} for {node_name}@{period}; clamping to {bad_value}"
+                    )
+                    results[period] = bad_value
             except Exception as e:
                 logger.warning(
-                    f"Error calculating temporary forecast for {node_name}@{period}: {e}. Returning 0.0"
+                    f"Error calculating temporary forecast for {node_name}@{period}: {e}. Returning {bad_value}"
                 )
-                results[period] = 0.0
+                results[period] = bad_value
 
         # Validate results before returning
         ForecastValidator.validate_forecast_result(results, forecast_periods, node_name)
@@ -17535,7 +17747,11 @@ class StatementForecaster:
             ... )
             >>> print(results['revenue'].get_value('2024'))
         """
-        results = {}
+        # Determine error propagation strategy (override via continue_on_error kwarg)
+        continue_on_err = kwargs.get(
+            "continue_on_error", cfg("forecasting.continue_on_error")
+        )
+        results: dict[str, ForecastResult] = {}
         configs = forecast_configs or {}
 
         for node_name in node_names:
@@ -17574,10 +17790,15 @@ class StatementForecaster:
                     method=config.method,
                     base_period=actual_base_period,
                 )
-            except Exception:
+            except Exception as e:
                 logger.exception(f"Error forecasting node {node_name}")
-                # Continue with other nodes
-                continue
+                if continue_on_err:
+                    continue
+                raise ForecastNodeError(
+                    f"Error forecasting node {node_name}: {e}",
+                    node_id=node_name,
+                    reason=str(e),
+                )
 
         return results
 
@@ -18078,6 +18299,7 @@ import numpy as np
 
 from fin_statement_model.core.nodes import Node
 from .base import BaseForecastMethod
+from fin_statement_model.config.helpers import cfg
 
 logger = logging.getLogger(__name__)
 
@@ -18184,9 +18406,10 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
                     )
                     continue
 
-        if len(historical_values) < 2:
+        min_periods = cfg("forecasting.min_historical_periods")
+        if len(historical_values) < min_periods:
             raise ValueError(
-                f"Need at least 2 historical data points for node {node.name} "
+                f"Need at least {min_periods} historical data points for node {node.name} "
                 f"to compute growth rate, found {len(historical_values)}"
             )
 
@@ -18205,20 +18428,29 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
             This is a helper method that can be used by the forecast node
             implementation to calculate the growth rate.
         """
+        # Calculate period-over-period growth rates
         if len(historical_values) < 2:
             return 0.0
 
-        # Calculate period-over-period growth rates
-        growth_rates = []
+        growth_rates: list[float] = []
         for i in range(1, len(historical_values)):
-            if historical_values[i - 1] != 0:
-                growth_rate = (
-                    historical_values[i] - historical_values[i - 1]
-                ) / historical_values[i - 1]
-                growth_rates.append(growth_rate)
+            previous_value = historical_values[i - 1]
+            if previous_value != 0:
+                growth_rates.append((historical_values[i] - previous_value) / previous_value)
 
-        # Return average growth rate, or 0 if no valid rates
-        return float(np.mean(growth_rates)) if growth_rates else 0.0
+        if not growth_rates:
+            return 0.0
+
+        # Determine aggregation method: 'mean' or 'median'
+        agg_method = cfg("forecasting.historical_growth_aggregation")
+        if agg_method == "median":
+            try:
+                return float(np.median(growth_rates))
+            except (ValueError, TypeError) as e:
+                logger.warning(f"Failed to calculate median growth rate, falling back to mean: {e}")
+                return float(np.mean(growth_rates))
+        # Default to mean
+        return float(np.mean(growth_rates))
 
 
 
@@ -18315,6 +18547,7 @@ This method generates forecast values by sampling from statistical distributions
 from typing import Any
 import numpy as np
 from pydantic import ValidationError
+from fin_statement_model.config.helpers import cfg
 
 from .base import BaseForecastMethod
 from fin_statement_model.forecasting.types import StatisticalConfig
@@ -18400,20 +18633,23 @@ class StatisticalForecastMethod(BaseForecastMethod):
             distribution=config["distribution"], params=config["params"]
         )
 
+        # Seed RNG if configured
+        seed = cfg("forecasting.random_seed")
+        if seed is not None:
+            rng = np.random.RandomState(seed)
+        else:
+            rng = np.random
+
         # Create generator function based on distribution
         def generator() -> float:
             """Generate a random growth rate from the specified distribution."""
             if stat_config.distribution == "normal":
                 return float(
-                    np.random.normal(
-                        stat_config.params["mean"], stat_config.params["std"]
-                    )
+                    rng.normal(stat_config.params["mean"], stat_config.params["std"])
                 )
             elif stat_config.distribution == "uniform":
                 return float(
-                    np.random.uniform(
-                        stat_config.params["low"], stat_config.params["high"]
-                    )
+                    rng.uniform(stat_config.params["low"], stat_config.params["high"])
                 )
             else:
                 # This shouldn't happen due to validation, but just in case
@@ -18439,6 +18675,7 @@ import logging
 from typing import Any, Optional
 
 from fin_statement_model.core.nodes import Node
+from fin_statement_model.config.helpers import cfg
 
 logger = logging.getLogger(__name__)
 
@@ -18546,38 +18783,43 @@ class PeriodManager:
         if not historical_periods:
             raise ValueError("No historical periods provided")
 
-        # If preferred period is specified and valid, use it
-        if (
-            preferred_period
-            and preferred_period in historical_periods
-            and hasattr(node, "values")
-            and isinstance(node.values, dict)
-            and preferred_period in node.values
-        ):
-            logger.debug(
-                f"Using preferred base period {preferred_period} for {node.name}"
+        # Determine strategy for selecting base period
+        strategy = cfg("forecasting.base_period_strategy")
+
+        # Validate strategy
+        valid_strategies = {"preferred_then_most_recent", "most_recent", "last_historical"}
+        if strategy not in valid_strategies:
+            logger.warning(
+                f"Unknown base period strategy '{strategy}', falling back to 'preferred_then_most_recent'"
             )
-            return preferred_period
+            strategy = "preferred_then_most_recent"
 
-        # Try to find the most recent period with data for this node
-        if hasattr(node, "values") and isinstance(node.values, dict):
-            # Get periods that have values for this node
-            available_periods = [p for p in historical_periods if p in node.values]
+        # 1. preferred_then_most_recent: check preferred first
+        if strategy == "preferred_then_most_recent" and preferred_period:
+            if preferred_period in historical_periods and hasattr(node, "values"):
+                values = getattr(node, "values", {})
+                if isinstance(values, dict) and preferred_period in values:
+                    return preferred_period
 
-            if available_periods:
-                # Use the most recent available period
-                # Assuming periods are in chronological order
-                base_period = available_periods[-1]
-                logger.debug(
-                    f"Using most recent period with data as base for {node.name}: {base_period}"
-                )
-                return base_period
+        # 2. most_recent: pick most recent available data
+        if strategy in ("preferred_then_most_recent", "most_recent"):
+            if hasattr(node, "values") and isinstance(
+                getattr(node, "values", None), dict
+            ):
+                values_dict = node.values  # type: ignore[attr-defined]
+                available_periods = [p for p in historical_periods if p in values_dict]
+                if available_periods:
+                    return available_periods[-1]
 
-        # Fallback: use the last historical period
+        # 3. last_historical: always use last in historical_periods
+        if strategy == "last_historical":
+            return historical_periods[-1]
+
+        # Final fallback: use last historical period
         base_period = historical_periods[-1]
         logger.info(
             f"Using last historical period as base for {node.name}: {base_period} "
-            f"(node may lack values)"
+            "(node may lack values)"
         )
         return base_period
 
@@ -19249,6 +19491,8 @@ from .core import (
     write_data,
 )
 from .exceptions import IOError, ReadError, WriteError, FormatNotSupportedError
+from . import formats  # noqa: F401
+from . import specialized  # noqa: F401
 
 # Import specialized functions for convenience
 from .specialized import (
@@ -19257,25 +19501,12 @@ from .specialized import (
     export_adjustments_to_excel,
     list_available_builtin_configs,
     read_builtin_statement_config,
-    read_statement_config_from_path,
-    read_statement_configs_from_directory,
     write_statement_to_excel,
     write_statement_to_json,
 )
 
 # Configure logging for the io package
 logger = logging.getLogger(__name__)
-
-# --- Trigger Registration ---
-# Import format modules to ensure their @register decorators run.
-# This makes them available in the registry when the io package is imported.
-try:
-    from . import formats  # noqa: F401
-    from . import specialized  # noqa: F401
-except ImportError:
-    # This might happen during setup or if directories are missing
-    logger.warning("Could not automatically import formats/specialized modules")
-
 
 # --- Public API ---
 
@@ -19301,8 +19532,6 @@ __all__ = [
     "read_builtin_statement_config",
     # Facade functions
     "read_data",
-    "read_statement_config_from_path",
-    "read_statement_configs_from_directory",
     "write_data",
     "write_statement_to_excel",
     "write_statement_to_json",
@@ -19365,6 +19594,27 @@ class CsvReaderConfig(BaseReaderConfig):
         None, description="Optional configuration for mapping source item names."
     )
 
+    # Runtime override options: these will override config defaults when provided at read-time
+    statement_type: Optional[
+        Literal["income_statement", "balance_sheet", "cash_flow"]
+    ] = Field(
+        None,
+        description="Type of statement ('income_statement', 'balance_sheet', 'cash_flow') to select mapping scope.",
+    )
+    item_col: Optional[str] = Field(
+        None, description="Name of the column containing item identifiers."
+    )
+    period_col: Optional[str] = Field(
+        None, description="Name of the column containing period identifiers."
+    )
+    value_col: Optional[str] = Field(
+        None, description="Name of the column containing numeric values."
+    )
+    pandas_read_csv_kwargs: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Additional kwargs for pandas.read_csv, overriding config defaults.",
+    )
+
     @model_validator(mode="after")  # type: ignore[arg-type]
     def check_header_row(cls, cfg: CsvReaderConfig) -> CsvReaderConfig:
         """Ensure header_row is at least 1."""
@@ -19385,6 +19635,22 @@ class ExcelReaderConfig(BaseReaderConfig):
     periods_row: int = Field(1, description="1-indexed row where periods reside.")
     mapping_config: Optional[MappingConfig] = Field(
         None, description="Optional configuration for mapping source item names."
+    )
+
+    statement_type: Optional[
+        Literal["income_statement", "balance_sheet", "cash_flow"]
+    ] = Field(
+        None,
+        description="Type of statement ('income_statement', 'balance_sheet', 'cash_flow'). Used to select a mapping scope.",
+    )
+    header_row: Optional[int] = Field(
+        None, description="1-indexed row for pandas header reading."
+    )
+    nrows: Optional[int] = Field(
+        None, description="Number of rows to read from the sheet."
+    )
+    skiprows: Optional[int] = Field(
+        None, description="Number of rows to skip at the beginning."
     )
 
     @model_validator(mode="after")  # type: ignore[arg-type]
@@ -19446,6 +19712,12 @@ class DataFrameReaderConfig(BaseReaderConfig):
     source: Any = Field(..., description="In-memory pandas DataFrame source")
     format_type: Literal["dataframe"] = "dataframe"
 
+    # Runtime override for read-time periods selection
+    periods: Optional[list[str]] = Field(
+        None,
+        description="Optional list of periods (columns) to include when reading a DataFrame.",
+    )
+
 
 class DictReaderConfig(BaseReaderConfig):
     """Configuration for DictReader.
@@ -19458,6 +19730,11 @@ class DictReaderConfig(BaseReaderConfig):
         ..., description="In-memory dictionary source"
     )
     format_type: Literal["dict"] = "dict"
+
+    # Runtime override for read-time periods selection
+    periods: Optional[list[str]] = Field(
+        None, description="Optional list of periods to include when reading a dict."
+    )
 
 
 # --- Writer-side Pydantic configuration models ---
@@ -19518,11 +19795,36 @@ class DictWriterConfig(BaseWriterConfig):
 
 
 class MarkdownWriterConfig(BaseWriterConfig):
-    """Markdown writer options."""
+    """Markdown writer options.
 
-    statement_config_path: str = Field(
-        ..., description="Path to the statement definition YAML file."
+    The writer can be configured in multiple ways:
+
+    1. ``statement_config_path`` – Path to a YAML file containing the statement
+       definition.  This mirrors historical behaviour where configurations were
+       stored on disk.
+    2. ``raw_configs`` – An *in-memory* mapping of statement IDs to their
+       configuration dictionaries.  This is the preferred mechanism in the new
+       API and aligns with ``create_statement_dataframe`` and other
+       in-memory workflows.
+
+    Only **one** of these two options is required.  If both are supplied the
+    explicit ``raw_configs`` takes precedence.
+    """
+
+    # Either a file-based config …
+    statement_config_path: Optional[str] = Field(
+        None, description="Path to the statement definition YAML file."
     )
+
+    # … or in-memory configs.
+    raw_configs: Optional[dict[str, dict[str, Any]]] = Field(
+        None,
+        description=(
+            "Mapping of statement IDs to configuration dictionaries.  This allows "
+            "fully in-memory operation without relying on the filesystem."
+        ),
+    )
+
     historical_periods: Optional[list[str]] = Field(
         None, description="List of historical period names."
     )
@@ -19540,6 +19842,28 @@ class MarkdownWriterConfig(BaseWriterConfig):
     target: Optional[str] = Field(
         None, description="Optional target path (ignored by MarkdownWriter)."
     )
+
+    # --- Validators ------------------------------------------------------
+
+    @model_validator(mode="after")  # type: ignore[arg-type]
+    def check_exclusive_sources(
+        cls, cfg: "MarkdownWriterConfig"
+    ) -> "MarkdownWriterConfig":
+        """Ensure that exactly one of statement_config_path or raw_configs is provided."""
+        if not cfg.statement_config_path and cfg.raw_configs is None:
+            raise ValueError(
+                "Must provide either 'statement_config_path' or 'raw_configs' to "
+                "MarkdownWriterConfig."
+            )
+        if cfg.statement_config_path and cfg.raw_configs is not None:
+            # Prefer raw_configs but emit warning via logging
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "Both 'statement_config_path' and 'raw_configs' supplied to "
+                "MarkdownWriterConfig – 'raw_configs' will take precedence."
+            )
+        return cfg
 
 
 
@@ -21050,9 +21374,6 @@ class ValidationResultCollector:
 
         return "\n".join(report_lines)
 
-# Provide backward compatibility for legacy mixin name
-#ConfigurableReaderMixin = ConfigurationMixin
-
 
 
 ================================================================================
@@ -21730,13 +22051,15 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
                  `source` (ticker), `api_key`, `statement_type`, `period_type`,
                  `limit`, and `mapping_config`.
         """
+        # Initialise mixins to set up configuration context and mapping caches.
+        ConfigurationMixin.__init__(self)
+        MappingAwareMixin.__init__(self)  # currently a no-op but future-proof
+
         self.cfg = cfg
 
-    def _validate_api_key(self) -> None:
-        """Perform a simple check if the API key seems valid."""
-        # API key is now guaranteed by FmpReaderConfig validation
-        api_key = self.cfg.api_key
-        if not api_key:  # Should not happen if validation passed, but defensive check
+    def _validate_api_key(self, api_key: str) -> None:
+        """Perform a simple check if the provided API key is valid."""
+        if not api_key:
             raise ReadError(
                 "FMP API key is required for reading.",
                 source="FMP API",
@@ -21746,8 +22069,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
             # Use a cheap endpoint for validation
             test_url = f"{self.BASE_URL}/profile/AAPL?apikey={api_key}"  # Example
             response = requests.get(test_url, timeout=cfg("api.api_timeout"))
-            response.raise_for_status()  # Raises HTTPError for bad responses (4xx or 5xx)
-            # Basic check on response content if needed
+            response.raise_for_status()
             if not response.json():
                 raise ReadError(
                     "API key validation returned empty response.",
@@ -21769,8 +22091,11 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
 
         Args:
             source (str): The stock ticker symbol (e.g., "AAPL").
-            **kwargs: Currently unused. Configuration is handled by the `FmpReaderConfig`
-                      object passed during initialization.
+            **kwargs: Optional runtime arguments overriding config defaults:
+                statement_type (str): Type of statement to fetch ('income_statement', 'balance_sheet', 'cash_flow').
+                period_type (str): Period type ('FY' or 'QTR').
+                limit (int): Number of periods to fetch.
+                api_key (str): API key for FMP, overrides env or config value.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -21783,14 +22108,15 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
         # Set configuration context for better error reporting
         self.set_config_context(ticker=ticker, operation="api_read")
 
-        # Parameters now come directly from the validated config with enhanced access
-        statement_type = self.require_config_value("statement_type", value_type=str)
-        period_type_arg = self.require_config_value("period_type", value_type=str)
-        limit = self.get_config_value(
-            "limit", default=5, value_type=int, validator=lambda x: x > 0
-        )
-        api_key = self.get_config_with_env_fallback(
-            "api_key", "FMP_API_KEY", value_type=str
+        # Runtime overrides: kwargs override configuration defaults
+        statement_type = kwargs.get("statement_type", self.cfg.statement_type)
+        period_type_arg = kwargs.get("period_type", self.cfg.period_type)
+        limit = kwargs.get("limit", self.cfg.limit)
+        # Handle API key override or fallback to validated config
+        api_key = (
+            kwargs.get("api_key")
+            if kwargs.get("api_key") is not None
+            else self.cfg.api_key
         )
 
         # --- Validate Inputs ---
@@ -21802,10 +22128,10 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
             )
         # statement_type and period_type are validated by FmpReaderConfig
 
-        self._validate_api_key()  # Ensure API key is usable
+        # Validate API key (using any override)
+        self._validate_api_key(api_key)
 
         # Determine mapping for this operation, allowing override via kwargs
-        # Mapping is now determined solely by the config passed during __init__
         try:
             mapping = self._get_mapping(statement_type)
         except TypeError as te:
@@ -21961,7 +22287,6 @@ from typing import Any, cast
 
 import pandas as pd
 
-from fin_statement_model.config import cfg
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.core.mixins import (
@@ -22014,13 +22339,12 @@ class CsvReader(
 
         Args:
             source (str): Path to the CSV file.
-            **kwargs: Read-time keyword arguments:
+            **kwargs: Optional runtime arguments overriding config defaults:
+                statement_type (str): Statement type ('income_statement', 'balance_sheet', 'cash_flow').
                 item_col (str): Name of the column containing item identifiers.
                 period_col (str): Name of the column containing period identifiers.
                 value_col (str): Name of the column containing numeric values.
-                pandas_read_csv_kwargs (dict): Additional arguments passed
-                    directly to `pandas.read_csv()`. These can override settings
-                    from the `CsvReaderConfig` (e.g., `delimiter`).
+                pandas_read_csv_kwargs (dict): Additional kwargs for pandas.read_csv.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -22038,10 +22362,15 @@ class CsvReader(
         self.validate_file_exists(file_path)
         self.validate_file_extension(file_path, (".csv", ".txt"))
 
-        # Get required column names
-        item_col = kwargs.get("item_col")
-        period_col = kwargs.get("period_col")
-        value_col = kwargs.get("value_col")
+        # Runtime overrides: kwargs override configured defaults (statement_type handled in _process_dataframe)
+        item_col = kwargs.get("item_col", self.cfg.item_col)
+        period_col = kwargs.get("period_col", self.cfg.period_col)
+        value_col = kwargs.get("value_col", self.cfg.value_col)
+        pandas_read_csv_kwargs = (
+            kwargs.get("pandas_read_csv_kwargs")
+            or self.cfg.pandas_read_csv_kwargs
+            or {}
+        )
 
         if not all([item_col, period_col, value_col]):
             raise ReadError(
@@ -22055,7 +22384,7 @@ class CsvReader(
         period_col_str = cast(str, period_col)
         value_col_str = cast(str, value_col)
         # Read CSV Data
-        df = self._read_csv_file(file_path, kwargs.get("pandas_read_csv_kwargs", {}))
+        df = self._read_csv_file(file_path, pandas_read_csv_kwargs)
 
         # Validate columns
         self._validate_columns(
@@ -22072,6 +22401,8 @@ class CsvReader(
     ) -> pd.DataFrame:
         """Read CSV file with configuration options."""
         # Use configuration from self.cfg with enhanced validation
+        from fin_statement_model.config.helpers import cfg
+
         delimiter = self.get_config_value(
             "delimiter",
             default=cfg("io.default_csv_delimiter"),
@@ -22140,8 +22471,8 @@ class CsvReader(
         grouped = df.groupby(item_col)
         nodes_added = 0
 
-        # Get mapping using mixin method
-        context_key = kwargs.get("statement_type")
+        # Determine mapping context
+        context_key = kwargs.get("statement_type", self.cfg.statement_type)
         mapping = self._get_mapping(context_key)
 
         for item_name_csv, group in grouped:
@@ -22283,9 +22614,8 @@ class DataFrameReader(DataReader):
 
         Args:
             source (pd.DataFrame): The DataFrame to read data from.
-            **kwargs: Read-time keyword arguments:
-                periods (list[str], optional): Explicit list of periods (columns) to include.
-                    If None, all columns are assumed to be periods.
+            **kwargs: Optional runtime argument overriding config defaults:
+                periods (list[str], optional): List of periods (columns) to include. Overrides `cfg.periods`.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -22311,8 +22641,10 @@ class DataFrameReader(DataReader):
             # Handle case where DF might be oriented differently if periods kwarg is present?
             # For now, stick to index=nodes assumption.
 
-        # Determine periods: use explicit list or infer from columns
-        graph_periods_arg = kwargs.get("periods")
+        # Determine periods: runtime kwargs override config, else config defaults, else infer
+        graph_periods_arg = kwargs.get(
+            "periods", self.cfg.periods if self.cfg else None
+        )
         if graph_periods_arg:
             if not isinstance(graph_periods_arg, list):
                 raise ReadError("'periods' argument must be a list of column names.")
@@ -22324,7 +22656,7 @@ class DataFrameReader(DataReader):
             graph_periods = sorted(graph_periods_arg)
             df_subset = df[graph_periods]  # Select only specified period columns
         else:
-            # Assume all columns are periods
+            # No explicit periods provided; infer from columns
             graph_periods = sorted(df.columns.astype(str).tolist())
             df_subset = df
 
@@ -22446,7 +22778,9 @@ class DataFrameWriter(DataFrameBasedWriter, ConfigurationMixin):
         Args:
             graph (Graph): The Graph instance to export.
             target (Any): Ignored by this writer; the DataFrame is returned directly.
-            **kwargs: Currently unused by this method.
+            **kwargs: Optional runtime overrides of configured defaults:
+                recalculate (bool): Whether to recalculate graph before export.
+                include_nodes (list[str]): List of node names to include in export.
 
         Returns:
             pd.DataFrame: DataFrame with node names as index and periods as columns.
@@ -22454,9 +22788,13 @@ class DataFrameWriter(DataFrameBasedWriter, ConfigurationMixin):
         Raises:
             WriteError: If an error occurs during conversion.
         """
-        # Get configuration values using the mixin
-        recalculate = self.get_config_value("recalculate", True)
-        include_nodes = self.get_config_value("include_nodes")
+        # Runtime overrides: kwargs override configured defaults
+        recalculate = kwargs.get(
+            "recalculate", self.cfg.recalculate if self.cfg else True
+        )
+        include_nodes = kwargs.get(
+            "include_nodes", self.cfg.include_nodes if self.cfg else None
+        )
 
         logger.info("Exporting graph to DataFrame format.")
 
@@ -22560,9 +22898,8 @@ class DictReader(DataReader):
         Args:
             source: Dictionary mapping node names to period-value dictionaries.
                     Format: {node_name: {period: value, ...}, ...}
-            **kwargs: Read-time keyword arguments:
-                periods (list[str], optional): Explicit list of periods for the new graph.
-                    If None, inferred from data keys.
+            **kwargs: Optional runtime argument overriding config defaults:
+                periods (list[str], optional): List of periods to include. Overrides `cfg.periods`.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -22624,8 +22961,8 @@ class DictReader(DataReader):
                 original_error=e,
             ) from e
 
-        # Determine graph periods
-        graph_periods = kwargs.get("periods")
+        # Determine graph periods: runtime kwargs override config defaults
+        graph_periods = kwargs.get("periods", self.cfg.periods if self.cfg else None)
         if graph_periods is None:
             graph_periods = sorted(list(all_periods))
             logger.debug(f"Inferred graph periods from data: {graph_periods}")
@@ -22826,13 +23163,11 @@ class ExcelReader(
 
         Args:
             source (str): Path to the Excel file.
-            **kwargs: Optional runtime keyword arguments:
-                statement_type (str, optional): Type of statement ('income_statement', 'balance_sheet', 'cash_flow').
-                    Used to select a scope within the `mapping_config` provided during initialization.
-                header_row (int, optional): 1-based index for pandas header reading.
-                    Defaults to `self.cfg.periods_row` if not provided.
-                nrows (int, optional): Number of rows to read from the sheet.
-                skiprows (int, optional): Number of rows to skip at the beginning.
+            **kwargs: Optional runtime keyword arguments overriding configured defaults:
+                statement_type (str): Type of statement ('income_statement', 'balance_sheet', 'cash_flow').
+                header_row (int): 1-based index for pandas header reading.
+                nrows (int): Number of rows to read from the sheet.
+                skiprows (int): Number of rows to skip at the beginning.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -22859,11 +23194,11 @@ class ExcelReader(
             "items_col", value_type=int, validator=lambda x: x >= 1
         )
 
-        # Runtime options from kwargs
-        statement_type = kwargs.get("statement_type")
-        header_row = kwargs.get("header_row", periods_row)
-        nrows = kwargs.get("nrows")
-        skiprows = kwargs.get("skiprows")
+        # Runtime options: kwargs override config defaults
+        statement_type = kwargs.get("statement_type", self.cfg.statement_type)
+        header_row = kwargs.get("header_row", self.cfg.header_row or periods_row)
+        nrows = kwargs.get("nrows", self.cfg.nrows)
+        skiprows = kwargs.get("skiprows", self.cfg.skiprows)
 
         # Get mapping
         mapping = self._get_mapping(statement_type)
@@ -23095,18 +23430,27 @@ class ExcelWriter(DataWriter, ConfigurationMixin):
         Args:
             graph (Graph): The Graph object containing the data to write.
             target (str): Path to the target Excel file.
-            **kwargs: Currently unused. Configuration is handled by the ExcelWriterConfig.
+            **kwargs: Optional runtime overrides of configured defaults:
+                sheet_name (str): Excel sheet name.
+                recalculate (bool): Whether to recalculate graph before export.
+                include_nodes (list[str]): List of node names to include in export.
+                excel_writer_kwargs (dict): Additional kwargs for pandas.DataFrame.to_excel.
 
         Raises:
             WriteError: If an error occurs during the writing process.
         """
         file_path = target
 
-        # Get configuration values using the mixin
-        sheet_name = self.get_config_value("sheet_name", "Sheet1")
-        recalculate = self.get_config_value("recalculate", True)
-        include_nodes = self.get_config_value("include_nodes")
-        excel_writer_options = self.get_config_value("excel_writer_kwargs", {})
+        # Runtime overrides: kwargs override configured defaults
+        if self.cfg is None:
+            raise ValueError("ExcelWriter configuration is required but not provided")
+
+        sheet_name = kwargs.get("sheet_name", self.cfg.sheet_name)
+        recalculate = kwargs.get("recalculate", self.cfg.recalculate)
+        include_nodes = kwargs.get("include_nodes", self.cfg.include_nodes)
+        excel_writer_options = kwargs.get(
+            "excel_writer_kwargs", self.cfg.excel_writer_kwargs
+        )
 
         logger.info(f"Exporting graph to Excel file: {file_path}, sheet: {sheet_name}")
 
@@ -23925,10 +24269,65 @@ class MarkdownWriter(DataWriter):
 
         try:
             statement_structure = kwargs.get("statement_structure")
+
+            # Fallback: build StatementStructure on-the-fly from raw_configs
+            if statement_structure is None and "raw_configs" in kwargs:
+                raw_configs = kwargs["raw_configs"]
+                try:
+                    from fin_statement_model.statements.structure.builder import (
+                        StatementStructureBuilder,
+                    )
+                    from fin_statement_model.statements.orchestration.loader import (
+                        load_build_register_statements,
+                    )
+                    from fin_statement_model.statements.registry import (
+                        StatementRegistry,
+                    )
+
+                    # Build and register statement(s)
+                    registry = StatementRegistry()
+                    builder = StatementStructureBuilder(
+                        enable_node_validation=False, node_validation_strict=False
+                    )
+                    loaded_ids = load_build_register_statements(
+                        raw_configs,
+                        registry,
+                        builder,
+                        enable_node_validation=False,
+                        node_validation_strict=False,
+                    )
+
+                    if not loaded_ids:
+                        raise WriteError(
+                            "No valid statements could be built from raw_configs."
+                        )
+
+                    # Use the *first* statement by default – users can supply a
+                    # pre-built structure via 'statement_structure' for more
+                    # complex scenarios or when specific statement selection is needed.
+                    # TODO: Consider adding a 'statement_id' parameter to select which statement to use
+                    statement_structure = registry.get(loaded_ids[0])
+                except Exception as build_err:
+                    logger.exception(
+                        "Failed to build statement structure from raw_configs"
+                    )
+                    raise WriteError(
+                        message="Error building statement structure from raw_configs",
+                        target=target,
+                        writer_type="markdown",
+                        original_error=build_err,
+                    ) from build_err
+
+            # If still None, we cannot proceed.
             if statement_structure is None:
-                raise WriteError("Must provide 'statement_structure' argument.")
+                raise WriteError(
+                    "Must provide 'statement_structure' argument or 'raw_configs'."
+                )
+
             filtered_kwargs = {
-                k: v for k, v in kwargs.items() if k != "statement_structure"
+                k: v
+                for k, v in kwargs.items()
+                if k not in ("statement_structure", "raw_configs")
             }
             return self._write_with_structure(
                 graph, statement_structure, **filtered_kwargs
@@ -24025,8 +24424,6 @@ from .graph import (
 from .statements import (
     list_available_builtin_configs,
     read_builtin_statement_config,
-    read_statement_config_from_path,
-    read_statement_configs_from_directory,
     write_statement_to_excel,
     write_statement_to_json,
 )
@@ -24041,16 +24438,16 @@ __all__ = [
     "import_from_cells",
     # Statements
     "list_available_builtin_configs",
-    "load_adjustments_from_excel",
-    "load_graph_definition",
     "read_builtin_statement_config",
-    "read_excel",
-    "read_statement_config_from_path",
-    "read_statement_configs_from_directory",
-    "save_graph_definition",
-    "write_excel",
     "write_statement_to_excel",
     "write_statement_to_json",
+    # Graph serialization
+    "save_graph_definition",
+    "load_graph_definition",
+    # File readers/writers for data sources
+    "read_excel",
+    "write_excel",
+    "load_adjustments_from_excel",
 ]
 
 
@@ -24817,19 +25214,14 @@ __all__ = [
 File: fin_statement_model/io/specialized/statements.py
 ================================================================================
 
-"""Statement-related IO utilities.
-
-This module provides functionality for reading statement configurations
-and writing formatted statement data.
-"""
+"""Statement-related IO utilities for built-in configs and writing formatted statement data."""
 
 import json
 import yaml
 import logging
 import importlib.resources
-import importlib.util  # Needed for checking resource type
 from pathlib import Path
-from typing import Any, Optional, cast
+from typing import Any
 
 import pandas as pd
 
@@ -24837,184 +25229,24 @@ from fin_statement_model.io.exceptions import ReadError, WriteError
 
 logger = logging.getLogger(__name__)
 
+# Built-in config package path constant (directory containing YAML/JSON configs)
+# Default base path is "fin_statement_model.statements.configs" – end-users can
+# drop YAML or JSON files in that package (or a sub-package added to
+# ``__init__.py``) and they will be discovered automatically.
 
-# ===== Statement Configuration Reading =====
-
-
-def read_statement_config_from_path(config_path: str) -> dict[str, Any]:
-    """Reads and parses a statement configuration file from a given path.
-
-    Supports JSON and YAML formats.
-
-    Args:
-        config_path: Absolute or relative path to the configuration file.
-
-    Returns:
-        The parsed configuration data as a dictionary.
-
-    Raises:
-        ReadError: If the file is not found, has an unsupported extension,
-                   or cannot be parsed.
-    """
-    path = Path(config_path)
-
-    if not path.exists() or not path.is_file():
-        raise ReadError(
-            message="Configuration file not found or is not a file",
-            source=config_path,
-        )
-
-    extension = path.suffix.lower()
-    config_data = {}
-
-    try:
-        with open(path, encoding="utf-8") as f:
-            if extension == ".json":
-                config_data = json.load(f)
-            elif extension in [".yaml", ".yml"]:
-                config_data = yaml.safe_load(f)
-            else:
-                raise ReadError(
-                    message=f"Unsupported file extension '{extension}' for statement config; use .json, .yaml, or .yml",
-                    source=config_path,
-                )
-        logger.debug(f"Successfully read and parsed config file: {config_path}")
-        return config_data
-
-    except json.JSONDecodeError as e:
-        logger.exception(f"Error parsing JSON configuration file {config_path}")
-        raise ReadError(
-            message=f"Invalid JSON format in configuration file: JSON decode error at line {e.lineno}, column {e.colno}: {e.msg}",
-            source=config_path,
-            original_error=e,
-        ) from e
-    except yaml.YAMLError as e:
-        logger.exception(f"Error parsing YAML configuration file {config_path}")
-        str(e)
-        if hasattr(e, "problem_mark") and getattr(e, "problem_mark", None) is not None:
-            mark = e.problem_mark
-            if mark:
-                (
-                    f"YAML parse error near line {mark.line + 1}, column {mark.column + 1}: "
-                    f"{getattr(e, 'problem', '')}"
-                )
-        raise ReadError(
-            message="Invalid YAML format in configuration file",
-            source=config_path,
-            original_error=e,
-        ) from e
-    except OSError as e:
-        logger.exception(f"IO Error reading configuration file {config_path}")
-        raise ReadError(
-            message="Failed to read configuration file",
-            source=config_path,
-            original_error=e,
-        ) from e
-    except Exception as e:
-        logger.exception(f"Unexpected error loading configuration from {config_path}")
-        raise ReadError(
-            message="Unexpected error loading configuration file",
-            source=config_path,
-            original_error=e,
-        ) from e
-
-
-def read_statement_configs_from_directory(
-    directory_path: str,
-) -> dict[str, dict[str, Any]]:
-    """Reads all statement configs (JSON/YAML) from a directory.
-
-    Args:
-        directory_path: Path to the directory containing configuration files.
-
-    Returns:
-        A dictionary mapping statement identifiers (filename stem) to their
-        parsed configuration data (dict).
-
-    Raises:
-        ReadError: If the directory doesn't exist or isn't accessible, or if
-                   any individual file fails to read/parse (errors are logged
-                   but reading continues for other files unless none succeed).
-        FileNotFoundError: If the directory_path does not exist.
-    """
-    path = Path(directory_path)
-    if not path.exists():
-        raise FileNotFoundError(f"Configuration directory not found: {directory_path}")
-    if not path.is_dir():
-        raise ReadError(
-            message="Provided path is not a directory",
-            source=directory_path,
-        )
-
-    configs: dict[str, dict[str, Any]] = {}
-    errors: list[str] = []
-
-    config_files = list(path.glob("*.json")) + list(path.glob("*.y*ml"))
-
-    if not config_files:
-        logger.warning(
-            f"No configuration files (.json, .yaml, .yml) found in {directory_path}"
-        )
-        return {}
-
-    for file_path in config_files:
-        file_path_str = str(file_path)
-        try:
-            config_data = read_statement_config_from_path(file_path_str)
-            statement_id = file_path.stem  # Use filename without extension as ID
-            if statement_id in configs:
-                logger.warning(
-                    f"Duplicate statement ID '{statement_id}' found. Overwriting config from {file_path_str}."
-                )
-            configs[statement_id] = config_data
-            logger.debug(
-                f"Successfully loaded statement config '{statement_id}' from {file_path.name}"
-            )
-        except ReadError as e:
-            logger.exception(f"Failed to read/parse config file {file_path.name}:")
-            errors.append(f"{file_path.name}: {e.message}")
-        except Exception as e:
-            logger.exception(f"Unexpected error processing file {file_path.name}")
-            errors.append(f"{file_path.name}: Unexpected error - {e!s}")
-
-    # Decision: Raise error only if NO files could be read successfully?
-    # Or just log errors and return what was successful?
-    # Current approach: Log errors, return successful ones.
-    # If no configs loaded AND errors occurred, maybe raise an aggregate error.
-    if not configs and errors:
-        raise ReadError(
-            message=f"Failed to load any valid configurations from directory {directory_path}: {'; '.join(errors)}",
-            source=directory_path,
-        )
-    elif errors:
-        # Log that some files failed if others succeeded
-        logger.warning(
-            f"Encountered errors while loading configs from {directory_path}: {len(errors)} file(s) failed."
-        )
-
-    return configs
-
-
-# Built-in config package path constant
-_BUILTIN_CONFIG_PACKAGE = "fin_statement_model.statements.config.mappings"
+_BUILTIN_CONFIG_PACKAGE = "fin_statement_model.statements.configs"
 
 
 def list_available_builtin_configs() -> list[str]:
-    """List the names of all built-in statement configuration mappings available.
-
-    Returns:
-        List[str]: List of mapping names (filename without extension).
-    """
+    """List names of all built-in statement configuration mappings."""
     package_path = _BUILTIN_CONFIG_PACKAGE
     try:
         resource_path = importlib.resources.files(package_path)
-        # Check if the resource exists and is a container (directory)
         if not resource_path.is_dir():
             logger.warning(
                 f"Built-in config package path is not a directory: {package_path}"
             )
             return []
-
         names = [
             Path(res.name).stem
             for res in resource_path.iterdir()
@@ -25022,121 +25254,53 @@ def list_available_builtin_configs() -> list[str]:
             and Path(res.name).suffix.lower() in (".yaml", ".yml", ".json")
         ]
         return sorted(names)
-    except (
-        ModuleNotFoundError,
-        FileNotFoundError,
-    ):  # Handle case where package/path doesn't exist
-        logger.warning(f"Built-in config package path not found: {package_path}")
+    except (ModuleNotFoundError, FileNotFoundError):
+        logger.warning(f"Built-in statement config path not found: {package_path}")
         return []
 
 
 def read_builtin_statement_config(name: str) -> dict[str, Any]:
-    """Reads and parses a built-in statement configuration by name.
-
-    Searches for <name>.yaml, <name>.yml, or <name>.json in the built-in
-    mappings directory.
-
-    Args:
-        name: The name of the built-in configuration (filename without extension).
-
-    Returns:
-        The parsed configuration data as a dictionary.
-
-    Raises:
-        ReadError: If no matching configuration file is found or if reading/parsing fails.
-    """
+    """Read and parse a built-in statement config by name."""
     package_path = _BUILTIN_CONFIG_PACKAGE
-    found_resource_name: Optional[str] = None
-    resource_content: Optional[str] = None
-    file_extension: Optional[str] = None
-
+    found = None
+    content = None
     for ext in (".yaml", ".yml", ".json"):
-        resource_name = f"{name}{ext}"
         try:
-            resource_path = importlib.resources.files(package_path).joinpath(
-                resource_name
-            )
-            if resource_path.is_file():
-                resource_content = resource_path.read_text(encoding="utf-8")
-                found_resource_name = resource_name
-                file_extension = ext
+            path = importlib.resources.files(package_path).joinpath(f"{name}{ext}")
+            if path.is_file():
+                content = path.read_text(encoding="utf-8")
+                found = ext
                 break
-        except (FileNotFoundError, ModuleNotFoundError):
-            continue  # Try next extension or handle package not found below
-        except Exception as e:
-            # Catch other potential errors during resource access
-            logger.exception(
-                f"Error accessing resource {resource_name} in {package_path}"
-            )
-            raise ReadError(
-                message=f"Error accessing built-in config resource '{name}'",
-                source=f"{package_path}/{resource_name}",
-                original_error=e,
-            ) from e
-
-    if (
-        resource_content is not None
-        and found_resource_name is not None
-        and file_extension is not None
-    ):
-        logger.debug(
-            f"Found and read built-in config '{name}' from resource: {package_path}/{found_resource_name}"
-        )
-        try:
-            if file_extension == ".json":
-                config_data = json.loads(resource_content)
-            else:  # .yaml or .yml
-                config_data = yaml.safe_load(resource_content)
-            return cast(dict[str, Any], config_data)
-        except json.JSONDecodeError as e:
-            logger.exception(f"Error parsing JSON for built-in config '{name}'")
-            raise ReadError(
-                message="Invalid JSON format in built-in configuration",
-                source=f"{package_path}/{found_resource_name}",
-                original_error=e,
-            ) from e
-        except yaml.YAMLError as e:
-            logger.exception(f"Error parsing YAML for built-in config '{name}'")
-            raise ReadError(
-                message="Invalid YAML format in built-in configuration",
-                source=f"{package_path}/{found_resource_name}",
-                original_error=e,
-            ) from e
-    else:
-        logger.warning(
-            f"Built-in statement config '{name}' not found in package {package_path}"
-        )
+        except Exception:
+            continue
+    if not content or not found:
         raise ReadError(
-            message=f"Built-in statement config '{name}' not found in package {package_path}",
+            message=f"Built-in statement config '{name}' not found in {package_path}",
             source=package_path,
         )
+    try:
+        if found == ".json":
+            return json.loads(content)
+        return yaml.safe_load(content)
+    except Exception as e:
+        raise ReadError(
+            message=f"Failed to parse built-in statement config '{name}'",
+            source=f"{package_path}/{name}{found}",
+            original_error=e,
+        ) from e
 
 
 # ===== Statement Writing =====
 
 
 def write_statement_to_excel(
-    statement_df: pd.DataFrame,
-    file_path: str,
-    **kwargs: Any,
+    statement_df: pd.DataFrame, file_path: str, **kwargs: Any
 ) -> None:
-    """Write a statement DataFrame to an Excel file.
-
-    Args:
-        statement_df: The pandas DataFrame containing the formatted statement data.
-        file_path: Path to save the Excel file.
-        **kwargs: Additional arguments passed directly to pandas.DataFrame.to_excel
-                 (e.g., sheet_name, index, header).
-
-    Raises:
-        WriteError: If writing the file fails.
-    """
+    """Write a statement DataFrame to an Excel file."""
     try:
-        # Default index=False is common for statement exports
         kwargs.setdefault("index", False)
         statement_df.to_excel(file_path, **kwargs)
     except Exception as e:
-        # Removed StatementError handling as it's no longer relevant here
         raise WriteError(
             message="Failed to export statement DataFrame to Excel",
             target=file_path,
@@ -25149,24 +25313,12 @@ def write_statement_to_json(
     statement_df: pd.DataFrame,
     file_path: str,
     orient: str = "columns",
-    **kwargs: dict[str, object],
+    **kwargs: Any,
 ) -> None:
-    """Write a statement DataFrame to a JSON file.
-
-    Args:
-        statement_df: The pandas DataFrame containing the formatted statement data.
-        file_path: Path to save the JSON file.
-        orient: JSON orientation format (passed to pandas.DataFrame.to_json).
-        **kwargs: Additional arguments passed directly to pandas.DataFrame.to_json
-                 (e.g., indent, date_format).
-
-    Raises:
-        WriteError: If writing the file fails.
-    """
+    """Write a statement DataFrame to a JSON file."""
     try:
         statement_df.to_json(file_path, orient=orient, **kwargs)
     except Exception as e:
-        # Removed StatementError handling
         raise WriteError(
             message="Failed to export statement DataFrame to JSON",
             target=file_path,
@@ -25176,11 +25328,9 @@ def write_statement_to_json(
 
 
 __all__ = [
-    # Configuration reading
+    # Built-in configs
     "list_available_builtin_configs",
     "read_builtin_statement_config",
-    "read_statement_config_from_path",
-    "read_statement_configs_from_directory",
     # Statement writing
     "write_statement_to_excel",
     "write_statement_to_json",
@@ -25726,35 +25876,9 @@ class UnifiedNodeValidator:
         self._validation_cache.clear()
 
 
-# Convenience functions for backward compatibility
 def create_validator(**kwargs: Any) -> UnifiedNodeValidator:
     """Create a validator instance with the given configuration."""
     return UnifiedNodeValidator(**kwargs)
-
-
-def validate_node_name(
-    name: str,
-    strict: bool = False,
-    auto_standardize: bool = True,
-) -> tuple[str, bool, str]:
-    """Simple validation function for backward compatibility.
-
-    Args:
-        name: Node name to validate.
-        strict: Whether to use strict mode.
-        auto_standardize: Whether to auto-standardize names.
-
-    Returns:
-        Tuple of (standardized_name, is_valid, message).
-    """
-    validator = UnifiedNodeValidator(
-        strict_mode=strict,
-        auto_standardize=auto_standardize,
-        warn_on_non_standard=False,
-    )
-
-    result = validator.validate(name)
-    return result.standardized_name, result.is_valid, result.message
 
 
 
@@ -26548,6 +26672,7 @@ from fin_statement_model.preprocessing.errors import (
     TransformerRegistrationError,
     TransformerConfigurationError,
 )
+from fin_statement_model.config.helpers import cfg
 
 logger = logging.getLogger(__name__)
 
@@ -26655,14 +26780,19 @@ class TransformationService:
     def normalize_data(
         self,
         data: Union[pd.DataFrame, dict[str, Any]],
-        normalization_type: str = "percent_of",
+        normalization_type: Optional[str] = None,
         reference: Optional[str] = None,
         scale_factor: Optional[float] = None,
     ) -> Union[pd.DataFrame, dict[str, Any]]:
         """Normalize financial data."""
+        # Determine normalization type default
+        default_norm_type = cfg("preprocessing.default_normalization_type")
+        norm_type = (
+            normalization_type if normalization_type is not None else default_norm_type
+        ) or "percent_of"
         transformer = TransformerFactory.create_transformer(
             "normalization",
-            normalization_type=normalization_type,
+            normalization_type=norm_type,
             reference=reference,
             scale_factor=scale_factor,
         )
@@ -26671,43 +26801,75 @@ class TransformationService:
     def transform_time_series(
         self,
         data: Union[pd.DataFrame, dict[str, Any]],
-        transformation_type: str = "growth_rate",
-        periods: int = 1,
-        window_size: int = 3,
+        transformation_type: Optional[str] = None,
+        periods: Optional[int] = None,
+        window_size: Optional[int] = None,
     ) -> Union[pd.DataFrame, dict[str, Any]]:
         """Apply time series transformations to financial data."""
+        # Determine defaults from config
+        default_transform_type = cfg("preprocessing.default_transformation_type")
+        transform_type = (
+            transformation_type
+            if transformation_type is not None
+            else default_transform_type
+        )
+        default_periods = cfg("preprocessing.default_time_series_periods")
+        num_periods = periods if periods is not None else default_periods
+        default_window = cfg("preprocessing.default_time_series_window_size")
+        win_size = window_size if window_size is not None else default_window
         transformer = TransformerFactory.create_transformer(
             "time_series",
-            transformation_type=transformation_type,
-            periods=periods,
-            window_size=window_size,
+            transformation_type=transform_type,
+            periods=num_periods,
+            window_size=win_size,
         )
         return transformer.execute(data)
 
     def convert_periods(
-        self, data: pd.DataFrame, conversion_type: str, aggregation: str = "sum"
+        self,
+        data: pd.DataFrame,
+        conversion_type: str,
+        aggregation: Optional[str] = None,
     ) -> pd.DataFrame:
         """Convert data between different period types."""
+        default_agg = cfg("preprocessing.default_conversion_aggregation")
+        agg = aggregation if aggregation is not None else default_agg
         transformer = TransformerFactory.create_transformer(
             "period_conversion",
             conversion_type=conversion_type,
-            aggregation=aggregation,
+            aggregation=agg,
         )
         return transformer.execute(data)
 
     def format_statement(
         self,
         data: pd.DataFrame,
-        statement_type: str = "income_statement",
-        add_subtotals: bool = True,
-        apply_sign_convention: bool = True,
+        statement_type: Optional[str] = None,
+        add_subtotals: Optional[bool] = None,
+        apply_sign_convention: Optional[bool] = None,
     ) -> pd.DataFrame:
         """Format a financial statement DataFrame."""
+        # Determine defaults from preprocessing config
+        stmt_cfg = cfg("preprocessing.statement_formatting")
+        default_stmt_type = stmt_cfg.statement_type or "income_statement"
+        stmt_type = statement_type if statement_type is not None else default_stmt_type
+        default_add = (
+            stmt_cfg.add_subtotals if hasattr(stmt_cfg, "add_subtotals") else True
+        )
+        sub = add_subtotals if add_subtotals is not None else default_add
+        default_sign = (
+            stmt_cfg.apply_sign_convention
+            if hasattr(stmt_cfg, "apply_sign_convention")
+            else True
+        )
+        sign = (
+            apply_sign_convention if apply_sign_convention is not None else default_sign
+        )
         transformer = TransformerFactory.create_transformer(
             "statement_formatting",
-            statement_type=statement_type,
-            add_subtotals=add_subtotals,
-            apply_sign_convention=apply_sign_convention,
+            statement_type=stmt_type,
+            add_subtotals=sub,
+            apply_sign_convention=sign,
         )
         return transformer.execute(data)
 
@@ -27816,7 +27978,10 @@ from .formatting.formatter import StatementFormatter
 
 # High-level orchestration functions
 from .orchestration.orchestrator import create_statement_dataframe
-from .orchestration.exporter import export_statements_to_excel, export_statements_to_json
+from .orchestration.exporter import (
+    export_statements_to_excel,
+    export_statements_to_json,
+)
 
 # Errors specific to statements
 from .errors import StatementError, ConfigurationError
@@ -27921,14 +28086,12 @@ def validate_statement_config_with_nodes(
         >>> else:
         ...     print("Validation passed!")
     """
-    # Import here to avoid circular dependencies
-    from fin_statement_model.statements.configs.loader import load_config_file
-
-    # Load config data if path provided
-    if isinstance(config_path_or_data, str):
-        config_data = load_config_file(config_path_or_data)
-    else:
-        config_data = config_path_or_data
+    # File-based loading is no longer supported; only in-memory dicts
+    if not isinstance(config_path_or_data, dict):
+        raise ConfigurationError(
+            message="File-based loading of statement configs is no longer supported; please pass a configuration dictionary."
+        )
+    config_data = config_path_or_data
 
     # Create validator
     node_validator = UnifiedNodeValidator(
@@ -28080,7 +28243,6 @@ This package provides:
 - StatementConfig class for managing configurations
 """
 
-from .loader import load_config_file, load_config_directory
 from .models import (
     AdjustmentFilterSpec,
     BaseItemModel,
@@ -28107,74 +28269,7 @@ __all__ = [
     "StatementConfig",
     "StatementModel",
     "SubtotalModel",
-    "load_config_directory",
-    # Loader functions
-    "load_config_file",
 ]
-
-
-
-================================================================================
-File: fin_statement_model/statements/configs/loader.py
-================================================================================
-
-"""Configuration file loader for statement configurations.
-
-This module handles reading statement configuration files from disk,
-delegating to the IO layer for actual file operations.
-"""
-
-import logging
-from typing import Any
-
-from fin_statement_model.io import (
-    read_statement_config_from_path,
-    read_statement_configs_from_directory,
-)
-
-logger = logging.getLogger(__name__)
-
-__all__ = ["load_config_directory", "load_config_file"]
-
-
-def load_config_file(config_path: str) -> dict[str, Any]:
-    """Load a single statement configuration file.
-
-    Args:
-        config_path: Path to the configuration file.
-
-    Returns:
-        Dictionary containing the configuration data.
-
-    Raises:
-        ReadError: If the file cannot be read.
-        FileNotFoundError: If the file doesn't exist.
-    """
-    try:
-        return read_statement_config_from_path(config_path)
-    except:
-        logger.exception(f"Failed to load config file {config_path}")
-        raise
-
-
-def load_config_directory(config_dir: str) -> dict[str, dict[str, Any]]:
-    """Load all statement configuration files from a directory.
-
-    Args:
-        config_dir: Path to the directory containing config files.
-
-    Returns:
-        Dictionary mapping config names to configuration data.
-
-    Raises:
-        ReadError: If any file cannot be read.
-        FileNotFoundError: If the directory doesn't exist.
-    """
-    try:
-        return read_statement_configs_from_directory(config_dir)
-    except:
-        logger.exception(f"Failed to load configs from directory {config_dir}")
-        raise
 
 
 
@@ -29669,7 +29764,6 @@ import logging
 import re
 from dataclasses import dataclass, field
 
-from fin_statement_model.config import cfg
 from fin_statement_model.statements.structure import StatementStructure
 from fin_statement_model.statements.structure import (
     Section,
@@ -29835,6 +29929,8 @@ class StatementFormatter:
 
         # Check config if path provided
         if config_path:
+            from fin_statement_model.config.helpers import cfg
+
             return cfg(config_path, default_value)
 
         # Return default value
@@ -30025,12 +30121,13 @@ class StatementFormatter:
         if pd.isna(value) or value == 0:
             return ""
 
+        # For contra items, we typically want to show the absolute value with special formatting
+        # regardless of the underlying sign, since sign_convention handles calculation logic
+        from fin_statement_model.config.helpers import cfg
+
         style = display_style or self.default_formats.get(
             "contra_display_style", cfg("display.contra_display_style", "parentheses")
         )
-
-        # For contra items, we typically want to show the absolute value with special formatting
-        # regardless of the underlying sign, since sign_convention handles calculation logic
         abs_value = abs(value)
 
         # Use dictionary for style formatting
@@ -30073,7 +30170,7 @@ class StatementFormatter:
         """Prepare formatting context with config defaults.
 
         Args:
-            **kwargs: All formatting parameters passed to generate_dataframe
+            **kwargs: All formatting parameters passed to generate_dataframe (overrides config)
 
         Returns:
             FormattingContext: Configured context object
@@ -30084,22 +30181,43 @@ class StatementFormatter:
 
         # Create context with provided kwargs
         context = FormattingContext(
-            should_apply_signs=kwargs.get("should_apply_signs", True),
-            include_empty_items=kwargs.get("include_empty_items", False),
+            should_apply_signs=kwargs.get(
+                "should_apply_signs", config.display.apply_sign_conventions
+            ),
+            include_empty_items=kwargs.get(
+                "include_empty_items", config.display.include_empty_items
+            ),
             number_format=kwargs.get("number_format"),
-            include_metadata_cols=kwargs.get("include_metadata_cols", False),
+            include_metadata_cols=kwargs.get(
+                "include_metadata_cols", config.display.include_metadata_cols
+            ),
             adjustment_filter=kwargs.get("adjustment_filter"),
-            add_is_adjusted_column=kwargs.get("add_is_adjusted_column", False),
-            include_units_column=kwargs.get("include_units_column", False),
-            include_css_classes=kwargs.get("include_css_classes", False),
-            include_notes_column=kwargs.get("include_notes_column", False),
-            apply_item_scaling=kwargs.get("apply_item_scaling", True),
-            apply_item_formatting=kwargs.get("apply_item_formatting", True),
+            add_is_adjusted_column=kwargs.get(
+                "add_is_adjusted_column", config.display.add_is_adjusted_column
+            ),
+            include_units_column=kwargs.get(
+                "include_units_column", config.display.include_units_column
+            ),
+            include_css_classes=kwargs.get(
+                "include_css_classes", config.display.include_css_classes
+            ),
+            include_notes_column=kwargs.get(
+                "include_notes_column", config.display.include_notes_column
+            ),
+            apply_item_scaling=kwargs.get(
+                "apply_item_scaling", config.display.apply_item_scaling
+            ),
+            apply_item_formatting=kwargs.get(
+                "apply_item_formatting", config.display.apply_item_formatting
+            ),
             respect_hide_flags=kwargs.get("respect_hide_flags"),
             contra_display_style=kwargs.get("contra_display_style"),
-            apply_contra_formatting=kwargs.get("apply_contra_formatting", True),
+            apply_contra_formatting=kwargs.get(
+                "apply_contra_formatting", config.display.apply_contra_formatting
+            ),
             add_contra_indicator_column=kwargs.get(
-                "add_contra_indicator_column", False
+                "add_contra_indicator_column",
+                config.display.add_contra_indicator_column,
             ),
         )
 
@@ -30720,22 +30838,22 @@ class StatementFormatter:
         should_apply_signs: Optional[bool] = None,
         include_empty_items: Optional[bool] = None,
         number_format: Optional[str] = None,
-        include_metadata_cols: bool = False,
+        include_metadata_cols: Optional[bool] = None,
         # --- Adjustment Integration ---
         adjustment_filter: AdjustmentFilterInput = None,
-        add_is_adjusted_column: bool = False,
+        add_is_adjusted_column: Optional[bool] = None,
         # --- End Adjustment Integration ---
         # --- Enhanced Display Control ---
-        include_units_column: bool = False,
-        include_css_classes: bool = False,
-        include_notes_column: bool = False,
-        apply_item_scaling: bool = True,
-        apply_item_formatting: bool = True,
+        include_units_column: Optional[bool] = None,
+        include_css_classes: Optional[bool] = None,
+        include_notes_column: Optional[bool] = None,
+        apply_item_scaling: Optional[bool] = None,
+        apply_item_formatting: Optional[bool] = None,
         respect_hide_flags: Optional[bool] = None,
         # --- Contra Item Support ---
         contra_display_style: Optional[str] = None,
-        apply_contra_formatting: bool = True,
-        add_contra_indicator_column: bool = False,
+        apply_contra_formatting: Optional[bool] = None,
+        add_contra_indicator_column: Optional[bool] = None,
         # --- End Contra Item Support ---
         # --- End Enhanced Display Control ---
         **kwargs: Any,
@@ -30839,25 +30957,45 @@ class StatementFormatter:
     def format_html(
         self,
         graph: Graph,
-        should_apply_signs: bool = True,  # Use consistent arg name
-        include_empty_items: bool = False,
+        should_apply_signs: Optional[bool] = None,
+        include_empty_items: Optional[bool] = None,
         css_styles: Optional[dict[str, str]] = None,
-        use_item_css_classes: bool = True,
+        use_item_css_classes: Optional[bool] = None,
         **kwargs: Any,
     ) -> str:
         """Format the statement data as HTML with enhanced styling support.
 
         Args:
             graph: The core.graph.Graph instance containing the data.
-            should_apply_signs: Whether to apply sign conventions.
-            include_empty_items: Whether to include items with no data.
+            should_apply_signs: Whether to apply sign conventions (override config).
+            include_empty_items: Whether to include items with no data (override config).
             css_styles: Optional dict of CSS styles for the HTML.
-            use_item_css_classes: Whether to use item-specific CSS classes.
+            use_item_css_classes: Whether to use item-specific CSS classes (override config).
             **kwargs: Additional arguments passed to generate_dataframe.
 
         Returns:
             str: HTML string representing the statement with enhanced styling.
         """
+        # Load display config defaults
+        from fin_statement_model import get_config
+
+        config = get_config()
+        # Determine final values (kwargs override config)
+        should_apply_signs = (
+            should_apply_signs
+            if should_apply_signs is not None
+            else config.display.apply_sign_conventions
+        )
+        include_empty_items = (
+            include_empty_items
+            if include_empty_items is not None
+            else config.display.include_empty_items
+        )
+        use_item_css_classes = (
+            use_item_css_classes
+            if use_item_css_classes is not None
+            else config.display.include_css_classes
+        )
         # Enable CSS classes if requested
         if use_item_css_classes:
             kwargs["include_css_classes"] = True
@@ -30993,8 +31131,77 @@ def export_statements(
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
+    # Load statement configuration(s) into memory if a path was provided
+    def _parse_config_file(file_path: Path) -> dict[str, Any] | None:
+        """Parse a YAML or JSON statement configuration file into a dictionary.
+
+        Returns None if the file cannot be parsed or the root element is not a mapping.
+        """
+        # Security: Check file size to prevent memory exhaustion
+        max_size = 10 * 1024 * 1024  # 10MB limit
+        if file_path.stat().st_size > max_size:
+            logger.warning("Config file '%s' exceeds size limit (%d bytes) - skipping", file_path, max_size)
+            return None
+
+        try:
+            if file_path.suffix.lower() == ".json":
+                import json
+                data = json.loads(file_path.read_text(encoding="utf-8"))
+            else:
+                # Fallback to YAML for .yaml / .yml extensions (PyYAML is a dependency)
+                import yaml
+                data = yaml.safe_load(file_path.read_text(encoding="utf-8"))
+            if not isinstance(data, dict):
+                logger.warning(
+                    "Statement config '%s' is not a mapping at the root level – skipping", file_path
+                )
+                return None
+            return data  # type: ignore[return-value]
+        except (json.JSONDecodeError, yaml.YAMLError) as exc:
+            logger.warning("Failed to parse statement config file '%s': %s", file_path, exc)
+            return None
+        except Exception as exc:
+            logger.exception(
+                "Failed to parse statement config file '%s': %s", file_path, exc
+            )
+            return None
+
+    # Determine raw_configs based on the provided argument type
+    raw_configs: dict[str, dict[str, Any]]
+    if isinstance(config_path_or_dir, (str, Path)):
+        cfg_path = Path(config_path_or_dir)
+        if not cfg_path.exists():
+            raise FileNotFoundError(f"Config path '{cfg_path}' does not exist.")
+        if cfg_path.is_dir():
+            raw_configs = {}
+            for item in cfg_path.iterdir():
+                if item.is_file() and item.suffix.lower() in {".yaml", ".yml", ".json"}:
+                    parsed_cfg = _parse_config_file(item)
+                    if parsed_cfg:
+                        stmt_id = str(parsed_cfg.get("id", item.stem))
+                        raw_configs[stmt_id] = parsed_cfg
+            if not raw_configs:
+                raise FileNotFoundError(
+                    f"No valid statement configuration files found in directory '{cfg_path}'."
+                )
+        else:
+            parsed_cfg = _parse_config_file(cfg_path)
+            if parsed_cfg is None:
+                raise FileNotFoundError(
+                    f"Failed to parse statement configuration file '{cfg_path}'."
+                )
+            stmt_id = str(parsed_cfg.get("id", cfg_path.stem))
+            raw_configs = {stmt_id: parsed_cfg}
+    elif isinstance(config_path_or_dir, dict):
+        # Already provided a mapping of configs
+        raw_configs = config_path_or_dir  # type: ignore[assignment]
+    else:
+        raise TypeError(
+            "config_path_or_dir must be a path to a config file/directory or a mapping of configs."
+        )
+
     try:
-        dfs = create_statement_dataframe(graph, config_path_or_dir, format_kwargs)
+        dfs = create_statement_dataframe(graph, raw_configs, format_kwargs)
     except FinancialModelError:
         logger.exception("Failed to generate statement dataframes for export:")
         raise  # Re-raise critical errors from generation step
@@ -31007,12 +31214,14 @@ def export_statements(
 
     # Standardize to dictionary format
     if isinstance(dfs, pd.DataFrame):
-        # Try to get a meaningful name if it was a single file
-        stmt_id = (
-            Path(config_path_or_dir).stem
-            if Path(config_path_or_dir).is_file()
-            else "statement"
-        )
+        # Derive a sensible statement ID when only a single DataFrame is returned
+        if isinstance(config_path_or_dir, (str, Path)):
+            # Use file/dir name if a path was provided
+            path_obj = Path(config_path_or_dir)
+            stmt_id = path_obj.stem if path_obj.is_file() else "statement"
+        else:
+            # Fallback to the first key in the raw_configs mapping
+            stmt_id = next(iter(raw_configs.keys()))
         dfs_dict = {stmt_id: dfs}
     else:
         dfs_dict = dfs
@@ -31178,26 +31387,18 @@ File: fin_statement_model/statements/orchestration/loader.py
 
 """Statement loading and building functionality.
 
-This module handles the loading of statement configurations from files or directories,
-validates them, builds statement structures, and registers them with the registry.
+This module handles validation, building, and registration of statement structures
+from in-memory configuration dictionaries.
 """
 
 import logging
+from typing import Any, Optional
 from pathlib import Path
-from typing import Optional
 
 from fin_statement_model.core.errors import ConfigurationError, StatementError
-from fin_statement_model.io import (
-    read_statement_config_from_path,
-    read_statement_configs_from_directory,
-)
-from fin_statement_model.io.exceptions import ReadError
-
 from fin_statement_model.statements.structure.builder import StatementStructureBuilder
 from fin_statement_model.statements.configs.validator import StatementConfig
 from fin_statement_model.statements.registry import StatementRegistry
-
-# Import UnifiedNodeValidator for optional node validation
 from fin_statement_model.io.validation import UnifiedNodeValidator
 
 logger = logging.getLogger(__name__)
@@ -31206,43 +31407,80 @@ __all__ = ["load_build_register_statements"]
 
 
 def load_build_register_statements(
-    config_path_or_dir: str,
+    raw_configs: dict[str, dict[str, Any]] | str | Path,
     registry: StatementRegistry,
     builder: Optional[StatementStructureBuilder] = None,
     enable_node_validation: bool = False,
     node_validation_strict: bool = False,
     node_validator: Optional[UnifiedNodeValidator] = None,
 ) -> list[str]:
-    """Load, validate, build, and register statement structures from configs.
-
-    This function orchestrates the first part of the statement processing pipeline.
-    It reads configurations, validates them using StatementConfig, builds the
-    structure using StatementStructureBuilder, and registers them with the
-    provided StatementRegistry.
+    """Load, validate, build, and register statement structures from config dicts.
 
     Args:
-        config_path_or_dir: Path to a single statement config file (e.g.,
-            'income_statement.yaml') or a directory containing multiple
-            config files.
-        registry: The StatementRegistry instance to register loaded statements.
-        builder: Optional StatementStructureBuilder instance. If None, creates
-            a default builder with node validation settings.
-        enable_node_validation: If True, validates node IDs during config and build.
-        node_validation_strict: If True, treats node validation failures as errors.
-        node_validator: Optional pre-configured UnifiedNodeValidator instance.
+        raw_configs: Mapping of statement IDs to configuration dicts, or a file path or directory path.
+        registry: StatementRegistry instance to register loaded statements.
+        builder: Optional StatementStructureBuilder instance.
+        enable_node_validation: If True, validate node IDs during config and build.
+        node_validation_strict: If True, treat validation failures as errors.
+        node_validator: Optional pre-configured UnifiedNodeValidator.
 
     Returns:
-        A list of statement IDs that were successfully loaded and registered.
+        List of statement IDs successfully loaded and registered.
 
     Raises:
-        ConfigurationError: If reading or validation of any configuration fails.
-        FileNotFoundError: If the `config_path_or_dir` does not exist.
-        StatementError: If registration fails (e.g., duplicate ID).
+        ConfigurationError: If config validation fails.
+        StatementError: If registration fails.
     """
-    loaded_statement_ids = []
-    errors = []
+    loaded_statement_ids: list[str] = []
+    errors: list[tuple[str, str]] = []
 
-    # Create builder if not provided
+    # NEW: Allow `raw_configs` to be a file path or directory path for backward compatibility
+    #       Convert such inputs into the expected {statement_id: config_dict} mapping.
+    if isinstance(raw_configs, (str, Path)):
+
+        def _parse_cfg_file(path: Path) -> dict[str, Any] | None:
+            """Parse a YAML or JSON configuration file into a dict mapping."""
+            try:
+                if path.suffix.lower() == ".json":
+                    import json
+
+                    data = json.loads(path.read_text(encoding="utf-8"))
+                else:
+                    import yaml
+
+                    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+                if not isinstance(data, dict):
+                    logger.warning(
+                        "Skipping config '%s' – root element is not a mapping.", path
+                    )
+                    return None
+                return data
+            except Exception as exc:  # pragma: no cover
+                logger.exception("Failed to parse statement config '%s': %s", path, exc)
+                return None
+
+        path_obj = Path(raw_configs)
+        if not path_obj.exists():
+            raise FileNotFoundError(
+                f"Statement config path '{path_obj}' does not exist."
+            )
+
+        configs_dict: dict[str, dict[str, Any]] = {}
+        if path_obj.is_dir():
+            for file in path_obj.iterdir():
+                if file.is_file() and file.suffix.lower() in {".yaml", ".yml", ".json"}:
+                    parsed = _parse_cfg_file(file)
+                    if parsed:
+                        stmt_id = str(parsed.get("id", file.stem))
+                        configs_dict[stmt_id] = parsed
+        else:
+            parsed = _parse_cfg_file(path_obj)
+            if parsed:
+                stmt_id = str(parsed.get("id", path_obj.stem))
+                configs_dict[stmt_id] = parsed
+
+        raw_configs = configs_dict  # type: ignore[assignment]
+
     if builder is None:
         builder = StatementStructureBuilder(
             enable_node_validation=enable_node_validation,
@@ -31250,69 +31488,39 @@ def load_build_register_statements(
             node_validator=node_validator,
         )
 
-    try:
-        if Path(config_path_or_dir).is_dir():
-            raw_configs = read_statement_configs_from_directory(config_path_or_dir)
-        elif Path(config_path_or_dir).is_file():
-            stmt_id = Path(config_path_or_dir).stem
-            raw_config = read_statement_config_from_path(config_path_or_dir)
-            raw_configs = {stmt_id: raw_config}
-        else:
-            raise FileNotFoundError(
-                f"Config path is not a valid file or directory: {config_path_or_dir}"
-            )
-
-    except (ReadError, FileNotFoundError) as e:
-        logger.exception(f"Failed to read configuration from {config_path_or_dir}:")
-        raise ConfigurationError(
-            message=f"Failed to read config: {e}", config_path=config_path_or_dir
-        ) from e
-
     if not raw_configs:
-        logger.warning(f"No statement configurations found at {config_path_or_dir}")
+        logger.warning("No statement configurations provided.")
         return []
 
     for stmt_id, raw_data in raw_configs.items():
         try:
-            # Create config with node validation if enabled
             config = StatementConfig(
                 config_data=raw_data,
                 enable_node_validation=enable_node_validation,
                 node_validation_strict=node_validation_strict,
                 node_validator=node_validator,
             )
-
             validation_errors = config.validate_config()
             if validation_errors:
                 raise ConfigurationError(
                     f"Invalid configuration for statement '{stmt_id}'",
-                    config_path=f"{config_path_or_dir}/{stmt_id}.ext",  # Placeholder path
                     errors=validation_errors,
                 )
-
             statement = builder.build(config)
-            registry.register(statement)  # Raises StatementError on conflict
+            registry.register(statement)
             loaded_statement_ids.append(statement.id)
-
         except (ConfigurationError, StatementError, ValueError) as e:
-            logger.exception(f"Failed to process/register statement '{stmt_id}':")
+            logger.exception(f"Failed to process/register statement '{stmt_id}'.")
             errors.append((stmt_id, str(e)))
         except Exception as e:
-            logger.exception(
-                f"Unexpected error processing statement '{stmt_id}' from {config_path_or_dir}"
-            )
+            logger.exception(f"Unexpected error processing statement '{stmt_id}'.")
             errors.append((stmt_id, f"Unexpected error: {e!s}"))
 
-    # Handle errors - maybe raise an aggregate error if any occurred?
     if errors:
-        # For now, just log a warning, processing continues with successfully
-        # loaded statements
-        error_details = "; ".join([f"{sid}: {msg}" for sid, msg in errors])
+        error_details = "; ".join(f"{sid}: {msg}" for sid, msg in errors)
         logger.warning(
-            f"Encountered {len(errors)} errors during statement loading/building "
-            f"from {config_path_or_dir}: {error_details}"
+            f"Encountered {len(errors)} errors during statement loading/building: {error_details}"
         )
-        # Consider raising an aggregated error if needed for stricter handling
 
     return loaded_statement_ids
 
@@ -31324,14 +31532,12 @@ File: fin_statement_model/statements/orchestration/orchestrator.py
 
 """Main orchestration for statement processing.
 
-This module coordinates the overall workflow of loading statements, populating
-graphs, and generating DataFrames. It provides the main public API function
-for creating statement DataFrames.
+This module coordinates the workflow of building statements from in-memory
+configurations, populating graphs, and generating DataFrames.
 """
 
 import logging
-from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 import pandas as pd
 
@@ -31354,203 +31560,83 @@ __all__ = ["create_statement_dataframe", "populate_graph"]
 
 
 def populate_graph(registry: StatementRegistry, graph: Graph) -> list[tuple[str, str]]:
-    """Populate the graph with nodes based on registered statements.
-
-    Internal helper function that iterates through all statements registered
-    in the `registry` and uses `populate_graph_from_statement` to add the
-    corresponding nodes and relationships to the `graph`.
-
-    Args:
-        registry: The StatementRegistry containing the statements to process.
-        graph: The Graph instance to be populated.
-
-    Returns:
-        A list of tuples, where each tuple contains (item_id, error_message)
-        for any items that failed during population. Returns an empty list if
-        population was successful for all items.
-    """
-    all_populator_errors = []
+    """Populate the graph with nodes based on registered statements."""
+    all_errors: list[tuple[str, str]] = []
     statements = registry.get_all_statements()
     if not statements:
         logger.warning("No statements registered to populate the graph.")
         return []
 
     for statement in statements:
-        populator_errors = populate_graph_from_statement(statement, graph)
-        if populator_errors:
-            all_populator_errors.extend(
-                [(statement.id, item_id, msg) for item_id, msg in populator_errors]
-            )
+        errors = populate_graph_from_statement(statement, graph)
+        for item_id, msg in errors:
+            all_errors.append((item_id, msg))
 
-    if all_populator_errors:
-        logger.warning(
-            f"Encountered {len(all_populator_errors)} errors during graph population."
-        )
-        # Log details if needed: logger.warning(f"Population errors: {all_populator_errors}")
-
-    return [
-        (item_id, msg) for stmt_id, item_id, msg in all_populator_errors
-    ]  # Return simplified list
+    if all_errors:
+        logger.warning(f"Encountered {len(all_errors)} errors during graph population.")
+    return all_errors
 
 
 def create_statement_dataframe(
     graph: Graph,
-    config_path_or_dir: str,
+    raw_configs: dict[str, dict[str, Any]],
     format_kwargs: Optional[dict[str, Any]] = None,
-    enable_node_validation: bool = False,
-    node_validation_strict: bool = False,
-) -> Union[pd.DataFrame, dict[str, pd.DataFrame]]:
-    r"""Load config(s), build structure(s), populate graph, format as DataFrame(s).
-
-    This function orchestrates the entire process of turning statement
-    configuration files into pandas DataFrames containing the calculated or
-    retrieved financial data.
-
-    It performs the following steps:
-    1. Loads configuration(s) from the specified path or directory.
-    2. Validates the configuration(s) with optional node ID validation.
-    3. Builds the internal statement structure(s).
-    4. Registers the structure(s).
-    5. Populates the provided `graph` with nodes based on the statement(s).
-       (Assumes the graph might already contain necessary data nodes or will
-       fetch them).
-    6. Formats the statement data from the graph into pandas DataFrame(s).
+    enable_node_validation: Optional[bool] = None,
+    node_validation_strict: Optional[bool] = None,
+) -> dict[str, pd.DataFrame]:
+    """Build statements from configurations, populate graph, and format DataFrames.
 
     Args:
-        graph: The core.graph.Graph instance to use and populate. This graph
-            should ideally contain the necessary base data nodes (e.g.,
-            actuals) before calling this function, or nodes should be capable
-            of fetching their data.
-        config_path_or_dir: Path to a single statement config file (e.g.,
-            './configs/income_statement.yaml') or a directory containing
-            multiple config files (e.g., './configs/').
-        format_kwargs: Optional dictionary of keyword arguments passed directly
-            to the `StatementFormatter.generate_dataframe` method. This can
-            be used to control aspects like date ranges, periods, or number
-            formatting. See `StatementFormatter` documentation for details.
-        enable_node_validation: If True, validates node IDs using UnifiedNodeValidator
-            during config parsing and building. Enforces naming conventions early.
-        node_validation_strict: If True, treats node validation failures as errors
-            instead of warnings. Only applies when enable_node_validation is True.
+        graph: Graph instance to populate.
+        raw_configs: Mapping of statement IDs to configuration dicts.
+        format_kwargs: Optional kwargs for formatter.
+        enable_node_validation: If True, validate node IDs.
+        node_validation_strict: If True, treat validation failures as errors.
 
     Returns:
-        If `config_path_or_dir` points to a single file, returns a single
-        pandas DataFrame representing that statement.
-        If `config_path_or_dir` points to a directory, returns a dictionary
-        mapping statement IDs (derived from filenames) to their corresponding
-        pandas DataFrames.
+        Mapping of statement IDs to pandas DataFrames.
 
     Raises:
-        ConfigurationError: If loading or validating configurations fails.
-        StatementError: If registering statements fails or if no valid
-            statements can be processed.
-        FileNotFoundError: If `config_path_or_dir` does not exist or is not a
-            valid file or directory.
-        FinancialModelError: Potentially other errors from graph operations
-            during population or formatting.
-
-    Example:
-        >>> from fin_statement_model.core.graph import Graph
-        >>> # Assume 'my_graph' is a pre-populated Graph instance
-        >>> # Assume 'configs/income_stmt.yaml' defines an income statement
-        >>> try:
-        ...     income_df = create_statement_dataframe(
-        ...         graph=my_graph,
-        ...         config_path_or_dir='configs/income_stmt.yaml',
-        ...         format_kwargs={'periods': ['2023Q1', '2023Q2']},
-        ...         enable_node_validation=True,
-        ...         node_validation_strict=True
-        ...     )
-        ...     # In real code, use logger.debug or logger.info
-        ...     logger.debug(f"Income DataFrame head:\n{income_df.head()}")
-        ... except FileNotFoundError:
-        ...     # Use logger.error or logger.warning
-        ...     logger.error("Config file not found.")
-        ... except (ConfigurationError, StatementError) as e:
-        ...     # Use logger.error or logger.exception
-        ...     logger.error(f"Error processing statement: {e}")
-
-        >>> # Process all configs in a directory with node validation
-        >>> try:
-        ...     all_statements = create_statement_dataframe(
-        ...         graph=my_graph,
-        ...         config_path_or_dir='configs/',
-        ...         enable_node_validation=True,
-        ...         node_validation_strict=False  # Warnings only
-        ...     )
-        ...     balance_sheet_df = all_statements.get('balance_sheet')
-        ...     if balance_sheet_df is not None:
-        ...         # Use logger.info
-        ...         logger.info("Balance Sheet DataFrame created.")
-        ... except FileNotFoundError:
-        ...     # Use logger.error or logger.warning
-        ...     logger.error("Config directory not found.")
-        ... except StatementError as e:
-        ...     # Use logger.error or logger.exception
-        ...     logger.error(f"Error processing statements: {e}")
+        StatementError: If loading or formatting fails.
     """
     registry = StatementRegistry()
+    enable_node_validation = (
+        enable_node_validation if enable_node_validation is not None else False
+    )
+    node_validation_strict = (
+        node_validation_strict if node_validation_strict is not None else False
+    )
     builder = StatementStructureBuilder(
         enable_node_validation=enable_node_validation,
         node_validation_strict=node_validation_strict,
     )
     format_kwargs = format_kwargs or {}
 
-    # Step 1: Load, Build, Register with node validation
+    # Step 1: Load, build, register
     loaded_ids = load_build_register_statements(
-        config_path_or_dir,
+        raw_configs,
         registry,
         builder,
         enable_node_validation=enable_node_validation,
         node_validation_strict=node_validation_strict,
     )
     if not loaded_ids:
-        raise StatementError(
-            f"No valid statements could be loaded from {config_path_or_dir}"
-        )
+        raise StatementError("No valid statements could be loaded.")
 
-    # Step 2: Populate Graph (handles errors internally, logs warnings)
+    # Step 2: Populate graph
     populate_graph(registry, graph)
 
     # Step 3: Format results
     results: dict[str, pd.DataFrame] = {}
-    formatting_errors = []
     for stmt_id in loaded_ids:
         statement = registry.get(stmt_id)
-        if not statement:
-            logger.error(
-                f"Internal error: Statement '{stmt_id}' was loaded but not found in registry."
-            )
-            formatting_errors.append(
-                (stmt_id, "Statement not found in registry after loading")
-            )
-            continue
-        try:
-            formatter = StatementFormatter(statement)
-            df = formatter.generate_dataframe(graph, **format_kwargs)
-            results[stmt_id] = df
-        except Exception as e:
-            logger.exception(f"Failed to format statement '{stmt_id}'")
-            formatting_errors.append((stmt_id, f"Formatting error: {e!s}"))
+        if statement is None:
+            logger.error(f"Statement '{stmt_id}' not found in registry.")
+            raise StatementError(f"Statement '{stmt_id}' not found in registry.")
+        df = StatementFormatter(statement).generate_dataframe(graph, **format_kwargs)
+        results[stmt_id] = df
 
-    if formatting_errors:
-        # Decide policy: raise error, or return partial results?
-        # For now, log warning and return what succeeded.
-        logger.warning(
-            f"Encountered {len(formatting_errors)} errors during formatting."
-        )
-
-    # Return single DF or Dict based on input type
-    is_single_file = Path(config_path_or_dir).is_file()
-    if is_single_file and len(results) == 1:
-        return next(iter(results.values()))
-    elif is_single_file and not results:
-        raise StatementError(
-            f"Failed to generate DataFrame for statement from file: {config_path_or_dir}"
-        )
-    else:
-        # Return dict for directory input, or if multiple results came from single file (unexpected)
-        return results
+    return results
 
 
 
@@ -32739,6 +32825,7 @@ from fin_statement_model.statements.errors import ConfigurationError
 
 # Import UnifiedNodeValidator for optional node validation during build
 from fin_statement_model.io.validation import UnifiedNodeValidator
+from fin_statement_model.config.helpers import cfg
 
 # Import Result types for enhanced error handling
 from fin_statement_model.statements.utilities.result_types import (
@@ -32765,29 +32852,35 @@ class StatementStructureBuilder:
 
     def __init__(
         self,
-        enable_node_validation: bool = False,
-        node_validation_strict: bool = False,
+        enable_node_validation: Optional[bool] = None,
+        node_validation_strict: Optional[bool] = None,
         node_validator: Optional[UnifiedNodeValidator] = None,
-    ):
+    ) -> None:
         """Initialize the StatementStructureBuilder.
 
+        Defaults for validation flags come from the global statements config, but can be overridden locally.
         Args:
             enable_node_validation: If True, validates node IDs during build.
             node_validation_strict: If True, treats validation failures as errors.
             node_validator: Optional pre-configured UnifiedNodeValidator instance.
         """
+        # Pull defaults from global config if not provided
+        if enable_node_validation is None:
+            enable_node_validation = cfg("statements.enable_node_validation")
+        if node_validation_strict is None:
+            node_validation_strict = cfg("statements.node_validation_strict")
         self.enable_node_validation = enable_node_validation
         self.node_validation_strict = node_validation_strict
 
         # Initialize node_validator
         self.node_validator: Optional[UnifiedNodeValidator] = None
-        if enable_node_validation:
+        if self.enable_node_validation:
             if node_validator is not None:
                 self.node_validator = node_validator
             else:
-                # Create default validator
+                # Create default validator using strict flag
                 self.node_validator = UnifiedNodeValidator(
-                    strict_mode=node_validation_strict,
+                    strict_mode=self.node_validation_strict,
                     auto_standardize=True,
                     warn_on_non_standard=True,
                     enable_patterns=True,
@@ -32806,8 +32899,12 @@ class StatementStructureBuilder:
         Returns:
             AdjustmentFilter instance, set of tags, or None.
         """
+        # Use global default adjustment filter if none provided
         if filter_input is None:
-            return None
+            default_filter = cfg("statements.default_adjustment_filter")
+            if default_filter is None:
+                return None
+            filter_input = default_filter
         # Simple list of tags - convert to set
         elif isinstance(filter_input, list):
             return set(filter_input)
@@ -33262,9 +33359,8 @@ LineItem and CalculatedLineItem objects into nested groups.
 """
 
 from __future__ import annotations
-from typing import Any, Optional, Union, Sequence, cast
+from typing import Any, Optional, Union, Sequence
 
-from fin_statement_model.config import cfg_or_param
 from fin_statement_model.core.errors import StatementError
 from fin_statement_model.statements.structure.items import (
     StatementItem,
@@ -33274,6 +33370,7 @@ from fin_statement_model.statements.structure.items import (
     SubtotalLineItem,
 )
 
+"""Configuration helper will be imported inside methods to avoid circular imports."""
 
 __all__ = ["Section", "StatementStructure"]
 
@@ -33323,13 +33420,14 @@ class Section:
         if not name or not isinstance(name, str):
             raise StatementError(f"Invalid section name: {name} for ID: {id}")
 
-        # Use config default if not provided
-        display_scale_factor = cast(
-            float,
-            cfg_or_param("display.scale_factor", display_scale_factor),
+        # Use config default if not provided (import only when needed)
+        from fin_statement_model.config.helpers import cfg_or_param
+
+        display_scale_factor = cfg_or_param(
+            "display.scale_factor", display_scale_factor
         )
 
-        if display_scale_factor <= 0:
+        if display_scale_factor is None or display_scale_factor <= 0:
             raise StatementError(
                 f"display_scale_factor must be positive for section: {id}"
             )
@@ -33487,13 +33585,14 @@ class StatementStructure:
         if not name or not isinstance(name, str):
             raise StatementError(f"Invalid statement name: {name} for ID: {id}")
 
-        # Use config default if not provided
-        display_scale_factor = cast(
-            float,
-            cfg_or_param("display.scale_factor", display_scale_factor),
+        # Use config default if not provided (import only when needed)
+        from fin_statement_model.config.helpers import cfg_or_param
+
+        display_scale_factor = cfg_or_param(
+            "display.scale_factor", display_scale_factor
         )
 
-        if display_scale_factor <= 0:
+        if display_scale_factor is None or display_scale_factor <= 0:
             raise StatementError(
                 f"display_scale_factor must be positive for statement: {id}"
             )
@@ -33666,7 +33765,6 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any, Optional, cast
 
-from fin_statement_model.config import cfg_or_param
 from fin_statement_model.core.errors import StatementError
 
 __all__ = [
@@ -33845,13 +33943,14 @@ class LineItem(StatementItem):
                 f"Invalid sign convention {sign_convention} for item: {id}"
             )
 
-        # Use config default if not provided
-        display_scale_factor = cast(
-            float,
-            cfg_or_param("display.scale_factor", display_scale_factor),
+        # Use config default if not provided (import only when needed)
+        from fin_statement_model.config.helpers import cfg_or_param
+
+        display_scale_factor = cfg_or_param(
+            "display.scale_factor", display_scale_factor
         )
 
-        if display_scale_factor <= 0:
+        if display_scale_factor is None or display_scale_factor <= 0:
             raise StatementError(
                 f"display_scale_factor must be positive for item: {id}"
             )
@@ -34718,7 +34817,6 @@ from enum import Enum
 from typing import Generic, Optional, TypeVar, cast
 from collections.abc import Callable
 
-from fin_statement_model.config import cfg_or_param
 from fin_statement_model.statements.utilities.result_types import (
     Result,
     Failure,
@@ -34778,6 +34876,8 @@ class RetryConfig:
         """Validate configuration and set defaults."""
         # Use config default if not provided
         if self.max_attempts is None:
+            from fin_statement_model.config.helpers import cfg_or_param
+
             self.max_attempts = cfg_or_param("api.api_retry_count", None)
 
         if self.max_attempts < 1:
@@ -35075,6 +35175,8 @@ def retry_with_exponential_backoff(
         RetryResult with the final outcome
     """
     # Use config default if not provided
+    from fin_statement_model.config.helpers import cfg_or_param
+
     max_attempts = cfg_or_param("api.api_retry_count", max_attempts)
 
     config = RetryConfig(
@@ -35104,6 +35206,8 @@ def retry_on_specific_errors(
         RetryResult with the final outcome
     """
     # Use config default if not provided
+    from fin_statement_model.config.helpers import cfg_or_param
+
     max_attempts = cfg_or_param("api.api_retry_count", max_attempts)
 
     config = RetryConfig(

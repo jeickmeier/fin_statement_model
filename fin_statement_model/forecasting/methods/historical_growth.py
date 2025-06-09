@@ -144,9 +144,9 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
 
         growth_rates: list[float] = []
         for i in range(1, len(historical_values)):
-            prev = historical_values[i - 1]
-            if prev != 0:
-                growth_rates.append((historical_values[i] - prev) / prev)
+            previous_value = historical_values[i - 1]
+            if previous_value != 0:
+                growth_rates.append((historical_values[i] - previous_value) / previous_value)
 
         if not growth_rates:
             return 0.0
@@ -156,7 +156,8 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
         if agg_method == "median":
             try:
                 return float(np.median(growth_rates))
-            except Exception:
+            except (ValueError, TypeError) as e:
+                logger.warning(f"Failed to calculate median growth rate, falling back to mean: {e}")
                 return float(np.mean(growth_rates))
         # Default to mean
         return float(np.mean(growth_rates))

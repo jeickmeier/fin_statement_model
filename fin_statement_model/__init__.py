@@ -49,21 +49,6 @@ __all__ = [
     "update_config",
 ]
 
-# --------------------------------------------------------------------------
-# Optional Extensions (via entry points / importlib.metadata)
-# --------------------------------------------------------------------------
-# Extensions are optional modules that add functionality without modifying
-# the core library. They might depend on heavy libraries (e.g., LLMs,
-# ML frameworks) and should be lazy-loaded.
-# Example entry point group: 'fin_statement_model.extensions.reporting'
-# Expected interface: TBD (e.g., a class with specific methods)
-# Note: Avoid hard imports from extensions into core/statements/io.
-# Goal: Keep core library lean, allow users to install extras like:
-# pip install fin-statement-model[openai]
-# pip install fin-statement-model[reporting-tools]
-# --------------------------------------------------------------------------
-
-
 # Core API Exports (ensure essential classes/functions are accessible)
 # Example:
 # from .core.graph import Graph

@@ -1,7 +1,5 @@
 """Core adjustment models and filters."""
 
-# from .manager import AdjustmentManager # Remove unused import
-
 from .models import (
     Adjustment,
     AdjustmentFilter,

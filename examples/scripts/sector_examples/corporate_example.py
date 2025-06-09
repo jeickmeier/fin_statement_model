@@ -43,8 +43,9 @@ logger = logging.getLogger(__name__)
 # --- 1. Setup ---
 
 # Hardcoded paths (as modified by user)
-md_output_path = "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/output/test_statement.md"
-TEST_CONFIG_PATH = "/Users/joneickmeier/projects/fin_statement_model/examples/scripts/configs/test_statement.yaml"
+SCRIPT_DIR = Path(__file__).parent
+md_output_path = SCRIPT_DIR / "output" / "test_statement.md"
+TEST_CONFIG_PATH = SCRIPT_DIR.parent / "configs" / "test_statement.yaml"
 
 # --- 2. Sample Data ---
 

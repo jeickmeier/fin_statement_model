@@ -394,7 +394,9 @@ class StandardNodeRegistry:
         nodes_loaded = self._load_nodes_from_data(
             data, str(yaml_path), overwrite_existing=True
         )
-
+        if nodes_loaded:
+            self._initialized = True
+            self._loaded_from = str(yaml_path)
         logger.debug(f"Loaded {nodes_loaded} nodes from {yaml_path}")
         return nodes_loaded
 

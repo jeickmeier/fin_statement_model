@@ -230,6 +230,12 @@ class StatementForecaster:
                     cfg("forecasting.allow_negative_forecasts"),
                 )
                 if not allow_neg and val < 0:
+                    # Ensure bad_value is non-negative when clamping negative values
+                    if bad_value < 0:
+                        logger.warning(
+                            f"bad_forecast_value ({bad_value}) is negative but allow_negative_forecasts is False. Using 0.0 instead."
+                        )
+                        bad_value = 0.0
                     logger.warning(
                         f"Negative forecast {val} for {node.name}@{period}; clamping to {bad_value}"
                     )
@@ -316,9 +322,13 @@ class StatementForecaster:
 
         # Set default config if not provided, using global forecasting defaults
         if forecast_config is None:
-            default_growth = cfg("forecasting.default_growth_rate")
             default_method = cfg("forecasting.default_method")
-            forecast_config = {"method": default_method, "config": default_growth}
+            # Use method-appropriate default config
+            if default_method == "simple":
+                forecast_config = {"method": default_method, "config": cfg("forecasting.default_growth_rate")}
+            else:
+                # For other methods, use empty config and let the method handle defaults
+                forecast_config = {"method": default_method, "config": {}}
 
         # Validate and create ForecastConfig
         validated_config = ForecastValidator.validate_forecast_config(forecast_config)

@@ -69,15 +69,19 @@ def export_statements(
 
         Returns None if the file cannot be parsed or the root element is not a mapping.
         """
+        # Security: Check file size to prevent memory exhaustion
+        max_size = 10 * 1024 * 1024  # 10MB limit
+        if file_path.stat().st_size > max_size:
+            logger.warning("Config file '%s' exceeds size limit (%d bytes) - skipping", file_path, max_size)
+            return None
+
         try:
             if file_path.suffix.lower() == ".json":
                 import json
-
                 data = json.loads(file_path.read_text(encoding="utf-8"))
             else:
                 # Fallback to YAML for .yaml / .yml extensions (PyYAML is a dependency)
                 import yaml
-
                 data = yaml.safe_load(file_path.read_text(encoding="utf-8"))
             if not isinstance(data, dict):
                 logger.warning(
@@ -85,7 +89,10 @@ def export_statements(
                 )
                 return None
             return data  # type: ignore[return-value]
-        except Exception as exc:  # pragma: no cover – log and continue
+        except (json.JSONDecodeError, yaml.YAMLError) as exc:
+            logger.warning("Failed to parse statement config file '%s': %s", file_path, exc)
+            return None
+        except Exception as exc:
             logger.exception(
                 "Failed to parse statement config file '%s': %s", file_path, exc
             )

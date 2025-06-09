@@ -1195,7 +1195,3 @@ class ValidationResultCollector:
                 report_lines.append(f"  ... and {len(self.warnings) - 5} more warnings")
 
         return "\n".join(report_lines)
-
-
-# Provide backward compatibility for legacy mixin name
-# ConfigurableReaderMixin = ConfigurationMixin

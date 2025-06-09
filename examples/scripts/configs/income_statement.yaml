@@ -1,0 +1,31 @@
+id: income_statement
+name: Income Statement
+description: Reports financial performance over a specific period.
+sections:
+- id: revenue_section
+  name: Revenue
+  items:
+  - id: revenue
+    name: Total Revenue
+    type: line_item
+    node_id: Revenue
+    sign_convention: 1
+- id: cost_of_goods_sold
+  name: Cost of Goods Sold
+  items:
+  - id: cogs
+    name: Cost of Goods Sold
+    type: line_item
+    node_id: COGS
+    sign_convention: -1
+- id: gross_profit_section
+  name: Gross Profit
+  items:
+  - id: gross_profit
+    name: Gross Profit
+    type: metric
+    metric_id: gross_profit
+    inputs:
+      revenue: revenue
+      cost_of_goods_sold: cogs
+    sign_convention: 1

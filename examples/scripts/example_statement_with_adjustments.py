@@ -21,6 +21,7 @@ from fin_statement_model.core.adjustments.models import AdjustmentType
 from fin_statement_model.io import read_data
 from fin_statement_model.statements import create_statement_dataframe
 from fin_statement_model.forecasting.forecaster import StatementForecaster
+from fin_statement_model.statements.orchestration import export_statements_to_excel
 
 # Configure logging
 logging.basicConfig(
@@ -201,16 +202,18 @@ try:
     logger.info("\n--- Statement DataFrame with Adjustments ---")
     logger.info(statement_df.to_string(index=False))
 
-    # Export the statement to Excel with formatting
-    # write_data(
-    #     format_type="excel",
-    #     graph=graph,
-    #     target=str(MD_OUTPUT_PATH),
-    #     historical_periods=historical_periods,
-    #     forecast_periods=forecast_periods,
-    #     adjustment_filter=None,
-    #     forecast_configs=forecast_configs,
-    # )
+    # Export the statement to Excel using the modern helper function
+    export_statements_to_excel(
+        graph=graph,
+        config_path_or_dir=raw_configs,
+        output_dir=str(MD_OUTPUT_PATH.parent),
+        format_kwargs={
+            "should_apply_signs": True,
+            "number_format": ",.1f",
+            "adjustment_filter": None,
+            "add_is_adjusted_column": True,
+        },
+    )
 except FinancialModelError as e:
     logger.error(f"Error generating statement dataframe: {e}", exc_info=True)
     sys.exit(1)
@@ -219,25 +222,5 @@ except FileNotFoundError:
         f"Statement configuration file not found: {CONFIG_PATH}", exc_info=True
     )
     sys.exit(1)
-
-# --- 8. Write Output Data ---
-logger.info(f"\nWriting output markdown to: {MD_OUTPUT_PATH}")
-try:
-    # Note: The markdown writer currently has schema issues with statement_config_path
-    # For now, we'll skip this part or use a different approach
-    logger.info(
-        "Markdown output writing is currently disabled due to writer configuration issues."
-    )
-    # write_data(
-    #     format_type="markdown",
-    #     graph=graph,
-    #     target=str(MD_OUTPUT_PATH),
-    #     historical_periods=historical_periods,
-    #     forecast_periods=forecast_periods,
-    #     adjustment_filter=None,
-    #     forecast_configs=forecast_configs,
-    # )
-except Exception as e:
-    logger.error(f"Error writing markdown output: {e}", exc_info=True)
 
 logger.info("\nExample complete.")

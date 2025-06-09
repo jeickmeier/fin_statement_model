@@ -50,6 +50,7 @@ def load_build_register_statements(
     # NEW: Allow `raw_configs` to be a file path or directory path for backward compatibility
     #       Convert such inputs into the expected {statement_id: config_dict} mapping.
     if isinstance(raw_configs, (str, Path)):
+
         def _parse_cfg_file(path: Path) -> dict[str, Any] | None:
             """Parse a YAML or JSON configuration file into a dict mapping."""
             try:
@@ -73,7 +74,9 @@ def load_build_register_statements(
 
         path_obj = Path(raw_configs)
         if not path_obj.exists():
-            raise FileNotFoundError(f"Statement config path '{path_obj}' does not exist.")
+            raise FileNotFoundError(
+                f"Statement config path '{path_obj}' does not exist."
+            )
 
         configs_dict: dict[str, dict[str, Any]] = {}
         if path_obj.is_dir():

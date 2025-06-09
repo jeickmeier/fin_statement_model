@@ -110,10 +110,13 @@ class MarkdownWriter(DataWriter):
 
                     # Use the *first* statement by default – users can supply a
                     # pre-built structure via 'statement_structure' for more
-                    # complex scenarios.
+                    # complex scenarios or when specific statement selection is needed.
+                    # TODO: Consider adding a 'statement_id' parameter to select which statement to use
                     statement_structure = registry.get(loaded_ids[0])
                 except Exception as build_err:
-                    logger.exception("Failed to build statement structure from raw_configs")
+                    logger.exception(
+                        "Failed to build statement structure from raw_configs"
+                    )
                     raise WriteError(
                         message="Error building statement structure from raw_configs",
                         target=target,
@@ -123,7 +126,9 @@ class MarkdownWriter(DataWriter):
 
             # If still None, we cannot proceed.
             if statement_structure is None:
-                raise WriteError("Must provide 'statement_structure' argument or 'raw_configs'.")
+                raise WriteError(
+                    "Must provide 'statement_structure' argument or 'raw_configs'."
+                )
 
             filtered_kwargs = {
                 k: v

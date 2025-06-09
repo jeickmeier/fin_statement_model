@@ -84,8 +84,10 @@ class CsvReader(
         item_col = kwargs.get("item_col", self.cfg.item_col)
         period_col = kwargs.get("period_col", self.cfg.period_col)
         value_col = kwargs.get("value_col", self.cfg.value_col)
-        pandas_read_csv_kwargs = kwargs.get(
-            "pandas_read_csv_kwargs", self.cfg.pandas_read_csv_kwargs
+        pandas_read_csv_kwargs = (
+            kwargs.get("pandas_read_csv_kwargs")
+            or self.cfg.pandas_read_csv_kwargs
+            or {}
         )
 
         if not all([item_col, period_col, value_col]):

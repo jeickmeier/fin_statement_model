@@ -119,6 +119,14 @@ class PeriodManager:
         # Determine strategy for selecting base period
         strategy = cfg("forecasting.base_period_strategy")
 
+        # Validate strategy
+        valid_strategies = {"preferred_then_most_recent", "most_recent", "last_historical"}
+        if strategy not in valid_strategies:
+            logger.warning(
+                f"Unknown base period strategy '{strategy}', falling back to 'preferred_then_most_recent'"
+            )
+            strategy = "preferred_then_most_recent"
+
         # 1. preferred_then_most_recent: check preferred first
         if strategy == "preferred_then_most_recent" and preferred_period:
             if preferred_period in historical_periods and hasattr(node, "values"):
@@ -140,11 +148,11 @@ class PeriodManager:
         if strategy == "last_historical":
             return historical_periods[-1]
 
-        # Fallback: use last historical period
+        # Final fallback: use last historical period
         base_period = historical_periods[-1]
         logger.info(
             f"Using last historical period as base for {node.name}: {base_period} "
-            f"(node may lack values)"
+            "(node may lack values)"
         )
         return base_period
 

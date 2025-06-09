@@ -343,13 +343,17 @@ class ConfigManager:
                             "FMP_API_KEY" in os.environ
                             and "FSM_API_FMP_API_KEY" not in os.environ
                         ):
-                            os.environ["FSM_API_FMP_API_KEY"] = os.environ["FMP_API_KEY"]
+                            os.environ["FSM_API_FMP_API_KEY"] = os.environ[
+                                "FMP_API_KEY"
+                            ]
                             logger.debug(
                                 "Mapped FMP_API_KEY → FSM_API_FMP_API_KEY for config integration"
                             )
                         break  # Stop searching after the first .env file
                     except Exception as err:  # noqa: BLE001  (broad but safe here)
-                        logger.warning("Failed to load .env file %s: %s", candidate, err)
+                        logger.warning(
+                            "Failed to load .env file %s: %s", candidate, err
+                        )
                 else:
                     # Ascend to parent directory, stop at filesystem root
                     if current.parent == current:
