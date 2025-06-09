@@ -75,10 +75,60 @@ class MarkdownWriter(DataWriter):
 
         try:
             statement_structure = kwargs.get("statement_structure")
+
+            # Fallback: build StatementStructure on-the-fly from raw_configs
+            if statement_structure is None and "raw_configs" in kwargs:
+                raw_configs = kwargs["raw_configs"]
+                try:
+                    from fin_statement_model.statements.structure.builder import (
+                        StatementStructureBuilder,
+                    )
+                    from fin_statement_model.statements.orchestration.loader import (
+                        load_build_register_statements,
+                    )
+                    from fin_statement_model.statements.registry import (
+                        StatementRegistry,
+                    )
+
+                    # Build and register statement(s)
+                    registry = StatementRegistry()
+                    builder = StatementStructureBuilder(
+                        enable_node_validation=False, node_validation_strict=False
+                    )
+                    loaded_ids = load_build_register_statements(
+                        raw_configs,
+                        registry,
+                        builder,
+                        enable_node_validation=False,
+                        node_validation_strict=False,
+                    )
+
+                    if not loaded_ids:
+                        raise WriteError(
+                            "No valid statements could be built from raw_configs."
+                        )
+
+                    # Use the *first* statement by default – users can supply a
+                    # pre-built structure via 'statement_structure' for more
+                    # complex scenarios.
+                    statement_structure = registry.get(loaded_ids[0])
+                except Exception as build_err:
+                    logger.exception("Failed to build statement structure from raw_configs")
+                    raise WriteError(
+                        message="Error building statement structure from raw_configs",
+                        target=target,
+                        writer_type="markdown",
+                        original_error=build_err,
+                    ) from build_err
+
+            # If still None, we cannot proceed.
             if statement_structure is None:
-                raise WriteError("Must provide 'statement_structure' argument.")
+                raise WriteError("Must provide 'statement_structure' argument or 'raw_configs'.")
+
             filtered_kwargs = {
-                k: v for k, v in kwargs.items() if k != "statement_structure"
+                k: v
+                for k, v in kwargs.items()
+                if k not in ("statement_structure", "raw_configs")
             }
             return self._write_with_structure(
                 graph, statement_structure, **filtered_kwargs

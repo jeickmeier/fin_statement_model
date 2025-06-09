@@ -436,6 +436,67 @@ sections:
         ),  # Negative value
     )
 
+    # ------------------------------------------------------------------
+    # Additional nodes required by 'test_statement.yaml' configuration
+    # ------------------------------------------------------------------
+
+    # Helper to clone data from an existing node if present, otherwise generate
+    def _clone_or_generate(
+        source_id: str,
+        target_id: str,
+        fallback_start: float,
+        growth_rate: float,
+    ) -> None:
+        """Clone data from `source_id` node to a new `target_id` or generate if missing.
+
+        Args:
+            source_id: Existing node ID to clone from.
+            target_id: New node ID to create/overwrite.
+            fallback_start: Starting value if source node is not available.
+            growth_rate: Growth rate to apply when generating fallback series.
+        """
+
+        if graph.has_node(source_id):
+            src_node = graph.get_node(source_id)
+            data_map: dict[str, float] = {
+                period: src_node.get_value(period) for period in all_periods_list
+            }
+        else:
+            data_map = generate_data(target_id, fallback_start, growth_rate)
+
+        graph.add_financial_statement_item(target_id, data_map)
+
+    # Map of (source_id, target_id, fallback_start, growth_rate)
+    mapping_specs = [
+        ("Revenue", "revenue", 1000.0, 0.10),
+        ("COGS", "cost_of_goods_sold", -400.0, 0.08),
+        ("R&D", "operating_expenses", -300.0, 0.05),
+        ("Interest Expense", "interest_expense", -50.0, 0.05),
+        ("Taxes", "income_tax", -75.0, 0.05),
+    ]
+
+    for src, tgt, start_val, gr in mapping_specs:
+        _clone_or_generate(src, tgt, start_val, gr)
+
+    # Balance-sheet-specific nodes (if not already present without the 'core.' prefix)
+    bs_specs = {
+        "cash_and_equivalents": (50.0, 0.10),
+        "accounts_receivable": (100.0, 0.12),
+        "property_plant_equipment": (300.0, 0.05),
+        "accounts_payable": (80.0, 0.08),
+        "total_debt": (150.0, 0.02),
+        "common_stock": (100.0, 0.0),
+        "prior_retained_earnings": (100.0, 0.0),
+        "dividends": (-10.0, 0.05),
+    }
+
+    for node_id, (start_val, gr) in bs_specs.items():
+        if not graph.has_node(node_id):
+            graph.add_financial_statement_item(
+                node_id,
+                generate_data(node_id, start_val, gr),
+            )
+
     # Use the high-level export function
     # This will internally call create_statement_dataframe for all configs in CONFIG_DIR
     # and write each resulting DataFrame to a separate sheet in the Excel file.

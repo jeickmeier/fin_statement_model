@@ -41,9 +41,8 @@ class DictReader(DataReader):
         Args:
             source: Dictionary mapping node names to period-value dictionaries.
                     Format: {node_name: {period: value, ...}, ...}
-            **kwargs: Read-time keyword arguments:
-                periods (list[str], optional): Explicit list of periods for the new graph.
-                    If None, inferred from data keys.
+            **kwargs: Optional runtime argument overriding config defaults:
+                periods (list[str], optional): List of periods to include. Overrides `cfg.periods`.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -105,8 +104,8 @@ class DictReader(DataReader):
                 original_error=e,
             ) from e
 
-        # Determine graph periods
-        graph_periods = kwargs.get("periods")
+        # Determine graph periods: runtime kwargs override config defaults
+        graph_periods = kwargs.get("periods", self.cfg.periods if self.cfg else None)
         if graph_periods is None:
             graph_periods = sorted(list(all_periods))
             logger.debug(f"Inferred graph periods from data: {graph_periods}")

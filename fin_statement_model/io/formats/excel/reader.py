@@ -54,13 +54,11 @@ class ExcelReader(
 
         Args:
             source (str): Path to the Excel file.
-            **kwargs: Optional runtime keyword arguments:
-                statement_type (str, optional): Type of statement ('income_statement', 'balance_sheet', 'cash_flow').
-                    Used to select a scope within the `mapping_config` provided during initialization.
-                header_row (int, optional): 1-based index for pandas header reading.
-                    Defaults to `self.cfg.periods_row` if not provided.
-                nrows (int, optional): Number of rows to read from the sheet.
-                skiprows (int, optional): Number of rows to skip at the beginning.
+            **kwargs: Optional runtime keyword arguments overriding configured defaults:
+                statement_type (str): Type of statement ('income_statement', 'balance_sheet', 'cash_flow').
+                header_row (int): 1-based index for pandas header reading.
+                nrows (int): Number of rows to read from the sheet.
+                skiprows (int): Number of rows to skip at the beginning.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -87,11 +85,11 @@ class ExcelReader(
             "items_col", value_type=int, validator=lambda x: x >= 1
         )
 
-        # Runtime options from kwargs
-        statement_type = kwargs.get("statement_type")
-        header_row = kwargs.get("header_row", periods_row)
-        nrows = kwargs.get("nrows")
-        skiprows = kwargs.get("skiprows")
+        # Runtime options: kwargs override config defaults
+        statement_type = kwargs.get("statement_type", self.cfg.statement_type)
+        header_row = kwargs.get("header_row", self.cfg.header_row or periods_row)
+        nrows = kwargs.get("nrows", self.cfg.nrows)
+        skiprows = kwargs.get("skiprows", self.cfg.skiprows)
 
         # Get mapping
         mapping = self._get_mapping(statement_type)

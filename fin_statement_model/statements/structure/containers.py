@@ -5,9 +5,8 @@ LineItem and CalculatedLineItem objects into nested groups.
 """
 
 from __future__ import annotations
-from typing import Any, Optional, Union, Sequence, cast
+from typing import Any, Optional, Union, Sequence
 
-from fin_statement_model.config import cfg_or_param
 from fin_statement_model.core.errors import StatementError
 from fin_statement_model.statements.structure.items import (
     StatementItem,
@@ -17,6 +16,7 @@ from fin_statement_model.statements.structure.items import (
     SubtotalLineItem,
 )
 
+"""Configuration helper will be imported inside methods to avoid circular imports."""
 
 __all__ = ["Section", "StatementStructure"]
 
@@ -66,13 +66,14 @@ class Section:
         if not name or not isinstance(name, str):
             raise StatementError(f"Invalid section name: {name} for ID: {id}")
 
-        # Use config default if not provided
-        display_scale_factor = cast(
-            float,
-            cfg_or_param("display.scale_factor", display_scale_factor),
+        # Use config default if not provided (import only when needed)
+        from fin_statement_model.config.helpers import cfg_or_param
+
+        display_scale_factor = cfg_or_param(
+            "display.scale_factor", display_scale_factor
         )
 
-        if display_scale_factor <= 0:
+        if display_scale_factor is None or display_scale_factor <= 0:
             raise StatementError(
                 f"display_scale_factor must be positive for section: {id}"
             )
@@ -230,13 +231,14 @@ class StatementStructure:
         if not name or not isinstance(name, str):
             raise StatementError(f"Invalid statement name: {name} for ID: {id}")
 
-        # Use config default if not provided
-        display_scale_factor = cast(
-            float,
-            cfg_or_param("display.scale_factor", display_scale_factor),
+        # Use config default if not provided (import only when needed)
+        from fin_statement_model.config.helpers import cfg_or_param
+
+        display_scale_factor = cfg_or_param(
+            "display.scale_factor", display_scale_factor
         )
 
-        if display_scale_factor <= 0:
+        if display_scale_factor is None or display_scale_factor <= 0:
             raise StatementError(
                 f"display_scale_factor must be positive for statement: {id}"
             )

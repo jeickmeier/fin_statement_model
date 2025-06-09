@@ -13,6 +13,7 @@ It includes:
 import sys
 import logging
 from pathlib import Path
+import yaml
 
 from fin_statement_model.core.errors import FinancialModelError
 from fin_statement_model.core.adjustments.models import AdjustmentType
@@ -80,19 +81,18 @@ try:
         "Building statement structure and populating graph with calculation nodes..."
     )
 
-    # This will:
-    # 1. Load and validate the statement configuration
-    # 2. Build the statement structure
-    # 3. Populate the graph with calculation nodes (like gross_profit)
-    # 4. Generate a dataframe (which we'll use later after adjustments)
-    initial_df = create_statement_dataframe(
+    # Load statement config into memory
+    raw_config = yaml.safe_load(CONFIG_PATH.read_text(encoding="utf-8"))
+    raw_configs = {raw_config.get("id", "statement"): raw_config}
+    initial_df_map = create_statement_dataframe(
         graph=graph,
-        config_path_or_dir=str(CONFIG_PATH),
+        raw_configs=raw_configs,
         format_kwargs={
             "should_apply_signs": True,
             "number_format": ",.1f",
         },
     )
+    initial_df = initial_df_map.get(list(raw_configs.keys())[0])
 
     logger.info("Statement structure built and graph populated with calculation nodes.")
 
@@ -183,17 +183,18 @@ except FinancialModelError as e:
 logger.info("\n--- Generating Statement with Adjustments Applied ---")
 
 try:
-    # Regenerate the statement dataframe with adjustments applied
-    statement_df = create_statement_dataframe(
+    # Regenerate with adjustments using same raw_configs
+    statement_df_map = create_statement_dataframe(
         graph=graph,
-        config_path_or_dir=str(CONFIG_PATH),
+        raw_configs=raw_configs,
         format_kwargs={
             "should_apply_signs": True,
             "number_format": ",.1f",
-            "adjustment_filter": None,  # Apply default scenario adjustments
-            "add_is_adjusted_column": True,  # Show which values were adjusted
+            "adjustment_filter": None,
+            "add_is_adjusted_column": True,
         },
     )
+    statement_df = statement_df_map.get(list(raw_configs.keys())[0])
 
     logger.info("Statement DataFrame generated successfully.")
     # Display the results

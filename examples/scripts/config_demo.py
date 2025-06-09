@@ -225,6 +225,7 @@ def demo_config_in_action() -> None:
     # Try to add a node with non-standard name
     from fin_statement_model.io.validation import UnifiedNodeValidator
 
+    # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
     validator = UnifiedNodeValidator(
         strict_mode=cfg("validation.strict_mode"),
         warn_on_non_standard=cfg("validation.warn_on_non_standard"),

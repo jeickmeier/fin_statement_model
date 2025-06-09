@@ -8,6 +8,7 @@ import logging
 from typing import Any, Optional
 
 from fin_statement_model.core.nodes import Node
+from fin_statement_model.config.helpers import cfg
 
 logger = logging.getLogger(__name__)
 
@@ -115,34 +116,31 @@ class PeriodManager:
         if not historical_periods:
             raise ValueError("No historical periods provided")
 
-        # If preferred period is specified and valid, use it
-        if (
-            preferred_period
-            and preferred_period in historical_periods
-            and hasattr(node, "values")
-            and isinstance(node.values, dict)
-            and preferred_period in node.values
-        ):
-            logger.debug(
-                f"Using preferred base period {preferred_period} for {node.name}"
-            )
-            return preferred_period
+        # Determine strategy for selecting base period
+        strategy = cfg("forecasting.base_period_strategy")
 
-        # Try to find the most recent period with data for this node
-        if hasattr(node, "values") and isinstance(node.values, dict):
-            # Get periods that have values for this node
-            available_periods = [p for p in historical_periods if p in node.values]
+        # 1. preferred_then_most_recent: check preferred first
+        if strategy == "preferred_then_most_recent" and preferred_period:
+            if preferred_period in historical_periods and hasattr(node, "values"):
+                values = getattr(node, "values", {})
+                if isinstance(values, dict) and preferred_period in values:
+                    return preferred_period
 
-            if available_periods:
-                # Use the most recent available period
-                # Assuming periods are in chronological order
-                base_period = available_periods[-1]
-                logger.debug(
-                    f"Using most recent period with data as base for {node.name}: {base_period}"
-                )
-                return base_period
+        # 2. most_recent: pick most recent available data
+        if strategy in ("preferred_then_most_recent", "most_recent"):
+            if hasattr(node, "values") and isinstance(
+                getattr(node, "values", None), dict
+            ):
+                values_dict = node.values  # type: ignore[attr-defined]
+                available_periods = [p for p in historical_periods if p in values_dict]
+                if available_periods:
+                    return available_periods[-1]
 
-        # Fallback: use the last historical period
+        # 3. last_historical: always use last in historical_periods
+        if strategy == "last_historical":
+            return historical_periods[-1]
+
+        # Fallback: use last historical period
         base_period = historical_periods[-1]
         logger.info(
             f"Using last historical period as base for {node.name}: {base_period} "

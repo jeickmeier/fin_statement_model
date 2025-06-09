@@ -17,6 +17,8 @@ from .core import (
     write_data,
 )
 from .exceptions import IOError, ReadError, WriteError, FormatNotSupportedError
+from . import formats  # noqa: F401
+from . import specialized  # noqa: F401
 
 # Import specialized functions for convenience
 from .specialized import (
@@ -25,25 +27,12 @@ from .specialized import (
     export_adjustments_to_excel,
     list_available_builtin_configs,
     read_builtin_statement_config,
-    read_statement_config_from_path,
-    read_statement_configs_from_directory,
     write_statement_to_excel,
     write_statement_to_json,
 )
 
 # Configure logging for the io package
 logger = logging.getLogger(__name__)
-
-# --- Trigger Registration ---
-# Import format modules to ensure their @register decorators run.
-# This makes them available in the registry when the io package is imported.
-try:
-    from . import formats  # noqa: F401
-    from . import specialized  # noqa: F401
-except ImportError:
-    # This might happen during setup or if directories are missing
-    logger.warning("Could not automatically import formats/specialized modules")
-
 
 # --- Public API ---
 
@@ -69,8 +58,6 @@ __all__ = [
     "read_builtin_statement_config",
     # Facade functions
     "read_data",
-    "read_statement_config_from_path",
-    "read_statement_configs_from_directory",
     "write_data",
     "write_statement_to_excel",
     "write_statement_to_json",

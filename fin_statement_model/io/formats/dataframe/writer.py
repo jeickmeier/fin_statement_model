@@ -43,7 +43,9 @@ class DataFrameWriter(DataFrameBasedWriter, ConfigurationMixin):
         Args:
             graph (Graph): The Graph instance to export.
             target (Any): Ignored by this writer; the DataFrame is returned directly.
-            **kwargs: Currently unused by this method.
+            **kwargs: Optional runtime overrides of configured defaults:
+                recalculate (bool): Whether to recalculate graph before export.
+                include_nodes (list[str]): List of node names to include in export.
 
         Returns:
             pd.DataFrame: DataFrame with node names as index and periods as columns.
@@ -51,9 +53,13 @@ class DataFrameWriter(DataFrameBasedWriter, ConfigurationMixin):
         Raises:
             WriteError: If an error occurs during conversion.
         """
-        # Get configuration values using the mixin
-        recalculate = self.get_config_value("recalculate", True)
-        include_nodes = self.get_config_value("include_nodes")
+        # Runtime overrides: kwargs override configured defaults
+        recalculate = kwargs.get(
+            "recalculate", self.cfg.recalculate if self.cfg else True
+        )
+        include_nodes = kwargs.get(
+            "include_nodes", self.cfg.include_nodes if self.cfg else None
+        )
 
         logger.info("Exporting graph to DataFrame format.")
 

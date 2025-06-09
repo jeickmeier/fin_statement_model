@@ -14,7 +14,6 @@ import logging
 import re
 from dataclasses import dataclass, field
 
-from fin_statement_model.config import cfg
 from fin_statement_model.statements.structure import StatementStructure
 from fin_statement_model.statements.structure import (
     Section,
@@ -180,6 +179,8 @@ class StatementFormatter:
 
         # Check config if path provided
         if config_path:
+            from fin_statement_model.config.helpers import cfg
+
             return cfg(config_path, default_value)
 
         # Return default value
@@ -370,12 +371,13 @@ class StatementFormatter:
         if pd.isna(value) or value == 0:
             return ""
 
+        # For contra items, we typically want to show the absolute value with special formatting
+        # regardless of the underlying sign, since sign_convention handles calculation logic
+        from fin_statement_model.config.helpers import cfg
+
         style = display_style or self.default_formats.get(
             "contra_display_style", cfg("display.contra_display_style", "parentheses")
         )
-
-        # For contra items, we typically want to show the absolute value with special formatting
-        # regardless of the underlying sign, since sign_convention handles calculation logic
         abs_value = abs(value)
 
         # Use dictionary for style formatting
@@ -418,7 +420,7 @@ class StatementFormatter:
         """Prepare formatting context with config defaults.
 
         Args:
-            **kwargs: All formatting parameters passed to generate_dataframe
+            **kwargs: All formatting parameters passed to generate_dataframe (overrides config)
 
         Returns:
             FormattingContext: Configured context object
@@ -429,22 +431,43 @@ class StatementFormatter:
 
         # Create context with provided kwargs
         context = FormattingContext(
-            should_apply_signs=kwargs.get("should_apply_signs", True),
-            include_empty_items=kwargs.get("include_empty_items", False),
+            should_apply_signs=kwargs.get(
+                "should_apply_signs", config.display.apply_sign_conventions
+            ),
+            include_empty_items=kwargs.get(
+                "include_empty_items", config.display.include_empty_items
+            ),
             number_format=kwargs.get("number_format"),
-            include_metadata_cols=kwargs.get("include_metadata_cols", False),
+            include_metadata_cols=kwargs.get(
+                "include_metadata_cols", config.display.include_metadata_cols
+            ),
             adjustment_filter=kwargs.get("adjustment_filter"),
-            add_is_adjusted_column=kwargs.get("add_is_adjusted_column", False),
-            include_units_column=kwargs.get("include_units_column", False),
-            include_css_classes=kwargs.get("include_css_classes", False),
-            include_notes_column=kwargs.get("include_notes_column", False),
-            apply_item_scaling=kwargs.get("apply_item_scaling", True),
-            apply_item_formatting=kwargs.get("apply_item_formatting", True),
+            add_is_adjusted_column=kwargs.get(
+                "add_is_adjusted_column", config.display.add_is_adjusted_column
+            ),
+            include_units_column=kwargs.get(
+                "include_units_column", config.display.include_units_column
+            ),
+            include_css_classes=kwargs.get(
+                "include_css_classes", config.display.include_css_classes
+            ),
+            include_notes_column=kwargs.get(
+                "include_notes_column", config.display.include_notes_column
+            ),
+            apply_item_scaling=kwargs.get(
+                "apply_item_scaling", config.display.apply_item_scaling
+            ),
+            apply_item_formatting=kwargs.get(
+                "apply_item_formatting", config.display.apply_item_formatting
+            ),
             respect_hide_flags=kwargs.get("respect_hide_flags"),
             contra_display_style=kwargs.get("contra_display_style"),
-            apply_contra_formatting=kwargs.get("apply_contra_formatting", True),
+            apply_contra_formatting=kwargs.get(
+                "apply_contra_formatting", config.display.apply_contra_formatting
+            ),
             add_contra_indicator_column=kwargs.get(
-                "add_contra_indicator_column", False
+                "add_contra_indicator_column",
+                config.display.add_contra_indicator_column,
             ),
         )
 
@@ -1065,22 +1088,22 @@ class StatementFormatter:
         should_apply_signs: Optional[bool] = None,
         include_empty_items: Optional[bool] = None,
         number_format: Optional[str] = None,
-        include_metadata_cols: bool = False,
+        include_metadata_cols: Optional[bool] = None,
         # --- Adjustment Integration ---
         adjustment_filter: AdjustmentFilterInput = None,
-        add_is_adjusted_column: bool = False,
+        add_is_adjusted_column: Optional[bool] = None,
         # --- End Adjustment Integration ---
         # --- Enhanced Display Control ---
-        include_units_column: bool = False,
-        include_css_classes: bool = False,
-        include_notes_column: bool = False,
-        apply_item_scaling: bool = True,
-        apply_item_formatting: bool = True,
+        include_units_column: Optional[bool] = None,
+        include_css_classes: Optional[bool] = None,
+        include_notes_column: Optional[bool] = None,
+        apply_item_scaling: Optional[bool] = None,
+        apply_item_formatting: Optional[bool] = None,
         respect_hide_flags: Optional[bool] = None,
         # --- Contra Item Support ---
         contra_display_style: Optional[str] = None,
-        apply_contra_formatting: bool = True,
-        add_contra_indicator_column: bool = False,
+        apply_contra_formatting: Optional[bool] = None,
+        add_contra_indicator_column: Optional[bool] = None,
         # --- End Contra Item Support ---
         # --- End Enhanced Display Control ---
         **kwargs: Any,
@@ -1184,25 +1207,45 @@ class StatementFormatter:
     def format_html(
         self,
         graph: Graph,
-        should_apply_signs: bool = True,  # Use consistent arg name
-        include_empty_items: bool = False,
+        should_apply_signs: Optional[bool] = None,
+        include_empty_items: Optional[bool] = None,
         css_styles: Optional[dict[str, str]] = None,
-        use_item_css_classes: bool = True,
+        use_item_css_classes: Optional[bool] = None,
         **kwargs: Any,
     ) -> str:
         """Format the statement data as HTML with enhanced styling support.
 
         Args:
             graph: The core.graph.Graph instance containing the data.
-            should_apply_signs: Whether to apply sign conventions.
-            include_empty_items: Whether to include items with no data.
+            should_apply_signs: Whether to apply sign conventions (override config).
+            include_empty_items: Whether to include items with no data (override config).
             css_styles: Optional dict of CSS styles for the HTML.
-            use_item_css_classes: Whether to use item-specific CSS classes.
+            use_item_css_classes: Whether to use item-specific CSS classes (override config).
             **kwargs: Additional arguments passed to generate_dataframe.
 
         Returns:
             str: HTML string representing the statement with enhanced styling.
         """
+        # Load display config defaults
+        from fin_statement_model import get_config
+
+        config = get_config()
+        # Determine final values (kwargs override config)
+        should_apply_signs = (
+            should_apply_signs
+            if should_apply_signs is not None
+            else config.display.apply_sign_conventions
+        )
+        include_empty_items = (
+            include_empty_items
+            if include_empty_items is not None
+            else config.display.include_empty_items
+        )
+        use_item_css_classes = (
+            use_item_css_classes
+            if use_item_css_classes is not None
+            else config.display.include_css_classes
+        )
         # Enable CSS classes if requested
         if use_item_css_classes:
             kwargs["include_css_classes"] = True

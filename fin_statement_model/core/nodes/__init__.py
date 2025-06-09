@@ -61,7 +61,7 @@ from .standard_registry import standard_node_registry
 
 logger = logging.getLogger(__name__)
 
-# Initialize standard nodes using the registry's built-in fallback mechanism
+# Initialize standard nodes from the organized definition directory
 try:
     count = standard_node_registry.initialize_default_nodes()
     if count == 0:

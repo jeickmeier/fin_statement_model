@@ -47,18 +47,24 @@ class ExcelWriter(DataWriter, ConfigurationMixin):
         Args:
             graph (Graph): The Graph object containing the data to write.
             target (str): Path to the target Excel file.
-            **kwargs: Currently unused. Configuration is handled by the ExcelWriterConfig.
+            **kwargs: Optional runtime overrides of configured defaults:
+                sheet_name (str): Excel sheet name.
+                recalculate (bool): Whether to recalculate graph before export.
+                include_nodes (list[str]): List of node names to include in export.
+                excel_writer_kwargs (dict): Additional kwargs for pandas.DataFrame.to_excel.
 
         Raises:
             WriteError: If an error occurs during the writing process.
         """
         file_path = target
 
-        # Get configuration values using the mixin
-        sheet_name = self.get_config_value("sheet_name", "Sheet1")
-        recalculate = self.get_config_value("recalculate", True)
-        include_nodes = self.get_config_value("include_nodes")
-        excel_writer_options = self.get_config_value("excel_writer_kwargs", {})
+        # Runtime overrides: kwargs override configured defaults
+        sheet_name = kwargs.get("sheet_name", self.cfg.sheet_name)
+        recalculate = kwargs.get("recalculate", self.cfg.recalculate)
+        include_nodes = kwargs.get("include_nodes", self.cfg.include_nodes)
+        excel_writer_options = kwargs.get(
+            "excel_writer_kwargs", self.cfg.excel_writer_kwargs
+        )
 
         logger.info(f"Exporting graph to Excel file: {file_path}, sheet: {sheet_name}")
 

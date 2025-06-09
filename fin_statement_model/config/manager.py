@@ -141,6 +141,13 @@ class ConfigManager:
 
     def _load_config(self) -> None:
         """Load and merge configuration from all sources."""
+        # Load environment variables from a .env file (if present) before any
+        # configuration layers are processed. This allows users to keep secrets
+        # like API keys in a `.env` file without explicitly exporting them in
+        # the shell. Values already present in the process environment are NOT
+        # overwritten.
+        self._load_dotenv()
+
         # Start with defaults
         config_dict = Config(
             project_name="fin_statement_model",
@@ -291,6 +298,66 @@ class ConfigManager:
                     else None
                 ),
             )
+
+    # ------------------------------------------------------------------
+    # .env loading utilities
+
+    def _load_dotenv(self) -> None:
+        """Populate os.environ with variables from a ``.env`` file, if found.
+
+        The search starts in the current working directory and ascends parent
+        directories until it reaches the filesystem root (similar to how Git
+        discovers its repository root). The first ``.env`` file encountered is
+        used. Existing environment variables **are not** overwritten—this
+        preserves any values the user has explicitly exported.
+        """
+        try:
+            import os
+            from pathlib import Path
+
+            current = Path.cwd()
+            while True:
+                candidate = current / ".env"
+                if candidate.exists() and candidate.is_file():
+                    try:
+                        for raw_line in candidate.read_text().splitlines():
+                            line = raw_line.strip()
+                            # Skip blanks and comments
+                            if not line or line.startswith("#"):
+                                continue
+                            if "=" not in line:
+                                continue
+                            key, value = line.split("=", 1)
+                            key = key.strip()
+                            # Remove any surrounding quotes from the value
+                            value = value.strip().strip("'\"")
+                            if key and key not in os.environ:
+                                os.environ[key] = value
+                        logger.debug("Loaded environment variables from %s", candidate)
+
+                        # Special fallback: if a generic FMP_API_KEY is defined, expose it
+                        # via the namespaced FSM_API_FMP_API_KEY expected by the Config
+                        # model. This provides compatibility with existing environment
+                        # setups without forcing users to duplicate variables.
+                        if (
+                            "FMP_API_KEY" in os.environ
+                            and "FSM_API_FMP_API_KEY" not in os.environ
+                        ):
+                            os.environ["FSM_API_FMP_API_KEY"] = os.environ["FMP_API_KEY"]
+                            logger.debug(
+                                "Mapped FMP_API_KEY → FSM_API_FMP_API_KEY for config integration"
+                            )
+                        break  # Stop searching after the first .env file
+                    except Exception as err:  # noqa: BLE001  (broad but safe here)
+                        logger.warning("Failed to load .env file %s: %s", candidate, err)
+                else:
+                    # Ascend to parent directory, stop at filesystem root
+                    if current.parent == current:
+                        break
+                    current = current.parent
+        except Exception as err:  # noqa: BLE001
+            # Never fail config loading due to .env issues
+            logger.debug("_load_dotenv encountered an error: %s", err, exc_info=False)
 
 
 # Global configuration instance

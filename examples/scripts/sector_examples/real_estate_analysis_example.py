@@ -6,6 +6,7 @@ for analyzing REIT financial performance.
 
 import logging
 from pathlib import Path
+import yaml
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
@@ -175,9 +176,14 @@ def main():
     # Build the base graph with raw data nodes
     graph = create_reit_financial_model()
 
+    # Load REIT statement configuration from YAML into memory
+    config_path = (
+        Path(__file__).resolve().parents[2] / "configs" / "reit_statement.yaml"
+    )
+    raw_config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    raw_configs = {raw_config.get("id", "reit_statement"): raw_config}
     # Generate calculation nodes via statement orchestration
-    config_path = Path(__file__).resolve().parents[2] / "configs" / "reit_statement.yaml"
-    create_statement_dataframe(graph, str(config_path))
+    create_statement_dataframe(graph, raw_configs)
 
     # Analyze performance using the populated graph
     analyze_reit_performance(graph)

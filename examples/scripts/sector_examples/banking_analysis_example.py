@@ -52,11 +52,13 @@ def validate_node_names_example() -> dict[str, str]:
 
     logger.info(f"Raw node names to validate: {raw_node_names}")
 
-    # Create unified validator
+    # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
+    # Create unified validator for demo
     validator = UnifiedNodeValidator(
         strict_mode=False,  # Allow alternate names
         auto_standardize=True,  # Convert to standard names
         warn_on_non_standard=True,  # Log warnings for non-standard names
+        enable_patterns=True,  # Enable pattern recognition for sub-nodes and formulas
     )
 
     # Validate and standardize names

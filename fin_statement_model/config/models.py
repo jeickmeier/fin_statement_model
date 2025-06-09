@@ -4,9 +4,14 @@ This module defines the configuration schema using Pydantic models,
 providing validation and type safety for all configuration options.
 """
 
-from typing import Optional, Literal, Any
+from typing import Optional, Literal, Any, Union
 from pathlib import Path
 from pydantic import BaseModel, Field, field_validator, ConfigDict
+from fin_statement_model.statements.configs.models import AdjustmentFilterSpec
+from fin_statement_model.preprocessing.config import (
+    StatementFormattingConfig,
+    TransformationType,
+)
 
 
 class LoggingConfig(BaseModel):
@@ -78,6 +83,34 @@ class ForecastingConfig(BaseModel):
     allow_negative_forecasts: bool = Field(
         True, description="Allow negative values in forecasts"
     )
+    add_missing_periods: bool = Field(
+        True, description="Whether to add missing forecast periods to the graph"
+    )
+    default_bad_forecast_value: float = Field(
+        0.0, description="Default value to use for NaN, Inf, or error forecasts"
+    )
+    continue_on_error: bool = Field(
+        True,
+        description="Whether to continue forecasting other nodes if one node fails",
+    )
+    historical_growth_aggregation: Literal["mean", "median"] = Field(
+        "mean",
+        description="Aggregation method for historical growth rate: 'mean' or 'median'",
+    )
+    random_seed: Optional[int] = Field(
+        None,
+        description="Random seed for statistical forecasting to ensure reproducible results",
+    )
+    base_period_strategy: Literal[
+        "preferred_then_most_recent", "most_recent", "last_historical"
+    ] = Field(
+        "preferred_then_most_recent",
+        description=(
+            "Strategy for selecting base period: 'preferred_then_most_recent' (default), "
+            "'most_recent' (ignore preferred, pick most recent with data), or "
+            "'last_historical' (always use last historical period)."
+        ),
+    )
 
     @field_validator("default_periods")
     def validate_periods(cls, v: int) -> int:
@@ -107,6 +140,23 @@ class PreprocessingConfig(BaseModel):
     default_normalization_type: Optional[
         Literal["percent_of", "minmax", "standard", "scale_by"]
     ] = Field(None, description="Default normalization method")
+    default_transformation_type: TransformationType = Field(
+        TransformationType.GROWTH_RATE,
+        description="Default time series transformation type",
+    )
+    default_time_series_periods: int = Field(
+        1, description="Default number of periods for time series transformations"
+    )
+    default_time_series_window_size: int = Field(
+        3, description="Default window size for time series transformations"
+    )
+    default_conversion_aggregation: str = Field(
+        "sum", description="Default aggregation method for period conversion"
+    )
+    statement_formatting: StatementFormattingConfig = Field(
+        default=StatementFormattingConfig.model_validate({}),
+        description="Default statement formatting configuration for preprocessing",
+    )
 
     model_config = ConfigDict(extra="forbid")
 
@@ -155,6 +205,40 @@ class DisplayConfig(BaseModel):
     show_negative_sign: bool = Field(
         True,
         description="Whether to prefix negative numbers with a minus sign when not using parentheses",
+    )
+    # Statement formatting defaults
+    apply_sign_conventions: bool = Field(
+        True, description="Whether to apply sign conventions by default"
+    )
+    include_empty_items: bool = Field(
+        False, description="Whether to include items with no data by default"
+    )
+    include_metadata_cols: bool = Field(
+        False, description="Whether to include metadata columns by default"
+    )
+    add_is_adjusted_column: bool = Field(
+        False, description="Whether to add an 'is_adjusted' column by default"
+    )
+    include_units_column: bool = Field(
+        False, description="Whether to include units column by default"
+    )
+    include_css_classes: bool = Field(
+        False, description="Whether to include CSS class column by default"
+    )
+    include_notes_column: bool = Field(
+        False, description="Whether to include notes column by default"
+    )
+    apply_item_scaling: bool = Field(
+        True, description="Whether to apply item-specific scaling by default"
+    )
+    apply_item_formatting: bool = Field(
+        True, description="Whether to apply item-specific formatting by default"
+    )
+    apply_contra_formatting: bool = Field(
+        True, description="Whether to apply contra-specific formatting by default"
+    )
+    add_contra_indicator_column: bool = Field(
+        False, description="Whether to add a contra indicator column by default"
     )
 
     @field_validator("scale_factor")
@@ -244,6 +328,25 @@ class ValidationConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+class StatementsConfig(BaseModel):
+    """Statement formatting and building configuration settings."""
+
+    default_adjustment_filter: Optional[Union[AdjustmentFilterSpec, list[str]]] = Field(
+        None,
+        description="Default adjustment filter spec or list of tags to apply when building statements",
+    )
+    enable_node_validation: bool = Field(
+        False,
+        description="Whether to enable node ID validation during statement building by default",
+    )
+    node_validation_strict: bool = Field(
+        False,
+        description="Whether to treat node validation failures as errors (strict) by default",
+    )
+
+    model_config = ConfigDict(extra="forbid")
+
+
 class Config(BaseModel):
     """Main configuration container for fin_statement_model."""
 
@@ -277,6 +380,10 @@ class Config(BaseModel):
         default=ValidationConfig.model_validate({}),
         description="Data validation configuration",
     )
+    statements: StatementsConfig = Field(
+        default=StatementsConfig.model_validate({}),
+        description="Statement structure and formatting configuration",
+    )
 
     # Global settings
     project_name: str = Field(
@@ -292,8 +399,16 @@ class Config(BaseModel):
     model_config = ConfigDict(extra="forbid", validate_assignment=True)
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert configuration to dictionary."""
-        return self.model_dump(exclude_none=True)
+        """Convert configuration to a JSON-serializable dictionary.
+
+        The default ``model_dump`` output may include complex Python objects
+        such as ``Enum`` instances.  Passing ``mode='json'`` ensures that
+        those objects are converted to their JSON representation (e.g. raw
+        strings for ``Enum`` values), allowing the resulting dictionary to be
+        safely serialized via ``yaml.dump`` or ``json.dumps`` without emitting
+        Python-specific YAML tags that require an *unsafe* loader.
+        """
+        return self.model_dump(exclude_none=True, mode="json")
 
     def to_yaml(self) -> str:
         """Convert configuration to YAML string."""

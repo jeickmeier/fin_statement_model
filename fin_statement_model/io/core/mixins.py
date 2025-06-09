@@ -1196,5 +1196,6 @@ class ValidationResultCollector:
 
         return "\n".join(report_lines)
 
+
 # Provide backward compatibility for legacy mixin name
-#ConfigurableReaderMixin = ConfigurationMixin
+# ConfigurableReaderMixin = ConfigurationMixin

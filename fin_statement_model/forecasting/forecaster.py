@@ -83,7 +83,8 @@ class StatementForecaster:
                 - 'config': Method-specific parameters (growth rate, distribution, etc.)
             historical_periods: Optional list of historical periods to use as base.
                 If not provided, will be inferred from the graph's existing periods.
-            **kwargs: Additional arguments passed to the forecasting logic.
+            **kwargs: Additional arguments passed to the forecasting logic:
+                add_missing_periods (bool): Whether to add missing forecast periods to the graph.
 
         Returns:
             None (modifies the graph in-place)
@@ -106,9 +107,12 @@ class StatementForecaster:
                 historical_periods, forecast_periods, node_configs
             )
 
-            # Ensure forecast periods exist in the graph
+            # Ensure forecast periods exist in the graph (override via add_missing_periods)
+            add_missing = kwargs.get(
+                "add_missing_periods", cfg("forecasting.add_missing_periods")
+            )
             PeriodManager.ensure_periods_exist(
-                self.fsg, forecast_periods, add_missing=True
+                self.fsg, forecast_periods, add_missing=add_missing
             )
 
             if node_configs is None:
@@ -211,17 +215,31 @@ class StatementForecaster:
         for period in forecast_periods:
             try:
                 val = tmp_node.calculate(period)
+                # Default fallback for bad forecasts, overrideable via bad_forecast_value kwarg
+                bad_value = kwargs.get(
+                    "bad_forecast_value", cfg("forecasting.default_bad_forecast_value")
+                )
                 if np.isnan(val) or np.isinf(val):
                     logger.warning(
-                        f"Bad forecast {val} for {node.name}@{period}; defaulting to 0.0"
+                        f"Bad forecast {val} for {node.name}@{period}; defaulting to {bad_value}"
                     )
-                    val = 0.0
+                    val = bad_value
+                # Clamp negative values if disallowed
+                allow_neg = kwargs.get(
+                    "allow_negative_forecasts",
+                    cfg("forecasting.allow_negative_forecasts"),
+                )
+                if not allow_neg and val < 0:
+                    logger.warning(
+                        f"Negative forecast {val} for {node.name}@{period}; clamping to {bad_value}"
+                    )
+                    val = bad_value
                 node.values[period] = float(val)  # Update the original node
             except Exception as e:
                 logger.error(
                     f"Error forecasting {node.name}@{period}: {e}", exc_info=True
                 )
-                node.values[period] = 0.0  # Set default on error
+                node.values[period] = bad_value  # Set default on error
 
         # Clear cache of the original node as its values have changed
         if hasattr(node, "clear_cache") and callable(node.clear_cache):
@@ -259,8 +277,10 @@ class StatementForecaster:
                 - 'method': Forecasting method ('simple', 'curve', 'statistical',
                            'average', 'historical_growth')
                 - 'config': Method-specific parameters
-                If not provided, defaults to simple method with 0% growth.
+                If not provided, uses global forecasting defaults.
             **kwargs: Additional arguments passed to the internal forecasting logic.
+                bad_forecast_value (float): Default to use for NaN/Inf or errors (overrides config)
+                allow_negative_forecasts (bool): Whether to allow negative forecast values (overrides config)
 
         Returns:
             A dictionary mapping forecast periods to their calculated values.
@@ -270,6 +290,10 @@ class StatementForecaster:
             ForecastNodeError: If node not found, no historical periods available,
                               or invalid forecast configuration.
         """
+        # Optional override for bad forecast fallback
+        bad_value = kwargs.get(
+            "bad_forecast_value", cfg("forecasting.default_bad_forecast_value")
+        )
         # Locate the node
         node = self.fsg.get_node(node_name)
         if node is None:
@@ -290,10 +314,11 @@ class StatementForecaster:
         # Validate inputs
         ForecastValidator.validate_forecast_inputs(historical_periods, forecast_periods)
 
-        # Set default config if not provided
+        # Set default config if not provided, using global forecasting defaults
         if forecast_config is None:
             default_growth = cfg("forecasting.default_growth_rate")
-            forecast_config = {"method": "simple", "config": default_growth}
+            default_method = cfg("forecasting.default_method")
+            forecast_config = {"method": default_method, "config": default_growth}
 
         # Validate and create ForecastConfig
         validated_config = ForecastValidator.validate_forecast_config(forecast_config)
@@ -341,12 +366,22 @@ class StatementForecaster:
             try:
                 value = temp_forecast_node.calculate(period)
                 # Handle potential NaN/Inf results from calculation
-                results[period] = 0.0 if not np.isfinite(value) else float(value)
+                results[period] = bad_value if not np.isfinite(value) else float(value)
+                # Clamp negative values if disallowed
+                allow_neg = kwargs.get(
+                    "allow_negative_forecasts",
+                    cfg("forecasting.allow_negative_forecasts"),
+                )
+                if not allow_neg and results[period] < 0:
+                    logger.warning(
+                        f"Negative forecast {results[period]} for {node_name}@{period}; clamping to {bad_value}"
+                    )
+                    results[period] = bad_value
             except Exception as e:
                 logger.warning(
-                    f"Error calculating temporary forecast for {node_name}@{period}: {e}. Returning 0.0"
+                    f"Error calculating temporary forecast for {node_name}@{period}: {e}. Returning {bad_value}"
                 )
-                results[period] = 0.0
+                results[period] = bad_value
 
         # Validate results before returning
         ForecastValidator.validate_forecast_result(results, forecast_periods, node_name)
@@ -385,7 +420,11 @@ class StatementForecaster:
             ... )
             >>> print(results['revenue'].get_value('2024'))
         """
-        results = {}
+        # Determine error propagation strategy (override via continue_on_error kwarg)
+        continue_on_err = kwargs.get(
+            "continue_on_error", cfg("forecasting.continue_on_error")
+        )
+        results: dict[str, ForecastResult] = {}
         configs = forecast_configs or {}
 
         for node_name in node_names:
@@ -424,10 +463,15 @@ class StatementForecaster:
                     method=config.method,
                     base_period=actual_base_period,
                 )
-            except Exception:
+            except Exception as e:
                 logger.exception(f"Error forecasting node {node_name}")
-                # Continue with other nodes
-                continue
+                if continue_on_err:
+                    continue
+                raise ForecastNodeError(
+                    f"Error forecasting node {node_name}: {e}",
+                    node_id=node_name,
+                    reason=str(e),
+                )
 
         return results
 

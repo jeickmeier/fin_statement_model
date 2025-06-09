@@ -68,7 +68,8 @@ Shows how the library uses configuration internally for a clean API:
 ### Simple Example (`scripts/simple_example.py`)
 The best starting point. Demonstrates:
 - Loading financial data using `read_data()`
-- Using statement configurations with `create_statement_dataframe()`
+- Defining statement configurations as Python dicts
+- Creating statements with `create_statement_dataframe()`
 - Calculating metrics using the metrics registry
 - Performing trend analysis
 - Using centralized configuration for formatting
@@ -78,6 +79,7 @@ The best starting point. Demonstrates:
 from fin_statement_model import get_config
 from fin_statement_model.io import read_data
 from fin_statement_model.statements import create_statement_dataframe
+from fin_statement_model.io.specialized.statements import read_builtin_statement_config
 
 # Configuration affects all operations
 config = get_config()
@@ -85,15 +87,23 @@ config = get_config()
 # Load your data
 graph = read_data(format_type="dict", source=financial_data)
 
-# Build statement structure with configured formatting
-df = create_statement_dataframe(
+# Define raw statement configurations (e.g., using built-in configs)
+raw_configs = {
+    "income_statement": read_builtin_statement_config("income_statement")
+}
+
+# Build statement structures and format with configured formatting
+df_map = create_statement_dataframe(
     graph=graph,
-    config_path_or_dir="path/to/statement_config.yaml",
+    raw_configs=raw_configs,
     format_kwargs={
         "number_format": config.display.default_currency_format,
-        "should_apply_signs": True
+        "should_apply_signs": True,
     }
 )
+
+# Retrieve DataFrame by statement ID
+df = df_map["income_statement"]
 ```
 
 ### Statement with Adjustments (`scripts/example_statement_with_adjustments.py`)

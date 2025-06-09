@@ -51,7 +51,8 @@ def step_1_validate_node_names() -> dict[str, str]:
     logger.info("STEP 1: NODE NAME VALIDATION")
     logger.info("=" * 60)
 
-    # Create validator using config settings
+    # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
+    # Create validator using config settings (demo)
     validator = UnifiedNodeValidator(
         strict_mode=config.validation.strict_mode,
         auto_standardize=config.validation.auto_standardize_names,
@@ -611,31 +612,28 @@ def main() -> None:
     logger.info("=" * 60)
 
     try:
-        # Save config to temp file
-        import tempfile
+        # Build in-memory banking statement config
+        import yaml
 
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
-            f.write(create_banking_statement_config())
-            config_path = f.name
+        config_yaml = create_banking_statement_config()
+        raw_config = yaml.safe_load(config_yaml)
+        stmt_id = raw_config.get("id", "banking_statement")
+        raw_configs = {stmt_id: raw_config}
 
-        # Create statement
-        statement_df = create_statement_dataframe(
+        # Create statement using in-memory config
+        statement_df_map = create_statement_dataframe(
             graph=graph,
-            config_path_or_dir=config_path,
+            raw_configs=raw_configs,
             format_kwargs={
                 "number_format": config.display.default_currency_format,
                 "should_apply_signs": True,
                 "include_empty_items": not config.display.hide_zero_rows,
             },
         )
+        statement_df = statement_df_map[stmt_id]
 
         logger.info("Banking Income Statement:")
         logger.info(statement_df.to_string(index=False))
-
-        # Clean up
-        import os
-
-        os.unlink(config_path)
 
     except Exception:
         logger.exception("Could not create statement")

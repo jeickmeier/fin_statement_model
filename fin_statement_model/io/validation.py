@@ -532,32 +532,6 @@ class UnifiedNodeValidator:
         self._validation_cache.clear()
 
 
-# Convenience functions for backward compatibility
 def create_validator(**kwargs: Any) -> UnifiedNodeValidator:
     """Create a validator instance with the given configuration."""
     return UnifiedNodeValidator(**kwargs)
-
-
-def validate_node_name(
-    name: str,
-    strict: bool = False,
-    auto_standardize: bool = True,
-) -> tuple[str, bool, str]:
-    """Simple validation function for backward compatibility.
-
-    Args:
-        name: Node name to validate.
-        strict: Whether to use strict mode.
-        auto_standardize: Whether to auto-standardize names.
-
-    Returns:
-        Tuple of (standardized_name, is_valid, message).
-    """
-    validator = UnifiedNodeValidator(
-        strict_mode=strict,
-        auto_standardize=auto_standardize,
-        warn_on_non_standard=False,
-    )
-
-    result = validator.validate(name)
-    return result.standardized_name, result.is_valid, result.message

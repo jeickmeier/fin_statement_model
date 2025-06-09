@@ -20,6 +20,7 @@ from fin_statement_model.preprocessing.errors import (
     TransformerRegistrationError,
     TransformerConfigurationError,
 )
+from fin_statement_model.config.helpers import cfg
 
 logger = logging.getLogger(__name__)
 
@@ -127,14 +128,19 @@ class TransformationService:
     def normalize_data(
         self,
         data: Union[pd.DataFrame, dict[str, Any]],
-        normalization_type: str = "percent_of",
+        normalization_type: Optional[str] = None,
         reference: Optional[str] = None,
         scale_factor: Optional[float] = None,
     ) -> Union[pd.DataFrame, dict[str, Any]]:
         """Normalize financial data."""
+        # Determine normalization type default
+        default_norm_type = cfg("preprocessing.default_normalization_type")
+        norm_type = (
+            normalization_type if normalization_type is not None else default_norm_type
+        ) or "percent_of"
         transformer = TransformerFactory.create_transformer(
             "normalization",
-            normalization_type=normalization_type,
+            normalization_type=norm_type,
             reference=reference,
             scale_factor=scale_factor,
         )
@@ -143,43 +149,75 @@ class TransformationService:
     def transform_time_series(
         self,
         data: Union[pd.DataFrame, dict[str, Any]],
-        transformation_type: str = "growth_rate",
-        periods: int = 1,
-        window_size: int = 3,
+        transformation_type: Optional[str] = None,
+        periods: Optional[int] = None,
+        window_size: Optional[int] = None,
     ) -> Union[pd.DataFrame, dict[str, Any]]:
         """Apply time series transformations to financial data."""
+        # Determine defaults from config
+        default_transform_type = cfg("preprocessing.default_transformation_type")
+        transform_type = (
+            transformation_type
+            if transformation_type is not None
+            else default_transform_type
+        )
+        default_periods = cfg("preprocessing.default_time_series_periods")
+        num_periods = periods if periods is not None else default_periods
+        default_window = cfg("preprocessing.default_time_series_window_size")
+        win_size = window_size if window_size is not None else default_window
         transformer = TransformerFactory.create_transformer(
             "time_series",
-            transformation_type=transformation_type,
-            periods=periods,
-            window_size=window_size,
+            transformation_type=transform_type,
+            periods=num_periods,
+            window_size=win_size,
         )
         return transformer.execute(data)
 
     def convert_periods(
-        self, data: pd.DataFrame, conversion_type: str, aggregation: str = "sum"
+        self,
+        data: pd.DataFrame,
+        conversion_type: str,
+        aggregation: Optional[str] = None,
     ) -> pd.DataFrame:
         """Convert data between different period types."""
+        default_agg = cfg("preprocessing.default_conversion_aggregation")
+        agg = aggregation if aggregation is not None else default_agg
         transformer = TransformerFactory.create_transformer(
             "period_conversion",
             conversion_type=conversion_type,
-            aggregation=aggregation,
+            aggregation=agg,
         )
         return transformer.execute(data)
 
     def format_statement(
         self,
         data: pd.DataFrame,
-        statement_type: str = "income_statement",
-        add_subtotals: bool = True,
-        apply_sign_convention: bool = True,
+        statement_type: Optional[str] = None,
+        add_subtotals: Optional[bool] = None,
+        apply_sign_convention: Optional[bool] = None,
     ) -> pd.DataFrame:
         """Format a financial statement DataFrame."""
+        # Determine defaults from preprocessing config
+        stmt_cfg = cfg("preprocessing.statement_formatting")
+        default_stmt_type = stmt_cfg.statement_type or "income_statement"
+        stmt_type = statement_type if statement_type is not None else default_stmt_type
+        default_add = (
+            stmt_cfg.add_subtotals if hasattr(stmt_cfg, "add_subtotals") else True
+        )
+        sub = add_subtotals if add_subtotals is not None else default_add
+        default_sign = (
+            stmt_cfg.apply_sign_convention
+            if hasattr(stmt_cfg, "apply_sign_convention")
+            else True
+        )
+        sign = (
+            apply_sign_convention if apply_sign_convention is not None else default_sign
+        )
         transformer = TransformerFactory.create_transformer(
             "statement_formatting",
-            statement_type=statement_type,
-            add_subtotals=add_subtotals,
-            apply_sign_convention=apply_sign_convention,
+            statement_type=stmt_type,
+            add_subtotals=sub,
+            apply_sign_convention=sign,
         )
         return transformer.execute(data)
 

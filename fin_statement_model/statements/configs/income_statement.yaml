@@ -1,0 +1,33 @@
+id: income_statement
+name: Income Statement
+sections:
+  - id: operating_results
+    name: Operating Results
+    items:
+      - id: revenue
+        name: Revenue
+        type: line_item
+        node_id: revenue
+      - id: cost_of_goods_sold
+        name: Cost of Goods Sold
+        type: line_item
+        node_id: cost_of_goods_sold
+      - id: gross_profit
+        name: Gross Profit
+        type: calculated
+        calculation:
+          type: subtraction
+          inputs:
+            - revenue
+            - cost_of_goods_sold
+  - id: bottom_line
+    name: Bottom Line
+    items:
+      - id: operating_income
+        name: Operating Income
+        type: line_item
+        node_id: operating_income
+      - id: net_income
+        name: Net Income
+        type: line_item
+        node_id: net_income 

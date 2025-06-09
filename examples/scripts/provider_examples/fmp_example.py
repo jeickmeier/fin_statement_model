@@ -61,11 +61,8 @@ def fetch_fmp_data() -> object:
         read_data._reader.retry_count = config.api.api_retry_count
 
     try:
-        # Read data from FMP API
-        graph = read_data(
-            format_type="fmp",
-            source=fmp_config,
-        )
+        # Pass validated configuration directly to the IO facade
+        graph = read_data(**fmp_config)
 
         logger.info(f"✓ Successfully fetched data for periods: {graph.periods}")
         logger.info(f"✓ Created {len(graph.nodes)} nodes")
@@ -100,18 +97,24 @@ def main():
 
     # Try to create a formatted statement if config exists
     try:
-        config_path = f"configs/{STATEMENT_TYPE}.yaml"
-        logger.info(f"\nCreating formatted statement using {config_path}...")
+        # Use built-in statement configuration
+        from fin_statement_model.io.specialized.statements import (
+            read_builtin_statement_config,
+        )
 
-        statement_df = create_statement_dataframe(
+        raw_config = read_builtin_statement_config(STATEMENT_TYPE)
+        raw_configs = {STATEMENT_TYPE: raw_config}
+        logger.info(f"\nCreating formatted statement for {STATEMENT_TYPE}...")
+        df_map = create_statement_dataframe(
             graph=graph,
-            config_path_or_dir=config_path,
+            raw_configs=raw_configs,
             format_kwargs={
                 "number_format": config.display.default_currency_format,
                 "should_apply_signs": True,
                 "hide_zero_rows": config.display.hide_zero_rows,
             },
         )
+        statement_df = df_map.get(STATEMENT_TYPE)
 
         logger.info("\nFormatted Statement:")
         logger.info(statement_df.to_string(index=False))

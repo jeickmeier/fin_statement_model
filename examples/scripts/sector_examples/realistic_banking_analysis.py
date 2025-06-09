@@ -366,7 +366,8 @@ def validate_banking_data(
     print("BANKING DATA VALIDATION AND STANDARDIZATION")
     print("=" * 60)
 
-    # Create validator with banking-specific settings
+    # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
+    # Create validator with banking-specific settings (demo)
     validator = UnifiedNodeValidator(
         strict_mode=False,
         auto_standardize=True,

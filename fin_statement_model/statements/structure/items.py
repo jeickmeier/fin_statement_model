@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any, Optional, cast
 
-from fin_statement_model.config import cfg_or_param
 from fin_statement_model.core.errors import StatementError
 
 __all__ = [
@@ -183,13 +182,14 @@ class LineItem(StatementItem):
                 f"Invalid sign convention {sign_convention} for item: {id}"
             )
 
-        # Use config default if not provided
-        display_scale_factor = cast(
-            float,
-            cfg_or_param("display.scale_factor", display_scale_factor),
+        # Use config default if not provided (import only when needed)
+        from fin_statement_model.config.helpers import cfg_or_param
+
+        display_scale_factor = cfg_or_param(
+            "display.scale_factor", display_scale_factor
         )
 
-        if display_scale_factor <= 0:
+        if display_scale_factor is None or display_scale_factor <= 0:
             raise StatementError(
                 f"display_scale_factor must be positive for item: {id}"
             )

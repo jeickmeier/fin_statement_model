@@ -56,6 +56,7 @@ def main():
 
     # 1. Validation - automatically uses config defaults
     print("\n1. Node Validation (auto-uses config):")
+    # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
     validator = UnifiedNodeValidator()  # That's it!
 
     result = validator.validate("gross revenue")
@@ -85,51 +86,50 @@ def main():
     # 4. Statement formatting - automatically uses display config
     print("\n4. Statement Formatting (auto-uses display config):")
 
-    # Create a simple statement config
-    import tempfile
-    import yaml
-
+    # Define in-memory statement configuration
     statement_config = {
-        "id": "simple_income",
-        "name": "Simple Income Statement",
-        "sections": [
-            {
-                "id": "main",
-                "name": "Income",
-                "items": [
-                    {
-                        "type": "line_item",
-                        "id": "revenue",
-                        "name": "Revenue",
-                        "node_id": "revenue",
-                    },
-                    {
-                        "type": "line_item",
-                        "id": "expenses",
-                        "name": "Expenses",
-                        "node_id": "expenses",
-                    },
-                    {
-                        "type": "line_item",
-                        "id": "net_income",
-                        "name": "Net Income",
-                        "node_id": "net_income",
-                    },
-                ],
-            }
-        ],
+        "simple_income": {
+            "id": "simple_income",
+            "name": "Simple Income Statement",
+            "sections": [
+                {
+                    "id": "main",
+                    "name": "Income",
+                    "items": [
+                        {
+                            "type": "line_item",
+                            "id": "revenue",
+                            "name": "Revenue",
+                            "node_id": "revenue",
+                        },
+                        {
+                            "type": "line_item",
+                            "id": "expenses",
+                            "name": "Expenses",
+                            "node_id": "expenses",
+                        },
+                        {
+                            "type": "line_item",
+                            "id": "net_income",
+                            "name": "Net Income",
+                            "node_id": "net_income",
+                        },
+                    ],
+                }
+            ],
+        }
     }
 
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
-        yaml.dump(statement_config, f)
-        config_path = f.name
-
-    # Create statement - no format_kwargs needed!
-    df = create_statement_dataframe(
+    # Create statement using in-memory config
+    df_map = create_statement_dataframe(
         graph=graph,
-        config_path_or_dir=config_path,
-        # That's it! Uses all config defaults automatically
+        raw_configs=statement_config,
+        format_kwargs={
+            "should_apply_signs": True,
+            "number_format": None,
+        },
     )
+    df = df_map["simple_income"]
 
     print("   Statement created with automatic config usage:")
     print(
@@ -140,11 +140,6 @@ def main():
 
     print("\n   Statement Output:")
     print(df.to_string(index=False))
-
-    # Clean up
-    import os
-
-    os.unlink(config_path)
 
     print("\n" + "=" * 80)
     print("SUMMARY")

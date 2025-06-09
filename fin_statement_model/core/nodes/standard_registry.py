@@ -132,74 +132,6 @@ class StandardNodeRegistry:
 
         return nodes_loaded
 
-    def load_from_yaml(self, yaml_path: Path) -> int:
-        """Load standard node definitions from a YAML file.
-
-        Args:
-            yaml_path: Path to the YAML file containing node definitions.
-
-        Returns:
-            Number of nodes loaded.
-
-        Raises:
-            ValueError: If the YAML file has invalid structure or duplicate names.
-            FileNotFoundError: If the YAML file doesn't exist.
-        """
-        if not yaml_path.exists():
-            raise FileNotFoundError(f"Standard nodes file not found: {yaml_path}")
-
-        try:
-            with open(yaml_path, encoding="utf-8") as f:
-                data = yaml.safe_load(f)
-        except yaml.YAMLError as e:
-            raise ValueError(f"Invalid YAML in {yaml_path}: {e}") from e
-
-        # Clear existing data (unique behavior of this method)
-        self._standard_nodes.clear()
-        self._alternate_to_standard.clear()
-        self._categories.clear()
-
-        # Process the data
-        nodes_loaded = self._load_nodes_from_data(
-            data, str(yaml_path), overwrite_existing=False
-        )
-
-        logger.info(
-            f"Loaded {nodes_loaded} standard node definitions "
-            f"with {len(self._alternate_to_standard)} alternate names"
-        )
-        return nodes_loaded
-
-    def load_from_yaml_file(self, yaml_path: Path) -> int:
-        """Load standard node definitions from a single YAML file without clearing existing data.
-
-        Args:
-            yaml_path: Path to the YAML file containing node definitions.
-
-        Returns:
-            Number of nodes loaded from this file.
-
-        Raises:
-            ValueError: If the YAML file has invalid structure or duplicate names.
-            FileNotFoundError: If the YAML file doesn't exist.
-        """
-        if not yaml_path.exists():
-            raise FileNotFoundError(f"Standard nodes file not found: {yaml_path}")
-
-        try:
-            with open(yaml_path, encoding="utf-8") as f:
-                data = yaml.safe_load(f)
-        except yaml.YAMLError as e:
-            raise ValueError(f"Invalid YAML in {yaml_path}: {e}") from e
-
-        # Process the data without clearing existing
-        nodes_loaded = self._load_nodes_from_data(
-            data, str(yaml_path), overwrite_existing=True
-        )
-
-        logger.debug(f"Loaded {nodes_loaded} nodes from {yaml_path}")
-        return nodes_loaded
-
     def get_standard_name(self, name: str) -> str:
         """Get the standard name for a given node name.
 
@@ -345,81 +277,34 @@ class StandardNodeRegistry:
     def initialize_default_nodes(
         self,
         organized_path: Optional[Path] = None,
-        fallback_path: Optional[Path] = None,
         force_reload: bool = False,
     ) -> int:
-        """Initialize the registry with default standard nodes.
-
-        This method implements a two-tier loading strategy:
-        1. Primary: Load from organized structure (multiple YAML files)
-        2. Fallback: Load from flat structure (single YAML file)
+        """Initialize the registry with default standard nodes from organized structure only.
 
         Args:
-            organized_path: Path to organized structure directory.
+            organized_path: Base directory to load organized YAML files from.
                 Defaults to standard_nodes_defn/ relative to this module.
-            fallback_path: Path to fallback flat YAML file.
-                Defaults to standard_nodes.yaml relative to this module.
             force_reload: If True, reload even if already initialized.
 
         Returns:
-            Number of nodes loaded (0 if loading failed).
+            Number of nodes loaded.
         """
-        # Check if already initialized
         if self._initialized and not force_reload:
             logger.debug(
-                f"Standard nodes already initialized from {self._loaded_from}, "
-                f"skipping reload. Use force_reload=True to reload."
+                f"Standard nodes already initialized from {self._loaded_from}, skipping reload."
             )
             return len(self._standard_nodes)
 
-        # Set default paths
         if organized_path is None:
             organized_path = Path(__file__).parent / "standard_nodes_defn"
-        if fallback_path is None:
-            fallback_path = Path(__file__).parent / "standard_nodes.yaml"
 
-        # Try primary loading from organized structure
-        try:
-            logger.info("Attempting to load standard nodes from organized structure")
-            count = self._load_from_organized_structure(organized_path)
-            if count > 0:
-                self._initialized = True
-                self._loaded_from = f"organized structure at {organized_path}"
-                logger.info(
-                    f"Successfully loaded {count} standard nodes from organized structure"
-                )
-                return count
-        except Exception as e:
-            logger.warning(
-                f"Failed to load from organized structure: {e}. Attempting fallback loading..."
-            )
-
-        # Try fallback loading from flat file
-        if fallback_path.exists():
-            try:
-                logger.info(
-                    f"Loading standard nodes from fallback file: {fallback_path}"
-                )
-                count = self.load_from_yaml(fallback_path)
-                if count > 0:
-                    self._initialized = True
-                    self._loaded_from = f"fallback file at {fallback_path}"
-                    logger.info(
-                        f"Successfully loaded {count} standard nodes from fallback file"
-                    )
-                    return count
-            except Exception:
-                logger.exception("Failed to load from fallback file")
-        else:
-            logger.warning(f"Fallback file not found: {fallback_path}")
-
-        # Both loading attempts failed
-        logger.error(
-            "Failed to load standard nodes from both organized structure and fallback file"
+        count = self._load_from_organized_structure(organized_path)
+        self._initialized = True
+        self._loaded_from = f"organized structure at {organized_path}"
+        logger.info(
+            f"Successfully loaded {count} standard nodes from organized structure"
         )
-        self._initialized = False
-        self._loaded_from = None
-        return 0
+        return count
 
     def _load_from_organized_structure(self, base_path: Path) -> int:
         """Load nodes from organized directory structure.
@@ -483,32 +368,40 @@ class StandardNodeRegistry:
         """Return the number of standard nodes in the registry."""
         return len(self._standard_nodes)
 
+    def load_from_yaml_file(self, yaml_path: Path) -> int:
+        """Load standard node definitions from a single YAML file without clearing existing data.
+
+        Args:
+            yaml_path: Path to the YAML file containing node definitions.
+
+        Returns:
+            Number of nodes loaded from this file.
+
+        Raises:
+            ValueError: If the YAML file has invalid structure or duplicate names.
+            FileNotFoundError: If the YAML file doesn't exist.
+        """
+        if not yaml_path.exists():
+            raise FileNotFoundError(f"Standard nodes file not found: {yaml_path}")
+
+        try:
+            with open(yaml_path, encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+        except yaml.YAMLError as e:
+            raise ValueError(f"Invalid YAML in {yaml_path}: {e}") from e
+
+        # Process the data without clearing existing
+        nodes_loaded = self._load_nodes_from_data(
+            data, str(yaml_path), overwrite_existing=True
+        )
+
+        logger.debug(f"Loaded {nodes_loaded} nodes from {yaml_path}")
+        return nodes_loaded
+
 
 # Global registry instance
 standard_node_registry = StandardNodeRegistry()
 
 
-def load_standard_nodes(yaml_path: Optional[Path] = None) -> None:
-    """Load standard nodes into the global registry.
-
-    Args:
-        yaml_path: Path to YAML file. If None, uses default location.
-    """
-    if yaml_path is None:
-        # Default location relative to this file
-        yaml_path = Path(__file__).parent / "standard_nodes.yaml"
-
-    count = standard_node_registry.load_from_yaml(yaml_path)
-    logger.info(f"Loaded {count} standard node definitions")
-
-
 # NOTE: Auto-loading is disabled to prevent conflicts with organized structure
 # The nodes/__init__.py will handle loading from the appropriate source
-#
-# # Auto-load standard nodes on import if file exists
-# default_yaml = Path(__file__).parent / "standard_nodes.yaml"
-# if default_yaml.exists():
-#     try:
-#         load_standard_nodes(default_yaml)
-#     except Exception as e:
-#         logger.warning(f"Failed to auto-load standard nodes: {e}")

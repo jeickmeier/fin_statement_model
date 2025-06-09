@@ -5,7 +5,6 @@ from typing import Any, cast
 
 import pandas as pd
 
-from fin_statement_model.config import cfg
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.core.mixins import (
@@ -58,13 +57,12 @@ class CsvReader(
 
         Args:
             source (str): Path to the CSV file.
-            **kwargs: Read-time keyword arguments:
+            **kwargs: Optional runtime arguments overriding config defaults:
+                statement_type (str): Statement type ('income_statement', 'balance_sheet', 'cash_flow').
                 item_col (str): Name of the column containing item identifiers.
                 period_col (str): Name of the column containing period identifiers.
                 value_col (str): Name of the column containing numeric values.
-                pandas_read_csv_kwargs (dict): Additional arguments passed
-                    directly to `pandas.read_csv()`. These can override settings
-                    from the `CsvReaderConfig` (e.g., `delimiter`).
+                pandas_read_csv_kwargs (dict): Additional kwargs for pandas.read_csv.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -82,10 +80,13 @@ class CsvReader(
         self.validate_file_exists(file_path)
         self.validate_file_extension(file_path, (".csv", ".txt"))
 
-        # Get required column names
-        item_col = kwargs.get("item_col")
-        period_col = kwargs.get("period_col")
-        value_col = kwargs.get("value_col")
+        # Runtime overrides: kwargs override configured defaults (statement_type handled in _process_dataframe)
+        item_col = kwargs.get("item_col", self.cfg.item_col)
+        period_col = kwargs.get("period_col", self.cfg.period_col)
+        value_col = kwargs.get("value_col", self.cfg.value_col)
+        pandas_read_csv_kwargs = kwargs.get(
+            "pandas_read_csv_kwargs", self.cfg.pandas_read_csv_kwargs
+        )
 
         if not all([item_col, period_col, value_col]):
             raise ReadError(
@@ -99,7 +100,7 @@ class CsvReader(
         period_col_str = cast(str, period_col)
         value_col_str = cast(str, value_col)
         # Read CSV Data
-        df = self._read_csv_file(file_path, kwargs.get("pandas_read_csv_kwargs", {}))
+        df = self._read_csv_file(file_path, pandas_read_csv_kwargs)
 
         # Validate columns
         self._validate_columns(
@@ -116,6 +117,8 @@ class CsvReader(
     ) -> pd.DataFrame:
         """Read CSV file with configuration options."""
         # Use configuration from self.cfg with enhanced validation
+        from fin_statement_model.config.helpers import cfg
+
         delimiter = self.get_config_value(
             "delimiter",
             default=cfg("io.default_csv_delimiter"),
@@ -184,8 +187,8 @@ class CsvReader(
         grouped = df.groupby(item_col)
         nodes_added = 0
 
-        # Get mapping using mixin method
-        context_key = kwargs.get("statement_type")
+        # Determine mapping context
+        context_key = kwargs.get("statement_type", self.cfg.statement_type)
         mapping = self._get_mapping(context_key)
 
         for item_name_csv, group in grouped:

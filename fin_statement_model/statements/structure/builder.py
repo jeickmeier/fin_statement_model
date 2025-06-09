@@ -34,6 +34,7 @@ from fin_statement_model.statements.errors import ConfigurationError
 
 # Import UnifiedNodeValidator for optional node validation during build
 from fin_statement_model.io.validation import UnifiedNodeValidator
+from fin_statement_model.config.helpers import cfg
 
 # Import Result types for enhanced error handling
 from fin_statement_model.statements.utilities.result_types import (
@@ -60,29 +61,35 @@ class StatementStructureBuilder:
 
     def __init__(
         self,
-        enable_node_validation: bool = False,
-        node_validation_strict: bool = False,
+        enable_node_validation: Optional[bool] = None,
+        node_validation_strict: Optional[bool] = None,
         node_validator: Optional[UnifiedNodeValidator] = None,
-    ):
+    ) -> None:
         """Initialize the StatementStructureBuilder.
 
+        Defaults for validation flags come from the global statements config, but can be overridden locally.
         Args:
             enable_node_validation: If True, validates node IDs during build.
             node_validation_strict: If True, treats validation failures as errors.
             node_validator: Optional pre-configured UnifiedNodeValidator instance.
         """
+        # Pull defaults from global config if not provided
+        if enable_node_validation is None:
+            enable_node_validation = cfg("statements.enable_node_validation")
+        if node_validation_strict is None:
+            node_validation_strict = cfg("statements.node_validation_strict")
         self.enable_node_validation = enable_node_validation
         self.node_validation_strict = node_validation_strict
 
         # Initialize node_validator
         self.node_validator: Optional[UnifiedNodeValidator] = None
-        if enable_node_validation:
+        if self.enable_node_validation:
             if node_validator is not None:
                 self.node_validator = node_validator
             else:
-                # Create default validator
+                # Create default validator using strict flag
                 self.node_validator = UnifiedNodeValidator(
-                    strict_mode=node_validation_strict,
+                    strict_mode=self.node_validation_strict,
                     auto_standardize=True,
                     warn_on_non_standard=True,
                     enable_patterns=True,
@@ -101,8 +108,12 @@ class StatementStructureBuilder:
         Returns:
             AdjustmentFilter instance, set of tags, or None.
         """
+        # Use global default adjustment filter if none provided
         if filter_input is None:
-            return None
+            default_filter = cfg("statements.default_adjustment_filter")
+            if default_filter is None:
+                return None
+            filter_input = default_filter
         # Simple list of tags - convert to set
         elif isinstance(filter_input, list):
             return set(filter_input)

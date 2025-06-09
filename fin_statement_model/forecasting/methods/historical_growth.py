@@ -9,6 +9,7 @@ import numpy as np
 
 from fin_statement_model.core.nodes import Node
 from .base import BaseForecastMethod
+from fin_statement_model.config.helpers import cfg
 
 logger = logging.getLogger(__name__)
 
@@ -115,9 +116,10 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
                     )
                     continue
 
-        if len(historical_values) < 2:
+        min_periods = cfg("forecasting.min_historical_periods")
+        if len(historical_values) < min_periods:
             raise ValueError(
-                f"Need at least 2 historical data points for node {node.name} "
+                f"Need at least {min_periods} historical data points for node {node.name} "
                 f"to compute growth rate, found {len(historical_values)}"
             )
 
@@ -136,17 +138,25 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
             This is a helper method that can be used by the forecast node
             implementation to calculate the growth rate.
         """
+        # Calculate period-over-period growth rates
         if len(historical_values) < 2:
             return 0.0
 
-        # Calculate period-over-period growth rates
-        growth_rates = []
+        growth_rates: list[float] = []
         for i in range(1, len(historical_values)):
-            if historical_values[i - 1] != 0:
-                growth_rate = (
-                    historical_values[i] - historical_values[i - 1]
-                ) / historical_values[i - 1]
-                growth_rates.append(growth_rate)
+            prev = historical_values[i - 1]
+            if prev != 0:
+                growth_rates.append((historical_values[i] - prev) / prev)
 
-        # Return average growth rate, or 0 if no valid rates
-        return float(np.mean(growth_rates)) if growth_rates else 0.0
+        if not growth_rates:
+            return 0.0
+
+        # Determine aggregation method: 'mean' or 'median'
+        agg_method = cfg("forecasting.historical_growth_aggregation")
+        if agg_method == "median":
+            try:
+                return float(np.median(growth_rates))
+            except Exception:
+                return float(np.mean(growth_rates))
+        # Default to mean
+        return float(np.mean(growth_rates))

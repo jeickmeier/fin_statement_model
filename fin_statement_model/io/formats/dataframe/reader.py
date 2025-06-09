@@ -39,9 +39,8 @@ class DataFrameReader(DataReader):
 
         Args:
             source (pd.DataFrame): The DataFrame to read data from.
-            **kwargs: Read-time keyword arguments:
-                periods (list[str], optional): Explicit list of periods (columns) to include.
-                    If None, all columns are assumed to be periods.
+            **kwargs: Optional runtime argument overriding config defaults:
+                periods (list[str], optional): List of periods (columns) to include. Overrides `cfg.periods`.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -67,8 +66,10 @@ class DataFrameReader(DataReader):
             # Handle case where DF might be oriented differently if periods kwarg is present?
             # For now, stick to index=nodes assumption.
 
-        # Determine periods: use explicit list or infer from columns
-        graph_periods_arg = kwargs.get("periods")
+        # Determine periods: runtime kwargs override config, else config defaults, else infer
+        graph_periods_arg = kwargs.get(
+            "periods", self.cfg.periods if self.cfg else None
+        )
         if graph_periods_arg:
             if not isinstance(graph_periods_arg, list):
                 raise ReadError("'periods' argument must be a list of column names.")
@@ -80,7 +81,7 @@ class DataFrameReader(DataReader):
             graph_periods = sorted(graph_periods_arg)
             df_subset = df[graph_periods]  # Select only specified period columns
         else:
-            # Assume all columns are periods
+            # No explicit periods provided; infer from columns
             graph_periods = sorted(df.columns.astype(str).tolist())
             df_subset = df
 

@@ -114,6 +114,7 @@ def example_custom_validator_configuration():
     print("\n=== Custom Validator Configuration Example ===")
 
     # Create a custom validator with specific settings
+    # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
     custom_validator = UnifiedNodeValidator(
         strict_mode=False,
         auto_standardize=True,  # Convert alternate names to standard

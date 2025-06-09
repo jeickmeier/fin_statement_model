@@ -58,13 +58,15 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
                  `source` (ticker), `api_key`, `statement_type`, `period_type`,
                  `limit`, and `mapping_config`.
         """
+        # Initialise mixins to set up configuration context and mapping caches.
+        ConfigurationMixin.__init__(self)
+        MappingAwareMixin.__init__(self)  # currently a no-op but future-proof
+
         self.cfg = cfg
 
-    def _validate_api_key(self) -> None:
-        """Perform a simple check if the API key seems valid."""
-        # API key is now guaranteed by FmpReaderConfig validation
-        api_key = self.cfg.api_key
-        if not api_key:  # Should not happen if validation passed, but defensive check
+    def _validate_api_key(self, api_key: str) -> None:
+        """Perform a simple check if the provided API key is valid."""
+        if not api_key:
             raise ReadError(
                 "FMP API key is required for reading.",
                 source="FMP API",
@@ -74,8 +76,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
             # Use a cheap endpoint for validation
             test_url = f"{self.BASE_URL}/profile/AAPL?apikey={api_key}"  # Example
             response = requests.get(test_url, timeout=cfg("api.api_timeout"))
-            response.raise_for_status()  # Raises HTTPError for bad responses (4xx or 5xx)
-            # Basic check on response content if needed
+            response.raise_for_status()
             if not response.json():
                 raise ReadError(
                     "API key validation returned empty response.",
@@ -97,8 +98,11 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
 
         Args:
             source (str): The stock ticker symbol (e.g., "AAPL").
-            **kwargs: Currently unused. Configuration is handled by the `FmpReaderConfig`
-                      object passed during initialization.
+            **kwargs: Optional runtime arguments overriding config defaults:
+                statement_type (str): Type of statement to fetch ('income_statement', 'balance_sheet', 'cash_flow').
+                period_type (str): Period type ('FY' or 'QTR').
+                limit (int): Number of periods to fetch.
+                api_key (str): API key for FMP, overrides env or config value.
 
         Returns:
             A new Graph instance populated with FinancialStatementItemNodes.
@@ -111,14 +115,15 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
         # Set configuration context for better error reporting
         self.set_config_context(ticker=ticker, operation="api_read")
 
-        # Parameters now come directly from the validated config with enhanced access
-        statement_type = self.require_config_value("statement_type", value_type=str)
-        period_type_arg = self.require_config_value("period_type", value_type=str)
-        limit = self.get_config_value(
-            "limit", default=5, value_type=int, validator=lambda x: x > 0
-        )
-        api_key = self.get_config_with_env_fallback(
-            "api_key", "FMP_API_KEY", value_type=str
+        # Runtime overrides: kwargs override configuration defaults
+        statement_type = kwargs.get("statement_type", self.cfg.statement_type)
+        period_type_arg = kwargs.get("period_type", self.cfg.period_type)
+        limit = kwargs.get("limit", self.cfg.limit)
+        # Handle API key override or fallback to validated config
+        api_key = (
+            kwargs.get("api_key")
+            if kwargs.get("api_key") is not None
+            else self.cfg.api_key
         )
 
         # --- Validate Inputs ---
@@ -130,10 +135,10 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
             )
         # statement_type and period_type are validated by FmpReaderConfig
 
-        self._validate_api_key()  # Ensure API key is usable
+        # Validate API key (using any override)
+        self._validate_api_key(api_key)
 
         # Determine mapping for this operation, allowing override via kwargs
-        # Mapping is now determined solely by the config passed during __init__
         try:
             mapping = self._get_mapping(statement_type)
         except TypeError as te:

@@ -49,6 +49,27 @@ class CsvReaderConfig(BaseReaderConfig):
         None, description="Optional configuration for mapping source item names."
     )
 
+    # Runtime override options: these will override config defaults when provided at read-time
+    statement_type: Optional[
+        Literal["income_statement", "balance_sheet", "cash_flow"]
+    ] = Field(
+        None,
+        description="Type of statement ('income_statement', 'balance_sheet', 'cash_flow') to select mapping scope.",
+    )
+    item_col: Optional[str] = Field(
+        None, description="Name of the column containing item identifiers."
+    )
+    period_col: Optional[str] = Field(
+        None, description="Name of the column containing period identifiers."
+    )
+    value_col: Optional[str] = Field(
+        None, description="Name of the column containing numeric values."
+    )
+    pandas_read_csv_kwargs: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Additional kwargs for pandas.read_csv, overriding config defaults.",
+    )
+
     @model_validator(mode="after")  # type: ignore[arg-type]
     def check_header_row(cls, cfg: CsvReaderConfig) -> CsvReaderConfig:
         """Ensure header_row is at least 1."""
@@ -69,6 +90,22 @@ class ExcelReaderConfig(BaseReaderConfig):
     periods_row: int = Field(1, description="1-indexed row where periods reside.")
     mapping_config: Optional[MappingConfig] = Field(
         None, description="Optional configuration for mapping source item names."
+    )
+
+    statement_type: Optional[
+        Literal["income_statement", "balance_sheet", "cash_flow"]
+    ] = Field(
+        None,
+        description="Type of statement ('income_statement', 'balance_sheet', 'cash_flow'). Used to select a mapping scope.",
+    )
+    header_row: Optional[int] = Field(
+        None, description="1-indexed row for pandas header reading."
+    )
+    nrows: Optional[int] = Field(
+        None, description="Number of rows to read from the sheet."
+    )
+    skiprows: Optional[int] = Field(
+        None, description="Number of rows to skip at the beginning."
     )
 
     @model_validator(mode="after")  # type: ignore[arg-type]
@@ -130,6 +167,12 @@ class DataFrameReaderConfig(BaseReaderConfig):
     source: Any = Field(..., description="In-memory pandas DataFrame source")
     format_type: Literal["dataframe"] = "dataframe"
 
+    # Runtime override for read-time periods selection
+    periods: Optional[list[str]] = Field(
+        None,
+        description="Optional list of periods (columns) to include when reading a DataFrame.",
+    )
+
 
 class DictReaderConfig(BaseReaderConfig):
     """Configuration for DictReader.
@@ -142,6 +185,11 @@ class DictReaderConfig(BaseReaderConfig):
         ..., description="In-memory dictionary source"
     )
     format_type: Literal["dict"] = "dict"
+
+    # Runtime override for read-time periods selection
+    periods: Optional[list[str]] = Field(
+        None, description="Optional list of periods to include when reading a dict."
+    )
 
 
 # --- Writer-side Pydantic configuration models ---
@@ -202,11 +250,36 @@ class DictWriterConfig(BaseWriterConfig):
 
 
 class MarkdownWriterConfig(BaseWriterConfig):
-    """Markdown writer options."""
+    """Markdown writer options.
 
-    statement_config_path: str = Field(
-        ..., description="Path to the statement definition YAML file."
+    The writer can be configured in multiple ways:
+
+    1. ``statement_config_path`` – Path to a YAML file containing the statement
+       definition.  This mirrors historical behaviour where configurations were
+       stored on disk.
+    2. ``raw_configs`` – An *in-memory* mapping of statement IDs to their
+       configuration dictionaries.  This is the preferred mechanism in the new
+       API and aligns with ``create_statement_dataframe`` and other
+       in-memory workflows.
+
+    Only **one** of these two options is required.  If both are supplied the
+    explicit ``raw_configs`` takes precedence.
+    """
+
+    # Either a file-based config …
+    statement_config_path: Optional[str] = Field(
+        None, description="Path to the statement definition YAML file."
     )
+
+    # … or in-memory configs.
+    raw_configs: Optional[dict[str, dict[str, Any]]] = Field(
+        None,
+        description=(
+            "Mapping of statement IDs to configuration dictionaries.  This allows "
+            "fully in-memory operation without relying on the filesystem."
+        ),
+    )
+
     historical_periods: Optional[list[str]] = Field(
         None, description="List of historical period names."
     )
@@ -224,3 +297,25 @@ class MarkdownWriterConfig(BaseWriterConfig):
     target: Optional[str] = Field(
         None, description="Optional target path (ignored by MarkdownWriter)."
     )
+
+    # --- Validators ------------------------------------------------------
+
+    @model_validator(mode="after")  # type: ignore[arg-type]
+    def check_exclusive_sources(
+        cls, cfg: "MarkdownWriterConfig"
+    ) -> "MarkdownWriterConfig":
+        """Ensure that exactly one of statement_config_path or raw_configs is provided."""
+        if not cfg.statement_config_path and cfg.raw_configs is None:
+            raise ValueError(
+                "Must provide either 'statement_config_path' or 'raw_configs' to "
+                "MarkdownWriterConfig."
+            )
+        if cfg.statement_config_path and cfg.raw_configs is not None:
+            # Prefer raw_configs but emit warning via logging
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "Both 'statement_config_path' and 'raw_configs' supplied to "
+                "MarkdownWriterConfig – 'raw_configs' will take precedence."
+            )
+        return cfg

@@ -63,8 +63,70 @@ def export_statements(
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
+    # Load statement configuration(s) into memory if a path was provided
+    def _parse_config_file(file_path: Path) -> dict[str, Any] | None:
+        """Parse a YAML or JSON statement configuration file into a dictionary.
+
+        Returns None if the file cannot be parsed or the root element is not a mapping.
+        """
+        try:
+            if file_path.suffix.lower() == ".json":
+                import json
+
+                data = json.loads(file_path.read_text(encoding="utf-8"))
+            else:
+                # Fallback to YAML for .yaml / .yml extensions (PyYAML is a dependency)
+                import yaml
+
+                data = yaml.safe_load(file_path.read_text(encoding="utf-8"))
+            if not isinstance(data, dict):
+                logger.warning(
+                    "Statement config '%s' is not a mapping at the root level – skipping", file_path
+                )
+                return None
+            return data  # type: ignore[return-value]
+        except Exception as exc:  # pragma: no cover – log and continue
+            logger.exception(
+                "Failed to parse statement config file '%s': %s", file_path, exc
+            )
+            return None
+
+    # Determine raw_configs based on the provided argument type
+    raw_configs: dict[str, dict[str, Any]]
+    if isinstance(config_path_or_dir, (str, Path)):
+        cfg_path = Path(config_path_or_dir)
+        if not cfg_path.exists():
+            raise FileNotFoundError(f"Config path '{cfg_path}' does not exist.")
+        if cfg_path.is_dir():
+            raw_configs = {}
+            for item in cfg_path.iterdir():
+                if item.is_file() and item.suffix.lower() in {".yaml", ".yml", ".json"}:
+                    parsed_cfg = _parse_config_file(item)
+                    if parsed_cfg:
+                        stmt_id = str(parsed_cfg.get("id", item.stem))
+                        raw_configs[stmt_id] = parsed_cfg
+            if not raw_configs:
+                raise FileNotFoundError(
+                    f"No valid statement configuration files found in directory '{cfg_path}'."
+                )
+        else:
+            parsed_cfg = _parse_config_file(cfg_path)
+            if parsed_cfg is None:
+                raise FileNotFoundError(
+                    f"Failed to parse statement configuration file '{cfg_path}'."
+                )
+            stmt_id = str(parsed_cfg.get("id", cfg_path.stem))
+            raw_configs = {stmt_id: parsed_cfg}
+    elif isinstance(config_path_or_dir, dict):
+        # Already provided a mapping of configs
+        raw_configs = config_path_or_dir  # type: ignore[assignment]
+    else:
+        raise TypeError(
+            "config_path_or_dir must be a path to a config file/directory or a mapping of configs."
+        )
+
     try:
-        dfs = create_statement_dataframe(graph, config_path_or_dir, format_kwargs)
+        dfs = create_statement_dataframe(graph, raw_configs, format_kwargs)
     except FinancialModelError:
         logger.exception("Failed to generate statement dataframes for export:")
         raise  # Re-raise critical errors from generation step
@@ -77,12 +139,14 @@ def export_statements(
 
     # Standardize to dictionary format
     if isinstance(dfs, pd.DataFrame):
-        # Try to get a meaningful name if it was a single file
-        stmt_id = (
-            Path(config_path_or_dir).stem
-            if Path(config_path_or_dir).is_file()
-            else "statement"
-        )
+        # Derive a sensible statement ID when only a single DataFrame is returned
+        if isinstance(config_path_or_dir, (str, Path)):
+            # Use file/dir name if a path was provided
+            path_obj = Path(config_path_or_dir)
+            stmt_id = path_obj.stem if path_obj.is_file() else "statement"
+        else:
+            # Fallback to the first key in the raw_configs mapping
+            stmt_id = next(iter(raw_configs.keys()))
         dfs_dict = {stmt_id: dfs}
     else:
         dfs_dict = dfs

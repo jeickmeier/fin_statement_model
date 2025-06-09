@@ -22,6 +22,8 @@ The validators help ensure:
 
 import logging
 import sys
+import yaml
+from pathlib import Path
 import pandas as pd
 from fin_statement_model.core.errors import FinancialModelError
 
@@ -75,7 +77,8 @@ historical_data = {
 
 logger.info("Validating and normalizing node names...")
 
-# Create unified validator
+# Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
+# Create unified validator for demo
 validator = UnifiedNodeValidator(
     strict_mode=False,  # Allow alternate names
     auto_standardize=True,  # Automatically convert to standard names
@@ -343,15 +346,21 @@ forecaster.create_forecast(
 
 # --- 4. Statement Generation ---
 
-# Restore try-except block
-statement_df = create_statement_dataframe(
+# Load corporate statement config from YAML into memory
+raw_config = yaml.safe_load(Path(TEST_CONFIG_PATH).read_text(encoding="utf-8"))
+stmt_id = raw_config.get("id", "test_statement")
+raw_configs = {stmt_id: raw_config}
+
+# Generate the statement DataFrame
+df_map = create_statement_dataframe(
     graph=graph,
-    config_path_or_dir=str(TEST_CONFIG_PATH),  # Pass the path to the config file
+    raw_configs=raw_configs,
     format_kwargs={
-        "should_apply_signs": True,  # Apply sign conventions from config
-        "number_format": ",.1f",  # Format numbers with commas, 1 decimal place
+        "should_apply_signs": True,
+        "number_format": ",.1f",
     },
 )
+statement_df = df_map[stmt_id]
 
 with pd.option_context(
     "display.max_rows", None, "display.max_columns", None, "display.width", 1000
@@ -363,7 +372,7 @@ write_data(
     format_type="markdown",
     graph=graph,
     target=str(md_output_path),
-    statement_config_path=str(TEST_CONFIG_PATH),
+    raw_configs=raw_configs,
     historical_periods=historical_periods,
     forecast_configs=forecast_configs,
 )

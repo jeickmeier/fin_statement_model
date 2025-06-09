@@ -7,6 +7,7 @@ including loan portfolios, maturity schedules, and covenant calculations.
 import logging
 from pathlib import Path
 from typing import Union
+import yaml
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
@@ -248,13 +249,16 @@ def main() -> None:
     # Create the base financial model with raw data nodes
     graph = create_real_estate_financial_model()
 
-    # Generate calculation nodes based on the statement configuration
+    # Load statement configuration from YAML into memory
     config_path = (
         Path(__file__).resolve().parents[2]
         / "configs"
         / "real_estate_debt_statement.yaml"
     )
-    create_statement_dataframe(graph, str(config_path))
+    raw_config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    raw_configs = {raw_config.get("id", "real_estate_debt"): raw_config}
+    # Build statement structure and calculation nodes
+    create_statement_dataframe(graph, raw_configs)
 
     # Calculate key metrics
     metrics = calculate_debt_metrics(graph)

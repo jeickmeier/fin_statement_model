@@ -13,16 +13,6 @@ any case variation:
 
 Note: Names with spaces still need preprocessing (replace spaces with underscores).
 
-IMPORTANT NOTE ON CASE SENSITIVITY:
-The standard node registry is case-sensitive. All standard node names are stored
-in lowercase (e.g., "revenue", "cost_of_goods_sold", "ebitda"). When validating
-node names from external sources (like Excel), you should normalize them to
-lowercase and replace spaces with underscores before validation.
-
-Example normalization:
-  "Revenue" -> "revenue"
-  "Cost of Goods Sold" -> "cost_of_goods_sold"
-  "EBITDA" -> "ebitda"
 """
 
 import logging
@@ -40,8 +30,10 @@ def example_basic_validation():
     """Show basic node name validation using config settings."""
     logger.info("=== Basic Validation Example ===")
 
-    # Create validator - automatically uses config settings!
-    validator = UnifiedNodeValidator()
+    # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
+    validator = (
+        UnifiedNodeValidator()
+    )  # Demo only: demonstrates direct validator instantiation
 
     # The validator now uses these config defaults internally:
     # - config.validation.strict_mode
@@ -88,7 +80,11 @@ def example_basic_validation():
 def example_case_sensitivity_handling():
     """Show automatic case handling in action."""
     logger.info("\n=== Automatic Case Handling ===")
-    validator = UnifiedNodeValidator()
+
+    # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
+    validator = (
+        UnifiedNodeValidator()
+    )  # Demo only: demonstrates direct validator instantiation
     # Test cases showing automatic case handling
     test_cases = [
         ("revenue", "Standard lowercase"),
@@ -120,10 +116,11 @@ def example_context_aware_validation():
     """Show context-aware validation with node types and relationships."""
     logger.info("\n=== Context-Aware Validation Example ===")
 
+    # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
     validator = UnifiedNodeValidator(
         enable_patterns=True,
         strict_mode=config.validation.strict_mode,
-    )
+    )  # Demo only: demonstrates direct validator instantiation
 
     # Test nodes with context
     test_cases = [
@@ -148,15 +145,15 @@ def example_graph_building():
     """Show validation during graph building with config settings."""
     logger.info("\n=== Graph Building with Validation ===")
 
-    from fin_statement_model.core.graph import Graph
-    from fin_statement_model.core.nodes import FinancialStatementItemNode
-
-    # Use config settings for validation
+    # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
     validator = UnifiedNodeValidator(
         auto_standardize=config.validation.auto_standardize_names,
         warn_on_non_standard=config.validation.warn_on_non_standard,
         strict_mode=config.validation.strict_mode,
-    )
+    )  # Demo only: demonstrates direct validator instantiation
+
+    from fin_statement_model.core.graph import Graph
+    from fin_statement_model.core.nodes import FinancialStatementItemNode
 
     graph = Graph()
 
@@ -241,6 +238,15 @@ def example_flexible_vs_strict():
     """Show difference between flexible and strict validation modes using config."""
     logger.info("\n=== Strict vs Flexible Validation ===")
 
+    # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
+    strict_validator = UnifiedNodeValidator(
+        strict_mode=config.validation.strict_mode
+    )  # Demo only
+    # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
+    flexible_validator = UnifiedNodeValidator(
+        strict_mode=config.validation.strict_mode
+    )  # Demo only
+
     # Save current config
     current_strict = config.validation.strict_mode
 
@@ -272,11 +278,11 @@ def example_excel_reader_integration():
     """Show how validation integrates with Excel reading using config."""
     logger.info("\n=== Reader Integration Example ===")
 
-    # Create validator with IO config settings
+    # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
     validator = UnifiedNodeValidator(
         auto_standardize=config.io.auto_standardize_columns,
         enable_patterns=True,
-    )
+    )  # Demo only: demonstrates direct validator instantiation
 
     # Simulate Excel column headers (often in mixed case)
     excel_headers = [

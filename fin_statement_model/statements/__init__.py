@@ -102,7 +102,10 @@ from .formatting.formatter import StatementFormatter
 
 # High-level orchestration functions
 from .orchestration.orchestrator import create_statement_dataframe
-from .orchestration.exporter import export_statements_to_excel, export_statements_to_json
+from .orchestration.exporter import (
+    export_statements_to_excel,
+    export_statements_to_json,
+)
 
 # Errors specific to statements
 from .errors import StatementError, ConfigurationError
@@ -207,14 +210,12 @@ def validate_statement_config_with_nodes(
         >>> else:
         ...     print("Validation passed!")
     """
-    # Import here to avoid circular dependencies
-    from fin_statement_model.statements.configs.loader import load_config_file
-
-    # Load config data if path provided
-    if isinstance(config_path_or_data, str):
-        config_data = load_config_file(config_path_or_data)
-    else:
-        config_data = config_path_or_data
+    # File-based loading is no longer supported; only in-memory dicts
+    if not isinstance(config_path_or_data, dict):
+        raise ConfigurationError(
+            message="File-based loading of statement configs is no longer supported; please pass a configuration dictionary."
+        )
+    config_data = config_path_or_data
 
     # Create validator
     node_validator = UnifiedNodeValidator(

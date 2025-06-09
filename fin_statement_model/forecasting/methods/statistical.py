@@ -6,6 +6,7 @@ This method generates forecast values by sampling from statistical distributions
 from typing import Any
 import numpy as np
 from pydantic import ValidationError
+from fin_statement_model.config.helpers import cfg
 
 from .base import BaseForecastMethod
 from fin_statement_model.forecasting.types import StatisticalConfig
@@ -91,20 +92,23 @@ class StatisticalForecastMethod(BaseForecastMethod):
             distribution=config["distribution"], params=config["params"]
         )
 
+        # Seed RNG if configured
+        seed = cfg("forecasting.random_seed")
+        if seed is not None:
+            rng = np.random.RandomState(seed)
+        else:
+            rng = np.random
+
         # Create generator function based on distribution
         def generator() -> float:
             """Generate a random growth rate from the specified distribution."""
             if stat_config.distribution == "normal":
                 return float(
-                    np.random.normal(
-                        stat_config.params["mean"], stat_config.params["std"]
-                    )
+                    rng.normal(stat_config.params["mean"], stat_config.params["std"])
                 )
             elif stat_config.distribution == "uniform":
                 return float(
-                    np.random.uniform(
-                        stat_config.params["low"], stat_config.params["high"]
-                    )
+                    rng.uniform(stat_config.params["low"], stat_config.params["high"])
                 )
             else:
                 # This shouldn't happen due to validation, but just in case
