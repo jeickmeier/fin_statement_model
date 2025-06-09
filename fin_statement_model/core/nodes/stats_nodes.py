@@ -158,26 +158,6 @@ class YoYGrowthNode(Node):
         }
 
     @staticmethod
-    def from_dict(data: dict[str, Any]) -> "YoYGrowthNode":
-        """Create a YoYGrowthNode from a dictionary representation.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-
-        Returns:
-            A new YoYGrowthNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: This method requires context (existing nodes) to resolve
-                input dependencies. Use from_dict_with_context instead.
-        """
-        raise NotImplementedError(
-            "YoYGrowthNode.from_dict() requires context to resolve input dependencies. "
-            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
-        )
-
-    @staticmethod
     def from_dict_with_context(
         data: dict[str, Any], context: dict[str, Node]
     ) -> "YoYGrowthNode":
@@ -399,26 +379,6 @@ class MultiPeriodStatNode(Node):
         }
 
     @staticmethod
-    def from_dict(data: dict[str, Any]) -> "MultiPeriodStatNode":
-        """Create a MultiPeriodStatNode from a dictionary representation.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-
-        Returns:
-            A new MultiPeriodStatNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: This method requires context (existing nodes) to resolve
-                input dependencies. Use from_dict_with_context instead.
-        """
-        raise NotImplementedError(
-            "MultiPeriodStatNode.from_dict() requires context to resolve input dependencies. "
-            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
-        )
-
-    @staticmethod
     def from_dict_with_context(
         data: dict[str, Any], context: dict[str, Node]
     ) -> "MultiPeriodStatNode":
@@ -600,26 +560,6 @@ class TwoPeriodAverageNode(Node):
             "period1": self.period1,
             "period2": self.period2,
         }
-
-    @staticmethod
-    def from_dict(data: dict[str, Any]) -> "TwoPeriodAverageNode":
-        """Create a TwoPeriodAverageNode from a dictionary representation.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-
-        Returns:
-            A new TwoPeriodAverageNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: This method requires context (existing nodes) to resolve
-                input dependencies. Use from_dict_with_context instead.
-        """
-        raise NotImplementedError(
-            "TwoPeriodAverageNode.from_dict() requires context to resolve input dependencies. "
-            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
-        )
 
     @staticmethod
     def from_dict_with_context(

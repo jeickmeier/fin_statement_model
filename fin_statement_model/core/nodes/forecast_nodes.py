@@ -202,31 +202,6 @@ class ForecastNode(Node):
         """
         raise NotImplementedError("Subclasses must implement from_dict_with_context")
 
-    @staticmethod
-    def from_dict(data: dict[str, Any]) -> "ForecastNode":
-        """Create a ForecastNode from a dictionary representation.
-
-        Note:
-            Forecast nodes require access to the existing node context to correctly
-            resolve dependencies (e.g., the base node that the forecast is built
-            upon). Therefore, plain deserialization via this method is **not**
-            supported.  Instead, use :py:meth:`from_dict_with_context` on the
-            appropriate concrete subclass where you can also supply the required
-            *context* mapping.
-
-        Args:
-            data: Serialized node representation.
-
-        Raises:
-            NotImplementedError: Always – plain deserialization without context is
-                not supported for forecast nodes.
-        """
-        raise NotImplementedError(
-            "ForecastNode deserialization requires node context. "
-            "Use the `from_dict_with_context` method of the concrete subclass "
-            "and provide a mapping of existing nodes."
-        )
-
 
 class FixedGrowthForecastNode(ForecastNode):
     """A forecast node that applies a constant growth rate to all forecast periods.

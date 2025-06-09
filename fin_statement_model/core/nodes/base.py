@@ -196,27 +196,32 @@ class Node(ABC):
             'financial_statement_item'
         """
 
-    @staticmethod
-    @abstractmethod
-    def from_dict(data: dict[str, Any]) -> "Node":
-        """Create a node instance from a dictionary representation.
+    # @staticmethod
+    # def from_dict(data: dict[str, Any]) -> "Node":
+    #     """Deserialize a node from a dictionary representation.
 
-        This static method should be implemented by each concrete node class
-        to reconstruct an instance from its serialized form.
+    #     Direct deserialization of nodes requires knowledge of the surrounding
+    #     graph context (e.g., resolving input dependencies between nodes).  To
+    #     avoid leaking this complexity into every individual node class, the
+    #     project centralises the logic in
+    #     :pyclass:`~fin_statement_model.core.node_factory.NodeFactory`.
 
-        Args:
-            data: Dictionary containing the node's serialized data.
+    #     This base implementation therefore **always** raises
+    #     :class:`NotImplementedError`.  Callers should use
+    #     ``NodeFactory.create_from_dict`` (or the specialised
+    #     ``from_dict_with_context`` methods on concrete node classes) instead.
 
-        Returns:
-            A new instance of the node.
+    #     Args:
+    #         data: The serialized node representation.
 
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-
-        Examples:
-            >>> data = {'type': 'financial_statement_item', 'name': 'Revenue', 'values': {'2023': 1000}}
-            >>> node = FinancialStatementItemNode.from_dict(data)
-        """
+    #     Raises:
+    #         NotImplementedError: Always – instructs the caller to use
+    #             :pyclass:`NodeFactory` for deserialization.
+    #     """
+    #     raise NotImplementedError(
+    #         "Direct node deserialization is not supported. Use "
+    #         "NodeFactory.create_from_dict(...) instead."
+    #     )
 
     def get_dependencies(self) -> list[str]:
         """Get the names of nodes this node depends on.

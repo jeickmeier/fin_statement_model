@@ -219,30 +219,6 @@ class CalculationNode(Node):
         return node_dict
 
     @staticmethod
-    def from_dict(data: dict[str, Any]) -> "CalculationNode":
-        """Create a CalculationNode from a dictionary representation.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-
-        Returns:
-            A new CalculationNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: This method requires context (existing nodes) to resolve
-                input dependencies. Use from_dict_with_context instead.
-
-        Note:
-            This method cannot resolve input node dependencies without context.
-            Use NodeFactory.create_from_dict() or from_dict_with_context() instead.
-        """
-        raise NotImplementedError(
-            "CalculationNode.from_dict() requires context to resolve input dependencies. "
-            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
-        )
-
-    @staticmethod
     def from_dict_with_context(
         data: dict[str, Any], context: dict[str, Node]
     ) -> "CalculationNode":
@@ -408,26 +384,6 @@ class FormulaCalculationNode(CalculationNode):
             "metric_name": self.metric_name,
             "metric_description": self.metric_description,
         }
-
-    @staticmethod
-    def from_dict(data: dict[str, Any]) -> "FormulaCalculationNode":
-        """Create a FormulaCalculationNode from a dictionary representation.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-
-        Returns:
-            A new FormulaCalculationNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: This method requires context (existing nodes) to resolve
-                input dependencies. Use from_dict_with_context instead.
-        """
-        raise NotImplementedError(
-            "FormulaCalculationNode.from_dict() requires context to resolve input dependencies. "
-            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
-        )
 
     @staticmethod
     def from_dict_with_context(
@@ -623,22 +579,4 @@ class CustomCalculationNode(Node):
             ),
         }
 
-    @staticmethod
-    def from_dict(data: dict[str, Any]) -> "CustomCalculationNode":
-        """Create a CustomCalculationNode from a dictionary representation.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-
-        Returns:
-            A new CustomCalculationNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: CustomCalculationNode cannot be fully deserialized
-                because the formula_func cannot be serialized.
-        """
-        raise NotImplementedError(
-            "CustomCalculationNode cannot be fully deserialized because the formula_func "
-            "cannot be serialized. Manual reconstruction required."
-        )
+    # from_dict static method removed – CustomCalculationNode cannot be deserialized without source code; use NodeFactory or manual creation.
