@@ -70,8 +70,7 @@ def export_statements(
     output_path.mkdir(parents=True, exist_ok=True)
 
     if not dfs:
-        logger.warning(
-            "Received an empty mapping of DataFrames – nothing to export.")
+        logger.warning("Received an empty mapping of DataFrames – nothing to export.")
         return
 
     export_errors: list[tuple[str, str]] = []

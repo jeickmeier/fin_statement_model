@@ -72,6 +72,7 @@ try:
 except Exception:
     logger.exception("Failed to initialize standard nodes")
 
+
 def is_calculation_node(node: Node) -> bool:
     """Return True for nodes that represent computed/calculated values.
 
@@ -99,6 +100,7 @@ def is_calculation_node(node: Node) -> bool:
             TwoPeriodAverageNode,
         ),
     )
+
 
 __all__ = [
     "AverageHistoricalGrowthForecastNode",

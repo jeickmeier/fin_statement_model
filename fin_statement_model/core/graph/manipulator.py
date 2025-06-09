@@ -57,7 +57,11 @@ class GraphManipulator:
             None
         """
         for nd in self.graph._nodes.values():
-            if isinstance(nd, CalculationNode) and hasattr(nd, "input_names") and nd.input_names:
+            if (
+                isinstance(nd, CalculationNode)
+                and hasattr(nd, "input_names")
+                and nd.input_names
+            ):
                 try:
                     resolved_inputs: list[Node] = []
                     for name in nd.input_names:

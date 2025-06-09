@@ -164,9 +164,7 @@ class GraphTraverser:
             >>> traverser.get_calculation_nodes()
         """
         return [
-            node_id
-            for node_id, node in self.nodes.items()
-            if is_calculation_node(node)
+            node_id for node_id, node in self.nodes.items() if is_calculation_node(node)
         ]
 
     def get_dependencies(self, node_id: str) -> list[str]:

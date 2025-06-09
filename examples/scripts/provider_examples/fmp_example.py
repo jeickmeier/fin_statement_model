@@ -101,9 +101,7 @@ def main():
     try:
         # Load statement configuration JSON from examples directory into memory
         config_file = (
-            Path(__file__).resolve().parents[3]
-            / "examples"
-            / f"{STATEMENT_TYPE}.json"
+            Path(__file__).resolve().parents[3] / "examples" / f"{STATEMENT_TYPE}.json"
         )
         if not config_file.is_file():
             raise FileNotFoundError(f"Statement configuration not found: {config_file}")

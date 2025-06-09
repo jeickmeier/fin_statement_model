@@ -120,7 +120,11 @@ class PeriodManager:
         strategy = cfg("forecasting.base_period_strategy")
 
         # Validate strategy
-        valid_strategies = {"preferred_then_most_recent", "most_recent", "last_historical"}
+        valid_strategies = {
+            "preferred_then_most_recent",
+            "most_recent",
+            "last_historical",
+        }
         if strategy not in valid_strategies:
             logger.warning(
                 f"Unknown base period strategy '{strategy}', falling back to 'preferred_then_most_recent'"

@@ -31,11 +31,11 @@ class ExcelWriter(DataWriter, ConfigurationMixin):
     provided via an `ExcelWriterConfig` object during initialization.
     """
 
-    def __init__(self, cfg: Optional[ExcelWriterConfig] = None) -> None:
+    def __init__(self, cfg: ExcelWriterConfig) -> None:
         """Initialize the ExcelWriter.
 
         Args:
-            cfg: Optional validated `ExcelWriterConfig` instance.
+            cfg: Non-optional validated `ExcelWriterConfig` instance.
         """
         super().__init__()
         self.cfg = cfg
@@ -59,9 +59,6 @@ class ExcelWriter(DataWriter, ConfigurationMixin):
         file_path = target
 
         # Runtime overrides: kwargs override configured defaults
-        if self.cfg is None:
-            raise ValueError("ExcelWriter configuration is required but not provided")
-
         sheet_name = kwargs.get("sheet_name", self.cfg.sheet_name)
         recalculate = kwargs.get("recalculate", self.cfg.recalculate)
         include_nodes = kwargs.get("include_nodes", self.cfg.include_nodes)

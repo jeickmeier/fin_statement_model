@@ -427,8 +427,7 @@ class StatementStructureBuilder:
             `CalculatedLineItem`, `MetricLineItem`, `SubtotalLineItem`, or `Section`).
 
         Raises:
-            ConfigurationError: If an unknown or unexpected model type is
-                encountered.
+            TypeError: If an unexpected model type is encountered.
         """
         # Convert adjustment filter for all item types
         adjustment_filter = self._convert_adjustment_filter(
@@ -498,15 +497,7 @@ class StatementStructureBuilder:
             return self._build_subtotal_model(item_model)
 
         # Should be unreachable if Pydantic validation works
-        logger.error(
-            f"Encountered unknown item model type during build: {type(item_model).__name__}"
-        )
-        raise ConfigurationError(
-            message=f"Unknown item model type: {type(item_model).__name__}",
-            errors=[
-                f"Item '{getattr(item_model, 'id', '<unknown>')}' has invalid model type."
-            ],
-        )
+        raise TypeError(f"Unhandled type: {type(item_model)}")
 
     def _build_subtotal_model(self, subtotal_model: SubtotalModel) -> SubtotalLineItem:
         """Build a `SubtotalLineItem` object from a `SubtotalModel`.

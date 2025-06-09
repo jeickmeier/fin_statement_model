@@ -1504,8 +1504,12 @@ sections:
     bs_registry = StatementRegistry()
     builder = StatementStructureBuilder()
     # Load, validate, build, and register the balance_sheet config from in-memory dict
-    bs_raw_config = all_configs.get("balance_sheet") or yaml.safe_load(bs_stmt_path.read_text(encoding="utf-8"))
-    load_build_register_statements({bs_raw_config.get("id", "balance_sheet"): bs_raw_config}, bs_registry, builder)
+    bs_raw_config = all_configs.get("balance_sheet") or yaml.safe_load(
+        bs_stmt_path.read_text(encoding="utf-8")
+    )
+    load_build_register_statements(
+        {bs_raw_config.get("id", "balance_sheet"): bs_raw_config}, bs_registry, builder
+    )
     statement_structure = bs_registry.get("balance_sheet")
     # Populate graph with balance sheet calculation and metric nodes
     populate_graph(bs_registry, graph)
@@ -2363,9 +2367,7 @@ def main():
     try:
         # Load statement configuration JSON from examples directory into memory
         config_file = (
-            Path(__file__).resolve().parents[3]
-            / "examples"
-            / f"{STATEMENT_TYPE}.json"
+            Path(__file__).resolve().parents[3] / "examples" / f"{STATEMENT_TYPE}.json"
         )
         if not config_file.is_file():
             raise FileNotFoundError(f"Statement configuration not found: {config_file}")
@@ -11326,7 +11328,11 @@ class GraphManipulator:
             None
         """
         for nd in self.graph._nodes.values():
-            if isinstance(nd, CalculationNode) and hasattr(nd, "input_names") and nd.input_names:
+            if (
+                isinstance(nd, CalculationNode)
+                and hasattr(nd, "input_names")
+                and nd.input_names
+            ):
                 try:
                     resolved_inputs: list[Node] = []
                     for name in nd.input_names:
@@ -11633,9 +11639,7 @@ class GraphTraverser:
             >>> traverser.get_calculation_nodes()
         """
         return [
-            node_id
-            for node_id, node in self.nodes.items()
-            if is_calculation_node(node)
+            node_id for node_id, node in self.nodes.items() if is_calculation_node(node)
         ]
 
     def get_dependencies(self, node_id: str) -> list[str]:
@@ -13353,6 +13357,7 @@ try:
 except Exception:
     logger.exception("Failed to initialize standard nodes")
 
+
 def is_calculation_node(node: Node) -> bool:
     """Return True for nodes that represent computed/calculated values.
 
@@ -13380,6 +13385,7 @@ def is_calculation_node(node: Node) -> bool:
             TwoPeriodAverageNode,
         ),
     )
+
 
 __all__ = [
     "AverageHistoricalGrowthForecastNode",
@@ -13605,27 +13611,32 @@ class Node(ABC):
             'financial_statement_item'
         """
 
-    @staticmethod
-    @abstractmethod
-    def from_dict(data: dict[str, Any]) -> "Node":
-        """Create a node instance from a dictionary representation.
+    # @staticmethod
+    # def from_dict(data: dict[str, Any]) -> "Node":
+    #     """Deserialize a node from a dictionary representation.
 
-        This static method should be implemented by each concrete node class
-        to reconstruct an instance from its serialized form.
+    #     Direct deserialization of nodes requires knowledge of the surrounding
+    #     graph context (e.g., resolving input dependencies between nodes).  To
+    #     avoid leaking this complexity into every individual node class, the
+    #     project centralises the logic in
+    #     :pyclass:`~fin_statement_model.core.node_factory.NodeFactory`.
 
-        Args:
-            data: Dictionary containing the node's serialized data.
+    #     This base implementation therefore **always** raises
+    #     :class:`NotImplementedError`.  Callers should use
+    #     ``NodeFactory.create_from_dict`` (or the specialised
+    #     ``from_dict_with_context`` methods on concrete node classes) instead.
 
-        Returns:
-            A new instance of the node.
+    #     Args:
+    #         data: The serialized node representation.
 
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-
-        Examples:
-            >>> data = {'type': 'financial_statement_item', 'name': 'Revenue', 'values': {'2023': 1000}}
-            >>> node = FinancialStatementItemNode.from_dict(data)
-        """
+    #     Raises:
+    #         NotImplementedError: Always – instructs the caller to use
+    #             :pyclass:`NodeFactory` for deserialization.
+    #     """
+    #     raise NotImplementedError(
+    #         "Direct node deserialization is not supported. Use "
+    #         "NodeFactory.create_from_dict(...) instead."
+    #     )
 
     def get_dependencies(self) -> list[str]:
         """Get the names of nodes this node depends on.
@@ -13864,30 +13875,6 @@ class CalculationNode(Node):
         return node_dict
 
     @staticmethod
-    def from_dict(data: dict[str, Any]) -> "CalculationNode":
-        """Create a CalculationNode from a dictionary representation.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-
-        Returns:
-            A new CalculationNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: This method requires context (existing nodes) to resolve
-                input dependencies. Use from_dict_with_context instead.
-
-        Note:
-            This method cannot resolve input node dependencies without context.
-            Use NodeFactory.create_from_dict() or from_dict_with_context() instead.
-        """
-        raise NotImplementedError(
-            "CalculationNode.from_dict() requires context to resolve input dependencies. "
-            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
-        )
-
-    @staticmethod
     def from_dict_with_context(
         data: dict[str, Any], context: dict[str, Node]
     ) -> "CalculationNode":
@@ -14053,26 +14040,6 @@ class FormulaCalculationNode(CalculationNode):
             "metric_name": self.metric_name,
             "metric_description": self.metric_description,
         }
-
-    @staticmethod
-    def from_dict(data: dict[str, Any]) -> "FormulaCalculationNode":
-        """Create a FormulaCalculationNode from a dictionary representation.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-
-        Returns:
-            A new FormulaCalculationNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: This method requires context (existing nodes) to resolve
-                input dependencies. Use from_dict_with_context instead.
-        """
-        raise NotImplementedError(
-            "FormulaCalculationNode.from_dict() requires context to resolve input dependencies. "
-            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
-        )
 
     @staticmethod
     def from_dict_with_context(
@@ -14268,25 +14235,7 @@ class CustomCalculationNode(Node):
             ),
         }
 
-    @staticmethod
-    def from_dict(data: dict[str, Any]) -> "CustomCalculationNode":
-        """Create a CustomCalculationNode from a dictionary representation.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-
-        Returns:
-            A new CustomCalculationNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: CustomCalculationNode cannot be fully deserialized
-                because the formula_func cannot be serialized.
-        """
-        raise NotImplementedError(
-            "CustomCalculationNode cannot be fully deserialized because the formula_func "
-            "cannot be serialized. Manual reconstruction required."
-        )
+    # from_dict static method removed – CustomCalculationNode cannot be deserialized without source code; use NodeFactory or manual creation.
 
 
 
@@ -14497,31 +14446,6 @@ class ForecastNode(Node):
             NotImplementedError: This base method should be overridden by subclasses.
         """
         raise NotImplementedError("Subclasses must implement from_dict_with_context")
-
-    @staticmethod
-    def from_dict(data: dict[str, Any]) -> "ForecastNode":
-        """Create a ForecastNode from a dictionary representation.
-
-        Note:
-            Forecast nodes require access to the existing node context to correctly
-            resolve dependencies (e.g., the base node that the forecast is built
-            upon). Therefore, plain deserialization via this method is **not**
-            supported.  Instead, use :py:meth:`from_dict_with_context` on the
-            appropriate concrete subclass where you can also supply the required
-            *context* mapping.
-
-        Args:
-            data: Serialized node representation.
-
-        Raises:
-            NotImplementedError: Always – plain deserialization without context is
-                not supported for forecast nodes.
-        """
-        raise NotImplementedError(
-            "ForecastNode deserialization requires node context. "
-            "Use the `from_dict_with_context` method of the concrete subclass "
-            "and provide a mapping of existing nodes."
-        )
 
 
 class FixedGrowthForecastNode(ForecastNode):
@@ -16187,26 +16111,6 @@ class YoYGrowthNode(Node):
         }
 
     @staticmethod
-    def from_dict(data: dict[str, Any]) -> "YoYGrowthNode":
-        """Create a YoYGrowthNode from a dictionary representation.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-
-        Returns:
-            A new YoYGrowthNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: This method requires context (existing nodes) to resolve
-                input dependencies. Use from_dict_with_context instead.
-        """
-        raise NotImplementedError(
-            "YoYGrowthNode.from_dict() requires context to resolve input dependencies. "
-            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
-        )
-
-    @staticmethod
     def from_dict_with_context(
         data: dict[str, Any], context: dict[str, Node]
     ) -> "YoYGrowthNode":
@@ -16428,26 +16332,6 @@ class MultiPeriodStatNode(Node):
         }
 
     @staticmethod
-    def from_dict(data: dict[str, Any]) -> "MultiPeriodStatNode":
-        """Create a MultiPeriodStatNode from a dictionary representation.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-
-        Returns:
-            A new MultiPeriodStatNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: This method requires context (existing nodes) to resolve
-                input dependencies. Use from_dict_with_context instead.
-        """
-        raise NotImplementedError(
-            "MultiPeriodStatNode.from_dict() requires context to resolve input dependencies. "
-            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
-        )
-
-    @staticmethod
     def from_dict_with_context(
         data: dict[str, Any], context: dict[str, Node]
     ) -> "MultiPeriodStatNode":
@@ -16629,26 +16513,6 @@ class TwoPeriodAverageNode(Node):
             "period1": self.period1,
             "period2": self.period2,
         }
-
-    @staticmethod
-    def from_dict(data: dict[str, Any]) -> "TwoPeriodAverageNode":
-        """Create a TwoPeriodAverageNode from a dictionary representation.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-
-        Returns:
-            A new TwoPeriodAverageNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: This method requires context (existing nodes) to resolve
-                input dependencies. Use from_dict_with_context instead.
-        """
-        raise NotImplementedError(
-            "TwoPeriodAverageNode.from_dict() requires context to resolve input dependencies. "
-            "Use NodeFactory.create_from_dict() or from_dict_with_context() instead."
-        )
 
     @staticmethod
     def from_dict_with_context(
@@ -17502,7 +17366,10 @@ class StatementForecaster:
             default_method = cfg("forecasting.default_method")
             # Use method-appropriate default config
             if default_method == "simple":
-                forecast_config = {"method": default_method, "config": cfg("forecasting.default_growth_rate")}
+                forecast_config = {
+                    "method": default_method,
+                    "config": cfg("forecasting.default_growth_rate"),
+                }
             else:
                 # For other methods, use empty config and let the method handle defaults
                 forecast_config = {"method": default_method, "config": {}}
@@ -18296,7 +18163,9 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
         for i in range(1, len(historical_values)):
             previous_value = historical_values[i - 1]
             if previous_value != 0:
-                growth_rates.append((historical_values[i] - previous_value) / previous_value)
+                growth_rates.append(
+                    (historical_values[i] - previous_value) / previous_value
+                )
 
         if not growth_rates:
             return 0.0
@@ -18307,7 +18176,9 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
             try:
                 return float(np.median(growth_rates))
             except (ValueError, TypeError) as e:
-                logger.warning(f"Failed to calculate median growth rate, falling back to mean: {e}")
+                logger.warning(
+                    f"Failed to calculate median growth rate, falling back to mean: {e}"
+                )
                 return float(np.mean(growth_rates))
         # Default to mean
         return float(np.mean(growth_rates))
@@ -18647,7 +18518,11 @@ class PeriodManager:
         strategy = cfg("forecasting.base_period_strategy")
 
         # Validate strategy
-        valid_strategies = {"preferred_then_most_recent", "most_recent", "last_historical"}
+        valid_strategies = {
+            "preferred_then_most_recent",
+            "most_recent",
+            "last_historical",
+        }
         if strategy not in valid_strategies:
             logger.warning(
                 f"Unknown base period strategy '{strategy}', falling back to 'preferred_then_most_recent'"
@@ -22594,7 +22469,7 @@ File: fin_statement_model/io/formats/dataframe/writer.py
 """Data writer for pandas DataFrames."""
 
 import logging
-from typing import Optional, Any
+from typing import Any
 
 import pandas as pd
 
@@ -22620,7 +22495,7 @@ class DataFrameWriter(DataFrameBasedWriter, ConfigurationMixin):
     the `DataFrameWriterConfig` object passed during initialization.
     """
 
-    def __init__(self, cfg: Optional[DataFrameWriterConfig] = None) -> None:
+    def __init__(self, cfg: DataFrameWriterConfig) -> None:
         """Initialize the DataFrameWriter.
 
         Args:
@@ -22647,12 +22522,8 @@ class DataFrameWriter(DataFrameBasedWriter, ConfigurationMixin):
             WriteError: If an error occurs during conversion.
         """
         # Runtime overrides: kwargs override configured defaults
-        recalculate = kwargs.get(
-            "recalculate", self.cfg.recalculate if self.cfg else True
-        )
-        include_nodes = kwargs.get(
-            "include_nodes", self.cfg.include_nodes if self.cfg else None
-        )
+        recalculate = kwargs.get("recalculate", self.cfg.recalculate)
+        include_nodes = kwargs.get("include_nodes", self.cfg.include_nodes)
 
         logger.info("Exporting graph to DataFrame format.")
 
@@ -22876,7 +22747,7 @@ File: fin_statement_model/io/formats/dict/writer.py
 """Data writer for Python dictionaries."""
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.mixins import (
@@ -22901,12 +22772,11 @@ class DictWriter(DataFrameBasedWriter, ConfigurationMixin):
     although the config currently has no options.
     """
 
-    def __init__(self, cfg: Optional[DictWriterConfig] = None) -> None:
+    def __init__(self, cfg: DictWriterConfig) -> None:
         """Initialize the DictWriter.
 
         Args:
-            cfg: Optional validated `DictWriterConfig` instance.
-                 Currently unused but kept for registry symmetry.
+            cfg: Validated `DictWriterConfig` instance.
         """
         super().__init__()
         self.cfg = cfg
@@ -23272,11 +23142,11 @@ class ExcelWriter(DataWriter, ConfigurationMixin):
     provided via an `ExcelWriterConfig` object during initialization.
     """
 
-    def __init__(self, cfg: Optional[ExcelWriterConfig] = None) -> None:
+    def __init__(self, cfg: ExcelWriterConfig) -> None:
         """Initialize the ExcelWriter.
 
         Args:
-            cfg: Optional validated `ExcelWriterConfig` instance.
+            cfg: Non-optional validated `ExcelWriterConfig` instance.
         """
         super().__init__()
         self.cfg = cfg
@@ -23300,9 +23170,6 @@ class ExcelWriter(DataWriter, ConfigurationMixin):
         file_path = target
 
         # Runtime overrides: kwargs override configured defaults
-        if self.cfg is None:
-            raise ValueError("ExcelWriter configuration is required but not provided")
-
         sheet_name = kwargs.get("sheet_name", self.cfg.sheet_name)
         recalculate = kwargs.get("recalculate", self.cfg.recalculate)
         include_nodes = kwargs.get("include_nodes", self.cfg.include_nodes)
@@ -24128,64 +23995,11 @@ class MarkdownWriter(DataWriter):
         try:
             statement_structure = kwargs.get("statement_structure")
 
-            # Fallback: build StatementStructure on-the-fly from raw_configs
-            if statement_structure is None and "raw_configs" in kwargs:
-                raw_configs = kwargs["raw_configs"]
-                try:
-                    from fin_statement_model.statements.structure.builder import (
-                        StatementStructureBuilder,
-                    )
-                    from fin_statement_model.statements.orchestration.loader import (
-                        load_build_register_statements,
-                    )
-                    from fin_statement_model.statements.registry import (
-                        StatementRegistry,
-                    )
-
-                    # Build and register statement(s)
-                    registry = StatementRegistry()
-                    builder = StatementStructureBuilder(
-                        enable_node_validation=False, node_validation_strict=False
-                    )
-                    loaded_ids = load_build_register_statements(
-                        raw_configs,
-                        registry,
-                        builder,
-                        enable_node_validation=False,
-                        node_validation_strict=False,
-                    )
-
-                    if not loaded_ids:
-                        raise WriteError(
-                            "No valid statements could be built from raw_configs."
-                        )
-
-                    # Use the *first* statement by default – users can supply a
-                    # pre-built structure via 'statement_structure' for more
-                    # complex scenarios or when specific statement selection is needed.
-                    # TODO: Consider adding a 'statement_id' parameter to select which statement to use
-                    statement_structure = registry.get(loaded_ids[0])
-                except Exception as build_err:
-                    logger.exception(
-                        "Failed to build statement structure from raw_configs"
-                    )
-                    raise WriteError(
-                        message="Error building statement structure from raw_configs",
-                        target=target,
-                        writer_type="markdown",
-                        original_error=build_err,
-                    ) from build_err
-
-            # If still None, we cannot proceed.
             if statement_structure is None:
-                raise WriteError(
-                    "Must provide 'statement_structure' argument or 'raw_configs'."
-                )
+                raise WriteError("Must provide 'statement_structure' argument.")
 
             filtered_kwargs = {
-                k: v
-                for k, v in kwargs.items()
-                if k not in ("statement_structure", "raw_configs")
+                k: v for k, v in kwargs.items() if k != "statement_structure"
             }
             return self._write_with_structure(
                 graph, statement_structure, **filtered_kwargs
@@ -24329,6 +24143,7 @@ from fin_statement_model.core.adjustments.models import (
 )
 from fin_statement_model.core.graph import Graph  # Needed for Graph convenience methods
 from fin_statement_model.io.exceptions import ReadError, WriteError
+from fin_statement_model.io.core import FileBasedReader, handle_read_errors
 
 logger = logging.getLogger(__name__)
 
@@ -24375,7 +24190,7 @@ def _parse_tags(tag_str: Optional[str]) -> set[AdjustmentTag]:
     return set(tag.strip() for tag in tag_str.split(",") if tag.strip())
 
 
-def read_excel(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
+def _read_excel_impl(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
     """Read adjustments from an Excel file.
 
     Expects the first sheet to contain adjustment data.
@@ -24522,6 +24337,34 @@ def read_excel(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
         )
 
     return valid_adjustments, error_report_df
+
+
+# DataReader class for reading adjustments with standardized validation
+class AdjustmentsExcelReader(FileBasedReader):
+    """DataReader for reading adjustments from an Excel file with consistent validation and error handling."""
+
+    @handle_read_errors()
+    def read(
+        self, source: str | Path, **kwargs
+    ) -> tuple[list[Adjustment], pd.DataFrame]:
+        """Read adjustments using FileBasedReader validation."""
+        path_str = str(source)
+        self.validate_file_exists(path_str)
+        self.validate_file_extension(path_str, (".xls", ".xlsx"))
+        return _read_excel_impl(path_str)
+
+
+# Public API: delegate to standardized reader
+def read_excel(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
+    """Read adjustments from an Excel file.
+
+    Args:
+        path: Path to the Excel file.
+
+    Returns:
+        Tuple of valid Adjustment list and error report DataFrame.
+    """
+    return AdjustmentsExcelReader().read(path)
 
 
 def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:
@@ -30924,8 +30767,7 @@ def export_statements(
     output_path.mkdir(parents=True, exist_ok=True)
 
     if not dfs:
-        logger.warning(
-            "Received an empty mapping of DataFrames – nothing to export.")
+        logger.warning("Received an empty mapping of DataFrames – nothing to export.")
         return
 
     export_errors: list[tuple[str, str]] = []
@@ -32892,8 +32734,7 @@ class StatementStructureBuilder:
             `CalculatedLineItem`, `MetricLineItem`, `SubtotalLineItem`, or `Section`).
 
         Raises:
-            ConfigurationError: If an unknown or unexpected model type is
-                encountered.
+            TypeError: If an unexpected model type is encountered.
         """
         # Convert adjustment filter for all item types
         adjustment_filter = self._convert_adjustment_filter(
@@ -32963,15 +32804,7 @@ class StatementStructureBuilder:
             return self._build_subtotal_model(item_model)
 
         # Should be unreachable if Pydantic validation works
-        logger.error(
-            f"Encountered unknown item model type during build: {type(item_model).__name__}"
-        )
-        raise ConfigurationError(
-            message=f"Unknown item model type: {type(item_model).__name__}",
-            errors=[
-                f"Item '{getattr(item_model, 'id', '<unknown>')}' has invalid model type."
-            ],
-        )
+        raise TypeError(f"Unhandled type: {type(item_model)}")
 
     def _build_subtotal_model(self, subtotal_model: SubtotalModel) -> SubtotalLineItem:
         """Build a `SubtotalLineItem` object from a `SubtotalModel`.

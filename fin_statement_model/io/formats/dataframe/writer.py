@@ -1,7 +1,7 @@
 """Data writer for pandas DataFrames."""
 
 import logging
-from typing import Optional, Any
+from typing import Any
 
 import pandas as pd
 
@@ -27,7 +27,7 @@ class DataFrameWriter(DataFrameBasedWriter, ConfigurationMixin):
     the `DataFrameWriterConfig` object passed during initialization.
     """
 
-    def __init__(self, cfg: Optional[DataFrameWriterConfig] = None) -> None:
+    def __init__(self, cfg: DataFrameWriterConfig) -> None:
         """Initialize the DataFrameWriter.
 
         Args:
@@ -54,12 +54,8 @@ class DataFrameWriter(DataFrameBasedWriter, ConfigurationMixin):
             WriteError: If an error occurs during conversion.
         """
         # Runtime overrides: kwargs override configured defaults
-        recalculate = kwargs.get(
-            "recalculate", self.cfg.recalculate if self.cfg else True
-        )
-        include_nodes = kwargs.get(
-            "include_nodes", self.cfg.include_nodes if self.cfg else None
-        )
+        recalculate = kwargs.get("recalculate", self.cfg.recalculate)
+        include_nodes = kwargs.get("include_nodes", self.cfg.include_nodes)
 
         logger.info("Exporting graph to DataFrame format.")
 

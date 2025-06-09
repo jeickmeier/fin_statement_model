@@ -325,7 +325,10 @@ class StatementForecaster:
             default_method = cfg("forecasting.default_method")
             # Use method-appropriate default config
             if default_method == "simple":
-                forecast_config = {"method": default_method, "config": cfg("forecasting.default_growth_rate")}
+                forecast_config = {
+                    "method": default_method,
+                    "config": cfg("forecasting.default_growth_rate"),
+                }
             else:
                 # For other methods, use empty config and let the method handle defaults
                 forecast_config = {"method": default_method, "config": {}}

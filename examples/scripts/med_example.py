@@ -391,8 +391,12 @@ sections:
     bs_registry = StatementRegistry()
     builder = StatementStructureBuilder()
     # Load, validate, build, and register the balance_sheet config from in-memory dict
-    bs_raw_config = all_configs.get("balance_sheet") or yaml.safe_load(bs_stmt_path.read_text(encoding="utf-8"))
-    load_build_register_statements({bs_raw_config.get("id", "balance_sheet"): bs_raw_config}, bs_registry, builder)
+    bs_raw_config = all_configs.get("balance_sheet") or yaml.safe_load(
+        bs_stmt_path.read_text(encoding="utf-8")
+    )
+    load_build_register_statements(
+        {bs_raw_config.get("id", "balance_sheet"): bs_raw_config}, bs_registry, builder
+    )
     statement_structure = bs_registry.get("balance_sheet")
     # Populate graph with balance sheet calculation and metric nodes
     populate_graph(bs_registry, graph)

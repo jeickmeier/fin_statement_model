@@ -15,6 +15,7 @@ from fin_statement_model.core.adjustments.models import (
 )
 from fin_statement_model.core.graph import Graph  # Needed for Graph convenience methods
 from fin_statement_model.io.exceptions import ReadError, WriteError
+from fin_statement_model.io.core import FileBasedReader, handle_read_errors
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +62,7 @@ def _parse_tags(tag_str: Optional[str]) -> set[AdjustmentTag]:
     return set(tag.strip() for tag in tag_str.split(",") if tag.strip())
 
 
-def read_excel(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
+def _read_excel_impl(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
     """Read adjustments from an Excel file.
 
     Expects the first sheet to contain adjustment data.
@@ -208,6 +209,34 @@ def read_excel(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
         )
 
     return valid_adjustments, error_report_df
+
+
+# DataReader class for reading adjustments with standardized validation
+class AdjustmentsExcelReader(FileBasedReader):
+    """DataReader for reading adjustments from an Excel file with consistent validation and error handling."""
+
+    @handle_read_errors()
+    def read(
+        self, source: str | Path, **kwargs
+    ) -> tuple[list[Adjustment], pd.DataFrame]:
+        """Read adjustments using FileBasedReader validation."""
+        path_str = str(source)
+        self.validate_file_exists(path_str)
+        self.validate_file_extension(path_str, (".xls", ".xlsx"))
+        return _read_excel_impl(path_str)
+
+
+# Public API: delegate to standardized reader
+def read_excel(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
+    """Read adjustments from an Excel file.
+
+    Args:
+        path: Path to the Excel file.
+
+    Returns:
+        Tuple of valid Adjustment list and error report DataFrame.
+    """
+    return AdjustmentsExcelReader().read(path)
 
 
 def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:

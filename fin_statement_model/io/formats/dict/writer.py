@@ -1,7 +1,7 @@
 """Data writer for Python dictionaries."""
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.mixins import (
@@ -26,12 +26,11 @@ class DictWriter(DataFrameBasedWriter, ConfigurationMixin):
     although the config currently has no options.
     """
 
-    def __init__(self, cfg: Optional[DictWriterConfig] = None) -> None:
+    def __init__(self, cfg: DictWriterConfig) -> None:
         """Initialize the DictWriter.
 
         Args:
-            cfg: Optional validated `DictWriterConfig` instance.
-                 Currently unused but kept for registry symmetry.
+            cfg: Validated `DictWriterConfig` instance.
         """
         super().__init__()
         self.cfg = cfg
