@@ -72,6 +72,34 @@ try:
 except Exception:
     logger.exception("Failed to initialize standard nodes")
 
+def is_calculation_node(node: Node) -> bool:
+    """Return True for nodes that represent computed/calculated values.
+
+    Helper centralises the logic that previously lived in ``Node.has_calculation``
+    implementations.  A node is considered a *calculation node* if it is an
+    instance of one of the dedicated calculation-type classes (CalculationNode,
+    ForecastNode, CustomCalculationNode) or of statistical helpers that derive
+    directly from :class:`Node` but still compute a value (e.g.
+    ``YoYGrowthNode``).
+
+    Args:
+        node: Any concrete :class:`~fin_statement_model.core.nodes.base.Node` instance.
+
+    Returns:
+        bool: ``True`` when *node* performs a calculation; otherwise ``False``.
+    """
+    return isinstance(
+        node,
+        (
+            CalculationNode,
+            ForecastNode,
+            CustomCalculationNode,
+            YoYGrowthNode,
+            MultiPeriodStatNode,
+            TwoPeriodAverageNode,
+        ),
+    )
+
 __all__ = [
     "AverageHistoricalGrowthForecastNode",
     "AverageValueForecastNode",
@@ -89,4 +117,5 @@ __all__ = [
     "TwoPeriodAverageNode",
     "YoYGrowthNode",
     "standard_node_registry",
+    "is_calculation_node",
 ]

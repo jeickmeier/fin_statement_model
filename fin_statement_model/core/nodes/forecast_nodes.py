@@ -108,10 +108,6 @@ class ForecastNode(Node):
         """
         self._cache.clear()
 
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs a calculation."""
-        return True
-
     def get_dependencies(self) -> list[str]:
         """Return the names of nodes this forecast node depends on.
 

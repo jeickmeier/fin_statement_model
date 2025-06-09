@@ -1123,6 +1123,7 @@ It includes:
 import logging
 from pathlib import Path
 import sys
+import yaml
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.errors import (
@@ -1132,16 +1133,15 @@ from fin_statement_model.core.errors import (
 from fin_statement_model.io.exceptions import WriteError
 from fin_statement_model.io import read_data
 from fin_statement_model.statements import (
+    create_statement_dataframe,
     export_statements_to_excel,
 )
 from fin_statement_model.forecasting.forecaster import StatementForecaster
 from fin_statement_model.core.metrics.registry import metric_registry
 from pathlib import Path as MetricPath
-from fin_statement_model.statements.configs.validator import StatementConfig
 from fin_statement_model.statements.structure.builder import StatementStructureBuilder
 from fin_statement_model.statements.registry import StatementRegistry
 from fin_statement_model.statements.orchestration.orchestrator import populate_graph
-from fin_statement_model.statements.formatting.formatter import StatementFormatter
 from fin_statement_model.statements.orchestration.loader import (
     load_build_register_statements,
 )
@@ -1184,9 +1184,9 @@ historical_data = {
 graph = Graph()
 graph = read_data(format_type="dict", source=historical_data)
 
-# --- 4. Statement Generation (Historical) using code-only StatementStructure ---
+# --- 4. Statement Generation (Historical) using file-based StatementStructure ---
 
-# Build the statement structure in code
+# Define the income statement configuration as a Python dict
 income_statement_config = {
     "id": "income_statement",
     "name": "Income Statement",
@@ -1232,26 +1232,30 @@ income_statement_config = {
                 }
             ],
         },
-        # Add additional sections as needed here
     ],
 }
 
-stmt_cfg = StatementConfig(income_statement_config)
-errors = stmt_cfg.validate_config()
-if errors:
-    logger.error(f"Statement config validation errors: {errors}")
-    sys.exit(1)
-structure = StatementStructureBuilder().build(stmt_cfg)
-registry = StatementRegistry()
-registry.clear()
-registry.register(structure)
-populate_graph(registry, graph)
-formatter = StatementFormatter(structure)
-income_statement_df_hist = formatter.generate_dataframe(
-    graph,
-    should_apply_signs=True,
-    number_format=",.0f",
+# Save configuration to a temporary YAML file for consistency across examples
+income_stmt_path = CONFIG_DIR / "income_statement.yaml"
+with open(income_stmt_path, "w", encoding="utf-8") as f:
+    yaml.safe_dump(income_statement_config, f, sort_keys=False)
+
+# Load the YAML back into memory and prepare for dataframe creation
+raw_config = yaml.safe_load(income_stmt_path.read_text(encoding="utf-8"))
+raw_configs = {raw_config.get("id", "statement"): raw_config}
+
+# Build the statement, populate the graph, and generate the dataframe
+df_map = create_statement_dataframe(
+    graph=graph,
+    raw_configs=raw_configs,
+    format_kwargs={
+        "should_apply_signs": True,
+        "number_format": ",.0f",
+    },
 )
+
+income_statement_df_hist = df_map[raw_config.get("id", "statement")]
+
 logger.info("✓ Statement structure built successfully")
 logger.info("\nIncome Statement:")
 logger.info(income_statement_df_hist.to_string(index=False))

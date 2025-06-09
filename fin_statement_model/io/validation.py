@@ -213,17 +213,6 @@ class UnifiedNodeValidator:
                     confidence=0.85,
                 )
 
-        # Check parent relationships before sub-nodes
-        if parent_nodes and self._check_parent_relationship(name, parent_nodes):
-            return ValidationResult(
-                original_name=name,
-                standardized_name=name,
-                is_valid=True,
-                message="Derived from parent nodes",
-                category="derived",
-                confidence=0.8,
-            )
-
         # Check specific sub-node patterns
         subnode_match = self._check_patterns(name, self.SUBNODE_PATTERNS, "subnode")
         if subnode_match:
@@ -325,37 +314,6 @@ class UnifiedNodeValidator:
                 return base_name, suffix, pattern_type
 
         return None
-
-    def _check_parent_relationship(self, name: str, parent_nodes: list[str]) -> bool:
-        """Check if node name is related to its parents."""
-        name_lower = name.lower()
-
-        # Check if we have enough parents to establish a relationship
-        if len(parent_nodes) < 2:
-            return False
-
-        # Check if any parent name is contained in this node name
-        parent_match_count = 0
-        for parent in parent_nodes:
-            parent_lower = parent.lower()
-
-            # Direct containment or similarity
-            if parent_lower in name_lower or self._is_similar(
-                name_lower, parent_lower, threshold=0.5
-            ):
-                parent_match_count += 1
-
-            # Check standard name relationships
-            if standard_node_registry.is_standard_name(parent_lower):
-                definition = standard_node_registry.get_definition(parent_lower)
-                if definition:
-                    for alt in definition.alternate_names:
-                        if alt.lower() in name_lower:
-                            parent_match_count += 1
-                            break
-
-        # Consider it derived if it matches at least one parent
-        return parent_match_count >= 1
 
     def _generate_suggestions(self, name: str) -> list[str]:
         """Generate improvement suggestions for non-standard names."""

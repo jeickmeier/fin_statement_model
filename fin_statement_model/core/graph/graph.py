@@ -15,6 +15,7 @@ from fin_statement_model.core.nodes import (
     Node,
     FinancialStatementItemNode,
     CalculationNode,
+    is_calculation_node,
 )
 from fin_statement_model.core.errors import (
     NodeError,
@@ -885,7 +886,7 @@ class Graph:
         for node in self.nodes.values():
             if isinstance(node, FinancialStatementItemNode):
                 fs_item_count += 1
-            elif node.has_calculation():
+            elif is_calculation_node(node):
                 calc_node_count += 1
                 # Prioritize get_dependencies if available, otherwise check inputs
                 if hasattr(node, "get_dependencies"):

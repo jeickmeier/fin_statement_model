@@ -8,7 +8,7 @@ from typing import Optional, Any, TYPE_CHECKING, cast
 from collections import deque
 
 from fin_statement_model.core.errors import NodeError
-from fin_statement_model.core.nodes import Node
+from fin_statement_model.core.nodes import Node, is_calculation_node
 
 if TYPE_CHECKING:
     from fin_statement_model.core.nodes.base import Node
@@ -164,7 +164,9 @@ class GraphTraverser:
             >>> traverser.get_calculation_nodes()
         """
         return [
-            node_id for node_id, node in self.nodes.items() if node.has_calculation()
+            node_id
+            for node_id, node in self.nodes.items()
+            if is_calculation_node(node)
         ]
 
     def get_dependencies(self, node_id: str) -> list[str]:

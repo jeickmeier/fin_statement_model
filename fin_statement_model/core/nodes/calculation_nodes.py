@@ -159,14 +159,6 @@ class CalculationNode(Node):
         """
         return [node.name for node in self.inputs]
 
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs calculation.
-
-        Returns:
-            True, as CalculationNode performs calculations.
-        """
-        return True
-
     def to_dict(self) -> dict[str, Any]:
         """Serialize the node to a dictionary representation.
 
@@ -400,14 +392,6 @@ class FormulaCalculationNode(CalculationNode):
         """
         return [node.name for node in self.inputs_dict.values()]
 
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs calculation.
-
-        Returns:
-            True, as FormulaCalculationNode performs calculations.
-        """
-        return True
-
     def to_dict(self) -> dict[str, Any]:
         """Serialize the node to a dictionary representation.
 
@@ -618,14 +602,6 @@ class CustomCalculationNode(Node):
             A list of input node names.
         """
         return [node.name for node in self.inputs]
-
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs calculation.
-
-        Returns:
-            True, as CustomCalculationNode performs calculations.
-        """
-        return True
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize the node to a dictionary representation.

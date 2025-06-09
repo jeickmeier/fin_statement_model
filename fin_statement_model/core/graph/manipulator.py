@@ -6,7 +6,7 @@ This module defines the GraphManipulator class, encapsulating node-level mutatio
 import logging
 from typing import Optional, Any, cast
 from fin_statement_model.core.errors import NodeError
-from fin_statement_model.core.nodes import Node
+from fin_statement_model.core.nodes import Node, CalculationNode
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ class GraphManipulator:
             None
         """
         for nd in self.graph._nodes.values():
-            if nd.has_calculation() and hasattr(nd, "input_names") and nd.input_names:
+            if isinstance(nd, CalculationNode) and hasattr(nd, "input_names") and nd.input_names:
                 try:
                     resolved_inputs: list[Node] = []
                     for name in nd.input_names:

@@ -132,19 +132,19 @@ class Node(ABC):
             )
 
     def has_value(self, period: str) -> bool:
-        """Indicate whether the node stores a direct value for a period.
+        """Return True when the node stores a direct value for *period*.
 
-        Primarily for data-bearing nodes; calculation nodes override has_calculation.
+        Calculation-style nodes derive their value from inputs and therefore do
+        **not** store raw values.  Concrete data nodes such as
+        :class:`~fin_statement_model.core.nodes.item_node.FinancialStatementItemNode`
+        should override this method accordingly.  The default implementation
+        returns ``False``.
 
         Args:
-            period: The time period to check for a stored value.
+            period: Time-period identifier to check.
 
         Returns:
-            True if a direct value is stored, otherwise False.
-
-        Examples:
-            >>> node.has_value("2023")
-            False
+            bool: ``True`` if a direct value is stored for *period*.
         """
         return False
 
@@ -168,25 +168,12 @@ class Node(ABC):
         raise NotImplementedError(f"Node {self.name} does not implement get_value")
 
     def set_value(self, period: str, value: float) -> None:
-        """Optional: Set a value for a specific period on data-bearing nodes.
+        """Set a value for *period* on data-bearing nodes.
 
-        Default implementation raises NotImplementedError if not overridden.
+        The base implementation raises :class:`NotImplementedError`; override in
+        subclasses that support mutating stored data.
         """
         raise NotImplementedError(f"Node '{self.name}' does not support set_value")
-
-    def has_calculation(self) -> bool:
-        """Indicate whether this node performs calculation.
-
-        Distinguish calculation nodes from data-holding nodes.
-
-        Returns:
-            True if the node performs calculations, otherwise False.
-
-        Examples:
-            >>> node.has_calculation()
-            False
-        """
-        return False
 
     @abstractmethod
     def to_dict(self) -> dict[str, Any]:

@@ -143,10 +143,6 @@ class YoYGrowthNode(Node):
         """Return the names of nodes this node depends on."""
         return [self.input_node.name]
 
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs a calculation."""
-        return True
-
     def to_dict(self) -> dict[str, Any]:
         """Serialize the node to a dictionary representation.
 
@@ -381,10 +377,6 @@ class MultiPeriodStatNode(Node):
         """Return the names of nodes this node depends on."""
         return [self.input_node.name]
 
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs a calculation."""
-        return True
-
     def to_dict(self) -> dict[str, Any]:
         """Serialize the node to a dictionary representation.
 
@@ -594,10 +586,6 @@ class TwoPeriodAverageNode(Node):
     def get_dependencies(self) -> list[str]:
         """Return the names of nodes this node depends on."""
         return [self.input_node.name]
-
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs a calculation."""
-        return True
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize the node to a dictionary representation.
