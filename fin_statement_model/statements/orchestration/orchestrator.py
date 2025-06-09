@@ -101,7 +101,14 @@ def create_statement_dataframe(
         if statement is None:
             logger.error(f"Statement '{stmt_id}' not found in registry.")
             raise StatementError(f"Statement '{stmt_id}' not found in registry.")
-        df = StatementFormatter(statement).generate_dataframe(graph, **format_kwargs)
+        formatter = StatementFormatter(statement)
+        if format_kwargs:
+            context = formatter._prepare_formatting_context(**format_kwargs)
+        else:
+            # Use default project configuration
+            context = formatter._prepare_formatting_context()
+
+        df = formatter.generate_dataframe(graph, context=context)
         results[stmt_id] = df
 
     return results

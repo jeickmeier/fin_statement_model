@@ -97,7 +97,7 @@ class StatisticalForecastMethod(BaseForecastMethod):
         if seed is not None:
             rng = np.random.RandomState(seed)
         else:
-            rng = np.random
+            rng = np.random.RandomState()
 
         # Create generator function based on distribution
         def generator() -> float:

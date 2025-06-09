@@ -2,7 +2,7 @@
 
 import logging
 import requests
-from typing import Optional, Any
+from typing import Optional, Any, cast
 import numpy as np
 
 
@@ -136,7 +136,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
         # statement_type and period_type are validated by FmpReaderConfig
 
         # Validate API key (using any override)
-        self._validate_api_key(api_key)
+        self._validate_api_key(cast(str, api_key))
 
         # Determine mapping for this operation, allowing override via kwargs
         try:

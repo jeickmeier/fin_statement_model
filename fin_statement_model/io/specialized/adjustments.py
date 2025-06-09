@@ -216,8 +216,8 @@ class AdjustmentsExcelReader(FileBasedReader):
     """DataReader for reading adjustments from an Excel file with consistent validation and error handling."""
 
     @handle_read_errors()
-    def read(
-        self, source: str | Path, **kwargs
+    def read(  # type: ignore[override]
+        self, source: str | Path, **kwargs: Any
     ) -> tuple[list[Adjustment], pd.DataFrame]:
         """Read adjustments using FileBasedReader validation."""
         path_str = str(source)

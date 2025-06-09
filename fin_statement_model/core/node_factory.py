@@ -118,7 +118,7 @@ class NodeFactory:
             ...     name="Revenue",
             ...     values={"2023": 1000.0, "2024": 1100.0}
             ... )
-            >>> revenue_node.get_value("2023")
+            >>> revenue_node.calculate("2023")
             1000.0
         """
         if not name or not isinstance(name, str):
@@ -431,7 +431,7 @@ class NodeFactory:
             if hasattr(node_class, "from_dict_with_context"):
                 return cast(Node, node_class.from_dict_with_context(data, context))
             else:
-                return node_class.from_dict(data)
+                return cast(Node, node_class.from_dict(data))  # type: ignore[attr-defined]
 
         else:
             valid_types = list(cls._node_type_registry.keys())
@@ -511,8 +511,3 @@ class NodeFactory:
         return CustomCalculationNode(
             name, inputs, formula_func=formula, description=description
         )
-
-    # Consider adding a method for creating FormulaCalculationNode if needed directly
-    # @classmethod
-    # def create_formula_node(cls, name: str, inputs: Dict[str, Node], formula: str) -> FormulaCalculationNode:
-    #     ...

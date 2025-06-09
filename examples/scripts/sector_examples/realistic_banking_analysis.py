@@ -662,9 +662,9 @@ def perform_stress_testing(
                 "securities_available_for_sale",
             ]
         ):
-            gross_loans = data_nodes["gross_loans"].get_value(latest_period)
-            total_deposits = data_nodes["total_deposits"].get_value(latest_period)
-            securities = data_nodes["securities_available_for_sale"].get_value(
+            gross_loans = data_nodes["gross_loans"].calculate(latest_period)
+            total_deposits = data_nodes["total_deposits"].calculate(latest_period)
+            securities = data_nodes["securities_available_for_sale"].calculate(
                 latest_period
             )
 
@@ -677,13 +677,13 @@ def perform_stress_testing(
 
             # Calculate impact on capital
             if "common_equity_tier_1" in data_nodes:
-                cet1_capital = data_nodes["common_equity_tier_1"].get_value(
+                cet1_capital = data_nodes["common_equity_tier_1"].calculate(
                     latest_period
                 )
                 stressed_cet1 = cet1_capital - total_losses
 
                 if "total_risk_weighted_assets" in data_nodes:
-                    rwa = data_nodes["total_risk_weighted_assets"].get_value(
+                    rwa = data_nodes["total_risk_weighted_assets"].calculate(
                         latest_period
                     )
                     stressed_cet1_ratio = (stressed_cet1 / rwa) * 100
@@ -882,7 +882,7 @@ def create_banking_visualizations(
     if "total_assets" in graph.nodes:
         asset_node = graph.get_node("average_total_assets")
         if asset_node:
-            assets = [asset_node.get_value(p) / 1000 for p in periods]  # In billions
+            assets = [asset_node.calculate(p) / 1000 for p in periods]  # In billions
             ax1.plot(
                 periods, assets, marker="o", linewidth=2, markersize=8, color="blue"
             )
@@ -1141,8 +1141,8 @@ def generate_banking_report(
             node in data_nodes
             for node in ["interest_income_loans", "average_earning_assets"]
         ):
-            int_income = data_nodes["interest_income_loans"].get_value(latest_period)
-            avg_assets = data_nodes["average_earning_assets"].get_value(latest_period)
+            int_income = data_nodes["interest_income_loans"].calculate(latest_period)
+            avg_assets = data_nodes["average_earning_assets"].calculate(latest_period)
             asset_yield = (int_income / avg_assets) * 100 if avg_assets > 0 else 0
             f.write(f"- **Asset Yield**: {asset_yield:.2f}%\n")
             f.write("- **Rate Sensitivity**: Monitor for rising rate environment\n")

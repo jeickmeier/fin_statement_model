@@ -208,7 +208,7 @@ try:
 
     logger.info("Forecasting complete. Graph data nodes updated.")
     # logger.debug(f"Graph periods after forecast: {graph.periods}") # Already added periods
-    # logger.debug(f"Forecasted Revenue in 2025: {graph.get_node('Revenue').get_value('2025')}")
+    # logger.debug(f"Forecasted Revenue in 2025: {graph.get_node('Revenue').calculate('2025')}")
     # logger.debug(f"Recalculated Gross Profit in 2025: {graph.calculate('gross_profit', '2025')}")
 
 except (ValueError, FinancialModelError):

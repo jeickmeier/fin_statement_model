@@ -73,7 +73,7 @@ def fetch_fmp_data() -> object:
         sample_node = next(iter(graph.nodes.values()))
         logger.info(f"\nSample node '{sample_node.name}':")
         for period in sorted(graph.periods)[:3]:  # Show first 3 periods
-            value = sample_node.get_value(period)
+            value = sample_node.calculate(period)
             if value is not None:
                 # Format using display config
                 formatted_value = f"{value * config.display.scale_factor:{config.display.default_currency_format}}"

@@ -774,7 +774,7 @@ class Graph:
 
         Examples:
             >>> item_node = graph.add_financial_statement_item("SG&A", {"2023": 50.0})
-            >>> item_node.get_value("2023")
+            >>> item_node.calculate("2023")
             50.0
         """
         # Validate inputs

@@ -25,15 +25,13 @@ class FinancialStatementItemNode(Node):
         >>> revenue_node = FinancialStatementItemNode("Revenue", revenue_data)
         >>> print(revenue_node.name)
         Revenue
-        >>> print(revenue_node.get_value("2023"))
+        >>> print(revenue_node.calculate("2023"))
         1200.0
-        >>> print(revenue_node.calculate("2022")) # Calculate retrieves the value
+        >>> print(revenue_node.calculate("2022"))
         1000.0
         >>> revenue_node.set_value("2024", 1500.0)
-        >>> print(revenue_node.get_value("2024"))
+        >>> print(revenue_node.calculate("2024"))
         1500.0
-        >>> print(revenue_node.has_value("2021"))
-        False
     """
 
     values: dict[str, float]
@@ -59,7 +57,7 @@ class FinancialStatementItemNode(Node):
         Returns:
             float: The value for the given period, or 0.0 if the period is not found.
         """
-        return self.get_value(period)
+        return self.values.get(period, 0.0)
 
     def set_value(self, period: str, value: float) -> None:
         """Update or add a value for a specific period.
@@ -71,28 +69,6 @@ class FinancialStatementItemNode(Node):
             value (float): The numerical value to store for the period.
         """
         self.values[period] = value
-
-    def has_value(self, period: str) -> bool:
-        """Check if a value exists for the specified period.
-
-        Args:
-            period (str): The time period to check.
-
-        Returns:
-            bool: True if a value is stored for the period, False otherwise.
-        """
-        return period in self.values
-
-    def get_value(self, period: str) -> float:
-        """Retrieve the stored value for a specific period.
-
-        Args:
-            period (str): The time period for which to get the value.
-
-        Returns:
-            float: The stored value, defaulting to 0.0 if the period is not found.
-        """
-        return self.values.get(period, 0.0)
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize the node to a dictionary representation.

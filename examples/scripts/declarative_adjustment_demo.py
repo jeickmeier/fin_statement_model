@@ -251,9 +251,10 @@ def demonstrate_declarative_adjustments():
     logger.info("-" * 40)
 
     # Generate dataframe using default filters from configuration
-    df_with_defaults = formatter.generate_dataframe(
-        graph=graph, include_empty_items=True, include_metadata_cols=True
+    ctx_defaults = formatter._prepare_formatting_context(
+        include_empty_items=True, include_metadata_cols=True
     )
+    df_with_defaults = formatter.generate_dataframe(graph=graph, context=ctx_defaults)
 
     logger.info("Generated DataFrame with default adjustment filters:")
     logger.info(df_with_defaults.to_string())
@@ -263,12 +264,12 @@ def demonstrate_declarative_adjustments():
 
     # Override all default filters with a global filter
     global_filter = AdjustmentFilter(include_tags={"management"})
-    df_with_override = formatter.generate_dataframe(
-        graph=graph,
-        adjustment_filter=global_filter,  # Overrides all defaults
+    ctx_override = formatter._prepare_formatting_context(
+        adjustment_filter=global_filter,
         include_empty_items=True,
         include_metadata_cols=True,
     )
+    df_with_override = formatter.generate_dataframe(graph=graph, context=ctx_override)
 
     logger.info("Generated DataFrame with global filter override (management only):")
     logger.info(df_with_override.to_string())
@@ -278,12 +279,12 @@ def demonstrate_declarative_adjustments():
 
     # Show raw data without any adjustments
     empty_filter = AdjustmentFilter()  # Empty filter
-    df_raw = formatter.generate_dataframe(
-        graph=graph,
+    ctx_raw = formatter._prepare_formatting_context(
         adjustment_filter=empty_filter,
         include_empty_items=True,
         include_metadata_cols=True,
     )
+    df_raw = formatter.generate_dataframe(graph=graph, context=ctx_raw)
 
     logger.info("Generated DataFrame with no adjustments (raw data):")
     logger.info(df_raw.to_string())

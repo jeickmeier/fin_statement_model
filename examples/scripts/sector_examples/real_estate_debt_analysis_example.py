@@ -117,22 +117,22 @@ def analyze_debt_composition(graph: Graph, period: str = "2023") -> dict[str, fl
         total_debt = graph.calculate("total_debt", period)
 
         # Debt type breakdown
-        mortgage = graph.get_node("mortgage_debt").get_value(period)
-        construction = graph.get_node("construction_loans").get_value(period)
-        bridge = graph.get_node("bridge_loans").get_value(period)
-        mezzanine = graph.get_node("mezzanine_debt").get_value(period)
+        mortgage = graph.get_node("mortgage_debt").calculate(period)
+        construction = graph.get_node("construction_loans").calculate(period)
+        bridge = graph.get_node("bridge_loans").calculate(period)
+        mezzanine = graph.get_node("mezzanine_debt").calculate(period)
 
         # Fixed vs Variable
-        fixed = graph.get_node("fixed_rate_debt").get_value(period)
-        variable = graph.get_node("variable_rate_debt").get_value(period)
+        fixed = graph.get_node("fixed_rate_debt").calculate(period)
+        variable = graph.get_node("variable_rate_debt").calculate(period)
 
         # Maturity profile
-        short_term = graph.get_node("debt_maturing_1yr").get_value(period)
-        medium_term = graph.get_node("debt_maturing_2_5yr").get_value(period)
+        short_term = graph.get_node("debt_maturing_1yr").calculate(period)
+        medium_term = graph.get_node("debt_maturing_2_5yr").calculate(period)
 
         # Credit utilization
-        credit_used = graph.get_node("credit_facility").get_value(period)
-        credit_limit = graph.get_node("credit_facility_limit").get_value(period)
+        credit_used = graph.get_node("credit_facility").calculate(period)
+        credit_limit = graph.get_node("credit_facility_limit").calculate(period)
 
         composition = {
             "mortgage_debt_pct": (mortgage / total_debt) * 100,

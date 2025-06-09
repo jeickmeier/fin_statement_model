@@ -24,7 +24,7 @@ class PeriodManager:
     """
 
     @staticmethod
-    def infer_historical_periods(
+    def infer_historical_periods(  # type: ignore
         graph: Any,
         forecast_periods: list[str],
         provided_periods: Optional[list[str]] = None,
@@ -49,15 +49,7 @@ class PeriodManager:
             )
             return provided_periods
 
-        # Check if graph has a custom method for getting historical periods
-        if hasattr(graph, "get_historical_periods") and callable(
-            graph.get_historical_periods
-        ):
-            historical = graph.get_historical_periods()
-            logger.debug(f"Using graph's get_historical_periods method: {historical}")
-            return historical  # type: ignore[no-any-return]
-
-        # Otherwise, infer from graph periods and forecast periods
+        # Infer from graph periods and forecast periods
         if not hasattr(graph, "periods") or not graph.periods:
             raise ValueError(
                 "Cannot infer historical periods: graph has no periods attribute"
@@ -92,7 +84,7 @@ class PeriodManager:
                 "the first forecast period."
             )
 
-        return historical_periods  # type: ignore[no-any-return]
+        return historical_periods
 
     @staticmethod
     def determine_base_period(
@@ -143,7 +135,7 @@ class PeriodManager:
             if hasattr(node, "values") and isinstance(
                 getattr(node, "values", None), dict
             ):
-                values_dict = node.values  # type: ignore[attr-defined]
+                values_dict = node.values
                 available_periods = [p for p in historical_periods if p in values_dict]
                 if available_periods:
                     return available_periods[-1]

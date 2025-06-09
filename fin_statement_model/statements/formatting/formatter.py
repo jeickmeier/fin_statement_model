@@ -1085,103 +1085,43 @@ class StatementFormatter:
     def generate_dataframe(
         self,
         graph: Graph,
-        should_apply_signs: Optional[bool] = None,
-        include_empty_items: Optional[bool] = None,
-        number_format: Optional[str] = None,
-        include_metadata_cols: Optional[bool] = None,
-        # --- Adjustment Integration ---
-        adjustment_filter: AdjustmentFilterInput = None,
-        add_is_adjusted_column: Optional[bool] = None,
-        # --- End Adjustment Integration ---
-        # --- Enhanced Display Control ---
-        include_units_column: Optional[bool] = None,
-        include_css_classes: Optional[bool] = None,
-        include_notes_column: Optional[bool] = None,
-        apply_item_scaling: Optional[bool] = None,
-        apply_item_formatting: Optional[bool] = None,
-        respect_hide_flags: Optional[bool] = None,
-        # --- Contra Item Support ---
-        contra_display_style: Optional[str] = None,
-        apply_contra_formatting: Optional[bool] = None,
-        add_contra_indicator_column: Optional[bool] = None,
-        # --- End Contra Item Support ---
-        # --- End Enhanced Display Control ---
-        **kwargs: Any,
+        context: Optional[FormattingContext] = None,
     ) -> pd.DataFrame:
-        """Generate a formatted DataFrame of the statement including subtotals.
-
-        Queries the graph for data based on the statement structure,
-        calculates subtotals, and formats the result with enhanced display control.
+        """Generate a formatted DataFrame for the statement.
 
         Args:
-            graph: The core.graph.Graph instance containing the data.
-            should_apply_signs: Whether to apply sign conventions after calculation.
-                              If None, uses config.display default.
-            include_empty_items: Whether to include items with no data rows.
-                               If None, uses !config.display.hide_zero_rows.
-            number_format: Optional Python format string for numbers (e.g., ',.2f').
-                          If None, uses config.display.default_number_format when formatting.
-            include_metadata_cols: If True, includes hidden metadata columns
-                                   (like sign_convention, node_id) in the output.
-            adjustment_filter: Optional filter for applying adjustments during data fetch.
-            add_is_adjusted_column: If True, adds a boolean column indicating if the
-                                    value for a node/period was adjusted.
-            include_units_column: If True, includes a column showing units for each item.
-            include_css_classes: If True, includes CSS class information in metadata.
-            include_notes_column: If True, includes a column with note references.
-            apply_item_scaling: If True, applies item-specific scaling factors.
-            apply_item_formatting: If True, applies item-specific number formats.
-            respect_hide_flags: If True, respects hide_if_all_zero flags.
-                              If None, uses config.display.hide_zero_rows.
-            contra_display_style: Optional contra display style for items
-                                If None, uses config.display.contra_display_style.
-            apply_contra_formatting: If True, applies contra-specific formatting
-            add_contra_indicator_column: If True, adds a column indicating contra items
-            **kwargs: Additional keyword arguments (for future extensibility)
+            graph: Graph instance containing the data to render.
+            context: FormattingContext object containing all display / formatting
+                configuration. If *None*, a context will be created from project
+                configuration.
 
         Returns:
-            pd.DataFrame: Formatted statement DataFrame with subtotals and enhanced display control.
+            A fully-formatted ``pandas.DataFrame`` representing the statement.
         """
-        # 1. Prepare context
-        context = self._prepare_formatting_context(
-            should_apply_signs=should_apply_signs,
-            include_empty_items=include_empty_items,
-            number_format=number_format,
-            include_metadata_cols=include_metadata_cols,
-            adjustment_filter=adjustment_filter,
-            add_is_adjusted_column=add_is_adjusted_column,
-            include_units_column=include_units_column,
-            include_css_classes=include_css_classes,
-            include_notes_column=include_notes_column,
-            apply_item_scaling=apply_item_scaling,
-            apply_item_formatting=apply_item_formatting,
-            respect_hide_flags=respect_hide_flags,
-            contra_display_style=contra_display_style,
-            apply_contra_formatting=apply_contra_formatting,
-            add_contra_indicator_column=add_contra_indicator_column,
-            **kwargs,
-        )
+        if context is None:
+            # Build context purely from project defaults (no legacy kwargs path).
+            context = self._prepare_formatting_context()
 
-        # 2. Fetch data
-        data, errors = self._fetch_statement_data(graph, context)
+        # 2. Fetch statement data -------------------------------------------------------------------
+        data, _ = self._fetch_statement_data(graph, context)
 
-        # 3. Build rows
+        # 3. Build row dictionaries -----------------------------------------------------------------
         rows = self._build_row_data(graph, data, context)
 
-        # 4. Create DataFrame
+        # 4. Assemble DataFrame ---------------------------------------------------------------------
         if not rows:
             return self._create_empty_dataframe(context)
 
         df = pd.DataFrame(rows)
 
-        # 5. Apply adjustments first (before organizing columns)
+        # 5. Adjustment columns (must precede column organisation)
         if context.add_is_adjusted_column:
             df = self._add_adjustment_columns(df, graph, context)
 
-        # 6. Organize columns
+        # 6. Column ordering / injection ------------------------------------------------------------
         df = self._organize_dataframe_columns(df, context)
 
-        # 7. Apply all formatting
+        # 7. Post-processing formatting -------------------------------------------------------------
         df = self._apply_all_formatting(df, context)
 
         return df
@@ -1226,37 +1166,40 @@ class StatementFormatter:
         Returns:
             str: HTML string representing the statement with enhanced styling.
         """
-        # Load display config defaults
+        # Determine defaults for unspecified parameters -------------------------------------------
         from fin_statement_model import get_config
 
-        config = get_config()
-        # Determine final values (kwargs override config)
+        cfg = get_config()
+
         should_apply_signs = (
             should_apply_signs
             if should_apply_signs is not None
-            else config.display.apply_sign_conventions
+            else cfg.display.apply_sign_conventions
         )
         include_empty_items = (
             include_empty_items
             if include_empty_items is not None
-            else config.display.include_empty_items
+            else cfg.display.include_empty_items
         )
         use_item_css_classes = (
             use_item_css_classes
             if use_item_css_classes is not None
-            else config.display.include_css_classes
+            else cfg.display.include_css_classes
         )
-        # Enable CSS classes if requested
+
+        # Ensure the correct flag for CSS class inclusion is propagated
         if use_item_css_classes:
             kwargs["include_css_classes"] = True
 
-        df = self.generate_dataframe(
-            graph=graph,
+        # Build a FormattingContext with the specified overrides and any additional
+        # keyword arguments provided by the caller.
+        context = self._prepare_formatting_context(
             should_apply_signs=should_apply_signs,
             include_empty_items=include_empty_items,
-            # number_format is applied internally by generate_dataframe
             **kwargs,
         )
+
+        df = self.generate_dataframe(graph=graph, context=context)
 
         html: str = df.to_html(
             index=False, classes="statement-table", table_id="financial-statement"

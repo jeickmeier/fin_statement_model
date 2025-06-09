@@ -198,7 +198,7 @@ def demo_config_in_action() -> None:
     if revenue_node is None:
         print("  Error: Revenue node not found")
         return
-    revenue_2023 = revenue_node.get_value("2023")
+    revenue_2023 = revenue_node.calculate("2023")
     print(f"  Revenue 2023: ${revenue_2023:,.2f}")
 
     # Test 2: European configuration

@@ -131,46 +131,10 @@ class Node(ABC):
                 f"Node '{self.name}' has no attribute '{attribute_name}'"
             )
 
-    def has_value(self, period: str) -> bool:
-        """Return True when the node stores a direct value for *period*.
-
-        Calculation-style nodes derive their value from inputs and therefore do
-        **not** store raw values.  Concrete data nodes such as
-        :class:`~fin_statement_model.core.nodes.item_node.FinancialStatementItemNode`
-        should override this method accordingly.  The default implementation
-        returns ``False``.
-
-        Args:
-            period: Time-period identifier to check.
-
-        Returns:
-            bool: ``True`` if a direct value is stored for *period*.
-        """
-        return False
-
-    def get_value(self, period: str) -> float:
-        """Retrieve the node's directly stored value for a period.
-
-        This method must be overridden by data-bearing nodes to return stored values.
-
-        Args:
-            period: The time period string for which to retrieve the value.
-
-        Returns:
-            The float value stored for the given period.
-
-        Raises:
-            NotImplementedError: If the node does not store direct values.
-
-        Examples:
-            >>> node.get_value("2023")
-        """
-        raise NotImplementedError(f"Node {self.name} does not implement get_value")
-
     def set_value(self, period: str, value: float) -> None:
         """Set a value for *period* on data-bearing nodes.
 
-        The base implementation raises :class:`NotImplementedError`; override in
+        The base implementation raises NotImplementedError; override in
         subclasses that support mutating stored data.
         """
         raise NotImplementedError(f"Node '{self.name}' does not support set_value")
@@ -195,33 +159,6 @@ class Node(ABC):
             >>> node_dict['type']
             'financial_statement_item'
         """
-
-    # @staticmethod
-    # def from_dict(data: dict[str, Any]) -> "Node":
-    #     """Deserialize a node from a dictionary representation.
-
-    #     Direct deserialization of nodes requires knowledge of the surrounding
-    #     graph context (e.g., resolving input dependencies between nodes).  To
-    #     avoid leaking this complexity into every individual node class, the
-    #     project centralises the logic in
-    #     :pyclass:`~fin_statement_model.core.node_factory.NodeFactory`.
-
-    #     This base implementation therefore **always** raises
-    #     :class:`NotImplementedError`.  Callers should use
-    #     ``NodeFactory.create_from_dict`` (or the specialised
-    #     ``from_dict_with_context`` methods on concrete node classes) instead.
-
-    #     Args:
-    #         data: The serialized node representation.
-
-    #     Raises:
-    #         NotImplementedError: Always – instructs the caller to use
-    #             :pyclass:`NodeFactory` for deserialization.
-    #     """
-    #     raise NotImplementedError(
-    #         "Direct node deserialization is not supported. Use "
-    #         "NodeFactory.create_from_dict(...) instead."
-    #     )
 
     def get_dependencies(self) -> list[str]:
         """Get the names of nodes this node depends on.
