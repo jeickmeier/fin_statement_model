@@ -6,6 +6,8 @@ and using it with the fin_statement_model library.
 
 import logging
 import sys
+import json
+from pathlib import Path
 
 from fin_statement_model.config import get_config, update_config
 from fin_statement_model.io import read_data
@@ -97,12 +99,16 @@ def main():
 
     # Try to create a formatted statement if config exists
     try:
-        # Use built-in statement configuration
-        from fin_statement_model.io.specialized.statements import (
-            read_builtin_statement_config,
+        # Load statement configuration JSON from examples directory into memory
+        config_file = (
+            Path(__file__).resolve().parents[3]
+            / "examples"
+            / f"{STATEMENT_TYPE}.json"
         )
+        if not config_file.is_file():
+            raise FileNotFoundError(f"Statement configuration not found: {config_file}")
 
-        raw_config = read_builtin_statement_config(STATEMENT_TYPE)
+        raw_config = json.loads(config_file.read_text(encoding="utf-8"))
         raw_configs = {STATEMENT_TYPE: raw_config}
         logger.info(f"\nCreating formatted statement for {STATEMENT_TYPE}...")
         df_map = create_statement_dataframe(

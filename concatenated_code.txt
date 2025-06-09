@@ -1085,7 +1085,7 @@ try:
     # Export the statement to Excel using the modern helper function
     export_statements_to_excel(
         graph=graph,
-        config_path_or_dir=raw_configs,
+        raw_configs=raw_configs,
         output_dir=str(MD_OUTPUT_PATH.parent),
         format_kwargs={
             "should_apply_signs": True,
@@ -1124,6 +1124,7 @@ import logging
 from pathlib import Path
 import sys
 import yaml
+from typing import Any
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.errors import (
@@ -1342,11 +1343,10 @@ logger.info(
     f"Reloaded {metric_count} metrics from special directory to include retained_earnings"
 )
 
-excel_output_path = OUTPUT_DIR / "financial_statements.xlsx"
 md_output_path = OUTPUT_DIR / "financial_statements.md"  # Added Markdown path
 
 try:
-    logger.info(f"Exporting statements to Excel: {excel_output_path}")
+    logger.info(f"Exporting statements to Excel into directory: {OUTPUT_DIR}")
 
     # Create a dummy Balance Sheet config for multi-sheet export demonstration
     # Use core. prefixes for node_ids and add required totals/metrics
@@ -1474,167 +1474,38 @@ sections:
         sign_convention: 1
 """
     bs_stmt_path = CONFIG_DIR / "balance_sheet.yaml"
-    with open(bs_stmt_path, "w") as f:
+    with open(bs_stmt_path, "w", encoding="utf-8") as f:
         f.write(balance_sheet_yaml)
 
-    # Add all required BS item data to the graph, using core prefixes
-    # and including all historical + forecast periods
-    all_periods_list = list(graph.periods)
-
-    # Define some simple forecast logic for the new BS items
-    bs_forecasts = {
-        "core.cash": 0.10,  # 10% growth
-        "core.accounts_receivable": 0.12,  # 12% growth
-        "core.ppe": 0.05,  # 5% growth
-        "core.accounts_payable": 0.08,  # 8% growth
-        "core.debt": 0.02,  # 2% growth (increase)
-        "core.common_stock": 0.0,  # No change
-        "core.prior_retained_earnings": 0.0,  # This will be calculated by metric usually
-        "core.dividends": 0.05,  # Increase dividends by 5%
-    }
-
-    # Function to generate data across all periods with simple growth
-    def generate_data(
-        node_id: str, start_val: float, growth_rate: float
-    ) -> dict[str, float]:
-        """Generate data for a node across periods with simple growth."""
-        data: dict[str, float] = {}
-        current_val = start_val
-        for i, period in enumerate(all_periods_list):
-            if i > 1:  # Apply growth after first two historical periods
-                current_val *= 1 + growth_rate
-            data[period] = current_val
-        return data
-
-    # Add data ensuring all periods exist
-    graph.add_financial_statement_item(
-        "core.cash", generate_data("core.cash", 50.0, bs_forecasts["core.cash"])
-    )
-    graph.add_financial_statement_item(
-        "core.accounts_receivable",
-        generate_data(
-            "core.accounts_receivable", 100.0, bs_forecasts["core.accounts_receivable"]
-        ),
-    )
-    graph.add_financial_statement_item(
-        "core.ppe", generate_data("core.ppe", 300.0, bs_forecasts["core.ppe"])
-    )
-    graph.add_financial_statement_item(
-        "core.accounts_payable",
-        generate_data(
-            "core.accounts_payable", 80.0, bs_forecasts["core.accounts_payable"]
-        ),
-    )
-    graph.add_financial_statement_item(
-        "core.debt", generate_data("core.debt", 150.0, bs_forecasts["core.debt"])
-    )
-    graph.add_financial_statement_item(
-        "core.common_stock",
-        generate_data("core.common_stock", 100.0, bs_forecasts["core.common_stock"]),
-    )
-    # Need prior RE and dividends for the Retained Earnings metric
-    # Let's assume prior RE grows with net income (simple approximation for example)
-    # We need net income data in the graph first. Net income IS calculated from IS items.
-    # Let's use the previously calculated net income node values
-    # TODO: This is tricky - Retained Earnings depends on Net Income, which is calculated.
-    # The metric expects 'net_income' as an input node ID. We have 'net_income' as a calculated item ID.
-    # We might need to ensure 'net_income' node exists or map differently. For now, assume graph.calculate works.
-    # Add dummy prior RE - usually this links period to period
-    prior_re = {"2022": 100.0, "2023": 100.0 + 945}  # Start + Previous NI
-    prior_re["2024"] = prior_re["2023"] + 1145
-    prior_re["2025"] = prior_re["2024"] + 1354  # Use NI values from previous run
-    prior_re["2026"] = prior_re["2025"] + 1628  # Use NI values from previous run
-    graph.add_financial_statement_item("core.prior_retained_earnings", prior_re)
-
-    graph.add_financial_statement_item(
-        "core.dividends",
-        generate_data(
-            "core.dividends", -10.0, bs_forecasts["core.dividends"]
-        ),  # Negative value
-    )
-
-    # ------------------------------------------------------------------
-    # Additional nodes required by 'test_statement.yaml' configuration
-    # ------------------------------------------------------------------
-
-    # Helper to clone data from an existing node if present, otherwise generate
-    def _clone_or_generate(
-        source_id: str,
-        target_id: str,
-        fallback_start: float,
-        growth_rate: float,
-    ) -> None:
-        """Clone data from `source_id` node to a new `target_id` or generate if missing.
-
-        Args:
-            source_id: Existing node ID to clone from.
-            target_id: New node ID to create/overwrite.
-            fallback_start: Starting value if source node is not available.
-            growth_rate: Growth rate to apply when generating fallback series.
-        """
-
-        if graph.has_node(source_id):
-            src_node = graph.get_node(source_id)
-            data_map: dict[str, float] = {
-                period: src_node.get_value(period) for period in all_periods_list
-            }
-        else:
-            data_map = generate_data(target_id, fallback_start, growth_rate)
-
-        graph.add_financial_statement_item(target_id, data_map)
-
-    # Map of (source_id, target_id, fallback_start, growth_rate)
-    mapping_specs = [
-        ("Revenue", "revenue", 1000.0, 0.10),
-        ("COGS", "cost_of_goods_sold", -400.0, 0.08),
-        ("R&D", "operating_expenses", -300.0, 0.05),
-        ("Interest Expense", "interest_expense", -50.0, 0.05),
-        ("Taxes", "income_tax", -75.0, 0.05),
-    ]
-
-    for src, tgt, start_val, gr in mapping_specs:
-        _clone_or_generate(src, tgt, start_val, gr)
-
-    # Balance-sheet-specific nodes (if not already present without the 'core.' prefix)
-    bs_specs = {
-        "cash_and_equivalents": (50.0, 0.10),
-        "accounts_receivable": (100.0, 0.12),
-        "property_plant_equipment": (300.0, 0.05),
-        "accounts_payable": (80.0, 0.08),
-        "total_debt": (150.0, 0.02),
-        "common_stock": (100.0, 0.0),
-        "prior_retained_earnings": (100.0, 0.0),
-        "dividends": (-10.0, 0.05),
-    }
-
-    for node_id, (start_val, gr) in bs_specs.items():
-        if not graph.has_node(node_id):
-            graph.add_financial_statement_item(
-                node_id,
-                generate_data(node_id, start_val, gr),
-            )
+    # Load all YAML configs in CONFIG_DIR into memory
+    all_configs: dict[str, dict[str, Any]] = {}
+    for yaml_path in CONFIG_DIR.glob("*.yaml"):
+        cfg_dict = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
+        stmt_id = cfg_dict.get("id", yaml_path.stem)
+        all_configs[stmt_id] = cfg_dict
 
     # Use the high-level export function
     # This will internally call create_statement_dataframe for all configs in CONFIG_DIR
     # and write each resulting DataFrame to a separate sheet in the Excel file.
     export_statements_to_excel(
         graph=graph,
-        config_path_or_dir=str(CONFIG_DIR),  # Process all YAML files in the dir
-        output_dir=str(excel_output_path),  # Specify the single output Excel file path
+        raw_configs=all_configs,
+        output_dir=str(OUTPUT_DIR),  # Excel files will be written into this directory
         format_kwargs={
             "number_format": ",.0f"
         },  # Formatting for the DataFrames before export
         # writer_kwargs={'freeze_panes': (1, 1)} # Example: Pass args to pandas.to_excel
     )
-    logger.info(f"Successfully exported statements to {excel_output_path}")
+    logger.info(f"Successfully exported statements to {OUTPUT_DIR}")
 
     # --- Add Markdown Export ---
     logger.info(f"Exporting statements to Markdown: {md_output_path}")
     # Prepare registry and builder for balance sheet
     bs_registry = StatementRegistry()
     builder = StatementStructureBuilder()
-    # Load, validate, build, and register the balance_sheet config
-    load_build_register_statements(str(bs_stmt_path), bs_registry, builder)
+    # Load, validate, build, and register the balance_sheet config from in-memory dict
+    bs_raw_config = all_configs.get("balance_sheet") or yaml.safe_load(bs_stmt_path.read_text(encoding="utf-8"))
+    load_build_register_statements({bs_raw_config.get("id", "balance_sheet"): bs_raw_config}, bs_registry, builder)
     statement_structure = bs_registry.get("balance_sheet")
     # Populate graph with balance sheet calculation and metric nodes
     populate_graph(bs_registry, graph)
@@ -2397,6 +2268,8 @@ and using it with the fin_statement_model library.
 
 import logging
 import sys
+import json
+from pathlib import Path
 
 from fin_statement_model.config import get_config, update_config
 from fin_statement_model.io import read_data
@@ -2488,12 +2361,16 @@ def main():
 
     # Try to create a formatted statement if config exists
     try:
-        # Use built-in statement configuration
-        from fin_statement_model.io.specialized.statements import (
-            read_builtin_statement_config,
+        # Load statement configuration JSON from examples directory into memory
+        config_file = (
+            Path(__file__).resolve().parents[3]
+            / "examples"
+            / f"{STATEMENT_TYPE}.json"
         )
+        if not config_file.is_file():
+            raise FileNotFoundError(f"Statement configuration not found: {config_file}")
 
-        raw_config = read_builtin_statement_config(STATEMENT_TYPE)
+        raw_config = json.loads(config_file.read_text(encoding="utf-8"))
         raw_configs = {STATEMENT_TYPE: raw_config}
         logger.info(f"\nCreating formatted statement for {STATEMENT_TYPE}...")
         df_map = create_statement_dataframe(
@@ -9881,6 +9758,7 @@ from fin_statement_model.core.nodes import (
     Node,
     FinancialStatementItemNode,
     CalculationNode,
+    is_calculation_node,
 )
 from fin_statement_model.core.errors import (
     NodeError,
@@ -10751,7 +10629,7 @@ class Graph:
         for node in self.nodes.values():
             if isinstance(node, FinancialStatementItemNode):
                 fs_item_count += 1
-            elif node.has_calculation():
+            elif is_calculation_node(node):
                 calc_node_count += 1
                 # Prioritize get_dependencies if available, otherwise check inputs
                 if hasattr(node, "get_dependencies"):
@@ -11397,7 +11275,7 @@ This module defines the GraphManipulator class, encapsulating node-level mutatio
 import logging
 from typing import Optional, Any, cast
 from fin_statement_model.core.errors import NodeError
-from fin_statement_model.core.nodes import Node
+from fin_statement_model.core.nodes import Node, CalculationNode
 
 logger = logging.getLogger(__name__)
 
@@ -11448,7 +11326,7 @@ class GraphManipulator:
             None
         """
         for nd in self.graph._nodes.values():
-            if nd.has_calculation() and hasattr(nd, "input_names") and nd.input_names:
+            if isinstance(nd, CalculationNode) and hasattr(nd, "input_names") and nd.input_names:
                 try:
                     resolved_inputs: list[Node] = []
                     for name in nd.input_names:
@@ -11599,7 +11477,7 @@ from typing import Optional, Any, TYPE_CHECKING, cast
 from collections import deque
 
 from fin_statement_model.core.errors import NodeError
-from fin_statement_model.core.nodes import Node
+from fin_statement_model.core.nodes import Node, is_calculation_node
 
 if TYPE_CHECKING:
     from fin_statement_model.core.nodes.base import Node
@@ -11755,7 +11633,9 @@ class GraphTraverser:
             >>> traverser.get_calculation_nodes()
         """
         return [
-            node_id for node_id, node in self.nodes.items() if node.has_calculation()
+            node_id
+            for node_id, node in self.nodes.items()
+            if is_calculation_node(node)
         ]
 
     def get_dependencies(self, node_id: str) -> list[str]:
@@ -13473,6 +13353,34 @@ try:
 except Exception:
     logger.exception("Failed to initialize standard nodes")
 
+def is_calculation_node(node: Node) -> bool:
+    """Return True for nodes that represent computed/calculated values.
+
+    Helper centralises the logic that previously lived in ``Node.has_calculation``
+    implementations.  A node is considered a *calculation node* if it is an
+    instance of one of the dedicated calculation-type classes (CalculationNode,
+    ForecastNode, CustomCalculationNode) or of statistical helpers that derive
+    directly from :class:`Node` but still compute a value (e.g.
+    ``YoYGrowthNode``).
+
+    Args:
+        node: Any concrete :class:`~fin_statement_model.core.nodes.base.Node` instance.
+
+    Returns:
+        bool: ``True`` when *node* performs a calculation; otherwise ``False``.
+    """
+    return isinstance(
+        node,
+        (
+            CalculationNode,
+            ForecastNode,
+            CustomCalculationNode,
+            YoYGrowthNode,
+            MultiPeriodStatNode,
+            TwoPeriodAverageNode,
+        ),
+    )
+
 __all__ = [
     "AverageHistoricalGrowthForecastNode",
     "AverageValueForecastNode",
@@ -13490,6 +13398,7 @@ __all__ = [
     "TwoPeriodAverageNode",
     "YoYGrowthNode",
     "standard_node_registry",
+    "is_calculation_node",
 ]
 
 
@@ -13632,19 +13541,19 @@ class Node(ABC):
             )
 
     def has_value(self, period: str) -> bool:
-        """Indicate whether the node stores a direct value for a period.
+        """Return True when the node stores a direct value for *period*.
 
-        Primarily for data-bearing nodes; calculation nodes override has_calculation.
+        Calculation-style nodes derive their value from inputs and therefore do
+        **not** store raw values.  Concrete data nodes such as
+        :class:`~fin_statement_model.core.nodes.item_node.FinancialStatementItemNode`
+        should override this method accordingly.  The default implementation
+        returns ``False``.
 
         Args:
-            period: The time period to check for a stored value.
+            period: Time-period identifier to check.
 
         Returns:
-            True if a direct value is stored, otherwise False.
-
-        Examples:
-            >>> node.has_value("2023")
-            False
+            bool: ``True`` if a direct value is stored for *period*.
         """
         return False
 
@@ -13668,25 +13577,12 @@ class Node(ABC):
         raise NotImplementedError(f"Node {self.name} does not implement get_value")
 
     def set_value(self, period: str, value: float) -> None:
-        """Optional: Set a value for a specific period on data-bearing nodes.
+        """Set a value for *period* on data-bearing nodes.
 
-        Default implementation raises NotImplementedError if not overridden.
+        The base implementation raises :class:`NotImplementedError`; override in
+        subclasses that support mutating stored data.
         """
         raise NotImplementedError(f"Node '{self.name}' does not support set_value")
-
-    def has_calculation(self) -> bool:
-        """Indicate whether this node performs calculation.
-
-        Distinguish calculation nodes from data-holding nodes.
-
-        Returns:
-            True if the node performs calculations, otherwise False.
-
-        Examples:
-            >>> node.has_calculation()
-            False
-        """
-        return False
 
     @abstractmethod
     def to_dict(self) -> dict[str, Any]:
@@ -13907,14 +13803,6 @@ class CalculationNode(Node):
             A list of input node names.
         """
         return [node.name for node in self.inputs]
-
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs calculation.
-
-        Returns:
-            True, as CalculationNode performs calculations.
-        """
-        return True
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize the node to a dictionary representation.
@@ -14149,14 +14037,6 @@ class FormulaCalculationNode(CalculationNode):
         """
         return [node.name for node in self.inputs_dict.values()]
 
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs calculation.
-
-        Returns:
-            True, as FormulaCalculationNode performs calculations.
-        """
-        return True
-
     def to_dict(self) -> dict[str, Any]:
         """Serialize the node to a dictionary representation.
 
@@ -14368,14 +14248,6 @@ class CustomCalculationNode(Node):
         """
         return [node.name for node in self.inputs]
 
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs calculation.
-
-        Returns:
-            True, as CustomCalculationNode performs calculations.
-        """
-        return True
-
     def to_dict(self) -> dict[str, Any]:
         """Serialize the node to a dictionary representation.
 
@@ -14531,10 +14403,6 @@ class ForecastNode(Node):
             node.clear_cache()  # Future calculate() calls will recompute values
         """
         self._cache.clear()
-
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs a calculation."""
-        return True
 
     def get_dependencies(self) -> list[str]:
         """Return the names of nodes this forecast node depends on.
@@ -16304,10 +16172,6 @@ class YoYGrowthNode(Node):
         """Return the names of nodes this node depends on."""
         return [self.input_node.name]
 
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs a calculation."""
-        return True
-
     def to_dict(self) -> dict[str, Any]:
         """Serialize the node to a dictionary representation.
 
@@ -16542,10 +16406,6 @@ class MultiPeriodStatNode(Node):
         """Return the names of nodes this node depends on."""
         return [self.input_node.name]
 
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs a calculation."""
-        return True
-
     def to_dict(self) -> dict[str, Any]:
         """Serialize the node to a dictionary representation.
 
@@ -16755,10 +16615,6 @@ class TwoPeriodAverageNode(Node):
     def get_dependencies(self) -> list[str]:
         """Return the names of nodes this node depends on."""
         return [self.input_node.name]
-
-    def has_calculation(self) -> bool:
-        """Indicate that this node performs a calculation."""
-        return True
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize the node to a dictionary representation.
@@ -19504,7 +19360,6 @@ from .specialized import (
     load_adjustments_from_excel,
     export_adjustments_to_excel,
     list_available_builtin_configs,
-    read_builtin_statement_config,
     write_statement_to_excel,
     write_statement_to_json,
 )
@@ -19533,7 +19388,6 @@ __all__ = [
     "list_readers",
     "list_writers",
     "load_adjustments_from_excel",
-    "read_builtin_statement_config",
     # Facade functions
     "read_data",
     "write_data",
@@ -24427,7 +24281,6 @@ from .graph import (
 # Statement utilities
 from .statements import (
     list_available_builtin_configs,
-    read_builtin_statement_config,
     write_statement_to_excel,
     write_statement_to_json,
 )
@@ -24442,7 +24295,6 @@ __all__ = [
     "import_from_cells",
     # Statements
     "list_available_builtin_configs",
-    "read_builtin_statement_config",
     "write_statement_to_excel",
     "write_statement_to_json",
     # Graph serialization
@@ -25218,10 +25070,14 @@ __all__ = [
 File: fin_statement_model/io/specialized/statements.py
 ================================================================================
 
-"""Statement-related IO utilities for built-in configs and writing formatted statement data."""
+"""Statement-related IO utilities.
 
-import json
-import yaml
+This module now only provides helpers for listing built-in statement configuration
+filenames *and* writing formatted statement data to Excel or JSON. All former
+file-loading utilities have been removed to enforce an in-memory configuration
+workflow.
+"""
+
 import logging
 import importlib.resources
 from pathlib import Path
@@ -25229,7 +25085,7 @@ from typing import Any
 
 import pandas as pd
 
-from fin_statement_model.io.exceptions import ReadError, WriteError
+from fin_statement_model.io.exceptions import WriteError
 
 logger = logging.getLogger(__name__)
 
@@ -25261,37 +25117,6 @@ def list_available_builtin_configs() -> list[str]:
     except (ModuleNotFoundError, FileNotFoundError):
         logger.warning(f"Built-in statement config path not found: {package_path}")
         return []
-
-
-def read_builtin_statement_config(name: str) -> dict[str, Any]:
-    """Read and parse a built-in statement config by name."""
-    package_path = _BUILTIN_CONFIG_PACKAGE
-    found = None
-    content = None
-    for ext in (".yaml", ".yml", ".json"):
-        try:
-            path = importlib.resources.files(package_path).joinpath(f"{name}{ext}")
-            if path.is_file():
-                content = path.read_text(encoding="utf-8")
-                found = ext
-                break
-        except Exception:
-            continue
-    if not content or not found:
-        raise ReadError(
-            message=f"Built-in statement config '{name}' not found in {package_path}",
-            source=package_path,
-        )
-    try:
-        if found == ".json":
-            return json.loads(content)
-        return yaml.safe_load(content)
-    except Exception as e:
-        raise ReadError(
-            message=f"Failed to parse built-in statement config '{name}'",
-            source=f"{package_path}/{name}{found}",
-            original_error=e,
-        ) from e
 
 
 # ===== Statement Writing =====
@@ -25332,9 +25157,8 @@ def write_statement_to_json(
 
 
 __all__ = [
-    # Built-in configs
+    # Built-in config helpers
     "list_available_builtin_configs",
-    "read_builtin_statement_config",
     # Statement writing
     "write_statement_to_excel",
     "write_statement_to_json",
@@ -25561,17 +25385,6 @@ class UnifiedNodeValidator:
                     confidence=0.85,
                 )
 
-        # Check parent relationships before sub-nodes
-        if parent_nodes and self._check_parent_relationship(name, parent_nodes):
-            return ValidationResult(
-                original_name=name,
-                standardized_name=name,
-                is_valid=True,
-                message="Derived from parent nodes",
-                category="derived",
-                confidence=0.8,
-            )
-
         # Check specific sub-node patterns
         subnode_match = self._check_patterns(name, self.SUBNODE_PATTERNS, "subnode")
         if subnode_match:
@@ -25673,37 +25486,6 @@ class UnifiedNodeValidator:
                 return base_name, suffix, pattern_type
 
         return None
-
-    def _check_parent_relationship(self, name: str, parent_nodes: list[str]) -> bool:
-        """Check if node name is related to its parents."""
-        name_lower = name.lower()
-
-        # Check if we have enough parents to establish a relationship
-        if len(parent_nodes) < 2:
-            return False
-
-        # Check if any parent name is contained in this node name
-        parent_match_count = 0
-        for parent in parent_nodes:
-            parent_lower = parent.lower()
-
-            # Direct containment or similarity
-            if parent_lower in name_lower or self._is_similar(
-                name_lower, parent_lower, threshold=0.5
-            ):
-                parent_match_count += 1
-
-            # Check standard name relationships
-            if standard_node_registry.is_standard_name(parent_lower):
-                definition = standard_node_registry.get_definition(parent_lower)
-                if definition:
-                    for alt in definition.alternate_names:
-                        if alt.lower() in name_lower:
-                            parent_match_count += 1
-                            break
-
-        # Consider it derived if it matches at least one parent
-        return parent_match_count >= 1
 
     def _generate_suggestions(self, name: str) -> list[str]:
         """Generate improvement suggestions for non-standard names."""
@@ -31087,6 +30869,9 @@ from fin_statement_model.core.errors import FinancialModelError
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io import write_statement_to_excel, write_statement_to_json
 from fin_statement_model.io.exceptions import WriteError
+from fin_statement_model.statements.orchestration.orchestrator import (
+    create_statement_dataframe,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -31098,167 +30883,85 @@ __all__ = [
 
 
 def export_statements(
-    graph: Graph,
-    config_path_or_dir: str,
+    dfs: dict[str, pd.DataFrame],
     output_dir: str,
-    format_kwargs: dict[str, Any],
     writer_func: Callable[..., None],
     writer_kwargs: dict[str, Any],
     file_suffix: str,
 ) -> None:
-    """Generate and export statement DataFrames using a specific writer function.
+    """Export pre-generated statement DataFrames using the provided writer.
 
-    Internal helper function that takes generated DataFrames (or generates them
-    if needed via `create_statement_dataframe`) and uses the provided
-    `writer_func` to save them to disk.
+    This function is intentionally *dumb*: it assumes the heavy-lifting has
+    already been done by :pyfunc:`create_statement_dataframe` and focuses solely
+    on persisting the resulting pandas objects to disk.
 
     Args:
-        graph: The core.graph.Graph instance.
-        config_path_or_dir: Path to config file or directory.
-        output_dir: Directory where output files will be saved.
-        format_kwargs: Optional arguments for `create_statement_dataframe`.
-        writer_func: The function responsible for writing a DataFrame to a file
-            (e.g., `write_statement_to_excel`).
-        writer_kwargs: Optional arguments passed directly to the `writer_func`.
-        file_suffix: The file extension to use for output files (e.g., ".xlsx").
+        dfs: A mapping of ``statement_id`` to pandas ``DataFrame`` instances
+            returned by :pyfunc:`create_statement_dataframe`.
+        output_dir: Target directory where the files will be written. The
+            directory (and any missing parents) is created if it does not yet
+            exist.
+        writer_func: Concrete low-level writer (e.g.
+            :pyfunc:`write_statement_to_excel`). Must accept the dataframe as
+            first argument and the destination path as second argument.
+        writer_kwargs: Arbitrary keyword arguments forwarded verbatim to
+            *writer_func*.
+        file_suffix: Extension used for the generated files (e.g. ``".xlsx"``).
 
     Raises:
-        WriteError: If any errors occur during the file writing process.
-        FinancialModelError: If errors occur during DataFrame generation.
-        FileNotFoundError: If config path doesn't exist.
+        TypeError: If *dfs* is not a mapping of ``str -> DataFrame``.
+        WriteError: Propagated if the underlying *writer_func* fails for any
+            individual statement.
     """
-    # Import here to avoid circular dependency
-    from fin_statement_model.statements.orchestration.orchestrator import (
-        create_statement_dataframe,
-    )
+
+    if not isinstance(dfs, dict):
+        raise TypeError(
+            "'dfs' must be a mapping of statement_id to pandas DataFrame. "
+            "Call 'create_statement_dataframe' first and pass the result here."
+        )
 
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
-    # Load statement configuration(s) into memory if a path was provided
-    def _parse_config_file(file_path: Path) -> dict[str, Any] | None:
-        """Parse a YAML or JSON statement configuration file into a dictionary.
-
-        Returns None if the file cannot be parsed or the root element is not a mapping.
-        """
-        # Security: Check file size to prevent memory exhaustion
-        max_size = 10 * 1024 * 1024  # 10MB limit
-        if file_path.stat().st_size > max_size:
-            logger.warning("Config file '%s' exceeds size limit (%d bytes) - skipping", file_path, max_size)
-            return None
-
-        try:
-            if file_path.suffix.lower() == ".json":
-                import json
-                data = json.loads(file_path.read_text(encoding="utf-8"))
-            else:
-                # Fallback to YAML for .yaml / .yml extensions (PyYAML is a dependency)
-                import yaml
-                data = yaml.safe_load(file_path.read_text(encoding="utf-8"))
-            if not isinstance(data, dict):
-                logger.warning(
-                    "Statement config '%s' is not a mapping at the root level – skipping", file_path
-                )
-                return None
-            return data  # type: ignore[return-value]
-        except (json.JSONDecodeError, yaml.YAMLError) as exc:
-            logger.warning("Failed to parse statement config file '%s': %s", file_path, exc)
-            return None
-        except Exception as exc:
-            logger.exception(
-                "Failed to parse statement config file '%s': %s", file_path, exc
-            )
-            return None
-
-    # Determine raw_configs based on the provided argument type
-    raw_configs: dict[str, dict[str, Any]]
-    if isinstance(config_path_or_dir, (str, Path)):
-        cfg_path = Path(config_path_or_dir)
-        if not cfg_path.exists():
-            raise FileNotFoundError(f"Config path '{cfg_path}' does not exist.")
-        if cfg_path.is_dir():
-            raw_configs = {}
-            for item in cfg_path.iterdir():
-                if item.is_file() and item.suffix.lower() in {".yaml", ".yml", ".json"}:
-                    parsed_cfg = _parse_config_file(item)
-                    if parsed_cfg:
-                        stmt_id = str(parsed_cfg.get("id", item.stem))
-                        raw_configs[stmt_id] = parsed_cfg
-            if not raw_configs:
-                raise FileNotFoundError(
-                    f"No valid statement configuration files found in directory '{cfg_path}'."
-                )
-        else:
-            parsed_cfg = _parse_config_file(cfg_path)
-            if parsed_cfg is None:
-                raise FileNotFoundError(
-                    f"Failed to parse statement configuration file '{cfg_path}'."
-                )
-            stmt_id = str(parsed_cfg.get("id", cfg_path.stem))
-            raw_configs = {stmt_id: parsed_cfg}
-    elif isinstance(config_path_or_dir, dict):
-        # Already provided a mapping of configs
-        raw_configs = config_path_or_dir  # type: ignore[assignment]
-    else:
-        raise TypeError(
-            "config_path_or_dir must be a path to a config file/directory or a mapping of configs."
-        )
-
-    try:
-        dfs = create_statement_dataframe(graph, raw_configs, format_kwargs)
-    except FinancialModelError:
-        logger.exception("Failed to generate statement dataframes for export:")
-        raise  # Re-raise critical errors from generation step
-
     if not dfs:
         logger.warning(
-            f"No DataFrames generated, nothing to export to {file_suffix} files."
-        )
+            "Received an empty mapping of DataFrames – nothing to export.")
         return
 
-    # Standardize to dictionary format
-    if isinstance(dfs, pd.DataFrame):
-        # Derive a sensible statement ID when only a single DataFrame is returned
-        if isinstance(config_path_or_dir, (str, Path)):
-            # Use file/dir name if a path was provided
-            path_obj = Path(config_path_or_dir)
-            stmt_id = path_obj.stem if path_obj.is_file() else "statement"
-        else:
-            # Fallback to the first key in the raw_configs mapping
-            stmt_id = next(iter(raw_configs.keys()))
-        dfs_dict = {stmt_id: dfs}
-    else:
-        dfs_dict = dfs
+    export_errors: list[tuple[str, str]] = []
 
-    export_errors = []
-    for stmt_id, df in dfs_dict.items():
-        # Ensure stmt_id is filename-safe (basic replacement)
+    for stmt_id, df in dfs.items():
+        # Ensure stmt_id is filename-safe (replace path separators)
         safe_stmt_id = stmt_id.replace("/", "_").replace("\\", "_")
         file_path = output_path / f"{safe_stmt_id}{file_suffix}"
+
         try:
             writer_func(df, str(file_path), **writer_kwargs)
-            logger.info(f"Successfully exported statement '{stmt_id}' to {file_path}")
+            logger.info(
+                "Successfully exported statement '%s' to %s", stmt_id, file_path
+            )
         except WriteError as e:
             logger.exception(
-                f"Failed to write {file_suffix} file for statement '{stmt_id}':"
+                "Failed to write %s file for statement '%s'", file_suffix, stmt_id
             )
             export_errors.append((stmt_id, str(e)))
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 – re-wrap unknown exceptions
             logger.exception(
-                f"Unexpected error exporting statement '{stmt_id}' to {file_suffix}."
+                "Unexpected error exporting statement '%s' to %s", stmt_id, file_path
             )
             export_errors.append((stmt_id, f"Unexpected export error: {e!s}"))
 
     if export_errors:
-        error_summary = "; ".join([f"{sid}: {err}" for sid, err in export_errors])
+        error_summary = "; ".join(f"{sid}: {err}" for sid, err in export_errors)
         raise WriteError(
-            f"Encountered {len(export_errors)} errors during {file_suffix} export: {error_summary}"
+            f"Encountered {len(export_errors)} errors during {file_suffix} export: "
+            f"{error_summary}"
         )
 
 
 def export_statements_to_excel(
     graph: Graph,
-    config_path_or_dir: str,
+    raw_configs: dict[str, dict[str, Any]],
     output_dir: str,
     format_kwargs: Optional[dict[str, Any]] = None,
     writer_kwargs: Optional[dict[str, Any]] = None,
@@ -31271,8 +30974,7 @@ def export_statements_to_excel(
 
     Args:
         graph: The core.graph.Graph instance containing necessary data.
-        config_path_or_dir: Path to a single statement config file or a
-            directory containing multiple config files.
+        raw_configs: Mapping of statement IDs to configuration dictionaries.
         output_dir: The directory where the resulting Excel files will be saved.
             File names will be derived from the statement IDs (e.g.,
             'income_statement.xlsx').
@@ -31285,7 +30987,7 @@ def export_statements_to_excel(
     Raises:
         ConfigurationError: If loading or validating configurations fails.
         StatementError: If processing statements fails critically.
-        FileNotFoundError: If `config_path_or_dir` is not found.
+        TypeError: If `raw_configs` is not a valid mapping.
         WriteError: If writing any of the Excel files fails.
         FinancialModelError: Potentially other errors from graph operations.
 
@@ -31296,7 +30998,7 @@ def export_statements_to_excel(
         >>> try:
         ...     export_statements_to_excel(
         ...         graph=my_graph,
-        ...         config_path_or_dir='./statement_configs/',
+        ...         raw_configs=my_configs,
         ...         output_dir='./output_excel/',
         ...         writer_kwargs={'freeze_panes': (1, 1)} # Freeze header row/col
         ...     )
@@ -31306,11 +31008,15 @@ def export_statements_to_excel(
         ...     # Use logger.error or logger.exception
         ...     logger.error(f"Export failed: {e}")
     """
+    try:
+        dfs = create_statement_dataframe(graph, raw_configs, format_kwargs or {})
+    except FinancialModelError:
+        logger.exception("Failed to generate statement DataFrames for Excel export:")
+        raise
+
     export_statements(
-        graph=graph,
-        config_path_or_dir=config_path_or_dir,
+        dfs=dfs,
         output_dir=output_dir,
-        format_kwargs=format_kwargs or {},
         writer_func=write_statement_to_excel,
         writer_kwargs=writer_kwargs or {},
         file_suffix=".xlsx",
@@ -31319,7 +31025,7 @@ def export_statements_to_excel(
 
 def export_statements_to_json(
     graph: Graph,
-    config_path_or_dir: str,
+    raw_configs: dict[str, dict[str, Any]],
     output_dir: str,
     format_kwargs: Optional[dict[str, Any]] = None,
     writer_kwargs: Optional[dict[str, Any]] = None,
@@ -31332,8 +31038,7 @@ def export_statements_to_json(
 
     Args:
         graph: The core.graph.Graph instance containing necessary data.
-        config_path_or_dir: Path to a single statement config file or a
-            directory containing multiple config files.
+        raw_configs: Mapping of statement IDs to configuration dictionaries.
         output_dir: The directory where the resulting JSON files will be saved.
             File names will be derived from the statement IDs (e.g.,
             'balance_sheet.json').
@@ -31347,7 +31052,7 @@ def export_statements_to_json(
     Raises:
         ConfigurationError: If loading or validating configurations fails.
         StatementError: If processing statements fails critically.
-        FileNotFoundError: If `config_path_or_dir` is not found.
+        TypeError: If `raw_configs` is not a valid mapping.
         WriteError: If writing any of the JSON files fails.
         FinancialModelError: Potentially other errors from graph operations.
 
@@ -31358,7 +31063,7 @@ def export_statements_to_json(
         >>> try:
         ...     export_statements_to_json(
         ...         graph=my_graph,
-        ...         config_path_or_dir='./statement_configs/',
+        ...         raw_configs=my_configs,
         ...         output_dir='./output_json/',
         ...         writer_kwargs={'orient': 'split', 'indent': 4}
         ...     )
@@ -31373,11 +31078,15 @@ def export_statements_to_json(
     final_writer_kwargs.setdefault("orient", "records")
     final_writer_kwargs.setdefault("indent", 2)
 
+    try:
+        dfs = create_statement_dataframe(graph, raw_configs, format_kwargs or {})
+    except FinancialModelError:
+        logger.exception("Failed to generate statement DataFrames for JSON export:")
+        raise
+
     export_statements(
-        graph=graph,
-        config_path_or_dir=config_path_or_dir,
+        dfs=dfs,
         output_dir=output_dir,
-        format_kwargs=format_kwargs or {},
         writer_func=write_statement_to_json,
         writer_kwargs=final_writer_kwargs,
         file_suffix=".json",
@@ -31397,7 +31106,6 @@ from in-memory configuration dictionaries.
 
 import logging
 from typing import Any, Optional
-from pathlib import Path
 
 from fin_statement_model.core.errors import ConfigurationError, StatementError
 from fin_statement_model.statements.structure.builder import StatementStructureBuilder
@@ -31411,7 +31119,7 @@ __all__ = ["load_build_register_statements"]
 
 
 def load_build_register_statements(
-    raw_configs: dict[str, dict[str, Any]] | str | Path,
+    raw_configs: dict[str, dict[str, Any]],
     registry: StatementRegistry,
     builder: Optional[StatementStructureBuilder] = None,
     enable_node_validation: bool = False,
@@ -31421,7 +31129,7 @@ def load_build_register_statements(
     """Load, validate, build, and register statement structures from config dicts.
 
     Args:
-        raw_configs: Mapping of statement IDs to configuration dicts, or a file path or directory path.
+        raw_configs: Mapping of statement IDs to configuration dicts.
         registry: StatementRegistry instance to register loaded statements.
         builder: Optional StatementStructureBuilder instance.
         enable_node_validation: If True, validate node IDs during config and build.
@@ -31438,52 +31146,14 @@ def load_build_register_statements(
     loaded_statement_ids: list[str] = []
     errors: list[tuple[str, str]] = []
 
-    # NEW: Allow `raw_configs` to be a file path or directory path for backward compatibility
-    #       Convert such inputs into the expected {statement_id: config_dict} mapping.
-    if isinstance(raw_configs, (str, Path)):
-
-        def _parse_cfg_file(path: Path) -> dict[str, Any] | None:
-            """Parse a YAML or JSON configuration file into a dict mapping."""
-            try:
-                if path.suffix.lower() == ".json":
-                    import json
-
-                    data = json.loads(path.read_text(encoding="utf-8"))
-                else:
-                    import yaml
-
-                    data = yaml.safe_load(path.read_text(encoding="utf-8"))
-                if not isinstance(data, dict):
-                    logger.warning(
-                        "Skipping config '%s' – root element is not a mapping.", path
-                    )
-                    return None
-                return data
-            except Exception as exc:  # pragma: no cover
-                logger.exception("Failed to parse statement config '%s': %s", path, exc)
-                return None
-
-        path_obj = Path(raw_configs)
-        if not path_obj.exists():
-            raise FileNotFoundError(
-                f"Statement config path '{path_obj}' does not exist."
-            )
-
-        configs_dict: dict[str, dict[str, Any]] = {}
-        if path_obj.is_dir():
-            for file in path_obj.iterdir():
-                if file.is_file() and file.suffix.lower() in {".yaml", ".yml", ".json"}:
-                    parsed = _parse_cfg_file(file)
-                    if parsed:
-                        stmt_id = str(parsed.get("id", file.stem))
-                        configs_dict[stmt_id] = parsed
-        else:
-            parsed = _parse_cfg_file(path_obj)
-            if parsed:
-                stmt_id = str(parsed.get("id", path_obj.stem))
-                configs_dict[stmt_id] = parsed
-
-        raw_configs = configs_dict  # type: ignore[assignment]
+    # Enforce modern API: raw_configs must be an in-memory mapping.
+    if not isinstance(raw_configs, dict):
+        raise TypeError(
+            "'raw_configs' must be a mapping of statement_id to configuration dict. "
+            "Loading configurations from file paths has been removed. "
+            "Load the YAML/JSON into memory first (e.g., with yaml.safe_load) "
+            "and pass the resulting mapping instead."
+        )
 
     if builder is None:
         builder = StatementStructureBuilder(

@@ -205,7 +205,7 @@ try:
     # Export the statement to Excel using the modern helper function
     export_statements_to_excel(
         graph=graph,
-        config_path_or_dir=raw_configs,
+        raw_configs=raw_configs,
         output_dir=str(MD_OUTPUT_PATH.parent),
         format_kwargs={
             "should_apply_signs": True,

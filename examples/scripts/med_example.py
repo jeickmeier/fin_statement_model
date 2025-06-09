@@ -11,6 +11,7 @@ import logging
 from pathlib import Path
 import sys
 import yaml
+from typing import Any
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.errors import (
@@ -229,11 +230,10 @@ logger.info(
     f"Reloaded {metric_count} metrics from special directory to include retained_earnings"
 )
 
-excel_output_path = OUTPUT_DIR / "financial_statements.xlsx"
 md_output_path = OUTPUT_DIR / "financial_statements.md"  # Added Markdown path
 
 try:
-    logger.info(f"Exporting statements to Excel: {excel_output_path}")
+    logger.info(f"Exporting statements to Excel into directory: {OUTPUT_DIR}")
 
     # Create a dummy Balance Sheet config for multi-sheet export demonstration
     # Use core. prefixes for node_ids and add required totals/metrics
@@ -361,167 +361,38 @@ sections:
         sign_convention: 1
 """
     bs_stmt_path = CONFIG_DIR / "balance_sheet.yaml"
-    with open(bs_stmt_path, "w") as f:
+    with open(bs_stmt_path, "w", encoding="utf-8") as f:
         f.write(balance_sheet_yaml)
 
-    # Add all required BS item data to the graph, using core prefixes
-    # and including all historical + forecast periods
-    all_periods_list = list(graph.periods)
-
-    # Define some simple forecast logic for the new BS items
-    bs_forecasts = {
-        "core.cash": 0.10,  # 10% growth
-        "core.accounts_receivable": 0.12,  # 12% growth
-        "core.ppe": 0.05,  # 5% growth
-        "core.accounts_payable": 0.08,  # 8% growth
-        "core.debt": 0.02,  # 2% growth (increase)
-        "core.common_stock": 0.0,  # No change
-        "core.prior_retained_earnings": 0.0,  # This will be calculated by metric usually
-        "core.dividends": 0.05,  # Increase dividends by 5%
-    }
-
-    # Function to generate data across all periods with simple growth
-    def generate_data(
-        node_id: str, start_val: float, growth_rate: float
-    ) -> dict[str, float]:
-        """Generate data for a node across periods with simple growth."""
-        data: dict[str, float] = {}
-        current_val = start_val
-        for i, period in enumerate(all_periods_list):
-            if i > 1:  # Apply growth after first two historical periods
-                current_val *= 1 + growth_rate
-            data[period] = current_val
-        return data
-
-    # Add data ensuring all periods exist
-    graph.add_financial_statement_item(
-        "core.cash", generate_data("core.cash", 50.0, bs_forecasts["core.cash"])
-    )
-    graph.add_financial_statement_item(
-        "core.accounts_receivable",
-        generate_data(
-            "core.accounts_receivable", 100.0, bs_forecasts["core.accounts_receivable"]
-        ),
-    )
-    graph.add_financial_statement_item(
-        "core.ppe", generate_data("core.ppe", 300.0, bs_forecasts["core.ppe"])
-    )
-    graph.add_financial_statement_item(
-        "core.accounts_payable",
-        generate_data(
-            "core.accounts_payable", 80.0, bs_forecasts["core.accounts_payable"]
-        ),
-    )
-    graph.add_financial_statement_item(
-        "core.debt", generate_data("core.debt", 150.0, bs_forecasts["core.debt"])
-    )
-    graph.add_financial_statement_item(
-        "core.common_stock",
-        generate_data("core.common_stock", 100.0, bs_forecasts["core.common_stock"]),
-    )
-    # Need prior RE and dividends for the Retained Earnings metric
-    # Let's assume prior RE grows with net income (simple approximation for example)
-    # We need net income data in the graph first. Net income IS calculated from IS items.
-    # Let's use the previously calculated net income node values
-    # TODO: This is tricky - Retained Earnings depends on Net Income, which is calculated.
-    # The metric expects 'net_income' as an input node ID. We have 'net_income' as a calculated item ID.
-    # We might need to ensure 'net_income' node exists or map differently. For now, assume graph.calculate works.
-    # Add dummy prior RE - usually this links period to period
-    prior_re = {"2022": 100.0, "2023": 100.0 + 945}  # Start + Previous NI
-    prior_re["2024"] = prior_re["2023"] + 1145
-    prior_re["2025"] = prior_re["2024"] + 1354  # Use NI values from previous run
-    prior_re["2026"] = prior_re["2025"] + 1628  # Use NI values from previous run
-    graph.add_financial_statement_item("core.prior_retained_earnings", prior_re)
-
-    graph.add_financial_statement_item(
-        "core.dividends",
-        generate_data(
-            "core.dividends", -10.0, bs_forecasts["core.dividends"]
-        ),  # Negative value
-    )
-
-    # ------------------------------------------------------------------
-    # Additional nodes required by 'test_statement.yaml' configuration
-    # ------------------------------------------------------------------
-
-    # Helper to clone data from an existing node if present, otherwise generate
-    def _clone_or_generate(
-        source_id: str,
-        target_id: str,
-        fallback_start: float,
-        growth_rate: float,
-    ) -> None:
-        """Clone data from `source_id` node to a new `target_id` or generate if missing.
-
-        Args:
-            source_id: Existing node ID to clone from.
-            target_id: New node ID to create/overwrite.
-            fallback_start: Starting value if source node is not available.
-            growth_rate: Growth rate to apply when generating fallback series.
-        """
-
-        if graph.has_node(source_id):
-            src_node = graph.get_node(source_id)
-            data_map: dict[str, float] = {
-                period: src_node.get_value(period) for period in all_periods_list
-            }
-        else:
-            data_map = generate_data(target_id, fallback_start, growth_rate)
-
-        graph.add_financial_statement_item(target_id, data_map)
-
-    # Map of (source_id, target_id, fallback_start, growth_rate)
-    mapping_specs = [
-        ("Revenue", "revenue", 1000.0, 0.10),
-        ("COGS", "cost_of_goods_sold", -400.0, 0.08),
-        ("R&D", "operating_expenses", -300.0, 0.05),
-        ("Interest Expense", "interest_expense", -50.0, 0.05),
-        ("Taxes", "income_tax", -75.0, 0.05),
-    ]
-
-    for src, tgt, start_val, gr in mapping_specs:
-        _clone_or_generate(src, tgt, start_val, gr)
-
-    # Balance-sheet-specific nodes (if not already present without the 'core.' prefix)
-    bs_specs = {
-        "cash_and_equivalents": (50.0, 0.10),
-        "accounts_receivable": (100.0, 0.12),
-        "property_plant_equipment": (300.0, 0.05),
-        "accounts_payable": (80.0, 0.08),
-        "total_debt": (150.0, 0.02),
-        "common_stock": (100.0, 0.0),
-        "prior_retained_earnings": (100.0, 0.0),
-        "dividends": (-10.0, 0.05),
-    }
-
-    for node_id, (start_val, gr) in bs_specs.items():
-        if not graph.has_node(node_id):
-            graph.add_financial_statement_item(
-                node_id,
-                generate_data(node_id, start_val, gr),
-            )
+    # Load all YAML configs in CONFIG_DIR into memory
+    all_configs: dict[str, dict[str, Any]] = {}
+    for yaml_path in CONFIG_DIR.glob("*.yaml"):
+        cfg_dict = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
+        stmt_id = cfg_dict.get("id", yaml_path.stem)
+        all_configs[stmt_id] = cfg_dict
 
     # Use the high-level export function
     # This will internally call create_statement_dataframe for all configs in CONFIG_DIR
     # and write each resulting DataFrame to a separate sheet in the Excel file.
     export_statements_to_excel(
         graph=graph,
-        config_path_or_dir=str(CONFIG_DIR),  # Process all YAML files in the dir
-        output_dir=str(excel_output_path),  # Specify the single output Excel file path
+        raw_configs=all_configs,
+        output_dir=str(OUTPUT_DIR),  # Excel files will be written into this directory
         format_kwargs={
             "number_format": ",.0f"
         },  # Formatting for the DataFrames before export
         # writer_kwargs={'freeze_panes': (1, 1)} # Example: Pass args to pandas.to_excel
     )
-    logger.info(f"Successfully exported statements to {excel_output_path}")
+    logger.info(f"Successfully exported statements to {OUTPUT_DIR}")
 
     # --- Add Markdown Export ---
     logger.info(f"Exporting statements to Markdown: {md_output_path}")
     # Prepare registry and builder for balance sheet
     bs_registry = StatementRegistry()
     builder = StatementStructureBuilder()
-    # Load, validate, build, and register the balance_sheet config
-    load_build_register_statements(str(bs_stmt_path), bs_registry, builder)
+    # Load, validate, build, and register the balance_sheet config from in-memory dict
+    bs_raw_config = all_configs.get("balance_sheet") or yaml.safe_load(bs_stmt_path.read_text(encoding="utf-8"))
+    load_build_register_statements({bs_raw_config.get("id", "balance_sheet"): bs_raw_config}, bs_registry, builder)
     statement_structure = bs_registry.get("balance_sheet")
     # Populate graph with balance sheet calculation and metric nodes
     populate_graph(bs_registry, graph)

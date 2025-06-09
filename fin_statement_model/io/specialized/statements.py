@@ -1,7 +1,11 @@
-"""Statement-related IO utilities for built-in configs and writing formatted statement data."""
+"""Statement-related IO utilities.
 
-import json
-import yaml
+This module now only provides helpers for listing built-in statement configuration
+filenames *and* writing formatted statement data to Excel or JSON. All former
+file-loading utilities have been removed to enforce an in-memory configuration
+workflow.
+"""
+
 import logging
 import importlib.resources
 from pathlib import Path
@@ -9,7 +13,7 @@ from typing import Any
 
 import pandas as pd
 
-from fin_statement_model.io.exceptions import ReadError, WriteError
+from fin_statement_model.io.exceptions import WriteError
 
 logger = logging.getLogger(__name__)
 
@@ -41,37 +45,6 @@ def list_available_builtin_configs() -> list[str]:
     except (ModuleNotFoundError, FileNotFoundError):
         logger.warning(f"Built-in statement config path not found: {package_path}")
         return []
-
-
-def read_builtin_statement_config(name: str) -> dict[str, Any]:
-    """Read and parse a built-in statement config by name."""
-    package_path = _BUILTIN_CONFIG_PACKAGE
-    found = None
-    content = None
-    for ext in (".yaml", ".yml", ".json"):
-        try:
-            path = importlib.resources.files(package_path).joinpath(f"{name}{ext}")
-            if path.is_file():
-                content = path.read_text(encoding="utf-8")
-                found = ext
-                break
-        except Exception:
-            continue
-    if not content or not found:
-        raise ReadError(
-            message=f"Built-in statement config '{name}' not found in {package_path}",
-            source=package_path,
-        )
-    try:
-        if found == ".json":
-            return json.loads(content)
-        return yaml.safe_load(content)
-    except Exception as e:
-        raise ReadError(
-            message=f"Failed to parse built-in statement config '{name}'",
-            source=f"{package_path}/{name}{found}",
-            original_error=e,
-        ) from e
 
 
 # ===== Statement Writing =====
@@ -112,9 +85,8 @@ def write_statement_to_json(
 
 
 __all__ = [
-    # Built-in configs
+    # Built-in config helpers
     "list_available_builtin_configs",
-    "read_builtin_statement_config",
     # Statement writing
     "write_statement_to_excel",
     "write_statement_to_json",

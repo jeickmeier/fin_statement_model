@@ -26,7 +26,6 @@ from .specialized import (
     load_adjustments_from_excel,
     export_adjustments_to_excel,
     list_available_builtin_configs,
-    read_builtin_statement_config,
     write_statement_to_excel,
     write_statement_to_json,
 )
@@ -55,7 +54,6 @@ __all__ = [
     "list_readers",
     "list_writers",
     "load_adjustments_from_excel",
-    "read_builtin_statement_config",
     # Facade functions
     "read_data",
     "write_data",

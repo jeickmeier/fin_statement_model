@@ -6,7 +6,6 @@ from in-memory configuration dictionaries.
 
 import logging
 from typing import Any, Optional
-from pathlib import Path
 
 from fin_statement_model.core.errors import ConfigurationError, StatementError
 from fin_statement_model.statements.structure.builder import StatementStructureBuilder
@@ -20,7 +19,7 @@ __all__ = ["load_build_register_statements"]
 
 
 def load_build_register_statements(
-    raw_configs: dict[str, dict[str, Any]] | str | Path,
+    raw_configs: dict[str, dict[str, Any]],
     registry: StatementRegistry,
     builder: Optional[StatementStructureBuilder] = None,
     enable_node_validation: bool = False,
@@ -30,7 +29,7 @@ def load_build_register_statements(
     """Load, validate, build, and register statement structures from config dicts.
 
     Args:
-        raw_configs: Mapping of statement IDs to configuration dicts, or a file path or directory path.
+        raw_configs: Mapping of statement IDs to configuration dicts.
         registry: StatementRegistry instance to register loaded statements.
         builder: Optional StatementStructureBuilder instance.
         enable_node_validation: If True, validate node IDs during config and build.
@@ -47,52 +46,14 @@ def load_build_register_statements(
     loaded_statement_ids: list[str] = []
     errors: list[tuple[str, str]] = []
 
-    # NEW: Allow `raw_configs` to be a file path or directory path for backward compatibility
-    #       Convert such inputs into the expected {statement_id: config_dict} mapping.
-    if isinstance(raw_configs, (str, Path)):
-
-        def _parse_cfg_file(path: Path) -> dict[str, Any] | None:
-            """Parse a YAML or JSON configuration file into a dict mapping."""
-            try:
-                if path.suffix.lower() == ".json":
-                    import json
-
-                    data = json.loads(path.read_text(encoding="utf-8"))
-                else:
-                    import yaml
-
-                    data = yaml.safe_load(path.read_text(encoding="utf-8"))
-                if not isinstance(data, dict):
-                    logger.warning(
-                        "Skipping config '%s' – root element is not a mapping.", path
-                    )
-                    return None
-                return data
-            except Exception as exc:  # pragma: no cover
-                logger.exception("Failed to parse statement config '%s': %s", path, exc)
-                return None
-
-        path_obj = Path(raw_configs)
-        if not path_obj.exists():
-            raise FileNotFoundError(
-                f"Statement config path '{path_obj}' does not exist."
-            )
-
-        configs_dict: dict[str, dict[str, Any]] = {}
-        if path_obj.is_dir():
-            for file in path_obj.iterdir():
-                if file.is_file() and file.suffix.lower() in {".yaml", ".yml", ".json"}:
-                    parsed = _parse_cfg_file(file)
-                    if parsed:
-                        stmt_id = str(parsed.get("id", file.stem))
-                        configs_dict[stmt_id] = parsed
-        else:
-            parsed = _parse_cfg_file(path_obj)
-            if parsed:
-                stmt_id = str(parsed.get("id", path_obj.stem))
-                configs_dict[stmt_id] = parsed
-
-        raw_configs = configs_dict  # type: ignore[assignment]
+    # Enforce modern API: raw_configs must be an in-memory mapping.
+    if not isinstance(raw_configs, dict):
+        raise TypeError(
+            "'raw_configs' must be a mapping of statement_id to configuration dict. "
+            "Loading configurations from file paths has been removed. "
+            "Load the YAML/JSON into memory first (e.g., with yaml.safe_load) "
+            "and pass the resulting mapping instead."
+        )
 
     if builder is None:
         builder = StatementStructureBuilder(

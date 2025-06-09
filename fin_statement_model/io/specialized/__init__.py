@@ -22,7 +22,6 @@ from .graph import (
 # Statement utilities
 from .statements import (
     list_available_builtin_configs,
-    read_builtin_statement_config,
     write_statement_to_excel,
     write_statement_to_json,
 )
@@ -37,7 +36,6 @@ __all__ = [
     "import_from_cells",
     # Statements
     "list_available_builtin_configs",
-    "read_builtin_statement_config",
     "write_statement_to_excel",
     "write_statement_to_json",
     # Graph serialization
