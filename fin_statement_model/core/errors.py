@@ -1,38 +1,36 @@
-"""Define custom exceptions for the Financial Statement Model.
+"""Custom exception classes for the financial statement model.
 
-This module defines exception classes for specific error cases in the
-Financial Statement Model, allowing for more precise error handling
-and better error messages.
+This module defines exception classes for specific error cases,
+allowing for more precise error handling and better error messages.
 """
 
 from typing import Optional, Any
 
 
 class FinancialModelError(Exception):
-    """Define the base exception class for all Financial Statement Model errors.
+    """Base exception for all financial statement model errors.
 
     All custom exceptions raised within the library should inherit from this class.
 
-    Args:
-        message: A human-readable description of the error.
+    Examples:
+        >>> raise FinancialModelError("An error occurred.")
     """
 
     def __init__(self, message: str):
-        """Initializes the FinancialModelError."""
+        """Initialize the FinancialModelError.
+
+        Args:
+            message: A human-readable description of the error.
+        """
         self.message = message
         super().__init__(self.message)
 
 
 class ConfigurationError(FinancialModelError):
-    """Raise an error for invalid configuration files or objects.
+    """Error raised for invalid configuration files or objects.
 
     This typically occurs when parsing or validating configuration data,
     such as YAML files defining metrics or statement structures.
-
-    Args:
-        message: The base error message.
-        config_path: Optional path to the configuration file where the error occurred.
-        errors: Optional list of specific validation errors found.
 
     Examples:
         >>> raise ConfigurationError("Invalid syntax", config_path="config.yaml")
@@ -49,7 +47,13 @@ class ConfigurationError(FinancialModelError):
         config_path: Optional[str] = None,
         errors: Optional[list[Any]] = None,
     ):
-        """Initializes the ConfigurationError."""
+        """Initialize the ConfigurationError.
+
+        Args:
+            message: The base error message.
+            config_path: Optional path to the configuration file where the error occurred.
+            errors: Optional list of specific validation errors found.
+        """
         self.config_path = config_path
         self.errors = errors or []
 
@@ -68,16 +72,10 @@ class ConfigurationError(FinancialModelError):
 
 
 class CalculationError(FinancialModelError):
-    """Raise an error during calculation operations.
+    """Error raised during calculation operations.
 
-    This indicates a problem while computing the value of a node, often due
+    Indicates a problem while computing the value of a node, often due
     to issues with the calculation logic, input data, or strategy used.
-
-    Args:
-        message: The base error message.
-        node_id: Optional ID of the node where the calculation failed.
-        period: Optional period for which the calculation failed.
-        details: Optional dictionary containing additional context about the error.
 
     Examples:
         >>> raise CalculationError("Division by zero", node_id="profit_margin", period="2023-Q1")
@@ -95,7 +93,14 @@ class CalculationError(FinancialModelError):
         period: Optional[str] = None,
         details: Optional[dict[str, Any]] = None,
     ):
-        """Initializes the CalculationError."""
+        """Initialize the CalculationError.
+
+        Args:
+            message: The base error message.
+            node_id: Optional ID of the node where the calculation failed.
+            period: Optional period for which the calculation failed.
+            details: Optional dictionary containing additional context about the error.
+        """
         self.node_id = node_id
         self.period = period
         self.details = details or {}
@@ -122,14 +127,10 @@ class CalculationError(FinancialModelError):
 
 
 class NodeError(FinancialModelError):
-    """Raise an error for issues related to graph nodes.
+    """Error raised for issues related to graph nodes.
 
-    This covers issues like trying to access a non-existent node,
+    Covers issues like trying to access a non-existent node,
     invalid node configurations, or type mismatches related to nodes.
-
-    Args:
-        message: The base error message.
-        node_id: Optional ID of the node related to the error.
 
     Examples:
         >>> raise NodeError("Node not found", node_id="non_existent_node")
@@ -137,7 +138,12 @@ class NodeError(FinancialModelError):
     """
 
     def __init__(self, message: str, node_id: Optional[str] = None):
-        """Initializes the NodeError."""
+        """Initialize the NodeError.
+
+        Args:
+            message: The base error message.
+            node_id: Optional ID of the node related to the error.
+        """
         self.node_id = node_id
 
         full_message = f"{message} for node '{node_id}'" if node_id else message
@@ -146,16 +152,10 @@ class NodeError(FinancialModelError):
 
 
 class MissingInputError(FinancialModelError):
-    """Raise an error when a required calculation input is missing.
+    """Error raised when a required calculation input is missing.
 
-    This occurs when a calculation node needs data from another node for a
+    Occurs when a calculation node needs data from another node for a
     specific period, but that data is unavailable.
-
-    Args:
-        message: The base error message.
-        node_id: Optional ID of the node requiring the input.
-        input_name: Optional name or ID of the missing input node.
-        period: Optional period for which the input was missing.
 
     Examples:
         >>> raise MissingInputError(
@@ -173,7 +173,14 @@ class MissingInputError(FinancialModelError):
         input_name: Optional[str] = None,
         period: Optional[str] = None,
     ):
-        """Initializes the MissingInputError."""
+        """Initialize the MissingInputError.
+
+        Args:
+            message: The base error message.
+            node_id: Optional ID of the node requiring the input.
+            input_name: Optional name or ID of the missing input node.
+            period: Optional period for which the input was missing.
+        """
         self.node_id = node_id
         self.input_name = input_name
         self.period = period
@@ -192,14 +199,10 @@ class MissingInputError(FinancialModelError):
 
 
 class GraphError(FinancialModelError):
-    """Raise an error for invalid graph structure or operations.
+    """Error raised for invalid graph structure or operations.
 
-    This covers issues like inconsistencies in the graph (e.g., orphaned nodes),
+    Covers issues like inconsistencies in the graph (e.g., orphaned nodes),
     problems during graph traversal, or invalid modifications to the graph.
-
-    Args:
-        message: The base error message.
-        nodes: Optional list of node IDs involved in the graph error.
 
     Examples:
         >>> raise GraphError("Orphaned node detected", nodes=["unconnected_node"])
@@ -207,7 +210,12 @@ class GraphError(FinancialModelError):
     """
 
     def __init__(self, message: str, nodes: Optional[list[str]] = None):
-        """Initializes the GraphError."""
+        """Initialize the GraphError.
+
+        Args:
+            message: The base error message.
+            nodes: Optional list of node IDs involved in the graph error.
+        """
         self.nodes = nodes or []
 
         full_message = (
@@ -218,24 +226,28 @@ class GraphError(FinancialModelError):
 
 
 class DataValidationError(FinancialModelError):
-    """Raise an error for data validation failures.
+    """Error raised for data validation failures.
 
-    This typically occurs during data import or preprocessing when data
+    Typically occurs during data import or preprocessing when data
     does not conform to expected formats, types, or constraints.
-
-    Args:
-        message: The base error message.
-        validation_errors: Optional list of specific validation failures.
 
     Examples:
         >>> raise DataValidationError(
         ...     "Input data failed validation",
-        ...     validation_errors=["Column 'Date' has invalid format", "Value '-100' is not allowed for 'Revenue'"]
+        ...     validation_errors=[
+        ...         "Column 'Date' has invalid format",
+        ...         "Value '-100' is not allowed for 'Revenue'"
+        ...     ]
         ... )
     """
 
     def __init__(self, message: str, validation_errors: Optional[list[str]] = None):
-        """Initializes the DataValidationError."""
+        """Initialize the DataValidationError.
+
+        Args:
+            message: The base error message.
+            validation_errors: Optional list of specific validation failures.
+        """
         self.validation_errors = validation_errors or []
 
         if validation_errors:
@@ -247,14 +259,10 @@ class DataValidationError(FinancialModelError):
 
 
 class CircularDependencyError(FinancialModelError):
-    """Raise an error when a circular dependency is detected in calculations.
+    """Error raised when a circular dependency is detected in calculations.
 
-    This occurs if the calculation graph contains cycles, meaning a node
+    Occurs if the calculation graph contains cycles, meaning a node
     directly or indirectly depends on itself.
-
-    Args:
-        message: The base error message. Defaults to "Circular dependency detected".
-        cycle: Optional list of node IDs forming the detected cycle.
 
     Examples:
         >>> raise CircularDependencyError(cycle=["node_a", "node_b", "node_c", "node_a"])
@@ -265,7 +273,12 @@ class CircularDependencyError(FinancialModelError):
         message: str = "Circular dependency detected",
         cycle: Optional[list[str]] = None,
     ):
-        """Initializes the CircularDependencyError."""
+        """Initialize the CircularDependencyError.
+
+        Args:
+            message: The base error message.
+            cycle: Optional list of node IDs forming the detected cycle.
+        """
         self.cycle = cycle or []
 
         if cycle:
@@ -278,15 +291,10 @@ class CircularDependencyError(FinancialModelError):
 
 
 class PeriodError(FinancialModelError):
-    """Raise an error for invalid or missing periods.
+    """Error raised for invalid or missing periods.
 
-    This covers issues like requesting data for a non-existent period or
+    Covers issues like requesting data for a non-existent period or
     using invalid period formats.
-
-    Args:
-        message: The base error message.
-        period: Optional specific period involved in the error.
-        available_periods: Optional list of valid periods.
 
     Examples:
         >>> raise PeriodError("Invalid period format", period="2023Q5")
@@ -299,7 +307,13 @@ class PeriodError(FinancialModelError):
         period: Optional[str] = None,
         available_periods: Optional[list[str]] = None,
     ):
-        """Initializes the PeriodError."""
+        """Initialize the PeriodError.
+
+        Args:
+            message: The base error message.
+            period: Optional specific period involved in the error.
+            available_periods: Optional list of valid periods.
+        """
         self.period = period
         self.available_periods = available_periods or []
 
@@ -314,14 +328,10 @@ class PeriodError(FinancialModelError):
 
 
 class StatementError(FinancialModelError):
-    """Raise an error for issues related to financial statements.
+    """Error raised for issues related to financial statements.
 
-    This is used for errors specific to the structure, definition, or
+    Used for errors specific to the structure, definition, or
     processing of financial statements (e.g., Balance Sheet, P&L).
-
-    Args:
-        message: The base error message.
-        statement_id: Optional ID or name of the statement involved.
 
     Examples:
         >>> raise StatementError("Balance sheet does not balance", statement_id="BS_2023")
@@ -329,7 +339,12 @@ class StatementError(FinancialModelError):
     """
 
     def __init__(self, message: str, statement_id: Optional[str] = None):
-        """Initializes the StatementError."""
+        """Initialize the StatementError.
+
+        Args:
+            message: The base error message.
+            statement_id: Optional ID or name of the statement involved.
+        """
         self.statement_id = statement_id
 
         full_message = (
@@ -340,15 +355,10 @@ class StatementError(FinancialModelError):
 
 
 class StrategyError(FinancialModelError):
-    """Raise an error for issues related to calculation strategies.
+    """Error raised for issues related to calculation strategies.
 
-    This indicates a problem with the configuration or execution of a
+    Indicates a problem with the configuration or execution of a
     specific calculation strategy (e.g., Summation, GrowthRate).
-
-    Args:
-        message: The base error message.
-        strategy_type: Optional name or type of the strategy involved.
-        node_id: Optional ID of the node using the strategy.
 
     Examples:
         >>> raise StrategyError("Invalid parameter for GrowthRate strategy", strategy_type="GrowthRate", node_id="revenue_forecast")
@@ -361,7 +371,13 @@ class StrategyError(FinancialModelError):
         strategy_type: Optional[str] = None,
         node_id: Optional[str] = None,
     ):
-        """Initializes the StrategyError."""
+        """Initialize the StrategyError.
+
+        Args:
+            message: The base error message.
+            strategy_type: Optional name or type of the strategy involved.
+            node_id: Optional ID of the node using the strategy.
+        """
         self.strategy_type = strategy_type
         self.node_id = node_id
 
@@ -377,15 +393,10 @@ class StrategyError(FinancialModelError):
 
 
 class TransformationError(FinancialModelError):
-    """Raise an error during data transformation.
+    """Error raised during data transformation.
 
-    This occurs during preprocessing steps when a specific transformation
+    Occurs during preprocessing steps when a specific transformation
     (e.g., normalization, scaling) fails.
-
-    Args:
-        message: The base error message.
-        transformer_type: Optional name or type of the transformer involved.
-        parameters: Optional dictionary of parameters used by the transformer.
 
     Examples:
         >>> raise TransformationError("Log transform requires positive values", transformer_type="LogTransformer")
@@ -402,7 +413,13 @@ class TransformationError(FinancialModelError):
         transformer_type: Optional[str] = None,
         parameters: Optional[dict[str, Any]] = None,
     ):
-        """Initializes the TransformationError."""
+        """Initialize the TransformationError.
+
+        Args:
+            message: The base error message.
+            transformer_type: Optional name or type of the transformer involved.
+            parameters: Optional dictionary of parameters used by the transformer.
+        """
         self.transformer_type = transformer_type
         self.parameters = parameters or {}
 
@@ -418,22 +435,17 @@ class TransformationError(FinancialModelError):
 
 
 class MetricError(FinancialModelError):
-    """Raise an error for issues related to metric definitions or registry.
+    """Error raised for issues related to metric definitions or registry.
 
-    This covers issues with loading, validating, or accessing financial metrics,
+    Covers issues with loading, validating, or accessing financial metrics,
     whether defined in YAML or Python code.
-
-    Args:
-        message: The base error message.
-        metric_name: Optional name of the metric involved in the error.
-        details: Optional dictionary containing additional context about the error.
 
     Examples:
         >>> raise MetricError("Metric definition not found", metric_name="unknown_ratio")
         >>> raise MetricError(
         ...     "Invalid formula syntax in metric definition",
         ...     metric_name="profitability_index",
-        ...     details={"formula": "NPV / Initial Investment)"} # Missing parenthesis
+        ...     details={"formula": "NPV / Initial Investment)"}  # Missing parenthesis
         ... )
     """
 
@@ -443,7 +455,13 @@ class MetricError(FinancialModelError):
         metric_name: Optional[str] = None,
         details: Optional[dict[str, Any]] = None,
     ):
-        """Initializes the MetricError."""
+        """Initialize the MetricError.
+
+        Args:
+            message: The base error message.
+            metric_name: Optional name of the metric involved in the error.
+            details: Optional dictionary containing additional context about the error.
+        """
         self.metric_name = metric_name
         self.details = details or {}
 
