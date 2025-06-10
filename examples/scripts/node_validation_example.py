@@ -12,6 +12,8 @@ from fin_statement_model.statements import (
     validate_statement_config_with_nodes,
 )
 from fin_statement_model.io.validation import UnifiedNodeValidator
+from fin_statement_model.core.nodes import standard_node_registry
+from fin_statement_model.statements.utilities.cli_formatters import pretty_print_errors
 
 
 def example_basic_node_validation():
@@ -83,8 +85,7 @@ def example_basic_node_validation():
 
     errors = config.validate_config()
     print(f"Validation errors: {len(errors)}")
-    for error in errors:
-        print(f"  - {error}")
+    pretty_print_errors(errors)
 
     if config.model:
         print("✅ Configuration successfully validated and parsed")
@@ -100,8 +101,7 @@ def example_basic_node_validation():
 
     strict_errors = strict_config.validate_config()
     print(f"Strict validation errors: {len(strict_errors)}")
-    for error in strict_errors:
-        print(f"  - {error}")
+    pretty_print_errors(strict_errors)
 
     if strict_config.model:
         print("✅ Strict validation passed")
@@ -116,6 +116,7 @@ def example_custom_validator_configuration():
     # Create a custom validator with specific settings
     # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
     custom_validator = UnifiedNodeValidator(
+        standard_node_registry,
         strict_mode=False,
         auto_standardize=True,  # Convert alternate names to standard
         warn_on_non_standard=True,
@@ -244,6 +245,7 @@ def example_convenience_functions():
     )
 
     print(f"High-level validation errors: {len(validation_errors)}")
+    pretty_print_errors(validation_errors)
     if not validation_errors:
         print("✅ High-level validation passed")
 

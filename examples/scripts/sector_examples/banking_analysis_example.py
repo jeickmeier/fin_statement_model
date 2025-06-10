@@ -13,7 +13,10 @@ from fin_statement_model.core.metrics import (
     interpret_metric,
     calculate_metric,
 )
-from fin_statement_model.core.nodes import FinancialStatementItemNode
+from fin_statement_model.core.nodes import (
+    FinancialStatementItemNode,
+    standard_node_registry,
+)
 from fin_statement_model.core.nodes.base import Node
 from fin_statement_model.core.nodes.calculation_nodes import (
     FormulaCalculationNode,
@@ -55,6 +58,7 @@ def validate_node_names_example() -> dict[str, str]:
     # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
     # Create unified validator for demo
     validator = UnifiedNodeValidator(
+        standard_node_registry,
         strict_mode=False,  # Allow alternate names
         auto_standardize=True,  # Convert to standard names
         warn_on_non_standard=True,  # Log warnings for non-standard names
@@ -100,6 +104,7 @@ def context_aware_validation_example():
 
     # Create unified validator with pattern recognition
     validator = UnifiedNodeValidator(
+        standard_node_registry,
         strict_mode=False,
         auto_standardize=True,
         enable_patterns=True,  # Enable pattern recognition
@@ -148,7 +153,7 @@ def create_validated_bank_data() -> dict[str, FinancialStatementItemNode]:
     logger.info("\n=== Creating Validated Bank Data ===")
 
     # Create validator
-    validator = UnifiedNodeValidator(auto_standardize=True)
+    validator = UnifiedNodeValidator(standard_node_registry, auto_standardize=True)
 
     # Raw data with potentially non-standard names
     raw_data_mapping = {

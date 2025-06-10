@@ -18,6 +18,7 @@ Note: Names with spaces still need preprocessing (replace spaces with underscore
 import logging
 from fin_statement_model.config import get_config, update_config
 from fin_statement_model.io.validation import UnifiedNodeValidator
+from fin_statement_model.core.nodes import standard_node_registry
 
 # Get configuration
 config = get_config()
@@ -31,8 +32,8 @@ def example_basic_validation():
     logger.info("=== Basic Validation Example ===")
 
     # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
-    validator = (
-        UnifiedNodeValidator()
+    validator = UnifiedNodeValidator(
+        standard_node_registry
     )  # Demo only: demonstrates direct validator instantiation
 
     # The validator now uses these config defaults internally:
@@ -82,8 +83,8 @@ def example_case_sensitivity_handling():
     logger.info("\n=== Automatic Case Handling ===")
 
     # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
-    validator = (
-        UnifiedNodeValidator()
+    validator = UnifiedNodeValidator(
+        standard_node_registry
     )  # Demo only: demonstrates direct validator instantiation
     # Test cases showing automatic case handling
     test_cases = [
@@ -118,6 +119,7 @@ def example_context_aware_validation():
 
     # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
     validator = UnifiedNodeValidator(
+        standard_node_registry,
         enable_patterns=True,
         strict_mode=config.validation.strict_mode,
     )  # Demo only: demonstrates direct validator instantiation
@@ -147,6 +149,7 @@ def example_graph_building():
 
     # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
     validator = UnifiedNodeValidator(
+        standard_node_registry,
         auto_standardize=config.validation.auto_standardize_names,
         warn_on_non_standard=config.validation.warn_on_non_standard,
         strict_mode=config.validation.strict_mode,
@@ -240,11 +243,11 @@ def example_flexible_vs_strict():
 
     # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
     strict_validator = UnifiedNodeValidator(
-        strict_mode=config.validation.strict_mode
+        standard_node_registry, strict_mode=config.validation.strict_mode
     )  # Demo only
     # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
     flexible_validator = UnifiedNodeValidator(
-        strict_mode=config.validation.strict_mode
+        standard_node_registry, strict_mode=config.validation.strict_mode
     )  # Demo only
 
     # Save current config
@@ -252,11 +255,15 @@ def example_flexible_vs_strict():
 
     # Test with strict mode
     update_config({"validation": {"strict_mode": True}})
-    strict_validator = UnifiedNodeValidator(strict_mode=config.validation.strict_mode)
+    strict_validator = UnifiedNodeValidator(
+        standard_node_registry, strict_mode=config.validation.strict_mode
+    )
 
     # Test with flexible mode
     update_config({"validation": {"strict_mode": False}})
-    flexible_validator = UnifiedNodeValidator(strict_mode=config.validation.strict_mode)
+    flexible_validator = UnifiedNodeValidator(
+        standard_node_registry, strict_mode=config.validation.strict_mode
+    )
 
     test_names = ["revenue_2023_q1", "custom_metric", "My Special Node"]
 
@@ -280,6 +287,7 @@ def example_excel_reader_integration():
 
     # Demo only: production code should use StatementConfig/StatementStructureBuilder for validation
     validator = UnifiedNodeValidator(
+        standard_node_registry,
         auto_standardize=config.io.auto_standardize_columns,
         enable_patterns=True,
     )  # Demo only: demonstrates direct validator instantiation

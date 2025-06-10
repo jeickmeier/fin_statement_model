@@ -33,6 +33,7 @@ from fin_statement_model.forecasting.forecaster import StatementForecaster
 
 # Import unified validator
 from fin_statement_model.io.validation import UnifiedNodeValidator
+from fin_statement_model.core.nodes import standard_node_registry
 
 # Configure logging
 logging.basicConfig(
@@ -81,6 +82,7 @@ logger.info("Validating and normalizing node names...")
 # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
 # Create unified validator for demo
 validator = UnifiedNodeValidator(
+    standard_node_registry,
     strict_mode=False,  # Allow alternate names
     auto_standardize=True,  # Automatically convert to standard names
     warn_on_non_standard=True,  # Warn about non-standard names

@@ -29,6 +29,7 @@ from fin_statement_model.core.metrics import (
 )
 from fin_statement_model.io.validation import UnifiedNodeValidator
 from fin_statement_model.io import read_data, write_data
+from fin_statement_model.core.nodes import standard_node_registry
 
 # Configure logging
 logging.basicConfig(
@@ -369,6 +370,7 @@ def validate_banking_data(
     # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
     # Create validator with banking-specific settings (demo)
     validator = UnifiedNodeValidator(
+        standard_node_registry,
         strict_mode=False,
         auto_standardize=True,
         warn_on_non_standard=True,

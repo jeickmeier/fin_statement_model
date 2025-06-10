@@ -12,6 +12,7 @@ import tempfile
 from fin_statement_model.config import get_config, update_config, reset_config, cfg
 from fin_statement_model.io import read_data
 from fin_statement_model.config.manager import generate_env_mappings
+from fin_statement_model.core.nodes import standard_node_registry
 
 logger = logging.getLogger(__name__)
 
@@ -227,6 +228,7 @@ def demo_config_in_action() -> None:
 
     # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
     validator = UnifiedNodeValidator(
+        standard_node_registry,
         strict_mode=cfg("validation.strict_mode"),
         warn_on_non_standard=cfg("validation.warn_on_non_standard"),
     )

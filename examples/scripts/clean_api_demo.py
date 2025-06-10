@@ -9,7 +9,10 @@ from fin_statement_model.config import get_config, update_config
 from fin_statement_model.io import read_data
 from fin_statement_model.io.validation import UnifiedNodeValidator
 from fin_statement_model.statements import create_statement_dataframe
-from fin_statement_model.core.nodes import FixedGrowthForecastNode
+from fin_statement_model.core.nodes import (
+    FixedGrowthForecastNode,
+    standard_node_registry,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +60,7 @@ def main():
     # 1. Validation - automatically uses config defaults
     print("\n1. Node Validation (auto-uses config):")
     # Demo only: direct use of UnifiedNodeValidator; production code should use StatementConfig/StatementStructureBuilder for validation
-    validator = UnifiedNodeValidator()  # That's it!
+    validator = UnifiedNodeValidator(standard_node_registry)  # That's it!
 
     result = validator.validate("gross revenue")
     print(f"   Validated 'gross revenue' -> '{result.standardized_name}'")
