@@ -9,7 +9,8 @@ import re
 from typing import Optional, ClassVar, Any
 from dataclasses import dataclass, field
 
-from fin_statement_model.core.nodes import Node, standard_node_registry
+from fin_statement_model.core.nodes import Node
+from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +58,7 @@ class UnifiedNodeValidator:
 
     def __init__(
         self,
+        registry: StandardNodeRegistry,
         strict_mode: Optional[bool] = None,
         auto_standardize: Optional[bool] = None,
         warn_on_non_standard: Optional[bool] = None,
@@ -65,6 +67,7 @@ class UnifiedNodeValidator:
         """Initialize the unified validator.
 
         Args:
+            registry: The StandardNodeRegistry instance.
             strict_mode: If True, only standard names are allowed.
                         If None, uses config.validation.strict_mode.
             auto_standardize: If True, convert alternate names to standard.
@@ -77,7 +80,7 @@ class UnifiedNodeValidator:
 
         config = get_config()
 
-        # Use config defaults if not explicitly provided
+        self._registry = registry
         self.strict_mode = (
             strict_mode if strict_mode is not None else config.validation.strict_mode
         )
@@ -145,7 +148,7 @@ class UnifiedNodeValidator:
         normalized_name = name.lower()
 
         # Check standard names first (using normalized name)
-        if standard_node_registry.is_standard_name(normalized_name):
+        if self._registry.is_standard_name(normalized_name):
             # If original name is different case, standardize to lowercase
             standardized = normalized_name if name != normalized_name else name
             return ValidationResult(
@@ -158,8 +161,8 @@ class UnifiedNodeValidator:
             )
 
         # Check alternate names (using normalized name)
-        if standard_node_registry.is_alternate_name(normalized_name):
-            standard_name = standard_node_registry.get_standard_name(normalized_name)
+        if self._registry.is_alternate_name(normalized_name):
+            standard_name = self._registry.get_standard_name(normalized_name)
             return ValidationResult(
                 original_name=name,
                 standardized_name=standard_name if self.auto_standardize else name,
@@ -218,9 +221,7 @@ class UnifiedNodeValidator:
         if subnode_match:
             base_name, suffix, pattern_type = subnode_match
             # Normalize base name for registry check
-            is_base_standard = standard_node_registry.is_recognized_name(
-                base_name.lower()
-            )
+            is_base_standard = self._registry.is_recognized_name(base_name.lower())
 
             return ValidationResult(
                 original_name=name,
@@ -266,9 +267,7 @@ class UnifiedNodeValidator:
                 keyword in suffix.lower() for keyword in segment_keywords
             ):
                 # Normalize base name for registry check
-                is_base_standard = standard_node_registry.is_recognized_name(
-                    base_name.lower()
-                )
+                is_base_standard = self._registry.is_recognized_name(base_name.lower())
 
                 return ValidationResult(
                     original_name=name,
@@ -321,7 +320,7 @@ class UnifiedNodeValidator:
         name_lower = name.lower()
 
         # Find similar standard names
-        for std_name in standard_node_registry.list_standard_names():
+        for std_name in self._registry.list_standard_names():
             std_lower = std_name.lower()
 
             # Calculate similarity score
@@ -351,7 +350,7 @@ class UnifiedNodeValidator:
             base = parts[0]
 
             # Suggest standardizing the base
-            for std_name in standard_node_registry.list_standard_names():
+            for std_name in self._registry.list_standard_names():
                 if self._is_similar(base.lower(), std_name.lower()):
                     suggestions.append(
                         f"Consider using '{std_name}_{parts[1]}' for consistency"
@@ -490,6 +489,8 @@ class UnifiedNodeValidator:
         self._validation_cache.clear()
 
 
-def create_validator(**kwargs: Any) -> UnifiedNodeValidator:
+def create_validator(
+    registry: StandardNodeRegistry, **kwargs: Any
+) -> UnifiedNodeValidator:
     """Create a validator instance with the given configuration."""
-    return UnifiedNodeValidator(**kwargs)
+    return UnifiedNodeValidator(registry, **kwargs)

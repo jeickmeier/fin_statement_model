@@ -1,21 +1,21 @@
 """Functions for bulk import and export of adjustments via Excel files."""
 
 import logging
-from typing import Optional, Any, cast
+from typing import Any, cast, Iterable
 from pathlib import Path
 from collections import defaultdict
 
 import pandas as pd
+from pydantic import ValidationError
 
 from fin_statement_model.core.adjustments.models import (
     Adjustment,
     AdjustmentType,
-    AdjustmentTag,
-    DEFAULT_SCENARIO,
 )
 from fin_statement_model.core.graph import Graph  # Needed for Graph convenience methods
 from fin_statement_model.io.exceptions import ReadError, WriteError
 from fin_statement_model.io.core import FileBasedReader, handle_read_errors
+from fin_statement_model.io.specialized.row_models import AdjustmentRowModel
 
 logger = logging.getLogger(__name__)
 
@@ -55,153 +55,67 @@ COL_TO_FIELD_MAP = {
 }
 
 
-def _parse_tags(tag_str: Optional[str]) -> set[AdjustmentTag]:
-    """Parse a comma-separated tag string into a set."""
-    if pd.isna(tag_str) or not isinstance(tag_str, str) or not tag_str.strip():
-        return set()
-    return set(tag.strip() for tag in tag_str.split(",") if tag.strip())
+def _validate_required_columns(columns: Iterable[str]) -> None:
+    missing = REQ_COLS - set(columns)
+    if missing:
+        raise ReadError(
+            f"Missing required columns in adjustment Excel file: {missing}",
+            source=str(columns),
+        )
+
+
+def _build_error_row(
+    raw: dict[str, Any], ve: ValidationError, idx: int
+) -> dict[str, Any]:
+    error_detail = "; ".join(f"{err['loc'][0]}: {err['msg']}" for err in ve.errors())
+    row = {**raw, "error": error_detail}
+    logger.debug(f"Row {idx}: Validation failed - {error_detail}")
+    return row
 
 
 def _read_excel_impl(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
     """Read adjustments from an Excel file.
 
     Expects the first sheet to contain adjustment data.
-    Validates required columns and attempts to parse each row into an Adjustment object.
-    Rows that fail validation are collected into an error report DataFrame.
-
-    Args:
-        path: Path to the Excel file.
-
-    Returns:
-        A tuple containing:
-            - list[Adjustment]: A list of successfully parsed Adjustment objects.
-            - pd.DataFrame: A DataFrame containing rows that failed validation,
-                          with an added 'error' column explaining the issue.
-
-    Raises:
-        ReadError: If the file cannot be read, sheet is missing, or required
-                   columns are not found.
+    Validates required columns and parses each row via AdjustmentRowModel.
+    Rows that fail validation are collected into an error report.
     """
     file_path = Path(path)
     logger.info(f"Reading adjustments from Excel file: {file_path}")
 
     try:
-        # Read the first sheet by default
         df = pd.read_excel(file_path, sheet_name=0)
     except FileNotFoundError:
         raise ReadError(
             f"Adjustment Excel file not found: {file_path}", source=str(file_path)
         )
     except Exception as e:
-        # Catch other potential pandas read errors (e.g., bad format, permissions)
         raise ReadError(
             f"Failed to read Excel file {file_path}: {e}",
             source=str(file_path),
             original_error=e,
         )
 
-    # Normalize column names to lowercase for case-insensitive matching
+    # Normalize and validate columns
     df.columns = [str(col).lower().strip() for col in df.columns]
-    actual_cols = set(df.columns)
+    _validate_required_columns(df.columns)
 
-    # Check for required columns
-    missing_req_cols = REQ_COLS - actual_cols
-    if missing_req_cols:
-        raise ReadError(
-            f"Missing required columns in adjustment Excel file: {missing_req_cols}",
-            source=str(file_path),
-        )
-
+    records = df.to_dict(orient="records")
     valid_adjustments: list[Adjustment] = []
     error_rows: list[dict[str, Any]] = []
 
-    for index, row in df.iterrows():
-        adj_data: dict[str, Any] = {}
-        parse_errors: list[str] = []
-
-        # Map columns to Adjustment fields
-        for col_name, field_name in COL_TO_FIELD_MAP.items():
-            if col_name in df.columns:
-                value = row[col_name]
-                # Handle potential NaNs from Excel
-                if pd.isna(value):
-                    adj_data[field_name] = None
-                else:
-                    # Specific type conversions / parsing
-                    try:
-                        if field_name == "tags":
-                            adj_data[field_name] = _parse_tags(str(value))
-                        elif field_name == "type":
-                            adj_data[field_name] = AdjustmentType(str(value).lower())
-                        elif field_name == "priority":
-                            adj_data[field_name] = int(value)
-                        elif field_name in {"scale", "value"}:
-                            adj_data[field_name] = float(value)
-                        elif field_name == "id":
-                            # Allow specific UUIDs from input
-                            from uuid import UUID  # Local import
-
-                            adj_data[field_name] = UUID(str(value))
-                        else:
-                            # Default to string conversion for others (node_name, period, etc.)
-                            adj_data[field_name] = str(value)
-                    except ValueError as e:
-                        parse_errors.append(
-                            f"Column '{col_name}': Invalid value '{value}' ({e})"
-                        )
-                    except Exception as e:
-                        parse_errors.append(
-                            f"Column '{col_name}': Error parsing value '{value}' ({e})"
-                        )
-            else:
-                # Optional field not present
-                adj_data[field_name] = None
-
-        # Fill defaults for optional fields if not provided/mapped
-        adj_data.setdefault("scenario", DEFAULT_SCENARIO)
-        adj_data.setdefault("scale", 1.0)
-        adj_data.setdefault("priority", 0)
-        adj_data.setdefault("type", AdjustmentType.ADDITIVE)
-        adj_data.setdefault("tags", set())
-
-        # Remove None values for fields that shouldn't be None if missing (handled by Pydantic defaults later)
-        # This is mainly for fields where None might cause issues if explicitly passed to Pydantic
-        # e.g., pydantic might handle default factories better if key is absent vs. key=None
-        # Let's be explicit for required ones:
-        if adj_data.get("node_name") is None:
-            parse_errors.append("Column 'node_name': Missing value")
-        if adj_data.get("period") is None:
-            parse_errors.append("Column 'period': Missing value")
-        if adj_data.get("value") is None:
-            parse_errors.append("Column 'value': Missing value")
-        if adj_data.get("reason") is None:
-            parse_errors.append("Column 'reason': Missing value")
-
-        if parse_errors:
-            error_detail = "; ".join(parse_errors)
-            error_row = row.to_dict()
-            error_row["error"] = error_detail
-            error_rows.append(error_row)
-            logger.debug(f"Row {index + 2}: Validation failed - {error_detail}")
-            continue
-
-        # Attempt to create the Adjustment object (final validation)
+    for idx, raw in enumerate(records, start=2):
         try:
-            # Filter out keys with None values before passing to Adjustment, let Pydantic handle defaults
-            final_adj_data = {k: v for k, v in adj_data.items() if v is not None}
-            adjustment = Adjustment(**final_adj_data)
-            valid_adjustments.append(adjustment)
-        except Exception as e:
-            error_detail = f"Pydantic validation failed: {e}"
-            error_row = row.to_dict()
-            error_row["error"] = error_detail
-            error_rows.append(error_row)
-            logger.debug(f"Row {index + 2}: Pydantic validation failed - {e}")
+            row_model = AdjustmentRowModel(**raw)
+            valid_adjustments.append(row_model.to_adjustment())
+        except ValidationError as ve:
+            error_rows.append(_build_error_row(raw, ve, idx))
 
     error_report_df = pd.DataFrame(error_rows)
     if not error_report_df.empty:
         logger.warning(
-            f"Completed reading adjustments from {file_path}. Found {len(valid_adjustments)} valid adjustments and {len(error_rows)} errors."
+            f"Completed reading adjustments from {file_path}. "
+            f"Found {len(valid_adjustments)} valid adjustments and {len(error_rows)} errors."
         )
     else:
         logger.info(

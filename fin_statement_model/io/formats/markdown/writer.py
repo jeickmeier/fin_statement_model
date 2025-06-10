@@ -34,7 +34,7 @@ class StatementItem(TypedDict):
     is_subtotal: bool  # Indicates if the row is a subtotal or section header
 
 
-@register_writer("markdown")
+@register_writer("markdown", schema=MarkdownWriterConfig)
 class MarkdownWriter(DataWriter):
     """Writes a financial statement structure to a Markdown table."""
 

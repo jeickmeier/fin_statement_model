@@ -13,7 +13,7 @@ from fin_statement_model.io.config.models import DictReaderConfig
 logger = logging.getLogger(__name__)
 
 
-@register_reader("dict")
+@register_reader("dict", schema=DictReaderConfig)
 class DictReader(DataReader):
     """Reads data from a Python dictionary to create a new Graph.
 

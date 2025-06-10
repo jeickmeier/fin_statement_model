@@ -15,6 +15,7 @@ from fin_statement_model.statements.structure import (
     MetricLineItem,
 )
 from fin_statement_model.io.formats.markdown.models import MarkdownStatementItem
+from fin_statement_model.core.nodes import standard_node_registry
 
 logger = logging.getLogger(__name__)
 
@@ -201,7 +202,7 @@ class MarkdownStatementRenderer:
             if item.node_id:
                 return item.node_id
             elif item.standard_node_ref:
-                return item.get_resolved_node_id()
+                return item.get_resolved_node_id(standard_node_registry)
             else:
                 return None
         elif isinstance(item, CalculatedLineItem | SubtotalLineItem | MetricLineItem):

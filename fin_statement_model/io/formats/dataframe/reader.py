@@ -15,7 +15,7 @@ from fin_statement_model.io.config.models import DataFrameReaderConfig
 logger = logging.getLogger(__name__)
 
 
-@register_reader("dataframe")
+@register_reader("dataframe", schema=DataFrameReaderConfig)
 class DataFrameReader(DataReader):
     """Reads data from a pandas DataFrame into a Graph.
 

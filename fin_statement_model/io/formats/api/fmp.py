@@ -22,7 +22,7 @@ from fin_statement_model.io.config.models import FmpReaderConfig
 logger = logging.getLogger(__name__)
 
 
-@register_reader("fmp")
+@register_reader("fmp", schema=FmpReaderConfig)
 class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
     """Reads financial statement data from the FMP API into a Graph.
 

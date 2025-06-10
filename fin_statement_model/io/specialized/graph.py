@@ -20,7 +20,7 @@ from fin_statement_model.io.core import (
     register_writer,
 )
 from fin_statement_model.io.exceptions import ReadError, WriteError
-from fin_statement_model.io.config.models import BaseWriterConfig
+from fin_statement_model.io.config.models import BaseReaderConfig, BaseWriterConfig
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ SerializedNode = dict[str, Any]
 # ===== Reader Implementation =====
 
 
-@register_reader("graph_definition_dict")
+@register_reader("graph_definition_dict", schema=BaseReaderConfig)
 class GraphDefinitionReader(DataReader):
     """Reads a graph definition dictionary to reconstruct a Graph object.
 
@@ -191,7 +191,7 @@ class GraphDefinitionReader(DataReader):
 # ===== Writer Implementation =====
 
 
-@register_writer("graph_definition_dict")
+@register_writer("graph_definition_dict", schema=BaseWriterConfig)
 class GraphDefinitionWriter(DataWriter):
     """Writes the full graph definition (nodes, periods, adjustments) to a dictionary.
 

@@ -23,7 +23,7 @@ from fin_statement_model.io.config.models import ExcelReaderConfig
 logger = logging.getLogger(__name__)
 
 
-@register_reader("excel")
+@register_reader("excel", schema=ExcelReaderConfig)
 class ExcelReader(
     FileBasedReader, ConfigurationMixin, MappingAwareMixin, ValidationMixin
 ):

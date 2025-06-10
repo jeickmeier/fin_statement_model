@@ -22,7 +22,7 @@ from fin_statement_model.io.config.models import CsvReaderConfig
 logger = logging.getLogger(__name__)
 
 
-@register_reader("csv")
+@register_reader("csv", schema=CsvReaderConfig)
 class CsvReader(
     FileBasedReader, ConfigurationMixin, MappingAwareMixin, ValidationMixin
 ):

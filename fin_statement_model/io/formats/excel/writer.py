@@ -20,7 +20,7 @@ from fin_statement_model.io.config.models import (
 logger = logging.getLogger(__name__)
 
 
-@register_writer("excel")
+@register_writer("excel", schema=ExcelWriterConfig)
 class ExcelWriter(DataWriter, ConfigurationMixin):
     """Writes graph data to an Excel file.
 

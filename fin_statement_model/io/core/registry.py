@@ -5,10 +5,12 @@ for readers and writers, along with registration decorators and access functions
 """
 
 import logging
-from typing import TypeVar, Generic, Optional, Any, Union, cast
+import os
+from typing import TypeVar, Generic, Optional, Any, Union, cast, Type
 from collections.abc import Callable
 
 from pydantic import ValidationError
+from pydantic import BaseModel
 
 from fin_statement_model.io.core.base import DataReader, DataWriter
 from fin_statement_model.io.exceptions import (
@@ -33,6 +35,9 @@ logger = logging.getLogger(__name__)
 # Type variable for the handler type (DataReader or DataWriter)
 T = TypeVar("T")
 
+# Strict schema enforcement for reader/writer registration (env var FSM_IO_STRICT_SCHEMA)
+STRICT_SCHEMA = os.getenv("FSM_IO_STRICT_SCHEMA", "0") == "1"
+
 
 # ===== Generic Registry Implementation =====
 
@@ -46,6 +51,7 @@ class HandlerRegistry(Generic[T]):
     Attributes:
         _registry: Internal dictionary mapping format types to handler classes.
         _handler_type: String describing the handler type ('reader' or 'writer').
+        _schema_map: Internal dictionary mapping format types to Pydantic schema classes.
     """
 
     def __init__(self, handler_type: str):
@@ -56,12 +62,16 @@ class HandlerRegistry(Generic[T]):
         """
         self._registry: dict[str, type[T]] = {}
         self._handler_type = handler_type
+        self._schema_map: dict[str, type[BaseModel]] = {}
 
-    def register(self, format_type: str) -> Callable[[type[T]], type[T]]:
+    def register(
+        self, format_type: str, *, schema: type[BaseModel] | None = None
+    ) -> Callable[[type[T]], type[T]]:
         """Create a decorator to register a handler class for a format type.
 
         Args:
             format_type: The format identifier (e.g., 'excel', 'csv').
+            schema: Optional Pydantic schema for the format.
 
         Returns:
             A decorator function that registers the class.
@@ -89,6 +99,8 @@ class HandlerRegistry(Generic[T]):
                 )
 
             self._registry[format_type] = cls
+            if schema is not None:
+                self._schema_map[format_type] = schema
             return cls
 
         return decorator
@@ -170,6 +182,10 @@ class HandlerRegistry(Generic[T]):
         """
         return len(self._registry)
 
+    def get_schema(self, format_type: str) -> Optional[type[BaseModel]]:
+        """Return the Pydantic schema for a registered format type, if any."""
+        return self._schema_map.get(format_type)
+
 
 # ===== Registry Instances =====
 
@@ -197,11 +213,16 @@ _WRITER_SCHEMA_MAP = {
 # ===== Registration Decorators =====
 
 
-def register_reader(format_type: str) -> Callable[[type[DataReader]], type[DataReader]]:
+def register_reader(
+    format_type: str,
+    *,
+    schema: Type[BaseModel] | None = None,
+) -> Callable[[type[DataReader]], type[DataReader]]:
     """Decorator to register a DataReader class for a specific format type.
 
     Args:
         format_type: The string identifier for the format (e.g., 'excel', 'csv').
+        schema: Optional Pydantic schema class for configuration validation.
 
     Returns:
         A decorator function that registers the class and returns it unmodified.
@@ -209,14 +230,21 @@ def register_reader(format_type: str) -> Callable[[type[DataReader]], type[DataR
     Raises:
         ValueError: If the format_type is already registered for a reader.
     """
-    return _reader_registry.register(format_type)
+    if STRICT_SCHEMA and schema is None:
+        raise ValueError(f"Schema required for reader '{format_type}' in strict mode")
+    return _reader_registry.register(format_type, schema=schema)
 
 
-def register_writer(format_type: str) -> Callable[[type[DataWriter]], type[DataWriter]]:
+def register_writer(
+    format_type: str,
+    *,
+    schema: Type[BaseModel] | None = None,
+) -> Callable[[type[DataWriter]], type[DataWriter]]:
     """Decorator to register a DataWriter class for a specific format type.
 
     Args:
         format_type: The string identifier for the format (e.g., 'excel', 'json').
+        schema: Optional Pydantic schema class for configuration validation.
 
     Returns:
         A decorator function that registers the class and returns it unmodified.
@@ -224,7 +252,9 @@ def register_writer(format_type: str) -> Callable[[type[DataWriter]], type[DataW
     Raises:
         ValueError: If the format_type is already registered for a writer.
     """
-    return _writer_registry.register(format_type)
+    if STRICT_SCHEMA and schema is None:
+        raise ValueError(f"Schema required for writer '{format_type}' in strict mode")
+    return _writer_registry.register(format_type, schema=schema)
 
 
 # ===== Generic Handler Function =====
@@ -261,7 +291,15 @@ def _get_handler(
     # Get handler class from registry (may raise FormatNotSupportedError)
     handler_class = registry.get(format_type)
 
-    schema = schema_map.get(format_type)
+    # Determine Pydantic schema: first registry, then fallback to static map
+    schema = registry.get_schema(format_type) or schema_map.get(format_type)
+    # Enforce strict-mode: require schema for instantiation
+    if STRICT_SCHEMA and schema is None:
+        from fin_statement_model.core.errors import ConfigurationError
+
+        raise ConfigurationError(
+            f"Schema required for {handler_type}er '{format_type}' in strict mode"
+        )
 
     # Prepare error context based on handler type
     error_context = {}
@@ -297,13 +335,21 @@ def _get_handler(
                 original_error=e,
                 **error_context,
             ) from e
-
-    # Only Pydantic-schema path is supported
-    from fin_statement_model.core.errors import ConfigurationError
-
-    raise ConfigurationError(
-        f"No configuration schema available for format '{format_type}'"
-    )
+    else:
+        # Lenient: instantiate handler directly without schema validation
+        try:
+            return cast(Union[DataReader, DataWriter], handler_class(**kwargs))
+        except Exception as e:
+            logger.error(
+                f"Failed to instantiate {handler_type}er for format '{format_type}' "
+                f"({handler_class.__name__}): {e}",
+                exc_info=True,
+            )
+            raise error_class(
+                message=f"Failed to initialize {handler_type}er",
+                original_error=e,
+                **error_context,
+            ) from e
 
 
 # ===== Registry Access Functions =====
