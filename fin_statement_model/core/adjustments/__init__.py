@@ -1,4 +1,7 @@
-"""Core adjustment models and filters."""
+"""Initialize core adjustments subpackage.
+
+This module exposes core adjustment models, filters, and related utilities.
+"""
 
 from .models import (
     Adjustment,

@@ -623,12 +623,15 @@ class Graph:
         Args:
             node_name: The name of the node to calculate.
             period: The time period identifier.
-            filter_input: Criteria for selecting which adjustments to apply.
-                          Can be an AdjustmentFilter instance, a set of tags (for include_tags),
-                          a callable predicate `fn(adj: Adjustment) -> bool`, or None
-                          (applies all adjustments in the default scenario).
-            return_flag: If True, return a tuple (adjusted_value, was_adjusted_flag).
-                         If False (default), return only the adjusted_value.
+            filter_input: Criteria for selecting which adjustments to apply. Can be:
+                - None: applies default filter (default scenario, all adjustments).
+                - AdjustmentFilter: filter by scenarios, tags, types, and period window.
+                - set of tags: shorthand for include_tags filter.
+                - Callable[[Adjustment], bool] or Callable[[Adjustment, str], bool]:
+                    predicate to select adjustments. Two-arg predicates receive
+                    the current period as the second argument.
+            return_flag: If True, return a tuple (adjusted_value, was_adjusted_flag);
+                         if False (default), return only the adjusted_value.
 
         Returns:
             The adjusted float value, or a tuple (value, flag) if return_flag is True.

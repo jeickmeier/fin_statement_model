@@ -94,6 +94,12 @@ def summary(
     Returns:
         A pandas DataFrame with the summary statistics (count, sum, mean_abs_value)
         indexed by the specified group_by columns.
+
+    Examples:
+        >>> manager = AdjustmentManager()
+        >>> df = summary(manager)
+        >>> df.index.names == ["period", "node_name"]
+        True
     """
     logger.debug(f"Generating adjustment summary, grouping by: {group_by}")
 
@@ -158,6 +164,12 @@ def list_by_tag(
     Returns:
         A list of Adjustment objects that have at least one tag starting with
         the tag_prefix and also match the optional filter_input.
+
+    Examples:
+        >>> manager = AdjustmentManager()
+        >>> adjustments = list_by_tag(manager, "NonRecurring")
+        >>> all("NonRecurring" in tag for adj in adjustments for tag in adj.tags)
+        True
     """
     logger.debug(f"Listing adjustments by tag prefix: '{tag_prefix}'")
 

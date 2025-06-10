@@ -14,6 +14,12 @@ def tag_matches(target_tags: set[str], prefixes: set[str]) -> bool:
     Returns:
         True if at least one tag in target_tags starts with at least one
         prefix in prefixes, False otherwise.
+
+    Examples:
+        >>> tag_matches({'A/B/C', 'X'}, {'A/B'})
+        True
+        >>> tag_matches({'A/B/C'}, {'D'})
+        False
     """
     if not prefixes:  # Optimization: if no prefixes specified, it can't match
         return False

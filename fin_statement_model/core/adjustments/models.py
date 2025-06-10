@@ -1,4 +1,8 @@
-"""Adjustment data models and related types."""
+"""Define core adjustment data models and related types.
+
+This module provides the Adjustment and AdjustmentFilter Pydantic models,
+as well as related constants and enums.
+"""
 
 from __future__ import annotations
 
@@ -39,21 +43,33 @@ DEFAULT_SCENARIO: Final[str] = "default"
 class Adjustment(BaseModel):
     """Immutable record describing a discretionary adjustment to a node's value.
 
+    Each adjustment can modify a base value by addition, multiplication, or replacement.
+
     Attributes:
         id: Unique identifier for the adjustment.
-        node_name: The name of the target node.
-        period: The primary period the adjustment applies to.
-        start_period: The first period the adjustment is effective (inclusive, Phase 2).
-        end_period: The last period the adjustment is effective (inclusive, Phase 2).
-        value: The numeric value of the adjustment.
-        type: How the adjustment combines with the base value.
-        scale: Attenuation factor for the adjustment (0.0 to 1.0, Phase 2).
-        priority: Tie-breaker for applying multiple adjustments (lower number applied first).
-        tags: Set of descriptive tags for filtering and analysis.
-        scenario: The named scenario this adjustment belongs to (Phase 2).
-        reason: Text description of why the adjustment was made.
-        user: Identifier for the user who created the adjustment.
+        node_name: Name of the target node.
+        period: Primary period the adjustment applies to.
+        start_period: Optional start of the effective period range.
+        end_period: Optional end of the effective period range.
+        value: Numeric value of the adjustment.
+        type: AdjustmentType defining how the adjustment is applied.
+        scale: Attenuation factor between 0.0 and 1.0.
+        priority: Tie-breaker for multiple adjustments (lower first).
+        tags: Set of tags for filtering and analysis.
+        scenario: Scenario name grouping the adjustment.
+        reason: Description of the adjustment.
+        user: Identifier of the user who created the adjustment.
         timestamp: UTC timestamp when the adjustment was created.
+
+    Examples:
+        >>> adj = Adjustment(
+        ...     node_name='Revenue',
+        ...     period='2023-01',
+        ...     value=100.0,
+        ...     reason='Manual update'
+        ... )
+        >>> adj.type == AdjustmentType.ADDITIVE
+        True
     """
 
     # Target
@@ -95,17 +111,22 @@ class Adjustment(BaseModel):
 
 
 class AdjustmentFilter(BaseModel):
-    """Defines criteria for selecting adjustments.
+    """Define criteria for selecting adjustments.
 
     Attributes:
-        include_scenarios: Only include adjustments from these scenarios.
-        exclude_scenarios: Exclude adjustments from these scenarios.
-        include_tags: Include adjustments matching any of these tag prefixes.
-        exclude_tags: Exclude adjustments matching any of these tag prefixes.
-        require_all_tags: Include only adjustments having *all* these exact tags.
-        include_types: Only include adjustments of these types.
-        exclude_types: Exclude adjustments of these types.
-        period: The specific period context for effective window checks.
+        include_scenarios: Set of scenarios to include.
+        exclude_scenarios: Set of scenarios to exclude.
+        include_tags: Set of tag prefixes to include.
+        exclude_tags: Set of tag prefixes to exclude.
+        require_all_tags: Set of tags that must all be present.
+        include_types: Set of AdjustmentType to include.
+        exclude_types: Set of AdjustmentType to exclude.
+        period: Optional period for effective window checks.
+
+    Examples:
+        >>> filt = AdjustmentFilter(include_tags={'NonRecurring'}, period='2023-01')
+        >>> filt.matches(adj)
+        True
     """
 
     # Scenario Filtering
@@ -128,7 +149,19 @@ class AdjustmentFilter(BaseModel):
     period: Optional[str] = None  # The current period being calculated/viewed
 
     def matches(self, adj: Adjustment) -> bool:
-        """Check if a given adjustment meets the filter criteria."""
+        """Check whether a given adjustment meets the filter criteria.
+
+        Args:
+            adj: The Adjustment instance to test.
+
+        Returns:
+            True if the adjustment matches all criteria, False otherwise.
+
+        Examples:
+            >>> filt = AdjustmentFilter(include_types={AdjustmentType.ADDITIVE})
+            >>> filt.matches(adj)
+            True
+        """
         # Need to import the helper function here to avoid circular dependency issues at module level
 
         # Start assuming it matches, then progressively set to False if any check fails.
@@ -204,7 +237,8 @@ class AdjustmentFilter(BaseModel):
         return is_match
 
 
-# Type alias for flexible filter input
+# Accept callables that take one or two positional arguments. Using Callable[..., bool]
+# allows flexible predicates while keeping type safety at a reasonable level.
 AdjustmentFilterInput = Optional[
-    AdjustmentFilter | set[AdjustmentTag] | Callable[[Adjustment], bool]
+    AdjustmentFilter | set[AdjustmentTag] | Callable[..., bool]
 ]

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import inspect
 from collections import defaultdict
 from typing import Optional
 from uuid import UUID
@@ -20,14 +21,27 @@ logger = logging.getLogger(__name__)
 
 
 class AdjustmentManager:
-    """Handles the lifecycle and application of Adjustment objects.
+    """Handle storage, retrieval, and application of adjustments.
 
-    Provides methods for adding, removing, filtering, and applying adjustments
+    This class provides methods to add, remove, filter, and apply adjustments
     to base values.
+
+    Methods:
+        add_adjustment: Add an adjustment, replacing any existing one with the same ID.
+        remove_adjustment: Remove an adjustment by ID.
+        apply_adjustments: Apply a series of adjustments to a base value.
+        get_adjustments: Retrieve adjustments for a node and period.
+        get_filtered_adjustments: Retrieve adjustments matching filter criteria.
+        get_all_adjustments: List all adjustments.
+        clear_all: Remove all adjustments.
+        load_adjustments: Load a new list of adjustments.
     """
 
     def __init__(self) -> None:
-        """Initializes the AdjustmentManager with empty storage."""
+        """Initialize the adjustment manager with empty storage.
+
+        This sets up internal indices for storing and retrieving adjustments.
+        """
         # Primary index: (scenario, node_name, period) -> list[Adjustment]
         self._by_location: dict[tuple[str, str, str], list[Adjustment]] = defaultdict(
             list
@@ -36,7 +50,16 @@ class AdjustmentManager:
         self._by_id: dict[UUID, Adjustment] = {}
 
     def add_adjustment(self, adj: Adjustment) -> None:
-        """Adds an adjustment to the manager, replacing if ID exists."""
+        """Add an adjustment to the manager.
+
+        If an adjustment with the same ID already exists, it is replaced.
+
+        Args:
+            adj: The Adjustment object to add.
+
+        Returns:
+            None
+        """
         # If an adjustment with the same ID already exists, remove it first
         if adj.id in self._by_id:
             self.remove_adjustment(adj.id)
@@ -48,7 +71,14 @@ class AdjustmentManager:
         self._by_location[key].sort(key=lambda x: (x.priority, x.timestamp))
 
     def remove_adjustment(self, adj_id: UUID) -> bool:
-        """Removes an adjustment by its ID. Returns True if found, False otherwise."""
+        """Remove an adjustment by its ID.
+
+        Args:
+            adj_id: The UUID of the adjustment to remove.
+
+        Returns:
+            True if the adjustment was found and removed, False otherwise.
+        """
         if adj_id not in self._by_id:
             return False
 
@@ -66,7 +96,15 @@ class AdjustmentManager:
         return True
 
     def _apply_one(self, base_value: float, adj: Adjustment) -> float:
-        """Applies a single adjustment to a value based on its type and scale."""
+        """Apply a single adjustment based on its type and scale.
+
+        Args:
+            base_value: The original numeric value.
+            adj: The Adjustment object to apply.
+
+        Returns:
+            The adjusted value as a float.
+        """
         if adj.type == AdjustmentType.ADDITIVE:
             # Ensuring result is float
             return float(base_value + adj.value * adj.scale)
@@ -93,7 +131,7 @@ class AdjustmentManager:
     def apply_adjustments(
         self, base_value: float, adjustments: list[Adjustment]
     ) -> tuple[float, bool]:
-        """Applies a list of adjustments sequentially to a base value.
+        """Apply a list of adjustments sequentially to a base value.
 
         Adjustments are applied in order of priority (lower first), then timestamp.
 
@@ -102,7 +140,7 @@ class AdjustmentManager:
             adjustments: A list of Adjustment objects to apply.
 
         Returns:
-            A tuple containing: (final adjusted value, boolean indicating if any adjustment was applied).
+            A tuple of (final adjusted value, boolean indicating if any adjustment was applied).
         """
         if not adjustments:
             return base_value, False
@@ -126,7 +164,16 @@ class AdjustmentManager:
     def get_adjustments(
         self, node_name: str, period: str, *, scenario: str = DEFAULT_SCENARIO
     ) -> list[Adjustment]:
-        """Retrieves all adjustments for a specific node, period, and scenario."""
+        """Retrieve all adjustments for a specific node, period, and scenario.
+
+        Args:
+            node_name: The name of the target node.
+            period: The period to retrieve adjustments for.
+            scenario: The scenario name to filter adjustments by.
+
+        Returns:
+            A list of Adjustment objects for the specified node, period, and scenario.
+        """
         key = (scenario, node_name, period)
         # Return a copy to prevent external modification of the internal list
         return list(self._by_location.get(key, []))
@@ -134,7 +181,20 @@ class AdjustmentManager:
     def _normalize_filter(
         self, filter_input: AdjustmentFilterInput, period: Optional[str] = None
     ) -> AdjustmentFilter:
-        """Converts flexible filter input into a standard AdjustmentFilter instance."""
+        """Convert flexible filter input into a baseline AdjustmentFilter instance.
+
+        Args:
+            filter_input: Criteria for selecting adjustments. Can be:
+                - None: use default filter (only default scenario).
+                - AdjustmentFilter: existing filter instance.
+                - set of tags: shorthand for include_tags filter.
+                - Callable[..., bool]: predicate accepting one or two args
+                  (Adjustment[, period]).
+            period: The period context for the filter (optional).
+
+        Returns:
+            A baseline AdjustmentFilter object for scenario and period checks.
+        """
         if filter_input is None:
             # Default filter includes only the default scenario and sets the period context
             return AdjustmentFilter(include_scenarios={DEFAULT_SCENARIO}, period=period)
@@ -153,36 +213,33 @@ class AdjustmentManager:
                 period=period,
             )
         elif callable(filter_input):
-            # This case is complex as the callable doesn't inherently know the period.
-            # We wrap the callable in a filter, but the effective window check might not work
-            # as expected unless the callable itself uses the period.
-            # For simplicity, we create a default filter and rely on the callable for matching.
-            # The manager will still filter by callable *after* potentially getting adjustments.
-            # A more robust solution might involve passing period to the callable.
-            # Let's just return a base filter for now and handle callable later.
-            # TODO: Revisit handling of callable filters if period context is critical.
-            logger.warning(
-                "Callable filter used; period context for effective window check might be ignored."
-            )
-            # Apply callable, but filter to default scenario like other shorthand.
-            return AdjustmentFilter(
-                include_scenarios={DEFAULT_SCENARIO}, period=period
-            )  # Base filter, callable applied later
+            # For callable predicates we still construct a baseline AdjustmentFilter so
+            # that core scenario / period checks remain in place. The callable itself
+            # will be evaluated later in `get_filtered_adjustments`. We purposefully do
+            # not restrict `include_scenarios` here – the caller can implement any
+            # scenario logic inside the predicate if desired.
+            return AdjustmentFilter(period=period)
         else:
             raise TypeError(f"Invalid filter_input type: {type(filter_input)}")
 
     def get_filtered_adjustments(
         self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None
     ) -> list[Adjustment]:
-        """Retrieves adjustments for a node/period that match the given filter criteria.
+        """Retrieve adjustments for a node and period that match given filter criteria.
 
         Args:
             node_name: The target node name.
-            period: The target period.
-            filter_input: The filter criteria (AdjustmentFilter, set of tags, callable, or None).
+            period: The period to retrieve adjustments for.
+            filter_input: Criteria for selecting adjustments. Can be:
+                - None: applies default filter (default scenario, all adjustments).
+                - AdjustmentFilter: filter by scenarios, tags, types, and period window.
+                - set of tags: shorthand for include_tags filter.
+                - Callable[[Adjustment], bool] or Callable[[Adjustment, str], bool]:
+                    predicate to select adjustments. Two-arg predicates receive
+                    the current period as the second argument.
 
         Returns:
-            A list of matching Adjustment objects, sorted by priority and timestamp.
+            A list of matching Adjustment objects sorted by priority and timestamp.
         """
         normalized_filter = self._normalize_filter(filter_input, period)
 
@@ -225,10 +282,34 @@ class AdjustmentManager:
         # Apply the filter logic
         matching_adjustments: list[Adjustment] = []
         if callable(filter_input):
-            # Apply the callable filter directly
-            matching_adjustments = [
-                adj for adj in candidate_adjustments if filter_input(adj)
-            ]
+            # Determine how many positional arguments the predicate expects. If it
+            # accepts two parameters we pass the current period as contextual
+            # information. This allows users to write filters that combine
+            # adjustment attributes with the calculation period in their logic.
+            try:
+                param_count = len(inspect.signature(filter_input).parameters)
+            except (TypeError, ValueError):
+                # Fallback in case the predicate is not introspectable (e.g., built-ins)
+                param_count = 1
+
+            if param_count == 1:
+                matching_adjustments = [
+                    adj
+                    for adj in candidate_adjustments
+                    if filter_input(adj)
+                    and normalized_filter.matches(adj)
+                ]
+            elif param_count == 2:
+                matching_adjustments = [
+                    adj
+                    for adj in candidate_adjustments
+                    if filter_input(adj, period)
+                    and normalized_filter.matches(adj)
+                ]
+            else:
+                raise TypeError(
+                    "Callable adjustment filter must accept one or two positional arguments"
+                )
         else:
             # Apply the normalized AdjustmentFilter's matches method
             matching_adjustments = [
@@ -240,17 +321,34 @@ class AdjustmentManager:
         return sorted(matching_adjustments, key=lambda x: (x.priority, x.timestamp))
 
     def get_all_adjustments(self) -> list[Adjustment]:
-        """Returns a list of all adjustments currently stored in the manager."""
+        """List all adjustments stored in the manager.
+
+        Returns:
+            A list of all Adjustment objects currently stored.
+        """
         # Return a copy to prevent external modification
         return list(self._by_id.values())
 
     def clear_all(self) -> None:
-        """Removes all adjustments from the manager."""
+        """Remove all adjustments from the manager.
+
+        Clears all internal storage.
+
+        Returns:
+            None
+        """
         self._by_location.clear()
         self._by_id.clear()
 
     def load_adjustments(self, adjustments: list[Adjustment]) -> None:
-        """Clears existing adjustments and loads a new list."""
+        """Clear existing adjustments and load a new list of adjustments.
+
+        Args:
+            adjustments: A list of Adjustment objects to load into the manager.
+
+        Returns:
+            None
+        """
         self.clear_all()
         for adj in adjustments:
             self.add_adjustment(adj)
