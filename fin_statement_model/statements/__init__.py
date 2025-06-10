@@ -113,6 +113,8 @@ from typing import Any, Optional
 
 # Import UnifiedNodeValidator for convenience
 from fin_statement_model.io.validation import UnifiedNodeValidator
+from fin_statement_model.core.nodes import standard_node_registry
+from .utilities.cli_formatters import pretty_print_errors
 
 
 # Node validation convenience functions
@@ -185,7 +187,7 @@ def validate_statement_config_with_nodes(
     config_path_or_data: str | dict[str, Any],
     strict_mode: bool = False,
     auto_standardize: bool = True,
-) -> tuple[StatementConfig, list[str]]:
+) -> tuple[StatementConfig, list[ErrorDetail]]:
     """Validate a statement configuration with comprehensive node validation.
 
     This is a high-level convenience function that handles the entire validation
@@ -197,8 +199,8 @@ def validate_statement_config_with_nodes(
         auto_standardize: If True, auto-standardize alternate node names.
 
     Returns:
-        Tuple of (StatementConfig, validation_errors).
-        If validation_errors is empty, validation was successful.
+        Tuple of (StatementConfig, validation_errors), where validation_errors is a list of ErrorDetail.
+        If the list is empty, validation was successful.
 
     Example:
         >>> config, errors = validate_statement_config_with_nodes(
@@ -219,6 +221,7 @@ def validate_statement_config_with_nodes(
 
     # Create validator
     node_validator = UnifiedNodeValidator(
+        standard_node_registry,
         strict_mode=strict_mode,
         auto_standardize=auto_standardize,
         warn_on_non_standard=True,
@@ -348,6 +351,7 @@ __all__ = [
     "retry_on_specific_errors",
     "retry_with_exponential_backoff",
     "validate_statement_config_with_nodes",
+    "pretty_print_errors",
 ]
 
 # Note: FinancialStatementGraph removed as part of refactor, assuming its

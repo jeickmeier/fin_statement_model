@@ -7,7 +7,6 @@ and applying sign conventions with enhanced display control.
 
 import pandas as pd
 import numpy as np  # Added numpy for NaN handling
-import warnings  # Added for suppressing dtype warnings
 from typing import Optional, Any, Union
 from collections.abc import Callable
 import logging
@@ -30,13 +29,13 @@ from fin_statement_model.core.adjustments.models import AdjustmentFilterInput
 
 # Import the ID resolver
 from fin_statement_model.statements.population.id_resolver import IDResolver
+from fin_statement_model.core.nodes import standard_node_registry
 
 # Import the data fetcher
 from fin_statement_model.statements.formatting.data_fetcher import DataFetcher
 
-# Import the new formatting utils
-from ._formatting_utils import format_numbers
-from ._formatting_utils import apply_sign_convention as apply_sign_convention_func
+# Import formatting utilities
+from ._formatting_utils import render_values
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -550,7 +549,7 @@ class StatementFormatter:
             List of row dictionaries
         """
         rows: list[dict[str, Any]] = []
-        id_resolver = IDResolver(self.statement)
+        id_resolver = IDResolver(self.statement, standard_node_registry)
 
         # Process all sections
         self._process_items_recursive(
@@ -925,75 +924,6 @@ class StatementFormatter:
 
         return df
 
-    def _apply_sign_conventions(
-        self, df: pd.DataFrame, context: FormattingContext
-    ) -> pd.DataFrame:
-        """Apply sign conventions to the dataframe.
-
-        Args:
-            df: DataFrame to apply sign conventions to
-            context: Formatting context
-
-        Returns:
-            DataFrame with sign conventions applied
-        """
-        if not context.should_apply_signs:
-            return df
-
-        return apply_sign_convention_func(df, context.all_periods)
-
-    def _apply_contra_display_formatting(
-        self, df: pd.DataFrame, context: FormattingContext
-    ) -> pd.DataFrame:
-        """Apply contra display formatting to the dataframe.
-
-        Args:
-            df: DataFrame to apply contra formatting to
-            context: Formatting context
-
-        Returns:
-            DataFrame with contra formatting applied
-        """
-        if not context.apply_contra_formatting:
-            return df
-
-        for index, row in df.iterrows():
-            if row.get("is_contra", False):
-                for period in context.all_periods:
-                    contra_col = f"{period}_contra"
-                    if (
-                        contra_col in row
-                        and pd.notna(row[contra_col])
-                        and row[contra_col]
-                    ):
-                        # Suppress dtype warnings since we're intentionally converting float to string
-                        with warnings.catch_warnings():
-                            warnings.simplefilter("ignore", FutureWarning)
-                            df.at[index, period] = row[contra_col]
-
-        return df
-
-    def _apply_number_formatting(
-        self, df: pd.DataFrame, context: FormattingContext
-    ) -> pd.DataFrame:
-        """Apply number formatting to the dataframe.
-
-        Args:
-            df: DataFrame to apply number formatting to
-            context: Formatting context
-
-        Returns:
-            DataFrame with number formatting applied
-        """
-        if not context.apply_item_formatting or context.number_format:
-            df = format_numbers(
-                df,
-                default_formats=context.default_formats,
-                number_format=context.number_format,
-                period_columns=context.all_periods,
-            )
-        return df
-
     def _cleanup_temporary_columns(
         self, df: pd.DataFrame, context: FormattingContext
     ) -> pd.DataFrame:
@@ -1059,27 +989,17 @@ class StatementFormatter:
     def _apply_all_formatting(
         self, df: pd.DataFrame, context: FormattingContext
     ) -> pd.DataFrame:
-        """Apply all formatting steps in the correct order.
-
-        Args:
-            df: DataFrame to format
-            context: Formatting context
-
-        Returns:
-            Fully formatted DataFrame
-        """
-        # 1. Sign conventions
-        df = self._apply_sign_conventions(df, context)
-
-        # 2. Contra formatting (if applicable)
-        df = self._apply_contra_display_formatting(df, context)
-
-        # 3. Number formatting
-        df = self._apply_number_formatting(df, context)
-
-        # 4. Clean up temporary columns
+        """Apply consolidated formatting in a single vectorized pass."""
+        # Combined sign, contra, and number formatting
+        df = render_values(
+            df=df,
+            period_columns=context.all_periods,
+            default_formats=context.default_formats,
+            number_format=context.number_format,
+            contra_display_style=context.contra_display_style,
+        )
+        # Clean up temporary columns
         df = self._cleanup_temporary_columns(df, context)
-
         return df
 
     def generate_dataframe(

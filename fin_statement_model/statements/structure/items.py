@@ -5,6 +5,7 @@ from enum import Enum
 from typing import Any, Optional, cast
 
 from fin_statement_model.core.errors import StatementError
+from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
 
 __all__ = [
     "CalculatedLineItem",
@@ -290,33 +291,21 @@ class LineItem(StatementItem):
         """Get the type of this item (LINE_ITEM)."""
         return StatementItemType.LINE_ITEM
 
-    def get_resolved_node_id(
-        self, standard_registry: Optional[Any] = None
-    ) -> Optional[str]:
+    def get_resolved_node_id(self, registry: StandardNodeRegistry) -> Optional[str]:
         """Get the resolved node ID, handling both direct node_id and standard_node_ref.
 
         Args:
-            standard_registry: Optional standard node registry for resolving references.
-                             If None, uses the global registry.
+            registry: Standard node registry for resolving references.
 
         Returns:
-            The resolved node ID, or None if no registry is available for standard_node_ref.
+            The resolved node ID, or None if no node ID could be resolved.
         """
         if self._node_id:
             return self._node_id
 
         if self._standard_node_ref:
-            if standard_registry is None:
-                # Import here to avoid circular dependency
-                from fin_statement_model.core.nodes import standard_node_registry
-
-                standard_registry = standard_node_registry
-
             # Try to get the standard name (handles alternate names too)
-            return cast(
-                str,
-                standard_registry.get_standard_name(self._standard_node_ref),
-            )
+            return registry.get_standard_name(self._standard_node_ref)
 
         return None
 

@@ -24,11 +24,13 @@ from pydantic import ValidationError  # Import directly
 
 # Import UnifiedNodeValidator for node ID validation
 from fin_statement_model.io.validation import UnifiedNodeValidator
+from fin_statement_model.core.nodes import standard_node_registry
 
 # Import Result types for enhanced error handling
 from fin_statement_model.statements.utilities.result_types import (
     ErrorCollector,
     ErrorSeverity,
+    ErrorDetail,
 )
 
 # Configure logging
@@ -81,17 +83,18 @@ class StatementConfig:
             else:
                 # Create default validator
                 self.node_validator = UnifiedNodeValidator(
+                    standard_node_registry,
                     strict_mode=node_validation_strict,
                     auto_standardize=True,
                     warn_on_non_standard=True,
                     enable_patterns=True,
                 )
 
-    def validate_config(self) -> list[str]:
+    def validate_config(self) -> list[ErrorDetail]:
         """Validate the configuration data using Pydantic models and optional node validation.
 
         Returns:
-            list[str]: List of validation errors, or empty list if valid.
+            list[ErrorDetail]: List of validation errors, or empty list if valid.
                      Stores the validated model in self.model on success.
         """
         error_collector = ErrorCollector()
@@ -104,40 +107,43 @@ class StatementConfig:
             if self.enable_node_validation and self.node_validator:
                 self._validate_node_ids(self.model, error_collector)
 
-            # Convert warnings and errors to string list for backward compatibility
-            validation_errors: list[str] = []
-
-            # Add errors (always included)
-            validation_errors.extend(
-                str(error) for error in error_collector.get_errors()
-            )
-
-            # Add warnings if in strict mode
+            # Collect structured errors (always include errors)
+            errors: list[ErrorDetail] = error_collector.get_errors()
+            warnings: list[ErrorDetail] = error_collector.get_warnings()
             if self.node_validation_strict:
-                validation_errors.extend(
-                    str(warning) for warning in error_collector.get_warnings()
-                )
-            else:
-                # Log warnings but don't include in errors list
-                for warning in error_collector.get_warnings():
-                    logger.warning(f"Node validation warning: {warning}")
-
-            return validation_errors
+                return errors + warnings
+            # Log warnings but exclude from returned errors
+            for warning in warnings:
+                logger.warning(f"Node validation warning: {warning}")
+            return errors
 
         except ValidationError as ve:
-            # Convert Pydantic errors to list of strings
-            errors: list[str] = []
+            # Convert Pydantic errors to structured ErrorDetail list
+            error_details: list[ErrorDetail] = []
             for err in ve.errors():
                 loc = ".".join(str(x) for x in err.get("loc", []))
                 msg = err.get("msg", "")
-                errors.append(f"{loc}: {msg}")
+                error_details.append(
+                    ErrorDetail(
+                        code="pydantic_validation",
+                        message=msg,
+                        context=loc,
+                        severity=ErrorSeverity.ERROR,
+                    )
+                )
             self.model = None  # Ensure model is not set on validation error
-            return errors
+            return error_details
         except Exception as e:
             # Catch other potential validation issues
             logger.exception("Unexpected error during configuration validation")
             self.model = None
-            return [f"Unexpected validation error: {e}"]
+            return [
+                ErrorDetail(
+                    code="unexpected_validation_error",
+                    message=str(e),
+                    severity=ErrorSeverity.ERROR,
+                )
+            ]
 
     def _validate_node_ids(
         self, model: StatementModel, error_collector: ErrorCollector

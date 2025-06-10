@@ -9,7 +9,7 @@ import logging
 from typing import Optional
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.nodes import standard_node_registry
+from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
 from fin_statement_model.statements.structure import (
     StatementStructure,
     LineItem,
@@ -26,7 +26,7 @@ class IDResolver:
     This class handles the complexity of mapping statement item IDs to graph
     node IDs, accounting for the fact that:
     - LineItems can have either a direct node_id property OR a standard_node_ref
-      that gets resolved through the standard_node_registry
+      that gets resolved through the provided registry
     - Other items (CalculatedLineItem, SubtotalLineItem, MetricLineItem) use
       their ID directly as the node ID
     - Some nodes may exist directly in the graph without being statement items
@@ -36,13 +36,15 @@ class IDResolver:
     build time for optimal performance.
     """
 
-    def __init__(self, statement: StatementStructure):
-        """Initialize the resolver with a statement structure.
+    def __init__(self, statement: StatementStructure, registry: StandardNodeRegistry):
+        """Initialize the resolver with a statement structure and a registry.
 
         Args:
             statement: The statement structure containing items to resolve.
+            registry: The standard node registry for resolving references.
         """
         self.statement = statement
+        self._registry = registry
         self._item_to_node_cache: dict[str, str] = {}
         self._node_to_items_cache: dict[str, list[str]] = {}
         self._build_cache()
@@ -54,7 +56,7 @@ class IDResolver:
         for item in self.statement.get_all_items():
             if isinstance(item, LineItem):
                 # Get the resolved node ID (handles both direct node_id and standard_node_ref)
-                resolved_node_id = item.get_resolved_node_id(standard_node_registry)
+                resolved_node_id = item.get_resolved_node_id(self._registry)
                 if resolved_node_id:
                     # LineItems map their ID to their resolved node_id
                     self._item_to_node_cache[item.id] = resolved_node_id

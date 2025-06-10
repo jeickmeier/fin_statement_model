@@ -19,6 +19,7 @@ import logging
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.statements.structure import StatementStructure
 from fin_statement_model.statements.population.id_resolver import IDResolver
+from fin_statement_model.core.nodes import standard_node_registry
 from fin_statement_model.statements.population.item_processors import (
     ItemProcessorManager,
 )
@@ -106,7 +107,7 @@ def populate_graph_from_statement(
         raise TypeError("graph must be a Graph instance")
 
     # Initialize components
-    id_resolver = IDResolver(statement)
+    id_resolver = IDResolver(statement, standard_node_registry)
     processor_manager = ItemProcessorManager(id_resolver, graph, statement)
 
     # Get all items to process

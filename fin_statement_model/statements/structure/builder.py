@@ -35,6 +35,7 @@ from fin_statement_model.statements.errors import ConfigurationError
 # Import UnifiedNodeValidator for optional node validation during build
 from fin_statement_model.io.validation import UnifiedNodeValidator
 from fin_statement_model.config.helpers import cfg
+from fin_statement_model.core.nodes import standard_node_registry
 
 # Import Result types for enhanced error handling
 from fin_statement_model.statements.utilities.result_types import (
@@ -89,6 +90,7 @@ class StatementStructureBuilder:
             else:
                 # Create default validator using strict flag
                 self.node_validator = UnifiedNodeValidator(
+                    standard_node_registry,
                     strict_mode=self.node_validation_strict,
                     auto_standardize=True,
                     warn_on_non_standard=True,
