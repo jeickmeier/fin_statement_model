@@ -130,7 +130,7 @@ class SubtractionCalculation(Calculation):
             its value is returned.
 
         Raises:
-            ValueError: If the `inputs` list is empty.
+            CalculationError: If the `inputs` list is empty.
 
         Examples:
             >>> class MockNode:
@@ -229,9 +229,7 @@ class DivisionCalculation(Calculation):
             The result of the division.
 
         Raises:
-            ValueError: If `inputs` list contains fewer than two nodes.
-            ZeroDivisionError: If the calculated product of the subsequent nodes
-                (denominator) is zero.
+            CalculationError: If the `inputs` list contains fewer than two nodes or if the denominator product is zero.
 
         Examples:
             >>> class MockNode:
@@ -244,7 +242,7 @@ class DivisionCalculation(Calculation):
             >>> nodes_zero_denom = [MockNode(100), MockNode(5), MockNode(0)]
             >>> try:
             ...     strategy.calculate(nodes_zero_denom, "2023")
-            ... except ZeroDivisionError as e:
+            ... except CalculationError as e:
             ...     # Example: logging the error instead of printing
             ...     logger.error(e)
             Division by zero: Denominator product is zero
@@ -312,11 +310,8 @@ class WeightedAverageCalculation(Calculation):
             The calculated weighted average as a float.
 
         Raises:
-            ValueError: If the `inputs` list is empty.
-            ValueError: If `weights` were provided during initialization and their
-                count does not match the number of `inputs`.
-            ValueError: If the sum of weights is zero (to prevent division by zero
-                if normalization were implemented differently).
+            CalculationError: If the `inputs` list is empty or if the sum of weights is zero.
+            StrategyError: If `weights` were provided and length does not match number of inputs.
 
         Examples:
             >>> class MockNode:
@@ -335,7 +330,7 @@ class WeightedAverageCalculation(Calculation):
             >>> strategy_mismatch = WeightedAverageCalculation(weights=[0.5, 0.5])
             >>> try:
             ...     strategy_mismatch.calculate(nodes, "2023")
-            ... except ValueError as e:
+            ... except StrategyError as e:
             ...     # Example: logging the error instead of printing
             ...     logger.error(e)
             Number of weights (2) must match number of inputs (3)
@@ -444,9 +439,8 @@ class CustomFormulaCalculation(Calculation):
             The float result returned by the `formula_function`.
 
         Raises:
-            ValueError: If the `formula_function` encounters an error during execution
-                (e.g., incorrect input keys, calculation errors). Wraps the original
-                exception.
+            CalculationError: If the `formula_function` encounters an error during execution
+                (e.g., incorrect input keys, calculation errors). Wraps the original exception.
 
         Examples:
             >>> class MockNode:
@@ -580,8 +574,8 @@ class FormulaCalculation(Calculation):
             The result of the formula evaluation.
 
         Raises:
-            ValueError: If the number of inputs doesn't match input_variable_names,
-                or if an error occurs during evaluation.
+            StrategyError: If the number of inputs doesn't match number of variable names.
+            CalculationError: If an error occurs during evaluation of the formula.
         """
         if len(inputs) != len(self.input_variable_names):
             raise StrategyError(

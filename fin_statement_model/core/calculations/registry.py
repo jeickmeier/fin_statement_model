@@ -3,6 +3,14 @@
 This module provides a central registry for discovering and accessing different
 calculation classes. Calculations can be registered using their class
 object and later retrieved by their class name.
+
+Examples:
+    >>> from fin_statement_model.core.calculations.registry import Registry
+    >>> from fin_statement_model.core.calculations import AdditionCalculation
+    >>> Registry.register(AdditionCalculation)
+    >>> Registry.get("AdditionCalculation") is AdditionCalculation
+    >>> list(Registry.list().keys())
+    ['AdditionCalculation', 'SubtractionCalculation', 'MultiplicationCalculation', ...]
 """
 
 # Use lowercase built-in types
