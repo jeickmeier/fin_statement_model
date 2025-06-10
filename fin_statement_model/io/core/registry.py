@@ -18,25 +18,11 @@ from fin_statement_model.io.exceptions import (
     ReadError,
     WriteError,
 )
-from fin_statement_model.io.config.models import (
-    CsvReaderConfig,
-    ExcelReaderConfig,
-    FmpReaderConfig,
-    DataFrameReaderConfig,
-    DictReaderConfig,
-    ExcelWriterConfig,
-    DataFrameWriterConfig,
-    DictWriterConfig,
-    MarkdownWriterConfig,
-)
 
 logger = logging.getLogger(__name__)
 
 # Type variable for the handler type (DataReader or DataWriter)
 T = TypeVar("T")
-
-# Strict schema enforcement for reader/writer registration (env var FSM_IO_STRICT_SCHEMA)
-STRICT_SCHEMA = os.getenv("FSM_IO_STRICT_SCHEMA", "0") == "1"
 
 
 # ===== Generic Registry Implementation =====
@@ -193,22 +179,6 @@ class HandlerRegistry(Generic[T]):
 _reader_registry = HandlerRegistry[DataReader]("reader")
 _writer_registry = HandlerRegistry[DataWriter]("writer")
 
-# Schema mappings for configuration validation
-_READER_SCHEMA_MAP = {
-    "csv": CsvReaderConfig,
-    "excel": ExcelReaderConfig,
-    "fmp": FmpReaderConfig,
-    "dataframe": DataFrameReaderConfig,
-    "dict": DictReaderConfig,
-}
-
-_WRITER_SCHEMA_MAP = {
-    "excel": ExcelWriterConfig,
-    "dataframe": DataFrameWriterConfig,
-    "dict": DictWriterConfig,
-    "markdown": MarkdownWriterConfig,
-}
-
 
 # ===== Registration Decorators =====
 
@@ -230,7 +200,8 @@ def register_reader(
     Raises:
         ValueError: If the format_type is already registered for a reader.
     """
-    if STRICT_SCHEMA and schema is None:
+    # Enforce strict-mode at registration time
+    if os.getenv("FSM_IO_STRICT_SCHEMA", "0") == "1" and schema is None:
         raise ValueError(f"Schema required for reader '{format_type}' in strict mode")
     return _reader_registry.register(format_type, schema=schema)
 
@@ -252,7 +223,8 @@ def register_writer(
     Raises:
         ValueError: If the format_type is already registered for a writer.
     """
-    if STRICT_SCHEMA and schema is None:
+    # Enforce strict-mode at registration time
+    if os.getenv("FSM_IO_STRICT_SCHEMA", "0") == "1" and schema is None:
         raise ValueError(f"Schema required for writer '{format_type}' in strict mode")
     return _writer_registry.register(format_type, schema=schema)
 
@@ -263,7 +235,6 @@ def register_writer(
 def _get_handler(
     format_type: str,
     registry: HandlerRegistry[Any],
-    schema_map: dict[str, Any],
     handler_type: str,
     error_class: type[Union[ReadError, WriteError]],
     **kwargs: Any,
@@ -276,7 +247,6 @@ def _get_handler(
     Args:
         format_type: The format identifier (e.g., 'excel', 'csv').
         registry: The registry instance containing handler classes.
-        schema_map: Mapping of format types to Pydantic config schemas.
         handler_type: Either 'read' or 'write' for error messages.
         error_class: Either ReadError or WriteError class.
         **kwargs: Configuration parameters for the handler.
@@ -291,10 +261,10 @@ def _get_handler(
     # Get handler class from registry (may raise FormatNotSupportedError)
     handler_class = registry.get(format_type)
 
-    # Determine Pydantic schema: first registry, then fallback to static map
-    schema = registry.get_schema(format_type) or schema_map.get(format_type)
-    # Enforce strict-mode: require schema for instantiation
-    if STRICT_SCHEMA and schema is None:
+    # Determine Pydantic schema from registry
+    schema = registry.get_schema(format_type)
+    # Enforce strict-mode at instantiation time
+    if os.getenv("FSM_IO_STRICT_SCHEMA", "0") == "1" and schema is None:
         from fin_statement_model.core.errors import ConfigurationError
 
         raise ConfigurationError(
@@ -374,7 +344,6 @@ def get_reader(format_type: str, **kwargs: Any) -> DataReader:
         _get_handler(
             format_type=format_type,
             registry=_reader_registry,
-            schema_map=_READER_SCHEMA_MAP,
             handler_type="read",
             error_class=ReadError,
             **kwargs,
@@ -401,7 +370,6 @@ def get_writer(format_type: str, **kwargs: Any) -> DataWriter:
         _get_handler(
             format_type=format_type,
             registry=_writer_registry,
-            schema_map=_WRITER_SCHEMA_MAP,
             handler_type="write",
             error_class=WriteError,
             **kwargs,
