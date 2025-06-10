@@ -88,7 +88,6 @@ def format_numbers(
     return result
 
 
-# Consolidated formatting utility
 def render_values(
     df: pd.DataFrame,
     period_columns: list[str],
@@ -96,65 +95,33 @@ def render_values(
     number_format: Optional[str] = None,
     contra_display_style: Optional[str] = "parentheses",
 ) -> pd.DataFrame:
-    """Render values by applying sign conventions, contra formatting, and number formatting in a single vectorized pass.
+    """Render values by applying sign conventions, number formatting, and contra styling."""
+    # 1. Apply sign conventions to numeric data
+    signed_df = apply_sign_convention(df, period_columns)
 
-    Args:
-        df: DataFrame with period columns, 'sign_convention', and 'is_contra'.
-        period_columns: List of DataFrame columns with period data to format.
-        default_formats: Defaults containing 'precision' and 'use_thousands_separator'.
-        number_format: Optional Python format string to override default formatting.
-        contra_display_style: Style for contra items ('parentheses', 'negative_sign', 'brackets').
+    # 2. Format numbers to strings
+    formatted_df = format_numbers(
+        signed_df,
+        default_formats,
+        number_format=number_format,
+        period_columns=period_columns,
+    )
 
-    Returns:
-        pd.DataFrame: New DataFrame with formatted string values in period columns.
-    """
+    # 3. Apply contra formatting to formatted strings
+    if "is_contra" in df.columns:
+        contra_mask = df["is_contra"].fillna(False)
+        for col in period_columns:
+            mask = contra_mask & formatted_df[col].astype(bool)
+            if contra_display_style == "parentheses":
+                formatted_df.loc[mask, col] = "(" + formatted_df.loc[mask, col] + ")"
+            elif contra_display_style == "negative_sign":
+                formatted_df.loc[mask, col] = "-" + formatted_df.loc[mask, col]
+            elif contra_display_style == "brackets":
+                formatted_df.loc[mask, col] = "[" + formatted_df.loc[mask, col] + "]"
+            else:
+                formatted_df.loc[mask, col] = "(" + formatted_df.loc[mask, col] + ")"
+
+    # 4. Assign formatted strings back to DataFrame
     result = df.copy()
-
-    # 1. Apply sign conventions vectorized
-    if "sign_convention" in result.columns:
-        signs = result["sign_convention"].fillna(1).to_numpy(dtype=float)
-    else:
-        signs = np.ones(len(result), dtype=float)
-    vals = result.loc[:, period_columns].to_numpy(dtype=float)
-    vals = vals * signs[:, None]
-
-    # 2. Prepare format string
-    if number_format:
-        fmt = "{:" + number_format + "}"
-    else:
-        precision = default_formats.get("precision", 2)
-        use_thousands = default_formats.get("use_thousands_separator", True)
-        sep = "," if use_thousands else ""
-        fmt = f"{{:{sep}.{precision}f}}"
-
-    # 3. Vectorized formatting
-    mask_valid = ~np.isnan(vals)
-    base = np.full(vals.shape, "", dtype=object)
-    base[mask_valid] = np.char.mod(fmt, vals[mask_valid])
-
-    # 4. Contra formatting
-    if "is_contra" in result.columns:
-        contra_mask = result["is_contra"].fillna(False).to_numpy(dtype=bool)
-    else:
-        contra_mask = np.zeros(len(result), dtype=bool)
-    contra2d = contra_mask[:, None] & mask_valid
-    abs_vals = np.abs(vals)
-    abs_fmt = np.full(vals.shape, "", dtype=object)
-    abs_fmt[mask_valid] = np.char.mod(fmt, abs_vals[mask_valid])
-
-    if contra_display_style == "parentheses":
-        styled = np.char.add("(", np.char.add(abs_fmt, ")"))
-    elif contra_display_style == "negative_sign":
-        styled = np.char.add("-", abs_fmt)
-    elif contra_display_style == "brackets":
-        styled = np.char.add("[", np.char.add(abs_fmt, "]"))
-    else:
-        styled = np.char.add("(", np.char.add(abs_fmt, ")"))
-
-    rendered = np.where(contra2d, styled, base)
-
-    # 5. Assign back to DataFrame
-    formatted_df = pd.DataFrame(rendered, index=result.index, columns=period_columns)
-    result.loc[:, period_columns] = formatted_df
-
+    result[period_columns] = formatted_df[period_columns].astype("object")
     return result
