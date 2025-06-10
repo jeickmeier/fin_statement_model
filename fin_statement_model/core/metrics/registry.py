@@ -1,7 +1,8 @@
-"""Manage loading and accessing metric definitions from YAML files.
+"""Provide a registry for loading and accessing metric definitions from YAML files.
 
-This module provides a registry to discover, validate, and retrieve
-metric definitions from YAML files and associate them with calculation classes.
+This module defines:
+- MetricRegistry: Load, validate, and retrieve metric definitions.
+- metric_registry: Singleton instance of MetricRegistry.
 """
 
 import logging
@@ -24,10 +25,13 @@ logger = logging.getLogger(__name__)
 
 
 class MetricRegistry:
-    """Manage loading and accessing metric definitions from YAML files.
+    """Provide methods to load, discover, and retrieve metric definitions from YAML files.
 
-    This includes discovering YAML definitions, validating their structure,
-    and providing retrieval methods by metric ID.
+    Example:
+        >>> from fin_statement_model.core.metrics.registry import MetricRegistry
+        >>> registry = MetricRegistry()
+        >>> registry.list_metrics()
+        []
     """
 
     _REQUIRED_FIELDS: ClassVar[list[str]] = ["inputs", "formula", "description", "name"]
@@ -60,7 +64,6 @@ class MetricRegistry:
         Raises:
             ImportError: If PyYAML is not installed.
             FileNotFoundError: If the directory_path does not exist.
-            ConfigurationError: If a YAML file is invalid or missing required fields.
 
         Examples:
             >>> registry = MetricRegistry()
@@ -212,6 +215,14 @@ class MetricRegistry:
 
         Args:
             definition: The metric definition to register.
+
+        Example:
+            >>> from fin_statement_model.core.metrics.registry import MetricRegistry
+            >>> from fin_statement_model.core.metrics.models import MetricDefinition
+            >>> registry = MetricRegistry()
+            >>> model = MetricDefinition(name='test', description='desc', inputs=['a'], formula='a', tags=[])
+            >>> registry.register_definition(model)
+            >>> 'test' in registry
         """
         metric_id = definition.name.lower().replace(" ", "_").replace("-", "_")
         if metric_id in self._metrics:

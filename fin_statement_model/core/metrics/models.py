@@ -1,4 +1,7 @@
-"""Models for metric definitions."""
+"""Provide models for metric definitions loaded from YAML files.
+
+This module defines Pydantic models for metric definitions and their interpretation guidelines.
+"""
 
 from typing import Optional, Any
 from pydantic import BaseModel, Field, model_validator
@@ -6,7 +9,16 @@ from pydantic import ConfigDict
 
 
 class MetricInterpretation(BaseModel):
-    """Interpretation guidelines for a metric."""
+    """Provide interpretation guidelines for a metric.
+
+    Attributes:
+        good_range: Range of values considered good [min, max].
+        warning_below: Value below which a warning should be issued.
+        warning_above: Value above which a warning should be issued.
+        excellent_above: Value above which the metric is considered excellent.
+        poor_below: Value below which the metric is considered poor.
+        notes: Additional interpretation notes and context.
+    """
 
     good_range: Optional[list[float]] = Field(
         None, description="Range of values considered good [min, max]"
@@ -29,7 +41,19 @@ class MetricInterpretation(BaseModel):
 
 
 class MetricDefinition(BaseModel):
-    """Schema for one metric definition loaded from YAML."""
+    """Define schema for a single metric definition loaded from a YAML file.
+
+    Attributes:
+        name: The name of the metric.
+        description: The description of the metric.
+        inputs: List of input identifiers for the metric.
+        formula: The formula used to calculate the metric.
+        tags: List of tags classifying the metric.
+        units: Unit of the metric (e.g., percentage, ratio).
+        category: Category of the metric.
+        interpretation: Guidelines for interpreting metric values.
+        related_metrics: Names of related metrics to consider together.
+    """
 
     name: str = Field(..., min_length=1, description="The name of the metric")
     description: str = Field(

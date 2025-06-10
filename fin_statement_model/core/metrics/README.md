@@ -1,206 +1,120 @@
-# Financial Metrics Organization
+# Metrics Module
 
-This directory contains the organized financial metric definitions for the financial statement model library. The metrics are split into logical categories for easier maintenance and understanding.
+Provide a comprehensive overview of the `fin_statement_model.core.metrics` package for loading, calculating, and interpreting financial metrics defined in YAML files.
 
-## Directory Structure
+## Overview
 
-```
-metrics/
-├── README.md                    # This file
-├── __init__.py                  # Main exports and registry loading
-├── models.py                    # Pydantic models for metric definitions
-├── registry.py                  # Metric registry and loading logic
-├── interpretation.py            # Metric interpretation and rating system
-├── metric_defn/                # Built-in metrics organized by category
-│   ├── README.md               # Built-in metrics documentation
-│   ├── __init__.py             # Built-in metrics loading
-│   ├── liquidity/              # Liquidity and working capital metrics
-│   │   ├── __init__.py
-│   │   ├── ratios.yaml         # Current, quick, cash ratios
-│   │   └── working_capital.yaml # DSO, DIO, DPO, cash conversion cycle
-│   ├── leverage/               # Leverage and solvency metrics
-│   │   ├── __init__.py
-│   │   ├── debt_ratios.yaml    # Debt-to-equity, debt-to-assets, etc.
-│   │   └── net_leverage.yaml   # Net debt ratios and EBITDA multiples
-│   ├── coverage/               # Coverage and debt service metrics
-│   │   ├── __init__.py
-│   │   ├── interest_coverage.yaml # Interest coverage ratios
-│   │   └── debt_service.yaml   # DSCR, cash flow coverage
-│   ├── profitability/          # Profitability and margin metrics
-│   │   ├── __init__.py
-│   │   ├── margins.yaml        # Gross, operating, net margins
-│   │   └── returns.yaml        # ROA, ROE, ROIC, ROCE
-│   ├── efficiency/             # Efficiency and turnover metrics
-│   │   ├── __init__.py
-│   │   ├── asset_turnover.yaml # Asset, fixed asset, working capital turnover
-│   │   └── component_turnover.yaml # Inventory, receivables, payables turnover
-│   ├── valuation/              # Valuation multiples and yields
-│   │   ├── __init__.py
-│   │   ├── price_multiples.yaml # P/E, P/B, P/S ratios
-│   │   ├── enterprise_multiples.yaml # EV/EBITDA, EV/Sales, EV/EBIT
-│   │   └── yields.yaml         # Dividend yield, earnings yield, FCF yield
-│   ├── cash_flow/              # Cash flow metrics
-│   │   ├── __init__.py
-│   │   ├── generation.yaml     # OCF margin, FCF margin, quality of earnings
-│   │   └── returns.yaml        # Cash flow ROA, ROE, capex coverage
-│   ├── growth/                 # Growth metrics
-│   │   ├── __init__.py
-│   │   └── growth_rates.yaml   # Revenue, EBITDA, EPS, asset growth
-│   ├── per_share/              # Per share metrics
-│   │   ├── __init__.py
-│   │   └── per_share_metrics.yaml # Revenue, cash, FCF, book value per share
-│   ├── credit_risk/            # Credit risk and distress models
-│   │   ├── __init__.py
-│   │   ├── altman_scores.yaml  # Altman Z-Score variants
-│   │   └── warning_flags.yaml  # Binary warning indicators
-│   ├── advanced/               # Advanced analysis tools
-│   │   ├── __init__.py
-│   │   └── dupont_analysis.yaml # DuPont ROE decomposition
-│   ├── special/                # Special calculated metrics
-│   │   ├── __init__.py
-│   │   ├── gross_profit.yaml   # Gross profit calculation
-│   │   ├── net_income.yaml     # Net income calculation
-│   │   └── retained_earnings.yaml # Retained earnings calculation
-│   └── real_estate/            # Real estate and REIT metrics
-│       ├── __init__.py
-│       ├── operational_metrics.yaml # NOI, FFO, AFFO, occupancy
-│       ├── valuation_metrics.yaml # Cap rates, price per SF, REIT multiples
-│       └── per_share_metrics.yaml # FFO/share, AFFO/share, NAV/share
-└── industry_extensions/        # Industry-specific metrics (future)
-    ├── banking/
-    ├── real_estate/
-    └── insurance/
-```
+The `core/metrics` package includes:
 
-## Benefits of This Organization
+- **MetricDefinition**: Pydantic model representing a metric loaded from YAML.
+- **MetricRegistry**: Class to load, validate, and retrieve definitions.
+- **metric_registry**: Singleton instance of `MetricRegistry`.
+- **calculate_metric**: Helper function to compute a metric value by name.
+- **MetricInterpreter** and **interpret_metric**: Utilities to rate and explain metric values based on interpretation guidelines.
 
-1. **Logical Grouping**: Related metrics are grouped together by analytical purpose
-2. **Easier Maintenance**: Smaller files are easier to edit and review
-3. **Clear Ownership**: Each file has a specific analytical focus
-4. **Scalability**: Easy to add new categories or industry-specific metrics
-5. **Better Documentation**: Each category can have specific documentation
-6. **Faster Loading**: Can load specific categories as needed
+Metrics are organized in `core/metrics/metric_defn/` by category, such as:
 
-## Loading Metrics
+- Liquidity
+- Leverage
+- Profitability
+- Efficiency
+- Valuation
+- Cash Flow
+- Growth
+- Credit Risk
+- Advanced Analytics (e.g., DuPont)
+- Special Calculations (e.g., Gross Profit, Net Income)
+- Real Estate Metrics
+- Per-Share Metrics
 
-The registry automatically loads all metric definitions from these organized files:
+## Basic Usage
 
 ```python
-from fin_statement_model.core.metrics import metric_registry
+from fin_statement_model.core.metrics import (
+    metric_registry,
+    calculate_metric,
+    interpret_metric,
+)
 
-# All metrics are automatically loaded
-print(f"Loaded {len(metric_registry)} metrics")
+# (Re)load metrics from disk (auto-loaded on import)
+count = metric_registry.load_metrics_from_directory(
+    "fin_statement_model/core/metrics/metric_defn"
+)
+print(f"Loaded {count} metrics")
 
-# Access by category
-liquidity_metrics = [m for m in metric_registry.list_metrics() 
-                    if metric_registry.get(m).category == "liquidity"]
+# List available metric IDs
+print(metric_registry.list_metrics())
+
+# Prepare data nodes (e.g., from your statement graph)
+# data_nodes = { 'revenue': RevenueNode(...), 'total_assets': AssetNode(...), ... }
+
+# Calculate a metric
+value = calculate_metric(
+    "current_ratio", data_nodes, period="2023"
+)
+print(f"Current Ratio for 2023: {value:.2f}")
+
+# Interpret the result
+metric_def = metric_registry.get("current_ratio")
+analysis = interpret_metric(metric_def, value)
+print(analysis)
 ```
 
-## Metric Categories
+## Available Metric Categories
 
-### Core Analysis Categories
-- **Liquidity (8 metrics)**: Short-term solvency and working capital efficiency
-- **Leverage (8 metrics)**: Capital structure and long-term solvency  
-- **Coverage (7 metrics)**: Ability to service debt and fixed charges
-- **Profitability (11 metrics)**: Margin and return metrics
-- **Efficiency (12 metrics)**: Asset utilization and turnover ratios
+Metrics are grouped into the following logical categories:
 
-### Market and Valuation
-- **Valuation (10 metrics)**: Market-based valuation multiples and yields
-- **Cash Flow (7 metrics)**: Cash generation and quality metrics
-- **Per Share (4 metrics)**: Per share calculations
+| Category         | Description                                        |
+|------------------|----------------------------------------------------|
+| Liquidity        | Current ratio, quick ratio, cash coverage          |
+| Leverage         | Debt ratios, coverage, capital structure           |
+| Profitability    | Margins, ROA, ROE, ROC                             |
+| Efficiency       | Asset & working capital turnover                   |
+| Valuation        | Price multiples, EV ratios, yield metrics          |
+| Cash Flow        | Operating cash flow, free cash flow, quality       |
+| Growth           | Year-over-year growth rates                        |
+| Credit Risk      | Altman Z-scores, warning flags                     |
+| Advanced         | DuPont analysis, decompositions                    |
+| Special          | Calculated items like gross/net profit             |
+| Real Estate      | NOI, FFO, cap rates, debt yield                    |
+| Per-Share        | Per-share metrics (EPS, FCF/share, NAV/share)      |
 
-### Advanced Analysis
-- **Growth (5 metrics)**: Period-over-period growth rates
-- **Credit Risk (5 metrics)**: Bankruptcy prediction and warning flags
-- **Advanced (2 metrics)**: DuPont analysis and sophisticated tools
+## Adding a New Metric Definition
 
-### Industry-Specific
-- **Real Estate (12 metrics)**: REIT and property-specific metrics including NOI, FFO, AFFO, cap rates, and occupancy metrics
+To add a custom metric:
 
-## Adding New Metrics
+1. Create a new YAML file under `core/metrics/metric_defn/` (or within a subfolder).
+2. Follow the schema:
 
-To add new metrics:
+   ```yaml
+   - name: My Custom Metric
+     description: Description of this metric.
+     inputs:
+       - input1
+       - input2
+     formula: input1 / input2
+     tags:
+       - custom
+       - example
+     units: ratio
+     category: custom
+     related_metrics:
+       - existing_metric
+     interpretation:
+       good_range: [0.8, 1.2]
+       warning_below: 0.5
+       warning_above: 1.5
+       excellent_above: 1.2
+       poor_below: 0.5
+       notes: 'Any additional context or guidance'
+   ```
 
-1. Choose the appropriate category directory
-2. Add the metric definition to the relevant YAML file
-3. Follow the existing pattern for metric definitions
-4. Include comprehensive interpretation guidelines
-5. Update tests if needed
+3. Reload the registry (or restart the application):
 
-## Industry-Specific Extensions
+   ```python
+   metric_registry.load_metrics_from_directory(
+       "fin_statement_model/core/metrics/metric_defn"
+   )
+   ```
 
-For industry-specific metrics, create new directories under `industry_extensions/`:
-
-```
-industry_extensions/
-├── banking/
-│   ├── asset_quality.yaml     # NPL ratios, charge-offs
-│   ├── capital_adequacy.yaml  # Tier 1 capital, risk-weighted assets
-│   └── profitability.yaml     # Net interest margin, efficiency ratio
-├── real_estate/
-│   ├── operations.yaml        # NOI, FFO, AFFO metrics
-│   └── valuation.yaml         # Cap rates, price per square foot
-└── insurance/
-    ├── underwriting.yaml      # Combined ratio, loss ratio
-    └── investment.yaml        # Investment yield, duration matching
-```
-
-These can be loaded optionally based on industry context.
-
-## Metric Quality Standards
-
-All metrics must include:
-- Clear description and purpose
-- Comprehensive interpretation guidelines with thresholds
-- Industry context and usage notes
-- Related metrics for cross-analysis
-- Proper categorization and tagging
-
-## Usage Examples
-
-### Basic Analysis
-```python
-# Load specific category
-liquidity_analysis = [
-    "current_ratio", "quick_ratio", "cash_ratio", 
-    "operating_cash_flow_ratio", "cash_conversion_cycle"
-]
-
-# Calculate and interpret
-for metric_name in liquidity_analysis:
-    value = graph.calculate_metric(metric_name)
-    interpretation = interpret_metric(metric_registry.get(metric_name), value)
-    print(f"{metric_name}: {interpretation['interpretation_message']}")
-```
-
-### Real Estate Analysis
-```python
-# REIT analysis dashboard
-reit_metrics = {
-    "operational": ["net_operating_income", "funds_from_operations", "adjusted_funds_from_operations"],
-    "valuation": ["capitalization_rate", "ffo_multiple", "affo_multiple", "price_to_nav_ratio"],
-    "per_share": ["ffo_per_share", "affo_per_share", "dividend_coverage_ratio_affo"],
-    "efficiency": ["occupancy_rate", "same_store_noi_growth"]
-}
-
-# Generate REIT assessment
-reit_assessment = analyze_reit_metrics(graph, reit_metrics)
-```
-
-### Credit Analysis Dashboard
-```python
-# Comprehensive credit assessment
-credit_metrics = {
-    "liquidity": ["current_ratio", "quick_ratio", "operating_cash_flow_ratio"],
-    "leverage": ["debt_to_equity_ratio", "net_debt_to_ebitda", "financial_leverage_ratio"],
-    "coverage": ["times_interest_earned", "ebitda_interest_coverage", "debt_service_coverage_ratio"],
-    "profitability": ["operating_profit_margin", "return_on_assets", "return_on_equity"],
-    "credit_risk": ["altman_z_score_manufacturing", "interest_coverage_flag"]
-}
-
-# Generate comprehensive assessment
-credit_assessment = analyze_credit_metrics(graph, credit_metrics)
-```
-
-This organized structure provides a solid foundation for comprehensive financial analysis while maintaining the flexibility needed for diverse analytical requirements. 
+4. Use `calculate_metric` and `interpret_metric` as demonstrated above. 

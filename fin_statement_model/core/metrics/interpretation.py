@@ -1,4 +1,4 @@
-"""Utilities for interpreting metric values based on defined guidelines."""
+"""Provide utilities for interpreting metric values based on defined guidelines."""
 
 from enum import Enum
 from typing import Any
@@ -19,7 +19,15 @@ class MetricRating(Enum):
 
 
 class MetricInterpreter:
-    """Interprets metric values based on defined guidelines."""
+    """Interpret metric values based on defined guidelines.
+
+    Example:
+        >>> from fin_statement_model.core.metrics import metric_registry, MetricInterpreter
+        >>> metric_def = metric_registry.get("current_ratio")
+        >>> interpreter = MetricInterpreter(metric_def)
+        >>> interpreter.rate_value(1.8)
+        <MetricRating.GOOD: 'good'>
+    """
 
     def __init__(self, metric_definition: MetricDefinition):
         """Initialize with a metric definition.
@@ -38,6 +46,10 @@ class MetricInterpreter:
 
         Returns:
             MetricRating indicating the quality of the value.
+
+        Example:
+            >>> interpreter.rate_value(1.8)
+            <MetricRating.GOOD: 'good'>
         """
         if not self.interpretation:
             return MetricRating.UNKNOWN
@@ -93,6 +105,10 @@ class MetricInterpreter:
 
         Returns:
             A descriptive message about the metric value.
+
+        Example:
+            >>> interpreter.get_interpretation_message(1.8)
+            'Good performance: 1.80'
         """
         rating = self.rate_value(value)
 
@@ -116,6 +132,11 @@ class MetricInterpreter:
 
         Returns:
             Dictionary containing detailed analysis information.
+
+        Example:
+            >>> analysis = interpreter.get_detailed_analysis(1.8)
+            >>> analysis['rating']
+            'good'
         """
         rating = self.rate_value(value)
 
@@ -151,7 +172,7 @@ class MetricInterpreter:
 def interpret_metric(
     metric_definition: MetricDefinition, value: float
 ) -> dict[str, Any]:
-    """Convenience function to interpret a metric value.
+    """Interpret a metric value using the MetricInterpreter.
 
     Args:
         metric_definition: The metric definition.
@@ -159,6 +180,13 @@ def interpret_metric(
 
     Returns:
         Detailed interpretation analysis.
+
+    Example:
+        >>> from fin_statement_model.core.metrics import metric_registry, interpret_metric
+        >>> metric_def = metric_registry.get("current_ratio")
+        >>> result = interpret_metric(metric_def, 1.8)
+        >>> result['rating']
+        'good'
     """
     interpreter = MetricInterpreter(metric_definition)
     return interpreter.get_detailed_analysis(value)

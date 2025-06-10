@@ -1,11 +1,11 @@
-"""Financial Metrics Module.
+"""Provide a comprehensive system for defining, calculating, and interpreting financial metrics.
 
-This module provides a comprehensive system for defining, calculating, and interpreting
-financial metrics. It includes:
-
+This module defines:
 - MetricDefinition: Pydantic model for metric definitions
 - MetricRegistry: Registry for loading and managing metrics
 - MetricInterpreter: System for interpreting metric values with ratings
+- calculate_metric: Helper to calculate a metric by name
+- interpret_metric: Convenience function to interpret a metric value
 - Built-in metrics: 75+ professional financial metrics organized by category
 
 The metrics are organized into logical categories:
