@@ -5,6 +5,7 @@ abstracting away the complexity of the registry system.
 """
 
 import logging
+import os
 from typing import Union, Any
 
 from fin_statement_model.core.graph import Graph
@@ -143,6 +144,10 @@ def write_data(
         # If the writer returns a string and target is a path, write it to the file.
         if isinstance(result, str) and isinstance(target, str):
             try:
+                # Ensure target directory exists
+                dir_path = os.path.dirname(target)
+                if dir_path:
+                    os.makedirs(dir_path, exist_ok=True)
                 logger.debug(
                     f"Writing string result from writer '{type(writer).__name__}' to file: {target}"
                 )

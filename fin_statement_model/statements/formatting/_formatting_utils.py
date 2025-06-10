@@ -1,7 +1,6 @@
 """Utility functions for formatting statement DataFrames."""
 
 import pandas as pd
-import numpy as np  # Added for vectorized formatting
 from typing import Optional, Any  # Keep necessary imports
 from pandas.api.types import is_numeric_dtype
 

@@ -298,24 +298,5 @@ class MarkdownWriterConfig(BaseWriterConfig):
         None, description="Optional target path (ignored by MarkdownWriter)."
     )
 
-    # --- Validators ------------------------------------------------------
-
-    @model_validator(mode="after")  # type: ignore[arg-type]
-    def check_exclusive_sources(
-        cls, cfg: "MarkdownWriterConfig"
-    ) -> "MarkdownWriterConfig":
-        """Ensure that exactly one of statement_config_path or raw_configs is provided."""
-        if not cfg.statement_config_path and cfg.raw_configs is None:
-            raise ValueError(
-                "Must provide either 'statement_config_path' or 'raw_configs' to "
-                "MarkdownWriterConfig."
-            )
-        if cfg.statement_config_path and cfg.raw_configs is not None:
-            # Prefer raw_configs but emit warning via logging
-            import logging
-
-            logging.getLogger(__name__).warning(
-                "Both 'statement_config_path' and 'raw_configs' supplied to "
-                "MarkdownWriterConfig – 'raw_configs' will take precedence."
-            )
-        return cfg
+    # Allow extra write() kwargs like 'statement_structure' to pass through without error
+    model_config = ConfigDict(extra="ignore", frozen=True)

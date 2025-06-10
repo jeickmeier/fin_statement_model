@@ -34,6 +34,11 @@ from fin_statement_model.forecasting.forecaster import StatementForecaster
 # Import unified validator
 from fin_statement_model.io.validation import UnifiedNodeValidator
 from fin_statement_model.core.nodes import standard_node_registry
+from fin_statement_model.statements.registry import StatementRegistry
+from fin_statement_model.statements.orchestration.loader import (
+    load_build_register_statements,
+)
+from fin_statement_model.statements.structure.builder import StatementStructureBuilder
 
 # Configure logging
 logging.basicConfig(
@@ -370,12 +375,18 @@ with pd.option_context(
 ):
     logger.info(statement_df.to_string(index=False))
 
+# Build and register statement structure for markdown write
+registry = StatementRegistry()
+builder = StatementStructureBuilder()
+load_build_register_statements(raw_configs, registry, builder)
+statement_structure = registry.get(stmt_id)
+
 # Write output data
 write_data(
     format_type="markdown",
     graph=graph,
     target=str(md_output_path),
-    raw_configs=raw_configs,
+    statement_structure=statement_structure,
     historical_periods=historical_periods,
     forecast_configs=forecast_configs,
 )

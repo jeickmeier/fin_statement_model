@@ -66,6 +66,15 @@ historical_data = {
     "Interest Expense": {"2022": -50.0, "2023": -60.0},
     "Taxes": {"2022": -75.0, "2023": -90.0},
     "D&A": {"2022": -30.0, "2023": -35.0},
+    # Added entries for balance sheet example
+    "core.cash": {"2022": 100.0, "2023": 120.0},
+    "core.accounts_receivable": {"2022": 200.0, "2023": 250.0},
+    "core.ppe": {"2022": 500.0, "2023": 550.0},
+    "core.accounts_payable": {"2022": 150.0, "2023": 180.0},
+    "core.debt": {"2022": 300.0, "2023": 320.0},
+    "core.common_stock": {"2022": 100.0, "2023": 100.0},
+    "core.prior_retained_earnings": {"2022": 130.0, "2023": 150.0},
+    "core.dividends": {"2022": -20.0, "2023": -25.0},
 }
 
 # Create the core graph
@@ -366,7 +375,8 @@ sections:
 
     # Load all YAML configs in CONFIG_DIR into memory
     all_configs: dict[str, dict[str, Any]] = {}
-    for yaml_path in CONFIG_DIR.glob("*.yaml"):
+    # Only load the example statement configs for this script
+    for yaml_path in [income_stmt_path, bs_stmt_path]:
         cfg_dict = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
         stmt_id = cfg_dict.get("id", yaml_path.stem)
         all_configs[stmt_id] = cfg_dict

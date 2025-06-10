@@ -296,15 +296,13 @@ class AdjustmentManager:
                 matching_adjustments = [
                     adj
                     for adj in candidate_adjustments
-                    if filter_input(adj)
-                    and normalized_filter.matches(adj)
+                    if filter_input(adj) and normalized_filter.matches(adj)
                 ]
             elif param_count == 2:
                 matching_adjustments = [
                     adj
                     for adj in candidate_adjustments
-                    if filter_input(adj, period)
-                    and normalized_filter.matches(adj)
+                    if filter_input(adj, period) and normalized_filter.matches(adj)
                 ]
             else:
                 raise TypeError(

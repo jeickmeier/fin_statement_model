@@ -108,3 +108,23 @@ class FormatNotSupportedError(IOError):
         """
         message = f"Format '{format_type}' is not supported for {operation} operations."
         super().__init__(message=message, format_type=format_type)
+
+
+# Add new exception for unsupported readers (schema-less mode removed)
+class UnsupportedReaderError(ReadError):
+    """Exception raised when a requested reader is unsupported (no schema)."""
+
+    def __init__(
+        self,
+        message: str,
+        source: Optional[str] = None,
+        reader_type: Optional[str] = None,
+        original_error: Optional[Exception] = None,
+    ):
+        """Initializes the UnsupportedReaderError."""
+        super().__init__(
+            message=message,
+            source=source,
+            reader_type=reader_type,
+            original_error=original_error,
+        )

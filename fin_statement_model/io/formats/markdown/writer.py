@@ -5,7 +5,7 @@ from typing import Any, Optional, TypedDict, Union
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.base import DataWriter
-from fin_statement_model.io.config.models import BaseWriterConfig
+from fin_statement_model.io.config.models import MarkdownWriterConfig
 from fin_statement_model.io.exceptions import WriteError
 from fin_statement_model.io.core.registry import register_writer
 from fin_statement_model.statements.structure import StatementStructure
@@ -14,13 +14,6 @@ from fin_statement_model.io.formats.markdown.formatter import MarkdownTableForma
 from fin_statement_model.io.formats.markdown.notes import MarkdownNotesBuilder
 
 logger = logging.getLogger(__name__)
-
-
-class MarkdownWriterConfig(BaseWriterConfig):
-    """Configuration specific to the Markdown writer."""
-
-    indent_spaces: int = 4  # Number of spaces per indentation level
-    # Add other Markdown-specific config options here if needed
 
 
 # Legacy structure for backward compatibility
@@ -40,8 +33,9 @@ class MarkdownWriter(DataWriter):
 
     def __init__(self, config: Optional[MarkdownWriterConfig] = None):
         """Initializes the MarkdownWriter."""
+        # Provide a default config; missing fields are handled by Pydantic defaults.
         self.config = config or MarkdownWriterConfig(
-            format_type="markdown", target=None
+            format_type="markdown", target=None  # type: ignore[call-arg]
         )
         logger.debug(f"Initialized MarkdownWriter with config: {self.config}")
 
