@@ -1,8 +1,20 @@
-"""Provide graph operations for the financial statement model.
+"""Core graph implementation for `fin_statement_model`.
 
-This module provides the `Graph` class that combines manipulation, traversal,
-forecasting, and calculation capabilities for building and evaluating
-financial statement models.
+The `Graph` class orchestrates the construction and evaluation of directed
+graphs representing financial statements. It provides methods for:
+
+* Adding data (`FinancialStatementItemNode`) and calculation nodes
+* Managing time periods and ensuring uniqueness/sorting
+* Performing calculations, forecasting, and applying adjustments
+* Inspecting and mutating graph structure via the `manipulator` and
+  `traverser` sub-APIs
+
+Example:
+    >>> from fin_statement_model.core.graph.graph import Graph
+    >>> g = Graph(periods=["2023"])
+    >>> g.add_financial_statement_item("Revenue", {"2023": 100.0})
+    >>> g.calculate("Revenue", "2023")
+    100.0
 """
 
 import logging
@@ -44,42 +56,47 @@ __all__ = ["Graph"]
 
 
 class Graph:
-    """Represent the financial statement model as a directed graph.
+    """Core directed-graph abstraction for financial statement modeling.
 
-    This class integrates graph manipulation, traversal, forecasting, and
-    calculation capabilities. It serves as the central orchestrator for nodes,
-    periods, caching, and calculation workflows.
+    The `Graph` class orchestrates construction, mutation, traversal,
+    calculation, and forecasting of nodes representing financial statement
+    items and metrics. It exposes high-level convenience methods for
+    building and evaluating the model, while delegating structural
+    mutations and read-only inspections to its sub-APIs.
 
     Attributes:
-        _nodes: A dict mapping node names (str) to Node objects.
-        _periods: A list of time period identifiers (str) managed by the graph.
-        _cache: A nested dict caching calculated values per node per period.
-        _node_factory: An instance of NodeFactory for creating new nodes.
+        _nodes: Mapping of node names (str) to Node instances registered in the graph.
+        _periods: Sorted list of unique period identifiers (str) managed by the graph.
+        _cache: Nested dict caching calculated float values per node per period.
+        _node_factory: `NodeFactory` instance for creating new nodes.
+        manipulator: `GraphManipulator` for structural mutations (add/remove/replace nodes, set values).
+        traverser: `GraphTraverser` for read-only traversal, validation, and cycle detection.
+        adjustment_manager: `AdjustmentManager` handling discretionary adjustments.
     """
 
     def __init__(self, periods: Optional[list[str]] = None):
-        """Initialize the Graph instance.
+        """Initialize a new `Graph` instance.
 
-        Set up core components: node registry, `DataManager`, and `CalculationEngine`.
-        Optionally initialize the graph with a list of time periods.
+        Sets up core components: node registry, period list, calculation cache,
+        node factory, and sub-API instances (`manipulator`, `traverser`,
+        `adjustment_manager`).
 
         Args:
-            periods: An optional list of strings representing the initial time
-                     periods for the financial model (e.g., ["2023", "2024"]).
-                     The `DataManager` will handle sorting and ensuring uniqueness.
+            periods: Optional list of period identifiers (str) to initialize.
+                     Periods are automatically deduplicated and sorted.
 
         Raises:
-            TypeError: If `periods` is provided but is not a list.
+            TypeError: If `periods` is not a list of strings.
 
         Examples:
-            >>> graph_no_periods = Graph()
-            >>> logger.info(graph_no_periods.periods) # Output: []
-            >>> graph_with_periods = Graph(periods=["2023", "2022"])
-            >>> logger.info(graph_with_periods.periods) # Periods are sorted
-            >>> try:
-            ...     Graph(periods="2023") # Invalid type
-            ... except TypeError as e:
-            ...     logger.error(e)
+            >>> from fin_statement_model.core.graph.graph import Graph
+            >>> g = Graph()
+            >>> g.periods
+            []
+            >>> g = Graph(periods=["2024", "2023"])
+            >>> g.periods
+            ["2023", "2024"]
+            >>> Graph(periods="2023")  # raises TypeError
         """
         # No super().__init__() needed as mixins don't have __init__
         # and GraphCore is removed.

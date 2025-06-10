@@ -1,6 +1,38 @@
-"""Provide graph manipulation utilities.
+"""Utilities for mutating a :class:`~fin_statement_model.core.graph.graph.Graph` instance.
 
-This module defines the GraphManipulator class, encapsulating node-level mutation helpers for Graph.
+The *Graph* class exposes a :pyattr:`graph.manipulator <fin_statement_model.core.graph.graph.Graph.manipulator>`
+attribute that is an instance of :class:`GraphManipulator`.  The manipulator
+groups together all *write* operations on the graph – adding, removing or
+replacing nodes, updating values, and clearing caches – so that the rest of the
+code base can rely on a single consistency layer.
+
+Key responsibilities
+===================
+1. Ensure new nodes are properly registered on the graph.
+2. Keep calculation-node input references up-to-date after structural changes.
+3. Invalidate per-node and global caches whenever something that could affect
+   results is modified.
+
+Although you *can* instantiate `GraphManipulator` directly, in normal usage you
+retrieve it from an existing graph:
+
+Examples
+~~~~~~~~
+>>> from fin_statement_model.core.graph import Graph
+>>> g = Graph(periods=["2023"])
+>>> _ = g.add_financial_statement_item("Revenue", {"2023": 100.0})
+>>> g.calculate("Revenue", "2023")
+100.0
+
+Now update the value via the manipulator and observe caches being cleared:
+
+>>> g.manipulator.set_value("Revenue", "2023", 110.0)
+>>> g.calculate("Revenue", "2023")
+110.0
+
+The manipulator is *internal API*; it is documented here solely to aid
+contributors.  End-users should prefer the higher-level convenience methods on
+`Graph` itself whenever possible.
 """
 
 import logging
