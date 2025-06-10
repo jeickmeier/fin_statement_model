@@ -1,0 +1,105 @@
+# Configuration Subpackage
+
+The `fin_statement_model.config` subpackage provides centralized configuration management for the library.
+It includes:
+
+- **Models** (`models.py`): Pydantic models defining all configuration options and defaults.
+- **Manager** (`manager.py`): `ConfigManager` class to load and merge settings from defaults, project/user files, environment variables, and runtime overrides.
+- **Helpers** (`helpers.py`): Utility functions (`cfg`, `get_typed_config`, `cfg_or_param`) for easy access to configuration values.
+
+## Usage
+
+### Retrieving Configuration
+
+```python
+from fin_statement_model.config import get_config
+
+config = get_config()
+print(config.logging.level)  # e.g. 'WARNING'
+```
+
+### Updating Configuration at Runtime
+
+```python
+from fin_statement_model.config import update_config, get_config
+
+# Override forecasting defaults
+update_config({
+  'forecasting': {
+    'default_method': 'historical_growth',
+    'default_periods': 5,
+  }
+})
+print(get_config().forecasting.default_method)
+# 'historical_growth'
+```
+
+### Accessing Individual Values
+
+```python
+from fin_statement_model.config import cfg, get_typed_config
+
+# Get with default fallback
+db_host = cfg('database.host', default='localhost')
+# Type-checked access
+timeout = get_typed_config('api.api_timeout', int, default=30)
+```
+
+## Configuration Loading Order
+
+1. **Defaults** defined in Pydantic models
+2. **Project config file** (`.fsm_config.yaml`) in cwd or parent directories
+3. **User config file** (`fsm_config.yaml`) in cwd or home directory
+4. **Environment variables** prefixed with `FSM_` (e.g. `FSM_LOGGING_LEVEL`)
+5. **Runtime overrides** via `update_config()`
+
+Supported config file formats: YAML (`.yaml`, `.yml`) and JSON (`.json`).
+
+## Environment Variables
+
+Variable mappings are auto-generated from the Pydantic `Config` model. For example:
+
+- `FSM_LOGGING_LEVEL` → `logging.level`
+- `FSM_API_FMP_API_KEY` → `api.fmp_api_key`
+
+You may set these directly in your environment or in a `.env` file at your project root.
+
+## Adding New Configuration Options
+
+To introduce a new feature or default:
+
+1. **Define the field**
+   In `fin_statement_model/config/models.py`, locate the relevant model (e.g., `LoggingConfig`, `IOConfig`, or root `Config`) and add a new attribute:
+   ```python
+   class LoggingConfig(BaseModel):
+       # New feature toggle
+       enable_new_feature: bool = Field(
+           True, description="Enable the new experimental feature"
+       )
+   ```
+
+2. **Provide validation** (optional)
+   If custom validation is needed, add a `@field_validator`:
+   ```python
+   @field_validator('enable_new_feature')
+   def _validate_new_feature(cls, v: bool) -> bool:
+       if not isinstance(v, bool):
+           raise ValueError('enable_new_feature must be boolean')
+       return v
+   ```
+
+3. **Update documentation**
+   - Add descriptions/examples to the model docstring in `models.py`.
+   - Update this README if necessary.
+
+4. **Access the new option**
+   ```python
+   from fin_statement_model.config import cfg
+   is_enabled = cfg('logging.enable_new_feature', default=False)
+   ```
+
+5. **Override via environment**
+   Use `FSM_LOGGING_ENABLE_NEW_FEATURE=true` to override.
+
+6. **Testing**
+   Add or update tests under `tests/config` (if present) to verify behavior. 

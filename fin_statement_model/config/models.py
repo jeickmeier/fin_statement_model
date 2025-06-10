@@ -1,7 +1,14 @@
-"""Configuration models for fin_statement_model.
+"""Define configuration schemas for fin_statement_model.
 
-This module defines the configuration schema using Pydantic models,
-providing validation and type safety for all configuration options.
+This module provides Pydantic models to validate and type-check the
+application's configuration settings, including logging, I/O, forecasting,
+preprocessing, display, API, metrics, validation, and statement options.
+
+Examples:
+    >>> from fin_statement_model.config.models import Config
+    >>> config = Config()
+    >>> config.logging.level
+    'WARNING'
 """
 
 from typing import Optional, Literal, Any, Union
@@ -15,7 +22,18 @@ from fin_statement_model.preprocessing.config import (
 
 
 class LoggingConfig(BaseModel):
-    """Logging configuration settings."""
+    """Settings for library logging.
+
+    Attributes:
+        level (Literal): Default logging level ('DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL').
+        format (str): Log message format string.
+        detailed (bool): Enable detailed logging with file and line numbers.
+        log_file_path (Optional[Path]): Path for rotating log files; None disables file logging.
+
+    Example:
+        >>> LoggingConfig(level='DEBUG').level
+        'DEBUG'
+    """
 
     level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
         "WARNING", description="Default logging level for the library"
@@ -39,7 +57,18 @@ class LoggingConfig(BaseModel):
 
 
 class IOConfig(BaseModel):
-    """Input/Output configuration settings."""
+    """Configuration for input/output operations.
+
+    Attributes:
+        default_excel_sheet (str): Default sheet name for Excel operations.
+        default_csv_delimiter (str): Default delimiter for CSV files.
+        auto_create_output_dirs (bool): Automatically create output directories.
+        validate_on_read (bool): Validate data when reading.
+        default_mapping_configs_dir (Optional[Path]): Directory for mapping configs.
+        auto_standardize_columns (bool): Standardize column names on read.
+        skip_invalid_rows (bool): Skip rows with invalid data.
+        strict_validation (bool): Enforce strict data validation on read.
+    """
 
     default_excel_sheet: str = Field(
         "Sheet1", description="Default sheet name for Excel operations"
@@ -68,7 +97,26 @@ class IOConfig(BaseModel):
 
 
 class ForecastingConfig(BaseModel):
-    """Forecasting configuration settings."""
+    """Settings for forecasting behavior.
+
+    Attributes:
+        default_method (Literal): Default forecasting method ('simple', 'historical_growth', 'curve',
+            'statistical', or 'ml').
+        default_periods (int): Default number of periods to forecast.
+        default_growth_rate (float): Default growth rate for simple forecasting.
+        min_historical_periods (int): Minimum historical periods required.
+        allow_negative_forecasts (bool): Allow negative forecast values.
+        add_missing_periods (bool): Add missing forecast periods.
+        default_bad_forecast_value (float): Value for invalid forecasts.
+        continue_on_error (bool): Continue forecasting other nodes if one fails.
+        historical_growth_aggregation (Literal['mean', 'median']): Aggregation method.
+        random_seed (Optional[int]): Seed for statistical forecasting.
+        base_period_strategy (Literal): Strategy for selecting base period.
+
+    Example:
+        >>> ForecastingConfig(default_periods=10).default_periods
+        10
+    """
 
     default_method: Literal[
         "simple", "historical_growth", "curve", "statistical", "ml"
@@ -114,7 +162,21 @@ class ForecastingConfig(BaseModel):
 
     @field_validator("default_periods")
     def validate_periods(cls, v: int) -> int:
-        """Ensure periods is positive."""
+        """Validate that `default_periods` is positive.
+
+        Args:
+            v (int): Number of periods.
+
+        Returns:
+            The validated period count.
+
+        Raises:
+            ValueError: If `v` is not positive.
+
+        Example:
+            >>> ForecastingConfig.validate_periods(5)
+            5
+        """
         if v <= 0:
             raise ValueError("default_periods must be positive")
         return v
@@ -123,7 +185,20 @@ class ForecastingConfig(BaseModel):
 
 
 class PreprocessingConfig(BaseModel):
-    """Data preprocessing configuration settings."""
+    """Settings for data preprocessing operations.
+
+    Attributes:
+        auto_clean_data (bool): Automatically clean data on import.
+        fill_missing_with_zero (bool): Fill missing values with zero.
+        remove_empty_periods (bool): Remove periods with no data.
+        standardize_period_format (bool): Standardize period name formats.
+        default_normalization_type (Optional[Literal[...] ): Default normalization method.
+        default_transformation_type (TransformationType): Default time series transformation.
+        default_time_series_periods (int): Number of periods for transformations.
+        default_time_series_window_size (int): Window size for transformations.
+        default_conversion_aggregation (str): Aggregation method for period conversion.
+        statement_formatting (StatementFormattingConfig): Formatting settings.
+    """
 
     auto_clean_data: bool = Field(
         True, description="Automatically clean data on import"
@@ -162,7 +237,40 @@ class PreprocessingConfig(BaseModel):
 
 
 class DisplayConfig(BaseModel):
-    """Display and formatting configuration settings."""
+    """Settings for formatting and displaying statement outputs.
+
+    Attributes:
+        default_number_format (str): Format string for numbers.
+        default_currency_format (str): Format string for currency.
+        default_percentage_format (str): Format string for percentages.
+        hide_zero_rows (bool): Hide rows with all zero values.
+        contra_display_style (Literal['parentheses', 'brackets','negative']): Style for contra items.
+        thousands_separator (str): Character for thousands separator.
+        decimal_separator (str): Character for decimal separator.
+        default_units (str): Default currency or unit label.
+        scale_factor (float): Scale factor applied to values.
+        indent_character (str): Characters used for indentation.
+        subtotal_style (str): Style keyword for subtotal rows.
+        total_style (str): Style keyword for total rows.
+        header_style (str): Style keyword for headers.
+        contra_css_class (str): CSS class for contra items.
+        show_negative_sign (bool): Show minus sign instead of parentheses.
+        apply_sign_conventions (bool): Apply default sign conventions.
+        include_empty_items (bool): Include items with no data.
+        include_metadata_cols (bool): Include metadata columns.
+        add_is_adjusted_column (bool): Add 'is_adjusted' column.
+        include_units_column (bool): Add units column.
+        include_css_classes (bool): Add CSS class column.
+        include_notes_column (bool): Add notes column.
+        apply_item_scaling (bool): Apply item-specific scaling.
+        apply_item_formatting (bool): Apply item-specific formatting.
+        apply_contra_formatting (bool): Apply contra-specific formatting.
+        add_contra_indicator_column (bool): Add contra indicator column.
+
+    Example:
+        >>> DisplayConfig(default_number_format='.1%').default_number_format
+        '.1%'
+    """
 
     default_number_format: str = Field(
         ",.2f", description="Default number format string"
@@ -252,7 +360,20 @@ class DisplayConfig(BaseModel):
 
 
 class APIConfig(BaseModel):
-    """API and external service configuration."""
+    """Settings for external API integrations.
+
+    Attributes:
+        fmp_api_key (Optional[str]): Financial Modeling Prep API key.
+        fmp_base_url (str): Base URL for FMP API.
+        api_timeout (int): HTTP request timeout in seconds.
+        api_retry_count (int): Number of retries for failed requests.
+        cache_api_responses (bool): Cache API responses to reduce calls.
+        cache_ttl_hours (int): Time-to-live for cache entries in hours.
+
+    Example:
+        >>> APIConfig(api_timeout=60).api_timeout
+        60
+    """
 
     fmp_api_key: Optional[str] = Field(
         None, description="Financial Modeling Prep API key"
@@ -280,7 +401,13 @@ class APIConfig(BaseModel):
 
 
 class MetricsConfig(BaseModel):
-    """Metrics configuration settings."""
+    """Settings for metric registry behavior.
+
+    Attributes:
+        custom_metrics_dir (Optional[Path]): Directory for custom metric definitions.
+        validate_metric_inputs (bool): Check that metric input nodes exist.
+        auto_register_metrics (bool): Auto-register metrics from definition files.
+    """
 
     custom_metrics_dir: Optional[Path] = Field(
         None, description="Directory containing custom metric definitions"
@@ -296,7 +423,17 @@ class MetricsConfig(BaseModel):
 
 
 class ValidationConfig(BaseModel):
-    """Data validation configuration settings."""
+    """Settings for data validation within the graph.
+
+    Attributes:
+        strict_mode (bool): Enable strict validation mode.
+        auto_standardize_names (bool): Standardize node names to canonical form.
+        warn_on_non_standard (bool): Warn on non-standard names.
+        check_balance_sheet_balance (bool): Validate Assets = Liabilities + Equity.
+        balance_tolerance (float): Tolerance for balance sheet validation.
+        warn_on_negative_assets (bool): Warn on negative asset values.
+        validate_sign_conventions (bool): Enforce expected sign conventions.
+    """
 
     strict_mode: bool = Field(False, description="Enable strict validation mode")
     auto_standardize_names: bool = Field(
@@ -329,7 +466,13 @@ class ValidationConfig(BaseModel):
 
 
 class StatementsConfig(BaseModel):
-    """Statement formatting and building configuration settings."""
+    """Settings for building and formatting financial statements.
+
+    Attributes:
+        default_adjustment_filter (Optional[Union[AdjustmentFilterSpec,list[str]]]): Default filter spec or tag list.
+        enable_node_validation (bool): Enable node ID validation during building.
+        node_validation_strict (bool): Treat validation failures as errors.
+    """
 
     default_adjustment_filter: Optional[Union[AdjustmentFilterSpec, list[str]]] = Field(
         None,
@@ -348,7 +491,28 @@ class StatementsConfig(BaseModel):
 
 
 class Config(BaseModel):
-    """Main configuration container for fin_statement_model."""
+    """Primary configuration container aggregating all sub-configurations.
+
+    Attributes:
+        logging (LoggingConfig): Logging configuration.
+        io (IOConfig): I/O configuration.
+        forecasting (ForecastingConfig): Forecasting settings.
+        preprocessing (PreprocessingConfig): Data preprocessing settings.
+        display (DisplayConfig): Display and formatting settings.
+        api (APIConfig): API integration settings.
+        metrics (MetricsConfig): Metrics registry settings.
+        validation (ValidationConfig): Data validation settings.
+        statements (StatementsConfig): Statement building settings.
+        project_name (str): Identifier for the project.
+        config_file_path (Optional[Path]): Path to the loaded config file.
+        auto_save_config (bool): Auto-save overrides to file.
+
+    Example:
+        >>> from fin_statement_model.config.models import Config
+        >>> config = Config()
+        >>> config.to_dict()
+        {...}
+    """
 
     # Sub-configurations
     logging: LoggingConfig = Field(
@@ -399,31 +563,67 @@ class Config(BaseModel):
     model_config = ConfigDict(extra="forbid", validate_assignment=True)
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert configuration to a JSON-serializable dictionary.
+        """Convert configuration to a JSON-serializable dict.
 
-        The default ``model_dump`` output may include complex Python objects
-        such as ``Enum`` instances.  Passing ``mode='json'`` ensures that
-        those objects are converted to their JSON representation (e.g. raw
-        strings for ``Enum`` values), allowing the resulting dictionary to be
-        safely serialized via ``yaml.dump`` or ``json.dumps`` without emitting
-        Python-specific YAML tags that require an *unsafe* loader.
+        Uses Pydantic's `model_dump` in JSON mode to convert complex types
+        to primitive representations.
+
+        Returns:
+            A dict with no None values and JSON-compatible types.
+
+        Example:
+            >>> isinstance(Config().to_dict(), dict)
+            True
         """
         return self.model_dump(exclude_none=True, mode="json")
 
     def to_yaml(self) -> str:
-        """Convert configuration to YAML string."""
+        """Serialize configuration to a YAML formatted string.
+
+        Returns:
+            YAML string representing the configuration.
+
+        Example:
+            >>> yaml_str = Config().to_yaml()
+            >>> 'logging' in yaml_str
+            True
+        """
         import yaml
 
         return yaml.dump(self.to_dict(), default_flow_style=False, sort_keys=True)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Config":
-        """Create configuration from dictionary."""
+        """Instantiate Config from a dictionary.
+
+        Args:
+            data: Dictionary with configuration values.
+
+        Returns:
+            A validated Config instance.
+
+        Example:
+            >>> data = {'project_name': 'test'}
+            >>> isinstance(Config.from_dict(data), Config)
+            True
+        """
         return cls(**data)
 
     @classmethod
     def from_yaml(cls, yaml_str: str) -> "Config":
-        """Create configuration from YAML string."""
+        """Instantiate Config from a YAML-formatted string.
+
+        Args:
+            yaml_str: YAML string containing configuration.
+
+        Returns:
+            A validated Config instance.
+
+        Example:
+            >>> yaml_str = Config().to_yaml()
+            >>> isinstance(Config.from_yaml(yaml_str), Config)
+            True
+        """
         import yaml
 
         data = yaml.safe_load(yaml_str)
@@ -431,7 +631,23 @@ class Config(BaseModel):
 
     @classmethod
     def from_file(cls, path: Path) -> "Config":
-        """Load configuration from file."""
+        """Load and parse configuration from a file.
+
+        Args:
+            path: Path to a .yaml, .yml, or .json configuration file.
+
+        Returns:
+            A validated Config instance.
+
+        Raises:
+            ValueError: If the file suffix is not supported.
+
+        Example:
+            >>> from pathlib import Path
+            >>> config = Config.from_file(Path('config.yaml'))
+            >>> isinstance(config, Config)
+            True
+        """
         if path.suffix in [".yaml", ".yml"]:
             return cls.from_yaml(path.read_text())
         elif path.suffix == ".json":

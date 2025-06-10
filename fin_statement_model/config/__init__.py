@@ -1,22 +1,27 @@
-"""Centralized configuration management for fin_statement_model.
+"""Provide centralized configuration management for fin_statement_model.
 
-This module provides a unified interface for managing all library configurations,
-including defaults, user overrides, and environment variables.
+This sub-package offers a single entry-point for accessing and mutating the
+library's configuration during runtime.  It re-exports the most commonly used
+helpers so that callers can interact with the configuration layer without
+needing to know the underlying module structure.
 
-Example:
+Examples:
     >>> from fin_statement_model.config import get_config, update_config
-    >>>
-    >>> # Get current configuration
-    >>> config = get_config()
-    >>> print(config.logging.level)
-    >>>
-    >>> # Update configuration
+
+    # Retrieve the current configuration
+    >>> cfg = get_config()
+    >>> cfg.logging.level
+    'WARNING'
+
+    # Apply an in-memory override (takes effect immediately)
     >>> update_config({
     ...     'forecasting': {
     ...         'default_method': 'historical_growth',
-    ...         'default_periods': 5
+    ...         'default_periods': 5,
     ...     }
     ... })
+    >>> get_config().forecasting.default_method
+    'historical_growth'
 """
 
 from .helpers import cfg, cfg_or_param, get_typed_config

@@ -1,7 +1,18 @@
 """Configuration manager for fin_statement_model.
 
-This module provides the ConfigManager class that handles loading configurations
-from multiple sources and merging them according to precedence rules.
+This module provides utilities to load and merge application configuration from:
+    1. Default settings
+    2. Project-level config file (.fsm_config.yaml)
+    3. User-level config file (fsm_config.yaml)
+    4. Environment variables (FSM_* prefix)
+    5. Runtime overrides
+
+Example:
+    >>> from fin_statement_model.config.manager import ConfigManager
+    >>> cm = ConfigManager()
+    >>> cfg = cm.get()
+    >>> cfg.logging.level
+    'WARNING'
 """
 
 import os
@@ -22,7 +33,28 @@ logger = logging.getLogger(__name__)
 def generate_env_mappings(
     model: type[BaseModel], prefix: Optional[str] = None, path: list[str] | None = None
 ) -> dict[str, list[str]]:
-    """Generate environment variable mappings for a Pydantic model."""
+    """Generate environment variable mappings for a Pydantic model.
+
+    Recursively traverse the fields of a Pydantic BaseModel class to map
+    environment variable names to config path segments.
+
+    Args:
+        model: The Pydantic model class to inspect.
+        prefix: Optional prefix for environment variable names; defaults to
+            the ConfigManager.ENV_PREFIX without trailing underscore.
+        path: Internal parameter for recursive calls representing the
+            current path of nested model fields.
+
+    Returns:
+        A dict mapping environment variable names to lists of config path
+        segments, e.g. {'FSM_DATABASE_HOST': ['database', 'host']}.
+
+    Examples:
+        >>> from fin_statement_model.config.manager import generate_env_mappings
+        >>> mappings = generate_env_mappings(Config)
+        >>> 'FSM_LOGGING_LEVEL' in mappings
+        True
+    """
     from .manager import ConfigManager
 
     if prefix is None:
@@ -73,16 +105,19 @@ class ConfigurationError(FinancialModelError):
 
 
 class ConfigManager:
-    """Manages configuration loading and merging from multiple sources.
+    """Manage application configuration from multiple sources.
 
-    Configuration precedence (highest to lowest):
-    1. Runtime updates via update_config()
-    2. Environment variables (FSM_* prefix)
-    3. User config file (fsm_config.yaml in current directory or specified path)
-    4. Project config file (.fsm_config.yaml in project root)
-    5. Default configuration
+    Loads and merges configuration with the following precedence (highest to lowest):
+        1. Runtime updates via `update()`
+        2. Environment variables (FSM_* prefix)
+        3. User config file (fsm_config.yaml or specified path)
+        4. Project config file (.fsm_config.yaml in project root)
+        5. Default configuration
 
-    Example:
+    This class is thread-safe.
+
+    Examples:
+        >>> from fin_statement_model.config.manager import ConfigManager
         >>> config = ConfigManager()
         >>> config.get().logging.level
         'WARNING'
@@ -102,8 +137,9 @@ class ConfigManager:
         """Initialize the configuration manager.
 
         Args:
-            config_file: Optional path to a configuration file.
-                        If not provided, searches for default config files.
+            config_file: Optional path to a configuration file. If not provided,
+                the manager will search for default config files in the
+                current directory or home directory.
         """
         self._lock = Lock()
         self._config: Optional[Config] = None
@@ -111,10 +147,20 @@ class ConfigManager:
         self._config_file = config_file
 
     def get(self) -> Config:
-        """Get the current configuration.
+        """Return the current merged configuration.
+
+        Loads and merges configuration sources on first call or after an
+        update/reset operation.
 
         Returns:
-            The merged configuration object.
+            A validated `Config` object representing the current configuration.
+
+        Examples:
+            >>> from fin_statement_model.config.manager import ConfigManager
+            >>> cm = ConfigManager()
+            >>> cfg = cm.get()
+            >>> isinstance(cfg, Config)
+            True
         """
         with self._lock:
             if self._config is None:
@@ -123,24 +169,38 @@ class ConfigManager:
             return self._config
 
     def update(self, updates: dict[str, Any]) -> None:
-        """Update configuration with runtime values.
+        """Apply runtime overrides to the configuration.
+
+        Merges the provided updates into existing runtime overrides and
+        forces a reload on the next `get()` call.
 
         Args:
-            updates: Dictionary of configuration updates.
-                    Can be nested, e.g., {'logging': {'level': 'DEBUG'}}
+            updates: Nested dictionary of configuration keys and values to override.
+
+        Examples:
+            >>> cm = ConfigManager()
+            >>> cm.update({'logging': {'level': 'DEBUG'}})
         """
         with self._lock:
             self._runtime_overrides = self._deep_merge(self._runtime_overrides, updates)
             self._config = None  # Force reload on next get()
 
     def reset(self) -> None:
-        """Reset configuration to defaults."""
+        """Clear runtime overrides and reset configuration to defaults.
+
+        After calling this, the next `get()` will rebuild config from base sources.
+        """
         with self._lock:
             self._runtime_overrides = {}
             self._config = None
 
     def _load_config(self) -> None:
-        """Load and merge configuration from all sources."""
+        """Load and merge configuration from all supported sources.
+
+        Reads default settings, then merges in project-level and user-level config
+        files, environment variable overrides, and runtime overrides, in order.
+        Finally, validates the result into a `Config` object and applies logging.
+        """
         # Load environment variables from a .env file (if present) before any
         # configuration layers are processed. This allows users to keep secrets
         # like API keys in a `.env` file without explicitly exporting them in
@@ -185,7 +245,13 @@ class ConfigManager:
         self._apply_logging_config()
 
     def _find_project_config(self) -> Optional[Path]:
-        """Find project-level configuration file."""
+        """Locate the project-level config file (.fsm_config.yaml).
+
+        Searches upward from the current working directory to the filesystem root.
+
+        Returns:
+            Path to the project config file if found, otherwise None.
+        """
         # Look for .fsm_config.yaml in parent directories
         current = Path.cwd()
         while current != current.parent:
@@ -196,7 +262,14 @@ class ConfigManager:
         return None
 
     def _find_user_config(self) -> Optional[Path]:
-        """Find user configuration file."""
+        """Locate the user-level config file (fsm_config.yaml).
+
+        Checks an explicitly provided path, then the current directory, then
+        the home directory.
+
+        Returns:
+            Path to the user config file if found, otherwise None.
+        """
         if self._config_file and self._config_file.exists():
             return self._config_file
 
@@ -213,7 +286,17 @@ class ConfigManager:
         return None
 
     def _load_file(self, path: Path) -> dict[str, Any]:
-        """Load configuration from file."""
+        """Load configuration values from a YAML or JSON file.
+
+        Args:
+            path: Path to the config file (.yaml, .yml, or .json).
+
+        Returns:
+            A dict of configuration values loaded from the file.
+
+        Raises:
+            ConfigurationError: If the file format is unsupported or loading fails.
+        """
         try:
             if path.suffix in [".yaml", ".yml"]:
                 import yaml
@@ -233,14 +316,13 @@ class ConfigManager:
             raise ConfigurationError(f"Failed to load config from {path}: {e}") from e
 
     def _load_from_env(self) -> dict[str, Any]:
-        """Load configuration from environment variables.
+        """Load configuration overrides from environment variables.
 
-        Environment variables are mapped to config paths:
-        FSM_LOGGING_LEVEL -> logging.level
-        FSM_IO_DEFAULT_EXCEL_SHEET -> io.default_excel_sheet
-        FSM_API_FMP_API_KEY -> api.fmp_api_key
+        Generates env var to config path mappings from the Config model,
+        parses raw values, and builds nested override dict.
 
-        Mappings are now generated dynamically from the Config model.
+        Returns:
+            A nested dict of config values set via environment variables.
         """
         config: dict[str, Any] = {}
 
@@ -268,7 +350,15 @@ class ConfigManager:
     def _deep_merge(
         self, base: dict[str, Any], update: dict[str, Any]
     ) -> dict[str, Any]:
-        """Deep merge two dictionaries."""
+        """Recursively merge two dictionaries with `update` taking precedence.
+
+        Args:
+            base: Original dict.
+            update: Dict of new values to merge.
+
+        Returns:
+            A new dict representing the deep merge of base and update.
+        """
         result = base.copy()
 
         for key, value in update.items():
@@ -284,7 +374,11 @@ class ConfigManager:
         return result
 
     def _apply_logging_config(self) -> None:
-        """Apply logging configuration to the library."""
+        """Configure library logging based on current settings.
+
+        Reads logging configuration from `self._config` and applies it via
+        `logging_config.setup_logging()`.
+        """
         if self._config:
             from fin_statement_model import logging_config
 
@@ -303,13 +397,12 @@ class ConfigManager:
     # .env loading utilities
 
     def _load_dotenv(self) -> None:
-        """Populate os.environ with variables from a ``.env`` file, if found.
+        """Populate os.environ from the first `.env` file found upward.
 
-        The search starts in the current working directory and ascends parent
-        directories until it reaches the filesystem root (similar to how Git
-        discovers its repository root). The first ``.env`` file encountered is
-        used. Existing environment variables **are not** overwritten—this
-        preserves any values the user has explicitly exported.
+        Searches upward from current directory to filesystem root, loading
+        `key=value` pairs, skipping comments and blanks. Existing env vars
+        are not overwritten. Also maps `FMP_API_KEY` to `FSM_API_FMP_API_KEY`
+        for backward compatibility.
         """
         try:
             import os
@@ -369,23 +462,33 @@ _config_manager = ConfigManager()
 
 
 def get_config() -> Config:
-    """Get the current global configuration.
+    """Get the global configuration singleton.
 
     Returns:
-        The current configuration object.
+        The `Config` object managed by the global ConfigManager.
+
+    Examples:
+        >>> from fin_statement_model.config.manager import get_config
+        >>> cfg = get_config()
+        >>> cfg.logging.level
+        'WARNING'
     """
     return _config_manager.get()
 
 
 def update_config(updates: dict[str, Any]) -> None:
-    """Update the global configuration.
+    """Apply runtime overrides to the global configuration.
 
     Args:
-        updates: Dictionary of configuration updates.
+        updates: Nested dict of configuration keys and values to override.
     """
     _config_manager.update(updates)
 
 
 def reset_config() -> None:
-    """Reset configuration to defaults."""
+    """Reset the global configuration singleton to defaults.
+
+    Clears runtime overrides so that subsequent `get_config()` calls rebuild
+    from static sources.
+    """
     _config_manager.reset()
