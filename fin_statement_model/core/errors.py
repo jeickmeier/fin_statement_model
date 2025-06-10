@@ -47,18 +47,20 @@ class ConfigurationError(FinancialModelError):
         self,
         message: str,
         config_path: Optional[str] = None,
-        errors: Optional[list[str]] = None,
+        errors: Optional[list[Any]] = None,
     ):
         """Initializes the ConfigurationError."""
         self.config_path = config_path
         self.errors = errors or []
 
-        if config_path and errors:
-            full_message = f"{message} in {config_path}: {'; '.join(errors)}"
+        if config_path and self.errors:
+            full_message = (
+                f"{message} in {config_path}: {' ; '.join(str(e) for e in self.errors)}"
+            )
         elif config_path:
             full_message = f"{message} in {config_path}"
-        elif errors:
-            full_message = f"{message}: {'; '.join(errors)}"
+        elif self.errors:
+            full_message = f"{message}: {' ; '.join(str(e) for e in self.errors)}"
         else:
             full_message = message
 
