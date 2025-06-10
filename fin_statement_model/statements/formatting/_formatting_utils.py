@@ -94,7 +94,7 @@ def render_values(
     period_columns: list[str],
     default_formats: dict[str, Any],
     number_format: Optional[str] = None,
-    contra_display_style: str = "parentheses",
+    contra_display_style: Optional[str] = "parentheses",
 ) -> pd.DataFrame:
     """Render values by applying sign conventions, contra formatting, and number formatting in a single vectorized pass.
 
