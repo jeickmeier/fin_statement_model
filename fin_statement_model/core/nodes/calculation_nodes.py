@@ -22,11 +22,9 @@ from fin_statement_model.core.nodes.base import Node
 
 
 class CalculationNode(Node):
-    """Delegate calculation logic to a separate calculation object.
+    """Delegate calculation logic to a calculation object.
 
-    Uses a calculation object. The actual calculation algorithm is
-    encapsulated in a `calculation` object provided during initialization.
-    This allows for flexible and interchangeable calculation logic.
+    Use a calculation object to encapsulate the algorithm for computing node values.
 
     Attributes:
         name (str): Identifier for this node.
@@ -35,17 +33,14 @@ class CalculationNode(Node):
         _values (Dict[str, float]): Internal cache for calculated results.
 
     Examples:
+        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode
         >>> class SumCalculation:
-        ...     def calculate(self, inputs: List[Node], period: str) -> float:
+        ...     def calculate(self, inputs, period):
         ...         return sum(node.calculate(period) for node in inputs)
         >>> node_a = FinancialStatementItemNode("a", {"2023": 10})
         >>> node_b = FinancialStatementItemNode("b", {"2023": 20})
-        >>> sum_node = CalculationNode(
-        ...     "sum_ab",
-        ...     inputs=[node_a, node_b],
-        ...     calculation=SumCalculation()
-        ... )
-        >>> print(sum_node.calculate("2023"))
+        >>> sum_node = CalculationNode("sum_ab", inputs=[node_a, node_b], calculation=SumCalculation())
+        >>> sum_node.calculate("2023")
         30.0
     """
 
@@ -84,20 +79,18 @@ class CalculationNode(Node):
             setattr(self, key, value)
 
     def calculate(self, period: str) -> float:
-        """Calculate the value for a period using the assigned calculation.
+        """Calculate the node's value for a given period.
 
-        Checks the cache first. If not found, delegates to the calculation's
-        `calculate` method and stores the result.
+        Check the cache; on a miss, delegate to `calculation.calculate` and cache the result.
 
         Args:
-            period (str): The time period for the calculation.
+            period (str): Identifier for the time period.
 
         Returns:
-            float: The calculated value from the calculation.
+            float: Calculated value for the period.
 
         Raises:
-            CalculationError: If the calculation fails or returns
-                a non-numeric value.
+            CalculationError: If calculation fails or returns a non-numeric value.
         """
         if period in self._values:
             return self._values[period]
@@ -285,29 +278,24 @@ class CalculationNode(Node):
 
 
 class FormulaCalculationNode(CalculationNode):
-    """Calculate a value based on a mathematical formula string.
+    """Calculate values based on a formula string.
 
-    This node extends CalculationNode and uses a FormulaCalculation strategy
-    internally to parse and evaluate mathematical expressions.
+    Use a formula expression and mapped input nodes to evaluate a calculation.
 
     Attributes:
-        name (str): Identifier for this node.
-        inputs (Dict[str, Node]): Mapping of variable names used in the formula
-            to their corresponding input Node instances.
-        formula (str): The mathematical expression string to evaluate (e.g., "a + b").
-        metric_name (Optional[str]): The original metric identifier from the registry, if applicable.
-        metric_description (Optional[str]): The description from the metric definition, if applicable.
+        inputs_dict (dict[str, Node]): Mapping of variable names to input nodes.
+        formula (str): Mathematical expression to evaluate.
+        metric_name (Optional[str]): Metric identifier from the registry, if any.
+        metric_description (Optional[str]): Description from the metric definition, if any.
 
     Examples:
-        >>> # Assume revenue and cogs are Node instances
+        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode
         >>> revenue = FinancialStatementItemNode("revenue", {"2023": 100})
         >>> cogs = FinancialStatementItemNode("cogs", {"2023": 60})
-        >>> gross_profit = FormulaCalculationNode(
-        ...     "gross_profit",
-        ...     inputs={"rev": revenue, "cost": cogs},
-        ...     formula="rev - cost"
+        >>> formula_node = FormulaCalculationNode(
+        ...     "gross_profit", inputs={"rev": revenue, "cost": cogs}, formula="rev - cost"
         ... )
-        >>> print(gross_profit.calculate("2023"))
+        >>> formula_node.calculate("2023")
         40.0
     """
 
@@ -319,21 +307,18 @@ class FormulaCalculationNode(CalculationNode):
         metric_name: Optional[str] = None,
         metric_description: Optional[str] = None,
     ):
-        """Initialize the FormulaCalculationNode.
+        """Create a FormulaCalculationNode.
 
         Args:
-            name (str): The unique identifier for this node.
-            inputs (Dict[str, Node]): Dictionary mapping variable names in the
-                formula to the corresponding input nodes.
-            formula (str): The mathematical formula string.
-            metric_name (Optional[str]): The original metric identifier from the
-                registry, if this node represents a defined metric. Defaults to None.
-            metric_description (Optional[str]): The description from the metric
-                definition, if applicable. Defaults to None.
+            name (str): Unique identifier for the node.
+            inputs (dict[str, Node]): Mapping of variable names to input nodes.
+            formula (str): Mathematical formula string to evaluate.
+            metric_name (Optional[str]): Original metric key from registry.
+            metric_description (Optional[str]): Description from the metric definition.
 
         Raises:
-            ValueError: If the formula string has invalid syntax.
-            TypeError: If any value in `inputs` is not a Node instance.
+            ValueError: If `formula` syntax is invalid.
+            TypeError: If any entry in `inputs` is not a Node.
         """
         if not isinstance(inputs, dict) or not all(
             isinstance(n, Node) for n in inputs.values()
@@ -361,18 +346,18 @@ class FormulaCalculationNode(CalculationNode):
         self.inputs_dict = inputs
 
     def get_dependencies(self) -> list[str]:
-        """Return the names of input nodes used in the formula.
+        """Get names of nodes used in the formula.
 
         Returns:
-            A list of variable names corresponding to the formula inputs.
+            list[str]: Names of input nodes.
         """
         return [node.name for node in self.inputs_dict.values()]
 
     def to_dict(self) -> dict[str, Any]:
-        """Serialize the node to a dictionary representation.
+        """Serialize this node to a dictionary.
 
         Returns:
-            Dictionary containing the node's type, name, inputs, and formula info.
+            dict[str, Any]: Serialized node data.
         """
         return {
             "type": "formula_calculation",
@@ -446,29 +431,23 @@ class FormulaCalculationNode(CalculationNode):
 
 
 class CustomCalculationNode(Node):
-    """Calculate a value using a Python callable/function.
+    """Calculate values using a custom Python function.
 
-    Uses a Python callable/function to calculate the value for a node.
-    The function is provided during initialization.
+    Use a provided callable to compute node values from input nodes.
 
     Attributes:
-        name (str): Identifier for this node.
-        inputs (List[Node]): List of input nodes needed for calculation.
-        formula_func (Callable): The Python callable function to use for calculation.
-        description (str, optional): Description of what this calculation does.
-        _values (Dict[str, float]): Internal cache for calculated results.
+        inputs (list[Node]): Nodes supplying inputs to the function.
+        formula_func (Callable[..., float]): Function to compute values.
+        description (Optional[str]): Description of the calculation.
+        _values (dict[str, float]): Cache of computed results.
 
     Examples:
-        >>> def custom_calculation(a, b):
-        ...     return a + b
-        >>> node_a = FinancialStatementItemNode("NodeA", values={"2023": 10.0})
-        >>> node_b = FinancialStatementItemNode("NodeB", values={"2023": 5.0})
-        >>> node = CustomCalculationNode(
-        ...     "custom_calc",
-        ...     inputs=[node_a, node_b],
-        ...     formula_func=custom_calculation
-        ... )
-        >>> print(node.calculate("2023"))
+        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode
+        >>> def add(a, b): return a + b
+        >>> a = FinancialStatementItemNode("A", {"2023": 10})
+        >>> b = FinancialStatementItemNode("B", {"2023": 5})
+        >>> node = CustomCalculationNode("add_node", inputs=[a, b], formula_func=add)
+        >>> node.calculate("2023")
         15.0
     """
 
@@ -479,16 +458,16 @@ class CustomCalculationNode(Node):
         formula_func: Callable[..., float],
         description: Optional[str] = None,
     ) -> None:
-        """Initialize the CustomCalculationNode.
+        """Create a CustomCalculationNode.
 
         Args:
-            name (str): The unique identifier for this node.
-            inputs (List[Node]): The input nodes whose values will be passed to formula_func.
-            formula_func (Callable): The Python callable function to use for calculation.
-            description (str, optional): Description of what this calculation does.
+            name (str): Unique identifier for the node.
+            inputs (list[Node]): Nodes providing input values.
+            formula_func (Callable[..., float]): Function to compute values.
+            description (str, optional): Description of the calculation.
 
         Raises:
-            TypeError: If `inputs` is not a list of Nodes or `formula_func` is not a callable.
+            TypeError: If `inputs` is not a list of Node or `formula_func` is not callable.
         """
         super().__init__(name)
         if not isinstance(inputs, list) or not all(isinstance(n, Node) for n in inputs):
@@ -506,17 +485,18 @@ class CustomCalculationNode(Node):
         self._values: dict[str, float] = {}  # Cache for calculated results
 
     def calculate(self, period: str) -> float:
-        """Calculate the node's value for a period using the provided function.
+        """Compute the node's value for a given period.
+
+        Evaluate `formula_func` with inputs from `inputs` and cache the result.
 
         Args:
             period (str): The time period for which to perform the calculation.
 
         Returns:
-            float: The calculated value from the function.
+            float: Computed value for the period.
 
         Raises:
-            CalculationError: If an error occurs during calculation, such as
-                if an input node fails to provide a numeric value for the period.
+            CalculationError: On errors retrieving inputs or computing the function.
         """
         if period in self._values:
             return self._values[period]
@@ -552,21 +532,18 @@ class CustomCalculationNode(Node):
             ) from e
 
     def get_dependencies(self) -> list[str]:
-        """Return the names of input nodes used in the function.
+        """Get names of nodes used by the function.
 
         Returns:
-            A list of input node names.
+            list[str]: Names of input nodes.
         """
         return [node.name for node in self.inputs]
 
     def to_dict(self) -> dict[str, Any]:
-        """Serialize the node to a dictionary representation.
+        """Serialize this node to a dictionary.
 
         Returns:
-            Dictionary containing the node's type, name, inputs, and description.
-
-        Note:
-            The formula_func cannot be serialized, so a warning is included.
+            dict[str, Any]: Serialized node data with non-serializable function warning.
         """
         return {
             "type": "custom_calculation",

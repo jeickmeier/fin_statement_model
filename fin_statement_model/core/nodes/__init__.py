@@ -1,34 +1,31 @@
-"""Core Node Implementations for the Financial Statement Model.
+"""Provide core node implementations for the financial statement model.
 
-This package exports the base `Node` class and various concrete node types
-used to build the financial model graph. These include:
+This package exports the `Node` base class and specialized node types for building
+and evaluating financial statement graphs:
 
-- Data Nodes:
-    - `FinancialStatementItemNode`: Stores raw numerical data for specific periods.
+Data Nodes:
+    - FinancialStatementItemNode: Store raw financial data for specific periods.
 
-- Calculation Nodes:
-    - `FormulaCalculationNode`: Calculates based on mathematical string formulas.
-    - `CalculationNode`: Uses a calculation object for calculation logic.
-    - `CustomCalculationNode`: Uses arbitrary Python functions for calculation.
+Calculation Nodes:
+    - CalculationNode: Delegate value computation to a calculation object.
+    - FormulaCalculationNode: Evaluate expression-based formulas.
+    - CustomCalculationNode: Compute values using custom Python functions.
 
-- Statistical Nodes:
-    - `YoYGrowthNode`: Calculates year-over-year percentage growth.
-    - `MultiPeriodStatNode`: Computes statistics (mean, stddev) over multiple periods.
-    - `TwoPeriodAverageNode`: Calculates the average over two specific periods.
+Statistical Nodes:
+    - YoYGrowthNode: Compute year-over-year percentage growth.
+    - MultiPeriodStatNode: Compute statistical measures (mean, stdev) over multiple periods.
+    - TwoPeriodAverageNode: Compute the average between two periods.
 
-- Forecast Nodes:
-    - `ForecastNode`: Base class for forecasting nodes.
-    - Various forecast implementations for different forecasting strategies.
+Forecast Nodes:
+    - ForecastNode: Base class for forecasting future values.
+    - FixedGrowthForecastNode: Apply a constant growth rate.
+    - CurveGrowthForecastNode: Apply period-specific growth rates.
+    - StatisticalGrowthForecastNode: Draw growth from a distribution.
+    - CustomGrowthForecastNode: Compute growth via a custom function.
+    - AverageValueForecastNode: Project the historical average forward.
+    - AverageHistoricalGrowthForecastNode: Apply average historical growth rate.
 
-Standard Node Registry:
-The package also provides a registry of standardized node names for financial
-statement items, ensuring consistency across models and enabling metrics to work properly.
-Standard nodes are organized by category:
-- Balance Sheet: Assets, liabilities, equity
-- Income Statement: Revenue, expenses, profit measures
-- Cash Flow: Operating, investing, financing activities
-- Calculated Items: EBITDA, working capital, leverage measures
-- Market Data: Stock price, market cap, per-share metrics
+Also provides `standard_node_registry` and `is_calculation_node` helper.
 """
 
 import logging
@@ -74,20 +71,32 @@ except Exception:
 
 
 def is_calculation_node(node: Node) -> bool:
-    """Return True for nodes that represent computed/calculated values.
+    """Determine if a node performs a calculated value.
 
-    Helper centralises the logic that previously lived in ``Node.has_calculation``
-    implementations.  A node is considered a *calculation node* if it is an
-    instance of one of the dedicated calculation-type classes (CalculationNode,
-    ForecastNode, CustomCalculationNode) or of statistical helpers that derive
-    directly from :class:`Node` but still compute a value (e.g.
-    ``YoYGrowthNode``).
+    A node is considered a calculation node if it computes values rather than
+    storing raw data. Calculation node types include:
+    - CalculationNode
+    - FormulaCalculationNode
+    - CustomCalculationNode
+    - ForecastNode and its subclasses
+    - YoYGrowthNode
+    - MultiPeriodStatNode
+    - TwoPeriodAverageNode
 
     Args:
-        node: Any concrete :class:`~fin_statement_model.core.nodes.base.Node` instance.
+        node (Node): Node instance to check.
 
     Returns:
-        bool: ``True`` when *node* performs a calculation; otherwise ``False``.
+        bool: True if `node` performs a calculation; False otherwise.
+
+    Examples:
+        >>> from fin_statement_model.core.nodes import is_calculation_node, FinancialStatementItemNode, CalculationNode
+        >>> data_node = FinancialStatementItemNode('rev', {'2023': 100})
+        >>> is_calculation_node(data_node)
+        False
+        >>> calc_node = CalculationNode('sum', inputs=[data_node], calculation=...)
+        >>> is_calculation_node(calc_node)
+        True
     """
     return isinstance(
         node,

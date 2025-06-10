@@ -10,79 +10,73 @@ logger = logging.getLogger(__name__)
 
 
 class FinancialStatementItemNode(Node):
-    """Define a leaf node containing raw financial statement data.
+    """Store raw financial statement values for specific periods.
 
-    This node type typically stores actual reported values (e.g., Revenue,
-    COGS) for different time periods.
+    Represents a leaf node containing actual reported financial data
+    (e.g., revenue, COGS) across time periods.
 
     Attributes:
-        name (str): The unique identifier for the financial item (e.g., "Revenue").
-        values (Dict[str, float]): A dictionary mapping time periods (str)
-            to their corresponding numerical values (float).
+        name (str): Unique identifier for the financial item.
+        values (dict[str, float]): Mapping from period identifiers to their values.
 
     Examples:
-        >>> revenue_data = {"2022": 1000.0, "2023": 1200.0}
-        >>> revenue_node = FinancialStatementItemNode("Revenue", revenue_data)
-        >>> print(revenue_node.name)
-        Revenue
-        >>> print(revenue_node.calculate("2023"))
+        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode
+        >>> data = {"2022": 1000.0, "2023": 1200.0}
+        >>> node = FinancialStatementItemNode("revenue", data)
+        >>> node.calculate("2023")
         1200.0
-        >>> print(revenue_node.calculate("2022"))
-        1000.0
-        >>> revenue_node.set_value("2024", 1500.0)
-        >>> print(revenue_node.calculate("2024"))
+        >>> node.set_value("2024", 1500.0)
+        >>> node.calculate("2024")
         1500.0
     """
 
     values: dict[str, float]
 
     def __init__(self, name: str, values: dict[str, float]):
-        """Initialize the financial statement item node.
+        """Create a FinancialStatementItemNode.
 
         Args:
-            name (str): The name of the financial statement item.
-            values (Dict[str, float]): Dictionary of period-value pairs.
+            name (str): Unique identifier for the financial item.
+            values (dict[str, float]): Initial mapping of periods to values.
+
+        Raises:
+            ValueError: If `name` is empty, contains invalid characters, or has leading/trailing whitespace.
         """
         super().__init__(name)
         self.values = values
 
     def calculate(self, period: str) -> float:
-        """Retrieve the value for the specified period.
-
-        For this node type, calculation simply means retrieving the stored value.
+        """Get the value for a specific period.
 
         Args:
-            period (str): The time period for which to retrieve the value.
+            period (str): Period identifier to retrieve.
 
         Returns:
-            float: The value for the given period, or 0.0 if the period is not found.
+            float: Stored value for `period`, or 0.0 if not present.
         """
         return self.values.get(period, 0.0)
 
     def set_value(self, period: str, value: float) -> None:
-        """Update or add a value for a specific period.
-
-        Modifies the stored data for the given period.
+        """Set the value for a specific period.
 
         Args:
-            period (str): The time period to set the value for.
-            value (float): The numerical value to store for the period.
+            period (str): Period identifier.
+            value (float): Numerical value to store.
         """
         self.values[period] = value
 
     def to_dict(self) -> dict[str, Any]:
-        """Serialize the node to a dictionary representation.
+        """Serialize this node to a dictionary.
 
         Returns:
-            Dictionary containing the node's type, name, and values.
+            dict[str, Any]: Dictionary with keys 'type', 'name', and 'values'.
 
         Examples:
+            >>> from fin_statement_model.core.nodes import FinancialStatementItemNode
             >>> node = FinancialStatementItemNode("Revenue", {"2023": 1000.0})
             >>> data = node.to_dict()
             >>> data['type']
             'financial_statement_item'
-            >>> data['name']
-            'Revenue'
         """
         return {
             "type": "financial_statement_item",
@@ -92,27 +86,17 @@ class FinancialStatementItemNode(Node):
 
     @staticmethod
     def from_dict(data: dict[str, Any]) -> "FinancialStatementItemNode":
-        """Create a FinancialStatementItemNode from a dictionary representation.
+        """Create a FinancialStatementItemNode from serialized data.
 
         Args:
-            data: Dictionary containing the node's serialized data.
-                Must include 'type', 'name', and 'values' fields.
+            data (dict[str, Any]): Serialized node data; must contain keys 'type', 'name', and 'values'.
 
         Returns:
-            A new FinancialStatementItemNode instance.
+            FinancialStatementItemNode: Reconstructed node.
 
         Raises:
-            ValueError: If the data is invalid or missing required fields.
-
-        Examples:
-            >>> data = {
-            ...     'type': 'financial_statement_item',
-            ...     'name': 'Revenue',
-            ...     'values': {'2023': 1000.0}
-            ... }
-            >>> node = FinancialStatementItemNode.from_dict(data)
-            >>> node.name
-            'Revenue'
+            ValueError: If 'type' is not 'financial_statement_item' or 'name' is missing.
+            TypeError: If 'values' is not a dict.
         """
         if data.get("type") != "financial_statement_item":
             raise ValueError(
@@ -125,6 +109,6 @@ class FinancialStatementItemNode(Node):
 
         values = data.get("values", {})
         if not isinstance(values, dict):
-            raise TypeError("'values' field must be a dictionary")
+            raise TypeError("'values' field must be a dict[str, float]")
 
         return FinancialStatementItemNode(name, values)

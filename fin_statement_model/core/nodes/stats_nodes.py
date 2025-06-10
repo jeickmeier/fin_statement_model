@@ -1,9 +1,9 @@
-"""Provide nodes for statistical calculations on financial data across periods.
+"""Provide statistical node implementations for time-series analyses.
 
-This module provides nodes for common time-series statistical analyses:
-- `YoYGrowthNode`: Calculates year-over-year percentage growth.
-- `MultiPeriodStatNode`: Computes statistics (mean, stddev, etc.) over a range of periods.
-- `TwoPeriodAverageNode`: Calculates the simple average over two specific periods.
+This module defines nodes that perform statistical operations on node values across periods:
+- YoYGrowthNode: Compute year-over-year percentage growth.
+- MultiPeriodStatNode: Compute statistics (mean, stddev) over multiple periods.
+- TwoPeriodAverageNode: Compute simple average over two periods.
 """
 
 import logging
@@ -28,45 +28,38 @@ StatFunc = Callable[
 
 
 class YoYGrowthNode(Node):
-    """Calculate year-over-year (YoY) percentage growth.
+    """Compute year-over-year percentage growth.
 
-    Compares the value of an input node between two specified periods
-    (prior and current) and calculates the relative change.
-
-    Growth = (Current Value - Prior Value) / Prior Value
+    Compare values of an input node for two periods and compute
+    (current_value - prior_value) / prior_value.
 
     Attributes:
-        name (str): The node's identifier.
-        input_node (Node): The node providing the values for comparison.
-        prior_period (str): Identifier for the earlier time period.
-        current_period (str): Identifier for the later time period.
+        input_node (Node): Node providing source values.
+        prior_period (str): Identifier for the earlier period.
+        current_period (str): Identifier for the later period.
 
     Examples:
-        >>> # Assume revenue_node holds {"2022": 100, "2023": 120}
-        >>> revenue_node = FinancialStatementItemNode("revenue", {"2022": 100.0, "2023": 120.0})
-        >>> yoy_growth = YoYGrowthNode(
-        ...     "revenue_yoy",
-        ...     input_node=revenue_node,
-        ...     prior_period="2022",
-        ...     current_period="2023"
-        ... )
-        >>> print(yoy_growth.calculate("any_period")) # Period arg is ignored
+        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode, YoYGrowthNode
+        >>> data = {"2022": 100.0, "2023": 120.0}
+        >>> base = FinancialStatementItemNode("revenue", data)
+        >>> yoy = YoYGrowthNode("rev_yoy", input_node=base, prior_period="2022", current_period="2023")
+        >>> round(yoy.calculate(), 2)
         0.2
     """
 
     def __init__(
         self, name: str, input_node: Node, prior_period: str, current_period: str
     ):
-        """Initialize the YoY Growth node.
+        """Create a YoYGrowthNode.
 
         Args:
-            name (str): The identifier for this growth node.
-            input_node (Node): The node whose values will be compared.
-            prior_period (str): The identifier for the earlier period.
-            current_period (str): The identifier for the later period.
+            name (str): Unique identifier for this node.
+            input_node (Node): Node supplying values for comparison.
+            prior_period (str): Identifier for the earlier period.
+            current_period (str): Identifier for the later period.
 
         Raises:
-            TypeError: If `input_node` is not a Node instance or periods are not strings.
+            TypeError: If `input_node` is not a Node or periods are not strings.
         """
         super().__init__(name)
         if not isinstance(input_node, Node):
@@ -81,24 +74,18 @@ class YoYGrowthNode(Node):
         self.current_period = current_period
 
     def calculate(self, period: Optional[str] = None) -> float:
-        """Calculate the year-over-year growth rate.
+        """Compute the YoY growth rate.
 
-        Retrieves values for the prior and current periods from the input node
-        and computes the percentage growth. The `period` argument is ignored
-        as the calculation periods are fixed during initialization.
+        Ignore the `period` parameter; use configured periods.
 
         Args:
-            period (Optional[str]): Ignored. The calculation uses the periods
-                defined during initialization.
+            period (str | None): Ignored.
 
         Returns:
-            float: The calculated growth rate (e.g., 0.2 for 20% growth).
-                   Returns `float('nan')` if the prior period value is zero
-                   or non-finite prior value.
+            float: (current - prior) / prior, or NaN if prior is zero or non-finite.
 
         Raises:
-            CalculationError: If the input node fails to provide numeric values
-                for the required periods.
+            CalculationError: On errors retrieving or validating input values.
         """
         try:
             prior_value = self.input_node.calculate(self.prior_period)
@@ -140,14 +127,14 @@ class YoYGrowthNode(Node):
             ) from e
 
     def get_dependencies(self) -> list[str]:
-        """Return the names of nodes this node depends on."""
+        """Get names of nodes this node depends on."""
         return [self.input_node.name]
 
     def to_dict(self) -> dict[str, Any]:
-        """Serialize the node to a dictionary representation.
+        """Serialize this node to a dictionary.
 
         Returns:
-            Dictionary containing the node's type, name, and configuration.
+            dict[str, Any]: Serialized representation with type, name, and periods.
         """
         return {
             "type": "yoy_growth",
@@ -161,17 +148,17 @@ class YoYGrowthNode(Node):
     def from_dict_with_context(
         data: dict[str, Any], context: dict[str, Node]
     ) -> "YoYGrowthNode":
-        """Create a YoYGrowthNode from a dictionary with node context.
+        """Recreate a YoYGrowthNode from serialized data.
 
         Args:
-            data: Dictionary containing the node's serialized data.
-            context: Dictionary of existing nodes to resolve dependencies.
+            data (dict[str, Any]): Serialized node data.
+            context (dict[str, Node]): Existing nodes for dependencies.
 
         Returns:
-            A new YoYGrowthNode instance.
+            YoYGrowthNode: Reconstructed node.
 
         Raises:
-            ValueError: If the data is invalid or missing required fields.
+            ValueError: If required fields are missing or invalid.
         """
         if data.get("type") != "yoy_growth":
             raise ValueError(f"Invalid type for YoYGrowthNode: {data.get('type')}")
@@ -205,38 +192,22 @@ class YoYGrowthNode(Node):
 
 
 class MultiPeriodStatNode(Node):
-    """Calculate a statistical measure across multiple periods.
+    """Compute a statistical measure over multiple periods.
 
-    Applies a specified statistical function (e.g., mean, standard deviation)
-    to the values of an input node over a list of periods.
+    Apply a statistical function (e.g., mean, stdev) to values from an input node across specified periods.
 
     Attributes:
-        name (str): The node's identifier.
-        input_node (Node): The node providing the values for analysis.
-        periods (List[str]): The list of period identifiers to include.
-        stat_func (StatFunc): The statistical function to apply (e.g.,
-            `statistics.mean`, `statistics.stdev`). Must accept a sequence
-            of numbers and return a single number.
+        input_node (Node): Node providing source values.
+        periods (list[str]): Period identifiers to include.
+        stat_func (StatFunc): Function to apply to collected values.
 
     Examples:
-        >>> # Assume sales_node holds {"Q1": 10, "Q2": 12, "Q3": 11, "Q4": 13}
-        >>> sales_node = FinancialStatementItemNode("sales", {"Q1": 10, "Q2": 12, "Q3": 11, "Q4": 13})
-        >>> mean_sales = MultiPeriodStatNode(
-        ...     "avg_quarterly_sales",
-        ...     input_node=sales_node,
-        ...     periods=["Q1", "Q2", "Q3", "Q4"],
-        ...     stat_func=statistics.mean
-        ... )
-        >>> print(mean_sales.calculate()) # Period arg is ignored
+        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode, MultiPeriodStatNode
+        >>> data = {"Q1": 10, "Q2": 12, "Q3": 11, "Q4": 13}
+        >>> sales = FinancialStatementItemNode("sales", data)
+        >>> avg = MultiPeriodStatNode("avg_sales", input_node=sales, periods=["Q1","Q2","Q3","Q4"], stat_func=statistics.mean)
+        >>> avg.calculate()
         11.5
-        >>> stddev_sales = MultiPeriodStatNode(
-        ...     "sales_volatility",
-        ...     input_node=sales_node,
-        ...     periods=["Q1", "Q2", "Q3", "Q4"],
-        ...     stat_func=statistics.stdev # Default
-        ... )
-        >>> print(round(stddev_sales.calculate(), 2))
-        1.29
     """
 
     def __init__(
@@ -246,20 +217,17 @@ class MultiPeriodStatNode(Node):
         periods: list[str],
         stat_func: StatFunc = statistics.stdev,  # Default to standard deviation
     ):
-        """Initialize the multi-period statistics node.
+        """Create a MultiPeriodStatNode.
 
         Args:
-            name (str): The identifier for this statistical node.
-            input_node (Node): The node providing the source values.
-            periods (List[str]): A list of period identifiers to analyze.
-            stat_func (StatFunc): The statistical function to apply. Defaults to
-                `statistics.stdev`. It must accept a sequence of numerics and
-                return a numeric value.
+            name (str): Unique identifier for this node.
+            input_node (Node): Node supplying values.
+            periods (list[str]): Period identifiers to analyze.
+            stat_func (StatFunc): Function applied to collected values. Defaults to statistics.stdev.
 
         Raises:
-            ValueError: If `periods` is not a list or is empty.
-            TypeError: If `input_node` is not a Node, `periods` contains non-strings,
-                or `stat_func` is not callable.
+            ValueError: If `periods` is empty or not a list.
+            TypeError: If `input_node` is not a Node or `stat_func` is not callable.
         """
         super().__init__(name)
         if not isinstance(input_node, Node):
@@ -278,24 +246,16 @@ class MultiPeriodStatNode(Node):
         self.stat_func = stat_func
 
     def calculate(self, period: Optional[str] = None) -> float:
-        """Calculate the statistical measure across the specified periods.
-
-        Retrieves values from the input node for each period in the configured list,
-        then applies the `stat_func`. The `period` argument is ignored.
+        """Compute the statistical measure across specified periods.
 
         Args:
-            period (Optional[str]): Ignored. Calculation uses the periods defined
-                during initialization.
+            period (str | None): Ignored.
 
         Returns:
-            float: The result of the statistical function. Returns `float('nan')`
-                   if the statistical function requires more data points than
-                   available (e.g., standard deviation with < 2 values) or if
-                   no valid numeric data is found.
+            float: Result of `stat_func` on collected values, or NaN if insufficient valid data.
 
         Raises:
-            CalculationError: If retrieving input node values fails or if the
-                statistical function itself raises an unexpected error.
+            CalculationError: If input retrieval fails or unexpected errors occur.
         """
         values: list[Numeric] = []
         retrieval_errors = []
@@ -354,17 +314,17 @@ class MultiPeriodStatNode(Node):
             ) from e
 
     def get_dependencies(self) -> list[str]:
-        """Return the names of nodes this node depends on."""
+        """Get names of nodes this statistical node depends on."""
         return [self.input_node.name]
 
     def to_dict(self) -> dict[str, Any]:
-        """Serialize the node to a dictionary representation.
+        """Serialize this node to a dictionary.
 
         Returns:
-            Dictionary containing the node's type, name, and configuration.
+            dict[str, Any]: Serialized data with function name and periods.
 
         Note:
-            The stat_func cannot be serialized, so a warning is included.
+            `stat_func` may not be fully serializable; manual reconstruction may be required.
         """
         return {
             "type": "multi_period_stat",
@@ -382,17 +342,17 @@ class MultiPeriodStatNode(Node):
     def from_dict_with_context(
         data: dict[str, Any], context: dict[str, Node]
     ) -> "MultiPeriodStatNode":
-        """Create a MultiPeriodStatNode from a dictionary with node context.
+        """Recreate a MultiPeriodStatNode from serialized data.
 
         Args:
-            data: Dictionary containing the node's serialized data.
-            context: Dictionary of existing nodes to resolve dependencies.
+            data (dict[str, Any]): Serialized node data.
+            context (dict[str, Node]): Existing nodes for dependencies.
 
         Returns:
-            A new MultiPeriodStatNode instance.
+            MultiPeriodStatNode: Reconstructed node.
 
         Raises:
-            ValueError: If the data is invalid or missing required fields.
+            ValueError: If required fields are missing or invalid.
         """
         if data.get("type") != "multi_period_stat":
             raise ValueError(
@@ -447,40 +407,33 @@ class MultiPeriodStatNode(Node):
 
 
 class TwoPeriodAverageNode(Node):
-    """Compute the simple average of an input node's value over two periods.
-
-    Calculates (Value at Period 1 + Value at Period 2) / 2.
+    """Compute the average of an input node's values over two periods.
 
     Attributes:
-        name (str): Identifier for this node.
-        input_node (Node): Node providing the values to be averaged.
+        input_node (Node): Node supplying values.
         period1 (str): Identifier for the first period.
         period2 (str): Identifier for the second period.
 
     Examples:
-        >>> # Assume price_node holds {"Jan": 10.0, "Feb": 11.0}
-        >>> price_node = FinancialStatementItemNode("price", {"Jan": 10.0, "Feb": 11.0})
-        >>> avg_price = TwoPeriodAverageNode(
-        ...     "jan_feb_avg_price",
-        ...     input_node=price_node,
-        ...     period1="Jan",
-        ...     period2="Feb"
-        ... )
-        >>> print(avg_price.calculate()) # Period arg is ignored
+        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode, TwoPeriodAverageNode
+        >>> data = {"Jan": 10.0, "Feb": 11.0}
+        >>> price = FinancialStatementItemNode("price", data)
+        >>> avg = TwoPeriodAverageNode("avg_price", input_node=price, period1="Jan", period2="Feb")
+        >>> avg.calculate()
         10.5
     """
 
     def __init__(self, name: str, input_node: Node, period1: str, period2: str):
-        """Initialize the two-period average node.
+        """Create a TwoPeriodAverageNode.
 
         Args:
-            name (str): The identifier for this node.
-            input_node (Node): The node providing values.
-            period1 (str): The identifier for the first period.
-            period2 (str): The identifier for the second period.
+            name (str): Unique identifier for the node.
+            input_node (Node): Node supplying values.
+            period1 (str): Identifier for the first period.
+            period2 (str): Identifier for the second period.
 
         Raises:
-            TypeError: If `input_node` is not a Node, or periods are not strings.
+            TypeError: If `input_node` is not a Node or periods are not strings.
         """
         super().__init__(name)
         if not isinstance(input_node, Node):
@@ -495,20 +448,16 @@ class TwoPeriodAverageNode(Node):
         self.period2 = period2
 
     def calculate(self, period: Optional[str] = None) -> float:
-        """Calculate the average of the input node for the two fixed periods.
-
-        Ignores the `period` argument, using `period1` and `period2` defined
-        during initialization.
+        """Compute the average value for the two configured periods.
 
         Args:
-            period (Optional[str]): Ignored.
+            period (str | None): Ignored.
 
         Returns:
-            float: The average of the input node's values for `period1` and `period2`.
-                   Returns `float('nan')` if either input value is non-numeric.
+            float: (value1 + value2) / 2, or NaN if either value is non-numeric.
 
         Raises:
-            CalculationError: If retrieving values from the input node fails.
+            CalculationError: On errors retrieving input node values.
         """
         try:
             val1 = self.input_node.calculate(self.period1)
@@ -544,14 +493,14 @@ class TwoPeriodAverageNode(Node):
             ) from e
 
     def get_dependencies(self) -> list[str]:
-        """Return the names of nodes this node depends on."""
+        """Get names of nodes this average node depends on."""
         return [self.input_node.name]
 
     def to_dict(self) -> dict[str, Any]:
-        """Serialize the node to a dictionary representation.
+        """Serialize this node to a dictionary.
 
         Returns:
-            Dictionary containing the node's type, name, and configuration.
+            dict[str, Any]: Serialized representation with type, name, and periods.
         """
         return {
             "type": "two_period_average",
@@ -565,17 +514,17 @@ class TwoPeriodAverageNode(Node):
     def from_dict_with_context(
         data: dict[str, Any], context: dict[str, Node]
     ) -> "TwoPeriodAverageNode":
-        """Create a TwoPeriodAverageNode from a dictionary with node context.
+        """Recreate a TwoPeriodAverageNode from serialized data.
 
         Args:
-            data: Dictionary containing the node's serialized data.
-            context: Dictionary of existing nodes to resolve dependencies.
+            data (dict[str, Any]): Serialized node data.
+            context (dict[str, Node]): Existing nodes for dependencies.
 
         Returns:
-            A new TwoPeriodAverageNode instance.
+            TwoPeriodAverageNode: Reconstructed node.
 
         Raises:
-            ValueError: If the data is invalid or missing required fields.
+            ValueError: If required fields are missing or invalid.
         """
         if data.get("type") != "two_period_average":
             raise ValueError(

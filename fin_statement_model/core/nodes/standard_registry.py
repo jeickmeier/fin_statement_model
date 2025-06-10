@@ -14,14 +14,14 @@ logger = logging.getLogger(__name__)
 
 
 class StandardNodeDefinition(BaseModel):
-    """Define a standard node with metadata.
+    """Represent metadata for a standard node definition.
 
     Attributes:
-        category: The main category (e.g., balance_sheet_assets, income_statement)
-        subcategory: The subcategory within the main category
-        description: Human-readable description of the node
-        alternate_names: List of alternate names that should map to this standard name
-        sign_convention: Whether values are typically positive or negative
+        category (str): Main category (e.g., 'balance_sheet_assets').
+        subcategory (str): Subcategory within the main category.
+        description (str): Human-readable description of the node.
+        alternate_names (list[str]): Alternate names mapping to this standard.
+        sign_convention (str): Sign convention ('positive' or 'negative').
     """
 
     model_config = ConfigDict(str_strip_whitespace=True)
@@ -34,14 +34,16 @@ class StandardNodeDefinition(BaseModel):
 
 
 class StandardNodeRegistry:
-    """Registry for standard node definitions.
+    """Manage loading and access to standard node definitions.
 
-    This class manages loading and accessing standardized node definitions,
-    providing validation and alternate name resolution capabilities.
+    Provide methods to load definitions, validate node names, and resolve alternate names.
 
     Attributes:
-        _standard_nodes: Dict mapping standard node names to their definitions
-        _alternate_to_standard: Dict mapping alternate names to standard names
+        _standard_nodes (dict[str, StandardNodeDefinition]): Map standard names to definitions.
+        _alternate_to_standard (dict[str, str]): Map alternate names to standard names.
+        _categories (set[str]): Registered categories.
+        _initialized (bool): Whether default nodes have been initialized.
+        _loaded_from (Optional[str]): Source path of loaded definitions.
     """
 
     def __init__(self) -> None:
@@ -58,18 +60,19 @@ class StandardNodeRegistry:
         source_description: str,
         overwrite_existing: bool = False,
     ) -> int:
-        """Process node definitions from parsed YAML data.
+        """Load and process node definitions from parsed YAML data.
 
         Args:
-            data: The parsed YAML data containing node definitions
-            source_description: Description of the data source for logging
-            overwrite_existing: Whether to overwrite existing node definitions
+            data (dict[str, Any]): Parsed YAML mapping node names to definitions.
+            source_description (str): Description of the data source for logging.
+            overwrite_existing (bool): Whether to replace existing definitions.
 
         Returns:
-            Number of nodes successfully loaded
+            int: Number of nodes successfully loaded.
 
         Raises:
-            ValueError: If node definitions are invalid or contain duplicates
+            TypeError: If `data` is not a dict.
+            ValueError: If definitions are invalid or duplicates are detected.
         """
         if not isinstance(data, dict):
             raise TypeError(
@@ -279,15 +282,14 @@ class StandardNodeRegistry:
         organized_path: Optional[Path] = None,
         force_reload: bool = False,
     ) -> int:
-        """Initialize the registry with default standard nodes from organized structure only.
+        """Load default standard nodes from organized directory.
 
         Args:
-            organized_path: Base directory to load organized YAML files from.
-                Defaults to standard_nodes_defn/ relative to this module.
-            force_reload: If True, reload even if already initialized.
+            organized_path (Path | None): Base path to `standard_nodes_defn`. Defaults to package directory.
+            force_reload (bool): If True, reload even if already initialized.
 
         Returns:
-            Number of nodes loaded.
+            int: Count of nodes loaded.
         """
         if self._initialized and not force_reload:
             logger.debug(
@@ -307,16 +309,18 @@ class StandardNodeRegistry:
         return count
 
     def _load_from_organized_structure(self, base_path: Path) -> int:
-        """Load nodes from organized directory structure.
+        """Load standard nodes from an organized directory structure.
 
         Args:
-            base_path: Base directory containing organized YAML files.
+            base_path (Path): Directory containing organized YAML node definition files.
 
         Returns:
-            Number of nodes loaded.
+            int: Number of nodes loaded.
 
         Raises:
-            Exception: If loading fails.
+            FileNotFoundError: If `base_path` does not exist.
+            ImportError: If module loading fails.
+            Exception: For other loading errors.
         """
         if not base_path.exists():
             raise FileNotFoundError(f"Organized structure path not found: {base_path}")
@@ -369,17 +373,19 @@ class StandardNodeRegistry:
         return len(self._standard_nodes)
 
     def load_from_yaml_file(self, yaml_path: Path) -> int:
-        """Load standard node definitions from a single YAML file without clearing existing data.
+        """Load standard node definitions from a YAML file.
+
+        Does not clear existing definitions before loading.
 
         Args:
-            yaml_path: Path to the YAML file containing node definitions.
+            yaml_path (Path): Path to the YAML file with node definitions.
 
         Returns:
-            Number of nodes loaded from this file.
+            int: Number of nodes loaded from the file.
 
         Raises:
-            ValueError: If the YAML file has invalid structure or duplicate names.
-            FileNotFoundError: If the YAML file doesn't exist.
+            FileNotFoundError: If `yaml_path` does not exist.
+            ValueError: If YAML is invalid or structure is incorrect.
         """
         if not yaml_path.exists():
             raise FileNotFoundError(f"Standard nodes file not found: {yaml_path}")

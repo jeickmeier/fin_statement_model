@@ -12,14 +12,13 @@ if TYPE_CHECKING:
 
 
 class Node(ABC):
-    """Define the abstract base class for graph nodes.
+    """Abstract base class for nodes in the financial statement model.
 
-    Provide the essential interface for all nodes in the financial statement
-    model graph, including calculation, caching, and attribute access.
+    Provides the interface for calculating values, caching, serialization,
+    and dependency inspection.
 
     Attributes:
-    name (str): Unique identifier for the node instance.
-    values: dict[str, Any]
+        name (str): Unique identifier for the node instance.
     """
 
     name: str
@@ -58,26 +57,15 @@ class Node(ABC):
 
     @abstractmethod
     def calculate(self, period: str) -> float:
-        """Calculate the node's value for a specific period.
+        """Calculate the node's value for a given period.
 
-        This abstract method must be implemented by subclasses to define how to
-        determine the node's value for a given time period.
+        Subclasses must override this method to implement specific calculation logic.
 
         Args:
-            period: The time period identifier for the calculation.
+            period (str): Identifier for the time period.
 
         Returns:
-            The calculated float value for the specified period.
-
-        Raises:
-            NotImplementedError: If the subclass does not implement this method.
-
-        Examples:
-            >>> class Dummy(Node):
-            ...     def calculate(self, period): return 100.0
-            >>> d = Dummy("Test")
-            >>> d.calculate("2023")
-            100.0
+            float: Calculated value for the period.
         """
 
     def clear_cache(self) -> None:
@@ -132,10 +120,16 @@ class Node(ABC):
             )
 
     def set_value(self, period: str, value: float) -> None:
-        """Set a value for *period* on data-bearing nodes.
+        """Set a value for a specific period on data-bearing nodes.
 
-        The base implementation raises NotImplementedError; override in
-        subclasses that support mutating stored data.
+        Override in subclasses to support mutating stored data.
+
+        Args:
+            period (str): Period identifier.
+            value (float): Numerical value to store.
+
+        Raises:
+            NotImplementedError: Always in base class.
         """
         raise NotImplementedError(f"Node '{self.name}' does not support set_value")
 
