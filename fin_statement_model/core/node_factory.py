@@ -1,7 +1,7 @@
-"""Provide a factory for creating nodes in the financial statement model.
+"""Factory helpers for creating nodes in the financial statement model.
 
-This module centralizes node creation logic and ensures consistent initialization
-for different types of nodes used in the financial statement model.
+This module centralizes node-creation logic to ensure consistent initialization
+for all node types (financial statement items, calculations, forecasts, stats).
 """
 
 import logging
@@ -40,18 +40,18 @@ logger = logging.getLogger(__name__)
 
 
 class NodeFactory:
-    """Provide a factory for creating nodes in the financial statement model.
+    """Factory for creating nodes in the financial statement model.
 
-    This class centralizes node creation for financial statement items,
-    calculations, metrics, forecasts, and custom logic.
+    The class exposes convenience helpers that hide the underlying registry
+    and deserialization logic, so client code can create nodes declaratively
+    (e.g., via YAML configs or simple Python calls) without importing every
+    concrete node class.
 
     Attributes:
-        _calculation_methods: Maps simple string keys (e.g., 'addition') to
-            the class names of Calculation implementations registered in the
-            `Registry`. This allows creating CalculationNodes without
-            directly importing Calculation classes.
-        _node_type_registry: Maps node type strings to their corresponding
-            Node class implementations for deserialization.
+        _calculation_methods: Mapping of calculation type keys (e.g., ``"addition"``)
+            to calculation class names registered in :class:`fin_statement_model.core.calculations.Registry`.
+        _node_type_registry: Mapping of node-type strings to concrete :class:`Node`
+            subclasses used when deserializing from dictionaries.
     """
 
     # Mapping of calculation type strings to Calculation class names (keys in the Registry)
@@ -447,49 +447,45 @@ class NodeFactory:
         formula: Callable[..., Any],
         description: Optional[str] = None,
     ) -> CustomCalculationNode:
-        """Create a CustomCalculationNode using a Python callable for the calculation logic.
+        """Create a :class:`CustomCalculationNode` from an arbitrary Python callable.
 
-        This supports ad-hoc or complex calculations not covered by standard
-        strategies or metrics. The `formula` callable will be invoked with
-        input node values at calculation time.
-
-        Note:
-            Renamed from `create_metric_node` to avoid confusion with metric-based nodes.
+        This helper is useful for ad-hoc or complex calculations that are not
+        (yet) formalized as reusable strategies. The supplied ``formula`` is
+        invoked with the *values* of each input node during evaluation.
 
         Args:
             name: Identifier for the custom calculation node.
-            inputs: List of Node instances providing values to the formula.
-            formula: Callable that computes a value from input node values.
-            description: Optional description of the calculation logic.
+            inputs: List of nodes supplying arguments to ``formula``.
+            formula: Callable performing the calculation.
+            description: Human-readable description of the calculation logic.
 
         Returns:
-            A CustomCalculationNode configured with the provided formula.
+            The newly created :class:`CustomCalculationNode` instance.
 
         Raises:
-            ValueError: If name is empty or not a string.
-            TypeError: If formula is not callable or inputs contain non-Node items.
+            ValueError: If *name* is empty.
+            TypeError: If *formula* is not callable or *inputs* contain non-Node objects.
 
         Examples:
-            >>> def complex_tax_logic(revenue, expenses, tax_rate_node):
-            ...     profit = revenue - expenses
-            ...     if profit <= 0:
-            ...         return 0.0
-            ...     tax_rate = tax_rate_node
-            ...     return profit * tax_rate
-            ...
-            >>> tax_node = NodeFactory._create_custom_node_from_callable(
-            ...     name="CalculatedTaxes",
-            ...     inputs=[revenue_node, expenses_node, tax_rate_schedule_node],
-            ...     formula=complex_tax_logic,
-            ...     description="Calculates income tax based on profit and a variable rate."
-            ... )
+            Defining a tax-calculation node::
 
-            Using a lambda for a simple ratio:
-            >>> quick_ratio_node = NodeFactory._create_custom_node_from_callable(
-            ...    name="QuickRatioCustom",
-            ...    inputs=[cash_node, receivables_node, current_liabilities_node],
-            ...    formula=lambda cash, rec, liab: (cash + rec) / liab if liab else 0
-            ... )
+                def tax_logic(revenue, expenses, tax_rate):
+                    profit = revenue - expenses
+                    return max(profit, 0) * tax_rate
+
+                tax_node = NodeFactory._create_custom_node_from_callable(
+                    name="IncomeTax",
+                    inputs=[revenue, expenses, tax_rate_node],
+                    formula=tax_logic,
+                )
+
+            Using a lambda for a quick ratio::
+
+                quick_ratio = NodeFactory._create_custom_node_from_callable(
+                    name="QuickRatioCustom",
+                    inputs=[cash, receivables, current_liabilities],
+                    formula=lambda cash, rec, liab: (cash + rec) / liab if liab else 0,
+                )
         """
         # Validate inputs
         if not name or not isinstance(name, str):
