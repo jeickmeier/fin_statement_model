@@ -128,3 +128,23 @@ class UnsupportedReaderError(ReadError):
             reader_type=reader_type,
             original_error=original_error,
         )
+
+
+# Add new exception for unsupported writers (schema-less mode removed)
+class UnsupportedWriterError(WriteError):
+    """Exception raised when a requested writer is unsupported (no schema)."""
+
+    def __init__(
+        self,
+        message: str,
+        target: Optional[str] = None,
+        writer_type: Optional[str] = None,
+        original_error: Optional[Exception] = None,
+    ):
+        """Initializes the UnsupportedWriterError."""
+        super().__init__(
+            message=message,
+            target=target,
+            writer_type=writer_type,
+            original_error=original_error,
+        )

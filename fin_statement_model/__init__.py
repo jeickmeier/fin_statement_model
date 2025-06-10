@@ -27,7 +27,7 @@ from fin_statement_model.config import get_config, update_config, reset_config
 # ensure our library-wide logging policy is applied immediately
 from . import logging_config  # noqa: F401
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "CalculationNode",

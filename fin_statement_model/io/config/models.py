@@ -252,26 +252,11 @@ class DictWriterConfig(BaseWriterConfig):
 class MarkdownWriterConfig(BaseWriterConfig):
     """Markdown writer options.
 
-    The writer can be configured in multiple ways:
-
-    1. ``statement_config_path`` – Path to a YAML file containing the statement
-       definition.  This mirrors historical behaviour where configurations were
-       stored on disk.
-    2. ``raw_configs`` – An *in-memory* mapping of statement IDs to their
-       configuration dictionaries.  This is the preferred mechanism in the new
-       API and aligns with ``create_statement_dataframe`` and other
-       in-memory workflows.
-
-    Only **one** of these two options is required.  If both are supplied the
-    explicit ``raw_configs`` takes precedence.
+    The writer is configured via an in-memory mapping of statement IDs to
+    configuration dictionaries.
     """
 
-    # Either a file-based config …
-    statement_config_path: Optional[str] = Field(
-        None, description="Path to the statement definition YAML file."
-    )
-
-    # … or in-memory configs.
+    # In-memory configs only.
     raw_configs: Optional[dict[str, dict[str, Any]]] = Field(
         None,
         description=(

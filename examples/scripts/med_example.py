@@ -414,11 +414,11 @@ sections:
     from fin_statement_model.io.config.models import MarkdownWriterConfig
     from fin_statement_model.io.formats.markdown.writer import MarkdownWriter
 
-    # Build MarkdownWriterConfig (statement_config_path required by schema)
+    # Build MarkdownWriterConfig using in-memory raw_configs
     md_cfg = MarkdownWriterConfig(
         format_type="markdown",
         target=str(md_output_path),
-        statement_config_path=str(bs_stmt_path),
+        raw_configs={bs_raw_config.get("id", "balance_sheet"): bs_raw_config},
         historical_periods=["2022", "2023"],
         forecast_periods=forecast_periods,
         forecast_configs=forecast_configs,

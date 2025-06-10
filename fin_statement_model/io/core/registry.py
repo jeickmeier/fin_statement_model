@@ -5,7 +5,6 @@ for readers and writers, along with registration decorators and access functions
 """
 
 import logging
-import os
 from typing import TypeVar, Generic, Optional, Any, Union, cast, Type
 from collections.abc import Callable
 
@@ -18,6 +17,7 @@ from fin_statement_model.io.exceptions import (
     ReadError,
     WriteError,
     UnsupportedReaderError,
+    UnsupportedWriterError,
 )
 
 logger = logging.getLogger(__name__)
@@ -201,9 +201,9 @@ def register_reader(
     Raises:
         ValueError: If the format_type is already registered for a reader.
     """
-    # Enforce strict-mode at registration time
-    if os.getenv("FSM_IO_STRICT_SCHEMA", "0") == "1" and schema is None:
-        raise ValueError(f"Schema required for reader '{format_type}' in strict mode")
+    # Require schema at registration time (legacy schema-less removed)
+    if schema is None:
+        raise ValueError(f"Schema required for reader '{format_type}'; legacy schema-less mode removed.")
     return _reader_registry.register(format_type, schema=schema)
 
 
@@ -224,9 +224,9 @@ def register_writer(
     Raises:
         ValueError: If the format_type is already registered for a writer.
     """
-    # Enforce strict-mode at registration time
-    if os.getenv("FSM_IO_STRICT_SCHEMA", "0") == "1" and schema is None:
-        raise ValueError(f"Schema required for writer '{format_type}' in strict mode")
+    # Require schema at registration time (legacy schema-less removed)
+    if schema is None:
+        raise ValueError(f"Schema required for writer '{format_type}'; legacy schema-less mode removed.")
     return _writer_registry.register(format_type, schema=schema)
 
 
@@ -271,12 +271,12 @@ def _get_handler(
             source=kwargs.get("source"),
             reader_type=format_type,
         )
-    # Enforce strict-mode at instantiation time
-    if os.getenv("FSM_IO_STRICT_SCHEMA", "0") == "1" and schema is None:
-        from fin_statement_model.core.errors import ConfigurationError
-
-        raise ConfigurationError(
-            f"Schema required for {handler_type}er '{format_type}' in strict mode"
+    # Enforce schema-only mode for writers (remove legacy schema-less support)
+    if handler_type == "write" and schema is None:
+        raise UnsupportedWriterError(
+            f"Writer '{format_type}' requires a Pydantic schema; legacy schema-less mode removed.",
+            target=kwargs.get("target"),
+            writer_type=format_type,
         )
 
     # Prepare error context based on handler type
@@ -302,21 +302,6 @@ def _get_handler(
         # Instantiate handler with validated config
         try:
             return cast(Union[DataReader, DataWriter], handler_class(cfg))
-        except Exception as e:
-            logger.error(
-                f"Failed to instantiate {handler_type}er for format '{format_type}' "
-                f"({handler_class.__name__}): {e}",
-                exc_info=True,
-            )
-            raise error_class(
-                message=f"Failed to initialize {handler_type}er",
-                original_error=e,
-                **error_context,
-            ) from e
-    else:
-        # Lenient: instantiate handler directly without schema validation
-        try:
-            return cast(Union[DataReader, DataWriter], handler_class(**kwargs))
         except Exception as e:
             logger.error(
                 f"Failed to instantiate {handler_type}er for format '{format_type}' "
