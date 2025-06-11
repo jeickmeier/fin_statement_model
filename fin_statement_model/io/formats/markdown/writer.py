@@ -35,7 +35,8 @@ class MarkdownWriter(DataWriter):
         """Initializes the MarkdownWriter."""
         # Provide a default config; missing fields are handled by Pydantic defaults.
         self.config = config or MarkdownWriterConfig(
-            format_type="markdown", target=None  # type: ignore[call-arg]
+            format_type="markdown",
+            target=None,  # type: ignore[call-arg]
         )
         logger.debug(f"Initialized MarkdownWriter with config: {self.config}")
 

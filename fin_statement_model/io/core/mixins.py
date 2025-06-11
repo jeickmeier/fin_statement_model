@@ -1032,9 +1032,9 @@ class ValidationResultCollector:
         Args:
             context: Optional context information for validation.
         """
-        self.results: list[tuple[str, bool, str, str]] = (
-            []
-        )  # item, valid, message, category
+        self.results: list[
+            tuple[str, bool, str, str]
+        ] = []  # item, valid, message, category
         self.errors: list[str] = []
         self.warnings: list[str] = []
         self.context = context or {}

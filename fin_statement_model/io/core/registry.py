@@ -319,7 +319,9 @@ def _get_handler(
             ) from e
 
     # Explicitly handle unreachable code paths
-    raise RuntimeError(f"Unhandled handler instantiation for {handler_type} '{format_type}'")
+    raise RuntimeError(
+        f"Unhandled handler instantiation for {handler_type} '{format_type}'"
+    )
 
 
 # ===== Registry Access Functions =====
