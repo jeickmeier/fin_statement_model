@@ -1,7 +1,7 @@
-"""Type definitions and data structures for forecasting module.
+"""Define types and data structures for the forecasting module.
 
-This module contains all the type aliases, enums, and data structures
-used throughout the forecasting sub-module.
+This module provides type aliases, Pydantic models for configuration and
+results, and error types used throughout the forecasting sub-module.
 """
 
 from typing import Any, Union, Literal
@@ -32,7 +32,10 @@ ForecastMethodType = Literal[
 
 
 class StatisticalConfig(BaseModel):
-    """Configuration for statistical forecasting method."""
+    """Define configuration schema for statistical forecasting method.
+
+    Validates 'distribution' and 'params' based on the distribution type.
+    """
 
     distribution: str
     params: dict[str, float]
@@ -73,7 +76,10 @@ class StatisticalConfig(BaseModel):
 
 
 class ForecastConfig(BaseModel):
-    """Configuration for a forecast operation."""
+    """Define configuration for a forecast operation.
+
+    Enforces method selection and method-specific parameters.
+    """
 
     method: ForecastMethodType
     config: Any  # Method-specific configuration
@@ -119,7 +125,10 @@ class ForecastConfig(BaseModel):
 
 
 class ForecastResult(BaseModel):
-    """Result of a forecast operation."""
+    """Represent forecast results for a node.
+
+    Contains the node name, forecast periods, result values, method, and base period.
+    """
 
     node_name: str
     periods: list[str]

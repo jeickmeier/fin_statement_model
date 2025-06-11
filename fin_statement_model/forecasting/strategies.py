@@ -1,7 +1,7 @@
-"""Forecast method registry and selection strategies.
+"""Provide a registry and selection strategies for forecast methods.
 
-This module provides a registry for forecast methods and handles method
-selection and configuration.
+This module manages the ForecastMethodRegistry for registering and retrieving
+forecast methods, and exposes convenience functions for global access.
 """
 
 import logging
@@ -20,10 +20,10 @@ logger = logging.getLogger(__name__)
 
 
 class ForecastMethodRegistry:
-    """Registry for forecast methods.
+    """Manage forecast methods in a registry.
 
-    This class manages the available forecast methods and provides
-    a centralized way to access and register them.
+    Provides methods to register, unregister, retrieve, and list available
+    forecast methods. Supports querying method metadata.
 
     Example:
         >>> registry = ForecastMethodRegistry()
@@ -146,9 +146,7 @@ forecast_registry = ForecastMethodRegistry()
 
 
 def get_forecast_method(name: str) -> ForecastMethod:
-    """Get a forecast method from the global registry.
-
-    This is a convenience function that uses the global registry.
+    """Retrieve a forecast method from the global registry.
 
     Args:
         name: The name of the method to retrieve.
@@ -164,8 +162,6 @@ def get_forecast_method(name: str) -> ForecastMethod:
 
 def register_forecast_method(method: ForecastMethod) -> None:
     """Register a custom forecast method in the global registry.
-
-    This is a convenience function that uses the global registry.
 
     Args:
         method: The forecast method to register.

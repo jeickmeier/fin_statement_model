@@ -1,9 +1,8 @@
-"""Forecasting operations dedicated to statement-level financial graphs.
+"""Provide forecasting operations for financial statement graphs.
 
-This module provides the StatementForecaster class, which handles forecasting
-operations for financial statement graphs. It offers both mutating operations
-(that modify the graph) and non-mutating operations (that return forecast values
-without changing the graph state).
+This module defines the StatementForecaster class to perform mutating and
+non-mutating forecast operations on financial statement graphs, handling
+period management, validation, and method selection.
 """
 
 import logging
@@ -29,24 +28,14 @@ logger = logging.getLogger(__name__)
 
 
 class StatementForecaster:
-    """Handles forecasting operations specifically for a FinancialStatementGraph.
-
-    This class provides two main approaches to forecasting:
-
-    1. **Mutating operations** (`create_forecast`): Modifies the graph by adding
-       forecast periods and updating node values directly. This is useful when
-       you want to extend the graph with forecast data for further analysis.
-
-    2. **Non-mutating operations** (`forecast_value`): Returns forecast values
-       without modifying the graph state. This is useful for what-if scenarios
-       or when you need forecast values without altering the original data.
-
-    The forecaster supports multiple forecasting methods:
-    - simple: Simple growth rate
-    - curve: Variable growth rates per period
-    - statistical: Random sampling from distributions
-    - average: Average of historical values
-    - historical_growth: Based on historical growth patterns
+    """Perform forecasting operations on a financial statement graph.
+    
+    This class supports both mutating and non-mutating forecasts:
+    
+    - Mutating forecasts (`create_forecast`): adds forecast periods and updates node values.
+    - Non-mutating forecasts (`forecast_value`): computes and returns forecast values without modifying the graph.
+    
+    Supported forecasting methods: simple, curve, statistical, average, historical_growth.
     """
 
     def __init__(self, fsg: Any) -> None:

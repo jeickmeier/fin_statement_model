@@ -1,6 +1,16 @@
-"""Curve forecasting method with variable growth rates.
+"""Forecast future values using variable growth rates per period.
 
-This method applies different growth rates for each forecast period.
+This method applies different growth rates for each forecast period,
+allowing non-linear growth patterns across periods.
+
+Configuration:
+    - Single numeric value: Will be expanded to match forecast periods
+    - List of numeric values: One growth rate per forecast period
+
+Example:
+    >>> method = CurveForecastMethod()
+    >>> params = method.get_forecast_params([0.05, 0.04, 0.03], ["2024", "2025", "2026"])
+    >>> # Returns: {"forecast_type": "curve", "growth_params": [0.05, 0.04, 0.03]}
 """
 
 from typing import Any
@@ -9,19 +19,19 @@ from .base import BaseForecastMethod
 
 
 class CurveForecastMethod(BaseForecastMethod):
-    """Variable growth rate forecasting.
+    """Forecast future values using variable growth rates per period.
 
     This method applies different growth rates for each forecast period,
-    allowing for non-linear growth patterns.
+    allowing non-linear growth patterns across periods.
 
     Configuration:
-        - List of numeric values: One growth rate per forecast period
         - Single numeric value: Will be expanded to match forecast periods
+        - List of numeric values: One growth rate per forecast period
 
     Example:
         >>> method = CurveForecastMethod()
-        >>> params = method.get_forecast_params([0.05, 0.04, 0.03], ['2024', '2025', '2026'])
-        >>> # Returns: {'forecast_type': 'curve', 'growth_params': [0.05, 0.04, 0.03]}
+        >>> params = method.get_forecast_params([0.05, 0.04, 0.03], ["2024", "2025", "2026"])
+        >>> # Returns: {"forecast_type": "curve", "growth_params": [0.05, 0.04, 0.03]}
     """
 
     @property

@@ -1,7 +1,10 @@
-"""Period inference and management utilities for forecasting.
+"""Provide utilities for inferring and managing periods in forecasting.
 
-This module handles the logic for determining historical periods,
-base periods, and managing period-related operations.
+This module handles:
+- Inferring historical periods from graph state
+- Determining base periods for forecasting
+- Validating period sequences
+- Ensuring forecast periods exist in the graph
 """
 
 import logging
@@ -14,13 +17,10 @@ logger = logging.getLogger(__name__)
 
 
 class PeriodManager:
-    """Handles period inference and management for forecasting.
+    """Infer and manage forecasting periods.
 
-    This class provides utilities for:
-    - Inferring historical periods from graph state
-    - Determining base periods for forecasting
-    - Validating period sequences
-    - Managing period transitions
+    Provides utilities to infer historical periods, determine base periods,
+    validate period sequences, and manage period transitions on the graph.
     """
 
     @staticmethod

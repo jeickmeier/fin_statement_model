@@ -1,6 +1,16 @@
-"""Historical growth forecasting method based on past growth patterns.
+"""Forecast future values based on average historical growth patterns.
 
-This method calculates future values based on the average historical growth rate.
+This method calculates future values by determining the average historical
+growth rate and applying it to the base value for forecast periods.
+
+Configuration:
+    - Not required (pass None or 0)
+    - Automatically calculates growth from historical data based on minimum periods configured
+
+Example:
+    >>> method = HistoricalGrowthForecastMethod()
+    >>> params = method.get_forecast_params(None, ["2024", "2025"])
+    >>> # Returns: {"forecast_type": "historical_growth", "growth_params": None}
 """
 
 import logging
@@ -15,20 +25,21 @@ logger = logging.getLogger(__name__)
 
 
 class HistoricalGrowthForecastMethod(BaseForecastMethod):
-    """Historical growth pattern forecasting.
+    """Forecast future values based on average historical growth patterns.
 
-    This method calculates the average historical growth rate and applies
-    it to forecast future values. It's useful when past growth patterns
-    are expected to continue.
+    This method calculates the average historical growth rate and applies it to
+    forecast future values. Useful when past growth patterns are expected to
+    continue.
 
     Configuration:
-        - Not required (pass 0 or None)
-        - The method will automatically calculate growth from historical data
+        - Not required (pass None or 0)
+        - Automatically calculates growth from historical data requiring at least
+          cfg("forecasting.min_historical_periods") data points
 
     Example:
         >>> method = HistoricalGrowthForecastMethod()
-        >>> params = method.get_forecast_params(None, ['2024', '2025'])
-        >>> # Returns: {'forecast_type': 'historical_growth', 'growth_params': None}
+        >>> params = method.get_forecast_params(None, ["2024", "2025"])
+        >>> # Returns: {"forecast_type": "historical_growth", "growth_params": None}
     """
 
     @property

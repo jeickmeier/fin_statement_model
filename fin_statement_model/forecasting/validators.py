@@ -1,7 +1,7 @@
-"""Input validation and error checking for forecasting operations.
+"""Validate inputs for forecasting operations.
 
-This module provides validation utilities to ensure forecast inputs
-are valid before processing.
+This module provides utilities to check forecast parameters, node configurations,
+and period information before performing forecasting operations.
 """
 
 import logging
@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 
 
 class ForecastValidator:
-    """Validates inputs for forecasting operations.
+    """Validate input parameters for forecasting operations.
 
-    This class provides methods to validate various aspects of forecast
-    inputs including periods, node configurations, and method parameters.
+    Contains methods to validate periods, node configurations, forecast configs,
+    and forecast results before executing forecasting logic.
     """
 
     @staticmethod

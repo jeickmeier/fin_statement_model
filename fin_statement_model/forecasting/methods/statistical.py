@@ -1,6 +1,22 @@
-"""Statistical forecasting method using random sampling.
+"""Forecast future values by sampling from statistical distributions.
 
-This method generates forecast values by sampling from statistical distributions.
+This method generates forecast values by sampling from specified statistical
+distributions, useful for Monte Carlo simulations and uncertainty analysis.
+
+Configuration:
+    - 'distribution': 'normal' or 'uniform'
+    - 'params': Distribution-specific parameters
+        - For 'normal': {'mean': float, 'std': float}
+        - For 'uniform': {'low': float, 'high': float}
+
+Example:
+    >>> method = StatisticalForecastMethod()
+    >>> config = {
+    ...     "distribution": "normal",
+    ...     "params": {"mean": 0.05, "std": 0.02}
+    ... }
+    >>> params = method.get_forecast_params(config, ["2024", "2025"])
+    >>> # Returns: {"forecast_type": "statistical", "growth_params": <callable>}
 """
 
 from typing import Any
@@ -13,14 +29,12 @@ from fin_statement_model.forecasting.types import StatisticalConfig
 
 
 class StatisticalForecastMethod(BaseForecastMethod):
-    """Statistical forecasting using random distributions.
+    """Forecast future values by sampling from statistical distributions.
 
-    This method generates forecast values by sampling from specified
-    statistical distributions, useful for Monte Carlo simulations
-    and uncertainty analysis.
+    This method generates forecast values by sampling from specified statistical
+    distributions, useful for Monte Carlo simulations and uncertainty analysis.
 
     Configuration:
-        Dict with:
         - 'distribution': 'normal' or 'uniform'
         - 'params': Distribution-specific parameters
             - For 'normal': {'mean': float, 'std': float}
@@ -29,11 +43,11 @@ class StatisticalForecastMethod(BaseForecastMethod):
     Example:
         >>> method = StatisticalForecastMethod()
         >>> config = {
-        ...     'distribution': 'normal',
-        ...     'params': {'mean': 0.05, 'std': 0.02}
+        ...     "distribution": "normal",
+        ...     "params": {"mean": 0.05, "std": 0.02}
         ... }
-        >>> params = method.get_forecast_params(config, ['2024', '2025'])
-        >>> # Returns: {'forecast_type': 'statistical', 'growth_params': <callable>}
+        >>> params = method.get_forecast_params(config, ["2024", "2025"])
+        >>> # Returns: {"forecast_type": "statistical", "growth_params": <callable>}
     """
 
     @property

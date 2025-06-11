@@ -1,6 +1,7 @@
-"""Base protocol and abstract class for forecast methods.
+"""Define base protocol and abstract class for forecast methods.
 
-This module defines the interface that all forecast methods must implement.
+This module defines the interface that all forecast methods must implement
+and provides an abstract base class with common functionality.
 """
 
 from typing import Protocol, Any, Optional, runtime_checkable
@@ -11,7 +12,11 @@ from fin_statement_model.core.nodes import Node
 
 @runtime_checkable
 class ForecastMethod(Protocol):
-    """Protocol that all forecast methods must implement."""
+    """Protocol for forecast methods to implement.
+
+    All forecast methods must provide a name property and implement
+    validate_config and normalize_params, optionally prepare_historical_data.
+    """
 
     @property
     def name(self) -> str:
@@ -59,9 +64,10 @@ class ForecastMethod(Protocol):
 
 
 class BaseForecastMethod(ABC):
-    """Abstract base class for forecast methods.
+    """Provide an abstract base class for forecast methods.
 
-    Provides common functionality and enforces the interface.
+    Enforces the forecast method interface and provides common functionality,
+    including the get_forecast_params convenience method.
     """
 
     @property

@@ -1,7 +1,7 @@
-"""Custom Exception classes for the forecasting package.
+"""Define custom exceptions for forecasting operations.
 
-These exceptions provide specific error information related to forecasting
-operations, method configuration, and forecast result handling.
+This module provides exception classes for forecasting methods, configuration,
+node handling, and result validation within the forecasting sub-module.
 """
 
 from typing import Optional, Any

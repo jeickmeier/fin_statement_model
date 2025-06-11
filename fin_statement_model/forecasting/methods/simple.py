@@ -1,6 +1,16 @@
-"""Simple growth rate forecasting method.
+"""Forecast future values using a constant growth rate.
 
-This method applies a constant growth rate to forecast future values.
+This method applies a constant growth rate to the base value for all forecast
+periods.
+
+Configuration:
+    - Single numeric value: The growth rate (e.g., 0.05 for 5% growth)
+    - List with single value: Will use the first value
+
+Example:
+    >>> method = SimpleForecastMethod()
+    >>> params = method.get_forecast_params(0.05, ["2024", "2025"])
+    >>> # Returns: {"forecast_type": "simple", "growth_params": 0.05}
 """
 
 from typing import Any
@@ -9,10 +19,10 @@ from .base import BaseForecastMethod
 
 
 class SimpleForecastMethod(BaseForecastMethod):
-    """Simple growth rate forecasting.
+    """Forecast future values using a constant growth rate.
 
-    This method applies a constant growth rate to the base value
-    for all forecast periods.
+    This method applies a constant growth rate to the base value for all forecast
+    periods.
 
     Configuration:
         - Single numeric value: The growth rate (e.g., 0.05 for 5% growth)
@@ -20,8 +30,8 @@ class SimpleForecastMethod(BaseForecastMethod):
 
     Example:
         >>> method = SimpleForecastMethod()
-        >>> params = method.get_forecast_params(0.05, ['2024', '2025'])
-        >>> # Returns: {'forecast_type': 'simple', 'growth_params': 0.05}
+        >>> params = method.get_forecast_params(0.05, ["2024", "2025"])
+        >>> # Returns: {"forecast_type": "simple", "growth_params": 0.05}
     """
 
     @property

@@ -1,10 +1,10 @@
-"""Forecasting sub-module for financial statement models.
+"""Provide forecasting capabilities for financial statement graphs.
 
-This module provides comprehensive forecasting capabilities including:
-- Multiple forecast methods (simple, curve, statistical, average, historical growth)
-- Mutating and non-mutating forecast operations
-- Extensible architecture for custom forecast methods
-- Period management and validation utilities
+This sub-module offers:
+- Multiple forecast methods (simple, curve, statistical, average, historical_growth)
+- Mutating and non-mutating forecast operations on graphs
+- Extensible registry for custom forecast methods
+- Utilities for period management and validation
 
 Example:
     >>> from fin_statement_model.forecasting import StatementForecaster
@@ -12,18 +12,18 @@ Example:
     >>>
     >>> # Mutating forecast - modifies the graph
     >>> forecaster.create_forecast(
-    ...     forecast_periods=['2024', '2025'],
+    ...     forecast_periods=["2024", "2025"],
     ...     node_configs={
-    ...         'revenue': {'method': 'simple', 'config': 0.05},
-    ...         'costs': {'method': 'curve', 'config': [0.03, 0.04]}
+    ...         "revenue": {"method": "simple", "config": 0.05},
+    ...         "costs": {"method": "curve", "config": [0.03, 0.04]}
     ...     }
     ... )
     >>>
     >>> # Non-mutating forecast - returns values without modifying graph
     >>> values = forecaster.forecast_value(
-    ...     'revenue',
-    ...     forecast_periods=['2024', '2025'],
-    ...     forecast_config={'method': 'simple', 'config': 0.05}
+    ...     "revenue",
+    ...     forecast_periods=["2024", "2025"],
+    ...     forecast_config={"method": "simple", "config": 0.05}
     ... )
 """
 

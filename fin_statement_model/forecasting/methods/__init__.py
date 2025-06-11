@@ -1,6 +1,6 @@
-"""Forecast method implementations.
+"""Provide built-in forecast method implementations.
 
-This module contains all the built-in forecast methods available in the library.
+This module exports all built-in forecast methods available in the library.
 """
 
 from .base import ForecastMethod, BaseForecastMethod

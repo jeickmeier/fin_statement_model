@@ -1,6 +1,15 @@
-"""Average forecasting method based on historical values.
+"""Forecast future values as the historical average of available data.
 
-This method forecasts future values as the average of historical values.
+This method calculates forecast values as the historical average of available
+data points. Useful for stable metrics or when expecting mean reversion.
+
+Configuration:
+    - Not required (pass None or 0)
+
+Example:
+    >>> method = AverageForecastMethod()
+    >>> params = method.get_forecast_params(None, ["2024", "2025"])
+    >>> # Returns: {"forecast_type": "average", "growth_params": None}
 """
 
 import logging
@@ -14,19 +23,18 @@ logger = logging.getLogger(__name__)
 
 
 class AverageForecastMethod(BaseForecastMethod):
-    """Historical average forecasting.
+    """Forecast future values as the historical average of available data.
 
-    This method calculates forecast values as the average of historical
-    values. Useful for stable metrics or when expecting mean reversion.
+    This method calculates forecast values as the historical average of available
+    data points. Useful for stable metrics or when expecting mean reversion.
 
     Configuration:
-        - Not required (pass 0 or None)
-        - The method will automatically use all available historical data
+        - Not required (pass None or 0)
 
     Example:
         >>> method = AverageForecastMethod()
-        >>> params = method.get_forecast_params(None, ['2024', '2025'])
-        >>> # Returns: {'forecast_type': 'average', 'growth_params': None}
+        >>> params = method.get_forecast_params(None, ["2024", "2025"])
+        >>> # Returns: {"forecast_type": "average", "growth_params": None}
     """
 
     @property
