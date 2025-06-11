@@ -1,8 +1,8 @@
-"""Centralized logging configuration for the fin_statement_model library.
+"""Configure centralized logging for the fin_statement_model library.
 
 This module provides consistent logging configuration across the entire package.
-It sets up appropriate formatters, handlers, and logging levels for different
-components of the library.
+It defines formatters, handlers, and logging levels for different components of
+the library.
 """
 
 import logging
@@ -24,14 +24,19 @@ LOG_FORMAT_ENV = "FSM_LOG_FORMAT"
 def get_logger(name: str) -> logging.Logger:
     """Get a logger instance with the given name.
 
-    This is a convenience function that ensures all loggers are properly
-    namespaced under the fin_statement_model package.
+    Ensure the logger is namespaced under the fin_statement_model package.
+    If `name` starts with '.', it will be prefixed with 'fin_statement_model'.
 
     Args:
         name: The name of the logger, typically __name__
 
     Returns:
-        A configured logger instance
+        A configured logger instance.
+
+    Example:
+        >>> from fin_statement_model.logging_config import get_logger
+        >>> logger = get_logger(__name__)
+        >>> logger.debug("Debug message")
     """
     if not name.startswith("fin_statement_model") and name.startswith("."):
         name = f"fin_statement_model{name}"
@@ -57,6 +62,9 @@ def setup_logging(
                       If None, uses FSM_LOG_FORMAT env var or default format.
         log_file_path: Optional file path to write logs to.
         detailed: If True, uses detailed format with file/line information.
+
+    Returns:
+        None
 
     Example:
         >>> from fin_statement_model import logging_config
@@ -116,6 +124,9 @@ def configure_library_logging() -> None:
     This is called automatically when the library is imported and sets up
     a NullHandler to prevent "no handler" warnings. Users should call
     setup_logging() to enable actual logging output.
+
+    Returns:
+        None
     """
     # Attach a NullHandler to the base fin_statement_model logger so that
     # all child loggers inherit it and avoid 'No handler' warnings by default.
