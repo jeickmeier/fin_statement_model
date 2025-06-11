@@ -7,7 +7,6 @@ from .mixins import (
     ConfigurationMixin,
     DataFrameBasedWriter,
     ValueExtractionMixin,
-    BatchProcessingMixin,
     ValidationResultCollector,
     handle_read_errors,
     handle_write_errors,
@@ -24,7 +23,6 @@ from .registry import (
 
 __all__ = [
     # Mixins and utilities
-    "BatchProcessingMixin",
     "ConfigurationMixin",
     "DataFrameBasedWriter",
     # Base classes
