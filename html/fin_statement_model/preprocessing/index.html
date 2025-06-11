@@ -1,0 +1,2017 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.preprocessing API documentation</title>
+<meta name="description" content="Preprocessing module entrypoint …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.preprocessing</code></h1>
+</header>
+<section id="section-intro">
+<p>Preprocessing module entrypoint.</p>
+<p>Provides the core interfaces, services, and exceptions for data preprocessing:</p>
+<ul>
+<li>DataTransformer: Abstract base class for defining data transformations.</li>
+<li>CompositeTransformer: Compose multiple transformers into sequential pipelines.</li>
+<li>TransformerFactory: Discover, register, and instantiate transformers by name.</li>
+<li>TransformationService: High-level API for common tasks:</li>
+<li>normalize_data</li>
+<li>transform_time_series</li>
+<li>convert_periods</li>
+<li>format_statement</li>
+<li>create/apply transformation pipelines</li>
+<li>Exceptions: PreprocessingError, TransformerRegistrationError, TransformerConfigurationError,
+PeriodConversionError, NormalizationError, TimeSeriesError.</li>
+</ul>
+<p>Built-in transformers in <code><a title="fin_statement_model.preprocessing.transformers" href="transformers/index.html">fin_statement_model.preprocessing.transformers</a></code>
+are automatically discovered and registered on import.</p>
+<p>Usage Example:
+&gt;&gt;&gt; import pandas as pd
+&gt;&gt;&gt; from fin_statement_model.preprocessing import TransformationService
+&gt;&gt;&gt; df = pd.DataFrame({'revenue': [1000, 1100], 'cogs': [600, 650]}, index=['2022', '2023'])
+&gt;&gt;&gt; service = TransformationService()
+&gt;&gt;&gt; normalized = service.normalize_data(df, normalization_type='percent_of', reference='revenue')
+&gt;&gt;&gt; print(normalized)</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.preprocessing.base_transformer" href="base_transformer.html">fin_statement_model.preprocessing.base_transformer</a></code></dt>
+<dd>
+<div class="desc"><p>Define the base DataTransformer interface for the preprocessing layer …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.preprocessing.config" href="config.html">fin_statement_model.preprocessing.config</a></code></dt>
+<dd>
+<div class="desc"><p>Configuration models and enums for preprocessing transformers …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.preprocessing.errors" href="errors.html">fin_statement_model.preprocessing.errors</a></code></dt>
+<dd>
+<div class="desc"><p>Define custom exception classes for the preprocessing package …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.preprocessing.transformer_service" href="transformer_service.html">fin_statement_model.preprocessing.transformer_service</a></code></dt>
+<dd>
+<div class="desc"><p>Provide TransformerFactory and TransformationService for preprocessing …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.preprocessing.transformers" href="transformers/index.html">fin_statement_model.preprocessing.transformers</a></code></dt>
+<dd>
+<div class="desc"><p>Package for preprocessing transformers …</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.preprocessing.CompositeTransformer"><code class="flex name class">
+<span>class <span class="ident">CompositeTransformer</span></span>
+<span>(</span><span>transformers: list[<a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a>],<br>config: dict[str, object] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CompositeTransformer(DataTransformer):
+    &#34;&#34;&#34;Compose multiple transformers into a pipeline.
+
+    This allows building complex transformation chains from simple steps.
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        transformers: list[DataTransformer],
+        config: Optional[dict[str, object]] = None,
+    ):
+        &#34;&#34;&#34;Initialize with a list of transformers.
+
+        Args:
+            transformers: List of transformers to apply in sequence
+            config: Optional configuration dictionary
+        &#34;&#34;&#34;
+        super().__init__(config)
+        self.transformers = transformers
+
+    def _transform_impl(
+        self, data: Union[pd.DataFrame, pd.Series]
+    ) -&gt; Union[pd.DataFrame, pd.Series]:
+        &#34;&#34;&#34;Apply each transformer in sequence.
+
+        Args:
+            data: The input data to transform
+
+        Returns:
+            Data transformed by the pipeline
+        &#34;&#34;&#34;
+        result = data
+        for transformer in self.transformers:
+            result = transformer.execute(result)
+        return result
+
+    def add_transformer(self, transformer: DataTransformer) -&gt; None:
+        &#34;&#34;&#34;Add a transformer to the pipeline.
+
+        Args:
+            transformer: The transformer to add
+        &#34;&#34;&#34;
+        self.transformers.append(transformer)
+
+    def remove_transformer(self, index: int) -&gt; Optional[DataTransformer]:
+        &#34;&#34;&#34;Remove a transformer from the pipeline.
+
+        Args:
+            index: Index of the transformer to remove
+
+        Returns:
+            The removed transformer or None if index is invalid
+        &#34;&#34;&#34;
+        if 0 &lt;= index &lt; len(self.transformers):
+            return self.transformers.pop(index)
+        return None
+
+    def validate_input(self, data: object) -&gt; bool:
+        &#34;&#34;&#34;Validate input for the composite transformer.
+
+        If the pipeline is empty, accepts any data; otherwise, delegates validation to the first transformer.
+
+        Args:
+            data (object): Input data to validate.
+
+        Returns:
+            bool: True if input is valid for the pipeline.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#34;transformers&#34;) or not self.transformers:
+            return True
+        return self.transformers[0].validate_input(data)</code></pre>
+</details>
+<div class="desc"><p>Compose multiple transformers into a pipeline.</p>
+<p>This allows building complex transformation chains from simple steps.</p>
+<p>Initialize with a list of transformers.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>transformers</code></strong></dt>
+<dd>List of transformers to apply in sequence</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional configuration dictionary</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.CompositeTransformer.add_transformer"><code class="name flex">
+<span>def <span class="ident">add_transformer</span></span>(<span>self,<br>transformer: <a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_transformer(self, transformer: DataTransformer) -&gt; None:
+    &#34;&#34;&#34;Add a transformer to the pipeline.
+
+    Args:
+        transformer: The transformer to add
+    &#34;&#34;&#34;
+    self.transformers.append(transformer)</code></pre>
+</details>
+<div class="desc"><p>Add a transformer to the pipeline.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>transformer</code></strong></dt>
+<dd>The transformer to add</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.CompositeTransformer.remove_transformer"><code class="name flex">
+<span>def <span class="ident">remove_transformer</span></span>(<span>self, index: int) ‑> <a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a> | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_transformer(self, index: int) -&gt; Optional[DataTransformer]:
+    &#34;&#34;&#34;Remove a transformer from the pipeline.
+
+    Args:
+        index: Index of the transformer to remove
+
+    Returns:
+        The removed transformer or None if index is invalid
+    &#34;&#34;&#34;
+    if 0 &lt;= index &lt; len(self.transformers):
+        return self.transformers.pop(index)
+    return None</code></pre>
+</details>
+<div class="desc"><p>Remove a transformer from the pipeline.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>index</code></strong></dt>
+<dd>Index of the transformer to remove</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The removed transformer or None if index is invalid</p></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.CompositeTransformer.validate_input"><code class="name flex">
+<span>def <span class="ident">validate_input</span></span>(<span>self, data: object) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_input(self, data: object) -&gt; bool:
+    &#34;&#34;&#34;Validate input for the composite transformer.
+
+    If the pipeline is empty, accepts any data; otherwise, delegates validation to the first transformer.
+
+    Args:
+        data (object): Input data to validate.
+
+    Returns:
+        bool: True if input is valid for the pipeline.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#34;transformers&#34;) or not self.transformers:
+        return True
+    return self.transformers[0].validate_input(data)</code></pre>
+</details>
+<div class="desc"><p>Validate input for the composite transformer.</p>
+<p>If the pipeline is empty, accepts any data; otherwise, delegates validation to the first transformer.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>object</code></dt>
+<dd>Input data to validate.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if input is valid for the pipeline.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.execute" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer.execute">execute</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.transform" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer.transform">transform</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config">validate_config</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.preprocessing.DataTransformer"><code class="flex name class">
+<span>class <span class="ident">DataTransformer</span></span>
+<span>(</span><span>config: dict[str, object] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataTransformer(ABC):
+    &#34;&#34;&#34;Define base class for data transformers.
+
+    Data transformers convert data between formats and apply business rules.
+
+    This separation follows the Single Responsibility Principle for maintainability.
+    &#34;&#34;&#34;
+
+    def __init__(self, config: Optional[dict[str, object]] = None):
+        &#34;&#34;&#34;Initialize the transformer with optional configuration.
+
+        Args:
+            config: Optional configuration dictionary for the transformer
+        &#34;&#34;&#34;
+        self.config = config or {}
+        logger.debug(
+            f&#34;Initialized {self.__class__.__name__} with config: {self.config}&#34;
+        )
+
+    def transform(
+        self, data: Union[pd.DataFrame, pd.Series]
+    ) -&gt; Union[pd.DataFrame, pd.Series]:
+        &#34;&#34;&#34;Transform the input data.
+
+        Args:
+            data: The data to transform.
+
+        Returns:
+            The transformed data.
+
+        Raises:
+            TransformationError: If transformation fails.
+        &#34;&#34;&#34;
+        try:
+            logger.debug(f&#34;Transforming data with {self.__class__.__name__}&#34;)
+            return self._transform_impl(data)
+        except Exception as e:
+            logger.exception(f&#34;Error transforming data with {self.__class__.__name__}&#34;)
+            raise TransformationError(
+                &#34;Error transforming data&#34;,
+                transformer_type=self.__class__.__name__,
+            ) from e
+
+    @abstractmethod
+    def _transform_impl(
+        self, data: Union[pd.DataFrame, pd.Series]
+    ) -&gt; Union[pd.DataFrame, pd.Series]:
+        &#34;&#34;&#34;Apply the transformation logic.
+
+        This method must be implemented by subclasses to define the specific
+        transformation logic.
+
+        Args:
+            data: The data to transform.
+
+        Returns:
+            The transformed data.
+
+        Raises:
+            TransformationError: If transformation fails.
+        &#34;&#34;&#34;
+
+    def validate_input(self, data: object) -&gt; bool:
+        &#34;&#34;&#34;Validate that the input data is a pandas DataFrame by default.
+
+        This performs a basic DataFrame type check and can be overridden by subclasses with more specific validation logic.
+
+        Args:
+            data (object): The input data to validate.
+
+        Returns:
+            bool: True if data is a pandas.DataFrame, False otherwise.
+        &#34;&#34;&#34;
+        return isinstance(data, pd.DataFrame)
+
+    def _pre_transform_hook(self, data: object) -&gt; object:
+        &#34;&#34;&#34;Hook method called before transformation.
+
+        Args:
+            data: The input data
+
+        Returns:
+            Processed data to be passed to the transform method
+
+        This method can be overridden by subclasses to add pre-processing steps.
+        &#34;&#34;&#34;
+        return data
+
+    def _post_transform_hook(self, data: object) -&gt; object:
+        &#34;&#34;&#34;Hook method called after transformation.
+
+        Args:
+            data: The transformed data
+
+        Returns:
+            Final processed data
+
+        This method can be overridden by subclasses to add post-processing steps.
+        &#34;&#34;&#34;
+        return data
+
+    def execute(self, data: object) -&gt; object:
+        &#34;&#34;&#34;Execute the complete transformation pipeline.
+
+        Args:
+            data: The input data to transform
+
+        Returns:
+            Transformed data
+
+        Raises:
+            ValueError: If the data is invalid or cannot be transformed
+        &#34;&#34;&#34;
+        if not self.validate_input(data):
+            raise ValueError(f&#34;Invalid input data for {self.__class__.__name__}&#34;)
+
+        try:
+            # Apply pre-transform hook
+            processed_data = self._pre_transform_hook(data)
+
+            # Perform transformation
+            result = self.transform(processed_data)
+            result = self._post_transform_hook(result)
+            logger.debug(
+                f&#34;Successfully transformed data with {self.__class__.__name__}&#34;
+            )
+        except Exception as e:
+            logger.exception(f&#34;Error transforming data with {self.__class__.__name__}&#34;)
+            raise ValueError(&#34;Error transforming data&#34;) from e
+        else:
+            return result
+
+    def validate_config(self) -&gt; None:
+        &#34;&#34;&#34;Validate the transformer configuration.
+
+        This method can be overridden by subclasses to add specific validation logic.
+
+        Raises:
+            TransformationError: If the configuration is invalid.
+        &#34;&#34;&#34;
+        if self.config is None:
+            raise TransformationError(
+                f&#34;Invalid input data for {self.__class__.__name__}&#34;,
+                transformer_type=self.__class__.__name__,
+            )</code></pre>
+</details>
+<div class="desc"><p>Define base class for data transformers.</p>
+<p>Data transformers convert data between formats and apply business rules.</p>
+<p>This separation follows the Single Responsibility Principle for maintainability.</p>
+<p>Initialize the transformer with optional configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional configuration dictionary for the transformer</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.preprocessing.base_transformer.CompositeTransformer" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.CompositeTransformer">CompositeTransformer</a></li>
+<li><a title="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer" href="transformers/normalization.html#fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer">NormalizationTransformer</a></li>
+<li><a title="fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer" href="transformers/period_conversion.html#fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer">PeriodConversionTransformer</a></li>
+<li><a title="fin_statement_model.preprocessing.transformers.time_series.TimeSeriesTransformer" href="transformers/time_series.html#fin_statement_model.preprocessing.transformers.time_series.TimeSeriesTransformer">TimeSeriesTransformer</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.DataTransformer.execute"><code class="name flex">
+<span>def <span class="ident">execute</span></span>(<span>self, data: object) ‑> object</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def execute(self, data: object) -&gt; object:
+    &#34;&#34;&#34;Execute the complete transformation pipeline.
+
+    Args:
+        data: The input data to transform
+
+    Returns:
+        Transformed data
+
+    Raises:
+        ValueError: If the data is invalid or cannot be transformed
+    &#34;&#34;&#34;
+    if not self.validate_input(data):
+        raise ValueError(f&#34;Invalid input data for {self.__class__.__name__}&#34;)
+
+    try:
+        # Apply pre-transform hook
+        processed_data = self._pre_transform_hook(data)
+
+        # Perform transformation
+        result = self.transform(processed_data)
+        result = self._post_transform_hook(result)
+        logger.debug(
+            f&#34;Successfully transformed data with {self.__class__.__name__}&#34;
+        )
+    except Exception as e:
+        logger.exception(f&#34;Error transforming data with {self.__class__.__name__}&#34;)
+        raise ValueError(&#34;Error transforming data&#34;) from e
+    else:
+        return result</code></pre>
+</details>
+<div class="desc"><p>Execute the complete transformation pipeline.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The input data to transform</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Transformed data</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the data is invalid or cannot be transformed</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.DataTransformer.transform"><code class="name flex">
+<span>def <span class="ident">transform</span></span>(<span>self, data: pandas.core.frame.DataFrame | pandas.core.series.Series) ‑> pandas.core.frame.DataFrame | pandas.core.series.Series</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform(
+    self, data: Union[pd.DataFrame, pd.Series]
+) -&gt; Union[pd.DataFrame, pd.Series]:
+    &#34;&#34;&#34;Transform the input data.
+
+    Args:
+        data: The data to transform.
+
+    Returns:
+        The transformed data.
+
+    Raises:
+        TransformationError: If transformation fails.
+    &#34;&#34;&#34;
+    try:
+        logger.debug(f&#34;Transforming data with {self.__class__.__name__}&#34;)
+        return self._transform_impl(data)
+    except Exception as e:
+        logger.exception(f&#34;Error transforming data with {self.__class__.__name__}&#34;)
+        raise TransformationError(
+            &#34;Error transforming data&#34;,
+            transformer_type=self.__class__.__name__,
+        ) from e</code></pre>
+</details>
+<div class="desc"><p>Transform the input data.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The data to transform.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The transformed data.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TransformationError</code></dt>
+<dd>If transformation fails.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.DataTransformer.validate_config"><code class="name flex">
+<span>def <span class="ident">validate_config</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_config(self) -&gt; None:
+    &#34;&#34;&#34;Validate the transformer configuration.
+
+    This method can be overridden by subclasses to add specific validation logic.
+
+    Raises:
+        TransformationError: If the configuration is invalid.
+    &#34;&#34;&#34;
+    if self.config is None:
+        raise TransformationError(
+            f&#34;Invalid input data for {self.__class__.__name__}&#34;,
+            transformer_type=self.__class__.__name__,
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate the transformer configuration.</p>
+<p>This method can be overridden by subclasses to add specific validation logic.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TransformationError</code></dt>
+<dd>If the configuration is invalid.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.DataTransformer.validate_input"><code class="name flex">
+<span>def <span class="ident">validate_input</span></span>(<span>self, data: object) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_input(self, data: object) -&gt; bool:
+    &#34;&#34;&#34;Validate that the input data is a pandas DataFrame by default.
+
+    This performs a basic DataFrame type check and can be overridden by subclasses with more specific validation logic.
+
+    Args:
+        data (object): The input data to validate.
+
+    Returns:
+        bool: True if data is a pandas.DataFrame, False otherwise.
+    &#34;&#34;&#34;
+    return isinstance(data, pd.DataFrame)</code></pre>
+</details>
+<div class="desc"><p>Validate that the input data is a pandas DataFrame by default.</p>
+<p>This performs a basic DataFrame type check and can be overridden by subclasses with more specific validation logic.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>object</code></dt>
+<dd>The input data to validate.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if data is a pandas.DataFrame, False otherwise.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.preprocessing.NormalizationError"><code class="flex name class">
+<span>class <span class="ident">NormalizationError</span></span>
+<span>(</span><span>message: str,<br>method: str | None = None,<br>reference_field: str | None = None,<br>scale_factor: float | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NormalizationError(TransformationError):
+    &#34;&#34;&#34;Exception raised for normalization failures.
+
+    This includes missing reference columns, invalid normalization methods,
+    or data type incompatibilities.
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        message: str,
+        method: Optional[str] = None,
+        reference_field: Optional[str] = None,
+        scale_factor: Optional[float] = None,
+    ):
+        &#34;&#34;&#34;Initialize a NormalizationError.
+
+        Args:
+            message: The primary error message.
+            method: Optional normalization method.
+            reference_field: Optional reference field for percent_of method.
+            scale_factor: Optional scale factor for scale_by method.
+        &#34;&#34;&#34;
+        self.method = method
+        self.reference_field = reference_field
+        self.scale_factor = scale_factor
+
+        params: dict[str, Any] = {}
+        if method:
+            params[&#34;method&#34;] = method
+        if reference_field:
+            params[&#34;reference&#34;] = reference_field
+        if scale_factor is not None:
+            params[&#34;scale_factor&#34;] = scale_factor
+
+        super().__init__(
+            message,
+            transformer_type=&#34;NormalizationTransformer&#34;,
+            parameters=params,
+        )</code></pre>
+</details>
+<div class="desc"><p>Exception raised for normalization failures.</p>
+<p>This includes missing reference columns, invalid normalization methods,
+or data type incompatibilities.</p>
+<p>Initialize a NormalizationError.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong></dt>
+<dd>The primary error message.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>Optional normalization method.</dd>
+<dt><strong><code>reference_field</code></strong></dt>
+<dd>Optional reference field for percent_of method.</dd>
+<dt><strong><code>scale_factor</code></strong></dt>
+<dd>Optional scale factor for scale_by method.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.errors.TransformationError" href="../core/errors.html#fin_statement_model.core.errors.TransformationError">TransformationError</a></li>
+<li><a title="fin_statement_model.core.errors.FinancialModelError" href="../core/errors.html#fin_statement_model.core.errors.FinancialModelError">FinancialModelError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.preprocessing.PeriodConversionError"><code class="flex name class">
+<span>class <span class="ident">PeriodConversionError</span></span>
+<span>(</span><span>message: str,<br>source_period: str | None = None,<br>target_period: str | None = None,<br>date_column: str | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PeriodConversionError(TransformationError):
+    &#34;&#34;&#34;Exception raised for period conversion failures.
+
+    This includes invalid period formats, unsupported conversion types,
+    or missing date/period columns.
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        message: str,
+        source_period: Optional[str] = None,
+        target_period: Optional[str] = None,
+        date_column: Optional[str] = None,
+    ):
+        &#34;&#34;&#34;Initialize a PeriodConversionError.
+
+        Args:
+            message: The primary error message.
+            source_period: Optional source period type.
+            target_period: Optional target period type.
+            date_column: Optional name of the date column.
+        &#34;&#34;&#34;
+        self.source_period = source_period
+        self.target_period = target_period
+        self.date_column = date_column
+
+        details: dict[str, Any] = {}
+        if source_period and target_period:
+            details[&#34;conversion&#34;] = f&#34;{source_period} -&gt; {target_period}&#34;
+        if date_column:
+            details[&#34;date_column&#34;] = date_column
+
+        super().__init__(
+            message,
+            transformer_type=&#34;PeriodConversionTransformer&#34;,
+            parameters=details,
+        )</code></pre>
+</details>
+<div class="desc"><p>Exception raised for period conversion failures.</p>
+<p>This includes invalid period formats, unsupported conversion types,
+or missing date/period columns.</p>
+<p>Initialize a PeriodConversionError.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong></dt>
+<dd>The primary error message.</dd>
+<dt><strong><code>source_period</code></strong></dt>
+<dd>Optional source period type.</dd>
+<dt><strong><code>target_period</code></strong></dt>
+<dd>Optional target period type.</dd>
+<dt><strong><code>date_column</code></strong></dt>
+<dd>Optional name of the date column.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.errors.TransformationError" href="../core/errors.html#fin_statement_model.core.errors.TransformationError">TransformationError</a></li>
+<li><a title="fin_statement_model.core.errors.FinancialModelError" href="../core/errors.html#fin_statement_model.core.errors.FinancialModelError">FinancialModelError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.preprocessing.PreprocessingError"><code class="flex name class">
+<span>class <span class="ident">PreprocessingError</span></span>
+<span>(</span><span>message: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PreprocessingError(FinancialModelError):
+    &#34;&#34;&#34;Base exception for all preprocessing-related errors.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Base exception for all preprocessing-related errors.</p>
+<p>Initialize the FinancialModelError.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong></dt>
+<dd>A human-readable description of the error.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.errors.FinancialModelError" href="../core/errors.html#fin_statement_model.core.errors.FinancialModelError">FinancialModelError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.preprocessing.errors.TransformerConfigurationError" href="errors.html#fin_statement_model.preprocessing.errors.TransformerConfigurationError">TransformerConfigurationError</a></li>
+<li><a title="fin_statement_model.preprocessing.errors.TransformerRegistrationError" href="errors.html#fin_statement_model.preprocessing.errors.TransformerRegistrationError">TransformerRegistrationError</a></li>
+</ul>
+</dd>
+<dt id="fin_statement_model.preprocessing.TimeSeriesError"><code class="flex name class">
+<span>class <span class="ident">TimeSeriesError</span></span>
+<span>(</span><span>message: str,<br>operation: str | None = None,<br>window_size: int | None = None,<br>column: str | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TimeSeriesError(TransformationError):
+    &#34;&#34;&#34;Exception raised for time series transformation failures.
+
+    This includes invalid window sizes, missing columns, or
+    incompatible aggregation methods.
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        message: str,
+        operation: Optional[str] = None,
+        window_size: Optional[int] = None,
+        column: Optional[str] = None,
+    ):
+        &#34;&#34;&#34;Initialize a TimeSeriesError.
+
+        Args:
+            message: The primary error message.
+            operation: Optional operation type (e.g., &#39;rolling_mean&#39;, &#39;lag&#39;).
+            window_size: Optional window size parameter.
+            column: Optional column being processed.
+        &#34;&#34;&#34;
+        self.operation = operation
+        self.window_size = window_size
+        self.column = column
+
+        params: dict[str, Any] = {}
+        if operation:
+            params[&#34;operation&#34;] = operation
+        if window_size is not None:
+            params[&#34;window_size&#34;] = window_size
+        if column:
+            params[&#34;column&#34;] = column
+
+        super().__init__(
+            message,
+            transformer_type=&#34;TimeSeriesTransformer&#34;,
+            parameters=params,
+        )</code></pre>
+</details>
+<div class="desc"><p>Exception raised for time series transformation failures.</p>
+<p>This includes invalid window sizes, missing columns, or
+incompatible aggregation methods.</p>
+<p>Initialize a TimeSeriesError.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong></dt>
+<dd>The primary error message.</dd>
+<dt><strong><code>operation</code></strong></dt>
+<dd>Optional operation type (e.g., 'rolling_mean', 'lag').</dd>
+<dt><strong><code>window_size</code></strong></dt>
+<dd>Optional window size parameter.</dd>
+<dt><strong><code>column</code></strong></dt>
+<dd>Optional column being processed.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.errors.TransformationError" href="../core/errors.html#fin_statement_model.core.errors.TransformationError">TransformationError</a></li>
+<li><a title="fin_statement_model.core.errors.FinancialModelError" href="../core/errors.html#fin_statement_model.core.errors.FinancialModelError">FinancialModelError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformationService"><code class="flex name class">
+<span>class <span class="ident">TransformationService</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TransformationService:
+    &#34;&#34;&#34;Service for managing and applying data transformations.&#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        &#34;&#34;&#34;Initialize the transformation service.&#34;&#34;&#34;
+        logger.info(&#34;TransformationService initialized&#34;)
+
+    def normalize_data(
+        self,
+        data: Union[pd.DataFrame, dict[str, Any]],
+        normalization_type: Optional[str] = None,
+        reference: Optional[str] = None,
+        scale_factor: Optional[float] = None,
+    ) -&gt; Union[pd.DataFrame, dict[str, Any]]:
+        &#34;&#34;&#34;Normalize financial data.
+
+        Args:
+            data: DataFrame or dict of financial data to normalize.
+            normalization_type: Type of normalization to apply.
+            reference: Reference column for &#39;percent_of&#39; normalization.
+            scale_factor: Scale factor for &#39;scale_by&#39; normalization.
+
+        Returns:
+            Normalized data of the same type as input.
+
+        Raises:
+            TransformerConfigurationError: If the normalization transformer is not registered.
+            NormalizationError: If normalization fails due to invalid parameters or data.
+        &#34;&#34;&#34;
+        # Determine normalization type default
+        default_norm_type = cfg(&#34;preprocessing.default_normalization_type&#34;)
+        norm_type = (
+            normalization_type if normalization_type is not None else default_norm_type
+        ) or &#34;percent_of&#34;
+        transformer = TransformerFactory.create_transformer(
+            &#34;normalization&#34;,
+            normalization_type=norm_type,
+            reference=reference,
+            scale_factor=scale_factor,
+        )
+        return transformer.execute(data)
+
+    def transform_time_series(
+        self,
+        data: Union[pd.DataFrame, dict[str, Any]],
+        transformation_type: Optional[str] = None,
+        periods: Optional[int] = None,
+        window_size: Optional[int] = None,
+    ) -&gt; Union[pd.DataFrame, dict[str, Any]]:
+        &#34;&#34;&#34;Apply time series transformations to financial data.
+
+        Args:
+            data: DataFrame or dict of financial data.
+            transformation_type: Type of time series transformation to apply.
+            periods: Number of periods for lag-based transformations.
+            window_size: Window size for moving average calculations.
+
+        Returns:
+            Transformed data of the same type as input.
+
+        Raises:
+            TransformerConfigurationError: If the time series transformer is not registered.
+            TimeSeriesError: If the transformation fails due to invalid parameters or data.
+        &#34;&#34;&#34;
+        # Determine defaults from config
+        default_transform_type = cfg(&#34;preprocessing.default_transformation_type&#34;)
+        transform_type = (
+            transformation_type
+            if transformation_type is not None
+            else default_transform_type
+        )
+        default_periods = cfg(&#34;preprocessing.default_time_series_periods&#34;)
+        num_periods = periods if periods is not None else default_periods
+        default_window = cfg(&#34;preprocessing.default_time_series_window_size&#34;)
+        win_size = window_size if window_size is not None else default_window
+        transformer = TransformerFactory.create_transformer(
+            &#34;time_series&#34;,
+            transformation_type=transform_type,
+            periods=num_periods,
+            window_size=win_size,
+        )
+        return transformer.execute(data)
+
+    def convert_periods(
+        self,
+        data: pd.DataFrame,
+        conversion_type: str,
+        aggregation: Optional[str] = None,
+    ) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Convert data between different reporting periods.
+
+        Args:
+            data: DataFrame with time-based data to convert.
+            conversion_type: Conversion type (e.g., &#39;quarterly_to_annual&#39;).
+            aggregation: Aggregation method (e.g., &#39;sum&#39;, &#39;mean&#39;, &#39;last&#39;).
+
+        Returns:
+            DataFrame with converted periods.
+
+        Raises:
+            TransformerConfigurationError: If the period conversion transformer is not registered.
+            PeriodConversionError: If period conversion fails due to invalid data or parameters.
+        &#34;&#34;&#34;
+        default_agg = cfg(&#34;preprocessing.default_conversion_aggregation&#34;)
+        agg = aggregation if aggregation is not None else default_agg
+        transformer = TransformerFactory.create_transformer(
+            &#34;period_conversion&#34;,
+            conversion_type=conversion_type,
+            aggregation=agg,
+        )
+        return transformer.execute(data)
+
+    def format_statement(
+        self,
+        data: pd.DataFrame,
+        statement_type: Optional[str] = None,
+        add_subtotals: Optional[bool] = None,
+        apply_sign_convention: Optional[bool] = None,
+    ) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Format a financial statement DataFrame.
+
+        Args:
+            data: DataFrame representing the statement to format.
+            statement_type: Type of statement (e.g., &#39;income_statement&#39;).
+            add_subtotals: Whether to include subtotal lines.
+            apply_sign_convention: Whether to apply standard sign conventions.
+
+        Returns:
+            Formatted DataFrame with applied subtotals and sign conventions.
+
+        Raises:
+            TransformerConfigurationError: If the statement formatting transformer is not registered.
+            PreprocessingError: If formatting fails due to invalid data or parameters.
+        &#34;&#34;&#34;
+        # Determine defaults from preprocessing config
+        stmt_cfg = cfg(&#34;preprocessing.statement_formatting&#34;)
+        default_stmt_type = stmt_cfg.statement_type or &#34;income_statement&#34;
+        stmt_type = statement_type if statement_type is not None else default_stmt_type
+        default_add = (
+            stmt_cfg.add_subtotals if hasattr(stmt_cfg, &#34;add_subtotals&#34;) else True
+        )
+        sub = add_subtotals if add_subtotals is not None else default_add
+        default_sign = (
+            stmt_cfg.apply_sign_convention
+            if hasattr(stmt_cfg, &#34;apply_sign_convention&#34;)
+            else True
+        )
+        sign = (
+            apply_sign_convention if apply_sign_convention is not None else default_sign
+        )
+        transformer = TransformerFactory.create_transformer(
+            &#34;statement_formatting&#34;,
+            statement_type=stmt_type,
+            add_subtotals=sub,
+            apply_sign_convention=sign,
+        )
+        return transformer.execute(data)
+
+    def create_transformation_pipeline(
+        self, transformers_config: list[dict[str, Any]]
+    ) -&gt; DataTransformer:
+        &#34;&#34;&#34;Create a composite transformer from configurations.
+
+        Args:
+            transformers_config: List of transformer configuration dictionaries, each containing a &#39;name&#39; key and optional parameters.
+
+        Returns:
+            CompositeTransformer instance combining the specified transformers.
+
+        Raises:
+            ValueError: If any configuration dictionary is missing the &#39;name&#39; key.
+            TransformerConfigurationError: If transformer creation fails for a given name.
+        &#34;&#34;&#34;
+        transformers = []
+        for config in transformers_config:
+            if &#34;name&#34; not in config:
+                raise ValueError(
+                    &#34;Each transformer configuration must have a &#39;name&#39; field&#34;
+                )
+            name = config.pop(&#34;name&#34;)
+            transformer = TransformerFactory.create_transformer(name, **config)
+            transformers.append(transformer)
+        return CompositeTransformer(transformers)
+
+    def apply_transformation_pipeline(
+        self, data: object, transformers_config: list[dict[str, Any]]
+    ) -&gt; object:
+        &#34;&#34;&#34;Apply a transformation pipeline to data.
+
+        Args:
+            data: Input data to transform.
+            transformers_config: List of transformer configuration dictionaries.
+
+        Returns:
+            Transformed data after applying the pipeline.
+
+        Raises:
+            ValueError: If transformer configuration is invalid.
+            TransformerConfigurationError: If transformer creation fails.
+        &#34;&#34;&#34;
+        pipeline = self.create_transformation_pipeline(transformers_config)
+        return pipeline.execute(data)
+
+    def register_custom_transformer(
+        self, name: str, transformer_class: type[DataTransformer]
+    ) -&gt; None:
+        &#34;&#34;&#34;Register a custom transformer with the factory.
+
+        Args:
+            name: Name under which to register the custom transformer.
+            transformer_class: Custom transformer class to register.
+
+        Raises:
+            TransformerRegistrationError: If registration fails due to name conflicts or invalid class.
+        &#34;&#34;&#34;
+        TransformerFactory.register_transformer(name, transformer_class)
+        logger.info(f&#34;Registered custom transformer: {name}&#34;)
+
+    def list_available_transformers(self) -&gt; list[str]:
+        &#34;&#34;&#34;List all available transformer types.
+
+        Returns:
+            List of transformer names registered in the factory.
+        &#34;&#34;&#34;
+        return TransformerFactory.list_transformers()</code></pre>
+</details>
+<div class="desc"><p>Service for managing and applying data transformations.</p>
+<p>Initialize the transformation service.</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.TransformationService.apply_transformation_pipeline"><code class="name flex">
+<span>def <span class="ident">apply_transformation_pipeline</span></span>(<span>self, data: object, transformers_config: list[dict[str, typing.Any]]) ‑> object</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def apply_transformation_pipeline(
+    self, data: object, transformers_config: list[dict[str, Any]]
+) -&gt; object:
+    &#34;&#34;&#34;Apply a transformation pipeline to data.
+
+    Args:
+        data: Input data to transform.
+        transformers_config: List of transformer configuration dictionaries.
+
+    Returns:
+        Transformed data after applying the pipeline.
+
+    Raises:
+        ValueError: If transformer configuration is invalid.
+        TransformerConfigurationError: If transformer creation fails.
+    &#34;&#34;&#34;
+    pipeline = self.create_transformation_pipeline(transformers_config)
+    return pipeline.execute(data)</code></pre>
+</details>
+<div class="desc"><p>Apply a transformation pipeline to data.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>Input data to transform.</dd>
+<dt><strong><code>transformers_config</code></strong></dt>
+<dd>List of transformer configuration dictionaries.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Transformed data after applying the pipeline.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If transformer configuration is invalid.</dd>
+<dt><code><a title="fin_statement_model.preprocessing.TransformerConfigurationError" href="#fin_statement_model.preprocessing.TransformerConfigurationError">TransformerConfigurationError</a></code></dt>
+<dd>If transformer creation fails.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformationService.convert_periods"><code class="name flex">
+<span>def <span class="ident">convert_periods</span></span>(<span>self,<br>data: pandas.core.frame.DataFrame,<br>conversion_type: str,<br>aggregation: str | None = None) ‑> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def convert_periods(
+    self,
+    data: pd.DataFrame,
+    conversion_type: str,
+    aggregation: Optional[str] = None,
+) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;Convert data between different reporting periods.
+
+    Args:
+        data: DataFrame with time-based data to convert.
+        conversion_type: Conversion type (e.g., &#39;quarterly_to_annual&#39;).
+        aggregation: Aggregation method (e.g., &#39;sum&#39;, &#39;mean&#39;, &#39;last&#39;).
+
+    Returns:
+        DataFrame with converted periods.
+
+    Raises:
+        TransformerConfigurationError: If the period conversion transformer is not registered.
+        PeriodConversionError: If period conversion fails due to invalid data or parameters.
+    &#34;&#34;&#34;
+    default_agg = cfg(&#34;preprocessing.default_conversion_aggregation&#34;)
+    agg = aggregation if aggregation is not None else default_agg
+    transformer = TransformerFactory.create_transformer(
+        &#34;period_conversion&#34;,
+        conversion_type=conversion_type,
+        aggregation=agg,
+    )
+    return transformer.execute(data)</code></pre>
+</details>
+<div class="desc"><p>Convert data between different reporting periods.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>DataFrame with time-based data to convert.</dd>
+<dt><strong><code>conversion_type</code></strong></dt>
+<dd>Conversion type (e.g., 'quarterly_to_annual').</dd>
+<dt><strong><code>aggregation</code></strong></dt>
+<dd>Aggregation method (e.g., 'sum', 'mean', 'last').</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>DataFrame with converted periods.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.preprocessing.TransformerConfigurationError" href="#fin_statement_model.preprocessing.TransformerConfigurationError">TransformerConfigurationError</a></code></dt>
+<dd>If the period conversion transformer is not registered.</dd>
+<dt><code><a title="fin_statement_model.preprocessing.PeriodConversionError" href="#fin_statement_model.preprocessing.PeriodConversionError">PeriodConversionError</a></code></dt>
+<dd>If period conversion fails due to invalid data or parameters.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformationService.create_transformation_pipeline"><code class="name flex">
+<span>def <span class="ident">create_transformation_pipeline</span></span>(<span>self, transformers_config: list[dict[str, typing.Any]]) ‑> <a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_transformation_pipeline(
+    self, transformers_config: list[dict[str, Any]]
+) -&gt; DataTransformer:
+    &#34;&#34;&#34;Create a composite transformer from configurations.
+
+    Args:
+        transformers_config: List of transformer configuration dictionaries, each containing a &#39;name&#39; key and optional parameters.
+
+    Returns:
+        CompositeTransformer instance combining the specified transformers.
+
+    Raises:
+        ValueError: If any configuration dictionary is missing the &#39;name&#39; key.
+        TransformerConfigurationError: If transformer creation fails for a given name.
+    &#34;&#34;&#34;
+    transformers = []
+    for config in transformers_config:
+        if &#34;name&#34; not in config:
+            raise ValueError(
+                &#34;Each transformer configuration must have a &#39;name&#39; field&#34;
+            )
+        name = config.pop(&#34;name&#34;)
+        transformer = TransformerFactory.create_transformer(name, **config)
+        transformers.append(transformer)
+    return CompositeTransformer(transformers)</code></pre>
+</details>
+<div class="desc"><p>Create a composite transformer from configurations.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>transformers_config</code></strong></dt>
+<dd>List of transformer configuration dictionaries, each containing a 'name' key and optional parameters.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>CompositeTransformer instance combining the specified transformers.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If any configuration dictionary is missing the 'name' key.</dd>
+<dt><code><a title="fin_statement_model.preprocessing.TransformerConfigurationError" href="#fin_statement_model.preprocessing.TransformerConfigurationError">TransformerConfigurationError</a></code></dt>
+<dd>If transformer creation fails for a given name.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformationService.format_statement"><code class="name flex">
+<span>def <span class="ident">format_statement</span></span>(<span>self,<br>data: pandas.core.frame.DataFrame,<br>statement_type: str | None = None,<br>add_subtotals: bool | None = None,<br>apply_sign_convention: bool | None = None) ‑> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_statement(
+    self,
+    data: pd.DataFrame,
+    statement_type: Optional[str] = None,
+    add_subtotals: Optional[bool] = None,
+    apply_sign_convention: Optional[bool] = None,
+) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;Format a financial statement DataFrame.
+
+    Args:
+        data: DataFrame representing the statement to format.
+        statement_type: Type of statement (e.g., &#39;income_statement&#39;).
+        add_subtotals: Whether to include subtotal lines.
+        apply_sign_convention: Whether to apply standard sign conventions.
+
+    Returns:
+        Formatted DataFrame with applied subtotals and sign conventions.
+
+    Raises:
+        TransformerConfigurationError: If the statement formatting transformer is not registered.
+        PreprocessingError: If formatting fails due to invalid data or parameters.
+    &#34;&#34;&#34;
+    # Determine defaults from preprocessing config
+    stmt_cfg = cfg(&#34;preprocessing.statement_formatting&#34;)
+    default_stmt_type = stmt_cfg.statement_type or &#34;income_statement&#34;
+    stmt_type = statement_type if statement_type is not None else default_stmt_type
+    default_add = (
+        stmt_cfg.add_subtotals if hasattr(stmt_cfg, &#34;add_subtotals&#34;) else True
+    )
+    sub = add_subtotals if add_subtotals is not None else default_add
+    default_sign = (
+        stmt_cfg.apply_sign_convention
+        if hasattr(stmt_cfg, &#34;apply_sign_convention&#34;)
+        else True
+    )
+    sign = (
+        apply_sign_convention if apply_sign_convention is not None else default_sign
+    )
+    transformer = TransformerFactory.create_transformer(
+        &#34;statement_formatting&#34;,
+        statement_type=stmt_type,
+        add_subtotals=sub,
+        apply_sign_convention=sign,
+    )
+    return transformer.execute(data)</code></pre>
+</details>
+<div class="desc"><p>Format a financial statement DataFrame.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>DataFrame representing the statement to format.</dd>
+<dt><strong><code>statement_type</code></strong></dt>
+<dd>Type of statement (e.g., 'income_statement').</dd>
+<dt><strong><code>add_subtotals</code></strong></dt>
+<dd>Whether to include subtotal lines.</dd>
+<dt><strong><code>apply_sign_convention</code></strong></dt>
+<dd>Whether to apply standard sign conventions.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Formatted DataFrame with applied subtotals and sign conventions.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.preprocessing.TransformerConfigurationError" href="#fin_statement_model.preprocessing.TransformerConfigurationError">TransformerConfigurationError</a></code></dt>
+<dd>If the statement formatting transformer is not registered.</dd>
+<dt><code><a title="fin_statement_model.preprocessing.PreprocessingError" href="#fin_statement_model.preprocessing.PreprocessingError">PreprocessingError</a></code></dt>
+<dd>If formatting fails due to invalid data or parameters.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformationService.list_available_transformers"><code class="name flex">
+<span>def <span class="ident">list_available_transformers</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_available_transformers(self) -&gt; list[str]:
+    &#34;&#34;&#34;List all available transformer types.
+
+    Returns:
+        List of transformer names registered in the factory.
+    &#34;&#34;&#34;
+    return TransformerFactory.list_transformers()</code></pre>
+</details>
+<div class="desc"><p>List all available transformer types.</p>
+<h2 id="returns">Returns</h2>
+<p>List of transformer names registered in the factory.</p></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformationService.normalize_data"><code class="name flex">
+<span>def <span class="ident">normalize_data</span></span>(<span>self,<br>data: pandas.core.frame.DataFrame | dict[str, typing.Any],<br>normalization_type: str | None = None,<br>reference: str | None = None,<br>scale_factor: float | None = None) ‑> pandas.core.frame.DataFrame | dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def normalize_data(
+    self,
+    data: Union[pd.DataFrame, dict[str, Any]],
+    normalization_type: Optional[str] = None,
+    reference: Optional[str] = None,
+    scale_factor: Optional[float] = None,
+) -&gt; Union[pd.DataFrame, dict[str, Any]]:
+    &#34;&#34;&#34;Normalize financial data.
+
+    Args:
+        data: DataFrame or dict of financial data to normalize.
+        normalization_type: Type of normalization to apply.
+        reference: Reference column for &#39;percent_of&#39; normalization.
+        scale_factor: Scale factor for &#39;scale_by&#39; normalization.
+
+    Returns:
+        Normalized data of the same type as input.
+
+    Raises:
+        TransformerConfigurationError: If the normalization transformer is not registered.
+        NormalizationError: If normalization fails due to invalid parameters or data.
+    &#34;&#34;&#34;
+    # Determine normalization type default
+    default_norm_type = cfg(&#34;preprocessing.default_normalization_type&#34;)
+    norm_type = (
+        normalization_type if normalization_type is not None else default_norm_type
+    ) or &#34;percent_of&#34;
+    transformer = TransformerFactory.create_transformer(
+        &#34;normalization&#34;,
+        normalization_type=norm_type,
+        reference=reference,
+        scale_factor=scale_factor,
+    )
+    return transformer.execute(data)</code></pre>
+</details>
+<div class="desc"><p>Normalize financial data.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>DataFrame or dict of financial data to normalize.</dd>
+<dt><strong><code>normalization_type</code></strong></dt>
+<dd>Type of normalization to apply.</dd>
+<dt><strong><code>reference</code></strong></dt>
+<dd>Reference column for 'percent_of' normalization.</dd>
+<dt><strong><code>scale_factor</code></strong></dt>
+<dd>Scale factor for 'scale_by' normalization.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Normalized data of the same type as input.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.preprocessing.TransformerConfigurationError" href="#fin_statement_model.preprocessing.TransformerConfigurationError">TransformerConfigurationError</a></code></dt>
+<dd>If the normalization transformer is not registered.</dd>
+<dt><code><a title="fin_statement_model.preprocessing.NormalizationError" href="#fin_statement_model.preprocessing.NormalizationError">NormalizationError</a></code></dt>
+<dd>If normalization fails due to invalid parameters or data.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformationService.register_custom_transformer"><code class="name flex">
+<span>def <span class="ident">register_custom_transformer</span></span>(<span>self,<br>name: str,<br>transformer_class: type[<a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a>]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def register_custom_transformer(
+    self, name: str, transformer_class: type[DataTransformer]
+) -&gt; None:
+    &#34;&#34;&#34;Register a custom transformer with the factory.
+
+    Args:
+        name: Name under which to register the custom transformer.
+        transformer_class: Custom transformer class to register.
+
+    Raises:
+        TransformerRegistrationError: If registration fails due to name conflicts or invalid class.
+    &#34;&#34;&#34;
+    TransformerFactory.register_transformer(name, transformer_class)
+    logger.info(f&#34;Registered custom transformer: {name}&#34;)</code></pre>
+</details>
+<div class="desc"><p>Register a custom transformer with the factory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Name under which to register the custom transformer.</dd>
+<dt><strong><code>transformer_class</code></strong></dt>
+<dd>Custom transformer class to register.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.preprocessing.TransformerRegistrationError" href="#fin_statement_model.preprocessing.TransformerRegistrationError">TransformerRegistrationError</a></code></dt>
+<dd>If registration fails due to name conflicts or invalid class.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformationService.transform_time_series"><code class="name flex">
+<span>def <span class="ident">transform_time_series</span></span>(<span>self,<br>data: pandas.core.frame.DataFrame | dict[str, typing.Any],<br>transformation_type: str | None = None,<br>periods: int | None = None,<br>window_size: int | None = None) ‑> pandas.core.frame.DataFrame | dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform_time_series(
+    self,
+    data: Union[pd.DataFrame, dict[str, Any]],
+    transformation_type: Optional[str] = None,
+    periods: Optional[int] = None,
+    window_size: Optional[int] = None,
+) -&gt; Union[pd.DataFrame, dict[str, Any]]:
+    &#34;&#34;&#34;Apply time series transformations to financial data.
+
+    Args:
+        data: DataFrame or dict of financial data.
+        transformation_type: Type of time series transformation to apply.
+        periods: Number of periods for lag-based transformations.
+        window_size: Window size for moving average calculations.
+
+    Returns:
+        Transformed data of the same type as input.
+
+    Raises:
+        TransformerConfigurationError: If the time series transformer is not registered.
+        TimeSeriesError: If the transformation fails due to invalid parameters or data.
+    &#34;&#34;&#34;
+    # Determine defaults from config
+    default_transform_type = cfg(&#34;preprocessing.default_transformation_type&#34;)
+    transform_type = (
+        transformation_type
+        if transformation_type is not None
+        else default_transform_type
+    )
+    default_periods = cfg(&#34;preprocessing.default_time_series_periods&#34;)
+    num_periods = periods if periods is not None else default_periods
+    default_window = cfg(&#34;preprocessing.default_time_series_window_size&#34;)
+    win_size = window_size if window_size is not None else default_window
+    transformer = TransformerFactory.create_transformer(
+        &#34;time_series&#34;,
+        transformation_type=transform_type,
+        periods=num_periods,
+        window_size=win_size,
+    )
+    return transformer.execute(data)</code></pre>
+</details>
+<div class="desc"><p>Apply time series transformations to financial data.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>DataFrame or dict of financial data.</dd>
+<dt><strong><code>transformation_type</code></strong></dt>
+<dd>Type of time series transformation to apply.</dd>
+<dt><strong><code>periods</code></strong></dt>
+<dd>Number of periods for lag-based transformations.</dd>
+<dt><strong><code>window_size</code></strong></dt>
+<dd>Window size for moving average calculations.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Transformed data of the same type as input.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.preprocessing.TransformerConfigurationError" href="#fin_statement_model.preprocessing.TransformerConfigurationError">TransformerConfigurationError</a></code></dt>
+<dd>If the time series transformer is not registered.</dd>
+<dt><code><a title="fin_statement_model.preprocessing.TimeSeriesError" href="#fin_statement_model.preprocessing.TimeSeriesError">TimeSeriesError</a></code></dt>
+<dd>If the transformation fails due to invalid parameters or data.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformerConfigurationError"><code class="flex name class">
+<span>class <span class="ident">TransformerConfigurationError</span></span>
+<span>(</span><span>message: str,<br>transformer_name: str | None = None,<br>config: dict[str, typing.Any] | None = None,<br>missing_params: list[str] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TransformerConfigurationError(PreprocessingError):
+    &#34;&#34;&#34;Exception raised for invalid transformer configuration.
+
+    This includes missing required parameters, invalid parameter values,
+    or incompatible configuration options.
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        message: str,
+        transformer_name: Optional[str] = None,
+        config: Optional[dict[str, Any]] = None,
+        missing_params: Optional[list[str]] = None,
+    ):
+        &#34;&#34;&#34;Initialize a TransformerConfigurationError.
+
+        Args:
+            message: The primary error message.
+            transformer_name: Optional name of the transformer.
+            config: Optional configuration dictionary that caused the error.
+            missing_params: Optional list of missing required parameters.
+        &#34;&#34;&#34;
+        self.transformer_name = transformer_name
+        self.config = config
+        self.missing_params = missing_params or []
+
+        details = []
+        if transformer_name:
+            details.append(f&#34;Transformer: {transformer_name}&#34;)
+        if missing_params:
+            details.append(f&#34;Missing params: {&#39;, &#39;.join(missing_params)}&#34;)
+
+        full_message = message
+        if details:
+            full_message = f&#34;{message} ({&#39;; &#39;.join(details)})&#34;
+
+        super().__init__(full_message)</code></pre>
+</details>
+<div class="desc"><p>Exception raised for invalid transformer configuration.</p>
+<p>This includes missing required parameters, invalid parameter values,
+or incompatible configuration options.</p>
+<p>Initialize a TransformerConfigurationError.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong></dt>
+<dd>The primary error message.</dd>
+<dt><strong><code>transformer_name</code></strong></dt>
+<dd>Optional name of the transformer.</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional configuration dictionary that caused the error.</dd>
+<dt><strong><code>missing_params</code></strong></dt>
+<dd>Optional list of missing required parameters.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.preprocessing.errors.PreprocessingError" href="errors.html#fin_statement_model.preprocessing.errors.PreprocessingError">PreprocessingError</a></li>
+<li><a title="fin_statement_model.core.errors.FinancialModelError" href="../core/errors.html#fin_statement_model.core.errors.FinancialModelError">FinancialModelError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformerFactory"><code class="flex name class">
+<span>class <span class="ident">TransformerFactory</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TransformerFactory:
+    &#34;&#34;&#34;Create and manage transformer instances.
+
+    Centralizes transformer registration, discovery, and instantiation.
+    &#34;&#34;&#34;
+
+    _transformers: ClassVar[dict[str, type[DataTransformer]]] = {}
+
+    @classmethod
+    def register_transformer(
+        cls, name: str, transformer_class: type[DataTransformer]
+    ) -&gt; None:
+        &#34;&#34;&#34;Register a transformer class with the factory.
+
+        Args:
+            name: Name to register the transformer under.
+            transformer_class: Transformer class to register.
+
+        Raises:
+            TransformerRegistrationError: If a transformer with the given name is already registered or if the transformer_class is not a subclass of DataTransformer.
+        &#34;&#34;&#34;
+        if name in cls._transformers:
+            raise TransformerRegistrationError(
+                f&#34;Transformer name &#39;{name}&#39; is already registered&#34;,
+                transformer_name=name,
+                existing_class=cls._transformers[name],
+            )
+        if not issubclass(transformer_class, DataTransformer):
+            raise TransformerRegistrationError(
+                &#34;Transformer class must be a subclass of DataTransformer&#34;,
+                transformer_name=name,
+            )
+        cls._transformers[name] = transformer_class
+        logger.info(f&#34;Registered transformer &#39;{name}&#39;&#34;)
+
+    @classmethod
+    def create_transformer(cls, name: str, **kwargs: Any) -&gt; DataTransformer:
+        &#34;&#34;&#34;Create a transformer instance by its registered name.
+
+        Args:
+            name: Name of the registered transformer.
+            **kwargs: Keyword arguments to pass to the transformer constructor.
+
+        Returns:
+            A DataTransformer instance.
+
+        Raises:
+            TransformerConfigurationError: If no transformer is registered under the given name.
+        &#34;&#34;&#34;
+        if name not in cls._transformers:
+            raise TransformerConfigurationError(
+                f&#34;No transformer registered with name &#39;{name}&#39;&#34;,
+                transformer_name=name,
+            )
+        transformer_class = cls._transformers[name]
+        transformer = transformer_class(**kwargs)
+        logger.debug(f&#34;Created transformer &#39;{name}&#39;&#34;)
+        return transformer
+
+    @classmethod
+    def list_transformers(cls) -&gt; list[str]:
+        &#34;&#34;&#34;List all registered transformer names.
+
+        Returns:
+            List of registered transformer names.
+        &#34;&#34;&#34;
+        return list(cls._transformers.keys())
+
+    @classmethod
+    def get_transformer_class(cls, name: str) -&gt; type[DataTransformer]:
+        &#34;&#34;&#34;Get a transformer class by its registered name.
+
+        Args:
+            name: Name of the registered transformer.
+
+        Returns:
+            Transformer class corresponding to the given name.
+
+        Raises:
+            TransformerConfigurationError: If no transformer is registered under the given name.
+        &#34;&#34;&#34;
+        if name not in cls._transformers:
+            raise TransformerConfigurationError(
+                f&#34;No transformer registered with name &#39;{name}&#39;&#34;,
+                transformer_name=name,
+            )
+        return cls._transformers[name]
+
+    @classmethod
+    def discover_transformers(cls, package_name: str) -&gt; None:
+        &#34;&#34;&#34;Discover and register all transformers in a package.
+
+        Args:
+            package_name: Full package path to scan for transformers.
+
+        Raises:
+            ImportError: If the specified package cannot be imported.
+        &#34;&#34;&#34;
+        try:
+            package = importlib.import_module(package_name)
+            package_path = package.__path__
+            for _, module_name, _ in pkgutil.iter_modules(package_path):
+                full_module_name = f&#34;{package_name}.{module_name}&#34;
+                module = importlib.import_module(full_module_name)
+                for obj_name, obj in inspect.getmembers(module):
+                    if (
+                        inspect.isclass(obj)
+                        and issubclass(obj, DataTransformer)
+                        and obj is not DataTransformer
+                    ):
+                        cls.register_transformer(obj_name, obj)
+                        snake = re.sub(r&#34;(.)([A-Z][a-z]+)&#34;, r&#34;\1_\2&#34;, obj_name)
+                        snake = re.sub(r&#34;([a-z0-9])([A-Z])&#34;, r&#34;\1_\2&#34;, snake).lower()
+                        alias = snake.replace(&#34;_transformer&#34;, &#34;&#34;)
+                        if alias not in cls._transformers:
+                            cls.register_transformer(alias, obj)
+            logger.info(f&#34;Discovered transformers from package &#39;{package_name}&#39;&#34;)
+        except ImportError:
+            logger.exception(
+                f&#34;Error discovering transformers from package &#39;{package_name}&#39;&#34;
+            )
+
+    @classmethod
+    def create_composite_transformer(
+        cls, transformer_names: list[str], **kwargs: Any
+    ) -&gt; DataTransformer:
+        &#34;&#34;&#34;Create a composite transformer from a list of transformer names.
+
+        Args:
+            transformer_names: List of transformer names to include in the composite.
+            **kwargs: Keyword arguments to pass to each transformer constructor.
+
+        Returns:
+            CompositeTransformer instance combining the specified transformers.
+        &#34;&#34;&#34;
+        transformers = [
+            cls.create_transformer(name, **kwargs) for name in transformer_names
+        ]
+        return CompositeTransformer(transformers)</code></pre>
+</details>
+<div class="desc"><p>Create and manage transformer instances.</p>
+<p>Centralizes transformer registration, discovery, and instantiation.</p></div>
+<h3>Static methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.TransformerFactory.create_composite_transformer"><code class="name flex">
+<span>def <span class="ident">create_composite_transformer</span></span>(<span>transformer_names: list[str], **kwargs: Any) ‑> <a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a composite transformer from a list of transformer names.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>transformer_names</code></strong></dt>
+<dd>List of transformer names to include in the composite.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Keyword arguments to pass to each transformer constructor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>CompositeTransformer instance combining the specified transformers.</p></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformerFactory.create_transformer"><code class="name flex">
+<span>def <span class="ident">create_transformer</span></span>(<span>name: str, **kwargs: Any) ‑> <a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a transformer instance by its registered name.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Name of the registered transformer.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Keyword arguments to pass to the transformer constructor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A DataTransformer instance.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.preprocessing.TransformerConfigurationError" href="#fin_statement_model.preprocessing.TransformerConfigurationError">TransformerConfigurationError</a></code></dt>
+<dd>If no transformer is registered under the given name.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformerFactory.discover_transformers"><code class="name flex">
+<span>def <span class="ident">discover_transformers</span></span>(<span>package_name: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Discover and register all transformers in a package.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>package_name</code></strong></dt>
+<dd>Full package path to scan for transformers.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ImportError</code></dt>
+<dd>If the specified package cannot be imported.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformerFactory.get_transformer_class"><code class="name flex">
+<span>def <span class="ident">get_transformer_class</span></span>(<span>name: str) ‑> type[<a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get a transformer class by its registered name.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Name of the registered transformer.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Transformer class corresponding to the given name.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.preprocessing.TransformerConfigurationError" href="#fin_statement_model.preprocessing.TransformerConfigurationError">TransformerConfigurationError</a></code></dt>
+<dd>If no transformer is registered under the given name.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformerFactory.list_transformers"><code class="name flex">
+<span>def <span class="ident">list_transformers</span></span>(<span>) ‑> list[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>List all registered transformer names.</p>
+<h2 id="returns">Returns</h2>
+<p>List of registered transformer names.</p></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformerFactory.register_transformer"><code class="name flex">
+<span>def <span class="ident">register_transformer</span></span>(<span>name: str,<br>transformer_class: type[<a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a>]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register a transformer class with the factory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Name to register the transformer under.</dd>
+<dt><strong><code>transformer_class</code></strong></dt>
+<dd>Transformer class to register.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.preprocessing.TransformerRegistrationError" href="#fin_statement_model.preprocessing.TransformerRegistrationError">TransformerRegistrationError</a></code></dt>
+<dd>If a transformer with the given name is already registered or if the transformer_class is not a subclass of DataTransformer.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.preprocessing.TransformerRegistrationError"><code class="flex name class">
+<span>class <span class="ident">TransformerRegistrationError</span></span>
+<span>(</span><span>message: str,<br>transformer_name: str | None = None,<br>existing_class: type | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TransformerRegistrationError(PreprocessingError):
+    &#34;&#34;&#34;Exception raised for transformer registration issues.
+
+    This includes attempts to register duplicate transformers or
+    register invalid transformer classes.
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        message: str,
+        transformer_name: Optional[str] = None,
+        existing_class: Optional[type] = None,
+    ):
+        &#34;&#34;&#34;Initialize a TransformerRegistrationError.
+
+        Args:
+            message: The primary error message.
+            transformer_name: Optional name of the transformer.
+            existing_class: Optional existing class that&#39;s already registered.
+        &#34;&#34;&#34;
+        self.transformer_name = transformer_name
+        self.existing_class = existing_class
+
+        full_message = message
+        if transformer_name:
+            full_message = f&#34;{message} for transformer &#39;{transformer_name}&#39;&#34;
+        if existing_class:
+            full_message = (
+                f&#34;{full_message} (already registered as {existing_class.__name__})&#34;
+            )
+
+        super().__init__(full_message)</code></pre>
+</details>
+<div class="desc"><p>Exception raised for transformer registration issues.</p>
+<p>This includes attempts to register duplicate transformers or
+register invalid transformer classes.</p>
+<p>Initialize a TransformerRegistrationError.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong></dt>
+<dd>The primary error message.</dd>
+<dt><strong><code>transformer_name</code></strong></dt>
+<dd>Optional name of the transformer.</dd>
+<dt><strong><code>existing_class</code></strong></dt>
+<dd>Optional existing class that's already registered.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.preprocessing.errors.PreprocessingError" href="errors.html#fin_statement_model.preprocessing.errors.PreprocessingError">PreprocessingError</a></li>
+<li><a title="fin_statement_model.core.errors.FinancialModelError" href="../core/errors.html#fin_statement_model.core.errors.FinancialModelError">FinancialModelError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model" href="../index.html">fin_statement_model</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer" href="base_transformer.html">fin_statement_model.preprocessing.base_transformer</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config" href="config.html">fin_statement_model.preprocessing.config</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.errors" href="errors.html">fin_statement_model.preprocessing.errors</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformer_service" href="transformer_service.html">fin_statement_model.preprocessing.transformer_service</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers" href="transformers/index.html">fin_statement_model.preprocessing.transformers</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.CompositeTransformer" href="#fin_statement_model.preprocessing.CompositeTransformer">CompositeTransformer</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.CompositeTransformer.add_transformer" href="#fin_statement_model.preprocessing.CompositeTransformer.add_transformer">add_transformer</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.CompositeTransformer.remove_transformer" href="#fin_statement_model.preprocessing.CompositeTransformer.remove_transformer">remove_transformer</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.CompositeTransformer.validate_input" href="#fin_statement_model.preprocessing.CompositeTransformer.validate_input">validate_input</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.DataTransformer" href="#fin_statement_model.preprocessing.DataTransformer">DataTransformer</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.DataTransformer.execute" href="#fin_statement_model.preprocessing.DataTransformer.execute">execute</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.DataTransformer.transform" href="#fin_statement_model.preprocessing.DataTransformer.transform">transform</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.DataTransformer.validate_config" href="#fin_statement_model.preprocessing.DataTransformer.validate_config">validate_config</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.DataTransformer.validate_input" href="#fin_statement_model.preprocessing.DataTransformer.validate_input">validate_input</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.NormalizationError" href="#fin_statement_model.preprocessing.NormalizationError">NormalizationError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.PeriodConversionError" href="#fin_statement_model.preprocessing.PeriodConversionError">PeriodConversionError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.PreprocessingError" href="#fin_statement_model.preprocessing.PreprocessingError">PreprocessingError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.TimeSeriesError" href="#fin_statement_model.preprocessing.TimeSeriesError">TimeSeriesError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.TransformationService" href="#fin_statement_model.preprocessing.TransformationService">TransformationService</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.TransformationService.apply_transformation_pipeline" href="#fin_statement_model.preprocessing.TransformationService.apply_transformation_pipeline">apply_transformation_pipeline</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.TransformationService.convert_periods" href="#fin_statement_model.preprocessing.TransformationService.convert_periods">convert_periods</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.TransformationService.create_transformation_pipeline" href="#fin_statement_model.preprocessing.TransformationService.create_transformation_pipeline">create_transformation_pipeline</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.TransformationService.format_statement" href="#fin_statement_model.preprocessing.TransformationService.format_statement">format_statement</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.TransformationService.list_available_transformers" href="#fin_statement_model.preprocessing.TransformationService.list_available_transformers">list_available_transformers</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.TransformationService.normalize_data" href="#fin_statement_model.preprocessing.TransformationService.normalize_data">normalize_data</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.TransformationService.register_custom_transformer" href="#fin_statement_model.preprocessing.TransformationService.register_custom_transformer">register_custom_transformer</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.TransformationService.transform_time_series" href="#fin_statement_model.preprocessing.TransformationService.transform_time_series">transform_time_series</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.TransformerConfigurationError" href="#fin_statement_model.preprocessing.TransformerConfigurationError">TransformerConfigurationError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.TransformerFactory" href="#fin_statement_model.preprocessing.TransformerFactory">TransformerFactory</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.TransformerFactory.create_composite_transformer" href="#fin_statement_model.preprocessing.TransformerFactory.create_composite_transformer">create_composite_transformer</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.TransformerFactory.create_transformer" href="#fin_statement_model.preprocessing.TransformerFactory.create_transformer">create_transformer</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.TransformerFactory.discover_transformers" href="#fin_statement_model.preprocessing.TransformerFactory.discover_transformers">discover_transformers</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.TransformerFactory.get_transformer_class" href="#fin_statement_model.preprocessing.TransformerFactory.get_transformer_class">get_transformer_class</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.TransformerFactory.list_transformers" href="#fin_statement_model.preprocessing.TransformerFactory.list_transformers">list_transformers</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.TransformerFactory.register_transformer" href="#fin_statement_model.preprocessing.TransformerFactory.register_transformer">register_transformer</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.TransformerRegistrationError" href="#fin_statement_model.preprocessing.TransformerRegistrationError">TransformerRegistrationError</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,2901 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.io.core.mixins API documentation</title>
+<meta name="description" content="Reusable mixins and decorators for IO operations …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.io.core.mixins</code></h1>
+</header>
+<section id="section-intro">
+<p>Reusable mixins and decorators for IO operations.</p>
+<p>This module provides shared functionality for readers and writers including
+error handling decorators and mixins for consistent behavior.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.handle_read_errors"><code class="name flex">
+<span>def <span class="ident">handle_read_errors</span></span>(<span>source_attr: str = 'source') ‑> Callable[[~F], ~F]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def handle_read_errors(source_attr: str = &#34;source&#34;) -&gt; Callable[[F], F]:
+    &#34;&#34;&#34;Decorator to standardize error handling for readers.
+
+    This decorator catches common exceptions during read operations and
+    converts them to appropriate ReadError instances with consistent
+    error messages and context.
+
+    Args:
+        source_attr: Name of the attribute containing the source identifier.
+                    Defaults to &#34;source&#34;.
+
+    Returns:
+        Decorated function that handles errors consistently.
+    &#34;&#34;&#34;
+
+    def decorator(func: F) -&gt; F:
+        @functools.wraps(func)
+        def wrapper(self: Any, source: Any, **kwargs: Any) -&gt; Any:
+            try:
+                return func(self, source, **kwargs)
+            except ReadError:
+                raise  # Re-raise our own errors without modification
+            except FileNotFoundError as e:
+                raise ReadError(
+                    f&#34;File not found: {source}&#34;,
+                    source=str(source),
+                    reader_type=self.__class__.__name__,
+                    original_error=e,
+                )
+            except ValueError as e:
+                raise ReadError(
+                    f&#34;Invalid value encountered: {e}&#34;,
+                    source=str(source),
+                    reader_type=self.__class__.__name__,
+                    original_error=e,
+                )
+            except Exception as e:
+                logger.error(f&#34;Failed to read from {source}: {e}&#34;, exc_info=True)
+                raise ReadError(
+                    f&#34;Failed to process source: {e}&#34;,
+                    source=str(source),
+                    reader_type=self.__class__.__name__,
+                    original_error=e,
+                ) from e
+
+        return wrapper  # type: ignore
+
+    return decorator</code></pre>
+</details>
+<div class="desc"><p>Decorator to standardize error handling for readers.</p>
+<p>This decorator catches common exceptions during read operations and
+converts them to appropriate ReadError instances with consistent
+error messages and context.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source_attr</code></strong></dt>
+<dd>Name of the attribute containing the source identifier.
+Defaults to "source".</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Decorated function that handles errors consistently.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.handle_write_errors"><code class="name flex">
+<span>def <span class="ident">handle_write_errors</span></span>(<span>target_attr: str = 'target') ‑> Callable[[~F], ~F]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def handle_write_errors(target_attr: str = &#34;target&#34;) -&gt; Callable[[F], F]:
+    &#34;&#34;&#34;Decorator to standardize error handling for writers.
+
+    Similar to handle_read_errors but for write operations.
+
+    Args:
+        target_attr: Name of the attribute containing the target identifier.
+                    Defaults to &#34;target&#34;.
+
+    Returns:
+        Decorated function that handles errors consistently.
+    &#34;&#34;&#34;
+
+    def decorator(func: F) -&gt; F:
+        @functools.wraps(func)
+        def wrapper(self: Any, graph: Any, target: Any = None, **kwargs: Any) -&gt; Any:
+            try:
+                return func(self, graph, target, **kwargs)
+            except WriteError:
+                raise  # Re-raise our own errors without modification
+            except Exception as e:
+                logger.error(f&#34;Failed to write to {target}: {e}&#34;, exc_info=True)
+                raise WriteError(
+                    f&#34;Failed to write data: {e}&#34;,
+                    target=str(target) if target else &#34;unknown&#34;,
+                    writer_type=self.__class__.__name__,
+                    original_error=e,
+                ) from e
+
+        return wrapper  # type: ignore
+
+    return decorator</code></pre>
+</details>
+<div class="desc"><p>Decorator to standardize error handling for writers.</p>
+<p>Similar to handle_read_errors but for write operations.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>target_attr</code></strong></dt>
+<dd>Name of the attribute containing the target identifier.
+Defaults to "target".</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Decorated function that handles errors consistently.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.ConfigurationMixin"><code class="flex name class">
+<span>class <span class="ident">ConfigurationMixin</span></span>
+<span>(</span><span>*args: Any, **kwargs: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ConfigurationMixin:
+    &#34;&#34;&#34;Enhanced mixin for readers that use configuration objects.
+
+    Provides comprehensive configuration management including:
+    - Safe configuration value access with defaults
+    - Configuration validation and type checking
+    - Configuration inheritance and merging
+    - Environment variable integration
+    - Configuration context tracking
+    &#34;&#34;&#34;
+
+    def __init__(self, *args: Any, **kwargs: Any) -&gt; None:
+        &#34;&#34;&#34;Initialize configuration mixin.&#34;&#34;&#34;
+        super().__init__(*args, **kwargs)
+        self._config_context: dict[str, Any] = {}
+        self._config_overrides: dict[str, Any] = {}
+
+    def set_config_context(self, **context: Any) -&gt; None:
+        &#34;&#34;&#34;Set configuration context for enhanced error reporting.
+
+        Args:
+            **context: Key-value pairs to store as configuration context.
+        &#34;&#34;&#34;
+        self._config_context.update(context)
+
+    def get_config_context(self) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Get current configuration context.
+
+        Returns:
+            Dictionary containing current configuration context.
+        &#34;&#34;&#34;
+        return self._config_context.copy()
+
+    def set_config_override(self, key: str, value: Any) -&gt; None:
+        &#34;&#34;&#34;Set a configuration override for runtime customization.
+
+        Args:
+            key: Configuration key to override.
+            value: Override value.
+        &#34;&#34;&#34;
+        self._config_overrides[key] = value
+
+    def clear_config_overrides(self) -&gt; None:
+        &#34;&#34;&#34;Clear all configuration overrides.&#34;&#34;&#34;
+        self._config_overrides.clear()
+
+    def get_config_value(
+        self,
+        key: str,
+        default: Any = None,
+        required: bool = False,
+        value_type: Optional[type] = None,
+        validator: Optional[Callable[[Any], bool]] = None,
+    ) -&gt; Any:
+        &#34;&#34;&#34;Get a configuration value with comprehensive validation and fallback.
+
+        Args:
+            key: Configuration key to retrieve.
+            default: Default value if key is not found.
+            required: Whether the configuration value is required.
+            value_type: Expected type for the configuration value.
+            validator: Optional validation function that takes the value and returns bool.
+
+        Returns:
+            Configuration value, override, or default.
+
+        Raises:
+            ReadError: If required value is missing or validation fails.
+        &#34;&#34;&#34;
+        # Check for runtime overrides first
+        if key in self._config_overrides:
+            value = self._config_overrides[key]
+        # Then check configuration object
+        elif hasattr(self, &#34;cfg&#34;) and self.cfg:
+            value = getattr(self.cfg, key, default)
+        else:
+            value = default
+
+        # Handle required values
+        if required and value is None:
+            raise ReadError(
+                f&#34;Required configuration value &#39;{key}&#39; is missing&#34;,
+                reader_type=self.__class__.__name__,
+            )
+
+        # Type validation
+        if (
+            value is not None
+            and value_type is not None
+            and not isinstance(value, value_type)
+        ):
+            try:
+                # Attempt type conversion
+                value = value_type(value)
+            except (ValueError, TypeError) as e:
+                raise ReadError(
+                    f&#34;Configuration value &#39;{key}&#39; has invalid type. &#34;
+                    f&#34;Expected {value_type.__name__}, got {type(value).__name__}&#34;,
+                    reader_type=self.__class__.__name__,
+                    original_error=e,
+                )
+
+        # Custom validation
+        if value is not None and validator is not None:
+            try:
+                if not validator(value):
+                    raise ReadError(
+                        f&#34;Configuration value &#39;{key}&#39; failed validation&#34;,
+                        reader_type=self.__class__.__name__,
+                    )
+            except Exception as e:
+                raise ReadError(
+                    f&#34;Configuration validation error for &#39;{key}&#39;: {e}&#34;,
+                    reader_type=self.__class__.__name__,
+                    original_error=e,
+                )
+
+        return value
+
+    def require_config_value(
+        self,
+        key: str,
+        value_type: Optional[type] = None,
+        validator: Optional[Callable[[Any], bool]] = None,
+    ) -&gt; Any:
+        &#34;&#34;&#34;Get a required configuration value with validation.
+
+        Args:
+            key: Configuration key to retrieve.
+            value_type: Expected type for the configuration value.
+            validator: Optional validation function.
+
+        Returns:
+            Configuration value.
+
+        Raises:
+            ReadError: If the configuration value is missing or invalid.
+        &#34;&#34;&#34;
+        return self.get_config_value(
+            key, required=True, value_type=value_type, validator=validator
+        )
+
+    def get_config_with_env_fallback(
+        self,
+        key: str,
+        env_var: str,
+        default: Any = None,
+        value_type: Optional[type] = None,
+    ) -&gt; Any:
+        &#34;&#34;&#34;Get configuration value with environment variable fallback.
+
+        Args:
+            key: Configuration key to retrieve.
+            env_var: Environment variable name to check as fallback.
+            default: Default value if neither config nor env var is found.
+            value_type: Expected type for the value.
+
+        Returns:
+            Configuration value, environment variable value, or default.
+        &#34;&#34;&#34;
+        import os
+
+        # First try configuration
+        value = self.get_config_value(key)
+
+        # If not found, try environment variable
+        if value is None:
+            env_value = os.getenv(env_var)
+            if env_value is not None:
+                value = env_value
+
+        # Use default if still None
+        if value is None:
+            value = default
+
+        # Type conversion if needed
+        if (
+            value is not None
+            and value_type is not None
+            and not isinstance(value, value_type)
+        ):
+            try:
+                value = value_type(value)
+            except (ValueError, TypeError):
+                logger.warning(
+                    f&#34;Failed to convert {key} value &#39;{value}&#39; to {value_type.__name__}, using as-is&#34;
+                )
+
+        return value
+
+    def validate_configuration(self) -&gt; &#34;ValidationResultCollector&#34;:
+        &#34;&#34;&#34;Validate the entire configuration object.
+
+        Returns:
+            ValidationResultCollector with validation results.
+        &#34;&#34;&#34;
+        validator = ValidationResultCollector(context=self._config_context)
+
+        if not hasattr(self, &#34;cfg&#34;) or not self.cfg:
+            validator.add_result(
+                &#34;configuration&#34;, False, &#34;Missing configuration object&#34;, &#34;structure&#34;
+            )
+            return validator
+
+        # Validate configuration object using Pydantic if available
+        try:
+            if hasattr(self.cfg, &#34;model_validate&#34;):
+                # It&#39;s a Pydantic model, validation already happened during creation
+                validator.add_result(
+                    &#34;configuration&#34;, True, &#34;Configuration object is valid&#34;, &#34;structure&#34;
+                )
+            else:
+                validator.add_result(
+                    &#34;configuration&#34;,
+                    True,
+                    &#34;Configuration object exists (non-Pydantic)&#34;,
+                    &#34;structure&#34;,
+                )
+        except Exception as e:
+            validator.add_result(
+                &#34;configuration&#34;,
+                False,
+                f&#34;Configuration validation failed: {e}&#34;,
+                &#34;validation&#34;,
+            )
+
+        return validator
+
+    def get_effective_configuration(self) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Get the effective configuration including overrides.
+
+        Returns:
+            Dictionary containing all configuration values with overrides applied.
+        &#34;&#34;&#34;
+        config_dict = {}
+
+        # Start with base configuration
+        if hasattr(self, &#34;cfg&#34;) and self.cfg:
+            if hasattr(self.cfg, &#34;model_dump&#34;):
+                # Pydantic model
+                config_dict = self.cfg.model_dump()
+            elif hasattr(self.cfg, &#34;__dict__&#34;):
+                # Regular object
+                config_dict = vars(self.cfg).copy()
+
+        # Apply overrides
+        config_dict.update(self._config_overrides)
+
+        return config_dict
+
+    def merge_configurations(self, *configs: Any) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Merge multiple configuration objects with precedence.
+
+        Args:
+            *configs: Configuration objects to merge (later ones take precedence).
+
+        Returns:
+            Merged configuration dictionary.
+        &#34;&#34;&#34;
+        merged = {}
+
+        for config in configs:
+            if config is None:
+                continue
+
+            if hasattr(config, &#34;model_dump&#34;):
+                # Pydantic model
+                config_dict = config.model_dump()
+            elif hasattr(config, &#34;__dict__&#34;):
+                # Regular object
+                config_dict = vars(config).copy()
+            elif isinstance(config, dict):
+                # Dictionary
+                config_dict = config.copy()
+            else:
+                logger.warning(f&#34;Unsupported configuration type: {type(config)}&#34;)
+                continue
+
+            merged.update(config_dict)
+
+        return merged</code></pre>
+</details>
+<div class="desc"><p>Enhanced mixin for readers that use configuration objects.</p>
+<p>Provides comprehensive configuration management including:
+- Safe configuration value access with defaults
+- Configuration validation and type checking
+- Configuration inheritance and merging
+- Environment variable integration
+- Configuration context tracking</p>
+<p>Initialize configuration mixin.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.formats.api.fmp.FmpReader" href="../formats/api/fmp.html#fin_statement_model.io.formats.api.fmp.FmpReader">FmpReader</a></li>
+<li><a title="fin_statement_model.io.formats.csv.reader.CsvReader" href="../formats/csv/reader.html#fin_statement_model.io.formats.csv.reader.CsvReader">CsvReader</a></li>
+<li><a title="fin_statement_model.io.formats.dataframe.writer.DataFrameWriter" href="../formats/dataframe/writer.html#fin_statement_model.io.formats.dataframe.writer.DataFrameWriter">DataFrameWriter</a></li>
+<li><a title="fin_statement_model.io.formats.dict.writer.DictWriter" href="../formats/dict/writer.html#fin_statement_model.io.formats.dict.writer.DictWriter">DictWriter</a></li>
+<li><a title="fin_statement_model.io.formats.excel.reader.ExcelReader" href="../formats/excel/reader.html#fin_statement_model.io.formats.excel.reader.ExcelReader">ExcelReader</a></li>
+<li><a title="fin_statement_model.io.formats.excel.writer.ExcelWriter" href="../formats/excel/writer.html#fin_statement_model.io.formats.excel.writer.ExcelWriter">ExcelWriter</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides"><code class="name flex">
+<span>def <span class="ident">clear_config_overrides</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear_config_overrides(self) -&gt; None:
+    &#34;&#34;&#34;Clear all configuration overrides.&#34;&#34;&#34;
+    self._config_overrides.clear()</code></pre>
+</details>
+<div class="desc"><p>Clear all configuration overrides.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context"><code class="name flex">
+<span>def <span class="ident">get_config_context</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_config_context(self) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Get current configuration context.
+
+    Returns:
+        Dictionary containing current configuration context.
+    &#34;&#34;&#34;
+    return self._config_context.copy()</code></pre>
+</details>
+<div class="desc"><p>Get current configuration context.</p>
+<h2 id="returns">Returns</h2>
+<p>Dictionary containing current configuration context.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value"><code class="name flex">
+<span>def <span class="ident">get_config_value</span></span>(<span>self,<br>key: str,<br>default: Any = None,<br>required: bool = False,<br>value_type: type | None = None,<br>validator: Callable[[typing.Any], bool] | None = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_config_value(
+    self,
+    key: str,
+    default: Any = None,
+    required: bool = False,
+    value_type: Optional[type] = None,
+    validator: Optional[Callable[[Any], bool]] = None,
+) -&gt; Any:
+    &#34;&#34;&#34;Get a configuration value with comprehensive validation and fallback.
+
+    Args:
+        key: Configuration key to retrieve.
+        default: Default value if key is not found.
+        required: Whether the configuration value is required.
+        value_type: Expected type for the configuration value.
+        validator: Optional validation function that takes the value and returns bool.
+
+    Returns:
+        Configuration value, override, or default.
+
+    Raises:
+        ReadError: If required value is missing or validation fails.
+    &#34;&#34;&#34;
+    # Check for runtime overrides first
+    if key in self._config_overrides:
+        value = self._config_overrides[key]
+    # Then check configuration object
+    elif hasattr(self, &#34;cfg&#34;) and self.cfg:
+        value = getattr(self.cfg, key, default)
+    else:
+        value = default
+
+    # Handle required values
+    if required and value is None:
+        raise ReadError(
+            f&#34;Required configuration value &#39;{key}&#39; is missing&#34;,
+            reader_type=self.__class__.__name__,
+        )
+
+    # Type validation
+    if (
+        value is not None
+        and value_type is not None
+        and not isinstance(value, value_type)
+    ):
+        try:
+            # Attempt type conversion
+            value = value_type(value)
+        except (ValueError, TypeError) as e:
+            raise ReadError(
+                f&#34;Configuration value &#39;{key}&#39; has invalid type. &#34;
+                f&#34;Expected {value_type.__name__}, got {type(value).__name__}&#34;,
+                reader_type=self.__class__.__name__,
+                original_error=e,
+            )
+
+    # Custom validation
+    if value is not None and validator is not None:
+        try:
+            if not validator(value):
+                raise ReadError(
+                    f&#34;Configuration value &#39;{key}&#39; failed validation&#34;,
+                    reader_type=self.__class__.__name__,
+                )
+        except Exception as e:
+            raise ReadError(
+                f&#34;Configuration validation error for &#39;{key}&#39;: {e}&#34;,
+                reader_type=self.__class__.__name__,
+                original_error=e,
+            )
+
+    return value</code></pre>
+</details>
+<div class="desc"><p>Get a configuration value with comprehensive validation and fallback.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>key</code></strong></dt>
+<dd>Configuration key to retrieve.</dd>
+<dt><strong><code>default</code></strong></dt>
+<dd>Default value if key is not found.</dd>
+<dt><strong><code>required</code></strong></dt>
+<dd>Whether the configuration value is required.</dd>
+<dt><strong><code>value_type</code></strong></dt>
+<dd>Expected type for the configuration value.</dd>
+<dt><strong><code>validator</code></strong></dt>
+<dd>Optional validation function that takes the value and returns bool.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Configuration value, override, or default.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If required value is missing or validation fails.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback"><code class="name flex">
+<span>def <span class="ident">get_config_with_env_fallback</span></span>(<span>self, key: str, env_var: str, default: Any = None, value_type: type | None = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_config_with_env_fallback(
+    self,
+    key: str,
+    env_var: str,
+    default: Any = None,
+    value_type: Optional[type] = None,
+) -&gt; Any:
+    &#34;&#34;&#34;Get configuration value with environment variable fallback.
+
+    Args:
+        key: Configuration key to retrieve.
+        env_var: Environment variable name to check as fallback.
+        default: Default value if neither config nor env var is found.
+        value_type: Expected type for the value.
+
+    Returns:
+        Configuration value, environment variable value, or default.
+    &#34;&#34;&#34;
+    import os
+
+    # First try configuration
+    value = self.get_config_value(key)
+
+    # If not found, try environment variable
+    if value is None:
+        env_value = os.getenv(env_var)
+        if env_value is not None:
+            value = env_value
+
+    # Use default if still None
+    if value is None:
+        value = default
+
+    # Type conversion if needed
+    if (
+        value is not None
+        and value_type is not None
+        and not isinstance(value, value_type)
+    ):
+        try:
+            value = value_type(value)
+        except (ValueError, TypeError):
+            logger.warning(
+                f&#34;Failed to convert {key} value &#39;{value}&#39; to {value_type.__name__}, using as-is&#34;
+            )
+
+    return value</code></pre>
+</details>
+<div class="desc"><p>Get configuration value with environment variable fallback.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>key</code></strong></dt>
+<dd>Configuration key to retrieve.</dd>
+<dt><strong><code>env_var</code></strong></dt>
+<dd>Environment variable name to check as fallback.</dd>
+<dt><strong><code>default</code></strong></dt>
+<dd>Default value if neither config nor env var is found.</dd>
+<dt><strong><code>value_type</code></strong></dt>
+<dd>Expected type for the value.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Configuration value, environment variable value, or default.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration"><code class="name flex">
+<span>def <span class="ident">get_effective_configuration</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_effective_configuration(self) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Get the effective configuration including overrides.
+
+    Returns:
+        Dictionary containing all configuration values with overrides applied.
+    &#34;&#34;&#34;
+    config_dict = {}
+
+    # Start with base configuration
+    if hasattr(self, &#34;cfg&#34;) and self.cfg:
+        if hasattr(self.cfg, &#34;model_dump&#34;):
+            # Pydantic model
+            config_dict = self.cfg.model_dump()
+        elif hasattr(self.cfg, &#34;__dict__&#34;):
+            # Regular object
+            config_dict = vars(self.cfg).copy()
+
+    # Apply overrides
+    config_dict.update(self._config_overrides)
+
+    return config_dict</code></pre>
+</details>
+<div class="desc"><p>Get the effective configuration including overrides.</p>
+<h2 id="returns">Returns</h2>
+<p>Dictionary containing all configuration values with overrides applied.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations"><code class="name flex">
+<span>def <span class="ident">merge_configurations</span></span>(<span>self, *configs: Any) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def merge_configurations(self, *configs: Any) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Merge multiple configuration objects with precedence.
+
+    Args:
+        *configs: Configuration objects to merge (later ones take precedence).
+
+    Returns:
+        Merged configuration dictionary.
+    &#34;&#34;&#34;
+    merged = {}
+
+    for config in configs:
+        if config is None:
+            continue
+
+        if hasattr(config, &#34;model_dump&#34;):
+            # Pydantic model
+            config_dict = config.model_dump()
+        elif hasattr(config, &#34;__dict__&#34;):
+            # Regular object
+            config_dict = vars(config).copy()
+        elif isinstance(config, dict):
+            # Dictionary
+            config_dict = config.copy()
+        else:
+            logger.warning(f&#34;Unsupported configuration type: {type(config)}&#34;)
+            continue
+
+        merged.update(config_dict)
+
+    return merged</code></pre>
+</details>
+<div class="desc"><p>Merge multiple configuration objects with precedence.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>*configs</code></strong></dt>
+<dd>Configuration objects to merge (later ones take precedence).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Merged configuration dictionary.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value"><code class="name flex">
+<span>def <span class="ident">require_config_value</span></span>(<span>self,<br>key: str,<br>value_type: type | None = None,<br>validator: Callable[[typing.Any], bool] | None = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def require_config_value(
+    self,
+    key: str,
+    value_type: Optional[type] = None,
+    validator: Optional[Callable[[Any], bool]] = None,
+) -&gt; Any:
+    &#34;&#34;&#34;Get a required configuration value with validation.
+
+    Args:
+        key: Configuration key to retrieve.
+        value_type: Expected type for the configuration value.
+        validator: Optional validation function.
+
+    Returns:
+        Configuration value.
+
+    Raises:
+        ReadError: If the configuration value is missing or invalid.
+    &#34;&#34;&#34;
+    return self.get_config_value(
+        key, required=True, value_type=value_type, validator=validator
+    )</code></pre>
+</details>
+<div class="desc"><p>Get a required configuration value with validation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>key</code></strong></dt>
+<dd>Configuration key to retrieve.</dd>
+<dt><strong><code>value_type</code></strong></dt>
+<dd>Expected type for the configuration value.</dd>
+<dt><strong><code>validator</code></strong></dt>
+<dd>Optional validation function.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Configuration value.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If the configuration value is missing or invalid.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context"><code class="name flex">
+<span>def <span class="ident">set_config_context</span></span>(<span>self, **context: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_config_context(self, **context: Any) -&gt; None:
+    &#34;&#34;&#34;Set configuration context for enhanced error reporting.
+
+    Args:
+        **context: Key-value pairs to store as configuration context.
+    &#34;&#34;&#34;
+    self._config_context.update(context)</code></pre>
+</details>
+<div class="desc"><p>Set configuration context for enhanced error reporting.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>**context</code></strong></dt>
+<dd>Key-value pairs to store as configuration context.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override"><code class="name flex">
+<span>def <span class="ident">set_config_override</span></span>(<span>self, key: str, value: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_config_override(self, key: str, value: Any) -&gt; None:
+    &#34;&#34;&#34;Set a configuration override for runtime customization.
+
+    Args:
+        key: Configuration key to override.
+        value: Override value.
+    &#34;&#34;&#34;
+    self._config_overrides[key] = value</code></pre>
+</details>
+<div class="desc"><p>Set a configuration override for runtime customization.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>key</code></strong></dt>
+<dd>Configuration key to override.</dd>
+<dt><strong><code>value</code></strong></dt>
+<dd>Override value.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration"><code class="name flex">
+<span>def <span class="ident">validate_configuration</span></span>(<span>self) ‑> <a title="fin_statement_model.io.core.mixins.ValidationResultCollector" href="#fin_statement_model.io.core.mixins.ValidationResultCollector">ValidationResultCollector</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_configuration(self) -&gt; &#34;ValidationResultCollector&#34;:
+    &#34;&#34;&#34;Validate the entire configuration object.
+
+    Returns:
+        ValidationResultCollector with validation results.
+    &#34;&#34;&#34;
+    validator = ValidationResultCollector(context=self._config_context)
+
+    if not hasattr(self, &#34;cfg&#34;) or not self.cfg:
+        validator.add_result(
+            &#34;configuration&#34;, False, &#34;Missing configuration object&#34;, &#34;structure&#34;
+        )
+        return validator
+
+    # Validate configuration object using Pydantic if available
+    try:
+        if hasattr(self.cfg, &#34;model_validate&#34;):
+            # It&#39;s a Pydantic model, validation already happened during creation
+            validator.add_result(
+                &#34;configuration&#34;, True, &#34;Configuration object is valid&#34;, &#34;structure&#34;
+            )
+        else:
+            validator.add_result(
+                &#34;configuration&#34;,
+                True,
+                &#34;Configuration object exists (non-Pydantic)&#34;,
+                &#34;structure&#34;,
+            )
+    except Exception as e:
+        validator.add_result(
+            &#34;configuration&#34;,
+            False,
+            f&#34;Configuration validation failed: {e}&#34;,
+            &#34;validation&#34;,
+        )
+
+    return validator</code></pre>
+</details>
+<div class="desc"><p>Validate the entire configuration object.</p>
+<h2 id="returns">Returns</h2>
+<p>ValidationResultCollector with validation results.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.DataFrameBasedWriter"><code class="flex name class">
+<span>class <span class="ident">DataFrameBasedWriter</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataFrameBasedWriter(ValueExtractionMixin):
+    &#34;&#34;&#34;Base class for writers that convert to DataFrame format.
+
+    This base class provides common functionality for writers that
+    need to extract data from a graph into a tabular format.
+
+    Note: Subclasses should apply the @handle_write_errors() decorator
+    to their write() method implementation for consistent error handling.
+    &#34;&#34;&#34;
+
+    def extract_graph_data(
+        self,
+        graph: Graph,
+        include_nodes: Optional[list[str]] = None,
+        calculate: bool = True,
+    ) -&gt; dict[str, dict[str, float]]:
+        &#34;&#34;&#34;Extract data from graph nodes into a dictionary format.
+
+        Args:
+            graph: The graph to extract data from.
+            include_nodes: Optional list of node names to include.
+                          If None, includes all nodes.
+            calculate: Whether to calculate values or just use stored values.
+
+        Returns:
+            Dictionary mapping node names to period-value dictionaries.
+        &#34;&#34;&#34;
+        import numpy as np
+
+        periods = sorted(graph.periods) if graph.periods else []
+        data: dict[str, dict[str, float]] = {}
+
+        # Determine which nodes to process
+        nodes_to_process = include_nodes if include_nodes else list(graph.nodes.keys())
+
+        # Validate requested nodes exist
+        if include_nodes:
+            missing_nodes = [n for n in include_nodes if n not in graph.nodes]
+            if missing_nodes:
+                logger.warning(f&#34;Requested nodes not found in graph: {missing_nodes}&#34;)
+                nodes_to_process = [n for n in include_nodes if n in graph.nodes]
+
+        # Extract data for each node
+        for node_id in nodes_to_process:
+            node = graph.nodes[node_id]
+            row: dict[str, float] = {}
+
+            for period in periods:
+                # Use the mixin&#39;s extract method for consistent value extraction
+                value = self.extract_node_value(node, period, calculate=calculate)
+
+                # Convert None to NaN for DataFrame compatibility
+                if (
+                    value is None
+                    or not isinstance(value, int | float | np.number)
+                    or not np.isfinite(value)
+                ):
+                    value = np.nan
+
+                row[period] = float(value)
+
+            data[node_id] = row
+
+        return data
+
+    @abstractmethod
+    def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; Any:
+        &#34;&#34;&#34;Write graph data to target.
+
+        Subclasses must implement this method with their specific
+        writing logic. It&#39;s recommended to apply the @handle_write_errors()
+        decorator to the implementation.
+
+        Args:
+            graph: Graph containing data to write.
+            target: Target for the output (file path, etc.).
+            **kwargs: Additional writer-specific options.
+
+        Returns:
+            Writer-specific return value.
+        &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Base class for writers that convert to DataFrame format.</p>
+<p>This base class provides common functionality for writers that
+need to extract data from a graph into a tabular format.</p>
+<p>Note: Subclasses should apply the @handle_write_errors() decorator
+to their write() method implementation for consistent error handling.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.mixins.ValueExtractionMixin" href="#fin_statement_model.io.core.mixins.ValueExtractionMixin">ValueExtractionMixin</a></li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.formats.dataframe.writer.DataFrameWriter" href="../formats/dataframe/writer.html#fin_statement_model.io.formats.dataframe.writer.DataFrameWriter">DataFrameWriter</a></li>
+<li><a title="fin_statement_model.io.formats.dict.writer.DictWriter" href="../formats/dict/writer.html#fin_statement_model.io.formats.dict.writer.DictWriter">DictWriter</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.DataFrameBasedWriter.extract_graph_data"><code class="name flex">
+<span>def <span class="ident">extract_graph_data</span></span>(<span>self,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>include_nodes: list[str] | None = None,<br>calculate: bool = True) ‑> dict[str, dict[str, float]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extract_graph_data(
+    self,
+    graph: Graph,
+    include_nodes: Optional[list[str]] = None,
+    calculate: bool = True,
+) -&gt; dict[str, dict[str, float]]:
+    &#34;&#34;&#34;Extract data from graph nodes into a dictionary format.
+
+    Args:
+        graph: The graph to extract data from.
+        include_nodes: Optional list of node names to include.
+                      If None, includes all nodes.
+        calculate: Whether to calculate values or just use stored values.
+
+    Returns:
+        Dictionary mapping node names to period-value dictionaries.
+    &#34;&#34;&#34;
+    import numpy as np
+
+    periods = sorted(graph.periods) if graph.periods else []
+    data: dict[str, dict[str, float]] = {}
+
+    # Determine which nodes to process
+    nodes_to_process = include_nodes if include_nodes else list(graph.nodes.keys())
+
+    # Validate requested nodes exist
+    if include_nodes:
+        missing_nodes = [n for n in include_nodes if n not in graph.nodes]
+        if missing_nodes:
+            logger.warning(f&#34;Requested nodes not found in graph: {missing_nodes}&#34;)
+            nodes_to_process = [n for n in include_nodes if n in graph.nodes]
+
+    # Extract data for each node
+    for node_id in nodes_to_process:
+        node = graph.nodes[node_id]
+        row: dict[str, float] = {}
+
+        for period in periods:
+            # Use the mixin&#39;s extract method for consistent value extraction
+            value = self.extract_node_value(node, period, calculate=calculate)
+
+            # Convert None to NaN for DataFrame compatibility
+            if (
+                value is None
+                or not isinstance(value, int | float | np.number)
+                or not np.isfinite(value)
+            ):
+                value = np.nan
+
+            row[period] = float(value)
+
+        data[node_id] = row
+
+    return data</code></pre>
+</details>
+<div class="desc"><p>Extract data from graph nodes into a dictionary format.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The graph to extract data from.</dd>
+<dt><strong><code>include_nodes</code></strong></dt>
+<dd>Optional list of node names to include.
+If None, includes all nodes.</dd>
+<dt><strong><code>calculate</code></strong></dt>
+<dd>Whether to calculate values or just use stored values.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dictionary mapping node names to period-value dictionaries.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.DataFrameBasedWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: Any = None,<br>**kwargs: Any) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; Any:
+    &#34;&#34;&#34;Write graph data to target.
+
+    Subclasses must implement this method with their specific
+    writing logic. It&#39;s recommended to apply the @handle_write_errors()
+    decorator to the implementation.
+
+    Args:
+        graph: Graph containing data to write.
+        target: Target for the output (file path, etc.).
+        **kwargs: Additional writer-specific options.
+
+    Returns:
+        Writer-specific return value.
+    &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Write graph data to target.</p>
+<p>Subclasses must implement this method with their specific
+writing logic. It's recommended to apply the @handle_write_errors()
+decorator to the implementation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>Graph containing data to write.</dd>
+<dt><strong><code>target</code></strong></dt>
+<dd>Target for the output (file path, etc.).</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional writer-specific options.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Writer-specific return value.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.mixins.ValueExtractionMixin" href="#fin_statement_model.io.core.mixins.ValueExtractionMixin">ValueExtractionMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.ValueExtractionMixin.extract_node_value" href="#fin_statement_model.io.core.mixins.ValueExtractionMixin.extract_node_value">extract_node_value</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.FileBasedReader"><code class="flex name class">
+<span>class <span class="ident">FileBasedReader</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class FileBasedReader(DataReader):
+    &#34;&#34;&#34;Base class for file-based readers with common validation.
+
+    This class provides common file validation methods and ensures
+    consistent error handling for all file-based readers.
+
+    Note: Subclasses should apply the @handle_read_errors() decorator
+    to their read() method implementation for consistent error handling.
+    &#34;&#34;&#34;
+
+    def validate_file_exists(self, path: str) -&gt; None:
+        &#34;&#34;&#34;Validate that file exists.
+
+        Args:
+            path: Path to the file to validate.
+
+        Raises:
+            ReadError: If the file does not exist.
+        &#34;&#34;&#34;
+        if not os.path.exists(path):
+            raise ReadError(
+                f&#34;File not found: {path}&#34;,
+                source=path,
+                reader_type=self.__class__.__name__,
+            )
+
+    def validate_file_extension(
+        self, path: str, valid_extensions: tuple[str, ...]
+    ) -&gt; None:
+        &#34;&#34;&#34;Validate file has correct extension.
+
+        Args:
+            path: Path to the file to validate.
+            valid_extensions: Tuple of valid file extensions (e.g., (&#39;.csv&#39;, &#39;.txt&#39;)).
+
+        Raises:
+            ReadError: If the file extension is not valid.
+        &#34;&#34;&#34;
+        if not path.lower().endswith(valid_extensions):
+            raise ReadError(
+                f&#34;Invalid file extension. Expected one of {valid_extensions}, &#34;
+                f&#34;got &#39;{os.path.splitext(path)[1]}&#39;&#34;,
+                source=path,
+                reader_type=self.__class__.__name__,
+            )
+
+    @abstractmethod
+    def read(self, source: str, **kwargs: Any) -&gt; Graph:
+        &#34;&#34;&#34;Read from file source.
+
+        Subclasses must implement this method with their specific
+        file reading logic. It&#39;s recommended to apply the @handle_read_errors()
+        decorator to the implementation.
+
+        Args:
+            source: Path to the file to read.
+            **kwargs: Additional reader-specific options.
+
+        Returns:
+            Graph populated with data from the file.
+        &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Base class for file-based readers with common validation.</p>
+<p>This class provides common file validation methods and ensures
+consistent error handling for all file-based readers.</p>
+<p>Note: Subclasses should apply the @handle_read_errors() decorator
+to their read() method implementation for consistent error handling.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base.DataReader" href="base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.formats.csv.reader.CsvReader" href="../formats/csv/reader.html#fin_statement_model.io.formats.csv.reader.CsvReader">CsvReader</a></li>
+<li><a title="fin_statement_model.io.formats.excel.reader.ExcelReader" href="../formats/excel/reader.html#fin_statement_model.io.formats.excel.reader.ExcelReader">ExcelReader</a></li>
+<li><a title="fin_statement_model.io.specialized.adjustments.AdjustmentsExcelReader" href="../specialized/adjustments.html#fin_statement_model.io.specialized.adjustments.AdjustmentsExcelReader">AdjustmentsExcelReader</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.FileBasedReader.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self, source: str, **kwargs: Any) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def read(self, source: str, **kwargs: Any) -&gt; Graph:
+    &#34;&#34;&#34;Read from file source.
+
+    Subclasses must implement this method with their specific
+    file reading logic. It&#39;s recommended to apply the @handle_read_errors()
+    decorator to the implementation.
+
+    Args:
+        source: Path to the file to read.
+        **kwargs: Additional reader-specific options.
+
+    Returns:
+        Graph populated with data from the file.
+    &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Read from file source.</p>
+<p>Subclasses must implement this method with their specific
+file reading logic. It's recommended to apply the @handle_read_errors()
+decorator to the implementation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source</code></strong></dt>
+<dd>Path to the file to read.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional reader-specific options.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Graph populated with data from the file.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.FileBasedReader.validate_file_exists"><code class="name flex">
+<span>def <span class="ident">validate_file_exists</span></span>(<span>self, path: str) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_file_exists(self, path: str) -&gt; None:
+    &#34;&#34;&#34;Validate that file exists.
+
+    Args:
+        path: Path to the file to validate.
+
+    Raises:
+        ReadError: If the file does not exist.
+    &#34;&#34;&#34;
+    if not os.path.exists(path):
+        raise ReadError(
+            f&#34;File not found: {path}&#34;,
+            source=path,
+            reader_type=self.__class__.__name__,
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate that file exists.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong></dt>
+<dd>Path to the file to validate.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If the file does not exist.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.FileBasedReader.validate_file_extension"><code class="name flex">
+<span>def <span class="ident">validate_file_extension</span></span>(<span>self, path: str, valid_extensions: tuple[str, ...]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_file_extension(
+    self, path: str, valid_extensions: tuple[str, ...]
+) -&gt; None:
+    &#34;&#34;&#34;Validate file has correct extension.
+
+    Args:
+        path: Path to the file to validate.
+        valid_extensions: Tuple of valid file extensions (e.g., (&#39;.csv&#39;, &#39;.txt&#39;)).
+
+    Raises:
+        ReadError: If the file extension is not valid.
+    &#34;&#34;&#34;
+    if not path.lower().endswith(valid_extensions):
+        raise ReadError(
+            f&#34;Invalid file extension. Expected one of {valid_extensions}, &#34;
+            f&#34;got &#39;{os.path.splitext(path)[1]}&#39;&#34;,
+            source=path,
+            reader_type=self.__class__.__name__,
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate file has correct extension.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong></dt>
+<dd>Path to the file to validate.</dd>
+<dt><strong><code>valid_extensions</code></strong></dt>
+<dd>Tuple of valid file extensions (e.g., ('.csv', '.txt')).</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If the file extension is not valid.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.MappingAwareMixin"><code class="flex name class">
+<span>class <span class="ident">MappingAwareMixin</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MappingAwareMixin:
+    &#34;&#34;&#34;Mixin for readers that support name mapping functionality.
+
+    Provides common methods for:
+    - Loading default mappings from YAML files
+    - Getting effective mappings based on context
+    - Applying mappings to source names
+    &#34;&#34;&#34;
+
+    # Class variable to store default mappings per reader type
+    _default_mappings_cache: ClassVar[dict[str, MappingConfig]] = {}
+
+    @classmethod
+    def _get_default_mapping_path(cls) -&gt; Optional[str]:
+        &#34;&#34;&#34;Get the path to default mapping YAML file for this reader.
+
+        Subclasses should override this to specify their default mapping file.
+
+        Returns:
+            Path relative to fin_statement_model.io.config.mappings package,
+            or None if no default mappings.
+        &#34;&#34;&#34;
+        return None
+
+    @classmethod
+    def _load_default_mappings(cls) -&gt; MappingConfig:
+        &#34;&#34;&#34;Load default mapping configurations from YAML file.
+
+        Returns:
+            Dictionary containing default mappings, empty if none found.
+        &#34;&#34;&#34;
+        cache_key = cls.__name__
+
+        # Return cached value if available
+        if cache_key in cls._default_mappings_cache:
+            return cls._default_mappings_cache[cache_key]
+
+        mapping_path = cls._get_default_mapping_path()
+        if not mapping_path:
+            cls._default_mappings_cache[cache_key] = {}
+            return {}
+
+        try:
+            yaml_content = (
+                importlib.resources.files(&#34;fin_statement_model.io.config.mappings&#34;)
+                .joinpath(mapping_path)
+                .read_text(encoding=&#34;utf-8&#34;)
+            )
+            mappings = yaml.safe_load(yaml_content) or {}
+            cls._default_mappings_cache[cache_key] = mappings
+            logger.debug(f&#34;Loaded default mappings for {cls.__name__}&#34;)
+            return mappings
+        except Exception:
+            logger.exception(f&#34;Failed to load default mappings for {cls.__name__}&#34;)
+            cls._default_mappings_cache[cache_key] = {}
+            return {}
+
+    def _get_mapping(self, context_key: Optional[str] = None) -&gt; dict[str, str]:
+        &#34;&#34;&#34;Get the effective mapping based on context and configuration.
+
+        Args:
+            context_key: Optional context (e.g., sheet name, statement type)
+                        to select specific mapping scope.
+
+        Returns:
+            Flat dictionary mapping source names to canonical names.
+
+        Raises:
+            TypeError: If mapping configuration is invalid.
+        &#34;&#34;&#34;
+        # Load defaults if not already loaded
+        default_mappings = self._load_default_mappings()
+
+        # Get user config
+        user_config = self.get_config_value(&#34;mapping_config&#34;)
+
+        # Start with defaults for the context
+        mapping = normalize_mapping(default_mappings, context_key=context_key)
+
+        # Overlay user mappings if provided
+        if user_config:
+            user_mapping = normalize_mapping(user_config, context_key=context_key)
+            mapping.update(user_mapping)
+
+        return mapping
+
+    def _apply_mapping(self, source_name: str, mapping: dict[str, str]) -&gt; str:
+        &#34;&#34;&#34;Apply mapping to convert source name to canonical name.
+
+        Args:
+            source_name: Original name from the data source
+            mapping: Mapping dictionary
+
+        Returns:
+            Canonical name (mapped name or original if no mapping exists)
+        &#34;&#34;&#34;
+        return mapping.get(source_name, source_name)
+
+    def get_config_value(
+        self,
+        key: str,
+        default: Any = None,
+        required: bool = False,
+        value_type: Optional[type] = None,
+        validator: Optional[Callable[[Any], bool]] = None,
+    ) -&gt; Any:
+        &#34;&#34;&#34;Stub for configuration value retrieval; overridden by ConfigurationMixin.&#34;&#34;&#34;
+        ...</code></pre>
+</details>
+<div class="desc"><p>Mixin for readers that support name mapping functionality.</p>
+<p>Provides common methods for:
+- Loading default mappings from YAML files
+- Getting effective mappings based on context
+- Applying mappings to source names</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.formats.api.fmp.FmpReader" href="../formats/api/fmp.html#fin_statement_model.io.formats.api.fmp.FmpReader">FmpReader</a></li>
+<li><a title="fin_statement_model.io.formats.csv.reader.CsvReader" href="../formats/csv/reader.html#fin_statement_model.io.formats.csv.reader.CsvReader">CsvReader</a></li>
+<li><a title="fin_statement_model.io.formats.excel.reader.ExcelReader" href="../formats/excel/reader.html#fin_statement_model.io.formats.excel.reader.ExcelReader">ExcelReader</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.MappingAwareMixin.get_config_value"><code class="name flex">
+<span>def <span class="ident">get_config_value</span></span>(<span>self,<br>key: str,<br>default: Any = None,<br>required: bool = False,<br>value_type: type | None = None,<br>validator: Callable[[typing.Any], bool] | None = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_config_value(
+    self,
+    key: str,
+    default: Any = None,
+    required: bool = False,
+    value_type: Optional[type] = None,
+    validator: Optional[Callable[[Any], bool]] = None,
+) -&gt; Any:
+    &#34;&#34;&#34;Stub for configuration value retrieval; overridden by ConfigurationMixin.&#34;&#34;&#34;
+    ...</code></pre>
+</details>
+<div class="desc"><p>Stub for configuration value retrieval; overridden by ConfigurationMixin.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationMixin"><code class="flex name class">
+<span>class <span class="ident">ValidationMixin</span></span>
+<span>(</span><span>*args: Any, **kwargs: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ValidationMixin:
+    &#34;&#34;&#34;Mixin for readers that need comprehensive validation capabilities.
+
+    Provides standardized validation methods for common data validation scenarios
+    including data type validation, range validation, and custom validation rules.
+    &#34;&#34;&#34;
+
+    def __init__(self, *args: Any, **kwargs: Any) -&gt; None:
+        &#34;&#34;&#34;Initialize validation mixin.&#34;&#34;&#34;
+        super().__init__(*args, **kwargs)
+        self._validation_context: dict[str, Any] = {}
+
+    def set_validation_context(self, **context: Any) -&gt; None:
+        &#34;&#34;&#34;Set validation context for error reporting.
+
+        Args:
+            **context: Key-value pairs to store as validation context.
+        &#34;&#34;&#34;
+        self._validation_context.update(context)
+
+    def get_validation_context(self) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Get current validation context.
+
+        Returns:
+            Dictionary containing current validation context.
+        &#34;&#34;&#34;
+        return self._validation_context.copy()
+
+    def validate_required_columns(
+        self,
+        df: Any,  # pandas.DataFrame
+        required_columns: list[str],
+        source_identifier: str = &#34;data source&#34;,
+    ) -&gt; None:
+        &#34;&#34;&#34;Validate that required columns exist in DataFrame.
+
+        Args:
+            df: DataFrame to validate.
+            required_columns: List of required column names.
+            source_identifier: Identifier for the data source (for error messages).
+
+        Raises:
+            ReadError: If required columns are missing.
+        &#34;&#34;&#34;
+        if not hasattr(df, &#34;columns&#34;):
+            raise ReadError(
+                &#34;Invalid data structure: expected DataFrame with columns attribute&#34;,
+                source=source_identifier,
+                reader_type=getattr(self, &#34;__class__&#34;, {}).get(&#34;__name__&#34;, &#34;Unknown&#34;),
+            )
+
+        missing_columns = set(required_columns) - set(df.columns)
+        if missing_columns:
+            raise ReadError(
+                f&#34;Missing required columns in {source_identifier}: {missing_columns}&#34;,
+                source=source_identifier,
+                reader_type=getattr(self, &#34;__class__&#34;, {}).get(&#34;__name__&#34;, &#34;Unknown&#34;),
+            )
+
+    def validate_column_bounds(
+        self,
+        df: Any,  # pandas.DataFrame
+        column_index: int,
+        source_identifier: str = &#34;data source&#34;,
+        context: str = &#34;column&#34;,
+    ) -&gt; None:
+        &#34;&#34;&#34;Validate that column index is within DataFrame bounds.
+
+        Args:
+            df: DataFrame to validate.
+            column_index: 0-based column index to validate.
+            source_identifier: Identifier for the data source.
+            context: Context description for error messages.
+
+        Raises:
+            ReadError: If column index is out of bounds.
+        &#34;&#34;&#34;
+        if not hasattr(df, &#34;columns&#34;):
+            raise ReadError(
+                &#34;Invalid data structure: expected DataFrame with columns attribute&#34;,
+                source=source_identifier,
+                reader_type=getattr(self, &#34;__class__&#34;, {}).get(&#34;__name__&#34;, &#34;Unknown&#34;),
+            )
+
+        if column_index &gt;= len(df.columns) or column_index &lt; 0:
+            raise ReadError(
+                f&#34;{context} index ({column_index + 1}) is out of bounds. &#34;
+                f&#34;Found {len(df.columns)} columns.&#34;,
+                source=source_identifier,
+                reader_type=getattr(self, &#34;__class__&#34;, {}).get(&#34;__name__&#34;, &#34;Unknown&#34;),
+            )
+
+    def validate_periods_exist(
+        self,
+        periods: list[str],
+        source_identifier: str = &#34;data source&#34;,
+        min_periods: int = 1,
+    ) -&gt; None:
+        &#34;&#34;&#34;Validate that periods list is not empty and meets minimum requirements.
+
+        Args:
+            periods: List of period identifiers.
+            source_identifier: Identifier for the data source.
+            min_periods: Minimum number of periods required.
+
+        Raises:
+            ReadError: If periods validation fails.
+        &#34;&#34;&#34;
+        if not periods:
+            raise ReadError(
+                f&#34;No periods found in {source_identifier}&#34;,
+                source=source_identifier,
+                reader_type=getattr(self, &#34;__class__&#34;, {}).get(&#34;__name__&#34;, &#34;Unknown&#34;),
+            )
+
+        if len(periods) &lt; min_periods:
+            raise ReadError(
+                f&#34;Insufficient periods in {source_identifier}. &#34;
+                f&#34;Found {len(periods)}, minimum required: {min_periods}&#34;,
+                source=source_identifier,
+                reader_type=getattr(self, &#34;__class__&#34;, {}).get(&#34;__name__&#34;, &#34;Unknown&#34;),
+            )
+
+    def validate_numeric_value(  # noqa: PLR0911
+        self,
+        value: Any,
+        item_name: str,
+        period: str,
+        validator: Optional[&#34;ValidationResultCollector&#34;] = None,
+        allow_conversion: bool = True,
+    ) -&gt; tuple[bool, Optional[float]]:
+        &#34;&#34;&#34;Validate and optionally convert a value to numeric.
+
+        Args:
+            value: Value to validate.
+            item_name: Name of the item (for error reporting).
+            period: Period identifier (for error reporting).
+            validator: Optional ValidationResultCollector to record errors.
+            allow_conversion: Whether to attempt string-to-float conversion.
+
+        Returns:
+            Tuple of (is_valid, converted_value).
+            If is_valid is False, converted_value will be None.
+        &#34;&#34;&#34;
+        import pandas as pd
+
+        # Skip NaN/None values
+        if pd.isna(value) or value is None:
+            return True, None
+
+        # Already numeric
+        if isinstance(value, int | float):
+            if not pd.isfinite(value):
+                error_msg = f&#34;Non-finite numeric value &#39;{value}&#39; for period &#39;{period}&#39;&#34;
+                if validator:
+                    validator.add_result(item_name, False, error_msg)
+                return False, None
+            return True, float(value)
+
+        # Attempt conversion if allowed
+        if allow_conversion:
+            try:
+                converted = float(value)
+                if not pd.isfinite(converted):
+                    error_msg = f&#34;Converted to non-finite value &#39;{converted}&#39; for period &#39;{period}&#39;&#34;
+                    if validator:
+                        validator.add_result(item_name, False, error_msg)
+                    return False, None
+                return True, converted
+            except (ValueError, TypeError):
+                error_msg = f&#34;Non-numeric value &#39;{value}&#39; for period &#39;{period}&#39;&#34;
+                if validator:
+                    validator.add_result(item_name, False, error_msg)
+                return False, None
+
+        # Not numeric and conversion not allowed
+        error_msg = f&#34;Non-numeric value &#39;{value}&#39; for period &#39;{period}&#39;&#34;
+        if validator:
+            validator.add_result(item_name, False, error_msg)
+        return False, None
+
+    def validate_node_name(
+        self,
+        node_name: Any,
+        source_name: str = &#34;&#34;,
+        allow_empty: bool = False,
+    ) -&gt; tuple[bool, Optional[str]]:
+        &#34;&#34;&#34;Validate and normalize a node name.
+
+        Args:
+            node_name: Raw node name to validate.
+            source_name: Original source name (for error context).
+            allow_empty: Whether to allow empty/None node names.
+
+        Returns:
+            Tuple of (is_valid, normalized_name).
+            If is_valid is False, normalized_name will be None.
+        &#34;&#34;&#34;
+        import pandas as pd
+
+        if pd.isna(node_name) or node_name is None:
+            return allow_empty, None
+
+        if not node_name or (isinstance(node_name, str) and not node_name.strip()):
+            return allow_empty, None
+
+        # Normalize to string and strip whitespace
+        normalized = str(node_name).strip()
+        return True, normalized
+
+    def create_validation_summary(
+        self,
+        validator: &#34;ValidationResultCollector&#34;,
+        source_identifier: str,
+        operation: str = &#34;processing&#34;,
+    ) -&gt; str:
+        &#34;&#34;&#34;Create a formatted validation summary message.
+
+        Args:
+            validator: ValidationResultCollector with results.
+            source_identifier: Identifier for the data source.
+            operation: Description of the operation being performed.
+
+        Returns:
+            Formatted summary message.
+        &#34;&#34;&#34;
+        summary = validator.get_summary()
+
+        if not validator.has_errors():
+            return f&#34;Successfully completed {operation} {source_identifier}&#34;
+
+        error_summary = (
+            f&#34;Validation errors occurred during {operation} {source_identifier}: &#34;
+        )
+        error_details = &#34;; &#34;.join(summary[&#34;errors&#34;][:5])  # Limit to first 5 errors
+
+        if len(summary[&#34;errors&#34;]) &gt; 5:
+            error_details += f&#34; (and {len(summary[&#39;errors&#39;]) - 5} more errors)&#34;
+
+        return error_summary + error_details</code></pre>
+</details>
+<div class="desc"><p>Mixin for readers that need comprehensive validation capabilities.</p>
+<p>Provides standardized validation methods for common data validation scenarios
+including data type validation, range validation, and custom validation rules.</p>
+<p>Initialize validation mixin.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.formats.csv.reader.CsvReader" href="../formats/csv/reader.html#fin_statement_model.io.formats.csv.reader.CsvReader">CsvReader</a></li>
+<li><a title="fin_statement_model.io.formats.excel.reader.ExcelReader" href="../formats/excel/reader.html#fin_statement_model.io.formats.excel.reader.ExcelReader">ExcelReader</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.ValidationMixin.create_validation_summary"><code class="name flex">
+<span>def <span class="ident">create_validation_summary</span></span>(<span>self,<br>validator: <a title="fin_statement_model.io.core.mixins.ValidationResultCollector" href="#fin_statement_model.io.core.mixins.ValidationResultCollector">ValidationResultCollector</a>,<br>source_identifier: str,<br>operation: str = 'processing') ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_validation_summary(
+    self,
+    validator: &#34;ValidationResultCollector&#34;,
+    source_identifier: str,
+    operation: str = &#34;processing&#34;,
+) -&gt; str:
+    &#34;&#34;&#34;Create a formatted validation summary message.
+
+    Args:
+        validator: ValidationResultCollector with results.
+        source_identifier: Identifier for the data source.
+        operation: Description of the operation being performed.
+
+    Returns:
+        Formatted summary message.
+    &#34;&#34;&#34;
+    summary = validator.get_summary()
+
+    if not validator.has_errors():
+        return f&#34;Successfully completed {operation} {source_identifier}&#34;
+
+    error_summary = (
+        f&#34;Validation errors occurred during {operation} {source_identifier}: &#34;
+    )
+    error_details = &#34;; &#34;.join(summary[&#34;errors&#34;][:5])  # Limit to first 5 errors
+
+    if len(summary[&#34;errors&#34;]) &gt; 5:
+        error_details += f&#34; (and {len(summary[&#39;errors&#39;]) - 5} more errors)&#34;
+
+    return error_summary + error_details</code></pre>
+</details>
+<div class="desc"><p>Create a formatted validation summary message.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>validator</code></strong></dt>
+<dd>ValidationResultCollector with results.</dd>
+<dt><strong><code>source_identifier</code></strong></dt>
+<dd>Identifier for the data source.</dd>
+<dt><strong><code>operation</code></strong></dt>
+<dd>Description of the operation being performed.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Formatted summary message.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationMixin.get_validation_context"><code class="name flex">
+<span>def <span class="ident">get_validation_context</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_validation_context(self) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Get current validation context.
+
+    Returns:
+        Dictionary containing current validation context.
+    &#34;&#34;&#34;
+    return self._validation_context.copy()</code></pre>
+</details>
+<div class="desc"><p>Get current validation context.</p>
+<h2 id="returns">Returns</h2>
+<p>Dictionary containing current validation context.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationMixin.set_validation_context"><code class="name flex">
+<span>def <span class="ident">set_validation_context</span></span>(<span>self, **context: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_validation_context(self, **context: Any) -&gt; None:
+    &#34;&#34;&#34;Set validation context for error reporting.
+
+    Args:
+        **context: Key-value pairs to store as validation context.
+    &#34;&#34;&#34;
+    self._validation_context.update(context)</code></pre>
+</details>
+<div class="desc"><p>Set validation context for error reporting.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>**context</code></strong></dt>
+<dd>Key-value pairs to store as validation context.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationMixin.validate_column_bounds"><code class="name flex">
+<span>def <span class="ident">validate_column_bounds</span></span>(<span>self,<br>df: Any,<br>column_index: int,<br>source_identifier: str = 'data source',<br>context: str = 'column') ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_column_bounds(
+    self,
+    df: Any,  # pandas.DataFrame
+    column_index: int,
+    source_identifier: str = &#34;data source&#34;,
+    context: str = &#34;column&#34;,
+) -&gt; None:
+    &#34;&#34;&#34;Validate that column index is within DataFrame bounds.
+
+    Args:
+        df: DataFrame to validate.
+        column_index: 0-based column index to validate.
+        source_identifier: Identifier for the data source.
+        context: Context description for error messages.
+
+    Raises:
+        ReadError: If column index is out of bounds.
+    &#34;&#34;&#34;
+    if not hasattr(df, &#34;columns&#34;):
+        raise ReadError(
+            &#34;Invalid data structure: expected DataFrame with columns attribute&#34;,
+            source=source_identifier,
+            reader_type=getattr(self, &#34;__class__&#34;, {}).get(&#34;__name__&#34;, &#34;Unknown&#34;),
+        )
+
+    if column_index &gt;= len(df.columns) or column_index &lt; 0:
+        raise ReadError(
+            f&#34;{context} index ({column_index + 1}) is out of bounds. &#34;
+            f&#34;Found {len(df.columns)} columns.&#34;,
+            source=source_identifier,
+            reader_type=getattr(self, &#34;__class__&#34;, {}).get(&#34;__name__&#34;, &#34;Unknown&#34;),
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate that column index is within DataFrame bounds.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>df</code></strong></dt>
+<dd>DataFrame to validate.</dd>
+<dt><strong><code>column_index</code></strong></dt>
+<dd>0-based column index to validate.</dd>
+<dt><strong><code>source_identifier</code></strong></dt>
+<dd>Identifier for the data source.</dd>
+<dt><strong><code>context</code></strong></dt>
+<dd>Context description for error messages.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If column index is out of bounds.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationMixin.validate_node_name"><code class="name flex">
+<span>def <span class="ident">validate_node_name</span></span>(<span>self, node_name: Any, source_name: str = '', allow_empty: bool = False) ‑> tuple[bool, str | None]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_node_name(
+    self,
+    node_name: Any,
+    source_name: str = &#34;&#34;,
+    allow_empty: bool = False,
+) -&gt; tuple[bool, Optional[str]]:
+    &#34;&#34;&#34;Validate and normalize a node name.
+
+    Args:
+        node_name: Raw node name to validate.
+        source_name: Original source name (for error context).
+        allow_empty: Whether to allow empty/None node names.
+
+    Returns:
+        Tuple of (is_valid, normalized_name).
+        If is_valid is False, normalized_name will be None.
+    &#34;&#34;&#34;
+    import pandas as pd
+
+    if pd.isna(node_name) or node_name is None:
+        return allow_empty, None
+
+    if not node_name or (isinstance(node_name, str) and not node_name.strip()):
+        return allow_empty, None
+
+    # Normalize to string and strip whitespace
+    normalized = str(node_name).strip()
+    return True, normalized</code></pre>
+</details>
+<div class="desc"><p>Validate and normalize a node name.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_name</code></strong></dt>
+<dd>Raw node name to validate.</dd>
+<dt><strong><code>source_name</code></strong></dt>
+<dd>Original source name (for error context).</dd>
+<dt><strong><code>allow_empty</code></strong></dt>
+<dd>Whether to allow empty/None node names.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Tuple of (is_valid, normalized_name).
+If is_valid is False, normalized_name will be None.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationMixin.validate_numeric_value"><code class="name flex">
+<span>def <span class="ident">validate_numeric_value</span></span>(<span>self,<br>value: Any,<br>item_name: str,<br>period: str,<br>validator: ForwardRef('<a title="fin_statement_model.io.core.mixins.ValidationResultCollector" href="#fin_statement_model.io.core.mixins.ValidationResultCollector">ValidationResultCollector</a>') | None = None,<br>allow_conversion: bool = True) ‑> tuple[bool, float | None]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_numeric_value(  # noqa: PLR0911
+    self,
+    value: Any,
+    item_name: str,
+    period: str,
+    validator: Optional[&#34;ValidationResultCollector&#34;] = None,
+    allow_conversion: bool = True,
+) -&gt; tuple[bool, Optional[float]]:
+    &#34;&#34;&#34;Validate and optionally convert a value to numeric.
+
+    Args:
+        value: Value to validate.
+        item_name: Name of the item (for error reporting).
+        period: Period identifier (for error reporting).
+        validator: Optional ValidationResultCollector to record errors.
+        allow_conversion: Whether to attempt string-to-float conversion.
+
+    Returns:
+        Tuple of (is_valid, converted_value).
+        If is_valid is False, converted_value will be None.
+    &#34;&#34;&#34;
+    import pandas as pd
+
+    # Skip NaN/None values
+    if pd.isna(value) or value is None:
+        return True, None
+
+    # Already numeric
+    if isinstance(value, int | float):
+        if not pd.isfinite(value):
+            error_msg = f&#34;Non-finite numeric value &#39;{value}&#39; for period &#39;{period}&#39;&#34;
+            if validator:
+                validator.add_result(item_name, False, error_msg)
+            return False, None
+        return True, float(value)
+
+    # Attempt conversion if allowed
+    if allow_conversion:
+        try:
+            converted = float(value)
+            if not pd.isfinite(converted):
+                error_msg = f&#34;Converted to non-finite value &#39;{converted}&#39; for period &#39;{period}&#39;&#34;
+                if validator:
+                    validator.add_result(item_name, False, error_msg)
+                return False, None
+            return True, converted
+        except (ValueError, TypeError):
+            error_msg = f&#34;Non-numeric value &#39;{value}&#39; for period &#39;{period}&#39;&#34;
+            if validator:
+                validator.add_result(item_name, False, error_msg)
+            return False, None
+
+    # Not numeric and conversion not allowed
+    error_msg = f&#34;Non-numeric value &#39;{value}&#39; for period &#39;{period}&#39;&#34;
+    if validator:
+        validator.add_result(item_name, False, error_msg)
+    return False, None</code></pre>
+</details>
+<div class="desc"><p>Validate and optionally convert a value to numeric.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>value</code></strong></dt>
+<dd>Value to validate.</dd>
+<dt><strong><code>item_name</code></strong></dt>
+<dd>Name of the item (for error reporting).</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>Period identifier (for error reporting).</dd>
+<dt><strong><code>validator</code></strong></dt>
+<dd>Optional ValidationResultCollector to record errors.</dd>
+<dt><strong><code>allow_conversion</code></strong></dt>
+<dd>Whether to attempt string-to-float conversion.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Tuple of (is_valid, converted_value).
+If is_valid is False, converted_value will be None.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationMixin.validate_periods_exist"><code class="name flex">
+<span>def <span class="ident">validate_periods_exist</span></span>(<span>self,<br>periods: list[str],<br>source_identifier: str = 'data source',<br>min_periods: int = 1) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_periods_exist(
+    self,
+    periods: list[str],
+    source_identifier: str = &#34;data source&#34;,
+    min_periods: int = 1,
+) -&gt; None:
+    &#34;&#34;&#34;Validate that periods list is not empty and meets minimum requirements.
+
+    Args:
+        periods: List of period identifiers.
+        source_identifier: Identifier for the data source.
+        min_periods: Minimum number of periods required.
+
+    Raises:
+        ReadError: If periods validation fails.
+    &#34;&#34;&#34;
+    if not periods:
+        raise ReadError(
+            f&#34;No periods found in {source_identifier}&#34;,
+            source=source_identifier,
+            reader_type=getattr(self, &#34;__class__&#34;, {}).get(&#34;__name__&#34;, &#34;Unknown&#34;),
+        )
+
+    if len(periods) &lt; min_periods:
+        raise ReadError(
+            f&#34;Insufficient periods in {source_identifier}. &#34;
+            f&#34;Found {len(periods)}, minimum required: {min_periods}&#34;,
+            source=source_identifier,
+            reader_type=getattr(self, &#34;__class__&#34;, {}).get(&#34;__name__&#34;, &#34;Unknown&#34;),
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate that periods list is not empty and meets minimum requirements.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>periods</code></strong></dt>
+<dd>List of period identifiers.</dd>
+<dt><strong><code>source_identifier</code></strong></dt>
+<dd>Identifier for the data source.</dd>
+<dt><strong><code>min_periods</code></strong></dt>
+<dd>Minimum number of periods required.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If periods validation fails.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationMixin.validate_required_columns"><code class="name flex">
+<span>def <span class="ident">validate_required_columns</span></span>(<span>self,<br>df: Any,<br>required_columns: list[str],<br>source_identifier: str = 'data source') ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_required_columns(
+    self,
+    df: Any,  # pandas.DataFrame
+    required_columns: list[str],
+    source_identifier: str = &#34;data source&#34;,
+) -&gt; None:
+    &#34;&#34;&#34;Validate that required columns exist in DataFrame.
+
+    Args:
+        df: DataFrame to validate.
+        required_columns: List of required column names.
+        source_identifier: Identifier for the data source (for error messages).
+
+    Raises:
+        ReadError: If required columns are missing.
+    &#34;&#34;&#34;
+    if not hasattr(df, &#34;columns&#34;):
+        raise ReadError(
+            &#34;Invalid data structure: expected DataFrame with columns attribute&#34;,
+            source=source_identifier,
+            reader_type=getattr(self, &#34;__class__&#34;, {}).get(&#34;__name__&#34;, &#34;Unknown&#34;),
+        )
+
+    missing_columns = set(required_columns) - set(df.columns)
+    if missing_columns:
+        raise ReadError(
+            f&#34;Missing required columns in {source_identifier}: {missing_columns}&#34;,
+            source=source_identifier,
+            reader_type=getattr(self, &#34;__class__&#34;, {}).get(&#34;__name__&#34;, &#34;Unknown&#34;),
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate that required columns exist in DataFrame.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>df</code></strong></dt>
+<dd>DataFrame to validate.</dd>
+<dt><strong><code>required_columns</code></strong></dt>
+<dd>List of required column names.</dd>
+<dt><strong><code>source_identifier</code></strong></dt>
+<dd>Identifier for the data source (for error messages).</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If required columns are missing.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationResultCollector"><code class="flex name class">
+<span>class <span class="ident">ValidationResultCollector</span></span>
+<span>(</span><span>context: dict[str, typing.Any] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ValidationResultCollector:
+    &#34;&#34;&#34;Enhanced utility class for collecting and summarizing validation results.
+
+    Useful for batch operations where you want to collect all validation
+    results and report them together. Supports categorization, context tracking,
+    and detailed metrics.
+    &#34;&#34;&#34;
+
+    def __init__(self, context: Optional[dict[str, Any]] = None):
+        &#34;&#34;&#34;Initialize the validation result collector.
+
+        Args:
+            context: Optional context information for validation.
+        &#34;&#34;&#34;
+        self.results: list[
+            tuple[str, bool, str, str]
+        ] = []  # item, valid, message, category
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
+        self.context = context or {}
+        self._categories: dict[str, int] = {}
+
+    def add_result(
+        self,
+        item_name: str,
+        is_valid: bool,
+        message: str,
+        category: str = &#34;general&#34;,
+    ) -&gt; None:
+        &#34;&#34;&#34;Add a validation result with optional categorization.
+
+        Args:
+            item_name: Name/identifier of the item being validated.
+            is_valid: Whether the validation passed.
+            message: Validation message or error description.
+            category: Category of validation (e.g., &#39;data_type&#39;, &#39;range&#39;, &#39;format&#39;).
+        &#34;&#34;&#34;
+        self.results.append((item_name, is_valid, message, category))
+
+        # Track categories
+        if category not in self._categories:
+            self._categories[category] = 0
+        if not is_valid:
+            self._categories[category] += 1
+
+        if not is_valid:
+            self.errors.append(f&#34;{item_name}: {message}&#34;)
+        elif &#34;warning&#34; in message.lower():
+            self.warnings.append(f&#34;{item_name}: {message}&#34;)
+
+    def add_warning(
+        self, item_name: str, message: str, category: str = &#34;warning&#34;
+    ) -&gt; None:
+        &#34;&#34;&#34;Add a warning (non-blocking validation issue).
+
+        Args:
+            item_name: Name/identifier of the item.
+            message: Warning message.
+            category: Category of the warning.
+        &#34;&#34;&#34;
+        self.warnings.append(f&#34;{item_name}: {message}&#34;)
+        self.results.append((item_name, True, f&#34;WARNING: {message}&#34;, category))
+
+    def has_errors(self) -&gt; bool:
+        &#34;&#34;&#34;Check if any errors were collected.&#34;&#34;&#34;
+        return len(self.errors) &gt; 0
+
+    def has_warnings(self) -&gt; bool:
+        &#34;&#34;&#34;Check if any warnings were collected.&#34;&#34;&#34;
+        return len(self.warnings) &gt; 0
+
+    def get_error_count_by_category(self) -&gt; dict[str, int]:
+        &#34;&#34;&#34;Get error counts grouped by category.
+
+        Returns:
+            Dictionary mapping category names to error counts.
+        &#34;&#34;&#34;
+        return self._categories.copy()
+
+    def get_items_with_errors(self) -&gt; list[str]:
+        &#34;&#34;&#34;Get list of item names that had validation errors.
+
+        Returns:
+            List of item names with errors.
+        &#34;&#34;&#34;
+        return [item for item, valid, _, _ in self.results if not valid]
+
+    def get_summary(self) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Get a comprehensive summary of all validation results.
+
+        Returns:
+            Dictionary containing validation metrics and summaries.
+        &#34;&#34;&#34;
+        total = len(self.results)
+        valid = sum(1 for _, is_valid, _, _ in self.results if is_valid)
+
+        # Calculate category-specific metrics
+        category_summary = {}
+        for category, error_count in self._categories.items():
+            category_total = sum(1 for _, _, _, cat in self.results if cat == category)
+            category_summary[category] = {
+                &#34;total&#34;: category_total,
+                &#34;errors&#34;: error_count,
+                &#34;success_rate&#34;: (
+                    (category_total - error_count) / category_total
+                    if category_total &gt; 0
+                    else 1.0
+                ),
+            }
+
+        return {
+            &#34;total&#34;: total,
+            &#34;valid&#34;: valid,
+            &#34;invalid&#34;: total - valid,
+            &#34;errors&#34;: self.errors.copy(),
+            &#34;warnings&#34;: self.warnings.copy(),
+            &#34;error_rate&#34;: (total - valid) / total if total &gt; 0 else 0.0,
+            &#34;warning_count&#34;: len(self.warnings),
+            &#34;categories&#34;: category_summary,
+            &#34;context&#34;: self.context.copy(),
+            &#34;items_with_errors&#34;: self.get_items_with_errors(),
+        }
+
+    def clear(self) -&gt; None:
+        &#34;&#34;&#34;Clear all collected results.&#34;&#34;&#34;
+        self.results.clear()
+        self.errors.clear()
+        self.warnings.clear()
+        self._categories.clear()
+
+    def merge(self, other: &#34;ValidationResultCollector&#34;) -&gt; None:
+        &#34;&#34;&#34;Merge results from another collector.
+
+        Args:
+            other: Another ValidationResultCollector to merge from.
+        &#34;&#34;&#34;
+        for item, valid, message, category in other.results:
+            self.add_result(item, valid, message, category)
+
+    def get_detailed_report(self) -&gt; str:
+        &#34;&#34;&#34;Generate a detailed text report of validation results.
+
+        Returns:
+            Formatted string report.
+        &#34;&#34;&#34;
+        summary = self.get_summary()
+
+        report_lines = [
+            &#34;=== Validation Report ===&#34;,
+            f&#34;Total items processed: {summary[&#39;total&#39;]}&#34;,
+            f&#34;Valid items: {summary[&#39;valid&#39;]}&#34;,
+            f&#34;Invalid items: {summary[&#39;invalid&#39;]}&#34;,
+            f&#34;Warnings: {summary[&#39;warning_count&#39;]}&#34;,
+            f&#34;Overall success rate: {(1 - summary[&#39;error_rate&#39;]) * 100:.1f}%&#34;,
+        ]
+
+        if summary[&#34;categories&#34;]:
+            report_lines.append(&#34;\n--- Category Breakdown ---&#34;)
+            for category, stats in summary[&#34;categories&#34;].items():
+                report_lines.append(
+                    f&#34;{category}: {stats[&#39;total&#39;]} items, {stats[&#39;errors&#39;]} errors &#34;
+                    f&#34;({stats[&#39;success_rate&#39;] * 100:.1f}% success)&#34;
+                )
+
+        if self.has_errors():
+            report_lines.append(&#34;\n--- First 10 Errors ---&#34;)
+            report_lines.extend(f&#34;  • {error}&#34; for error in self.errors[:10])
+            if len(self.errors) &gt; 10:
+                report_lines.append(f&#34;  ... and {len(self.errors) - 10} more errors&#34;)
+
+        if self.has_warnings():
+            report_lines.append(&#34;\n--- First 5 Warnings ---&#34;)
+            report_lines.extend(f&#34;  • {warning}&#34; for warning in self.warnings[:5])
+            if len(self.warnings) &gt; 5:
+                report_lines.append(f&#34;  ... and {len(self.warnings) - 5} more warnings&#34;)
+
+        return &#34;\n&#34;.join(report_lines)</code></pre>
+</details>
+<div class="desc"><p>Enhanced utility class for collecting and summarizing validation results.</p>
+<p>Useful for batch operations where you want to collect all validation
+results and report them together. Supports categorization, context tracking,
+and detailed metrics.</p>
+<p>Initialize the validation result collector.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>context</code></strong></dt>
+<dd>Optional context information for validation.</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.ValidationResultCollector.add_result"><code class="name flex">
+<span>def <span class="ident">add_result</span></span>(<span>self, item_name: str, is_valid: bool, message: str, category: str = 'general') ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_result(
+    self,
+    item_name: str,
+    is_valid: bool,
+    message: str,
+    category: str = &#34;general&#34;,
+) -&gt; None:
+    &#34;&#34;&#34;Add a validation result with optional categorization.
+
+    Args:
+        item_name: Name/identifier of the item being validated.
+        is_valid: Whether the validation passed.
+        message: Validation message or error description.
+        category: Category of validation (e.g., &#39;data_type&#39;, &#39;range&#39;, &#39;format&#39;).
+    &#34;&#34;&#34;
+    self.results.append((item_name, is_valid, message, category))
+
+    # Track categories
+    if category not in self._categories:
+        self._categories[category] = 0
+    if not is_valid:
+        self._categories[category] += 1
+
+    if not is_valid:
+        self.errors.append(f&#34;{item_name}: {message}&#34;)
+    elif &#34;warning&#34; in message.lower():
+        self.warnings.append(f&#34;{item_name}: {message}&#34;)</code></pre>
+</details>
+<div class="desc"><p>Add a validation result with optional categorization.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>item_name</code></strong></dt>
+<dd>Name/identifier of the item being validated.</dd>
+<dt><strong><code>is_valid</code></strong></dt>
+<dd>Whether the validation passed.</dd>
+<dt><strong><code>message</code></strong></dt>
+<dd>Validation message or error description.</dd>
+<dt><strong><code>category</code></strong></dt>
+<dd>Category of validation (e.g., 'data_type', 'range', 'format').</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationResultCollector.add_warning"><code class="name flex">
+<span>def <span class="ident">add_warning</span></span>(<span>self, item_name: str, message: str, category: str = 'warning') ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_warning(
+    self, item_name: str, message: str, category: str = &#34;warning&#34;
+) -&gt; None:
+    &#34;&#34;&#34;Add a warning (non-blocking validation issue).
+
+    Args:
+        item_name: Name/identifier of the item.
+        message: Warning message.
+        category: Category of the warning.
+    &#34;&#34;&#34;
+    self.warnings.append(f&#34;{item_name}: {message}&#34;)
+    self.results.append((item_name, True, f&#34;WARNING: {message}&#34;, category))</code></pre>
+</details>
+<div class="desc"><p>Add a warning (non-blocking validation issue).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>item_name</code></strong></dt>
+<dd>Name/identifier of the item.</dd>
+<dt><strong><code>message</code></strong></dt>
+<dd>Warning message.</dd>
+<dt><strong><code>category</code></strong></dt>
+<dd>Category of the warning.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationResultCollector.clear"><code class="name flex">
+<span>def <span class="ident">clear</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear(self) -&gt; None:
+    &#34;&#34;&#34;Clear all collected results.&#34;&#34;&#34;
+    self.results.clear()
+    self.errors.clear()
+    self.warnings.clear()
+    self._categories.clear()</code></pre>
+</details>
+<div class="desc"><p>Clear all collected results.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationResultCollector.get_detailed_report"><code class="name flex">
+<span>def <span class="ident">get_detailed_report</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_detailed_report(self) -&gt; str:
+    &#34;&#34;&#34;Generate a detailed text report of validation results.
+
+    Returns:
+        Formatted string report.
+    &#34;&#34;&#34;
+    summary = self.get_summary()
+
+    report_lines = [
+        &#34;=== Validation Report ===&#34;,
+        f&#34;Total items processed: {summary[&#39;total&#39;]}&#34;,
+        f&#34;Valid items: {summary[&#39;valid&#39;]}&#34;,
+        f&#34;Invalid items: {summary[&#39;invalid&#39;]}&#34;,
+        f&#34;Warnings: {summary[&#39;warning_count&#39;]}&#34;,
+        f&#34;Overall success rate: {(1 - summary[&#39;error_rate&#39;]) * 100:.1f}%&#34;,
+    ]
+
+    if summary[&#34;categories&#34;]:
+        report_lines.append(&#34;\n--- Category Breakdown ---&#34;)
+        for category, stats in summary[&#34;categories&#34;].items():
+            report_lines.append(
+                f&#34;{category}: {stats[&#39;total&#39;]} items, {stats[&#39;errors&#39;]} errors &#34;
+                f&#34;({stats[&#39;success_rate&#39;] * 100:.1f}% success)&#34;
+            )
+
+    if self.has_errors():
+        report_lines.append(&#34;\n--- First 10 Errors ---&#34;)
+        report_lines.extend(f&#34;  • {error}&#34; for error in self.errors[:10])
+        if len(self.errors) &gt; 10:
+            report_lines.append(f&#34;  ... and {len(self.errors) - 10} more errors&#34;)
+
+    if self.has_warnings():
+        report_lines.append(&#34;\n--- First 5 Warnings ---&#34;)
+        report_lines.extend(f&#34;  • {warning}&#34; for warning in self.warnings[:5])
+        if len(self.warnings) &gt; 5:
+            report_lines.append(f&#34;  ... and {len(self.warnings) - 5} more warnings&#34;)
+
+    return &#34;\n&#34;.join(report_lines)</code></pre>
+</details>
+<div class="desc"><p>Generate a detailed text report of validation results.</p>
+<h2 id="returns">Returns</h2>
+<p>Formatted string report.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationResultCollector.get_error_count_by_category"><code class="name flex">
+<span>def <span class="ident">get_error_count_by_category</span></span>(<span>self) ‑> dict[str, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_error_count_by_category(self) -&gt; dict[str, int]:
+    &#34;&#34;&#34;Get error counts grouped by category.
+
+    Returns:
+        Dictionary mapping category names to error counts.
+    &#34;&#34;&#34;
+    return self._categories.copy()</code></pre>
+</details>
+<div class="desc"><p>Get error counts grouped by category.</p>
+<h2 id="returns">Returns</h2>
+<p>Dictionary mapping category names to error counts.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationResultCollector.get_items_with_errors"><code class="name flex">
+<span>def <span class="ident">get_items_with_errors</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_items_with_errors(self) -&gt; list[str]:
+    &#34;&#34;&#34;Get list of item names that had validation errors.
+
+    Returns:
+        List of item names with errors.
+    &#34;&#34;&#34;
+    return [item for item, valid, _, _ in self.results if not valid]</code></pre>
+</details>
+<div class="desc"><p>Get list of item names that had validation errors.</p>
+<h2 id="returns">Returns</h2>
+<p>List of item names with errors.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationResultCollector.get_summary"><code class="name flex">
+<span>def <span class="ident">get_summary</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_summary(self) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Get a comprehensive summary of all validation results.
+
+    Returns:
+        Dictionary containing validation metrics and summaries.
+    &#34;&#34;&#34;
+    total = len(self.results)
+    valid = sum(1 for _, is_valid, _, _ in self.results if is_valid)
+
+    # Calculate category-specific metrics
+    category_summary = {}
+    for category, error_count in self._categories.items():
+        category_total = sum(1 for _, _, _, cat in self.results if cat == category)
+        category_summary[category] = {
+            &#34;total&#34;: category_total,
+            &#34;errors&#34;: error_count,
+            &#34;success_rate&#34;: (
+                (category_total - error_count) / category_total
+                if category_total &gt; 0
+                else 1.0
+            ),
+        }
+
+    return {
+        &#34;total&#34;: total,
+        &#34;valid&#34;: valid,
+        &#34;invalid&#34;: total - valid,
+        &#34;errors&#34;: self.errors.copy(),
+        &#34;warnings&#34;: self.warnings.copy(),
+        &#34;error_rate&#34;: (total - valid) / total if total &gt; 0 else 0.0,
+        &#34;warning_count&#34;: len(self.warnings),
+        &#34;categories&#34;: category_summary,
+        &#34;context&#34;: self.context.copy(),
+        &#34;items_with_errors&#34;: self.get_items_with_errors(),
+    }</code></pre>
+</details>
+<div class="desc"><p>Get a comprehensive summary of all validation results.</p>
+<h2 id="returns">Returns</h2>
+<p>Dictionary containing validation metrics and summaries.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationResultCollector.has_errors"><code class="name flex">
+<span>def <span class="ident">has_errors</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_errors(self) -&gt; bool:
+    &#34;&#34;&#34;Check if any errors were collected.&#34;&#34;&#34;
+    return len(self.errors) &gt; 0</code></pre>
+</details>
+<div class="desc"><p>Check if any errors were collected.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationResultCollector.has_warnings"><code class="name flex">
+<span>def <span class="ident">has_warnings</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_warnings(self) -&gt; bool:
+    &#34;&#34;&#34;Check if any warnings were collected.&#34;&#34;&#34;
+    return len(self.warnings) &gt; 0</code></pre>
+</details>
+<div class="desc"><p>Check if any warnings were collected.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValidationResultCollector.merge"><code class="name flex">
+<span>def <span class="ident">merge</span></span>(<span>self,<br>other: <a title="fin_statement_model.io.core.mixins.ValidationResultCollector" href="#fin_statement_model.io.core.mixins.ValidationResultCollector">ValidationResultCollector</a>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def merge(self, other: &#34;ValidationResultCollector&#34;) -&gt; None:
+    &#34;&#34;&#34;Merge results from another collector.
+
+    Args:
+        other: Another ValidationResultCollector to merge from.
+    &#34;&#34;&#34;
+    for item, valid, message, category in other.results:
+        self.add_result(item, valid, message, category)</code></pre>
+</details>
+<div class="desc"><p>Merge results from another collector.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>other</code></strong></dt>
+<dd>Another ValidationResultCollector to merge from.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.ValueExtractionMixin"><code class="flex name class">
+<span>class <span class="ident">ValueExtractionMixin</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ValueExtractionMixin:
+    &#34;&#34;&#34;Mixin for consistent value extraction from nodes.
+
+    This mixin provides a standardized way to extract values from nodes,
+    handling both calculated values and stored values with proper error
+    handling.
+    &#34;&#34;&#34;
+
+    def extract_node_value(
+        self,
+        node: Any,  # Avoid circular import with Node type
+        period: str,
+        calculate: bool = True,
+    ) -&gt; Optional[float]:
+        &#34;&#34;&#34;Extract value from node with consistent error handling.
+
+        Args:
+            node: The node to extract value from.
+            period: The period to get the value for.
+            calculate: If True, attempt to calculate the value using node.calculate().
+                      If False, only look for stored values.
+
+        Returns:
+            The extracted value as a float, or None if no value could be extracted.
+        &#34;&#34;&#34;
+        try:
+            # First try calculation if enabled and method exists
+            if calculate and hasattr(node, &#34;calculate&#34;) and callable(node.calculate):
+                value = node.calculate(period)
+                if isinstance(value, int | float):
+                    return float(value)
+
+            # Fall back to stored values
+            if hasattr(node, &#34;values&#34;) and isinstance(node.values, dict):
+                value = node.values.get(period)
+                if isinstance(value, int | float):
+                    return float(value)
+
+            return None
+
+        except Exception as e:
+            logger.debug(
+                f&#34;Failed to extract value from node &#39;{getattr(node, &#39;name&#39;, &#39;unknown&#39;)}&#39; &#34;
+                f&#34;for period &#39;{period}&#39;: {e}&#34;
+            )
+            return None</code></pre>
+</details>
+<div class="desc"><p>Mixin for consistent value extraction from nodes.</p>
+<p>This mixin provides a standardized way to extract values from nodes,
+handling both calculated values and stored values with proper error
+handling.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.mixins.DataFrameBasedWriter" href="#fin_statement_model.io.core.mixins.DataFrameBasedWriter">DataFrameBasedWriter</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.ValueExtractionMixin.extract_node_value"><code class="name flex">
+<span>def <span class="ident">extract_node_value</span></span>(<span>self, node: Any, period: str, calculate: bool = True) ‑> float | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extract_node_value(
+    self,
+    node: Any,  # Avoid circular import with Node type
+    period: str,
+    calculate: bool = True,
+) -&gt; Optional[float]:
+    &#34;&#34;&#34;Extract value from node with consistent error handling.
+
+    Args:
+        node: The node to extract value from.
+        period: The period to get the value for.
+        calculate: If True, attempt to calculate the value using node.calculate().
+                  If False, only look for stored values.
+
+    Returns:
+        The extracted value as a float, or None if no value could be extracted.
+    &#34;&#34;&#34;
+    try:
+        # First try calculation if enabled and method exists
+        if calculate and hasattr(node, &#34;calculate&#34;) and callable(node.calculate):
+            value = node.calculate(period)
+            if isinstance(value, int | float):
+                return float(value)
+
+        # Fall back to stored values
+        if hasattr(node, &#34;values&#34;) and isinstance(node.values, dict):
+            value = node.values.get(period)
+            if isinstance(value, int | float):
+                return float(value)
+
+        return None
+
+    except Exception as e:
+        logger.debug(
+            f&#34;Failed to extract value from node &#39;{getattr(node, &#39;name&#39;, &#39;unknown&#39;)}&#39; &#34;
+            f&#34;for period &#39;{period}&#39;: {e}&#34;
+        )
+        return None</code></pre>
+</details>
+<div class="desc"><p>Extract value from node with consistent error handling.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd>The node to extract value from.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>The period to get the value for.</dd>
+<dt><strong><code>calculate</code></strong></dt>
+<dd>If True, attempt to calculate the value using node.calculate().
+If False, only look for stored values.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The extracted value as a float, or None if no value could be extracted.</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.io.core" href="index.html">fin_statement_model.io.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.mixins.handle_read_errors" href="#fin_statement_model.io.core.mixins.handle_read_errors">handle_read_errors</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.handle_write_errors" href="#fin_statement_model.io.core.mixins.handle_write_errors">handle_write_errors</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides" href="#fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context" href="#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value" href="#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback" href="#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration" href="#fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations" href="#fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value" href="#fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context" href="#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override" href="#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration" href="#fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.mixins.DataFrameBasedWriter" href="#fin_statement_model.io.core.mixins.DataFrameBasedWriter">DataFrameBasedWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.mixins.DataFrameBasedWriter.extract_graph_data" href="#fin_statement_model.io.core.mixins.DataFrameBasedWriter.extract_graph_data">extract_graph_data</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.DataFrameBasedWriter.write" href="#fin_statement_model.io.core.mixins.DataFrameBasedWriter.write">write</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.mixins.FileBasedReader" href="#fin_statement_model.io.core.mixins.FileBasedReader">FileBasedReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.mixins.FileBasedReader.read" href="#fin_statement_model.io.core.mixins.FileBasedReader.read">read</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.FileBasedReader.validate_file_exists" href="#fin_statement_model.io.core.mixins.FileBasedReader.validate_file_exists">validate_file_exists</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.FileBasedReader.validate_file_extension" href="#fin_statement_model.io.core.mixins.FileBasedReader.validate_file_extension">validate_file_extension</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.mixins.MappingAwareMixin" href="#fin_statement_model.io.core.mixins.MappingAwareMixin">MappingAwareMixin</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.mixins.MappingAwareMixin.get_config_value" href="#fin_statement_model.io.core.mixins.MappingAwareMixin.get_config_value">get_config_value</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.mixins.ValidationMixin" href="#fin_statement_model.io.core.mixins.ValidationMixin">ValidationMixin</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.create_validation_summary" href="#fin_statement_model.io.core.mixins.ValidationMixin.create_validation_summary">create_validation_summary</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.get_validation_context" href="#fin_statement_model.io.core.mixins.ValidationMixin.get_validation_context">get_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.set_validation_context" href="#fin_statement_model.io.core.mixins.ValidationMixin.set_validation_context">set_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_column_bounds" href="#fin_statement_model.io.core.mixins.ValidationMixin.validate_column_bounds">validate_column_bounds</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_node_name" href="#fin_statement_model.io.core.mixins.ValidationMixin.validate_node_name">validate_node_name</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_numeric_value" href="#fin_statement_model.io.core.mixins.ValidationMixin.validate_numeric_value">validate_numeric_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_periods_exist" href="#fin_statement_model.io.core.mixins.ValidationMixin.validate_periods_exist">validate_periods_exist</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_required_columns" href="#fin_statement_model.io.core.mixins.ValidationMixin.validate_required_columns">validate_required_columns</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.mixins.ValidationResultCollector" href="#fin_statement_model.io.core.mixins.ValidationResultCollector">ValidationResultCollector</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationResultCollector.add_result" href="#fin_statement_model.io.core.mixins.ValidationResultCollector.add_result">add_result</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationResultCollector.add_warning" href="#fin_statement_model.io.core.mixins.ValidationResultCollector.add_warning">add_warning</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationResultCollector.clear" href="#fin_statement_model.io.core.mixins.ValidationResultCollector.clear">clear</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationResultCollector.get_detailed_report" href="#fin_statement_model.io.core.mixins.ValidationResultCollector.get_detailed_report">get_detailed_report</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationResultCollector.get_error_count_by_category" href="#fin_statement_model.io.core.mixins.ValidationResultCollector.get_error_count_by_category">get_error_count_by_category</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationResultCollector.get_items_with_errors" href="#fin_statement_model.io.core.mixins.ValidationResultCollector.get_items_with_errors">get_items_with_errors</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationResultCollector.get_summary" href="#fin_statement_model.io.core.mixins.ValidationResultCollector.get_summary">get_summary</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationResultCollector.has_errors" href="#fin_statement_model.io.core.mixins.ValidationResultCollector.has_errors">has_errors</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationResultCollector.has_warnings" href="#fin_statement_model.io.core.mixins.ValidationResultCollector.has_warnings">has_warnings</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationResultCollector.merge" href="#fin_statement_model.io.core.mixins.ValidationResultCollector.merge">merge</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.mixins.ValueExtractionMixin" href="#fin_statement_model.io.core.mixins.ValueExtractionMixin">ValueExtractionMixin</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.mixins.ValueExtractionMixin.extract_node_value" href="#fin_statement_model.io.core.mixins.ValueExtractionMixin.extract_node_value">extract_node_value</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

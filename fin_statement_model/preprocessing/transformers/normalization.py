@@ -1,8 +1,7 @@
-"""Provide a NormalizationTransformer to normalize financial data.
+"""Provide the NormalizationTransformer for normalizing financial data.
 
-Transforms data by percent_of, minmax, standard, or scale_by methods.
-
-This module implements the NormalizationTransformer for the preprocessing layer.
+This module defines the transformer to normalize data using percent_of, minmax,
+standard, or scale_by methods within the preprocessing layer.
 """
 
 from typing import Optional, Union, ClassVar
@@ -23,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 class NormalizationTransformer(DataTransformer):
-    """Transformer that normalizes financial data using various methods.
+    """Normalize financial data using various methods.
 
     This transformer provides multiple normalization strategies commonly used in
     financial analysis to make data comparable across different scales or to

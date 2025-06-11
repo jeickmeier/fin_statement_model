@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.config.helpers API documentation</title>
+<meta name="description" content="Utility functions for accessing configuration values …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.config.helpers</code></h1>
+</header>
+<section id="section-intro">
+<p>Utility functions for accessing configuration values.</p>
+<p>This module provides functions to retrieve application configuration
+settings from the central config object, with optional type checking and
+default values. It also includes utilities for parsing environment variable
+strings into native Python types.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.config.helpers.cfg"><code class="name flex">
+<span>def <span class="ident">cfg</span></span>(<span>path: str | Sequence[str], default: Any = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cfg(path: str | Sequence[str], default: Any = None) -&gt; Any:
+    &#34;&#34;&#34;Get a configuration value by dotted path.
+
+    Retrieves a configuration value from the global config object using a
+    dotted path or sequence of path segments.
+
+    Args:
+        path: Dotted path string or sequence of keys to traverse the config.
+        default: Default value to return if the key is not found.
+
+    Returns:
+        The configuration value or the default if provided.
+
+    Raises:
+        ConfigurationAccessError: If the path is empty or a key does not exist
+            and no default is provided.
+
+    Examples:
+        &gt;&gt;&gt; cfg(&#34;database.host&#34;)
+        &#34;localhost&#34;
+
+        &gt;&gt;&gt; cfg([&#34;database&#34;, &#34;port&#34;], default=5432)
+        5432
+    &#34;&#34;&#34;
+    from .manager import get_config
+
+    # Convert string path to sequence
+    if isinstance(path, str):
+        if not path:
+            raise ConfigurationAccessError(&#34;Configuration path cannot be empty&#34;)
+        parts = path.split(&#34;.&#34;)
+    else:
+        parts = list(path)
+
+    if not parts:
+        raise ConfigurationAccessError(&#34;Configuration path cannot be empty&#34;)
+
+    obj = get_config()
+    for i, part in enumerate(parts):
+        full_path = &#34;.&#34;.join(parts[: i + 1])
+        if not hasattr(obj, part):
+            if default is not None:
+                return default
+            raise ConfigurationAccessError(
+                f&#34;Configuration key &#39;{full_path}&#39; does not exist&#34;
+            )
+        obj = getattr(obj, part)
+    return obj if obj is not None else default</code></pre>
+</details>
+<div class="desc"><p>Get a configuration value by dotted path.</p>
+<p>Retrieves a configuration value from the global config object using a
+dotted path or sequence of path segments.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong></dt>
+<dd>Dotted path string or sequence of keys to traverse the config.</dd>
+<dt><strong><code>default</code></strong></dt>
+<dd>Default value to return if the key is not found.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The configuration value or the default if provided.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.config.helpers.ConfigurationAccessError" href="#fin_statement_model.config.helpers.ConfigurationAccessError">ConfigurationAccessError</a></code></dt>
+<dd>If the path is empty or a key does not exist
+and no default is provided.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; cfg(&quot;database.host&quot;)
+&quot;localhost&quot;
+</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; cfg([&quot;database&quot;, &quot;port&quot;], default=5432)
+5432
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.config.helpers.cfg_or_param"><code class="name flex">
+<span>def <span class="ident">cfg_or_param</span></span>(<span>config_path: str, param_value: Any) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cfg_or_param(config_path: str, param_value: Any) -&gt; Any:
+    &#34;&#34;&#34;Return the parameter value if provided, otherwise get it from config.
+
+    Args:
+        config_path: Dotted path string to the configuration key.
+        param_value: The value explicitly provided by the user.
+
+    Returns:
+        The `param_value` if it is not None, otherwise the configuration value.
+
+    Examples:
+        &gt;&gt;&gt; cfg_or_param(&#34;logging.level&#34;, &#34;DEBUG&#34;)
+        &#34;DEBUG&#34;
+
+        &gt;&gt;&gt; cfg_or_param(&#34;logging.level&#34;, None)
+        &#34;INFO&#34;
+    &#34;&#34;&#34;
+    return param_value if param_value is not None else cfg(config_path)</code></pre>
+</details>
+<div class="desc"><p>Return the parameter value if provided, otherwise get it from config.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config_path</code></strong></dt>
+<dd>Dotted path string to the configuration key.</dd>
+<dt><strong><code>param_value</code></strong></dt>
+<dd>The value explicitly provided by the user.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The <code>param_value</code> if it is not None, otherwise the configuration value.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; cfg_or_param(&quot;logging.level&quot;, &quot;DEBUG&quot;)
+&quot;DEBUG&quot;
+</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; cfg_or_param(&quot;logging.level&quot;, None)
+&quot;INFO&quot;
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.config.helpers.get_typed_config"><code class="name flex">
+<span>def <span class="ident">get_typed_config</span></span>(<span>path: str | Sequence[str], expected_type: type[T], default: Optional[T] = None) ‑> ~T</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_typed_config(
+    path: str | Sequence[str], expected_type: type[T], default: Optional[T] = None
+) -&gt; T:
+    &#34;&#34;&#34;Get a configuration value with type checking.
+
+    Retrieves a configuration value and verifies it is of the expected type.
+
+    Args:
+        path: Dotted path string or sequence of keys to traverse the config.
+        expected_type: Type that the returned value must match.
+        default: Default value to use if the key is not present.
+
+    Returns:
+        The configuration value of type `expected_type`.
+
+    Raises:
+        ConfigurationAccessError: If the key is None and no default is provided.
+        TypeError: If the value is not an instance of `expected_type`.
+
+    Examples:
+        &gt;&gt;&gt; get_typed_config(&#34;features.enable_feature_x&#34;, bool, default=False)
+        True
+    &#34;&#34;&#34;
+    value = cfg(path, default)
+    if value is None and default is None:
+        raise ConfigurationAccessError(
+            f&#34;Configuration key &#39;{path}&#39; is None and no default provided&#34;
+        )
+    if not isinstance(value, expected_type):
+        raise TypeError(
+            f&#34;Configuration key &#39;{path}&#39; has type {type(value).__name__}, &#34;
+            f&#34;expected {expected_type.__name__}&#34;
+        )
+    return value</code></pre>
+</details>
+<div class="desc"><p>Get a configuration value with type checking.</p>
+<p>Retrieves a configuration value and verifies it is of the expected type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong></dt>
+<dd>Dotted path string or sequence of keys to traverse the config.</dd>
+<dt><strong><code>expected_type</code></strong></dt>
+<dd>Type that the returned value must match.</dd>
+<dt><strong><code>default</code></strong></dt>
+<dd>Default value to use if the key is not present.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The configuration value of type <code>expected_type</code>.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.config.helpers.ConfigurationAccessError" href="#fin_statement_model.config.helpers.ConfigurationAccessError">ConfigurationAccessError</a></code></dt>
+<dd>If the key is None and no default is provided.</dd>
+<dt><code>TypeError</code></dt>
+<dd>If the value is not an instance of <code>expected_type</code>.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; get_typed_config(&quot;features.enable_feature_x&quot;, bool, default=False)
+True
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.config.helpers.parse_env_value"><code class="name flex">
+<span>def <span class="ident">parse_env_value</span></span>(<span>value: str) ‑> bool | int | float | str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def parse_env_value(value: str) -&gt; bool | int | float | str:
+    &#34;&#34;&#34;Parse an environment variable string into bool, int, float, or str.
+
+    Attempts to convert the input string to a boolean if it matches
+    &#34;true&#34;/&#34;false&#34;, then to an integer if it represents a whole number,
+    then to a float if it appears numeric with decimal or exponent. Otherwise,
+    returns the original string.
+
+    Args:
+        value: The environment variable value as a string.
+
+    Returns:
+        The parsed native Python type: bool, int, float, or str.
+
+    Examples:
+        &gt;&gt;&gt; parse_env_value(&#34;true&#34;)
+        True
+
+        &gt;&gt;&gt; parse_env_value(&#34;42&#34;)
+        42
+
+        &gt;&gt;&gt; parse_env_value(&#34;-3.14&#34;)
+        -3.14
+
+        &gt;&gt;&gt; parse_env_value(&#34;foo&#34;)
+        &#34;foo&#34;
+    &#34;&#34;&#34;
+    val = value.strip()
+    low = val.lower()
+    # Boolean
+    if low in (&#34;true&#34;, &#34;false&#34;):
+        return low == &#34;true&#34;
+    # Integer (including negatives)
+    if (val.startswith(&#34;-&#34;) and val[1:].isdigit()) or val.isdigit():
+        try:
+            return int(val)
+        except ValueError:
+            pass
+    # Float
+    try:
+        float_val = float(val)
+        if &#34;.&#34; in val or &#34;e&#34; in low or &#34;E&#34; in value:
+            return float_val
+    except ValueError:
+        pass
+    # Fallback to string
+    return val</code></pre>
+</details>
+<div class="desc"><p>Parse an environment variable string into bool, int, float, or str.</p>
+<p>Attempts to convert the input string to a boolean if it matches
+"true"/"false", then to an integer if it represents a whole number,
+then to a float if it appears numeric with decimal or exponent. Otherwise,
+returns the original string.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>value</code></strong></dt>
+<dd>The environment variable value as a string.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The parsed native Python type</code></dt>
+<dd>bool, int, float, or str.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; parse_env_value(&quot;true&quot;)
+True
+</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; parse_env_value(&quot;42&quot;)
+42
+</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; parse_env_value(&quot;-3.14&quot;)
+-3.14
+</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; parse_env_value(&quot;foo&quot;)
+&quot;foo&quot;
+</code></pre></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.config.helpers.ConfigurationAccessError"><code class="flex name class">
+<span>class <span class="ident">ConfigurationAccessError</span></span>
+<span>(</span><span>message: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ConfigurationAccessError(FinancialModelError):
+    &#34;&#34;&#34;Raised when there&#39;s an error accessing configuration values.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Raised when there's an error accessing configuration values.</p>
+<p>Initialize the FinancialModelError.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong></dt>
+<dd>A human-readable description of the error.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.errors.FinancialModelError" href="../core/errors.html#fin_statement_model.core.errors.FinancialModelError">FinancialModelError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.config" href="index.html">fin_statement_model.config</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.config.helpers.cfg" href="#fin_statement_model.config.helpers.cfg">cfg</a></code></li>
+<li><code><a title="fin_statement_model.config.helpers.cfg_or_param" href="#fin_statement_model.config.helpers.cfg_or_param">cfg_or_param</a></code></li>
+<li><code><a title="fin_statement_model.config.helpers.get_typed_config" href="#fin_statement_model.config.helpers.get_typed_config">get_typed_config</a></code></li>
+<li><code><a title="fin_statement_model.config.helpers.parse_env_value" href="#fin_statement_model.config.helpers.parse_env_value">parse_env_value</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.config.helpers.ConfigurationAccessError" href="#fin_statement_model.config.helpers.ConfigurationAccessError">ConfigurationAccessError</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

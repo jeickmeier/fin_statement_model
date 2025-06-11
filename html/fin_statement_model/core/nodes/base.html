@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.core.nodes.base API documentation</title>
+<meta name="description" content="Define the abstract base class for all nodes in the graph …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.core.nodes.base</code></h1>
+</header>
+<section id="section-intro">
+<p>Define the abstract base class for all nodes in the graph.</p>
+<p>This module provides the Node base class with interfaces for calculation,
+attribute access, and optional caching behavior.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.core.nodes.base.Node"><code class="flex name class">
+<span>class <span class="ident">Node</span></span>
+<span>(</span><span>name: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Node(ABC):
+    &#34;&#34;&#34;Abstract base class for nodes in the financial statement model.
+
+    Provides the interface for calculating values, caching, serialization,
+    and dependency inspection.
+
+    Attributes:
+        name (str): Unique identifier for the node instance.
+    &#34;&#34;&#34;
+
+    name: str
+    values: dict[str, Any]
+
+    def __init__(self, name: str):
+        &#34;&#34;&#34;Initialize the Node instance with a unique name.
+
+        Args:
+            name: Unique identifier for the node. Must be a non-empty string.
+
+        Raises:
+            ValueError: If `name` is empty or not a string.
+
+        Examples:
+            &gt;&gt;&gt; class Dummy(Node):
+            ...     def calculate(self, period): return 0.0
+            &gt;&gt;&gt; dn = Dummy(&#34;Revenue&#34;)
+            &gt;&gt;&gt; dn.name
+            &#39;Revenue&#39;
+        &#34;&#34;&#34;
+        # Check if name is a non-empty string
+        if not isinstance(name, str) or not name:
+            raise ValueError(&#34;Node name must be a non-empty string.&#34;)
+        # Check for invalid characters (including newline, tab)
+        if &#34;\n&#34; in name or &#34;\t&#34; in name:
+            raise ValueError(
+                f&#34;Invalid node name: &#39;{name}&#39;. Contains invalid characters.&#34;
+            )
+        # Check for leading/trailing whitespace
+        if name != name.strip():
+            raise ValueError(
+                f&#34;Invalid node name: &#39;{name}&#39;. Cannot have leading/trailing whitespace.&#34;
+            )
+        self.name = name
+
+    @abstractmethod
+    def calculate(self, period: str) -&gt; float:
+        &#34;&#34;&#34;Calculate the node&#39;s value for a given period.
+
+        Subclasses must override this method to implement specific calculation logic.
+
+        Args:
+            period (str): Identifier for the time period.
+
+        Returns:
+            float: Calculated value for the period.
+        &#34;&#34;&#34;
+
+    def clear_cache(self) -&gt; None:
+        &#34;&#34;&#34;Clear cached calculation results for this node.
+
+        Subclasses with caching should override this method to clear their internal cache.
+
+        Returns:
+            None
+
+        Examples:
+            &gt;&gt;&gt; node.clear_cache()
+        &#34;&#34;&#34;
+        # Default: no cache to clear
+
+    def has_attribute(self, attr_name: str) -&gt; bool:
+        &#34;&#34;&#34;Check if the node has a specific attribute.
+
+        Args:
+            attr_name: The name of the attribute to check.
+
+        Returns:
+            True if the attribute exists, otherwise False.
+
+        Examples:
+            &gt;&gt;&gt; node.has_attribute(&#34;name&#34;)
+            True
+        &#34;&#34;&#34;
+        return hasattr(self, attr_name)
+
+    def get_attribute(self, attribute_name: str) -&gt; object:
+        &#34;&#34;&#34;Get a named attribute from the node.
+
+        Args:
+            attribute_name: The name of the attribute to retrieve.
+
+        Returns:
+            The value of the specified attribute.
+
+        Raises:
+            AttributeError: If the attribute does not exist.
+
+        Examples:
+            &gt;&gt;&gt; node.get_attribute(&#34;name&#34;)
+            &#39;Revenue&#39;
+        &#34;&#34;&#34;
+        try:
+            return getattr(self, attribute_name)
+        except AttributeError:
+            raise AttributeError(
+                f&#34;Node &#39;{self.name}&#39; has no attribute &#39;{attribute_name}&#39;&#34;
+            )
+
+    def set_value(self, period: str, value: float) -&gt; None:
+        &#34;&#34;&#34;Set a value for a specific period on data-bearing nodes.
+
+        Override in subclasses to support mutating stored data.
+
+        Args:
+            period (str): Period identifier.
+            value (float): Numerical value to store.
+
+        Raises:
+            NotImplementedError: Always in base class.
+        &#34;&#34;&#34;
+        raise NotImplementedError(f&#34;Node &#39;{self.name}&#39; does not support set_value&#34;)
+
+    @abstractmethod
+    def to_dict(self) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Serialize the node to a dictionary representation.
+
+        This method should return a dictionary containing all information
+        necessary to reconstruct the node, including:
+        - node type
+        - name
+        - any configuration parameters
+        - values (for data nodes)
+        - input references (for calculation nodes)
+
+        Returns:
+            Dictionary representation of the node.
+
+        Examples:
+            &gt;&gt;&gt; node_dict = node.to_dict()
+            &gt;&gt;&gt; node_dict[&#39;type&#39;]
+            &#39;financial_statement_item&#39;
+        &#34;&#34;&#34;
+
+    def get_dependencies(self) -&gt; list[str]:
+        &#34;&#34;&#34;Get the names of nodes this node depends on.
+
+        Default implementation returns empty list. Override in nodes that have dependencies.
+
+        Returns:
+            List of node names this node depends on.
+        &#34;&#34;&#34;
+        return []</code></pre>
+</details>
+<div class="desc"><p>Abstract base class for nodes in the financial statement model.</p>
+<p>Provides the interface for calculating values, caching, serialization,
+and dependency inspection.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Unique identifier for the node instance.</dd>
+</dl>
+<p>Initialize the Node instance with a unique name.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Unique identifier for the node. Must be a non-empty string.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If <code>name</code> is empty or not a string.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class Dummy(Node):
+...     def calculate(self, period): return 0.0
+&gt;&gt;&gt; dn = Dummy(&quot;Revenue&quot;)
+&gt;&gt;&gt; dn.name
+'Revenue'
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.nodes.calculation_nodes.CalculationNode" href="calculation_nodes.html#fin_statement_model.core.nodes.calculation_nodes.CalculationNode">CalculationNode</a></li>
+<li><a title="fin_statement_model.core.nodes.calculation_nodes.CustomCalculationNode" href="calculation_nodes.html#fin_statement_model.core.nodes.calculation_nodes.CustomCalculationNode">CustomCalculationNode</a></li>
+<li><a title="fin_statement_model.core.nodes.forecast_nodes.ForecastNode" href="forecast_nodes.html#fin_statement_model.core.nodes.forecast_nodes.ForecastNode">ForecastNode</a></li>
+<li><a title="fin_statement_model.core.nodes.item_node.FinancialStatementItemNode" href="item_node.html#fin_statement_model.core.nodes.item_node.FinancialStatementItemNode">FinancialStatementItemNode</a></li>
+<li><a title="fin_statement_model.core.nodes.stats_nodes.MultiPeriodStatNode" href="stats_nodes.html#fin_statement_model.core.nodes.stats_nodes.MultiPeriodStatNode">MultiPeriodStatNode</a></li>
+<li><a title="fin_statement_model.core.nodes.stats_nodes.TwoPeriodAverageNode" href="stats_nodes.html#fin_statement_model.core.nodes.stats_nodes.TwoPeriodAverageNode">TwoPeriodAverageNode</a></li>
+<li><a title="fin_statement_model.core.nodes.stats_nodes.YoYGrowthNode" href="stats_nodes.html#fin_statement_model.core.nodes.stats_nodes.YoYGrowthNode">YoYGrowthNode</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.core.nodes.base.Node.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.base.Node.values"><code class="name">var <span class="ident">values</span> : dict[str, typing.Any]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.nodes.base.Node.calculate"><code class="name flex">
+<span>def <span class="ident">calculate</span></span>(<span>self, period: str) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def calculate(self, period: str) -&gt; float:
+    &#34;&#34;&#34;Calculate the node&#39;s value for a given period.
+
+    Subclasses must override this method to implement specific calculation logic.
+
+    Args:
+        period (str): Identifier for the time period.
+
+    Returns:
+        float: Calculated value for the period.
+    &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Calculate the node's value for a given period.</p>
+<p>Subclasses must override this method to implement specific calculation logic.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>period</code></strong> :&ensp;<code>str</code></dt>
+<dd>Identifier for the time period.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Calculated value for the period.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.base.Node.clear_cache"><code class="name flex">
+<span>def <span class="ident">clear_cache</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear_cache(self) -&gt; None:
+    &#34;&#34;&#34;Clear cached calculation results for this node.
+
+    Subclasses with caching should override this method to clear their internal cache.
+
+    Returns:
+        None
+
+    Examples:
+        &gt;&gt;&gt; node.clear_cache()
+    &#34;&#34;&#34;
+    # Default: no cache to clear</code></pre>
+</details>
+<div class="desc"><p>Clear cached calculation results for this node.</p>
+<p>Subclasses with caching should override this method to clear their internal cache.</p>
+<h2 id="returns">Returns</h2>
+<p>None</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; node.clear_cache()
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.base.Node.get_attribute"><code class="name flex">
+<span>def <span class="ident">get_attribute</span></span>(<span>self, attribute_name: str) ‑> object</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_attribute(self, attribute_name: str) -&gt; object:
+    &#34;&#34;&#34;Get a named attribute from the node.
+
+    Args:
+        attribute_name: The name of the attribute to retrieve.
+
+    Returns:
+        The value of the specified attribute.
+
+    Raises:
+        AttributeError: If the attribute does not exist.
+
+    Examples:
+        &gt;&gt;&gt; node.get_attribute(&#34;name&#34;)
+        &#39;Revenue&#39;
+    &#34;&#34;&#34;
+    try:
+        return getattr(self, attribute_name)
+    except AttributeError:
+        raise AttributeError(
+            f&#34;Node &#39;{self.name}&#39; has no attribute &#39;{attribute_name}&#39;&#34;
+        )</code></pre>
+</details>
+<div class="desc"><p>Get a named attribute from the node.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>attribute_name</code></strong></dt>
+<dd>The name of the attribute to retrieve.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The value of the specified attribute.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>AttributeError</code></dt>
+<dd>If the attribute does not exist.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; node.get_attribute(&quot;name&quot;)
+'Revenue'
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.base.Node.get_dependencies"><code class="name flex">
+<span>def <span class="ident">get_dependencies</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_dependencies(self) -&gt; list[str]:
+    &#34;&#34;&#34;Get the names of nodes this node depends on.
+
+    Default implementation returns empty list. Override in nodes that have dependencies.
+
+    Returns:
+        List of node names this node depends on.
+    &#34;&#34;&#34;
+    return []</code></pre>
+</details>
+<div class="desc"><p>Get the names of nodes this node depends on.</p>
+<p>Default implementation returns empty list. Override in nodes that have dependencies.</p>
+<h2 id="returns">Returns</h2>
+<p>List of node names this node depends on.</p></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.base.Node.has_attribute"><code class="name flex">
+<span>def <span class="ident">has_attribute</span></span>(<span>self, attr_name: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_attribute(self, attr_name: str) -&gt; bool:
+    &#34;&#34;&#34;Check if the node has a specific attribute.
+
+    Args:
+        attr_name: The name of the attribute to check.
+
+    Returns:
+        True if the attribute exists, otherwise False.
+
+    Examples:
+        &gt;&gt;&gt; node.has_attribute(&#34;name&#34;)
+        True
+    &#34;&#34;&#34;
+    return hasattr(self, attr_name)</code></pre>
+</details>
+<div class="desc"><p>Check if the node has a specific attribute.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>attr_name</code></strong></dt>
+<dd>The name of the attribute to check.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if the attribute exists, otherwise False.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; node.has_attribute(&quot;name&quot;)
+True
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.base.Node.set_value"><code class="name flex">
+<span>def <span class="ident">set_value</span></span>(<span>self, period: str, value: float) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_value(self, period: str, value: float) -&gt; None:
+    &#34;&#34;&#34;Set a value for a specific period on data-bearing nodes.
+
+    Override in subclasses to support mutating stored data.
+
+    Args:
+        period (str): Period identifier.
+        value (float): Numerical value to store.
+
+    Raises:
+        NotImplementedError: Always in base class.
+    &#34;&#34;&#34;
+    raise NotImplementedError(f&#34;Node &#39;{self.name}&#39; does not support set_value&#34;)</code></pre>
+</details>
+<div class="desc"><p>Set a value for a specific period on data-bearing nodes.</p>
+<p>Override in subclasses to support mutating stored data.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>period</code></strong> :&ensp;<code>str</code></dt>
+<dd>Period identifier.</dd>
+<dt><strong><code>value</code></strong> :&ensp;<code>float</code></dt>
+<dd>Numerical value to store.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>NotImplementedError</code></dt>
+<dd>Always in base class.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.base.Node.to_dict"><code class="name flex">
+<span>def <span class="ident">to_dict</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def to_dict(self) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Serialize the node to a dictionary representation.
+
+    This method should return a dictionary containing all information
+    necessary to reconstruct the node, including:
+    - node type
+    - name
+    - any configuration parameters
+    - values (for data nodes)
+    - input references (for calculation nodes)
+
+    Returns:
+        Dictionary representation of the node.
+
+    Examples:
+        &gt;&gt;&gt; node_dict = node.to_dict()
+        &gt;&gt;&gt; node_dict[&#39;type&#39;]
+        &#39;financial_statement_item&#39;
+    &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Serialize the node to a dictionary representation.</p>
+<p>This method should return a dictionary containing all information
+necessary to reconstruct the node, including:
+- node type
+- name
+- any configuration parameters
+- values (for data nodes)
+- input references (for calculation nodes)</p>
+<h2 id="returns">Returns</h2>
+<p>Dictionary representation of the node.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; node_dict = node.to_dict()
+&gt;&gt;&gt; node_dict['type']
+'financial_statement_item'
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.core.nodes" href="index.html">fin_statement_model.core.nodes</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.core.nodes.base.Node" href="#fin_statement_model.core.nodes.base.Node">Node</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.core.nodes.base.Node.calculate" href="#fin_statement_model.core.nodes.base.Node.calculate">calculate</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.base.Node.clear_cache" href="#fin_statement_model.core.nodes.base.Node.clear_cache">clear_cache</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.base.Node.get_attribute" href="#fin_statement_model.core.nodes.base.Node.get_attribute">get_attribute</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.base.Node.get_dependencies" href="#fin_statement_model.core.nodes.base.Node.get_dependencies">get_dependencies</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.base.Node.has_attribute" href="#fin_statement_model.core.nodes.base.Node.has_attribute">has_attribute</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.base.Node.name" href="#fin_statement_model.core.nodes.base.Node.name">name</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.base.Node.set_value" href="#fin_statement_model.core.nodes.base.Node.set_value">set_value</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.base.Node.to_dict" href="#fin_statement_model.core.nodes.base.Node.to_dict">to_dict</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.base.Node.values" href="#fin_statement_model.core.nodes.base.Node.values">values</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

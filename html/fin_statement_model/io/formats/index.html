@@ -1,0 +1,2933 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.io.formats API documentation</title>
+<meta name="description" content="Format-specific IO implementations …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.io.formats</code></h1>
+</header>
+<section id="section-intro">
+<p>Format-specific IO implementations.</p>
+<p>This module contains readers and writers for various data formats.
+Each format is organized in its own submodule.</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.io.formats.api" href="api/index.html">fin_statement_model.io.formats.api</a></code></dt>
+<dd>
+<div class="desc"><p>API format IO operations.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats.csv" href="csv/index.html">fin_statement_model.io.formats.csv</a></code></dt>
+<dd>
+<div class="desc"><p>CSV format IO operations.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats.dataframe" href="dataframe/index.html">fin_statement_model.io.formats.dataframe</a></code></dt>
+<dd>
+<div class="desc"><p>DataFrame format IO operations.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats.dict" href="dict/index.html">fin_statement_model.io.formats.dict</a></code></dt>
+<dd>
+<div class="desc"><p>Dictionary format IO operations.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats.excel" href="excel/index.html">fin_statement_model.io.formats.excel</a></code></dt>
+<dd>
+<div class="desc"><p>Excel format IO operations.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats.markdown" href="markdown/index.html">fin_statement_model.io.formats.markdown</a></code></dt>
+<dd>
+<div class="desc"><p>Markdown format IO operations.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.io.formats.CsvReader"><code class="flex name class">
+<span>class <span class="ident">CsvReader</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.CsvReaderConfig" href="../config/models.html#fin_statement_model.io.config.models.CsvReaderConfig">CsvReaderConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_reader(&#34;csv&#34;, schema=CsvReaderConfig)
+class CsvReader(
+    FileBasedReader, ConfigurationMixin, MappingAwareMixin, ValidationMixin
+):
+    &#34;&#34;&#34;Reads financial statement data from a CSV file into a Graph.
+
+    Assumes a &#39;long&#39; format where each row represents a single data point
+    (item, period, value).
+    Requires specifying the columns containing item names, period identifiers,
+    and values.
+
+    Supports a `mapping_config` constructor parameter for name mapping,
+    accepting either a flat mapping or a statement-type scoped mapping.
+
+    Configuration (delimiter, header_row, index_col, mapping_config) is passed
+    via a `CsvReaderConfig` object during initialization (typically by the `read_data` facade).
+    Method-specific options (`item_col`, `period_col`, `value_col`, `pandas_read_csv_kwargs`)
+    are passed as keyword arguments to the `read()` method.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: CsvReaderConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the CsvReader with validated configuration.
+
+        Args:
+            cfg: A validated `CsvReaderConfig` instance containing parameters like
+                 `source`, `delimiter`, `header_row`, `index_col`, and `mapping_config`.
+        &#34;&#34;&#34;
+        self.cfg = cfg
+
+    @handle_read_errors()
+    def read(self, source: str, **kwargs: Any) -&gt; Graph:
+        &#34;&#34;&#34;Read data from a CSV file into a new Graph.
+
+        Args:
+            source (str): Path to the CSV file.
+            **kwargs: Optional runtime arguments overriding config defaults:
+                statement_type (str): Statement type (&#39;income_statement&#39;, &#39;balance_sheet&#39;, &#39;cash_flow&#39;).
+                item_col (str): Name of the column containing item identifiers.
+                period_col (str): Name of the column containing period identifiers.
+                value_col (str): Name of the column containing numeric values.
+                pandas_read_csv_kwargs (dict): Additional kwargs for pandas.read_csv.
+
+        Returns:
+            A new Graph instance populated with FinancialStatementItemNodes.
+
+        Raises:
+            ReadError: If the file cannot be read or required columns are missing.
+        &#34;&#34;&#34;
+        file_path = source
+        logger.info(f&#34;Starting import from CSV file: {file_path}&#34;)
+
+        # Set configuration context for better error reporting
+        self.set_config_context(file_path=file_path, operation=&#34;read&#34;)
+
+        # Use base class validation
+        self.validate_file_exists(file_path)
+        self.validate_file_extension(file_path, (&#34;.csv&#34;, &#34;.txt&#34;))
+
+        # Runtime overrides: kwargs override configured defaults (statement_type handled in _process_dataframe)
+        item_col = kwargs.get(&#34;item_col&#34;, self.cfg.item_col)
+        period_col = kwargs.get(&#34;period_col&#34;, self.cfg.period_col)
+        value_col = kwargs.get(&#34;value_col&#34;, self.cfg.value_col)
+        pandas_read_csv_kwargs = (
+            kwargs.get(&#34;pandas_read_csv_kwargs&#34;)
+            or self.cfg.pandas_read_csv_kwargs
+            or {}
+        )
+
+        if not all([item_col, period_col, value_col]):
+            raise ReadError(
+                &#34;Missing required arguments: &#39;item_col&#39;, &#39;period_col&#39;, &#39;value_col&#39; must be provided.&#34;,
+                source=file_path,
+                reader_type=self.__class__.__name__,
+            )
+
+        # Cast columns to str after validation
+        item_col_str = cast(str, item_col)
+        period_col_str = cast(str, period_col)
+        value_col_str = cast(str, value_col)
+        # Read CSV Data
+        df = self._read_csv_file(file_path, pandas_read_csv_kwargs)
+
+        # Validate columns
+        self._validate_columns(
+            df, item_col_str, period_col_str, value_col_str, file_path
+        )
+
+        # Process data
+        return self._process_dataframe(
+            df, item_col_str, period_col_str, value_col_str, file_path, kwargs
+        )
+
+    def _read_csv_file(
+        self, file_path: str, user_options: dict[str, Any]
+    ) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Read CSV file with configuration options.&#34;&#34;&#34;
+        # Use configuration from self.cfg with enhanced validation
+        from fin_statement_model.config.helpers import cfg
+
+        delimiter = self.get_config_value(
+            &#34;delimiter&#34;,
+            default=cfg(&#34;io.default_csv_delimiter&#34;),
+            value_type=str,
+            validator=lambda x: len(x) &gt;= 1,
+        )
+        header_row = self.get_config_value(
+            &#34;header_row&#34;, default=1, value_type=int, validator=lambda x: x &gt;= 1
+        )
+
+        read_options = {
+            &#34;delimiter&#34;: delimiter,
+            &#34;header&#34;: header_row - 1,  # Convert to 0-indexed
+        }
+
+        # Handle optional index_col with validation
+        index_col = self.get_config_value(
+            &#34;index_col&#34;,
+            value_type=int,
+            validator=lambda x: x is None or x &gt;= 1,
+        )
+        if index_col is not None:
+            read_options[&#34;index_col&#34;] = index_col - 1  # Convert to 0-indexed
+
+        # Merge user-provided kwargs, allowing them to override config
+        read_options.update(user_options)
+
+        return pd.read_csv(file_path, **read_options)
+
+    def _validate_columns(
+        self,
+        df: pd.DataFrame,
+        item_col: str,
+        period_col: str,
+        value_col: str,
+        file_path: str,
+    ) -&gt; None:
+        &#34;&#34;&#34;Validate that required columns exist in the DataFrame.&#34;&#34;&#34;
+        # Use ValidationMixin for column validation
+        self.validate_required_columns(df, [item_col, period_col, value_col], file_path)
+
+    def _process_dataframe(
+        self,
+        df: pd.DataFrame,
+        item_col: str,
+        period_col: str,
+        value_col: str,
+        file_path: str,
+        kwargs: dict[str, Any],
+    ) -&gt; Graph:
+        &#34;&#34;&#34;Process the DataFrame and create a Graph.&#34;&#34;&#34;
+        # Convert period column to string
+        df[period_col] = df[period_col].astype(str)
+        all_periods = sorted(df[period_col].unique().tolist())
+
+        # Use ValidationMixin for periods validation
+        self.validate_periods_exist(all_periods, file_path)
+
+        logger.info(f&#34;Identified periods: {all_periods}&#34;)
+        graph = Graph(periods=all_periods)
+
+        # Use validation collector for better error reporting
+        validator = ValidationResultCollector()
+
+        # Group data by item name
+        grouped = df.groupby(item_col)
+        nodes_added = 0
+
+        # Determine mapping context
+        context_key = kwargs.get(&#34;statement_type&#34;, self.cfg.statement_type)
+        mapping = self._get_mapping(context_key)
+
+        for item_name_csv, group in grouped:
+            if pd.isna(item_name_csv) or not item_name_csv:
+                logger.debug(&#34;Skipping group with empty item name.&#34;)
+                continue
+
+            item_name_csv_str = str(item_name_csv).strip()
+            node_name = self._apply_mapping(item_name_csv_str, mapping)
+
+            period_values = self._extract_period_values(
+                group, period_col, value_col, item_name_csv_str, node_name, validator
+            )
+
+            if period_values:
+                if graph.has_node(node_name):
+                    logger.warning(
+                        f&#34;Node &#39;{node_name}&#39; (from CSV item &#39;{item_name_csv_str}&#39;) already exists. &#34;
+                        &#34;Overwriting data is not standard for readers.&#34;
+                    )
+                else:
+                    new_node = FinancialStatementItemNode(
+                        name=node_name, values=period_values
+                    )
+                    graph.add_node(new_node)
+                    nodes_added += 1
+
+        # Check for validation errors
+        if validator.has_errors():
+            summary = validator.get_summary()
+            raise ReadError(
+                f&#34;Validation errors occurred while reading {file_path}: {&#39;; &#39;.join(summary[&#39;errors&#39;])}&#34;,
+                source=file_path,
+                reader_type=self.__class__.__name__,
+            )
+
+        logger.info(
+            f&#34;Successfully created graph with {nodes_added} nodes from {file_path}.&#34;
+        )
+        return graph
+
+    def _extract_period_values(
+        self,
+        group: pd.DataFrame,
+        period_col: str,
+        value_col: str,
+        item_name_csv: str,
+        node_name: str,
+        validator: ValidationResultCollector,
+    ) -&gt; dict[str, float]:
+        &#34;&#34;&#34;Extract period values from a group with validation.&#34;&#34;&#34;
+        period_values: dict[str, float] = {}
+
+        for _, row in group.iterrows():
+            period = row[period_col]
+            value = row[value_col]
+
+            if pd.isna(value):
+                continue  # Skip missing values
+
+            # Use ValidationMixin for numeric validation
+            is_valid, converted_value = self.validate_numeric_value(
+                value, item_name_csv, period, validator, allow_conversion=True
+            )
+
+            if not is_valid or converted_value is None:
+                continue
+
+            value = converted_value
+
+            if period in period_values:
+                logger.warning(
+                    f&#34;Duplicate value found for node &#39;{node_name}&#39; &#34;
+                    f&#34;(from CSV item &#39;{item_name_csv}&#39;) period &#39;{period}&#39;. &#34;
+                    &#34;Using the last one found.&#34;
+                )
+
+            period_values[period] = float(value)
+
+        return period_values</code></pre>
+</details>
+<div class="desc"><p>Reads financial statement data from a CSV file into a Graph.</p>
+<p>Assumes a 'long' format where each row represents a single data point
+(item, period, value).
+Requires specifying the columns containing item names, period identifiers,
+and values.</p>
+<p>Supports a <code>mapping_config</code> constructor parameter for name mapping,
+accepting either a flat mapping or a statement-type scoped mapping.</p>
+<p>Configuration (delimiter, header_row, index_col, mapping_config) is passed
+via a <code>CsvReaderConfig</code> object during initialization (typically by the <code>read_data</code> facade).
+Method-specific options (<code>item_col</code>, <code>period_col</code>, <code>value_col</code>, <code>pandas_read_csv_kwargs</code>)
+are passed as keyword arguments to the <code>read()</code> method.</p>
+<p>Initialize the CsvReader with validated configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>A validated <code>CsvReaderConfig</code> instance containing parameters like
+<code>source</code>, <code>delimiter</code>, <code>header_row</code>, <code>index_col</code>, and <code>mapping_config</code>.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.mixins.FileBasedReader" href="../core/mixins.html#fin_statement_model.io.core.mixins.FileBasedReader">FileBasedReader</a></li>
+<li><a title="fin_statement_model.io.core.base.DataReader" href="../core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li>abc.ABC</li>
+<li><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.MappingAwareMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.MappingAwareMixin">MappingAwareMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.ValidationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin">ValidationMixin</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.CsvReader.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self, source: str, **kwargs: Any) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@handle_read_errors()
+def read(self, source: str, **kwargs: Any) -&gt; Graph:
+    &#34;&#34;&#34;Read data from a CSV file into a new Graph.
+
+    Args:
+        source (str): Path to the CSV file.
+        **kwargs: Optional runtime arguments overriding config defaults:
+            statement_type (str): Statement type (&#39;income_statement&#39;, &#39;balance_sheet&#39;, &#39;cash_flow&#39;).
+            item_col (str): Name of the column containing item identifiers.
+            period_col (str): Name of the column containing period identifiers.
+            value_col (str): Name of the column containing numeric values.
+            pandas_read_csv_kwargs (dict): Additional kwargs for pandas.read_csv.
+
+    Returns:
+        A new Graph instance populated with FinancialStatementItemNodes.
+
+    Raises:
+        ReadError: If the file cannot be read or required columns are missing.
+    &#34;&#34;&#34;
+    file_path = source
+    logger.info(f&#34;Starting import from CSV file: {file_path}&#34;)
+
+    # Set configuration context for better error reporting
+    self.set_config_context(file_path=file_path, operation=&#34;read&#34;)
+
+    # Use base class validation
+    self.validate_file_exists(file_path)
+    self.validate_file_extension(file_path, (&#34;.csv&#34;, &#34;.txt&#34;))
+
+    # Runtime overrides: kwargs override configured defaults (statement_type handled in _process_dataframe)
+    item_col = kwargs.get(&#34;item_col&#34;, self.cfg.item_col)
+    period_col = kwargs.get(&#34;period_col&#34;, self.cfg.period_col)
+    value_col = kwargs.get(&#34;value_col&#34;, self.cfg.value_col)
+    pandas_read_csv_kwargs = (
+        kwargs.get(&#34;pandas_read_csv_kwargs&#34;)
+        or self.cfg.pandas_read_csv_kwargs
+        or {}
+    )
+
+    if not all([item_col, period_col, value_col]):
+        raise ReadError(
+            &#34;Missing required arguments: &#39;item_col&#39;, &#39;period_col&#39;, &#39;value_col&#39; must be provided.&#34;,
+            source=file_path,
+            reader_type=self.__class__.__name__,
+        )
+
+    # Cast columns to str after validation
+    item_col_str = cast(str, item_col)
+    period_col_str = cast(str, period_col)
+    value_col_str = cast(str, value_col)
+    # Read CSV Data
+    df = self._read_csv_file(file_path, pandas_read_csv_kwargs)
+
+    # Validate columns
+    self._validate_columns(
+        df, item_col_str, period_col_str, value_col_str, file_path
+    )
+
+    # Process data
+    return self._process_dataframe(
+        df, item_col_str, period_col_str, value_col_str, file_path, kwargs
+    )</code></pre>
+</details>
+<div class="desc"><p>Read data from a CSV file into a new Graph.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the CSV file.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Optional runtime arguments overriding config defaults:
+statement_type (str): Statement type ('income_statement', 'balance_sheet', 'cash_flow').
+item_col (str): Name of the column containing item identifiers.
+period_col (str): Name of the column containing period identifiers.
+value_col (str): Name of the column containing numeric values.
+pandas_read_csv_kwargs (dict): Additional kwargs for pandas.read_csv.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A new Graph instance populated with FinancialStatementItemNodes.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If the file cannot be read or required columns are missing.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.mixins.FileBasedReader" href="../core/mixins.html#fin_statement_model.io.core.mixins.FileBasedReader">FileBasedReader</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.FileBasedReader.validate_file_exists" href="../core/mixins.html#fin_statement_model.io.core.mixins.FileBasedReader.validate_file_exists">validate_file_exists</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.FileBasedReader.validate_file_extension" href="../core/mixins.html#fin_statement_model.io.core.mixins.FileBasedReader.validate_file_extension">validate_file_extension</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="fin_statement_model.io.core.mixins.ValidationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin">ValidationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.create_validation_summary" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.create_validation_summary">create_validation_summary</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.get_validation_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.get_validation_context">get_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.set_validation_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.set_validation_context">set_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_column_bounds" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_column_bounds">validate_column_bounds</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_node_name" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_node_name">validate_node_name</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_numeric_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_numeric_value">validate_numeric_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_periods_exist" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_periods_exist">validate_periods_exist</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_required_columns" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_required_columns">validate_required_columns</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.DataFrameReader"><code class="flex name class">
+<span>class <span class="ident">DataFrameReader</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.DataFrameReaderConfig" href="../config/models.html#fin_statement_model.io.config.models.DataFrameReaderConfig">DataFrameReaderConfig</a> | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_reader(&#34;dataframe&#34;, schema=DataFrameReaderConfig)
+class DataFrameReader(DataReader):
+    &#34;&#34;&#34;Reads data from a pandas DataFrame into a Graph.
+
+    Assumes the DataFrame index contains node names and columns contain periods.
+    Values should be numeric.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: Optional[DataFrameReaderConfig] = None) -&gt; None:
+        &#34;&#34;&#34;Initialize the DataFrameReader.
+
+        Args:
+            cfg: Optional validated `DataFrameReaderConfig` instance.
+                 Currently unused but kept for registry symmetry and future options.
+        &#34;&#34;&#34;
+        self.cfg = cfg  # For future use; currently no configuration options.
+
+    def read(self, source: pd.DataFrame, **kwargs: Any) -&gt; Graph:
+        &#34;&#34;&#34;Read data from a pandas DataFrame into a new Graph.
+
+        Assumes DataFrame index = node names, columns = periods.
+
+        Args:
+            source (pd.DataFrame): The DataFrame to read data from.
+            **kwargs: Optional runtime argument overriding config defaults:
+                periods (list[str], optional): List of periods (columns) to include. Overrides `cfg.periods`.
+
+        Returns:
+            A new Graph instance populated with FinancialStatementItemNodes.
+
+        Raises:
+            ReadError: If the source is not a DataFrame or has invalid structure.
+        &#34;&#34;&#34;
+        df = source
+        logger.info(&#34;Starting import from DataFrame.&#34;)
+
+        # --- Validate Inputs ---
+        if not isinstance(df, pd.DataFrame):
+            raise ReadError(
+                &#34;Source is not a pandas DataFrame.&#34;,
+                source=&#34;DataFrame&#34;,
+                reader_type=&#34;DataFrameReader&#34;,
+            )
+
+        if df.index.name is None and df.index.empty:
+            logger.warning(
+                &#34;DataFrame index is unnamed and empty, assuming columns are nodes if periods kwarg is provided.&#34;
+            )
+            # Handle case where DF might be oriented differently if periods kwarg is present?
+            # For now, stick to index=nodes assumption.
+
+        # Determine periods: runtime kwargs override config, else config defaults, else infer
+        graph_periods_arg = kwargs.get(
+            &#34;periods&#34;, self.cfg.periods if self.cfg else None
+        )
+        if graph_periods_arg:
+            if not isinstance(graph_periods_arg, list):
+                raise ReadError(&#34;&#39;periods&#39; argument must be a list of column names.&#34;)
+            missing_cols = [p for p in graph_periods_arg if p not in df.columns]
+            if missing_cols:
+                raise ReadError(
+                    f&#34;Specified periods (columns) not found in DataFrame: {missing_cols}&#34;
+                )
+            graph_periods = sorted(graph_periods_arg)
+            df_subset = df[graph_periods]  # Select only specified period columns
+        else:
+            # No explicit periods provided; infer from columns
+            graph_periods = sorted(df.columns.astype(str).tolist())
+            df_subset = df
+
+        if not graph_periods:
+            raise ReadError(
+                &#34;No periods identified in DataFrame columns.&#34;,
+                source=&#34;DataFrame&#34;,
+                reader_type=&#34;DataFrameReader&#34;,
+            )
+
+        logger.info(f&#34;Using periods (columns): {graph_periods}&#34;)
+        graph = Graph(periods=graph_periods)
+
+        # --- Populate Graph ---
+        validation_errors = []
+        nodes_added = 0
+        for node_name_df, row in df_subset.iterrows():
+            if pd.isna(node_name_df) or not node_name_df:
+                logger.debug(&#34;Skipping row with empty index name.&#34;)
+                continue
+
+            node_name = str(node_name_df).strip()
+            period_values: dict[str, float] = {}
+            for period in graph_periods:
+                value = row[period]
+                if pd.isna(value):
+                    continue  # Skip NaN values
+
+                if not isinstance(value, int | float | np.number):
+                    try:
+                        value = float(value)
+                        logger.warning(
+                            f&#34;Converted non-numeric value &#39;{row[period]}&#39; to float for node &#39;{node_name}&#39; period &#39;{period}&#39;&#34;
+                        )
+                    except (ValueError, TypeError):
+                        validation_errors.append(
+                            f&#34;Node &#39;{node_name}&#39;: Non-numeric value &#39;{value}&#39; for period &#39;{period}&#39;&#34;
+                        )
+                        continue  # Skip invalid value
+
+                period_values[period] = float(value)
+
+            if period_values:
+                if graph.has_node(node_name):
+                    logger.warning(
+                        f&#34;Node &#39;{node_name}&#39; already exists. Overwriting data is not standard for readers.&#34;
+                    )
+                    # Update existing? Log for now.
+                else:
+                    new_node = FinancialStatementItemNode(
+                        name=node_name, values=period_values
+                    )
+                    graph.add_node(new_node)
+                    nodes_added += 1
+
+        if validation_errors:
+            raise ReadError(
+                f&#34;Validation errors occurred while reading DataFrame: {&#39;; &#39;.join(validation_errors)}&#34;,
+                source=&#34;DataFrame&#34;,
+                reader_type=&#34;DataFrameReader&#34;,
+            )
+
+        logger.info(
+            f&#34;Successfully created graph with {nodes_added} nodes from DataFrame.&#34;
+        )
+        return graph
+
+        # No specific file operations, so less need for broad Exception catch
+        # Specific errors handled above (TypeError, ValueError from float conversion)</code></pre>
+</details>
+<div class="desc"><p>Reads data from a pandas DataFrame into a Graph.</p>
+<p>Assumes the DataFrame index contains node names and columns contain periods.
+Values should be numeric.</p>
+<p>Initialize the DataFrameReader.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>Optional validated <code>DataFrameReaderConfig</code> instance.
+Currently unused but kept for registry symmetry and future options.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base.DataReader" href="../core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.DataFrameReader.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self, source: pandas.core.frame.DataFrame, **kwargs: Any) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read(self, source: pd.DataFrame, **kwargs: Any) -&gt; Graph:
+    &#34;&#34;&#34;Read data from a pandas DataFrame into a new Graph.
+
+    Assumes DataFrame index = node names, columns = periods.
+
+    Args:
+        source (pd.DataFrame): The DataFrame to read data from.
+        **kwargs: Optional runtime argument overriding config defaults:
+            periods (list[str], optional): List of periods (columns) to include. Overrides `cfg.periods`.
+
+    Returns:
+        A new Graph instance populated with FinancialStatementItemNodes.
+
+    Raises:
+        ReadError: If the source is not a DataFrame or has invalid structure.
+    &#34;&#34;&#34;
+    df = source
+    logger.info(&#34;Starting import from DataFrame.&#34;)
+
+    # --- Validate Inputs ---
+    if not isinstance(df, pd.DataFrame):
+        raise ReadError(
+            &#34;Source is not a pandas DataFrame.&#34;,
+            source=&#34;DataFrame&#34;,
+            reader_type=&#34;DataFrameReader&#34;,
+        )
+
+    if df.index.name is None and df.index.empty:
+        logger.warning(
+            &#34;DataFrame index is unnamed and empty, assuming columns are nodes if periods kwarg is provided.&#34;
+        )
+        # Handle case where DF might be oriented differently if periods kwarg is present?
+        # For now, stick to index=nodes assumption.
+
+    # Determine periods: runtime kwargs override config, else config defaults, else infer
+    graph_periods_arg = kwargs.get(
+        &#34;periods&#34;, self.cfg.periods if self.cfg else None
+    )
+    if graph_periods_arg:
+        if not isinstance(graph_periods_arg, list):
+            raise ReadError(&#34;&#39;periods&#39; argument must be a list of column names.&#34;)
+        missing_cols = [p for p in graph_periods_arg if p not in df.columns]
+        if missing_cols:
+            raise ReadError(
+                f&#34;Specified periods (columns) not found in DataFrame: {missing_cols}&#34;
+            )
+        graph_periods = sorted(graph_periods_arg)
+        df_subset = df[graph_periods]  # Select only specified period columns
+    else:
+        # No explicit periods provided; infer from columns
+        graph_periods = sorted(df.columns.astype(str).tolist())
+        df_subset = df
+
+    if not graph_periods:
+        raise ReadError(
+            &#34;No periods identified in DataFrame columns.&#34;,
+            source=&#34;DataFrame&#34;,
+            reader_type=&#34;DataFrameReader&#34;,
+        )
+
+    logger.info(f&#34;Using periods (columns): {graph_periods}&#34;)
+    graph = Graph(periods=graph_periods)
+
+    # --- Populate Graph ---
+    validation_errors = []
+    nodes_added = 0
+    for node_name_df, row in df_subset.iterrows():
+        if pd.isna(node_name_df) or not node_name_df:
+            logger.debug(&#34;Skipping row with empty index name.&#34;)
+            continue
+
+        node_name = str(node_name_df).strip()
+        period_values: dict[str, float] = {}
+        for period in graph_periods:
+            value = row[period]
+            if pd.isna(value):
+                continue  # Skip NaN values
+
+            if not isinstance(value, int | float | np.number):
+                try:
+                    value = float(value)
+                    logger.warning(
+                        f&#34;Converted non-numeric value &#39;{row[period]}&#39; to float for node &#39;{node_name}&#39; period &#39;{period}&#39;&#34;
+                    )
+                except (ValueError, TypeError):
+                    validation_errors.append(
+                        f&#34;Node &#39;{node_name}&#39;: Non-numeric value &#39;{value}&#39; for period &#39;{period}&#39;&#34;
+                    )
+                    continue  # Skip invalid value
+
+            period_values[period] = float(value)
+
+        if period_values:
+            if graph.has_node(node_name):
+                logger.warning(
+                    f&#34;Node &#39;{node_name}&#39; already exists. Overwriting data is not standard for readers.&#34;
+                )
+                # Update existing? Log for now.
+            else:
+                new_node = FinancialStatementItemNode(
+                    name=node_name, values=period_values
+                )
+                graph.add_node(new_node)
+                nodes_added += 1
+
+    if validation_errors:
+        raise ReadError(
+            f&#34;Validation errors occurred while reading DataFrame: {&#39;; &#39;.join(validation_errors)}&#34;,
+            source=&#34;DataFrame&#34;,
+            reader_type=&#34;DataFrameReader&#34;,
+        )
+
+    logger.info(
+        f&#34;Successfully created graph with {nodes_added} nodes from DataFrame.&#34;
+    )
+    return graph
+
+    # No specific file operations, so less need for broad Exception catch
+    # Specific errors handled above (TypeError, ValueError from float conversion)</code></pre>
+</details>
+<div class="desc"><p>Read data from a pandas DataFrame into a new Graph.</p>
+<p>Assumes DataFrame index = node names, columns = periods.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source</code></strong> :&ensp;<code>pd.DataFrame</code></dt>
+<dd>The DataFrame to read data from.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Optional runtime argument overriding config defaults:
+periods (list[str], optional): List of periods (columns) to include. Overrides <code>cfg.periods</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A new Graph instance populated with FinancialStatementItemNodes.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If the source is not a DataFrame or has invalid structure.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.formats.DataFrameWriter"><code class="flex name class">
+<span>class <span class="ident">DataFrameWriter</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.DataFrameWriterConfig" href="../config/models.html#fin_statement_model.io.config.models.DataFrameWriterConfig">DataFrameWriterConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_writer(&#34;dataframe&#34;, schema=DataFrameWriterConfig)  # type: ignore[arg-type]
+class DataFrameWriter(DataFrameBasedWriter, ConfigurationMixin):
+    &#34;&#34;&#34;Writes graph data to a pandas DataFrame.
+
+    Converts the graph to a DataFrame with node names as index and periods as columns.
+
+    Configuration options `recalculate` and `include_nodes` are controlled by
+    the `DataFrameWriterConfig` object passed during initialization.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: DataFrameWriterConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the DataFrameWriter.
+
+        Args:
+            cfg: Optional validated `DataFrameWriterConfig` instance.
+        &#34;&#34;&#34;
+        super().__init__()
+        self.cfg = cfg
+
+    @handle_write_errors()
+    def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Convert the graph data to a pandas DataFrame based on instance configuration.
+
+        Args:
+            graph (Graph): The Graph instance to export.
+            target (Any): Ignored by this writer; the DataFrame is returned directly.
+            **kwargs: Optional runtime overrides of configured defaults:
+                recalculate (bool): Whether to recalculate graph before export.
+                include_nodes (list[str]): List of node names to include in export.
+
+        Returns:
+            pd.DataFrame: DataFrame with node names as index and periods as columns.
+
+        Raises:
+            WriteError: If an error occurs during conversion.
+        &#34;&#34;&#34;
+        # Runtime overrides: kwargs override configured defaults
+        recalculate = kwargs.get(&#34;recalculate&#34;, self.cfg.recalculate)
+        include_nodes = kwargs.get(&#34;include_nodes&#34;, self.cfg.include_nodes)
+
+        logger.info(&#34;Exporting graph to DataFrame format.&#34;)
+
+        # Handle recalculation if requested
+        if recalculate:
+            self._recalculate_graph(graph)
+
+        # Extract data using base class method
+        data = self.extract_graph_data(
+            graph, include_nodes=include_nodes, calculate=True
+        )
+
+        # Convert to DataFrame
+        periods = sorted(graph.periods) if graph.periods else []
+        df = pd.DataFrame.from_dict(data, orient=&#34;index&#34;, columns=periods)
+        df.index.name = &#34;node_name&#34;
+
+        logger.info(f&#34;Successfully exported {len(df)} nodes to DataFrame.&#34;)
+        return df
+
+    def _recalculate_graph(self, graph: Graph) -&gt; None:
+        &#34;&#34;&#34;Recalculate the graph if it has periods defined.
+
+        Args:
+            graph: The graph to recalculate.
+        &#34;&#34;&#34;
+        try:
+            if graph.periods:
+                graph.recalculate_all(periods=graph.periods)
+                logger.info(&#34;Recalculated graph before exporting to DataFrame.&#34;)
+            else:
+                logger.warning(&#34;Graph has no periods defined, skipping recalculation.&#34;)
+        except Exception as e:
+            logger.error(
+                f&#34;Error during recalculation for DataFrame export: {e}&#34;,
+                exc_info=True,
+            )
+            logger.warning(
+                &#34;Proceeding to export DataFrame without successful recalculation.&#34;
+            )</code></pre>
+</details>
+<div class="desc"><p>Writes graph data to a pandas DataFrame.</p>
+<p>Converts the graph to a DataFrame with node names as index and periods as columns.</p>
+<p>Configuration options <code>recalculate</code> and <code>include_nodes</code> are controlled by
+the <code>DataFrameWriterConfig</code> object passed during initialization.</p>
+<p>Initialize the DataFrameWriter.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>Optional validated <code>DataFrameWriterConfig</code> instance.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.mixins.DataFrameBasedWriter" href="../core/mixins.html#fin_statement_model.io.core.mixins.DataFrameBasedWriter">DataFrameBasedWriter</a></li>
+<li><a title="fin_statement_model.io.core.mixins.ValueExtractionMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValueExtractionMixin">ValueExtractionMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.DataFrameWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: Any = None,<br>**kwargs: Any) ‑> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@handle_write_errors()
+def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;Convert the graph data to a pandas DataFrame based on instance configuration.
+
+    Args:
+        graph (Graph): The Graph instance to export.
+        target (Any): Ignored by this writer; the DataFrame is returned directly.
+        **kwargs: Optional runtime overrides of configured defaults:
+            recalculate (bool): Whether to recalculate graph before export.
+            include_nodes (list[str]): List of node names to include in export.
+
+    Returns:
+        pd.DataFrame: DataFrame with node names as index and periods as columns.
+
+    Raises:
+        WriteError: If an error occurs during conversion.
+    &#34;&#34;&#34;
+    # Runtime overrides: kwargs override configured defaults
+    recalculate = kwargs.get(&#34;recalculate&#34;, self.cfg.recalculate)
+    include_nodes = kwargs.get(&#34;include_nodes&#34;, self.cfg.include_nodes)
+
+    logger.info(&#34;Exporting graph to DataFrame format.&#34;)
+
+    # Handle recalculation if requested
+    if recalculate:
+        self._recalculate_graph(graph)
+
+    # Extract data using base class method
+    data = self.extract_graph_data(
+        graph, include_nodes=include_nodes, calculate=True
+    )
+
+    # Convert to DataFrame
+    periods = sorted(graph.periods) if graph.periods else []
+    df = pd.DataFrame.from_dict(data, orient=&#34;index&#34;, columns=periods)
+    df.index.name = &#34;node_name&#34;
+
+    logger.info(f&#34;Successfully exported {len(df)} nodes to DataFrame.&#34;)
+    return df</code></pre>
+</details>
+<div class="desc"><p>Convert the graph data to a pandas DataFrame based on instance configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong> :&ensp;<code>Graph</code></dt>
+<dd>The Graph instance to export.</dd>
+<dt><strong><code>target</code></strong> :&ensp;<code>Any</code></dt>
+<dd>Ignored by this writer; the DataFrame is returned directly.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Optional runtime overrides of configured defaults:
+recalculate (bool): Whether to recalculate graph before export.
+include_nodes (list[str]): List of node names to include in export.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>pd.DataFrame</code></dt>
+<dd>DataFrame with node names as index and periods as columns.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>WriteError</code></dt>
+<dd>If an error occurs during conversion.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.mixins.DataFrameBasedWriter" href="../core/mixins.html#fin_statement_model.io.core.mixins.DataFrameBasedWriter">DataFrameBasedWriter</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.DataFrameBasedWriter.extract_graph_data" href="../core/mixins.html#fin_statement_model.io.core.mixins.DataFrameBasedWriter.extract_graph_data">extract_graph_data</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.DataFrameBasedWriter.extract_node_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValueExtractionMixin.extract_node_value">extract_node_value</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.DictReader"><code class="flex name class">
+<span>class <span class="ident">DictReader</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.DictReaderConfig" href="../config/models.html#fin_statement_model.io.config.models.DictReaderConfig">DictReaderConfig</a> | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_reader(&#34;dict&#34;, schema=DictReaderConfig)
+class DictReader(DataReader):
+    &#34;&#34;&#34;Reads data from a Python dictionary to create a new Graph.
+
+    Expects a dictionary format: {node_name: {period: value, ...}, ...}
+    Creates FinancialStatementItemNode instances for each entry.
+
+    Note:
+        Configuration is handled via `DictReaderConfig` during initialization.
+        The `read()` method takes the source dictionary directly and an optional
+        `periods` keyword argument.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: Optional[DictReaderConfig] = None) -&gt; None:
+        &#34;&#34;&#34;Initialize the DictReader.
+
+        Args:
+            cfg: Optional validated `DictReaderConfig` instance.
+                 Currently unused but kept for registry symmetry and future options.
+        &#34;&#34;&#34;
+        self.cfg = cfg
+
+    def read(self, source: dict[str, dict[str, float]], **kwargs: Any) -&gt; Graph:
+        &#34;&#34;&#34;Create a new Graph from a dictionary.
+
+        Args:
+            source: Dictionary mapping node names to period-value dictionaries.
+                    Format: {node_name: {period: value, ...}, ...}
+            **kwargs: Optional runtime argument overriding config defaults:
+                periods (list[str], optional): List of periods to include. Overrides `cfg.periods`.
+
+        Returns:
+            A new Graph instance populated with FinancialStatementItemNodes.
+
+        Raises:
+            ReadError: If the source data format is invalid or processing fails.
+            # DataValidationError: If data values are not numeric.
+        &#34;&#34;&#34;
+        logger.info(&#34;Starting import from dictionary to create a new graph.&#34;)
+
+        if not isinstance(source, dict):
+            raise ReadError(
+                message=&#34;Invalid source type for DictReader. Expected dict.&#34;,
+                source=&#34;dict_input&#34;,
+                reader_type=&#34;DictReader&#34;,
+            )
+
+        # Validate data structure and collect all periods
+        all_periods = set()
+        validation_errors: list[str] = []
+        try:
+            for node_name, period_values in source.items():
+                if not isinstance(period_values, dict):
+                    validation_errors.append(
+                        f&#34;Node &#39;{node_name}&#39;: Invalid format - expected dict, got {type(period_values).__name__}&#34;
+                    )
+                    continue  # Skip further checks for this node
+                for period, value in period_values.items():
+                    # Basic type checks - can be expanded
+                    if not isinstance(period, str):
+                        validation_errors.append(
+                            f&#34;Node &#39;{node_name}&#39;: Invalid period format &#39;{period}&#39; - expected string.&#34;
+                        )
+                    if not isinstance(value, int | float):
+                        validation_errors.append(
+                            f&#34;Node &#39;{node_name}&#39; period &#39;{period}&#39;: Invalid value type {type(value).__name__} - expected number.&#34;
+                        )
+                    all_periods.add(str(period))
+
+            if validation_errors:
+                # Use core DataValidationError if it exists and is suitable
+                # Otherwise, stick to ReadError or a specific IOValidationError
+                # raise DataValidationError(
+                #     message=&#34;Input dictionary failed validation&#34;,
+                #     validation_errors=validation_errors
+                # )
+                raise ReadError(
+                    f&#34;Input dictionary failed validation: {&#39;; &#39;.join(validation_errors)}&#34;,
+                    source=&#34;dict_input&#34;,
+                    reader_type=&#34;DictReader&#34;,
+                )
+
+        except Exception as e:
+            # Catch unexpected validation errors
+            raise ReadError(
+                message=f&#34;Error validating input dictionary: {e}&#34;,
+                source=&#34;dict_input&#34;,
+                reader_type=&#34;DictReader&#34;,
+                original_error=e,
+            ) from e
+
+        # Determine graph periods: runtime kwargs override config defaults
+        graph_periods = kwargs.get(&#34;periods&#34;, self.cfg.periods if self.cfg else None)
+        if graph_periods is None:
+            graph_periods = sorted(list(all_periods))
+            logger.debug(f&#34;Inferred graph periods from data: {graph_periods}&#34;)
+        # Optional: Validate if all data periods are within the provided list
+        elif not all_periods.issubset(set(graph_periods)):
+            missing = all_periods - set(graph_periods)
+            logger.warning(
+                f&#34;Data contains periods not in specified graph periods: {missing}&#34;
+            )
+            # Decide whether to error or just ignore extra data
+
+        # Create graph and add nodes
+        try:
+            graph = Graph(periods=graph_periods)
+            for node_name, period_values in source.items():
+                # Filter values to only include those matching graph_periods
+                filtered_values = {
+                    p: v for p, v in period_values.items() if p in graph_periods
+                }
+                if filtered_values:
+                    # Create FinancialStatementItemNode directly
+                    # Assumes FinancialStatementItemNode takes name and values dict
+                    new_node = FinancialStatementItemNode(
+                        name=node_name, values=filtered_values.copy()
+                    )
+                    graph.add_node(new_node)
+                else:
+                    logger.debug(
+                        f&#34;Node &#39;{node_name}&#39; has no data for specified graph periods. Skipping.&#34;
+                    )
+
+            logger.info(
+                f&#34;Successfully created graph with {len(graph.nodes)} nodes from dictionary.&#34;
+            )
+            return graph
+
+        except Exception as e:
+            # Catch errors during graph/node creation
+            logger.error(f&#34;Failed to create graph from dictionary: {e}&#34;, exc_info=True)
+            raise ReadError(
+                message=&#34;Failed to build graph from dictionary data&#34;,
+                source=&#34;dict_input&#34;,
+                reader_type=&#34;DictReader&#34;,
+                original_error=e,
+            ) from e</code></pre>
+</details>
+<div class="desc"><p>Reads data from a Python dictionary to create a new Graph.</p>
+<p>Expects a dictionary format: {node_name: {period: value, &hellip;}, &hellip;}
+Creates FinancialStatementItemNode instances for each entry.</p>
+<h2 id="note">Note</h2>
+<p>Configuration is handled via <code>DictReaderConfig</code> during initialization.
+The <code>read()</code> method takes the source dictionary directly and an optional
+<code>periods</code> keyword argument.</p>
+<p>Initialize the DictReader.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>Optional validated <code>DictReaderConfig</code> instance.
+Currently unused but kept for registry symmetry and future options.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base.DataReader" href="../core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.DictReader.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self,<br>source: <a title="fin_statement_model.io.formats.dict" href="dict/index.html">fin_statement_model.io.formats.dict</a>[str, <a title="fin_statement_model.io.formats.dict" href="dict/index.html">fin_statement_model.io.formats.dict</a>[str, float]],<br>**kwargs: Any) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read(self, source: dict[str, dict[str, float]], **kwargs: Any) -&gt; Graph:
+    &#34;&#34;&#34;Create a new Graph from a dictionary.
+
+    Args:
+        source: Dictionary mapping node names to period-value dictionaries.
+                Format: {node_name: {period: value, ...}, ...}
+        **kwargs: Optional runtime argument overriding config defaults:
+            periods (list[str], optional): List of periods to include. Overrides `cfg.periods`.
+
+    Returns:
+        A new Graph instance populated with FinancialStatementItemNodes.
+
+    Raises:
+        ReadError: If the source data format is invalid or processing fails.
+        # DataValidationError: If data values are not numeric.
+    &#34;&#34;&#34;
+    logger.info(&#34;Starting import from dictionary to create a new graph.&#34;)
+
+    if not isinstance(source, dict):
+        raise ReadError(
+            message=&#34;Invalid source type for DictReader. Expected dict.&#34;,
+            source=&#34;dict_input&#34;,
+            reader_type=&#34;DictReader&#34;,
+        )
+
+    # Validate data structure and collect all periods
+    all_periods = set()
+    validation_errors: list[str] = []
+    try:
+        for node_name, period_values in source.items():
+            if not isinstance(period_values, dict):
+                validation_errors.append(
+                    f&#34;Node &#39;{node_name}&#39;: Invalid format - expected dict, got {type(period_values).__name__}&#34;
+                )
+                continue  # Skip further checks for this node
+            for period, value in period_values.items():
+                # Basic type checks - can be expanded
+                if not isinstance(period, str):
+                    validation_errors.append(
+                        f&#34;Node &#39;{node_name}&#39;: Invalid period format &#39;{period}&#39; - expected string.&#34;
+                    )
+                if not isinstance(value, int | float):
+                    validation_errors.append(
+                        f&#34;Node &#39;{node_name}&#39; period &#39;{period}&#39;: Invalid value type {type(value).__name__} - expected number.&#34;
+                    )
+                all_periods.add(str(period))
+
+        if validation_errors:
+            # Use core DataValidationError if it exists and is suitable
+            # Otherwise, stick to ReadError or a specific IOValidationError
+            # raise DataValidationError(
+            #     message=&#34;Input dictionary failed validation&#34;,
+            #     validation_errors=validation_errors
+            # )
+            raise ReadError(
+                f&#34;Input dictionary failed validation: {&#39;; &#39;.join(validation_errors)}&#34;,
+                source=&#34;dict_input&#34;,
+                reader_type=&#34;DictReader&#34;,
+            )
+
+    except Exception as e:
+        # Catch unexpected validation errors
+        raise ReadError(
+            message=f&#34;Error validating input dictionary: {e}&#34;,
+            source=&#34;dict_input&#34;,
+            reader_type=&#34;DictReader&#34;,
+            original_error=e,
+        ) from e
+
+    # Determine graph periods: runtime kwargs override config defaults
+    graph_periods = kwargs.get(&#34;periods&#34;, self.cfg.periods if self.cfg else None)
+    if graph_periods is None:
+        graph_periods = sorted(list(all_periods))
+        logger.debug(f&#34;Inferred graph periods from data: {graph_periods}&#34;)
+    # Optional: Validate if all data periods are within the provided list
+    elif not all_periods.issubset(set(graph_periods)):
+        missing = all_periods - set(graph_periods)
+        logger.warning(
+            f&#34;Data contains periods not in specified graph periods: {missing}&#34;
+        )
+        # Decide whether to error or just ignore extra data
+
+    # Create graph and add nodes
+    try:
+        graph = Graph(periods=graph_periods)
+        for node_name, period_values in source.items():
+            # Filter values to only include those matching graph_periods
+            filtered_values = {
+                p: v for p, v in period_values.items() if p in graph_periods
+            }
+            if filtered_values:
+                # Create FinancialStatementItemNode directly
+                # Assumes FinancialStatementItemNode takes name and values dict
+                new_node = FinancialStatementItemNode(
+                    name=node_name, values=filtered_values.copy()
+                )
+                graph.add_node(new_node)
+            else:
+                logger.debug(
+                    f&#34;Node &#39;{node_name}&#39; has no data for specified graph periods. Skipping.&#34;
+                )
+
+        logger.info(
+            f&#34;Successfully created graph with {len(graph.nodes)} nodes from dictionary.&#34;
+        )
+        return graph
+
+    except Exception as e:
+        # Catch errors during graph/node creation
+        logger.error(f&#34;Failed to create graph from dictionary: {e}&#34;, exc_info=True)
+        raise ReadError(
+            message=&#34;Failed to build graph from dictionary data&#34;,
+            source=&#34;dict_input&#34;,
+            reader_type=&#34;DictReader&#34;,
+            original_error=e,
+        ) from e</code></pre>
+</details>
+<div class="desc"><p>Create a new Graph from a dictionary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source</code></strong></dt>
+<dd>Dictionary mapping node names to period-value dictionaries.
+Format: {node_name: {period: value, &hellip;}, &hellip;}</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Optional runtime argument overriding config defaults:
+periods (list[str], optional): List of periods to include. Overrides <code>cfg.periods</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A new Graph instance populated with FinancialStatementItemNodes.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If the source data format is invalid or processing fails.</dd>
+</dl>
+<h1 id="datavalidationerror-if-data-values-are-not-numeric">DataValidationError: If data values are not numeric.</h1></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.formats.DictWriter"><code class="flex name class">
+<span>class <span class="ident">DictWriter</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.DictWriterConfig" href="../config/models.html#fin_statement_model.io.config.models.DictWriterConfig">DictWriterConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_writer(&#34;dict&#34;, schema=DictWriterConfig)  # type: ignore[arg-type]
+class DictWriter(DataFrameBasedWriter, ConfigurationMixin):
+    &#34;&#34;&#34;Writes graph data to a Python dictionary.
+
+    Extracts values for each node and period in the graph, attempting to
+    calculate values where possible.
+
+    Initialized via `DictWriterConfig` (typically by the `write_data` facade),
+    although the config currently has no options.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: DictWriterConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the DictWriter.
+
+        Args:
+            cfg: Validated `DictWriterConfig` instance.
+        &#34;&#34;&#34;
+        super().__init__()
+        self.cfg = cfg
+
+    @handle_write_errors()
+    def write(
+        self, graph: Graph, target: Any = None, **kwargs: dict[str, Any]
+    ) -&gt; dict[str, dict[str, float]]:
+        &#34;&#34;&#34;Export calculated data from all graph nodes to a dictionary.
+
+        Args:
+            graph (Graph): The Graph instance to export data from.
+            target (Any): Ignored by this writer; the dictionary is returned directly.
+            **kwargs: Currently unused.
+
+        Returns:
+            Dict[str, Dict[str, float]]: Mapping node names to period-value dicts.
+                                         Includes values for all nodes in the graph
+                                         for all defined periods. NaN represents
+                                         uncalculable values.
+
+        Raises:
+            WriteError: If an unexpected error occurs during export.
+        &#34;&#34;&#34;
+        logger.info(f&#34;Starting export of graph &#39;{graph}&#39; to dictionary format.&#34;)
+
+        if not graph.periods:
+            logger.warning(
+                &#34;Graph has no periods defined. Exported dictionary will be empty.&#34;
+            )
+            return {}
+
+        # Use base class method to extract all data
+        # This handles calculation attempts and error handling consistently
+        result = self.extract_graph_data(graph, include_nodes=None, calculate=True)
+
+        logger.info(f&#34;Successfully exported {len(result)} nodes to dictionary.&#34;)
+        return result</code></pre>
+</details>
+<div class="desc"><p>Writes graph data to a Python dictionary.</p>
+<p>Extracts values for each node and period in the graph, attempting to
+calculate values where possible.</p>
+<p>Initialized via <code>DictWriterConfig</code> (typically by the <code>write_data</code> facade),
+although the config currently has no options.</p>
+<p>Initialize the DictWriter.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>Validated <code>DictWriterConfig</code> instance.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.mixins.DataFrameBasedWriter" href="../core/mixins.html#fin_statement_model.io.core.mixins.DataFrameBasedWriter">DataFrameBasedWriter</a></li>
+<li><a title="fin_statement_model.io.core.mixins.ValueExtractionMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValueExtractionMixin">ValueExtractionMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.DictWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: Any = None,<br>**kwargs: <a title="fin_statement_model.io.formats.dict" href="dict/index.html">fin_statement_model.io.formats.dict</a>[str, typing.Any]) ‑> <a title="fin_statement_model.io.formats.dict" href="dict/index.html">fin_statement_model.io.formats.dict</a>[str, <a title="fin_statement_model.io.formats.dict" href="dict/index.html">fin_statement_model.io.formats.dict</a>[str, float]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@handle_write_errors()
+def write(
+    self, graph: Graph, target: Any = None, **kwargs: dict[str, Any]
+) -&gt; dict[str, dict[str, float]]:
+    &#34;&#34;&#34;Export calculated data from all graph nodes to a dictionary.
+
+    Args:
+        graph (Graph): The Graph instance to export data from.
+        target (Any): Ignored by this writer; the dictionary is returned directly.
+        **kwargs: Currently unused.
+
+    Returns:
+        Dict[str, Dict[str, float]]: Mapping node names to period-value dicts.
+                                     Includes values for all nodes in the graph
+                                     for all defined periods. NaN represents
+                                     uncalculable values.
+
+    Raises:
+        WriteError: If an unexpected error occurs during export.
+    &#34;&#34;&#34;
+    logger.info(f&#34;Starting export of graph &#39;{graph}&#39; to dictionary format.&#34;)
+
+    if not graph.periods:
+        logger.warning(
+            &#34;Graph has no periods defined. Exported dictionary will be empty.&#34;
+        )
+        return {}
+
+    # Use base class method to extract all data
+    # This handles calculation attempts and error handling consistently
+    result = self.extract_graph_data(graph, include_nodes=None, calculate=True)
+
+    logger.info(f&#34;Successfully exported {len(result)} nodes to dictionary.&#34;)
+    return result</code></pre>
+</details>
+<div class="desc"><p>Export calculated data from all graph nodes to a dictionary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong> :&ensp;<code>Graph</code></dt>
+<dd>The Graph instance to export data from.</dd>
+<dt><strong><code>target</code></strong> :&ensp;<code>Any</code></dt>
+<dd>Ignored by this writer; the dictionary is returned directly.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Currently unused.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, Dict[str, float]]</code></dt>
+<dd>Mapping node names to period-value dicts.
+Includes values for all nodes in the graph
+for all defined periods. NaN represents
+uncalculable values.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>WriteError</code></dt>
+<dd>If an unexpected error occurs during export.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.mixins.DataFrameBasedWriter" href="../core/mixins.html#fin_statement_model.io.core.mixins.DataFrameBasedWriter">DataFrameBasedWriter</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.DataFrameBasedWriter.extract_graph_data" href="../core/mixins.html#fin_statement_model.io.core.mixins.DataFrameBasedWriter.extract_graph_data">extract_graph_data</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.DataFrameBasedWriter.extract_node_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValueExtractionMixin.extract_node_value">extract_node_value</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.ExcelReader"><code class="flex name class">
+<span>class <span class="ident">ExcelReader</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.ExcelReaderConfig" href="../config/models.html#fin_statement_model.io.config.models.ExcelReaderConfig">ExcelReaderConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_reader(&#34;excel&#34;, schema=ExcelReaderConfig)
+class ExcelReader(
+    FileBasedReader, ConfigurationMixin, MappingAwareMixin, ValidationMixin
+):
+    &#34;&#34;&#34;Reads financial statement data from an Excel file into a Graph.
+
+    Expects data in a tabular format where rows typically represent items
+    and columns represent periods, or vice-versa.
+    Requires specifying sheet name, period identification, and item identification.
+
+    Configuration (sheet_name, items_col, periods_row, mapping_config) is passed
+    via an `ExcelReaderConfig` object during initialization (typically by the `read_data` facade).
+    Method-specific options (`statement_type`, `header_row`, `nrows`, `skiprows`)
+    are passed as keyword arguments to the `read()` method.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: ExcelReaderConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the ExcelReader with validated configuration.
+
+        Args:
+            cfg: A validated `ExcelReaderConfig` instance containing parameters like
+                 `source`, `sheet_name`, `items_col`, `periods_row`, and `mapping_config`.
+        &#34;&#34;&#34;
+        self.cfg = cfg
+
+    @handle_read_errors()
+    def read(self, source: str, **kwargs: Any) -&gt; Graph:
+        &#34;&#34;&#34;Read data from an Excel file sheet into a new Graph based on instance config.
+
+        Args:
+            source (str): Path to the Excel file.
+            **kwargs: Optional runtime keyword arguments overriding configured defaults:
+                statement_type (str): Type of statement (&#39;income_statement&#39;, &#39;balance_sheet&#39;, &#39;cash_flow&#39;).
+                header_row (int): 1-based index for pandas header reading.
+                nrows (int): Number of rows to read from the sheet.
+                skiprows (int): Number of rows to skip at the beginning.
+
+        Returns:
+            A new Graph instance populated with FinancialStatementItemNodes.
+
+        Raises:
+            ReadError: If the file cannot be read or the configuration is invalid.
+        &#34;&#34;&#34;
+        file_path = source
+        logger.info(f&#34;Starting import from Excel file: {file_path}&#34;)
+
+        # Use base class validation
+        self.validate_file_exists(file_path)
+        self.validate_file_extension(file_path, (&#34;.xls&#34;, &#34;.xlsx&#34;, &#34;.xlsm&#34;))
+
+        # Set configuration context for better error reporting
+        self.set_config_context(file_path=file_path, operation=&#34;read&#34;)
+
+        # Get configuration values with validation
+        sheet_name = self.require_config_value(&#34;sheet_name&#34;, value_type=str)
+        periods_row = self.require_config_value(
+            &#34;periods_row&#34;, value_type=int, validator=lambda x: x &gt;= 1
+        )
+        items_col = self.require_config_value(
+            &#34;items_col&#34;, value_type=int, validator=lambda x: x &gt;= 1
+        )
+
+        # Runtime options: kwargs override config defaults
+        statement_type = kwargs.get(&#34;statement_type&#34;, self.cfg.statement_type)
+        header_row = kwargs.get(&#34;header_row&#34;, self.cfg.header_row or periods_row)
+        nrows = kwargs.get(&#34;nrows&#34;, self.cfg.nrows)
+        skiprows = kwargs.get(&#34;skiprows&#34;, self.cfg.skiprows)
+
+        # Get mapping
+        mapping = self._get_mapping(statement_type)
+        logger.debug(f&#34;Using mapping for statement type &#39;{statement_type}&#39;: {mapping}&#34;)
+
+        # Read Excel data
+        df, period_headers = self._read_excel_data(
+            file_path, sheet_name, periods_row, items_col, header_row, nrows, skiprows
+        )
+
+        # Extract periods
+        graph_periods = self._extract_periods(period_headers, items_col)
+
+        # Create and populate graph
+        return self._create_graph(
+            df, graph_periods, items_col, mapping, file_path, sheet_name
+        )
+
+    def _read_excel_data(
+        self,
+        file_path: str,
+        sheet_name: str,
+        periods_row: int,
+        items_col: int,
+        header_row: int,
+        nrows: Optional[int],
+        skiprows: Optional[int],
+    ) -&gt; tuple[pd.DataFrame, list[str]]:
+        &#34;&#34;&#34;Read Excel file and extract data and period headers.&#34;&#34;&#34;
+        # Convert to 0-based indices for pandas
+        periods_row_0idx = periods_row - 1
+        items_col_0idx = items_col - 1
+        header_row_0idx = header_row - 1
+
+        # Read the main data
+        df = pd.read_excel(
+            file_path,
+            sheet_name=sheet_name,
+            header=header_row_0idx,
+            skiprows=skiprows,
+            nrows=nrows,
+        )
+
+        # Get period headers
+        if header_row_0idx != periods_row_0idx:
+            # Read periods row separately if different from header
+            periods_df = pd.read_excel(
+                file_path,
+                sheet_name=sheet_name,
+                header=None,
+                skiprows=periods_row_0idx,
+                nrows=1,
+            )
+            period_headers = periods_df.iloc[0].astype(str).tolist()
+        else:
+            # Periods are in the main header row
+            period_headers = df.columns.astype(str).tolist()
+
+        # Validate items column index using ValidationMixin
+        self.validate_column_bounds(
+            df, items_col_0idx, file_path, f&#34;items_col ({items_col})&#34;
+        )
+
+        return df, period_headers
+
+    def _extract_periods(self, period_headers: list[str], items_col: int) -&gt; list[str]:
+        &#34;&#34;&#34;Extract valid period names from headers.&#34;&#34;&#34;
+        items_col_0idx = items_col - 1
+
+        # Filter period headers: exclude the item column and empty values
+        graph_periods = [
+            p
+            for i, p in enumerate(period_headers)
+            if i &gt; items_col_0idx and p and p.strip()
+        ]
+
+        # Validate periods using ValidationMixin
+        self.validate_periods_exist(graph_periods, &#34;Excel file&#34;)
+
+        logger.info(f&#34;Identified periods: {graph_periods}&#34;)
+        return graph_periods
+
+    def _create_graph(
+        self,
+        df: pd.DataFrame,
+        graph_periods: list[str],
+        items_col: int,
+        mapping: dict[str, str],
+        file_path: str,
+        sheet_name: str,
+    ) -&gt; Graph:
+        &#34;&#34;&#34;Create and populate the graph from DataFrame.&#34;&#34;&#34;
+        items_col_0idx = items_col - 1
+        graph = Graph(periods=graph_periods)
+
+        # Use validation collector
+        validator = ValidationResultCollector()
+        nodes_added = 0
+
+        for index, row in df.iterrows():
+            # Get item name
+            item_name_excel = row.iloc[items_col_0idx]
+            if pd.isna(item_name_excel) or not item_name_excel:
+                continue
+
+            item_name_excel = str(item_name_excel).strip()
+            node_name = self._apply_mapping(item_name_excel, mapping)
+
+            # Extract values for all periods
+            period_values = self._extract_row_values(
+                row, df, graph_periods, node_name, item_name_excel, index, validator
+            )
+
+            if period_values:
+                if graph.has_node(node_name):
+                    logger.warning(
+                        f&#34;Node &#39;{node_name}&#39; (from Excel item &#39;{item_name_excel}&#39;) already exists. &#34;
+                        &#34;Overwriting data is not standard for readers.&#34;
+                    )
+                else:
+                    new_node = FinancialStatementItemNode(
+                        name=node_name, values=period_values
+                    )
+                    graph.add_node(new_node)
+                    nodes_added += 1
+
+        # Check for validation errors
+        if validator.has_errors():
+            summary = validator.get_summary()
+            raise ReadError(
+                f&#34;Validation errors occurred while reading {file_path} sheet &#39;{sheet_name}&#39;: &#34;
+                f&#34;{&#39;; &#39;.join(summary[&#39;errors&#39;])}&#34;,
+                source=file_path,
+                reader_type=self.__class__.__name__,
+            )
+
+        logger.info(
+            f&#34;Successfully created graph with {nodes_added} nodes from {file_path} sheet &#39;{sheet_name}&#39;.&#34;
+        )
+        return graph
+
+    def _extract_row_values(
+        self,
+        row: pd.Series,
+        df: pd.DataFrame,
+        graph_periods: list[str],
+        node_name: str,
+        item_name_excel: str,
+        row_index: int,
+        validator: ValidationResultCollector,
+    ) -&gt; dict[str, float]:
+        &#34;&#34;&#34;Extract period values from a row with validation.&#34;&#34;&#34;
+        period_values: dict[str, float] = {}
+
+        for period in graph_periods:
+            if period not in df.columns:
+                logger.warning(
+                    f&#34;Period header &#39;{period}&#39; not found in DataFrame columns for row {row_index}.&#34;
+                )
+                continue
+
+            value = row[period]
+
+            if pd.isna(value):
+                continue  # Skip NaN values
+
+            # Use ValidationMixin for numeric validation
+            is_valid, converted_value = self.validate_numeric_value(
+                value, node_name, period, validator, allow_conversion=True
+            )
+
+            if is_valid and converted_value is not None:
+                period_values[period] = converted_value
+
+        return period_values</code></pre>
+</details>
+<div class="desc"><p>Reads financial statement data from an Excel file into a Graph.</p>
+<p>Expects data in a tabular format where rows typically represent items
+and columns represent periods, or vice-versa.
+Requires specifying sheet name, period identification, and item identification.</p>
+<p>Configuration (sheet_name, items_col, periods_row, mapping_config) is passed
+via an <code>ExcelReaderConfig</code> object during initialization (typically by the <code>read_data</code> facade).
+Method-specific options (<code>statement_type</code>, <code>header_row</code>, <code>nrows</code>, <code>skiprows</code>)
+are passed as keyword arguments to the <code>read()</code> method.</p>
+<p>Initialize the ExcelReader with validated configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>A validated <code>ExcelReaderConfig</code> instance containing parameters like
+<code>source</code>, <code>sheet_name</code>, <code>items_col</code>, <code>periods_row</code>, and <code>mapping_config</code>.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.mixins.FileBasedReader" href="../core/mixins.html#fin_statement_model.io.core.mixins.FileBasedReader">FileBasedReader</a></li>
+<li><a title="fin_statement_model.io.core.base.DataReader" href="../core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li>abc.ABC</li>
+<li><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.MappingAwareMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.MappingAwareMixin">MappingAwareMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.ValidationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin">ValidationMixin</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.ExcelReader.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self, source: str, **kwargs: Any) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@handle_read_errors()
+def read(self, source: str, **kwargs: Any) -&gt; Graph:
+    &#34;&#34;&#34;Read data from an Excel file sheet into a new Graph based on instance config.
+
+    Args:
+        source (str): Path to the Excel file.
+        **kwargs: Optional runtime keyword arguments overriding configured defaults:
+            statement_type (str): Type of statement (&#39;income_statement&#39;, &#39;balance_sheet&#39;, &#39;cash_flow&#39;).
+            header_row (int): 1-based index for pandas header reading.
+            nrows (int): Number of rows to read from the sheet.
+            skiprows (int): Number of rows to skip at the beginning.
+
+    Returns:
+        A new Graph instance populated with FinancialStatementItemNodes.
+
+    Raises:
+        ReadError: If the file cannot be read or the configuration is invalid.
+    &#34;&#34;&#34;
+    file_path = source
+    logger.info(f&#34;Starting import from Excel file: {file_path}&#34;)
+
+    # Use base class validation
+    self.validate_file_exists(file_path)
+    self.validate_file_extension(file_path, (&#34;.xls&#34;, &#34;.xlsx&#34;, &#34;.xlsm&#34;))
+
+    # Set configuration context for better error reporting
+    self.set_config_context(file_path=file_path, operation=&#34;read&#34;)
+
+    # Get configuration values with validation
+    sheet_name = self.require_config_value(&#34;sheet_name&#34;, value_type=str)
+    periods_row = self.require_config_value(
+        &#34;periods_row&#34;, value_type=int, validator=lambda x: x &gt;= 1
+    )
+    items_col = self.require_config_value(
+        &#34;items_col&#34;, value_type=int, validator=lambda x: x &gt;= 1
+    )
+
+    # Runtime options: kwargs override config defaults
+    statement_type = kwargs.get(&#34;statement_type&#34;, self.cfg.statement_type)
+    header_row = kwargs.get(&#34;header_row&#34;, self.cfg.header_row or periods_row)
+    nrows = kwargs.get(&#34;nrows&#34;, self.cfg.nrows)
+    skiprows = kwargs.get(&#34;skiprows&#34;, self.cfg.skiprows)
+
+    # Get mapping
+    mapping = self._get_mapping(statement_type)
+    logger.debug(f&#34;Using mapping for statement type &#39;{statement_type}&#39;: {mapping}&#34;)
+
+    # Read Excel data
+    df, period_headers = self._read_excel_data(
+        file_path, sheet_name, periods_row, items_col, header_row, nrows, skiprows
+    )
+
+    # Extract periods
+    graph_periods = self._extract_periods(period_headers, items_col)
+
+    # Create and populate graph
+    return self._create_graph(
+        df, graph_periods, items_col, mapping, file_path, sheet_name
+    )</code></pre>
+</details>
+<div class="desc"><p>Read data from an Excel file sheet into a new Graph based on instance config.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the Excel file.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Optional runtime keyword arguments overriding configured defaults:
+statement_type (str): Type of statement ('income_statement', 'balance_sheet', 'cash_flow').
+header_row (int): 1-based index for pandas header reading.
+nrows (int): Number of rows to read from the sheet.
+skiprows (int): Number of rows to skip at the beginning.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A new Graph instance populated with FinancialStatementItemNodes.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If the file cannot be read or the configuration is invalid.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.mixins.FileBasedReader" href="../core/mixins.html#fin_statement_model.io.core.mixins.FileBasedReader">FileBasedReader</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.FileBasedReader.validate_file_exists" href="../core/mixins.html#fin_statement_model.io.core.mixins.FileBasedReader.validate_file_exists">validate_file_exists</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.FileBasedReader.validate_file_extension" href="../core/mixins.html#fin_statement_model.io.core.mixins.FileBasedReader.validate_file_extension">validate_file_extension</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="fin_statement_model.io.core.mixins.ValidationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin">ValidationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.create_validation_summary" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.create_validation_summary">create_validation_summary</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.get_validation_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.get_validation_context">get_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.set_validation_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.set_validation_context">set_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_column_bounds" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_column_bounds">validate_column_bounds</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_node_name" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_node_name">validate_node_name</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_numeric_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_numeric_value">validate_numeric_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_periods_exist" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_periods_exist">validate_periods_exist</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_required_columns" href="../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_required_columns">validate_required_columns</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.ExcelWriter"><code class="flex name class">
+<span>class <span class="ident">ExcelWriter</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.ExcelWriterConfig" href="../config/models.html#fin_statement_model.io.config.models.ExcelWriterConfig">ExcelWriterConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_writer(&#34;excel&#34;, schema=ExcelWriterConfig)
+class ExcelWriter(DataWriter, ConfigurationMixin):
+    &#34;&#34;&#34;Writes graph data to an Excel file.
+
+    Converts the graph data to a pandas DataFrame first (using `DataFrameWriter`),
+    then writes that DataFrame to an Excel file using `pandas.to_excel()`.
+
+    Configuration (sheet_name, recalculate, include_nodes, excel_writer_kwargs) is
+    provided via an `ExcelWriterConfig` object during initialization.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: ExcelWriterConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the ExcelWriter.
+
+        Args:
+            cfg: Non-optional validated `ExcelWriterConfig` instance.
+        &#34;&#34;&#34;
+        super().__init__()
+        self.cfg = cfg
+
+    @handle_write_errors()
+    def write(self, graph: Graph, target: str, **kwargs: Any) -&gt; None:
+        &#34;&#34;&#34;Write graph data to an Excel file, converting via DataFrame first.
+
+        Args:
+            graph (Graph): The Graph object containing the data to write.
+            target (str): Path to the target Excel file.
+            **kwargs: Optional runtime overrides of configured defaults:
+                sheet_name (str): Excel sheet name.
+                recalculate (bool): Whether to recalculate graph before export.
+                include_nodes (list[str]): List of node names to include in export.
+                excel_writer_kwargs (dict): Additional kwargs for pandas.DataFrame.to_excel.
+
+        Raises:
+            WriteError: If an error occurs during the writing process.
+        &#34;&#34;&#34;
+        file_path = target
+
+        # Runtime overrides: kwargs override configured defaults
+        sheet_name = kwargs.get(&#34;sheet_name&#34;, self.cfg.sheet_name)
+        recalculate = kwargs.get(&#34;recalculate&#34;, self.cfg.recalculate)
+        include_nodes = kwargs.get(&#34;include_nodes&#34;, self.cfg.include_nodes)
+        excel_writer_options = kwargs.get(
+            &#34;excel_writer_kwargs&#34;, self.cfg.excel_writer_kwargs
+        )
+
+        logger.info(f&#34;Exporting graph to Excel file: {file_path}, sheet: {sheet_name}&#34;)
+
+        # Convert graph to DataFrame
+        df = self._create_dataframe(graph, recalculate, include_nodes)
+
+        # Write DataFrame to Excel
+        self._write_to_excel(df, file_path, sheet_name, excel_writer_options)
+
+        logger.info(f&#34;Successfully exported graph to {file_path}, sheet &#39;{sheet_name}&#39;&#34;)
+
+    def _create_dataframe(
+        self, graph: Graph, recalculate: bool, include_nodes: Optional[list[str]]
+    ) -&gt; Any:
+        &#34;&#34;&#34;Convert graph to DataFrame using DataFrameWriter.
+
+        Args:
+            graph: The graph to convert.
+            recalculate: Whether to recalculate before export.
+            include_nodes: Optional list of nodes to include.
+
+        Returns:
+            pandas DataFrame with the graph data.
+        &#34;&#34;&#34;
+        # Create a config for DataFrameWriter
+        df_config = DataFrameWriterConfig(
+            target=None,
+            format_type=&#34;dataframe&#34;,
+            recalculate=recalculate,
+            include_nodes=include_nodes,
+        )
+
+        df_writer = DataFrameWriter(df_config)
+        return df_writer.write(graph=graph, target=None)
+
+    def _write_to_excel(
+        self,
+        df: Any,
+        file_path: str,
+        sheet_name: str,
+        excel_writer_options: dict[str, Any],
+    ) -&gt; None:
+        &#34;&#34;&#34;Write DataFrame to Excel file.
+
+        Args:
+            df: The pandas DataFrame to write.
+            file_path: Path to the output file.
+            sheet_name: Name of the Excel sheet.
+            excel_writer_options: Additional options for pandas.to_excel().
+        &#34;&#34;&#34;
+        output_path = Path(file_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        df.to_excel(
+            output_path,
+            sheet_name=sheet_name,
+            index=True,  # Keep node names as index column
+            **excel_writer_options,
+        )</code></pre>
+</details>
+<div class="desc"><p>Writes graph data to an Excel file.</p>
+<p>Converts the graph data to a pandas DataFrame first (using <code><a title="fin_statement_model.io.formats.DataFrameWriter" href="#fin_statement_model.io.formats.DataFrameWriter">DataFrameWriter</a></code>),
+then writes that DataFrame to an Excel file using <code>pandas.to_excel()</code>.</p>
+<p>Configuration (sheet_name, recalculate, include_nodes, excel_writer_kwargs) is
+provided via an <code>ExcelWriterConfig</code> object during initialization.</p>
+<p>Initialize the ExcelWriter.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>Non-optional validated <code>ExcelWriterConfig</code> instance.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base.DataWriter" href="../core/base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a></li>
+<li>abc.ABC</li>
+<li><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.ExcelWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: str,<br>**kwargs: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@handle_write_errors()
+def write(self, graph: Graph, target: str, **kwargs: Any) -&gt; None:
+    &#34;&#34;&#34;Write graph data to an Excel file, converting via DataFrame first.
+
+    Args:
+        graph (Graph): The Graph object containing the data to write.
+        target (str): Path to the target Excel file.
+        **kwargs: Optional runtime overrides of configured defaults:
+            sheet_name (str): Excel sheet name.
+            recalculate (bool): Whether to recalculate graph before export.
+            include_nodes (list[str]): List of node names to include in export.
+            excel_writer_kwargs (dict): Additional kwargs for pandas.DataFrame.to_excel.
+
+    Raises:
+        WriteError: If an error occurs during the writing process.
+    &#34;&#34;&#34;
+    file_path = target
+
+    # Runtime overrides: kwargs override configured defaults
+    sheet_name = kwargs.get(&#34;sheet_name&#34;, self.cfg.sheet_name)
+    recalculate = kwargs.get(&#34;recalculate&#34;, self.cfg.recalculate)
+    include_nodes = kwargs.get(&#34;include_nodes&#34;, self.cfg.include_nodes)
+    excel_writer_options = kwargs.get(
+        &#34;excel_writer_kwargs&#34;, self.cfg.excel_writer_kwargs
+    )
+
+    logger.info(f&#34;Exporting graph to Excel file: {file_path}, sheet: {sheet_name}&#34;)
+
+    # Convert graph to DataFrame
+    df = self._create_dataframe(graph, recalculate, include_nodes)
+
+    # Write DataFrame to Excel
+    self._write_to_excel(df, file_path, sheet_name, excel_writer_options)
+
+    logger.info(f&#34;Successfully exported graph to {file_path}, sheet &#39;{sheet_name}&#39;&#34;)</code></pre>
+</details>
+<div class="desc"><p>Write graph data to an Excel file, converting via DataFrame first.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong> :&ensp;<code>Graph</code></dt>
+<dd>The Graph object containing the data to write.</dd>
+<dt><strong><code>target</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the target Excel file.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Optional runtime overrides of configured defaults:
+sheet_name (str): Excel sheet name.
+recalculate (bool): Whether to recalculate graph before export.
+include_nodes (list[str]): List of node names to include in export.
+excel_writer_kwargs (dict): Additional kwargs for pandas.DataFrame.to_excel.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>WriteError</code></dt>
+<dd>If an error occurs during the writing process.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.FmpReader"><code class="flex name class">
+<span>class <span class="ident">FmpReader</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.FmpReaderConfig" href="../config/models.html#fin_statement_model.io.config.models.FmpReaderConfig">FmpReaderConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_reader(&#34;fmp&#34;, schema=FmpReaderConfig)
+class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
+    &#34;&#34;&#34;Reads financial statement data from the FMP API into a Graph.
+
+    Fetches data for a specific ticker and statement type.
+    Requires an API key, either passed directly or via the FMP_API_KEY env var.
+
+    Supports a `mapping_config` constructor parameter for mapping API field names to canonical node names,
+    accepting either a flat mapping or a statement-type keyed mapping.
+
+    Configuration (api_key, statement_type, period_type, limit, mapping_config)
+    is passed via an `FmpReaderConfig` object during initialization (typically by
+    the `read_data` facade). The `.read()` method currently takes no specific
+    keyword arguments beyond the `source` (ticker).
+
+    Stateful Use:
+        For advanced use cases involving repeated API calls, consider instantiating
+        and reusing a single `FmpReader` instance to avoid redundant API key
+        validations and improve performance.
+    &#34;&#34;&#34;
+
+    BASE_URL = &#34;https://financialmodelingprep.com/api/v3&#34;
+
+    @classmethod
+    def _get_default_mapping_path(cls) -&gt; Optional[str]:
+        &#34;&#34;&#34;Specify the default mapping file for FMP.&#34;&#34;&#34;
+        return &#34;fmp_default_mappings.yaml&#34;
+
+    def __init__(self, cfg: FmpReaderConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the FmpReader with validated configuration.
+
+        Args:
+            cfg: A validated `FmpReaderConfig` instance containing parameters like
+                 `source` (ticker), `api_key`, `statement_type`, `period_type`,
+                 `limit`, and `mapping_config`.
+        &#34;&#34;&#34;
+        # Initialise mixins to set up configuration context and mapping caches.
+        ConfigurationMixin.__init__(self)
+        MappingAwareMixin.__init__(self)  # currently a no-op but future-proof
+
+        self.cfg = cfg
+
+    def _validate_api_key(self, api_key: str) -&gt; None:
+        &#34;&#34;&#34;Perform a simple check if the provided API key is valid.&#34;&#34;&#34;
+        if not api_key:
+            raise ReadError(
+                &#34;FMP API key is required for reading.&#34;,
+                source=&#34;FMP API&#34;,
+                reader_type=&#34;FmpReader&#34;,
+            )
+        try:
+            # Use a cheap endpoint for validation
+            test_url = f&#34;{self.BASE_URL}/profile/AAPL?apikey={api_key}&#34;  # Example
+            response = requests.get(test_url, timeout=cfg(&#34;api.api_timeout&#34;))
+            response.raise_for_status()
+            if not response.json():
+                raise ReadError(
+                    &#34;API key validation returned empty response.&#34;,
+                    source=&#34;FMP API&#34;,
+                    reader_type=&#34;FmpReader&#34;,
+                )
+            logger.debug(&#34;FMP API key validated successfully.&#34;)
+        except requests.exceptions.RequestException as e:
+            logger.error(f&#34;FMP API key validation failed: {e}&#34;, exc_info=True)
+            raise ReadError(
+                f&#34;FMP API key validation failed: {e}&#34;,
+                source=&#34;FMP API&#34;,
+                reader_type=&#34;FmpReader&#34;,
+                original_error=e,
+            )
+
+    def read(self, source: str, **kwargs: Any) -&gt; Graph:
+        &#34;&#34;&#34;Fetch data from FMP API and return a Graph.
+
+        Args:
+            source (str): The stock ticker symbol (e.g., &#34;AAPL&#34;).
+            **kwargs: Optional runtime arguments overriding config defaults:
+                statement_type (str): Type of statement to fetch (&#39;income_statement&#39;, &#39;balance_sheet&#39;, &#39;cash_flow&#39;).
+                period_type (str): Period type (&#39;FY&#39; or &#39;QTR&#39;).
+                limit (int): Number of periods to fetch.
+                api_key (str): API key for FMP, overrides env or config value.
+
+        Returns:
+            A new Graph instance populated with FinancialStatementItemNodes.
+
+        Raises:
+            ReadError: If API key is missing/invalid, API request fails, or data format is unexpected.
+        &#34;&#34;&#34;
+        ticker = source
+
+        # Set configuration context for better error reporting
+        self.set_config_context(ticker=ticker, operation=&#34;api_read&#34;)
+
+        # Runtime overrides: kwargs override configuration defaults
+        statement_type = kwargs.get(&#34;statement_type&#34;, self.cfg.statement_type)
+        period_type_arg = kwargs.get(&#34;period_type&#34;, self.cfg.period_type)
+        limit = kwargs.get(&#34;limit&#34;, self.cfg.limit)
+        # Handle API key override or fallback to validated config
+        api_key = (
+            kwargs.get(&#34;api_key&#34;)
+            if kwargs.get(&#34;api_key&#34;) is not None
+            else self.cfg.api_key
+        )
+
+        # --- Validate Inputs ---
+        if not ticker or not isinstance(ticker, str):
+            raise ReadError(
+                &#34;Invalid source (ticker) provided. Expected a non-empty string.&#34;,
+                source=ticker,
+                reader_type=&#34;FmpReader&#34;,
+            )
+        # statement_type and period_type are validated by FmpReaderConfig
+
+        # Validate API key (using any override)
+        self._validate_api_key(cast(str, api_key))
+
+        # Determine mapping for this operation, allowing override via kwargs
+        try:
+            mapping = self._get_mapping(statement_type)
+        except TypeError as te:
+            raise ReadError(
+                &#34;Invalid mapping_config provided.&#34;,
+                source=ticker,
+                reader_type=&#34;FmpReader&#34;,
+                original_error=te,
+            )
+        logger.debug(f&#34;Using mapping for {ticker} {statement_type}: {mapping}&#34;)
+
+        # --- Fetch API Data ---
+        # Correct endpoint construction based on FMP v3 docs
+        # e.g., /income-statement/AAPL, not /income_statement-statement/AAPL
+        endpoint_path = statement_type.replace(&#34;_&#34;, &#34;-&#34;)
+        endpoint = f&#34;{self.BASE_URL}/{endpoint_path}/{ticker}&#34;
+        params = {&#34;apikey&#34;: api_key, &#34;limit&#34;: limit}
+        if period_type_arg == &#34;QTR&#34;:
+            params[&#34;period&#34;] = &#34;quarter&#34;
+
+        try:
+            logger.info(
+                f&#34;Fetching {period_type_arg} {statement_type} for {ticker} from FMP API (limit={limit}).&#34;
+            )
+            response = requests.get(
+                endpoint, params=params, timeout=cfg(&#34;api.api_timeout&#34;)
+            )
+            response.raise_for_status()  # Check for HTTP errors
+            api_data = response.json()
+
+            if not isinstance(api_data, list):
+                raise ReadError(
+                    f&#34;Unexpected API response format. Expected list, got {type(api_data)}. Response: {str(api_data)[:100]}...&#34;,
+                    source=f&#34;FMP API ({ticker})&#34;,
+                    reader_type=&#34;FmpReader&#34;,
+                )
+            if not api_data:
+                logger.warning(
+                    f&#34;FMP API returned empty list for {ticker} {statement_type}.&#34;
+                )
+                # Return empty graph or raise? Returning empty for now.
+                return Graph(periods=[])
+
+        except requests.exceptions.RequestException as e:
+            logger.error(
+                f&#34;FMP API request failed for {ticker} {statement_type}: {e}&#34;,
+                exc_info=True,
+            )
+            raise ReadError(
+                f&#34;FMP API request failed: {e}&#34;,
+                source=f&#34;FMP API ({ticker})&#34;,
+                reader_type=&#34;FmpReader&#34;,
+                original_error=e,
+            )
+        except Exception as e:
+            logger.error(f&#34;Failed to process FMP API response: {e}&#34;, exc_info=True)
+            raise ReadError(
+                f&#34;Failed to process FMP API response: {e}&#34;,
+                source=f&#34;FMP API ({ticker})&#34;,
+                reader_type=&#34;FmpReader&#34;,
+                original_error=e,
+            )
+
+        # --- Process Data and Populate Graph ---
+        try:
+            # FMP data is usually newest first, reverse to process chronologically
+            api_data.reverse()
+
+            # Extract periods (e.g., &#39;date&#39; or &#39;fillingDate&#39;)
+            # Using &#39;date&#39; as it usually represents the period end date
+            periods = [item.get(&#34;date&#34;) for item in api_data if item.get(&#34;date&#34;)]
+            if not periods:
+                raise ReadError(
+                    &#34;Could not extract periods (&#39;date&#39; field) from FMP API response.&#34;,
+                    source=f&#34;FMP API ({ticker})&#34;,
+                    reader_type=&#34;FmpReader&#34;,
+                )
+
+            graph = Graph(periods=periods)
+            all_item_data: dict[str, dict[str, float]] = {}
+
+            # Collect data for all items across all periods
+            for period_data in api_data:
+                period = period_data.get(&#34;date&#34;)
+                if not period:
+                    continue  # Skip records without a date
+
+                for api_field, value in period_data.items():
+                    node_name = self._apply_mapping(api_field, mapping)
+
+                    # Initialize node data dict if first time seeing this node
+                    if node_name not in all_item_data:
+                        all_item_data[node_name] = {
+                            p: np.nan for p in periods
+                        }  # Pre-fill with NaN
+
+                    # Store value for this period
+                    if isinstance(value, int | float):
+                        all_item_data[node_name][period] = float(value)
+
+            # Create nodes from collected data
+            nodes_added = 0
+            for node_name, period_values in all_item_data.items():
+                # Filter out periods that only have NaN
+                valid_period_values = {
+                    p: v for p, v in period_values.items() if not np.isnan(v)
+                }
+                if valid_period_values:
+                    new_node = FinancialStatementItemNode(
+                        name=node_name, values=valid_period_values
+                    )
+                    graph.add_node(new_node)
+                    nodes_added += 1
+
+            logger.info(
+                f&#34;Successfully created graph with {nodes_added} nodes from FMP API for {ticker} {statement_type}.&#34;
+            )
+            return graph
+
+        except Exception as e:
+            logger.error(
+                f&#34;Failed to parse FMP data and build graph: {e}&#34;, exc_info=True
+            )
+            raise ReadError(
+                message=f&#34;Failed to parse FMP data: {e}&#34;,
+                source=f&#34;FMP API ({ticker})&#34;,
+                reader_type=&#34;FmpReader&#34;,
+                original_error=e,
+            ) from e</code></pre>
+</details>
+<div class="desc"><p>Reads financial statement data from the FMP API into a Graph.</p>
+<p>Fetches data for a specific ticker and statement type.
+Requires an API key, either passed directly or via the FMP_API_KEY env var.</p>
+<p>Supports a <code>mapping_config</code> constructor parameter for mapping API field names to canonical node names,
+accepting either a flat mapping or a statement-type keyed mapping.</p>
+<p>Configuration (api_key, statement_type, period_type, limit, mapping_config)
+is passed via an <code>FmpReaderConfig</code> object during initialization (typically by
+the <code>read_data</code> facade). The <code>.read()</code> method currently takes no specific
+keyword arguments beyond the <code>source</code> (ticker).</p>
+<p>Stateful Use:
+For advanced use cases involving repeated API calls, consider instantiating
+and reusing a single <code><a title="fin_statement_model.io.formats.FmpReader" href="#fin_statement_model.io.formats.FmpReader">FmpReader</a></code> instance to avoid redundant API key
+validations and improve performance.</p>
+<p>Initialize the FmpReader with validated configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>A validated <code>FmpReaderConfig</code> instance containing parameters like
+<code>source</code> (ticker), <code>api_key</code>, <code>statement_type</code>, <code>period_type</code>,
+<code>limit</code>, and <code>mapping_config</code>.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base.DataReader" href="../core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li>abc.ABC</li>
+<li><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.MappingAwareMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.MappingAwareMixin">MappingAwareMixin</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.FmpReader.BASE_URL"><code class="name">var <span class="ident">BASE_URL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.FmpReader.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self, source: str, **kwargs: Any) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read(self, source: str, **kwargs: Any) -&gt; Graph:
+    &#34;&#34;&#34;Fetch data from FMP API and return a Graph.
+
+    Args:
+        source (str): The stock ticker symbol (e.g., &#34;AAPL&#34;).
+        **kwargs: Optional runtime arguments overriding config defaults:
+            statement_type (str): Type of statement to fetch (&#39;income_statement&#39;, &#39;balance_sheet&#39;, &#39;cash_flow&#39;).
+            period_type (str): Period type (&#39;FY&#39; or &#39;QTR&#39;).
+            limit (int): Number of periods to fetch.
+            api_key (str): API key for FMP, overrides env or config value.
+
+    Returns:
+        A new Graph instance populated with FinancialStatementItemNodes.
+
+    Raises:
+        ReadError: If API key is missing/invalid, API request fails, or data format is unexpected.
+    &#34;&#34;&#34;
+    ticker = source
+
+    # Set configuration context for better error reporting
+    self.set_config_context(ticker=ticker, operation=&#34;api_read&#34;)
+
+    # Runtime overrides: kwargs override configuration defaults
+    statement_type = kwargs.get(&#34;statement_type&#34;, self.cfg.statement_type)
+    period_type_arg = kwargs.get(&#34;period_type&#34;, self.cfg.period_type)
+    limit = kwargs.get(&#34;limit&#34;, self.cfg.limit)
+    # Handle API key override or fallback to validated config
+    api_key = (
+        kwargs.get(&#34;api_key&#34;)
+        if kwargs.get(&#34;api_key&#34;) is not None
+        else self.cfg.api_key
+    )
+
+    # --- Validate Inputs ---
+    if not ticker or not isinstance(ticker, str):
+        raise ReadError(
+            &#34;Invalid source (ticker) provided. Expected a non-empty string.&#34;,
+            source=ticker,
+            reader_type=&#34;FmpReader&#34;,
+        )
+    # statement_type and period_type are validated by FmpReaderConfig
+
+    # Validate API key (using any override)
+    self._validate_api_key(cast(str, api_key))
+
+    # Determine mapping for this operation, allowing override via kwargs
+    try:
+        mapping = self._get_mapping(statement_type)
+    except TypeError as te:
+        raise ReadError(
+            &#34;Invalid mapping_config provided.&#34;,
+            source=ticker,
+            reader_type=&#34;FmpReader&#34;,
+            original_error=te,
+        )
+    logger.debug(f&#34;Using mapping for {ticker} {statement_type}: {mapping}&#34;)
+
+    # --- Fetch API Data ---
+    # Correct endpoint construction based on FMP v3 docs
+    # e.g., /income-statement/AAPL, not /income_statement-statement/AAPL
+    endpoint_path = statement_type.replace(&#34;_&#34;, &#34;-&#34;)
+    endpoint = f&#34;{self.BASE_URL}/{endpoint_path}/{ticker}&#34;
+    params = {&#34;apikey&#34;: api_key, &#34;limit&#34;: limit}
+    if period_type_arg == &#34;QTR&#34;:
+        params[&#34;period&#34;] = &#34;quarter&#34;
+
+    try:
+        logger.info(
+            f&#34;Fetching {period_type_arg} {statement_type} for {ticker} from FMP API (limit={limit}).&#34;
+        )
+        response = requests.get(
+            endpoint, params=params, timeout=cfg(&#34;api.api_timeout&#34;)
+        )
+        response.raise_for_status()  # Check for HTTP errors
+        api_data = response.json()
+
+        if not isinstance(api_data, list):
+            raise ReadError(
+                f&#34;Unexpected API response format. Expected list, got {type(api_data)}. Response: {str(api_data)[:100]}...&#34;,
+                source=f&#34;FMP API ({ticker})&#34;,
+                reader_type=&#34;FmpReader&#34;,
+            )
+        if not api_data:
+            logger.warning(
+                f&#34;FMP API returned empty list for {ticker} {statement_type}.&#34;
+            )
+            # Return empty graph or raise? Returning empty for now.
+            return Graph(periods=[])
+
+    except requests.exceptions.RequestException as e:
+        logger.error(
+            f&#34;FMP API request failed for {ticker} {statement_type}: {e}&#34;,
+            exc_info=True,
+        )
+        raise ReadError(
+            f&#34;FMP API request failed: {e}&#34;,
+            source=f&#34;FMP API ({ticker})&#34;,
+            reader_type=&#34;FmpReader&#34;,
+            original_error=e,
+        )
+    except Exception as e:
+        logger.error(f&#34;Failed to process FMP API response: {e}&#34;, exc_info=True)
+        raise ReadError(
+            f&#34;Failed to process FMP API response: {e}&#34;,
+            source=f&#34;FMP API ({ticker})&#34;,
+            reader_type=&#34;FmpReader&#34;,
+            original_error=e,
+        )
+
+    # --- Process Data and Populate Graph ---
+    try:
+        # FMP data is usually newest first, reverse to process chronologically
+        api_data.reverse()
+
+        # Extract periods (e.g., &#39;date&#39; or &#39;fillingDate&#39;)
+        # Using &#39;date&#39; as it usually represents the period end date
+        periods = [item.get(&#34;date&#34;) for item in api_data if item.get(&#34;date&#34;)]
+        if not periods:
+            raise ReadError(
+                &#34;Could not extract periods (&#39;date&#39; field) from FMP API response.&#34;,
+                source=f&#34;FMP API ({ticker})&#34;,
+                reader_type=&#34;FmpReader&#34;,
+            )
+
+        graph = Graph(periods=periods)
+        all_item_data: dict[str, dict[str, float]] = {}
+
+        # Collect data for all items across all periods
+        for period_data in api_data:
+            period = period_data.get(&#34;date&#34;)
+            if not period:
+                continue  # Skip records without a date
+
+            for api_field, value in period_data.items():
+                node_name = self._apply_mapping(api_field, mapping)
+
+                # Initialize node data dict if first time seeing this node
+                if node_name not in all_item_data:
+                    all_item_data[node_name] = {
+                        p: np.nan for p in periods
+                    }  # Pre-fill with NaN
+
+                # Store value for this period
+                if isinstance(value, int | float):
+                    all_item_data[node_name][period] = float(value)
+
+        # Create nodes from collected data
+        nodes_added = 0
+        for node_name, period_values in all_item_data.items():
+            # Filter out periods that only have NaN
+            valid_period_values = {
+                p: v for p, v in period_values.items() if not np.isnan(v)
+            }
+            if valid_period_values:
+                new_node = FinancialStatementItemNode(
+                    name=node_name, values=valid_period_values
+                )
+                graph.add_node(new_node)
+                nodes_added += 1
+
+        logger.info(
+            f&#34;Successfully created graph with {nodes_added} nodes from FMP API for {ticker} {statement_type}.&#34;
+        )
+        return graph
+
+    except Exception as e:
+        logger.error(
+            f&#34;Failed to parse FMP data and build graph: {e}&#34;, exc_info=True
+        )
+        raise ReadError(
+            message=f&#34;Failed to parse FMP data: {e}&#34;,
+            source=f&#34;FMP API ({ticker})&#34;,
+            reader_type=&#34;FmpReader&#34;,
+            original_error=e,
+        ) from e</code></pre>
+</details>
+<div class="desc"><p>Fetch data from FMP API and return a Graph.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source</code></strong> :&ensp;<code>str</code></dt>
+<dd>The stock ticker symbol (e.g., "AAPL").</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Optional runtime arguments overriding config defaults:
+statement_type (str): Type of statement to fetch ('income_statement', 'balance_sheet', 'cash_flow').
+period_type (str): Period type ('FY' or 'QTR').
+limit (int): Number of periods to fetch.
+api_key (str): API key for FMP, overrides env or config value.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A new Graph instance populated with FinancialStatementItemNodes.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If API key is missing/invalid, API request fails, or data format is unexpected.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration" href="../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.MarkdownWriter"><code class="flex name class">
+<span>class <span class="ident">MarkdownWriter</span></span>
+<span>(</span><span>config: <a title="fin_statement_model.io.config.models.MarkdownWriterConfig" href="../config/models.html#fin_statement_model.io.config.models.MarkdownWriterConfig">MarkdownWriterConfig</a> | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_writer(&#34;markdown&#34;, schema=MarkdownWriterConfig)
+class MarkdownWriter(DataWriter):
+    &#34;&#34;&#34;Writes a financial statement structure to a Markdown table.&#34;&#34;&#34;
+
+    def __init__(self, config: Optional[MarkdownWriterConfig] = None):
+        &#34;&#34;&#34;Initializes the MarkdownWriter.&#34;&#34;&#34;
+        # Provide a default config; missing fields are handled by Pydantic defaults.
+        self.config = config or MarkdownWriterConfig(
+            format_type=&#34;markdown&#34;,
+            target=None,  # type: ignore[call-arg]
+        )
+        logger.debug(f&#34;Initialized MarkdownWriter with config: {self.config}&#34;)
+
+    def _format_value(self, value: Union[float, int, str, None]) -&gt; str:
+        &#34;&#34;&#34;Formats the value for display in the table.&#34;&#34;&#34;
+        if value is None:
+            return &#34;&#34;
+        if isinstance(value, float | int):
+            # Basic number formatting, could be enhanced (e.g., commas)
+            return f&#34;{value:,.2f}&#34; if isinstance(value, float) else str(value)
+        return str(value)
+
+    def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; str:
+        &#34;&#34;&#34;Write financial statement to markdown.
+
+        Args:
+            graph: The Graph object containing the financial data.
+            target: Ignored by this writer (returns string).
+            **kwargs: Additional options including:
+                - statement_structure: The StatementStructure to render
+
+        Returns:
+            String containing the formatted statement in Markdown.
+
+        Raises:
+            WriteError: If &#39;statement_structure&#39; is not provided.
+        &#34;&#34;&#34;
+        logger.info(
+            f&#34;Writing graph to Markdown format (target ignored: {target}) using kwargs: {kwargs.keys()}&#34;
+        )
+
+        try:
+            statement_structure = kwargs.get(&#34;statement_structure&#34;)
+
+            if statement_structure is None:
+                raise WriteError(&#34;Must provide &#39;statement_structure&#39; argument.&#34;)
+
+            filtered_kwargs = {
+                k: v for k, v in kwargs.items() if k != &#34;statement_structure&#34;
+            }
+            return self._write_with_structure(
+                graph, statement_structure, **filtered_kwargs
+            )
+        except NotImplementedError as nie:
+            logger.exception(&#34;Markdown write failed&#34;)
+            raise WriteError(
+                message=f&#34;Markdown writer requires graph traversal logic: {nie}&#34;,
+                target=target,
+                writer_type=&#34;markdown&#34;,
+                original_error=nie,
+            ) from nie
+        except Exception as e:
+            logger.exception(&#34;Error writing Markdown for graph&#34;, exc_info=True)
+            raise WriteError(
+                message=f&#34;Failed to generate Markdown table: {e}&#34;,
+                target=target,
+                writer_type=&#34;markdown&#34;,
+                original_error=e,
+            ) from e
+
+    def _write_with_structure(
+        self, graph: Graph, statement_structure: StatementStructure, **kwargs: Any
+    ) -&gt; str:
+        &#34;&#34;&#34;Write using the new StatementStructure approach.
+
+        Args:
+            graph: The Graph object containing financial data.
+            statement_structure: The StatementStructure to render.
+            **kwargs: Additional options.
+
+        Returns:
+            Formatted markdown string.
+        &#34;&#34;&#34;
+        # Use renderer to process structure
+        renderer = MarkdownStatementRenderer(graph, self.config.indent_spaces)
+        items = renderer.render_structure(
+            statement_structure,
+            historical_periods=set(kwargs.get(&#34;historical_periods&#34;, [])),
+            forecast_periods=set(kwargs.get(&#34;forecast_periods&#34;, [])),
+        )
+
+        if not items:
+            logger.warning(&#34;No statement items generated from structure.&#34;)
+            return &#34;&#34;
+
+        # Format into markdown table
+        formatter = MarkdownTableFormatter(self.config.indent_spaces)
+        table_lines = formatter.format_table(
+            items,
+            periods=renderer.periods,
+            historical_periods=kwargs.get(&#34;historical_periods&#34;),
+            forecast_periods=kwargs.get(&#34;forecast_periods&#34;),
+        )
+
+        # Add notes sections
+        notes_builder = MarkdownNotesBuilder()
+        notes_lines = notes_builder.build_notes(
+            graph=graph,
+            forecast_configs=kwargs.get(&#34;forecast_configs&#34;),
+            adjustment_filter=kwargs.get(&#34;adjustment_filter&#34;),
+        )
+
+        return &#34;\n&#34;.join(table_lines + notes_lines)</code></pre>
+</details>
+<div class="desc"><p>Writes a financial statement structure to a Markdown table.</p>
+<p>Initializes the MarkdownWriter.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base.DataWriter" href="../core/base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.MarkdownWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: Any = None,<br>**kwargs: Any) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; str:
+    &#34;&#34;&#34;Write financial statement to markdown.
+
+    Args:
+        graph: The Graph object containing the financial data.
+        target: Ignored by this writer (returns string).
+        **kwargs: Additional options including:
+            - statement_structure: The StatementStructure to render
+
+    Returns:
+        String containing the formatted statement in Markdown.
+
+    Raises:
+        WriteError: If &#39;statement_structure&#39; is not provided.
+    &#34;&#34;&#34;
+    logger.info(
+        f&#34;Writing graph to Markdown format (target ignored: {target}) using kwargs: {kwargs.keys()}&#34;
+    )
+
+    try:
+        statement_structure = kwargs.get(&#34;statement_structure&#34;)
+
+        if statement_structure is None:
+            raise WriteError(&#34;Must provide &#39;statement_structure&#39; argument.&#34;)
+
+        filtered_kwargs = {
+            k: v for k, v in kwargs.items() if k != &#34;statement_structure&#34;
+        }
+        return self._write_with_structure(
+            graph, statement_structure, **filtered_kwargs
+        )
+    except NotImplementedError as nie:
+        logger.exception(&#34;Markdown write failed&#34;)
+        raise WriteError(
+            message=f&#34;Markdown writer requires graph traversal logic: {nie}&#34;,
+            target=target,
+            writer_type=&#34;markdown&#34;,
+            original_error=nie,
+        ) from nie
+    except Exception as e:
+        logger.exception(&#34;Error writing Markdown for graph&#34;, exc_info=True)
+        raise WriteError(
+            message=f&#34;Failed to generate Markdown table: {e}&#34;,
+            target=target,
+            writer_type=&#34;markdown&#34;,
+            original_error=e,
+        ) from e</code></pre>
+</details>
+<div class="desc"><p>Write financial statement to markdown.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The Graph object containing the financial data.</dd>
+<dt><strong><code>target</code></strong></dt>
+<dd>Ignored by this writer (returns string).</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional options including:
+- statement_structure: The StatementStructure to render</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>String containing the formatted statement in Markdown.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>WriteError</code></dt>
+<dd>If 'statement_structure' is not provided.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.io" href="../index.html">fin_statement_model.io</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.io.formats.api" href="api/index.html">fin_statement_model.io.formats.api</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.csv" href="csv/index.html">fin_statement_model.io.formats.csv</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.dataframe" href="dataframe/index.html">fin_statement_model.io.formats.dataframe</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.dict" href="dict/index.html">fin_statement_model.io.formats.dict</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.excel" href="excel/index.html">fin_statement_model.io.formats.excel</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.markdown" href="markdown/index.html">fin_statement_model.io.formats.markdown</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.CsvReader" href="#fin_statement_model.io.formats.CsvReader">CsvReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.CsvReader.read" href="#fin_statement_model.io.formats.CsvReader.read">read</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.DataFrameReader" href="#fin_statement_model.io.formats.DataFrameReader">DataFrameReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.DataFrameReader.read" href="#fin_statement_model.io.formats.DataFrameReader.read">read</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.DataFrameWriter" href="#fin_statement_model.io.formats.DataFrameWriter">DataFrameWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.DataFrameWriter.write" href="#fin_statement_model.io.formats.DataFrameWriter.write">write</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.DictReader" href="#fin_statement_model.io.formats.DictReader">DictReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.DictReader.read" href="#fin_statement_model.io.formats.DictReader.read">read</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.DictWriter" href="#fin_statement_model.io.formats.DictWriter">DictWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.DictWriter.write" href="#fin_statement_model.io.formats.DictWriter.write">write</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.ExcelReader" href="#fin_statement_model.io.formats.ExcelReader">ExcelReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.ExcelReader.read" href="#fin_statement_model.io.formats.ExcelReader.read">read</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.ExcelWriter" href="#fin_statement_model.io.formats.ExcelWriter">ExcelWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.ExcelWriter.write" href="#fin_statement_model.io.formats.ExcelWriter.write">write</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.FmpReader" href="#fin_statement_model.io.formats.FmpReader">FmpReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.FmpReader.BASE_URL" href="#fin_statement_model.io.formats.FmpReader.BASE_URL">BASE_URL</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.FmpReader.read" href="#fin_statement_model.io.formats.FmpReader.read">read</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.MarkdownWriter" href="#fin_statement_model.io.formats.MarkdownWriter">MarkdownWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.MarkdownWriter.write" href="#fin_statement_model.io.formats.MarkdownWriter.write">write</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.io.formats.excel API documentation</title>
+<meta name="description" content="Excel format IO operations.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.io.formats.excel</code></h1>
+</header>
+<section id="section-intro">
+<p>Excel format IO operations.</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.io.formats.excel.reader" href="reader.html">fin_statement_model.io.formats.excel.reader</a></code></dt>
+<dd>
+<div class="desc"><p>Data reader for Excel files.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats.excel.writer" href="writer.html">fin_statement_model.io.formats.excel.writer</a></code></dt>
+<dd>
+<div class="desc"><p>Data writer for Excel files.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.io.formats.excel.ExcelReader"><code class="flex name class">
+<span>class <span class="ident">ExcelReader</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.ExcelReaderConfig" href="../../config/models.html#fin_statement_model.io.config.models.ExcelReaderConfig">ExcelReaderConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_reader(&#34;excel&#34;, schema=ExcelReaderConfig)
+class ExcelReader(
+    FileBasedReader, ConfigurationMixin, MappingAwareMixin, ValidationMixin
+):
+    &#34;&#34;&#34;Reads financial statement data from an Excel file into a Graph.
+
+    Expects data in a tabular format where rows typically represent items
+    and columns represent periods, or vice-versa.
+    Requires specifying sheet name, period identification, and item identification.
+
+    Configuration (sheet_name, items_col, periods_row, mapping_config) is passed
+    via an `ExcelReaderConfig` object during initialization (typically by the `read_data` facade).
+    Method-specific options (`statement_type`, `header_row`, `nrows`, `skiprows`)
+    are passed as keyword arguments to the `read()` method.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: ExcelReaderConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the ExcelReader with validated configuration.
+
+        Args:
+            cfg: A validated `ExcelReaderConfig` instance containing parameters like
+                 `source`, `sheet_name`, `items_col`, `periods_row`, and `mapping_config`.
+        &#34;&#34;&#34;
+        self.cfg = cfg
+
+    @handle_read_errors()
+    def read(self, source: str, **kwargs: Any) -&gt; Graph:
+        &#34;&#34;&#34;Read data from an Excel file sheet into a new Graph based on instance config.
+
+        Args:
+            source (str): Path to the Excel file.
+            **kwargs: Optional runtime keyword arguments overriding configured defaults:
+                statement_type (str): Type of statement (&#39;income_statement&#39;, &#39;balance_sheet&#39;, &#39;cash_flow&#39;).
+                header_row (int): 1-based index for pandas header reading.
+                nrows (int): Number of rows to read from the sheet.
+                skiprows (int): Number of rows to skip at the beginning.
+
+        Returns:
+            A new Graph instance populated with FinancialStatementItemNodes.
+
+        Raises:
+            ReadError: If the file cannot be read or the configuration is invalid.
+        &#34;&#34;&#34;
+        file_path = source
+        logger.info(f&#34;Starting import from Excel file: {file_path}&#34;)
+
+        # Use base class validation
+        self.validate_file_exists(file_path)
+        self.validate_file_extension(file_path, (&#34;.xls&#34;, &#34;.xlsx&#34;, &#34;.xlsm&#34;))
+
+        # Set configuration context for better error reporting
+        self.set_config_context(file_path=file_path, operation=&#34;read&#34;)
+
+        # Get configuration values with validation
+        sheet_name = self.require_config_value(&#34;sheet_name&#34;, value_type=str)
+        periods_row = self.require_config_value(
+            &#34;periods_row&#34;, value_type=int, validator=lambda x: x &gt;= 1
+        )
+        items_col = self.require_config_value(
+            &#34;items_col&#34;, value_type=int, validator=lambda x: x &gt;= 1
+        )
+
+        # Runtime options: kwargs override config defaults
+        statement_type = kwargs.get(&#34;statement_type&#34;, self.cfg.statement_type)
+        header_row = kwargs.get(&#34;header_row&#34;, self.cfg.header_row or periods_row)
+        nrows = kwargs.get(&#34;nrows&#34;, self.cfg.nrows)
+        skiprows = kwargs.get(&#34;skiprows&#34;, self.cfg.skiprows)
+
+        # Get mapping
+        mapping = self._get_mapping(statement_type)
+        logger.debug(f&#34;Using mapping for statement type &#39;{statement_type}&#39;: {mapping}&#34;)
+
+        # Read Excel data
+        df, period_headers = self._read_excel_data(
+            file_path, sheet_name, periods_row, items_col, header_row, nrows, skiprows
+        )
+
+        # Extract periods
+        graph_periods = self._extract_periods(period_headers, items_col)
+
+        # Create and populate graph
+        return self._create_graph(
+            df, graph_periods, items_col, mapping, file_path, sheet_name
+        )
+
+    def _read_excel_data(
+        self,
+        file_path: str,
+        sheet_name: str,
+        periods_row: int,
+        items_col: int,
+        header_row: int,
+        nrows: Optional[int],
+        skiprows: Optional[int],
+    ) -&gt; tuple[pd.DataFrame, list[str]]:
+        &#34;&#34;&#34;Read Excel file and extract data and period headers.&#34;&#34;&#34;
+        # Convert to 0-based indices for pandas
+        periods_row_0idx = periods_row - 1
+        items_col_0idx = items_col - 1
+        header_row_0idx = header_row - 1
+
+        # Read the main data
+        df = pd.read_excel(
+            file_path,
+            sheet_name=sheet_name,
+            header=header_row_0idx,
+            skiprows=skiprows,
+            nrows=nrows,
+        )
+
+        # Get period headers
+        if header_row_0idx != periods_row_0idx:
+            # Read periods row separately if different from header
+            periods_df = pd.read_excel(
+                file_path,
+                sheet_name=sheet_name,
+                header=None,
+                skiprows=periods_row_0idx,
+                nrows=1,
+            )
+            period_headers = periods_df.iloc[0].astype(str).tolist()
+        else:
+            # Periods are in the main header row
+            period_headers = df.columns.astype(str).tolist()
+
+        # Validate items column index using ValidationMixin
+        self.validate_column_bounds(
+            df, items_col_0idx, file_path, f&#34;items_col ({items_col})&#34;
+        )
+
+        return df, period_headers
+
+    def _extract_periods(self, period_headers: list[str], items_col: int) -&gt; list[str]:
+        &#34;&#34;&#34;Extract valid period names from headers.&#34;&#34;&#34;
+        items_col_0idx = items_col - 1
+
+        # Filter period headers: exclude the item column and empty values
+        graph_periods = [
+            p
+            for i, p in enumerate(period_headers)
+            if i &gt; items_col_0idx and p and p.strip()
+        ]
+
+        # Validate periods using ValidationMixin
+        self.validate_periods_exist(graph_periods, &#34;Excel file&#34;)
+
+        logger.info(f&#34;Identified periods: {graph_periods}&#34;)
+        return graph_periods
+
+    def _create_graph(
+        self,
+        df: pd.DataFrame,
+        graph_periods: list[str],
+        items_col: int,
+        mapping: dict[str, str],
+        file_path: str,
+        sheet_name: str,
+    ) -&gt; Graph:
+        &#34;&#34;&#34;Create and populate the graph from DataFrame.&#34;&#34;&#34;
+        items_col_0idx = items_col - 1
+        graph = Graph(periods=graph_periods)
+
+        # Use validation collector
+        validator = ValidationResultCollector()
+        nodes_added = 0
+
+        for index, row in df.iterrows():
+            # Get item name
+            item_name_excel = row.iloc[items_col_0idx]
+            if pd.isna(item_name_excel) or not item_name_excel:
+                continue
+
+            item_name_excel = str(item_name_excel).strip()
+            node_name = self._apply_mapping(item_name_excel, mapping)
+
+            # Extract values for all periods
+            period_values = self._extract_row_values(
+                row, df, graph_periods, node_name, item_name_excel, index, validator
+            )
+
+            if period_values:
+                if graph.has_node(node_name):
+                    logger.warning(
+                        f&#34;Node &#39;{node_name}&#39; (from Excel item &#39;{item_name_excel}&#39;) already exists. &#34;
+                        &#34;Overwriting data is not standard for readers.&#34;
+                    )
+                else:
+                    new_node = FinancialStatementItemNode(
+                        name=node_name, values=period_values
+                    )
+                    graph.add_node(new_node)
+                    nodes_added += 1
+
+        # Check for validation errors
+        if validator.has_errors():
+            summary = validator.get_summary()
+            raise ReadError(
+                f&#34;Validation errors occurred while reading {file_path} sheet &#39;{sheet_name}&#39;: &#34;
+                f&#34;{&#39;; &#39;.join(summary[&#39;errors&#39;])}&#34;,
+                source=file_path,
+                reader_type=self.__class__.__name__,
+            )
+
+        logger.info(
+            f&#34;Successfully created graph with {nodes_added} nodes from {file_path} sheet &#39;{sheet_name}&#39;.&#34;
+        )
+        return graph
+
+    def _extract_row_values(
+        self,
+        row: pd.Series,
+        df: pd.DataFrame,
+        graph_periods: list[str],
+        node_name: str,
+        item_name_excel: str,
+        row_index: int,
+        validator: ValidationResultCollector,
+    ) -&gt; dict[str, float]:
+        &#34;&#34;&#34;Extract period values from a row with validation.&#34;&#34;&#34;
+        period_values: dict[str, float] = {}
+
+        for period in graph_periods:
+            if period not in df.columns:
+                logger.warning(
+                    f&#34;Period header &#39;{period}&#39; not found in DataFrame columns for row {row_index}.&#34;
+                )
+                continue
+
+            value = row[period]
+
+            if pd.isna(value):
+                continue  # Skip NaN values
+
+            # Use ValidationMixin for numeric validation
+            is_valid, converted_value = self.validate_numeric_value(
+                value, node_name, period, validator, allow_conversion=True
+            )
+
+            if is_valid and converted_value is not None:
+                period_values[period] = converted_value
+
+        return period_values</code></pre>
+</details>
+<div class="desc"><p>Reads financial statement data from an Excel file into a Graph.</p>
+<p>Expects data in a tabular format where rows typically represent items
+and columns represent periods, or vice-versa.
+Requires specifying sheet name, period identification, and item identification.</p>
+<p>Configuration (sheet_name, items_col, periods_row, mapping_config) is passed
+via an <code>ExcelReaderConfig</code> object during initialization (typically by the <code>read_data</code> facade).
+Method-specific options (<code>statement_type</code>, <code>header_row</code>, <code>nrows</code>, <code>skiprows</code>)
+are passed as keyword arguments to the <code>read()</code> method.</p>
+<p>Initialize the ExcelReader with validated configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>A validated <code>ExcelReaderConfig</code> instance containing parameters like
+<code>source</code>, <code>sheet_name</code>, <code>items_col</code>, <code>periods_row</code>, and <code>mapping_config</code>.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.mixins.FileBasedReader" href="../../core/mixins.html#fin_statement_model.io.core.mixins.FileBasedReader">FileBasedReader</a></li>
+<li><a title="fin_statement_model.io.core.base.DataReader" href="../../core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li>abc.ABC</li>
+<li><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.MappingAwareMixin" href="../../core/mixins.html#fin_statement_model.io.core.mixins.MappingAwareMixin">MappingAwareMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.ValidationMixin" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin">ValidationMixin</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.excel.ExcelReader.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self, source: str, **kwargs: Any) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@handle_read_errors()
+def read(self, source: str, **kwargs: Any) -&gt; Graph:
+    &#34;&#34;&#34;Read data from an Excel file sheet into a new Graph based on instance config.
+
+    Args:
+        source (str): Path to the Excel file.
+        **kwargs: Optional runtime keyword arguments overriding configured defaults:
+            statement_type (str): Type of statement (&#39;income_statement&#39;, &#39;balance_sheet&#39;, &#39;cash_flow&#39;).
+            header_row (int): 1-based index for pandas header reading.
+            nrows (int): Number of rows to read from the sheet.
+            skiprows (int): Number of rows to skip at the beginning.
+
+    Returns:
+        A new Graph instance populated with FinancialStatementItemNodes.
+
+    Raises:
+        ReadError: If the file cannot be read or the configuration is invalid.
+    &#34;&#34;&#34;
+    file_path = source
+    logger.info(f&#34;Starting import from Excel file: {file_path}&#34;)
+
+    # Use base class validation
+    self.validate_file_exists(file_path)
+    self.validate_file_extension(file_path, (&#34;.xls&#34;, &#34;.xlsx&#34;, &#34;.xlsm&#34;))
+
+    # Set configuration context for better error reporting
+    self.set_config_context(file_path=file_path, operation=&#34;read&#34;)
+
+    # Get configuration values with validation
+    sheet_name = self.require_config_value(&#34;sheet_name&#34;, value_type=str)
+    periods_row = self.require_config_value(
+        &#34;periods_row&#34;, value_type=int, validator=lambda x: x &gt;= 1
+    )
+    items_col = self.require_config_value(
+        &#34;items_col&#34;, value_type=int, validator=lambda x: x &gt;= 1
+    )
+
+    # Runtime options: kwargs override config defaults
+    statement_type = kwargs.get(&#34;statement_type&#34;, self.cfg.statement_type)
+    header_row = kwargs.get(&#34;header_row&#34;, self.cfg.header_row or periods_row)
+    nrows = kwargs.get(&#34;nrows&#34;, self.cfg.nrows)
+    skiprows = kwargs.get(&#34;skiprows&#34;, self.cfg.skiprows)
+
+    # Get mapping
+    mapping = self._get_mapping(statement_type)
+    logger.debug(f&#34;Using mapping for statement type &#39;{statement_type}&#39;: {mapping}&#34;)
+
+    # Read Excel data
+    df, period_headers = self._read_excel_data(
+        file_path, sheet_name, periods_row, items_col, header_row, nrows, skiprows
+    )
+
+    # Extract periods
+    graph_periods = self._extract_periods(period_headers, items_col)
+
+    # Create and populate graph
+    return self._create_graph(
+        df, graph_periods, items_col, mapping, file_path, sheet_name
+    )</code></pre>
+</details>
+<div class="desc"><p>Read data from an Excel file sheet into a new Graph based on instance config.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the Excel file.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Optional runtime keyword arguments overriding configured defaults:
+statement_type (str): Type of statement ('income_statement', 'balance_sheet', 'cash_flow').
+header_row (int): 1-based index for pandas header reading.
+nrows (int): Number of rows to read from the sheet.
+skiprows (int): Number of rows to skip at the beginning.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A new Graph instance populated with FinancialStatementItemNodes.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If the file cannot be read or the configuration is invalid.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.mixins.FileBasedReader" href="../../core/mixins.html#fin_statement_model.io.core.mixins.FileBasedReader">FileBasedReader</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.FileBasedReader.validate_file_exists" href="../../core/mixins.html#fin_statement_model.io.core.mixins.FileBasedReader.validate_file_exists">validate_file_exists</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.FileBasedReader.validate_file_extension" href="../../core/mixins.html#fin_statement_model.io.core.mixins.FileBasedReader.validate_file_extension">validate_file_extension</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="fin_statement_model.io.core.mixins.ValidationMixin" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin">ValidationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.create_validation_summary" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.create_validation_summary">create_validation_summary</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.get_validation_context" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.get_validation_context">get_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.set_validation_context" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.set_validation_context">set_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_column_bounds" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_column_bounds">validate_column_bounds</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_node_name" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_node_name">validate_node_name</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_numeric_value" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_numeric_value">validate_numeric_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_periods_exist" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_periods_exist">validate_periods_exist</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ValidationMixin.validate_required_columns" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ValidationMixin.validate_required_columns">validate_required_columns</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.excel.ExcelWriter"><code class="flex name class">
+<span>class <span class="ident">ExcelWriter</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.ExcelWriterConfig" href="../../config/models.html#fin_statement_model.io.config.models.ExcelWriterConfig">ExcelWriterConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_writer(&#34;excel&#34;, schema=ExcelWriterConfig)
+class ExcelWriter(DataWriter, ConfigurationMixin):
+    &#34;&#34;&#34;Writes graph data to an Excel file.
+
+    Converts the graph data to a pandas DataFrame first (using `DataFrameWriter`),
+    then writes that DataFrame to an Excel file using `pandas.to_excel()`.
+
+    Configuration (sheet_name, recalculate, include_nodes, excel_writer_kwargs) is
+    provided via an `ExcelWriterConfig` object during initialization.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: ExcelWriterConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the ExcelWriter.
+
+        Args:
+            cfg: Non-optional validated `ExcelWriterConfig` instance.
+        &#34;&#34;&#34;
+        super().__init__()
+        self.cfg = cfg
+
+    @handle_write_errors()
+    def write(self, graph: Graph, target: str, **kwargs: Any) -&gt; None:
+        &#34;&#34;&#34;Write graph data to an Excel file, converting via DataFrame first.
+
+        Args:
+            graph (Graph): The Graph object containing the data to write.
+            target (str): Path to the target Excel file.
+            **kwargs: Optional runtime overrides of configured defaults:
+                sheet_name (str): Excel sheet name.
+                recalculate (bool): Whether to recalculate graph before export.
+                include_nodes (list[str]): List of node names to include in export.
+                excel_writer_kwargs (dict): Additional kwargs for pandas.DataFrame.to_excel.
+
+        Raises:
+            WriteError: If an error occurs during the writing process.
+        &#34;&#34;&#34;
+        file_path = target
+
+        # Runtime overrides: kwargs override configured defaults
+        sheet_name = kwargs.get(&#34;sheet_name&#34;, self.cfg.sheet_name)
+        recalculate = kwargs.get(&#34;recalculate&#34;, self.cfg.recalculate)
+        include_nodes = kwargs.get(&#34;include_nodes&#34;, self.cfg.include_nodes)
+        excel_writer_options = kwargs.get(
+            &#34;excel_writer_kwargs&#34;, self.cfg.excel_writer_kwargs
+        )
+
+        logger.info(f&#34;Exporting graph to Excel file: {file_path}, sheet: {sheet_name}&#34;)
+
+        # Convert graph to DataFrame
+        df = self._create_dataframe(graph, recalculate, include_nodes)
+
+        # Write DataFrame to Excel
+        self._write_to_excel(df, file_path, sheet_name, excel_writer_options)
+
+        logger.info(f&#34;Successfully exported graph to {file_path}, sheet &#39;{sheet_name}&#39;&#34;)
+
+    def _create_dataframe(
+        self, graph: Graph, recalculate: bool, include_nodes: Optional[list[str]]
+    ) -&gt; Any:
+        &#34;&#34;&#34;Convert graph to DataFrame using DataFrameWriter.
+
+        Args:
+            graph: The graph to convert.
+            recalculate: Whether to recalculate before export.
+            include_nodes: Optional list of nodes to include.
+
+        Returns:
+            pandas DataFrame with the graph data.
+        &#34;&#34;&#34;
+        # Create a config for DataFrameWriter
+        df_config = DataFrameWriterConfig(
+            target=None,
+            format_type=&#34;dataframe&#34;,
+            recalculate=recalculate,
+            include_nodes=include_nodes,
+        )
+
+        df_writer = DataFrameWriter(df_config)
+        return df_writer.write(graph=graph, target=None)
+
+    def _write_to_excel(
+        self,
+        df: Any,
+        file_path: str,
+        sheet_name: str,
+        excel_writer_options: dict[str, Any],
+    ) -&gt; None:
+        &#34;&#34;&#34;Write DataFrame to Excel file.
+
+        Args:
+            df: The pandas DataFrame to write.
+            file_path: Path to the output file.
+            sheet_name: Name of the Excel sheet.
+            excel_writer_options: Additional options for pandas.to_excel().
+        &#34;&#34;&#34;
+        output_path = Path(file_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        df.to_excel(
+            output_path,
+            sheet_name=sheet_name,
+            index=True,  # Keep node names as index column
+            **excel_writer_options,
+        )</code></pre>
+</details>
+<div class="desc"><p>Writes graph data to an Excel file.</p>
+<p>Converts the graph data to a pandas DataFrame first (using <code>DataFrameWriter</code>),
+then writes that DataFrame to an Excel file using <code>pandas.to_excel()</code>.</p>
+<p>Configuration (sheet_name, recalculate, include_nodes, excel_writer_kwargs) is
+provided via an <code>ExcelWriterConfig</code> object during initialization.</p>
+<p>Initialize the ExcelWriter.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>Non-optional validated <code>ExcelWriterConfig</code> instance.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base.DataWriter" href="../../core/base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a></li>
+<li>abc.ABC</li>
+<li><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.excel.ExcelWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: str,<br>**kwargs: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@handle_write_errors()
+def write(self, graph: Graph, target: str, **kwargs: Any) -&gt; None:
+    &#34;&#34;&#34;Write graph data to an Excel file, converting via DataFrame first.
+
+    Args:
+        graph (Graph): The Graph object containing the data to write.
+        target (str): Path to the target Excel file.
+        **kwargs: Optional runtime overrides of configured defaults:
+            sheet_name (str): Excel sheet name.
+            recalculate (bool): Whether to recalculate graph before export.
+            include_nodes (list[str]): List of node names to include in export.
+            excel_writer_kwargs (dict): Additional kwargs for pandas.DataFrame.to_excel.
+
+    Raises:
+        WriteError: If an error occurs during the writing process.
+    &#34;&#34;&#34;
+    file_path = target
+
+    # Runtime overrides: kwargs override configured defaults
+    sheet_name = kwargs.get(&#34;sheet_name&#34;, self.cfg.sheet_name)
+    recalculate = kwargs.get(&#34;recalculate&#34;, self.cfg.recalculate)
+    include_nodes = kwargs.get(&#34;include_nodes&#34;, self.cfg.include_nodes)
+    excel_writer_options = kwargs.get(
+        &#34;excel_writer_kwargs&#34;, self.cfg.excel_writer_kwargs
+    )
+
+    logger.info(f&#34;Exporting graph to Excel file: {file_path}, sheet: {sheet_name}&#34;)
+
+    # Convert graph to DataFrame
+    df = self._create_dataframe(graph, recalculate, include_nodes)
+
+    # Write DataFrame to Excel
+    self._write_to_excel(df, file_path, sheet_name, excel_writer_options)
+
+    logger.info(f&#34;Successfully exported graph to {file_path}, sheet &#39;{sheet_name}&#39;&#34;)</code></pre>
+</details>
+<div class="desc"><p>Write graph data to an Excel file, converting via DataFrame first.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong> :&ensp;<code>Graph</code></dt>
+<dd>The Graph object containing the data to write.</dd>
+<dt><strong><code>target</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the target Excel file.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Optional runtime overrides of configured defaults:
+sheet_name (str): Excel sheet name.
+recalculate (bool): Whether to recalculate graph before export.
+include_nodes (list[str]): List of node names to include in export.
+excel_writer_kwargs (dict): Additional kwargs for pandas.DataFrame.to_excel.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>WriteError</code></dt>
+<dd>If an error occurs during the writing process.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.mixins.ConfigurationMixin" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration" href="../../core/mixins.html#fin_statement_model.io.core.mixins.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.io.formats" href="../index.html">fin_statement_model.io.formats</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.io.formats.excel.reader" href="reader.html">fin_statement_model.io.formats.excel.reader</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.excel.writer" href="writer.html">fin_statement_model.io.formats.excel.writer</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.excel.ExcelReader" href="#fin_statement_model.io.formats.excel.ExcelReader">ExcelReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.excel.ExcelReader.read" href="#fin_statement_model.io.formats.excel.ExcelReader.read">read</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.excel.ExcelWriter" href="#fin_statement_model.io.formats.excel.ExcelWriter">ExcelWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.excel.ExcelWriter.write" href="#fin_statement_model.io.formats.excel.ExcelWriter.write">write</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

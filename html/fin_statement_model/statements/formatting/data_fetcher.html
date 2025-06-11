@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.statements.formatting.data_fetcher API documentation</title>
+<meta name="description" content="Data fetching functionality for financial statements …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.statements.formatting.data_fetcher</code></h1>
+</header>
+<section id="section-intro">
+<p>Data fetching functionality for financial statements.</p>
+<p>This module provides the DataFetcher class that handles retrieving data from
+the graph for statement formatting. It encapsulates the logic for resolving
+item IDs to node IDs and fetching values with proper error handling.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.DataFetcher"><code class="flex name class">
+<span>class <span class="ident">DataFetcher</span></span>
+<span>(</span><span>statement: <a title="fin_statement_model.statements.structure.containers.StatementStructure" href="../structure/containers.html#fin_statement_model.statements.structure.containers.StatementStructure">StatementStructure</a>,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataFetcher:
+    &#34;&#34;&#34;Fetches data from graph for statement formatting.
+
+    This class encapsulates the logic for:
+    - Resolving statement item IDs to graph node IDs
+    - Fetching values from the graph with error handling
+    - Applying adjustment filters if specified
+    - Collecting errors and warnings during the process
+    &#34;&#34;&#34;
+
+    def __init__(self, statement: StatementStructure, graph: Graph):
+        &#34;&#34;&#34;Initialize the data fetcher.
+
+        Args:
+            statement: The statement structure to fetch data for
+            graph: The graph containing the data
+        &#34;&#34;&#34;
+        self.statement = statement
+        self.graph = graph
+        self.id_resolver = IDResolver(statement, standard_node_registry)
+
+    def _resolve_adjustment_filter(
+        self,
+        item: StatementItem,
+        global_filter: Optional[AdjustmentFilterInput] = None,
+    ) -&gt; Optional[AdjustmentFilterInput]:
+        &#34;&#34;&#34;Resolve which adjustment filter to use for an item.
+
+        Precedence order:
+        1. Global filter passed to fetch method (highest priority)
+        2. Item&#39;s default adjustment filter
+        3. Parent section&#39;s default adjustment filter
+        4. None (no filter)
+
+        Args:
+            item: The statement item to get the filter for.
+            global_filter: Optional global filter that overrides everything.
+
+        Returns:
+            The resolved adjustment filter to use, or None.
+        &#34;&#34;&#34;
+        # Global filter has highest priority
+        if global_filter is not None:
+            return global_filter
+
+        # Check item&#39;s own default filter
+        if (
+            hasattr(item, &#34;default_adjustment_filter&#34;)
+            and item.default_adjustment_filter is not None
+        ):
+            return cast(AdjustmentFilterInput, item.default_adjustment_filter)
+
+        # Check parent section&#39;s default filter
+        # We need to find which section contains this item
+        parent_section = self._find_parent_section(item)
+        if (
+            parent_section
+            and hasattr(parent_section, &#34;default_adjustment_filter&#34;)
+            and parent_section.default_adjustment_filter is not None
+        ):
+            return cast(AdjustmentFilterInput, parent_section.default_adjustment_filter)
+
+        # No filter
+        return None
+
+    def _find_parent_section(self, target_item: StatementItem) -&gt; Optional[Section]:
+        &#34;&#34;&#34;Find the parent section that contains the given item.
+
+        Args:
+            target_item: The item to find the parent section for.
+
+        Returns:
+            The parent Section object, or None if not found.
+        &#34;&#34;&#34;
+
+        def search_in_section(section: Section) -&gt; Optional[Section]:
+            # Check direct items
+            for item in section.items:
+                if item is target_item or (
+                    hasattr(item, &#34;id&#34;)
+                    and hasattr(target_item, &#34;id&#34;)
+                    and item.id == target_item.id
+                ):
+                    return section
+                # Check nested sections
+                if isinstance(item, Section):
+                    result = search_in_section(item)
+                    if result:
+                        return result
+
+            # Check subtotal
+            if hasattr(section, &#34;subtotal&#34;) and section.subtotal is target_item:
+                return section
+
+            return None
+
+        # Search through all top-level sections
+        for section in self.statement.sections:
+            result = search_in_section(section)
+            if result:
+                return result
+
+        return None
+
+    def fetch_all_data(
+        self,
+        adjustment_filter: Optional[AdjustmentFilterInput] = None,
+        include_missing: bool = False,
+    ) -&gt; FetchResult:
+        &#34;&#34;&#34;Fetch data for all items in the statement.
+
+        Args:
+            adjustment_filter: Optional global filter for adjustments (overrides item defaults)
+            include_missing: If True, include nodes that don&#39;t exist in graph
+                           with NaN values
+
+        Returns:
+            FetchResult containing the fetched data and any errors
+        &#34;&#34;&#34;
+        error_collector = ErrorCollector()
+        data: dict[str, dict[str, float]] = {}
+        missing_nodes: list[str] = []
+
+        # Check if graph has periods
+        periods = self.graph.periods
+        if not periods:
+            error_collector.add_error(
+                code=&#34;no_periods&#34;,
+                message=f&#34;Graph has no periods defined for statement &#39;{self.statement.id}&#39;&#34;,
+                source=self.statement.id,
+            )
+            return FetchResult(
+                data={}, errors=error_collector, node_count=0, missing_nodes=[]
+            )
+
+        logger.debug(
+            f&#34;Fetching data for statement &#39;{self.statement.id}&#39; across {len(periods)} periods&#34;
+        )
+
+        # Get all items and resolve their node IDs
+        all_items = self.statement.get_all_items()
+        processed_node_ids = set()
+
+        for item in all_items:
+            # Resolve item ID to node ID
+            node_id = self.id_resolver.resolve(item.id, self.graph)
+
+            if not node_id:
+                error_collector.add_warning(
+                    code=&#34;unresolvable_item&#34;,
+                    message=f&#34;Cannot resolve item &#39;{item.id}&#39; to a node ID&#34;,
+                    source=item.id,
+                    context=&#34;IDResolver.resolve&#34;,
+                )
+                continue
+
+            if node_id in processed_node_ids:
+                continue  # Skip already processed nodes
+
+            processed_node_ids.add(node_id)
+
+            # Resolve adjustment filter for this specific item
+            item_filter = self._resolve_adjustment_filter(item, adjustment_filter)
+
+            # Fetch data for this node
+            node_result = self._fetch_node_data(
+                node_id, periods, item_filter, item_id=item.id
+            )
+
+            if node_result.is_success():
+                node_data = cast(NodeData, node_result.get_value())
+                if node_data.has_data or include_missing:
+                    data[node_id] = node_data.values
+
+                # Add any warnings from node fetching
+                for error in node_data.errors:
+                    if error.severity == ErrorSeverity.WARNING:
+                        error_collector.add_warning(
+                            error.code,
+                            error.message,
+                            error.context,
+                            error.source or item.id,
+                        )
+            else:
+                # Node doesn&#39;t exist in graph
+                missing_nodes.append(node_id)
+                if include_missing:
+                    # Fill with NaN values
+                    data[node_id] = {period: np.nan for period in periods}
+
+                error_collector.add_from_result(node_result, source=item.id)
+
+        logger.info(
+            f&#34;Fetched data for {len(data)} nodes from statement &#39;{self.statement.id}&#39;. &#34;
+            f&#34;Missing: {len(missing_nodes)}, Warnings: {len(error_collector.get_warnings())}&#34;
+        )
+
+        return FetchResult(
+            data=data,
+            errors=error_collector,
+            node_count=len(data),
+            missing_nodes=missing_nodes,
+        )
+
+    def _fetch_node_data(
+        self,
+        node_id: str,
+        periods: list[str],
+        adjustment_filter: Optional[AdjustmentFilterInput],
+        item_id: Optional[str] = None,
+    ) -&gt; Result[NodeData]:
+        &#34;&#34;&#34;Fetch data for a single node across all periods.
+
+        Args:
+            node_id: The graph node ID to fetch
+            periods: List of periods to fetch
+            adjustment_filter: Optional adjustment filter
+            item_id: Optional statement item ID for error context
+
+        Returns:
+            Result containing NodeData or error details
+        &#34;&#34;&#34;
+        # Check if node exists
+        if not self.graph.has_node(node_id):
+            return Failure(
+                [
+                    ErrorDetail(
+                        code=&#34;node_not_found&#34;,
+                        message=f&#34;Node &#39;{node_id}&#39; not found in graph&#34;,
+                        source=item_id or node_id,
+                        severity=ErrorSeverity.WARNING,
+                    )
+                ]
+            )
+
+        values = {}
+        is_adjusted = {}
+        errors = []
+
+        for period in periods:
+            try:
+                # Fetch value with optional adjustments
+                value = self.graph.get_adjusted_value(
+                    node_id,
+                    period,
+                    filter_input=adjustment_filter,
+                    return_flag=False,  # Only need the value
+                )
+                # Ensure value is float or NaN
+                values[period] = float(value) if pd.notna(value) else np.nan
+                is_adjusted[period] = bool(value)
+
+            except (NodeError, CalculationError) as e:
+                # Expected errors - log as warning
+                logger.warning(
+                    f&#34;Error calculating node &#39;{node_id}&#39; for period &#39;{period}&#39;: {e}&#34;
+                )
+                values[period] = np.nan
+                is_adjusted[period] = False
+                errors.append(
+                    ErrorDetail(
+                        code=&#34;calculation_error&#34;,
+                        message=f&#34;Failed to calculate value: {e}&#34;,
+                        context=f&#34;period={period}&#34;,
+                        severity=ErrorSeverity.WARNING,
+                        source=item_id or node_id,
+                    )
+                )
+
+            except TypeError as e:
+                # Filter/adjustment errors
+                logger.warning(
+                    f&#34;Type error for node &#39;{node_id}&#39;, period &#39;{period}&#39;: {e}&#34;
+                )
+                values[period] = np.nan
+                is_adjusted[period] = False
+                errors.append(
+                    ErrorDetail(
+                        code=&#34;filter_error&#34;,
+                        message=f&#34;Invalid adjustment filter: {e}&#34;,
+                        context=f&#34;period={period}&#34;,
+                        severity=ErrorSeverity.WARNING,
+                        source=item_id or node_id,
+                    )
+                )
+
+            except Exception as e:
+                # Unexpected errors - log as error
+                logger.error(
+                    f&#34;Unexpected error for node &#39;{node_id}&#39;, period &#39;{period}&#39;: {e}&#34;,
+                    exc_info=True,
+                )
+                values[period] = np.nan
+                is_adjusted[period] = False
+                errors.append(
+                    ErrorDetail(
+                        code=&#34;unexpected_error&#34;,
+                        message=f&#34;Unexpected error: {e}&#34;,
+                        context=f&#34;period={period}, error_type={type(e).__name__}&#34;,
+                        severity=ErrorSeverity.ERROR,
+                        source=item_id or node_id,
+                    )
+                )
+
+        return Success(
+            NodeData(
+                node_id=node_id, values=values, is_adjusted=is_adjusted, errors=errors
+            )
+        )
+
+    def check_adjustments(
+        self,
+        node_ids: list[str],
+        periods: list[str],
+        adjustment_filter: Optional[AdjustmentFilterInput] = None,
+    ) -&gt; dict[str, dict[str, bool]]:
+        &#34;&#34;&#34;Check which node/period combinations have adjustments.
+
+        Args:
+            node_ids: List of node IDs to check
+            periods: List of periods to check
+            adjustment_filter: Filter to check adjustments against
+
+        Returns:
+            Dict mapping node_id -&gt; period -&gt; was_adjusted boolean
+        &#34;&#34;&#34;
+        results = {}
+
+        for node_id in node_ids:
+            if not self.graph.has_node(node_id):
+                results[node_id] = {period: False for period in periods}
+                continue
+
+            period_results = {}
+            for period in periods:
+                try:
+                    was_adjusted = self.graph.was_adjusted(
+                        node_id, period, adjustment_filter
+                    )
+                    period_results[period] = bool(was_adjusted)
+                except Exception as e:
+                    logger.warning(
+                        f&#34;Error checking adjustments for {node_id}/{period}: {e}&#34;
+                    )
+                    period_results[period] = False
+
+            results[node_id] = period_results
+
+        return results</code></pre>
+</details>
+<div class="desc"><p>Fetches data from graph for statement formatting.</p>
+<p>This class encapsulates the logic for:
+- Resolving statement item IDs to graph node IDs
+- Fetching values from the graph with error handling
+- Applying adjustment filters if specified
+- Collecting errors and warnings during the process</p>
+<p>Initialize the data fetcher.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>statement</code></strong></dt>
+<dd>The statement structure to fetch data for</dd>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The graph containing the data</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.DataFetcher.check_adjustments"><code class="name flex">
+<span>def <span class="ident">check_adjustments</span></span>(<span>self,<br>node_ids: list[str],<br>periods: list[str],<br>adjustment_filter: <a title="fin_statement_model.core.adjustments.models.AdjustmentFilter" href="../../core/adjustments/models.html#fin_statement_model.core.adjustments.models.AdjustmentFilter">AdjustmentFilter</a> | set[str] | Callable[..., bool] | None = None) ‑> dict[str, dict[str, bool]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def check_adjustments(
+    self,
+    node_ids: list[str],
+    periods: list[str],
+    adjustment_filter: Optional[AdjustmentFilterInput] = None,
+) -&gt; dict[str, dict[str, bool]]:
+    &#34;&#34;&#34;Check which node/period combinations have adjustments.
+
+    Args:
+        node_ids: List of node IDs to check
+        periods: List of periods to check
+        adjustment_filter: Filter to check adjustments against
+
+    Returns:
+        Dict mapping node_id -&gt; period -&gt; was_adjusted boolean
+    &#34;&#34;&#34;
+    results = {}
+
+    for node_id in node_ids:
+        if not self.graph.has_node(node_id):
+            results[node_id] = {period: False for period in periods}
+            continue
+
+        period_results = {}
+        for period in periods:
+            try:
+                was_adjusted = self.graph.was_adjusted(
+                    node_id, period, adjustment_filter
+                )
+                period_results[period] = bool(was_adjusted)
+            except Exception as e:
+                logger.warning(
+                    f&#34;Error checking adjustments for {node_id}/{period}: {e}&#34;
+                )
+                period_results[period] = False
+
+        results[node_id] = period_results
+
+    return results</code></pre>
+</details>
+<div class="desc"><p>Check which node/period combinations have adjustments.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_ids</code></strong></dt>
+<dd>List of node IDs to check</dd>
+<dt><strong><code>periods</code></strong></dt>
+<dd>List of periods to check</dd>
+<dt><strong><code>adjustment_filter</code></strong></dt>
+<dd>Filter to check adjustments against</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dict mapping node_id -&gt; period -&gt; was_adjusted boolean</p></div>
+</dd>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.DataFetcher.fetch_all_data"><code class="name flex">
+<span>def <span class="ident">fetch_all_data</span></span>(<span>self,<br>adjustment_filter: <a title="fin_statement_model.core.adjustments.models.AdjustmentFilter" href="../../core/adjustments/models.html#fin_statement_model.core.adjustments.models.AdjustmentFilter">AdjustmentFilter</a> | set[str] | Callable[..., bool] | None = None,<br>include_missing: bool = False) ‑> <a title="fin_statement_model.statements.formatting.data_fetcher.FetchResult" href="#fin_statement_model.statements.formatting.data_fetcher.FetchResult">FetchResult</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fetch_all_data(
+    self,
+    adjustment_filter: Optional[AdjustmentFilterInput] = None,
+    include_missing: bool = False,
+) -&gt; FetchResult:
+    &#34;&#34;&#34;Fetch data for all items in the statement.
+
+    Args:
+        adjustment_filter: Optional global filter for adjustments (overrides item defaults)
+        include_missing: If True, include nodes that don&#39;t exist in graph
+                       with NaN values
+
+    Returns:
+        FetchResult containing the fetched data and any errors
+    &#34;&#34;&#34;
+    error_collector = ErrorCollector()
+    data: dict[str, dict[str, float]] = {}
+    missing_nodes: list[str] = []
+
+    # Check if graph has periods
+    periods = self.graph.periods
+    if not periods:
+        error_collector.add_error(
+            code=&#34;no_periods&#34;,
+            message=f&#34;Graph has no periods defined for statement &#39;{self.statement.id}&#39;&#34;,
+            source=self.statement.id,
+        )
+        return FetchResult(
+            data={}, errors=error_collector, node_count=0, missing_nodes=[]
+        )
+
+    logger.debug(
+        f&#34;Fetching data for statement &#39;{self.statement.id}&#39; across {len(periods)} periods&#34;
+    )
+
+    # Get all items and resolve their node IDs
+    all_items = self.statement.get_all_items()
+    processed_node_ids = set()
+
+    for item in all_items:
+        # Resolve item ID to node ID
+        node_id = self.id_resolver.resolve(item.id, self.graph)
+
+        if not node_id:
+            error_collector.add_warning(
+                code=&#34;unresolvable_item&#34;,
+                message=f&#34;Cannot resolve item &#39;{item.id}&#39; to a node ID&#34;,
+                source=item.id,
+                context=&#34;IDResolver.resolve&#34;,
+            )
+            continue
+
+        if node_id in processed_node_ids:
+            continue  # Skip already processed nodes
+
+        processed_node_ids.add(node_id)
+
+        # Resolve adjustment filter for this specific item
+        item_filter = self._resolve_adjustment_filter(item, adjustment_filter)
+
+        # Fetch data for this node
+        node_result = self._fetch_node_data(
+            node_id, periods, item_filter, item_id=item.id
+        )
+
+        if node_result.is_success():
+            node_data = cast(NodeData, node_result.get_value())
+            if node_data.has_data or include_missing:
+                data[node_id] = node_data.values
+
+            # Add any warnings from node fetching
+            for error in node_data.errors:
+                if error.severity == ErrorSeverity.WARNING:
+                    error_collector.add_warning(
+                        error.code,
+                        error.message,
+                        error.context,
+                        error.source or item.id,
+                    )
+        else:
+            # Node doesn&#39;t exist in graph
+            missing_nodes.append(node_id)
+            if include_missing:
+                # Fill with NaN values
+                data[node_id] = {period: np.nan for period in periods}
+
+            error_collector.add_from_result(node_result, source=item.id)
+
+    logger.info(
+        f&#34;Fetched data for {len(data)} nodes from statement &#39;{self.statement.id}&#39;. &#34;
+        f&#34;Missing: {len(missing_nodes)}, Warnings: {len(error_collector.get_warnings())}&#34;
+    )
+
+    return FetchResult(
+        data=data,
+        errors=error_collector,
+        node_count=len(data),
+        missing_nodes=missing_nodes,
+    )</code></pre>
+</details>
+<div class="desc"><p>Fetch data for all items in the statement.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>adjustment_filter</code></strong></dt>
+<dd>Optional global filter for adjustments (overrides item defaults)</dd>
+<dt><strong><code>include_missing</code></strong></dt>
+<dd>If True, include nodes that don't exist in graph
+with NaN values</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>FetchResult containing the fetched data and any errors</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.FetchResult"><code class="flex name class">
+<span>class <span class="ident">FetchResult</span></span>
+<span>(</span><span>data: dict[str, dict[str, float]],<br>errors: <a title="fin_statement_model.statements.utilities.result_types.ErrorCollector" href="../utilities/result_types.html#fin_statement_model.statements.utilities.result_types.ErrorCollector">ErrorCollector</a>,<br>node_count: int,<br>missing_nodes: list[str])</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class FetchResult:
+    &#34;&#34;&#34;Result of fetching data for a statement.
+
+    Attributes:
+        data: Dict mapping node_id to period values
+        errors: ErrorCollector with any errors/warnings
+        node_count: Number of nodes successfully fetched
+        missing_nodes: List of node IDs that couldn&#39;t be found
+    &#34;&#34;&#34;
+
+    data: dict[str, dict[str, float]]
+    errors: ErrorCollector
+    node_count: int
+    missing_nodes: list[str]
+
+    def to_result(self) -&gt; Result[dict[str, dict[str, float]]]:
+        &#34;&#34;&#34;Convert to Result type.&#34;&#34;&#34;
+        if self.errors.has_errors():
+            return Failure(errors=self.errors.get_errors())
+        return Success(value=self.data)</code></pre>
+</details>
+<div class="desc"><p>Result of fetching data for a statement.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>Dict mapping node_id to period values</dd>
+<dt><strong><code>errors</code></strong></dt>
+<dd>ErrorCollector with any errors/warnings</dd>
+<dt><strong><code>node_count</code></strong></dt>
+<dd>Number of nodes successfully fetched</dd>
+<dt><strong><code>missing_nodes</code></strong></dt>
+<dd>List of node IDs that couldn't be found</dd>
+</dl></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.FetchResult.data"><code class="name">var <span class="ident">data</span> : dict[str, dict[str, float]]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.FetchResult.errors"><code class="name">var <span class="ident">errors</span> : <a title="fin_statement_model.statements.utilities.result_types.ErrorCollector" href="../utilities/result_types.html#fin_statement_model.statements.utilities.result_types.ErrorCollector">ErrorCollector</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.FetchResult.missing_nodes"><code class="name">var <span class="ident">missing_nodes</span> : list[str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.FetchResult.node_count"><code class="name">var <span class="ident">node_count</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.FetchResult.to_result"><code class="name flex">
+<span>def <span class="ident">to_result</span></span>(<span>self) ‑> <a title="fin_statement_model.statements.utilities.result_types.Result" href="../utilities/result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a>[dict[str, dict[str, float]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_result(self) -&gt; Result[dict[str, dict[str, float]]]:
+    &#34;&#34;&#34;Convert to Result type.&#34;&#34;&#34;
+    if self.errors.has_errors():
+        return Failure(errors=self.errors.get_errors())
+    return Success(value=self.data)</code></pre>
+</details>
+<div class="desc"><p>Convert to Result type.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.NodeData"><code class="flex name class">
+<span>class <span class="ident">NodeData</span></span>
+<span>(</span><span>node_id: str,<br>values: dict[str, float],<br>is_adjusted: dict[str, bool],<br>errors: list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="../utilities/result_types.html#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>])</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class NodeData:
+    &#34;&#34;&#34;Data for a single node across all periods.
+
+    Attributes:
+        node_id: The graph node ID
+        values: Dict mapping period to value
+        is_adjusted: Dict mapping period to bool indicating if adjusted
+        errors: Any errors encountered during fetching
+    &#34;&#34;&#34;
+
+    node_id: str
+    values: dict[str, float]
+    is_adjusted: dict[str, bool]
+    errors: list[ErrorDetail]
+
+    @property
+    def has_data(self) -&gt; bool:
+        &#34;&#34;&#34;Check if any non-NaN values exist.&#34;&#34;&#34;
+        return any(pd.notna(v) for v in self.values.values())</code></pre>
+</details>
+<div class="desc"><p>Data for a single node across all periods.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>node_id</code></strong></dt>
+<dd>The graph node ID</dd>
+<dt><strong><code>values</code></strong></dt>
+<dd>Dict mapping period to value</dd>
+<dt><strong><code>is_adjusted</code></strong></dt>
+<dd>Dict mapping period to bool indicating if adjusted</dd>
+<dt><strong><code>errors</code></strong></dt>
+<dd>Any errors encountered during fetching</dd>
+</dl></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.NodeData.errors"><code class="name">var <span class="ident">errors</span> : list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="../utilities/result_types.html#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.NodeData.has_data"><code class="name">prop <span class="ident">has_data</span> : bool</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def has_data(self) -&gt; bool:
+    &#34;&#34;&#34;Check if any non-NaN values exist.&#34;&#34;&#34;
+    return any(pd.notna(v) for v in self.values.values())</code></pre>
+</details>
+<div class="desc"><p>Check if any non-NaN values exist.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.NodeData.is_adjusted"><code class="name">var <span class="ident">is_adjusted</span> : dict[str, bool]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.NodeData.node_id"><code class="name">var <span class="ident">node_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.formatting.data_fetcher.NodeData.values"><code class="name">var <span class="ident">values</span> : dict[str, float]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.statements.formatting" href="index.html">fin_statement_model.statements.formatting</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.statements.formatting.data_fetcher.DataFetcher" href="#fin_statement_model.statements.formatting.data_fetcher.DataFetcher">DataFetcher</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.formatting.data_fetcher.DataFetcher.check_adjustments" href="#fin_statement_model.statements.formatting.data_fetcher.DataFetcher.check_adjustments">check_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.statements.formatting.data_fetcher.DataFetcher.fetch_all_data" href="#fin_statement_model.statements.formatting.data_fetcher.DataFetcher.fetch_all_data">fetch_all_data</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.formatting.data_fetcher.FetchResult" href="#fin_statement_model.statements.formatting.data_fetcher.FetchResult">FetchResult</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.formatting.data_fetcher.FetchResult.data" href="#fin_statement_model.statements.formatting.data_fetcher.FetchResult.data">data</a></code></li>
+<li><code><a title="fin_statement_model.statements.formatting.data_fetcher.FetchResult.errors" href="#fin_statement_model.statements.formatting.data_fetcher.FetchResult.errors">errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.formatting.data_fetcher.FetchResult.missing_nodes" href="#fin_statement_model.statements.formatting.data_fetcher.FetchResult.missing_nodes">missing_nodes</a></code></li>
+<li><code><a title="fin_statement_model.statements.formatting.data_fetcher.FetchResult.node_count" href="#fin_statement_model.statements.formatting.data_fetcher.FetchResult.node_count">node_count</a></code></li>
+<li><code><a title="fin_statement_model.statements.formatting.data_fetcher.FetchResult.to_result" href="#fin_statement_model.statements.formatting.data_fetcher.FetchResult.to_result">to_result</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.formatting.data_fetcher.NodeData" href="#fin_statement_model.statements.formatting.data_fetcher.NodeData">NodeData</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.formatting.data_fetcher.NodeData.errors" href="#fin_statement_model.statements.formatting.data_fetcher.NodeData.errors">errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.formatting.data_fetcher.NodeData.has_data" href="#fin_statement_model.statements.formatting.data_fetcher.NodeData.has_data">has_data</a></code></li>
+<li><code><a title="fin_statement_model.statements.formatting.data_fetcher.NodeData.is_adjusted" href="#fin_statement_model.statements.formatting.data_fetcher.NodeData.is_adjusted">is_adjusted</a></code></li>
+<li><code><a title="fin_statement_model.statements.formatting.data_fetcher.NodeData.node_id" href="#fin_statement_model.statements.formatting.data_fetcher.NodeData.node_id">node_id</a></code></li>
+<li><code><a title="fin_statement_model.statements.formatting.data_fetcher.NodeData.values" href="#fin_statement_model.statements.formatting.data_fetcher.NodeData.values">values</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

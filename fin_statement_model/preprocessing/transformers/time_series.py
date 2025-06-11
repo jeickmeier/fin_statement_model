@@ -1,7 +1,7 @@
-"""Financial data transformers for the Financial Statement Model.
+"""Provide the TimeSeriesTransformer for applying common financial time series transformations.
 
-This module provides the TimeSeriesTransformer which applies growth rates,
-moving averages, CAGR, year-over-year, and quarter-over-quarter conversions.
+This module defines the transformer for computing growth rates, moving averages,
+compound annual growth rate (CAGR), year-over-year (YoY), and quarter-over-quarter (QoQ) changes.
 """
 
 import logging
@@ -225,7 +225,14 @@ class TimeSeriesTransformer(DataTransformer):
     def _transform_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
         """Transform a DataFrame with time series data.
 
-        Internal method that performs the actual transformation on DataFrames.
+        Args:
+            df: DataFrame containing time series data with a time-based index.
+
+        Returns:
+            DataFrame with new columns added for the specified transformation type.
+
+        Raises:
+            NotImplementedError: If the specified transformation_type is not supported.
         """
         result = df.copy()
 

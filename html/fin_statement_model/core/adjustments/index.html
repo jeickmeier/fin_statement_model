@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.core.adjustments API documentation</title>
+<meta name="description" content="Initialize core adjustments subpackage …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.core.adjustments</code></h1>
+</header>
+<section id="section-intro">
+<p>Initialize core adjustments subpackage.</p>
+<p>This module exposes core adjustment models, filters, and related utilities.</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.core.adjustments.analytics" href="analytics.html">fin_statement_model.core.adjustments.analytics</a></code></dt>
+<dd>
+<div class="desc"><p>Analytics functions for summarizing and analyzing adjustments.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.adjustments.helpers" href="helpers.html">fin_statement_model.core.adjustments.helpers</a></code></dt>
+<dd>
+<div class="desc"><p>Helper functions for the adjustments module.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.adjustments.manager" href="manager.html">fin_statement_model.core.adjustments.manager</a></code></dt>
+<dd>
+<div class="desc"><p>Manages the storage, retrieval, and application of adjustments.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.adjustments.models" href="models.html">fin_statement_model.core.adjustments.models</a></code></dt>
+<dd>
+<div class="desc"><p>Define core adjustment data models and related types …</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.core.adjustments.Adjustment"><code class="flex name class">
+<span>class <span class="ident">Adjustment</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Adjustment(BaseModel):
+    &#34;&#34;&#34;Immutable record describing a discretionary adjustment to a node&#39;s value.
+
+    Each adjustment can modify a base value by addition, multiplication, or replacement.
+
+    Attributes:
+        id: Unique identifier for the adjustment.
+        node_name: Name of the target node.
+        period: Primary period the adjustment applies to.
+        start_period: Optional start of the effective period range.
+        end_period: Optional end of the effective period range.
+        value: Numeric value of the adjustment.
+        type: AdjustmentType defining how the adjustment is applied.
+        scale: Attenuation factor between 0.0 and 1.0.
+        priority: Tie-breaker for multiple adjustments (lower first).
+        tags: Set of tags for filtering and analysis.
+        scenario: Scenario name grouping the adjustment.
+        reason: Description of the adjustment.
+        user: Identifier of the user who created the adjustment.
+        timestamp: UTC timestamp when the adjustment was created.
+
+    Examples:
+        &gt;&gt;&gt; adj = Adjustment(
+        ...     node_name=&#39;Revenue&#39;,
+        ...     period=&#39;2023-01&#39;,
+        ...     value=100.0,
+        ...     reason=&#39;Manual update&#39;
+        ... )
+        &gt;&gt;&gt; adj.type == AdjustmentType.ADDITIVE
+        True
+    &#34;&#34;&#34;
+
+    # Target
+    id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    node_name: str
+    period: str  # Primary target period
+    start_period: Optional[str] = None  # Phase 2 - effective range start (inclusive)
+    end_period: Optional[str] = None  # Phase 2 - effective range end (inclusive)
+
+    # Behaviour
+    value: float
+    type: AdjustmentType = AdjustmentType.ADDITIVE
+    scale: float = 1.0  # Phase 2 - 0.0 &lt;= scale &lt;= 1.0
+    priority: int = 0  # Lower value means higher priority (applied first)
+
+    # Classification
+    tags: set[AdjustmentTag] = Field(default_factory=set)
+    scenario: str = DEFAULT_SCENARIO  # Phase 2 - Scenario grouping
+
+    # Metadata
+    reason: str
+    user: Optional[str] = None
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+    model_config = ConfigDict(frozen=True)
+
+    @field_validator(&#34;scale&#34;)
+    @classmethod
+    def _scale_bounds(cls, v: float) -&gt; float:
+        &#34;&#34;&#34;Validate that the scale factor is between 0.0 and 1.0.&#34;&#34;&#34;
+        if not 0.0 &lt;= v &lt;= 1.0:
+            raise ValueError(&#34;Scale must be between 0.0 and 1.0 (inclusive)&#34;)
+        return v</code></pre>
+</details>
+<div class="desc"><p>Immutable record describing a discretionary adjustment to a node's value.</p>
+<p>Each adjustment can modify a base value by addition, multiplication, or replacement.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>id</code></strong></dt>
+<dd>Unique identifier for the adjustment.</dd>
+<dt><strong><code>node_name</code></strong></dt>
+<dd>Name of the target node.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>Primary period the adjustment applies to.</dd>
+<dt><strong><code>start_period</code></strong></dt>
+<dd>Optional start of the effective period range.</dd>
+<dt><strong><code>end_period</code></strong></dt>
+<dd>Optional end of the effective period range.</dd>
+<dt><strong><code>value</code></strong></dt>
+<dd>Numeric value of the adjustment.</dd>
+<dt><strong><code>type</code></strong></dt>
+<dd>AdjustmentType defining how the adjustment is applied.</dd>
+<dt><strong><code>scale</code></strong></dt>
+<dd>Attenuation factor between 0.0 and 1.0.</dd>
+<dt><strong><code>priority</code></strong></dt>
+<dd>Tie-breaker for multiple adjustments (lower first).</dd>
+<dt><strong><code>tags</code></strong></dt>
+<dd>Set of tags for filtering and analysis.</dd>
+<dt><strong><code>scenario</code></strong></dt>
+<dd>Scenario name grouping the adjustment.</dd>
+<dt><strong><code>reason</code></strong></dt>
+<dd>Description of the adjustment.</dd>
+<dt><strong><code>user</code></strong></dt>
+<dd>Identifier of the user who created the adjustment.</dd>
+<dt><strong><code>timestamp</code></strong></dt>
+<dd>UTC timestamp when the adjustment was created.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; adj = Adjustment(
+...     node_name='Revenue',
+...     period='2023-01',
+...     value=100.0,
+...     reason='Manual update'
+... )
+&gt;&gt;&gt; adj.type == AdjustmentType.ADDITIVE
+True
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.core.adjustments.Adjustment.end_period"><code class="name">var <span class="ident">end_period</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.Adjustment.id"><code class="name">var <span class="ident">id</span> : uuid.UUID</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.Adjustment.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.Adjustment.node_name"><code class="name">var <span class="ident">node_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.Adjustment.period"><code class="name">var <span class="ident">period</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.Adjustment.priority"><code class="name">var <span class="ident">priority</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.Adjustment.reason"><code class="name">var <span class="ident">reason</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.Adjustment.scale"><code class="name">var <span class="ident">scale</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.Adjustment.scenario"><code class="name">var <span class="ident">scenario</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.Adjustment.start_period"><code class="name">var <span class="ident">start_period</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.Adjustment.tags"><code class="name">var <span class="ident">tags</span> : set[str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.Adjustment.timestamp"><code class="name">var <span class="ident">timestamp</span> : datetime.datetime</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.Adjustment.type"><code class="name">var <span class="ident">type</span> : <a title="fin_statement_model.core.adjustments.models.AdjustmentType" href="models.html#fin_statement_model.core.adjustments.models.AdjustmentType">AdjustmentType</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.Adjustment.user"><code class="name">var <span class="ident">user</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.Adjustment.value"><code class="name">var <span class="ident">value</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.adjustments.AdjustmentFilter"><code class="flex name class">
+<span>class <span class="ident">AdjustmentFilter</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AdjustmentFilter(BaseModel):
+    &#34;&#34;&#34;Define criteria for selecting adjustments.
+
+    Attributes:
+        include_scenarios: Set of scenarios to include.
+        exclude_scenarios: Set of scenarios to exclude.
+        include_tags: Set of tag prefixes to include.
+        exclude_tags: Set of tag prefixes to exclude.
+        require_all_tags: Set of tags that must all be present.
+        include_types: Set of AdjustmentType to include.
+        exclude_types: Set of AdjustmentType to exclude.
+        period: Optional period for effective window checks.
+
+    Examples:
+        &gt;&gt;&gt; filt = AdjustmentFilter(include_tags={&#39;NonRecurring&#39;}, period=&#39;2023-01&#39;)
+        &gt;&gt;&gt; filt.matches(adj)
+        True
+    &#34;&#34;&#34;
+
+    # Scenario Filtering
+    include_scenarios: Optional[set[str]] = None
+    exclude_scenarios: Optional[set[str]] = None
+
+    # Tag Filtering (supports hierarchical matching via helpers.tag_matches)
+    # Need to import the helper function first.
+    # Let&#39;s assume it will be imported at the top level of the module later.
+
+    include_tags: Optional[set[AdjustmentTag]] = None
+    exclude_tags: Optional[set[AdjustmentTag]] = None
+    require_all_tags: Optional[set[AdjustmentTag]] = None  # Exact match required
+
+    # Type Filtering
+    include_types: Optional[set[AdjustmentType]] = None
+    exclude_types: Optional[set[AdjustmentType]] = None
+
+    # Context for Effective Window Checks (Phase 2)
+    period: Optional[str] = None  # The current period being calculated/viewed
+
+    def matches(self, adj: Adjustment) -&gt; bool:
+        &#34;&#34;&#34;Check whether a given adjustment meets the filter criteria.
+
+        Args:
+            adj: The Adjustment instance to test.
+
+        Returns:
+            True if the adjustment matches all criteria, False otherwise.
+
+        Examples:
+            &gt;&gt;&gt; filt = AdjustmentFilter(include_types={AdjustmentType.ADDITIVE})
+            &gt;&gt;&gt; filt.matches(adj)
+            True
+        &#34;&#34;&#34;
+        # Need to import the helper function here to avoid circular dependency issues at module level
+
+        # Start assuming it matches, then progressively set to False if any check fails.
+        is_match = True
+
+        # --- Scenario Checks ---
+        if (
+            self.include_scenarios is not None
+            and adj.scenario not in self.include_scenarios
+        ) or (
+            self.exclude_scenarios is not None
+            and adj.scenario in self.exclude_scenarios
+        ):
+            is_match = False
+
+        # --- Tag Checks ---
+        # Only check if still potentially a match
+        if is_match and (
+            (
+                self.include_tags is not None
+                and not tag_matches(adj.tags, self.include_tags)
+            )
+            or (
+                self.exclude_tags is not None
+                and tag_matches(adj.tags, self.exclude_tags)
+            )
+            or (
+                self.require_all_tags is not None
+                and not self.require_all_tags.issubset(adj.tags)
+            )
+        ):
+            is_match = False
+
+        # --- Type Checks ---
+        # Only check if still potentially a match
+        if is_match and (
+            (self.include_types is not None and adj.type not in self.include_types)
+            or (self.exclude_types is not None and adj.type in self.exclude_types)
+        ):
+            is_match = False
+
+        # --- Effective Window Check (Phase 2) ---
+        # Assumes periods are sortable strings (e.g., &#39;YYYY-MM&#39; or &#39;Q1-2023&#39;)
+        if (
+            is_match and self.period is not None
+        ):  # Only check if still potentially a match
+            logger.debug(
+                f&#34;Period check: FilterPeriod={self.period}, AdjStart={adj.start_period}, AdjEnd={adj.end_period}&#34;
+            )
+            period_match = True  # Assume period is ok unless proven otherwise
+            if adj.start_period is not None and self.period &lt; adj.start_period:
+                logger.debug(&#34;Period check failed: FilterPeriod &lt; AdjStart&#34;)
+                period_match = False
+            # Use &#39;if period_match&#39; to avoid unnecessary log if start check already failed
+            if (
+                period_match
+                and adj.end_period is not None
+                and self.period &gt; adj.end_period
+            ):
+                logger.debug(&#34;Period check failed: FilterPeriod &gt; AdjEnd&#34;)
+                period_match = False
+
+            if period_match:
+                logger.debug(&#34;Period check passed.&#34;)
+            else:
+                is_match = False  # Period check failed
+        # else: # Optional log if period check was skipped
+        #     if self.period is not None:
+        #         logger.debug(&#34;Period check skipped because is_match was already False&#34;)
+        #     else:
+        #         logger.debug(&#34;Period check skipped: Filter has no period context.&#34;)
+
+        return is_match</code></pre>
+</details>
+<div class="desc"><p>Define criteria for selecting adjustments.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>include_scenarios</code></strong></dt>
+<dd>Set of scenarios to include.</dd>
+<dt><strong><code>exclude_scenarios</code></strong></dt>
+<dd>Set of scenarios to exclude.</dd>
+<dt><strong><code>include_tags</code></strong></dt>
+<dd>Set of tag prefixes to include.</dd>
+<dt><strong><code>exclude_tags</code></strong></dt>
+<dd>Set of tag prefixes to exclude.</dd>
+<dt><strong><code>require_all_tags</code></strong></dt>
+<dd>Set of tags that must all be present.</dd>
+<dt><strong><code>include_types</code></strong></dt>
+<dd>Set of AdjustmentType to include.</dd>
+<dt><strong><code>exclude_types</code></strong></dt>
+<dd>Set of AdjustmentType to exclude.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>Optional period for effective window checks.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; filt = AdjustmentFilter(include_tags={'NonRecurring'}, period='2023-01')
+&gt;&gt;&gt; filt.matches(adj)
+True
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.core.adjustments.AdjustmentFilter.exclude_scenarios"><code class="name">var <span class="ident">exclude_scenarios</span> : set[str] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.AdjustmentFilter.exclude_tags"><code class="name">var <span class="ident">exclude_tags</span> : set[str] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.AdjustmentFilter.exclude_types"><code class="name">var <span class="ident">exclude_types</span> : set[<a title="fin_statement_model.core.adjustments.models.AdjustmentType" href="models.html#fin_statement_model.core.adjustments.models.AdjustmentType">AdjustmentType</a>] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.AdjustmentFilter.include_scenarios"><code class="name">var <span class="ident">include_scenarios</span> : set[str] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.AdjustmentFilter.include_tags"><code class="name">var <span class="ident">include_tags</span> : set[str] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.AdjustmentFilter.include_types"><code class="name">var <span class="ident">include_types</span> : set[<a title="fin_statement_model.core.adjustments.models.AdjustmentType" href="models.html#fin_statement_model.core.adjustments.models.AdjustmentType">AdjustmentType</a>] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.AdjustmentFilter.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.AdjustmentFilter.period"><code class="name">var <span class="ident">period</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.AdjustmentFilter.require_all_tags"><code class="name">var <span class="ident">require_all_tags</span> : set[str] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.adjustments.AdjustmentFilter.matches"><code class="name flex">
+<span>def <span class="ident">matches</span></span>(<span>self,<br>adj: <a title="fin_statement_model.core.adjustments.Adjustment" href="#fin_statement_model.core.adjustments.Adjustment">Adjustment</a>) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def matches(self, adj: Adjustment) -&gt; bool:
+    &#34;&#34;&#34;Check whether a given adjustment meets the filter criteria.
+
+    Args:
+        adj: The Adjustment instance to test.
+
+    Returns:
+        True if the adjustment matches all criteria, False otherwise.
+
+    Examples:
+        &gt;&gt;&gt; filt = AdjustmentFilter(include_types={AdjustmentType.ADDITIVE})
+        &gt;&gt;&gt; filt.matches(adj)
+        True
+    &#34;&#34;&#34;
+    # Need to import the helper function here to avoid circular dependency issues at module level
+
+    # Start assuming it matches, then progressively set to False if any check fails.
+    is_match = True
+
+    # --- Scenario Checks ---
+    if (
+        self.include_scenarios is not None
+        and adj.scenario not in self.include_scenarios
+    ) or (
+        self.exclude_scenarios is not None
+        and adj.scenario in self.exclude_scenarios
+    ):
+        is_match = False
+
+    # --- Tag Checks ---
+    # Only check if still potentially a match
+    if is_match and (
+        (
+            self.include_tags is not None
+            and not tag_matches(adj.tags, self.include_tags)
+        )
+        or (
+            self.exclude_tags is not None
+            and tag_matches(adj.tags, self.exclude_tags)
+        )
+        or (
+            self.require_all_tags is not None
+            and not self.require_all_tags.issubset(adj.tags)
+        )
+    ):
+        is_match = False
+
+    # --- Type Checks ---
+    # Only check if still potentially a match
+    if is_match and (
+        (self.include_types is not None and adj.type not in self.include_types)
+        or (self.exclude_types is not None and adj.type in self.exclude_types)
+    ):
+        is_match = False
+
+    # --- Effective Window Check (Phase 2) ---
+    # Assumes periods are sortable strings (e.g., &#39;YYYY-MM&#39; or &#39;Q1-2023&#39;)
+    if (
+        is_match and self.period is not None
+    ):  # Only check if still potentially a match
+        logger.debug(
+            f&#34;Period check: FilterPeriod={self.period}, AdjStart={adj.start_period}, AdjEnd={adj.end_period}&#34;
+        )
+        period_match = True  # Assume period is ok unless proven otherwise
+        if adj.start_period is not None and self.period &lt; adj.start_period:
+            logger.debug(&#34;Period check failed: FilterPeriod &lt; AdjStart&#34;)
+            period_match = False
+        # Use &#39;if period_match&#39; to avoid unnecessary log if start check already failed
+        if (
+            period_match
+            and adj.end_period is not None
+            and self.period &gt; adj.end_period
+        ):
+            logger.debug(&#34;Period check failed: FilterPeriod &gt; AdjEnd&#34;)
+            period_match = False
+
+        if period_match:
+            logger.debug(&#34;Period check passed.&#34;)
+        else:
+            is_match = False  # Period check failed
+    # else: # Optional log if period check was skipped
+    #     if self.period is not None:
+    #         logger.debug(&#34;Period check skipped because is_match was already False&#34;)
+    #     else:
+    #         logger.debug(&#34;Period check skipped: Filter has no period context.&#34;)
+
+    return is_match</code></pre>
+</details>
+<div class="desc"><p>Check whether a given adjustment meets the filter criteria.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>adj</code></strong></dt>
+<dd>The Adjustment instance to test.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if the adjustment matches all criteria, False otherwise.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; filt = AdjustmentFilter(include_types={AdjustmentType.ADDITIVE})
+&gt;&gt;&gt; filt.matches(adj)
+True
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.adjustments.AdjustmentType"><code class="flex name class">
+<span>class <span class="ident">AdjustmentType</span></span>
+<span>(</span><span>*args, **kwds)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AdjustmentType(Enum):
+    &#34;&#34;&#34;Defines how an adjustment modifies a base value.&#34;&#34;&#34;
+
+    ADDITIVE = &#34;additive&#34;  # base + (value * scale)
+    MULTIPLICATIVE = &#34;multiplicative&#34;  # base * (value ** scale)
+    REPLACEMENT = &#34;replacement&#34;  # use value (scale ignored)</code></pre>
+</details>
+<div class="desc"><p>Defines how an adjustment modifies a base value.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.core.adjustments.AdjustmentType.ADDITIVE"><code class="name">var <span class="ident">ADDITIVE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.AdjustmentType.MULTIPLICATIVE"><code class="name">var <span class="ident">MULTIPLICATIVE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.AdjustmentType.REPLACEMENT"><code class="name">var <span class="ident">REPLACEMENT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.core" href="../index.html">fin_statement_model.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.core.adjustments.analytics" href="analytics.html">fin_statement_model.core.adjustments.analytics</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.helpers" href="helpers.html">fin_statement_model.core.adjustments.helpers</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.manager" href="manager.html">fin_statement_model.core.adjustments.manager</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.models" href="models.html">fin_statement_model.core.adjustments.models</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.core.adjustments.Adjustment" href="#fin_statement_model.core.adjustments.Adjustment">Adjustment</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.end_period" href="#fin_statement_model.core.adjustments.Adjustment.end_period">end_period</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.id" href="#fin_statement_model.core.adjustments.Adjustment.id">id</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.model_config" href="#fin_statement_model.core.adjustments.Adjustment.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.node_name" href="#fin_statement_model.core.adjustments.Adjustment.node_name">node_name</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.period" href="#fin_statement_model.core.adjustments.Adjustment.period">period</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.priority" href="#fin_statement_model.core.adjustments.Adjustment.priority">priority</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.reason" href="#fin_statement_model.core.adjustments.Adjustment.reason">reason</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.scale" href="#fin_statement_model.core.adjustments.Adjustment.scale">scale</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.scenario" href="#fin_statement_model.core.adjustments.Adjustment.scenario">scenario</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.start_period" href="#fin_statement_model.core.adjustments.Adjustment.start_period">start_period</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.tags" href="#fin_statement_model.core.adjustments.Adjustment.tags">tags</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.timestamp" href="#fin_statement_model.core.adjustments.Adjustment.timestamp">timestamp</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.type" href="#fin_statement_model.core.adjustments.Adjustment.type">type</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.user" href="#fin_statement_model.core.adjustments.Adjustment.user">user</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.Adjustment.value" href="#fin_statement_model.core.adjustments.Adjustment.value">value</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.adjustments.AdjustmentFilter" href="#fin_statement_model.core.adjustments.AdjustmentFilter">AdjustmentFilter</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.core.adjustments.AdjustmentFilter.exclude_scenarios" href="#fin_statement_model.core.adjustments.AdjustmentFilter.exclude_scenarios">exclude_scenarios</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.AdjustmentFilter.exclude_tags" href="#fin_statement_model.core.adjustments.AdjustmentFilter.exclude_tags">exclude_tags</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.AdjustmentFilter.exclude_types" href="#fin_statement_model.core.adjustments.AdjustmentFilter.exclude_types">exclude_types</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.AdjustmentFilter.include_scenarios" href="#fin_statement_model.core.adjustments.AdjustmentFilter.include_scenarios">include_scenarios</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.AdjustmentFilter.include_tags" href="#fin_statement_model.core.adjustments.AdjustmentFilter.include_tags">include_tags</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.AdjustmentFilter.include_types" href="#fin_statement_model.core.adjustments.AdjustmentFilter.include_types">include_types</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.AdjustmentFilter.matches" href="#fin_statement_model.core.adjustments.AdjustmentFilter.matches">matches</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.AdjustmentFilter.model_config" href="#fin_statement_model.core.adjustments.AdjustmentFilter.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.AdjustmentFilter.period" href="#fin_statement_model.core.adjustments.AdjustmentFilter.period">period</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.AdjustmentFilter.require_all_tags" href="#fin_statement_model.core.adjustments.AdjustmentFilter.require_all_tags">require_all_tags</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.adjustments.AdjustmentType" href="#fin_statement_model.core.adjustments.AdjustmentType">AdjustmentType</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.adjustments.AdjustmentType.ADDITIVE" href="#fin_statement_model.core.adjustments.AdjustmentType.ADDITIVE">ADDITIVE</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.AdjustmentType.MULTIPLICATIVE" href="#fin_statement_model.core.adjustments.AdjustmentType.MULTIPLICATIVE">MULTIPLICATIVE</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.AdjustmentType.REPLACEMENT" href="#fin_statement_model.core.adjustments.AdjustmentType.REPLACEMENT">REPLACEMENT</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

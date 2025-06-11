@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.preprocessing.base_transformer API documentation</title>
+<meta name="description" content="Define the base DataTransformer interface for the preprocessing layer …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.preprocessing.base_transformer</code></h1>
+</header>
+<section id="section-intro">
+<p>Define the base DataTransformer interface for the preprocessing layer.</p>
+<p>This module provides the DataTransformer abstract base class and CompositeTransformer
+for building and composing data transformation pipelines.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.preprocessing.base_transformer.CompositeTransformer"><code class="flex name class">
+<span>class <span class="ident">CompositeTransformer</span></span>
+<span>(</span><span>transformers: list[<a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a>],<br>config: dict[str, object] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CompositeTransformer(DataTransformer):
+    &#34;&#34;&#34;Compose multiple transformers into a pipeline.
+
+    This allows building complex transformation chains from simple steps.
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        transformers: list[DataTransformer],
+        config: Optional[dict[str, object]] = None,
+    ):
+        &#34;&#34;&#34;Initialize with a list of transformers.
+
+        Args:
+            transformers: List of transformers to apply in sequence
+            config: Optional configuration dictionary
+        &#34;&#34;&#34;
+        super().__init__(config)
+        self.transformers = transformers
+
+    def _transform_impl(
+        self, data: Union[pd.DataFrame, pd.Series]
+    ) -&gt; Union[pd.DataFrame, pd.Series]:
+        &#34;&#34;&#34;Apply each transformer in sequence.
+
+        Args:
+            data: The input data to transform
+
+        Returns:
+            Data transformed by the pipeline
+        &#34;&#34;&#34;
+        result = data
+        for transformer in self.transformers:
+            result = transformer.execute(result)
+        return result
+
+    def add_transformer(self, transformer: DataTransformer) -&gt; None:
+        &#34;&#34;&#34;Add a transformer to the pipeline.
+
+        Args:
+            transformer: The transformer to add
+        &#34;&#34;&#34;
+        self.transformers.append(transformer)
+
+    def remove_transformer(self, index: int) -&gt; Optional[DataTransformer]:
+        &#34;&#34;&#34;Remove a transformer from the pipeline.
+
+        Args:
+            index: Index of the transformer to remove
+
+        Returns:
+            The removed transformer or None if index is invalid
+        &#34;&#34;&#34;
+        if 0 &lt;= index &lt; len(self.transformers):
+            return self.transformers.pop(index)
+        return None
+
+    def validate_input(self, data: object) -&gt; bool:
+        &#34;&#34;&#34;Validate input for the composite transformer.
+
+        If the pipeline is empty, accepts any data; otherwise, delegates validation to the first transformer.
+
+        Args:
+            data (object): Input data to validate.
+
+        Returns:
+            bool: True if input is valid for the pipeline.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#34;transformers&#34;) or not self.transformers:
+            return True
+        return self.transformers[0].validate_input(data)</code></pre>
+</details>
+<div class="desc"><p>Compose multiple transformers into a pipeline.</p>
+<p>This allows building complex transformation chains from simple steps.</p>
+<p>Initialize with a list of transformers.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>transformers</code></strong></dt>
+<dd>List of transformers to apply in sequence</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional configuration dictionary</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.base_transformer.CompositeTransformer.add_transformer"><code class="name flex">
+<span>def <span class="ident">add_transformer</span></span>(<span>self,<br>transformer: <a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_transformer(self, transformer: DataTransformer) -&gt; None:
+    &#34;&#34;&#34;Add a transformer to the pipeline.
+
+    Args:
+        transformer: The transformer to add
+    &#34;&#34;&#34;
+    self.transformers.append(transformer)</code></pre>
+</details>
+<div class="desc"><p>Add a transformer to the pipeline.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>transformer</code></strong></dt>
+<dd>The transformer to add</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.base_transformer.CompositeTransformer.remove_transformer"><code class="name flex">
+<span>def <span class="ident">remove_transformer</span></span>(<span>self, index: int) ‑> <a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a> | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_transformer(self, index: int) -&gt; Optional[DataTransformer]:
+    &#34;&#34;&#34;Remove a transformer from the pipeline.
+
+    Args:
+        index: Index of the transformer to remove
+
+    Returns:
+        The removed transformer or None if index is invalid
+    &#34;&#34;&#34;
+    if 0 &lt;= index &lt; len(self.transformers):
+        return self.transformers.pop(index)
+    return None</code></pre>
+</details>
+<div class="desc"><p>Remove a transformer from the pipeline.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>index</code></strong></dt>
+<dd>Index of the transformer to remove</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The removed transformer or None if index is invalid</p></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.base_transformer.CompositeTransformer.validate_input"><code class="name flex">
+<span>def <span class="ident">validate_input</span></span>(<span>self, data: object) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_input(self, data: object) -&gt; bool:
+    &#34;&#34;&#34;Validate input for the composite transformer.
+
+    If the pipeline is empty, accepts any data; otherwise, delegates validation to the first transformer.
+
+    Args:
+        data (object): Input data to validate.
+
+    Returns:
+        bool: True if input is valid for the pipeline.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#34;transformers&#34;) or not self.transformers:
+        return True
+    return self.transformers[0].validate_input(data)</code></pre>
+</details>
+<div class="desc"><p>Validate input for the composite transformer.</p>
+<p>If the pipeline is empty, accepts any data; otherwise, delegates validation to the first transformer.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>object</code></dt>
+<dd>Input data to validate.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if input is valid for the pipeline.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.execute" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer.execute">execute</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.transform" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer.transform">transform</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config">validate_config</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.preprocessing.base_transformer.DataTransformer"><code class="flex name class">
+<span>class <span class="ident">DataTransformer</span></span>
+<span>(</span><span>config: dict[str, object] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataTransformer(ABC):
+    &#34;&#34;&#34;Define base class for data transformers.
+
+    Data transformers convert data between formats and apply business rules.
+
+    This separation follows the Single Responsibility Principle for maintainability.
+    &#34;&#34;&#34;
+
+    def __init__(self, config: Optional[dict[str, object]] = None):
+        &#34;&#34;&#34;Initialize the transformer with optional configuration.
+
+        Args:
+            config: Optional configuration dictionary for the transformer
+        &#34;&#34;&#34;
+        self.config = config or {}
+        logger.debug(
+            f&#34;Initialized {self.__class__.__name__} with config: {self.config}&#34;
+        )
+
+    def transform(
+        self, data: Union[pd.DataFrame, pd.Series]
+    ) -&gt; Union[pd.DataFrame, pd.Series]:
+        &#34;&#34;&#34;Transform the input data.
+
+        Args:
+            data: The data to transform.
+
+        Returns:
+            The transformed data.
+
+        Raises:
+            TransformationError: If transformation fails.
+        &#34;&#34;&#34;
+        try:
+            logger.debug(f&#34;Transforming data with {self.__class__.__name__}&#34;)
+            return self._transform_impl(data)
+        except Exception as e:
+            logger.exception(f&#34;Error transforming data with {self.__class__.__name__}&#34;)
+            raise TransformationError(
+                &#34;Error transforming data&#34;,
+                transformer_type=self.__class__.__name__,
+            ) from e
+
+    @abstractmethod
+    def _transform_impl(
+        self, data: Union[pd.DataFrame, pd.Series]
+    ) -&gt; Union[pd.DataFrame, pd.Series]:
+        &#34;&#34;&#34;Apply the transformation logic.
+
+        This method must be implemented by subclasses to define the specific
+        transformation logic.
+
+        Args:
+            data: The data to transform.
+
+        Returns:
+            The transformed data.
+
+        Raises:
+            TransformationError: If transformation fails.
+        &#34;&#34;&#34;
+
+    def validate_input(self, data: object) -&gt; bool:
+        &#34;&#34;&#34;Validate that the input data is a pandas DataFrame by default.
+
+        This performs a basic DataFrame type check and can be overridden by subclasses with more specific validation logic.
+
+        Args:
+            data (object): The input data to validate.
+
+        Returns:
+            bool: True if data is a pandas.DataFrame, False otherwise.
+        &#34;&#34;&#34;
+        return isinstance(data, pd.DataFrame)
+
+    def _pre_transform_hook(self, data: object) -&gt; object:
+        &#34;&#34;&#34;Hook method called before transformation.
+
+        Args:
+            data: The input data
+
+        Returns:
+            Processed data to be passed to the transform method
+
+        This method can be overridden by subclasses to add pre-processing steps.
+        &#34;&#34;&#34;
+        return data
+
+    def _post_transform_hook(self, data: object) -&gt; object:
+        &#34;&#34;&#34;Hook method called after transformation.
+
+        Args:
+            data: The transformed data
+
+        Returns:
+            Final processed data
+
+        This method can be overridden by subclasses to add post-processing steps.
+        &#34;&#34;&#34;
+        return data
+
+    def execute(self, data: object) -&gt; object:
+        &#34;&#34;&#34;Execute the complete transformation pipeline.
+
+        Args:
+            data: The input data to transform
+
+        Returns:
+            Transformed data
+
+        Raises:
+            ValueError: If the data is invalid or cannot be transformed
+        &#34;&#34;&#34;
+        if not self.validate_input(data):
+            raise ValueError(f&#34;Invalid input data for {self.__class__.__name__}&#34;)
+
+        try:
+            # Apply pre-transform hook
+            processed_data = self._pre_transform_hook(data)
+
+            # Perform transformation
+            result = self.transform(processed_data)
+            result = self._post_transform_hook(result)
+            logger.debug(
+                f&#34;Successfully transformed data with {self.__class__.__name__}&#34;
+            )
+        except Exception as e:
+            logger.exception(f&#34;Error transforming data with {self.__class__.__name__}&#34;)
+            raise ValueError(&#34;Error transforming data&#34;) from e
+        else:
+            return result
+
+    def validate_config(self) -&gt; None:
+        &#34;&#34;&#34;Validate the transformer configuration.
+
+        This method can be overridden by subclasses to add specific validation logic.
+
+        Raises:
+            TransformationError: If the configuration is invalid.
+        &#34;&#34;&#34;
+        if self.config is None:
+            raise TransformationError(
+                f&#34;Invalid input data for {self.__class__.__name__}&#34;,
+                transformer_type=self.__class__.__name__,
+            )</code></pre>
+</details>
+<div class="desc"><p>Define base class for data transformers.</p>
+<p>Data transformers convert data between formats and apply business rules.</p>
+<p>This separation follows the Single Responsibility Principle for maintainability.</p>
+<p>Initialize the transformer with optional configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional configuration dictionary for the transformer</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.preprocessing.base_transformer.CompositeTransformer" href="#fin_statement_model.preprocessing.base_transformer.CompositeTransformer">CompositeTransformer</a></li>
+<li><a title="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer" href="transformers/normalization.html#fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer">NormalizationTransformer</a></li>
+<li><a title="fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer" href="transformers/period_conversion.html#fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer">PeriodConversionTransformer</a></li>
+<li><a title="fin_statement_model.preprocessing.transformers.time_series.TimeSeriesTransformer" href="transformers/time_series.html#fin_statement_model.preprocessing.transformers.time_series.TimeSeriesTransformer">TimeSeriesTransformer</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.base_transformer.DataTransformer.execute"><code class="name flex">
+<span>def <span class="ident">execute</span></span>(<span>self, data: object) ‑> object</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def execute(self, data: object) -&gt; object:
+    &#34;&#34;&#34;Execute the complete transformation pipeline.
+
+    Args:
+        data: The input data to transform
+
+    Returns:
+        Transformed data
+
+    Raises:
+        ValueError: If the data is invalid or cannot be transformed
+    &#34;&#34;&#34;
+    if not self.validate_input(data):
+        raise ValueError(f&#34;Invalid input data for {self.__class__.__name__}&#34;)
+
+    try:
+        # Apply pre-transform hook
+        processed_data = self._pre_transform_hook(data)
+
+        # Perform transformation
+        result = self.transform(processed_data)
+        result = self._post_transform_hook(result)
+        logger.debug(
+            f&#34;Successfully transformed data with {self.__class__.__name__}&#34;
+        )
+    except Exception as e:
+        logger.exception(f&#34;Error transforming data with {self.__class__.__name__}&#34;)
+        raise ValueError(&#34;Error transforming data&#34;) from e
+    else:
+        return result</code></pre>
+</details>
+<div class="desc"><p>Execute the complete transformation pipeline.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The input data to transform</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Transformed data</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the data is invalid or cannot be transformed</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.base_transformer.DataTransformer.transform"><code class="name flex">
+<span>def <span class="ident">transform</span></span>(<span>self, data: pandas.core.frame.DataFrame | pandas.core.series.Series) ‑> pandas.core.frame.DataFrame | pandas.core.series.Series</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform(
+    self, data: Union[pd.DataFrame, pd.Series]
+) -&gt; Union[pd.DataFrame, pd.Series]:
+    &#34;&#34;&#34;Transform the input data.
+
+    Args:
+        data: The data to transform.
+
+    Returns:
+        The transformed data.
+
+    Raises:
+        TransformationError: If transformation fails.
+    &#34;&#34;&#34;
+    try:
+        logger.debug(f&#34;Transforming data with {self.__class__.__name__}&#34;)
+        return self._transform_impl(data)
+    except Exception as e:
+        logger.exception(f&#34;Error transforming data with {self.__class__.__name__}&#34;)
+        raise TransformationError(
+            &#34;Error transforming data&#34;,
+            transformer_type=self.__class__.__name__,
+        ) from e</code></pre>
+</details>
+<div class="desc"><p>Transform the input data.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The data to transform.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The transformed data.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TransformationError</code></dt>
+<dd>If transformation fails.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config"><code class="name flex">
+<span>def <span class="ident">validate_config</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_config(self) -&gt; None:
+    &#34;&#34;&#34;Validate the transformer configuration.
+
+    This method can be overridden by subclasses to add specific validation logic.
+
+    Raises:
+        TransformationError: If the configuration is invalid.
+    &#34;&#34;&#34;
+    if self.config is None:
+        raise TransformationError(
+            f&#34;Invalid input data for {self.__class__.__name__}&#34;,
+            transformer_type=self.__class__.__name__,
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate the transformer configuration.</p>
+<p>This method can be overridden by subclasses to add specific validation logic.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TransformationError</code></dt>
+<dd>If the configuration is invalid.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_input"><code class="name flex">
+<span>def <span class="ident">validate_input</span></span>(<span>self, data: object) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_input(self, data: object) -&gt; bool:
+    &#34;&#34;&#34;Validate that the input data is a pandas DataFrame by default.
+
+    This performs a basic DataFrame type check and can be overridden by subclasses with more specific validation logic.
+
+    Args:
+        data (object): The input data to validate.
+
+    Returns:
+        bool: True if data is a pandas.DataFrame, False otherwise.
+    &#34;&#34;&#34;
+    return isinstance(data, pd.DataFrame)</code></pre>
+</details>
+<div class="desc"><p>Validate that the input data is a pandas DataFrame by default.</p>
+<p>This performs a basic DataFrame type check and can be overridden by subclasses with more specific validation logic.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>object</code></dt>
+<dd>The input data to validate.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if data is a pandas.DataFrame, False otherwise.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.preprocessing" href="index.html">fin_statement_model.preprocessing</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.base_transformer.CompositeTransformer" href="#fin_statement_model.preprocessing.base_transformer.CompositeTransformer">CompositeTransformer</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.CompositeTransformer.add_transformer" href="#fin_statement_model.preprocessing.base_transformer.CompositeTransformer.add_transformer">add_transformer</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.CompositeTransformer.remove_transformer" href="#fin_statement_model.preprocessing.base_transformer.CompositeTransformer.remove_transformer">remove_transformer</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.CompositeTransformer.validate_input" href="#fin_statement_model.preprocessing.base_transformer.CompositeTransformer.validate_input">validate_input</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.execute" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer.execute">execute</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.transform" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer.transform">transform</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config">validate_config</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_input" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_input">validate_input</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

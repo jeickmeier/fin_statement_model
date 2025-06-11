@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.statements.population.id_resolver API documentation</title>
+<meta name="description" content="ID resolution for statement items to graph nodes …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.statements.population.id_resolver</code></h1>
+</header>
+<section id="section-intro">
+<p>ID resolution for statement items to graph nodes.</p>
+<p>This module provides centralized logic for resolving statement item IDs to their
+corresponding graph node IDs, handling the complexity of different item types
+having different ID mapping rules, including standard node references.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.statements.population.id_resolver.IDResolver"><code class="flex name class">
+<span>class <span class="ident">IDResolver</span></span>
+<span>(</span><span>statement: <a title="fin_statement_model.statements.structure.containers.StatementStructure" href="../structure/containers.html#fin_statement_model.statements.structure.containers.StatementStructure">StatementStructure</a>,<br>registry: <a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry" href="../../core/nodes/standard_registry.html#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry">StandardNodeRegistry</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IDResolver:
+    &#34;&#34;&#34;Centralizes ID resolution from statement items to graph nodes.
+
+    This class handles the complexity of mapping statement item IDs to graph
+    node IDs, accounting for the fact that:
+    - LineItems can have either a direct node_id property OR a standard_node_ref
+      that gets resolved through the provided registry
+    - Other items (CalculatedLineItem, SubtotalLineItem, MetricLineItem) use
+      their ID directly as the node ID
+    - Some nodes may exist directly in the graph without being statement items
+
+    The resolver caches mappings for performance and provides both single and
+    batch resolution methods. Standard node references are resolved at cache
+    build time for optimal performance.
+    &#34;&#34;&#34;
+
+    def __init__(self, statement: StatementStructure, registry: StandardNodeRegistry):
+        &#34;&#34;&#34;Initialize the resolver with a statement structure and a registry.
+
+        Args:
+            statement: The statement structure containing items to resolve.
+            registry: The standard node registry for resolving references.
+        &#34;&#34;&#34;
+        self.statement = statement
+        self._registry = registry
+        self._item_to_node_cache: dict[str, str] = {}
+        self._node_to_items_cache: dict[str, list[str]] = {}
+        self._build_cache()
+
+    def _build_cache(self) -&gt; None:
+        &#34;&#34;&#34;Pre-build ID mappings for all items in the statement.&#34;&#34;&#34;
+        logger.debug(f&#34;Building ID cache for statement &#39;{self.statement.id}&#39;&#34;)
+
+        for item in self.statement.get_all_items():
+            if isinstance(item, LineItem):
+                # Get the resolved node ID (handles both direct node_id and standard_node_ref)
+                resolved_node_id = item.get_resolved_node_id(self._registry)
+                if resolved_node_id:
+                    # LineItems map their ID to their resolved node_id
+                    self._item_to_node_cache[item.id] = resolved_node_id
+                    self._node_to_items_cache.setdefault(resolved_node_id, []).append(
+                        item.id
+                    )
+
+                    # Log if using standard node reference for debugging
+                    if item.standard_node_ref:
+                        logger.debug(
+                            f&#34;Resolved standard node reference &#39;{item.standard_node_ref}&#39; &#34;
+                            f&#34;to &#39;{resolved_node_id}&#39; for item &#39;{item.id}&#39;&#34;
+                        )
+                else:
+                    logger.warning(
+                        f&#34;Could not resolve node reference for LineItem &#39;{item.id}&#39;. &#34;
+                        f&#34;node_id: {item.node_id}, standard_node_ref: {item.standard_node_ref}&#34;
+                    )
+            else:
+                # Other items use their ID directly as the node ID
+                self._item_to_node_cache[item.id] = item.id
+                self._node_to_items_cache.setdefault(item.id, []).append(item.id)
+
+        logger.debug(
+            f&#34;ID cache built: {len(self._item_to_node_cache)} item-&gt;node mappings, &#34;
+            f&#34;{len(self._node_to_items_cache)} unique nodes&#34;
+        )
+
+    def resolve(self, item_id: str, graph: Optional[Graph] = None) -&gt; Optional[str]:
+        &#34;&#34;&#34;Resolve a statement item ID to its graph node ID.
+
+        Resolution process:
+        1. Check the pre-built cache for the item ID
+        2. If not found and a graph is provided, check if the ID exists
+           directly as a node in the graph
+        3. Return None if not found anywhere
+
+        Args:
+            item_id: The statement item ID to resolve.
+            graph: Optional graph to check for direct node existence.
+
+        Returns:
+            The resolved graph node ID if found, None otherwise.
+        &#34;&#34;&#34;
+        # Rebuild cache if it&#39;s empty (e.g., after invalidation)
+        if not self._item_to_node_cache:
+            self._build_cache()
+
+        # Check cache first
+        if item_id in self._item_to_node_cache:
+            return self._item_to_node_cache[item_id]
+
+        # Check if it exists directly in graph
+        if graph and graph.has_node(item_id):
+            # Cache this discovery for future lookups
+            self._item_to_node_cache[item_id] = item_id
+            self._node_to_items_cache.setdefault(item_id, []).append(item_id)
+            return item_id
+
+        return None
+
+    def resolve_multiple(
+        self, item_ids: list[str], graph: Optional[Graph] = None
+    ) -&gt; dict[str, Optional[str]]:
+        &#34;&#34;&#34;Resolve multiple item IDs at once.
+
+        Args:
+            item_ids: List of statement item IDs to resolve.
+            graph: Optional graph to check for direct node existence.
+
+        Returns:
+            Dictionary mapping each item ID to its resolved node ID (or None).
+        &#34;&#34;&#34;
+        return {item_id: self.resolve(item_id, graph) for item_id in item_ids}
+
+    def get_items_for_node(self, node_id: str) -&gt; list[str]:
+        &#34;&#34;&#34;Get all statement item IDs that map to a given node ID.
+
+        This reverse lookup can be useful for debugging and understanding
+        which statement items contribute to a particular graph node.
+
+        Args:
+            node_id: The graph node ID to look up.
+
+        Returns:
+            List of statement item IDs that map to this node (may be empty).
+        &#34;&#34;&#34;
+        # Rebuild cache if it&#39;s empty
+        if not self._node_to_items_cache:
+            self._build_cache()
+        return self._node_to_items_cache.get(node_id, [])
+
+    def get_all_mappings(self) -&gt; dict[str, str]:
+        &#34;&#34;&#34;Get all item ID to node ID mappings.
+
+        Returns:
+            Dictionary of all cached mappings.
+        &#34;&#34;&#34;
+        # Rebuild cache if it&#39;s empty
+        if not self._item_to_node_cache:
+            self._build_cache()
+        return self._item_to_node_cache.copy()
+
+    def invalidate_cache(self) -&gt; None:
+        &#34;&#34;&#34;Clear the cache, forcing a rebuild on next resolution.
+
+        This should be called if the statement structure changes after
+        the resolver was created.
+        &#34;&#34;&#34;
+        self._item_to_node_cache.clear()
+        self._node_to_items_cache.clear()
+        logger.debug(f&#34;ID cache invalidated for statement &#39;{self.statement.id}&#39;&#34;)
+
+    def refresh_cache(self) -&gt; None:
+        &#34;&#34;&#34;Rebuild the cache from the current statement structure.&#34;&#34;&#34;
+        self.invalidate_cache()
+        self._build_cache()</code></pre>
+</details>
+<div class="desc"><p>Centralizes ID resolution from statement items to graph nodes.</p>
+<p>This class handles the complexity of mapping statement item IDs to graph
+node IDs, accounting for the fact that:
+- LineItems can have either a direct node_id property OR a standard_node_ref
+that gets resolved through the provided registry
+- Other items (CalculatedLineItem, SubtotalLineItem, MetricLineItem) use
+their ID directly as the node ID
+- Some nodes may exist directly in the graph without being statement items</p>
+<p>The resolver caches mappings for performance and provides both single and
+batch resolution methods. Standard node references are resolved at cache
+build time for optimal performance.</p>
+<p>Initialize the resolver with a statement structure and a registry.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>statement</code></strong></dt>
+<dd>The statement structure containing items to resolve.</dd>
+<dt><strong><code>registry</code></strong></dt>
+<dd>The standard node registry for resolving references.</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.population.id_resolver.IDResolver.get_all_mappings"><code class="name flex">
+<span>def <span class="ident">get_all_mappings</span></span>(<span>self) ‑> dict[str, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_all_mappings(self) -&gt; dict[str, str]:
+    &#34;&#34;&#34;Get all item ID to node ID mappings.
+
+    Returns:
+        Dictionary of all cached mappings.
+    &#34;&#34;&#34;
+    # Rebuild cache if it&#39;s empty
+    if not self._item_to_node_cache:
+        self._build_cache()
+    return self._item_to_node_cache.copy()</code></pre>
+</details>
+<div class="desc"><p>Get all item ID to node ID mappings.</p>
+<h2 id="returns">Returns</h2>
+<p>Dictionary of all cached mappings.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.id_resolver.IDResolver.get_items_for_node"><code class="name flex">
+<span>def <span class="ident">get_items_for_node</span></span>(<span>self, node_id: str) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_items_for_node(self, node_id: str) -&gt; list[str]:
+    &#34;&#34;&#34;Get all statement item IDs that map to a given node ID.
+
+    This reverse lookup can be useful for debugging and understanding
+    which statement items contribute to a particular graph node.
+
+    Args:
+        node_id: The graph node ID to look up.
+
+    Returns:
+        List of statement item IDs that map to this node (may be empty).
+    &#34;&#34;&#34;
+    # Rebuild cache if it&#39;s empty
+    if not self._node_to_items_cache:
+        self._build_cache()
+    return self._node_to_items_cache.get(node_id, [])</code></pre>
+</details>
+<div class="desc"><p>Get all statement item IDs that map to a given node ID.</p>
+<p>This reverse lookup can be useful for debugging and understanding
+which statement items contribute to a particular graph node.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_id</code></strong></dt>
+<dd>The graph node ID to look up.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of statement item IDs that map to this node (may be empty).</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.id_resolver.IDResolver.invalidate_cache"><code class="name flex">
+<span>def <span class="ident">invalidate_cache</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def invalidate_cache(self) -&gt; None:
+    &#34;&#34;&#34;Clear the cache, forcing a rebuild on next resolution.
+
+    This should be called if the statement structure changes after
+    the resolver was created.
+    &#34;&#34;&#34;
+    self._item_to_node_cache.clear()
+    self._node_to_items_cache.clear()
+    logger.debug(f&#34;ID cache invalidated for statement &#39;{self.statement.id}&#39;&#34;)</code></pre>
+</details>
+<div class="desc"><p>Clear the cache, forcing a rebuild on next resolution.</p>
+<p>This should be called if the statement structure changes after
+the resolver was created.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.id_resolver.IDResolver.refresh_cache"><code class="name flex">
+<span>def <span class="ident">refresh_cache</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def refresh_cache(self) -&gt; None:
+    &#34;&#34;&#34;Rebuild the cache from the current statement structure.&#34;&#34;&#34;
+    self.invalidate_cache()
+    self._build_cache()</code></pre>
+</details>
+<div class="desc"><p>Rebuild the cache from the current statement structure.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.id_resolver.IDResolver.resolve"><code class="name flex">
+<span>def <span class="ident">resolve</span></span>(<span>self,<br>item_id: str,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a> | None = None) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resolve(self, item_id: str, graph: Optional[Graph] = None) -&gt; Optional[str]:
+    &#34;&#34;&#34;Resolve a statement item ID to its graph node ID.
+
+    Resolution process:
+    1. Check the pre-built cache for the item ID
+    2. If not found and a graph is provided, check if the ID exists
+       directly as a node in the graph
+    3. Return None if not found anywhere
+
+    Args:
+        item_id: The statement item ID to resolve.
+        graph: Optional graph to check for direct node existence.
+
+    Returns:
+        The resolved graph node ID if found, None otherwise.
+    &#34;&#34;&#34;
+    # Rebuild cache if it&#39;s empty (e.g., after invalidation)
+    if not self._item_to_node_cache:
+        self._build_cache()
+
+    # Check cache first
+    if item_id in self._item_to_node_cache:
+        return self._item_to_node_cache[item_id]
+
+    # Check if it exists directly in graph
+    if graph and graph.has_node(item_id):
+        # Cache this discovery for future lookups
+        self._item_to_node_cache[item_id] = item_id
+        self._node_to_items_cache.setdefault(item_id, []).append(item_id)
+        return item_id
+
+    return None</code></pre>
+</details>
+<div class="desc"><p>Resolve a statement item ID to its graph node ID.</p>
+<p>Resolution process:
+1. Check the pre-built cache for the item ID
+2. If not found and a graph is provided, check if the ID exists
+directly as a node in the graph
+3. Return None if not found anywhere</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>item_id</code></strong></dt>
+<dd>The statement item ID to resolve.</dd>
+<dt><strong><code>graph</code></strong></dt>
+<dd>Optional graph to check for direct node existence.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The resolved graph node ID if found, None otherwise.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.id_resolver.IDResolver.resolve_multiple"><code class="name flex">
+<span>def <span class="ident">resolve_multiple</span></span>(<span>self,<br>item_ids: list[str],<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a> | None = None) ‑> dict[str, str | None]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resolve_multiple(
+    self, item_ids: list[str], graph: Optional[Graph] = None
+) -&gt; dict[str, Optional[str]]:
+    &#34;&#34;&#34;Resolve multiple item IDs at once.
+
+    Args:
+        item_ids: List of statement item IDs to resolve.
+        graph: Optional graph to check for direct node existence.
+
+    Returns:
+        Dictionary mapping each item ID to its resolved node ID (or None).
+    &#34;&#34;&#34;
+    return {item_id: self.resolve(item_id, graph) for item_id in item_ids}</code></pre>
+</details>
+<div class="desc"><p>Resolve multiple item IDs at once.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>item_ids</code></strong></dt>
+<dd>List of statement item IDs to resolve.</dd>
+<dt><strong><code>graph</code></strong></dt>
+<dd>Optional graph to check for direct node existence.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dictionary mapping each item ID to its resolved node ID (or None).</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.statements.population" href="index.html">fin_statement_model.statements.population</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.statements.population.id_resolver.IDResolver" href="#fin_statement_model.statements.population.id_resolver.IDResolver">IDResolver</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.statements.population.id_resolver.IDResolver.get_all_mappings" href="#fin_statement_model.statements.population.id_resolver.IDResolver.get_all_mappings">get_all_mappings</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.id_resolver.IDResolver.get_items_for_node" href="#fin_statement_model.statements.population.id_resolver.IDResolver.get_items_for_node">get_items_for_node</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.id_resolver.IDResolver.invalidate_cache" href="#fin_statement_model.statements.population.id_resolver.IDResolver.invalidate_cache">invalidate_cache</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.id_resolver.IDResolver.refresh_cache" href="#fin_statement_model.statements.population.id_resolver.IDResolver.refresh_cache">refresh_cache</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.id_resolver.IDResolver.resolve" href="#fin_statement_model.statements.population.id_resolver.IDResolver.resolve">resolve</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.id_resolver.IDResolver.resolve_multiple" href="#fin_statement_model.statements.population.id_resolver.IDResolver.resolve_multiple">resolve_multiple</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

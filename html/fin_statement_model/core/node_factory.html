@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.core.node_factory API documentation</title>
+<meta name="description" content="Factory helpers for creating nodes in the financial statement model …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.core.node_factory</code></h1>
+</header>
+<section id="section-intro">
+<p>Factory helpers for creating nodes in the financial statement model.</p>
+<p>This module centralizes node-creation logic to ensure consistent initialization
+for all node types (financial statement items, calculations, forecasts, stats).</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.core.node_factory.NodeFactory"><code class="flex name class">
+<span>class <span class="ident">NodeFactory</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NodeFactory:
+    &#34;&#34;&#34;Factory for creating nodes in the financial statement model.
+
+    The class exposes convenience helpers that hide the underlying registry
+    and deserialization logic, so client code can create nodes declaratively
+    (e.g., via YAML configs or simple Python calls) without importing every
+    concrete node class.
+
+    Attributes:
+        _calculation_methods: Mapping of calculation type keys (e.g., ``&#34;addition&#34;``)
+            to calculation class names registered in :class:`fin_statement_model.core.calculations.Registry`.
+        _node_type_registry: Mapping of node-type strings to concrete :class:`Node`
+            subclasses used when deserializing from dictionaries.
+    &#34;&#34;&#34;
+
+    # Mapping of calculation type strings to Calculation class names (keys in the Registry)
+    _calculation_methods: ClassVar[dict[str, str]] = {
+        &#34;addition&#34;: &#34;AdditionCalculation&#34;,
+        &#34;subtraction&#34;: &#34;SubtractionCalculation&#34;,
+        &#34;formula&#34;: &#34;FormulaCalculation&#34;,
+        &#34;division&#34;: &#34;DivisionCalculation&#34;,
+        &#34;weighted_average&#34;: &#34;WeightedAverageCalculation&#34;,
+        &#34;custom_formula&#34;: &#34;CustomFormulaCalculation&#34;,
+    }
+
+    # Mapping from node type names to Node classes for deserialization
+    _node_type_registry: ClassVar[dict[str, type[Node]]] = {
+        &#34;financial_statement_item&#34;: FinancialStatementItemNode,
+        &#34;calculation&#34;: CalculationNode,
+        &#34;formula_calculation&#34;: FormulaCalculationNode,
+        &#34;custom_calculation&#34;: CustomCalculationNode,
+        &#34;forecast&#34;: ForecastNode,
+        # Specific forecast types
+        &#34;fixed_growth_forecast&#34;: FixedGrowthForecastNode,
+        &#34;curve_growth_forecast&#34;: CurveGrowthForecastNode,
+        &#34;statistical_growth_forecast&#34;: StatisticalGrowthForecastNode,
+        &#34;average_value_forecast&#34;: AverageValueForecastNode,
+        &#34;average_historical_growth_forecast&#34;: AverageHistoricalGrowthForecastNode,
+        &#34;custom_growth_forecast&#34;: CustomGrowthForecastNode,
+        # Stats node types
+        &#34;yoy_growth&#34;: YoYGrowthNode,
+        &#34;multi_period_stat&#34;: MultiPeriodStatNode,
+        &#34;two_period_average&#34;: TwoPeriodAverageNode,
+    }
+
+    # Mapping from forecast type strings to specific forecast node classes
+    _forecast_type_registry: ClassVar[dict[str, type[ForecastNode]]] = {
+        &#34;simple&#34;: FixedGrowthForecastNode,
+        &#34;curve&#34;: CurveGrowthForecastNode,
+        &#34;statistical&#34;: StatisticalGrowthForecastNode,
+        &#34;average&#34;: AverageValueForecastNode,
+        &#34;historical_growth&#34;: AverageHistoricalGrowthForecastNode,
+        &#34;custom&#34;: CustomGrowthForecastNode,
+    }
+
+    @classmethod
+    def create_financial_statement_item(
+        cls, name: str, values: dict[str, float]
+    ) -&gt; FinancialStatementItemNode:
+        &#34;&#34;&#34;Create a FinancialStatementItemNode representing a base financial item.
+
+        This node holds historical or projected values for a specific
+        line item (e.g., Revenue, COGS) over different periods.
+
+        Args:
+            name: Identifier for the node (e.g., &#34;Revenue&#34;).
+            values: Mapping of period identifiers to numerical values.
+
+        Returns:
+            A FinancialStatementItemNode initialized with the provided values.
+
+        Raises:
+            ValueError: If the provided name is empty or not a string.
+
+        Examples:
+            &gt;&gt;&gt; revenue_node = NodeFactory.create_financial_statement_item(
+            ...     name=&#34;Revenue&#34;,
+            ...     values={&#34;2023&#34;: 1000.0, &#34;2024&#34;: 1100.0}
+            ... )
+            &gt;&gt;&gt; revenue_node.calculate(&#34;2023&#34;)
+            1000.0
+        &#34;&#34;&#34;
+        if not name or not isinstance(name, str):
+            raise ValueError(&#34;Node name must be a non-empty string&#34;)
+
+        logger.debug(f&#34;Creating financial statement item node: {name}&#34;)
+        return FinancialStatementItemNode(name, values)
+
+    @classmethod
+    def create_calculation_node(
+        cls,
+        name: str,
+        inputs: list[Node],
+        calculation_type: str,
+        formula_variable_names: Optional[list[str]] = None,
+        **calculation_kwargs: Any,
+    ) -&gt; CalculationNode:
+        &#34;&#34;&#34;Create a CalculationNode using a pre-defined calculation.
+
+        This method resolves a calculation class from a calculation_type key,
+        instantiates it with optional parameters, and wraps it in
+        a CalculationNode.
+
+        Args:
+            name: Identifier for the calculation node instance.
+            inputs: List of Node instances serving as inputs to the calculation.
+            calculation_type: Key for the desired calculation in the registry.
+            formula_variable_names: Optional list of variable names used in the formula
+                string. Required &amp; used only if creating a FormulaCalculationNode
+                via the &#39;custom_formula&#39; type with a &#39;formula&#39; kwarg.
+            **calculation_kwargs: Additional parameters for the calculation constructor.
+
+        Returns:
+            A CalculationNode configured with the selected calculation.
+
+        Raises:
+            ValueError: If name is invalid, inputs list is empty, or the
+                calculation_type is unrecognized.
+            TypeError: If the calculation cannot be instantiated with given kwargs.
+
+        Examples:
+            &gt;&gt;&gt; gross_profit = NodeFactory.create_calculation_node(
+            ...     name=&#34;GrossProfit&#34;,
+            ...     inputs=[revenue, cogs],
+            ...     calculation_type=&#34;subtraction&#34;
+            ... )
+        &#34;&#34;&#34;
+        # Validate inputs
+        if not name or not isinstance(name, str):
+            raise ValueError(&#34;Node name must be a non-empty string&#34;)
+
+        if not inputs:
+            raise ValueError(&#34;Calculation node must have at least one input&#34;)
+
+        # Check if the calculation type maps to a known calculation name
+        if calculation_type not in cls._calculation_methods:
+            valid_types = list(cls._calculation_methods.keys())
+            raise ValueError(
+                f&#34;Invalid calculation type: &#39;{calculation_type}&#39;. Valid types are: {valid_types}&#34;
+            )
+
+        # Get the calculation name
+        calculation_name = cls._calculation_methods[calculation_type]
+
+        # For other types, resolve the Calculation class from the registry
+        try:
+            calculation_cls: type[Calculation] = Registry.get(calculation_name)
+        except KeyError:
+            # This should ideally not happen if _calculation_methods is synced with registry
+            raise ValueError(
+                f&#34;Calculation class &#39;{calculation_name}&#39; (for type &#39;{calculation_type}&#39;) not found in Registry.&#34;
+            ) from None  # Prevent chaining the KeyError
+
+        # Instantiate the calculation, passing any extra kwargs
+        try:
+            # Extract any metadata that should be stored on the node, not passed to calculation
+            node_kwargs = {}
+            if &#34;metric_name&#34; in calculation_kwargs:
+                node_kwargs[&#34;metric_name&#34;] = calculation_kwargs.pop(&#34;metric_name&#34;)
+            if &#34;metric_description&#34; in calculation_kwargs:
+                node_kwargs[&#34;metric_description&#34;] = calculation_kwargs.pop(
+                    &#34;metric_description&#34;
+                )
+
+            # Special handling for FormulaCalculation which needs input_variable_names
+            if calculation_type == &#34;formula&#34;:
+                if formula_variable_names and len(formula_variable_names) == len(
+                    inputs
+                ):
+                    calculation_kwargs[&#34;input_variable_names&#34;] = formula_variable_names
+                elif not formula_variable_names:
+                    # Generate default names like var_0, var_1, ...
+                    calculation_kwargs[&#34;input_variable_names&#34;] = [
+                        f&#34;var_{i}&#34; for i in range(len(inputs))
+                    ]
+                    logger.warning(
+                        f&#34;No formula_variable_names provided for formula node &#39;{name}&#39;. Using defaults: {calculation_kwargs[&#39;input_variable_names&#39;]}&#34;
+                    )
+                else:
+                    # Mismatch between provided names and number of inputs
+                    raise ConfigurationError(
+                        f&#34;Mismatch between formula_variable_names ({len(formula_variable_names)}) and number of inputs ({len(inputs)}) for node &#39;{name}&#39;&#34;
+                    )
+
+            calculation_instance = calculation_cls(**calculation_kwargs)
+        except TypeError as e:
+            logger.exception(
+                f&#34;Failed to instantiate calculation &#39;{calculation_name}&#39; with kwargs {calculation_kwargs}&#34;
+            )
+            raise TypeError(
+                f&#34;Could not instantiate calculation &#39;{calculation_name}&#39; for node &#39;{name}&#39;. &#34;
+                f&#34;Check required arguments for {calculation_cls.__name__}. Provided kwargs: {calculation_kwargs}&#34;
+            ) from e
+
+        # Create and return a CalculationNode with the instantiated calculation
+        logger.debug(
+            f&#34;Creating calculation node &#39;{name}&#39; with &#39;{calculation_name}&#39; calculation.&#34;
+        )
+
+        return CalculationNode(name, inputs, calculation_instance, **node_kwargs)
+
+    @classmethod
+    def create_forecast_node(
+        cls,
+        name: str,
+        base_node: Node,
+        base_period: str,
+        forecast_periods: list[str],
+        forecast_type: str,
+        growth_params: Union[float, list[float], Callable[[], float]],
+    ) -&gt; Node:
+        &#34;&#34;&#34;Create a forecast node of the specified type using core forecast classes.
+
+        Args:
+            name: Custom name for the forecast node.
+            base_node: The Node instance to base projections on.
+            base_period: Period identifier providing the base value.
+            forecast_periods: List of periods for which to forecast.
+            forecast_type: Forecast method (&#39;simple&#39;, &#39;curve&#39;, &#39;statistical&#39;,
+                &#39;average&#39;, &#39;historical_growth&#39;).
+            growth_params: Parameters controlling forecast behavior (float,
+                list of floats, or callable). Ignored for &#39;average&#39; and &#39;historical_growth&#39;.
+
+        Returns:
+            A Node instance implementing the chosen forecast.
+
+        Raises:
+            ValueError: If an unsupported forecast_type is provided.
+
+        Examples:
+            &gt;&gt;&gt; forecast = NodeFactory.create_forecast_node(
+            ...     name=&#34;RevForecast&#34;,
+            ...     base_node=revenue,
+            ...     base_period=&#34;2023&#34;,
+            ...     forecast_periods=[&#34;2024&#34;, &#34;2025&#34;],
+            ...     forecast_type=&#34;simple&#34;,
+            ...     growth_params=0.05
+            ... )
+        &#34;&#34;&#34;
+        # Prepare placeholder to unify forecast node type
+        node: ForecastNode
+        # Instantiate the appropriate forecast node with proper type checking
+        if forecast_type == &#34;simple&#34;:
+            if not isinstance(growth_params, (int, float)):
+                raise TypeError(&#34;growth_params must be a float for &#39;simple&#39; forecast&#34;)
+            node = FixedGrowthForecastNode(
+                base_node, base_period, forecast_periods, float(growth_params)
+            )
+        elif forecast_type == &#34;curve&#34;:
+            if not isinstance(growth_params, list):
+                raise TypeError(
+                    &#34;growth_params must be a list of floats for &#39;curve&#39; forecast&#34;
+                )
+            rates: list[float] = [float(r) for r in growth_params]
+            node = CurveGrowthForecastNode(
+                base_node, base_period, forecast_periods, rates
+            )
+        elif forecast_type == &#34;statistical&#34;:
+            if not callable(growth_params):
+                raise TypeError(
+                    &#34;growth_params must be a callable returning float for &#39;statistical&#39; forecast&#34;
+                )
+            node = StatisticalGrowthForecastNode(
+                base_node, base_period, forecast_periods, growth_params
+            )
+        elif forecast_type == &#34;average&#34;:
+            node = AverageValueForecastNode(base_node, base_period, forecast_periods)
+        elif forecast_type == &#34;historical_growth&#34;:
+            node = AverageHistoricalGrowthForecastNode(
+                base_node, base_period, forecast_periods
+            )
+        else:
+            raise ValueError(f&#34;Invalid forecast type: {forecast_type}&#34;)
+
+        # Override forecast node&#39;s name to match factory &#39;name&#39; argument
+        node.name = name
+        logger.debug(
+            f&#34;Forecast node created with custom name: {name} (original: {base_node.name})&#34;
+        )
+        return node
+
+    @classmethod
+    def create_from_dict(  # noqa: PLR0911
+        cls, data: dict[str, Any], context: Optional[dict[str, Node]] = None
+    ) -&gt; Node:
+        &#34;&#34;&#34;Create a node from its dictionary representation.
+
+        This method provides a unified interface for deserializing nodes from
+        their dictionary representations, handling dependency resolution and
+        type-specific deserialization logic.
+
+        Args:
+            data: Serialized node data containing at minimum a &#39;type&#39; field.
+            context: Optional dictionary of existing nodes for resolving dependencies.
+                Required for nodes that have dependencies (calculation, forecast nodes).
+
+        Returns:
+            Reconstructed node instance.
+
+        Raises:
+            ValueError: If the data is invalid, missing required fields, or contains
+                an unknown node type.
+            ConfigurationError: If dependencies cannot be resolved or node creation fails.
+
+        Examples:
+            &gt;&gt;&gt; # Simple node without dependencies
+            &gt;&gt;&gt; data = {
+            ...     &#39;type&#39;: &#39;financial_statement_item&#39;,
+            ...     &#39;name&#39;: &#39;Revenue&#39;,
+            ...     &#39;values&#39;: {&#39;2023&#39;: 1000.0}
+            ... }
+            &gt;&gt;&gt; node = NodeFactory.create_from_dict(data)
+
+            &gt;&gt;&gt; # Node with dependencies
+            &gt;&gt;&gt; calc_data = {
+            ...     &#39;type&#39;: &#39;calculation&#39;,
+            ...     &#39;name&#39;: &#39;GrossProfit&#39;,
+            ...     &#39;inputs&#39;: [&#39;Revenue&#39;, &#39;COGS&#39;],
+            ...     &#39;calculation_type&#39;: &#39;subtraction&#39;
+            ... }
+            &gt;&gt;&gt; context = {&#39;Revenue&#39;: revenue_node, &#39;COGS&#39;: cogs_node}
+            &gt;&gt;&gt; calc_node = NodeFactory.create_from_dict(calc_data, context)
+        &#34;&#34;&#34;
+        if not isinstance(data, dict):
+            raise TypeError(&#34;Node data must be a dictionary&#34;)
+
+        node_type = data.get(&#34;type&#34;)
+        if not node_type:
+            raise ValueError(&#34;Missing &#39;type&#39; field in node data&#34;)
+
+        logger.debug(f&#34;Creating node of type &#39;{node_type}&#39; from dictionary&#34;)
+
+        # Handle nodes without dependencies first
+        if node_type == &#34;financial_statement_item&#34;:
+            return FinancialStatementItemNode.from_dict(data)
+
+        # Handle nodes that require context for dependency resolution
+        if context is None:
+            context = {}
+
+        # For calculation nodes, use the appropriate from_dict_with_context method
+        if node_type == &#34;calculation&#34;:
+            return cast(Node, CalculationNode.from_dict_with_context(data, context))
+        elif node_type == &#34;formula_calculation&#34;:
+            return cast(
+                Node, FormulaCalculationNode.from_dict_with_context(data, context)
+            )
+        elif node_type == &#34;custom_calculation&#34;:
+            raise ConfigurationError(
+                &#34;CustomCalculationNode cannot be deserialized because it contains &#34;
+                &#34;non-serializable Python functions. Manual reconstruction required.&#34;
+            )
+
+        # Handle stats nodes
+        elif node_type == &#34;yoy_growth&#34;:
+            return YoYGrowthNode.from_dict_with_context(data, context)
+        elif node_type == &#34;multi_period_stat&#34;:
+            return MultiPeriodStatNode.from_dict_with_context(data, context)
+        elif node_type == &#34;two_period_average&#34;:
+            return TwoPeriodAverageNode.from_dict_with_context(data, context)
+
+        # Handle forecast nodes
+        elif node_type == &#34;forecast&#34;:
+            # Determine the specific forecast type from the data
+            forecast_type = data.get(&#34;forecast_type&#34;)
+            if not forecast_type:
+                raise ValueError(&#34;Missing &#39;forecast_type&#39; field in forecast node data&#34;)
+
+            # Get the appropriate forecast node class
+            forecast_class = cls._forecast_type_registry.get(forecast_type)
+            if not forecast_class:
+                valid_types = list(cls._forecast_type_registry.keys())
+                raise ValueError(
+                    f&#34;Unknown forecast type &#39;{forecast_type}&#39;. Valid types: {valid_types}&#34;
+                )
+
+            # Handle non-serializable forecast types
+            if forecast_type in [&#34;statistical&#34;, &#34;custom&#34;]:
+                raise ConfigurationError(
+                    f&#34;Forecast type &#39;{forecast_type}&#39; cannot be deserialized because it contains &#34;
+                    &#34;non-serializable functions. Manual reconstruction required.&#34;
+                )
+
+            # Use the specific forecast class&#39;s from_dict_with_context method
+            return forecast_class.from_dict_with_context(data, context)
+
+        # Handle specific forecast node types (for backward compatibility)
+        elif node_type in cls._node_type_registry:
+            node_class = cls._node_type_registry[node_type]
+            if hasattr(node_class, &#34;from_dict_with_context&#34;):
+                return cast(Node, node_class.from_dict_with_context(data, context))
+            else:
+                return cast(Node, node_class.from_dict(data))  # type: ignore[attr-defined]
+
+        else:
+            valid_types = list(cls._node_type_registry.keys())
+            raise ValueError(
+                f&#34;Unknown node type: &#39;{node_type}&#39;. Valid types: {valid_types}&#34;
+            )
+
+    @classmethod
+    def _create_custom_node_from_callable(
+        cls,
+        name: str,
+        inputs: list[Node],
+        formula: Callable[..., Any],
+        description: Optional[str] = None,
+    ) -&gt; CustomCalculationNode:
+        &#34;&#34;&#34;Create a :class:`CustomCalculationNode` from an arbitrary Python callable.
+
+        This helper is useful for ad-hoc or complex calculations that are not
+        (yet) formalized as reusable strategies. The supplied ``formula`` is
+        invoked with the *values* of each input node during evaluation.
+
+        Args:
+            name: Identifier for the custom calculation node.
+            inputs: List of nodes supplying arguments to ``formula``.
+            formula: Callable performing the calculation.
+            description: Human-readable description of the calculation logic.
+
+        Returns:
+            The newly created :class:`CustomCalculationNode` instance.
+
+        Raises:
+            ValueError: If *name* is empty.
+            TypeError: If *formula* is not callable or *inputs* contain non-Node objects.
+
+        Examples:
+            Defining a tax-calculation node::
+
+                def tax_logic(revenue, expenses, tax_rate):
+                    profit = revenue - expenses
+                    return max(profit, 0) * tax_rate
+
+                tax_node = NodeFactory._create_custom_node_from_callable(
+                    name=&#34;IncomeTax&#34;,
+                    inputs=[revenue, expenses, tax_rate_node],
+                    formula=tax_logic,
+                )
+
+            Using a lambda for a quick ratio::
+
+                quick_ratio = NodeFactory._create_custom_node_from_callable(
+                    name=&#34;QuickRatioCustom&#34;,
+                    inputs=[cash, receivables, current_liabilities],
+                    formula=lambda cash, rec, liab: (cash + rec) / liab if liab else 0,
+                )
+        &#34;&#34;&#34;
+        # Validate inputs
+        if not name or not isinstance(name, str):
+            raise ValueError(&#34;Node name must be a non-empty string&#34;)
+
+        if not inputs:
+            # Allowing no inputs might be valid for some custom functions (e.g., constants)
+            # Reconsider if this check is always needed here.
+            logger.warning(f&#34;Creating CustomCalculationNode &#39;{name}&#39; with no inputs.&#34;)
+            # raise ValueError(&#34;Custom node must have at least one input&#34;)
+
+        if not callable(formula):
+            raise TypeError(&#34;Formula must be a callable function&#34;)
+        if not all(isinstance(i, Node) for i in inputs):
+            raise TypeError(&#34;All items in inputs must be Node instances.&#34;)
+
+        # Use the imported CustomCalculationNode
+        logger.debug(f&#34;Creating CustomCalculationNode: {name} using provided callable.&#34;)
+        return CustomCalculationNode(
+            name, inputs, formula_func=formula, description=description
+        )</code></pre>
+</details>
+<div class="desc"><p>Factory for creating nodes in the financial statement model.</p>
+<p>The class exposes convenience helpers that hide the underlying registry
+and deserialization logic, so client code can create nodes declaratively
+(e.g., via YAML configs or simple Python calls) without importing every
+concrete node class.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>_calculation_methods</code></strong></dt>
+<dd>Mapping of calculation type keys (e.g., <code>"addition"</code>)
+to calculation class names registered in :class:<code><a title="fin_statement_model.core.calculations.Registry" href="calculations/index.html#fin_statement_model.core.calculations.Registry">Registry</a></code>.</dd>
+<dt><strong><code>_node_type_registry</code></strong></dt>
+<dd>Mapping of node-type strings to concrete :class:<code>Node</code>
+subclasses used when deserializing from dictionaries.</dd>
+</dl></div>
+<h3>Static methods</h3>
+<dl>
+<dt id="fin_statement_model.core.node_factory.NodeFactory.create_calculation_node"><code class="name flex">
+<span>def <span class="ident">create_calculation_node</span></span>(<span>name: str,<br>inputs: list[<a title="fin_statement_model.core.nodes.base.Node" href="nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>],<br>calculation_type: str,<br>formula_variable_names: list[str] | None = None,<br>**calculation_kwargs: Any) ‑> <a title="fin_statement_model.core.nodes.calculation_nodes.CalculationNode" href="nodes/calculation_nodes.html#fin_statement_model.core.nodes.calculation_nodes.CalculationNode">CalculationNode</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a CalculationNode using a pre-defined calculation.</p>
+<p>This method resolves a calculation class from a calculation_type key,
+instantiates it with optional parameters, and wraps it in
+a CalculationNode.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Identifier for the calculation node instance.</dd>
+<dt><strong><code>inputs</code></strong></dt>
+<dd>List of Node instances serving as inputs to the calculation.</dd>
+<dt><strong><code>calculation_type</code></strong></dt>
+<dd>Key for the desired calculation in the registry.</dd>
+<dt><strong><code>formula_variable_names</code></strong></dt>
+<dd>Optional list of variable names used in the formula
+string. Required &amp; used only if creating a FormulaCalculationNode
+via the 'custom_formula' type with a 'formula' kwarg.</dd>
+<dt><strong><code>**calculation_kwargs</code></strong></dt>
+<dd>Additional parameters for the calculation constructor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A CalculationNode configured with the selected calculation.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If name is invalid, inputs list is empty, or the
+calculation_type is unrecognized.</dd>
+<dt><code>TypeError</code></dt>
+<dd>If the calculation cannot be instantiated with given kwargs.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; gross_profit = NodeFactory.create_calculation_node(
+...     name=&quot;GrossProfit&quot;,
+...     inputs=[revenue, cogs],
+...     calculation_type=&quot;subtraction&quot;
+... )
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.node_factory.NodeFactory.create_financial_statement_item"><code class="name flex">
+<span>def <span class="ident">create_financial_statement_item</span></span>(<span>name: str, values: dict[str, float]) ‑> <a title="fin_statement_model.core.nodes.item_node.FinancialStatementItemNode" href="nodes/item_node.html#fin_statement_model.core.nodes.item_node.FinancialStatementItemNode">FinancialStatementItemNode</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a FinancialStatementItemNode representing a base financial item.</p>
+<p>This node holds historical or projected values for a specific
+line item (e.g., Revenue, COGS) over different periods.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Identifier for the node (e.g., "Revenue").</dd>
+<dt><strong><code>values</code></strong></dt>
+<dd>Mapping of period identifiers to numerical values.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A FinancialStatementItemNode initialized with the provided values.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the provided name is empty or not a string.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; revenue_node = NodeFactory.create_financial_statement_item(
+...     name=&quot;Revenue&quot;,
+...     values={&quot;2023&quot;: 1000.0, &quot;2024&quot;: 1100.0}
+... )
+&gt;&gt;&gt; revenue_node.calculate(&quot;2023&quot;)
+1000.0
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.node_factory.NodeFactory.create_forecast_node"><code class="name flex">
+<span>def <span class="ident">create_forecast_node</span></span>(<span>name: str,<br>base_node: <a title="fin_statement_model.core.nodes.base.Node" href="nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>,<br>base_period: str,<br>forecast_periods: list[str],<br>forecast_type: str,<br>growth_params: float | list[float] | Callable[[], float]) ‑> <a title="fin_statement_model.core.nodes.base.Node" href="nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a forecast node of the specified type using core forecast classes.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Custom name for the forecast node.</dd>
+<dt><strong><code>base_node</code></strong></dt>
+<dd>The Node instance to base projections on.</dd>
+<dt><strong><code>base_period</code></strong></dt>
+<dd>Period identifier providing the base value.</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of periods for which to forecast.</dd>
+<dt><strong><code>forecast_type</code></strong></dt>
+<dd>Forecast method ('simple', 'curve', 'statistical',
+'average', 'historical_growth').</dd>
+<dt><strong><code>growth_params</code></strong></dt>
+<dd>Parameters controlling forecast behavior (float,
+list of floats, or callable). Ignored for 'average' and 'historical_growth'.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A Node instance implementing the chosen forecast.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If an unsupported forecast_type is provided.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; forecast = NodeFactory.create_forecast_node(
+...     name=&quot;RevForecast&quot;,
+...     base_node=revenue,
+...     base_period=&quot;2023&quot;,
+...     forecast_periods=[&quot;2024&quot;, &quot;2025&quot;],
+...     forecast_type=&quot;simple&quot;,
+...     growth_params=0.05
+... )
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.node_factory.NodeFactory.create_from_dict"><code class="name flex">
+<span>def <span class="ident">create_from_dict</span></span>(<span>data: dict[str, typing.Any],<br>context: dict[str, <a title="fin_statement_model.core.nodes.base.Node" href="nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>] | None = None) ‑> <a title="fin_statement_model.core.nodes.base.Node" href="nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a node from its dictionary representation.</p>
+<p>This method provides a unified interface for deserializing nodes from
+their dictionary representations, handling dependency resolution and
+type-specific deserialization logic.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>Serialized node data containing at minimum a 'type' field.</dd>
+<dt><strong><code>context</code></strong></dt>
+<dd>Optional dictionary of existing nodes for resolving dependencies.
+Required for nodes that have dependencies (calculation, forecast nodes).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Reconstructed node instance.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the data is invalid, missing required fields, or contains
+an unknown node type.</dd>
+<dt><code>ConfigurationError</code></dt>
+<dd>If dependencies cannot be resolved or node creation fails.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Simple node without dependencies
+&gt;&gt;&gt; data = {
+...     'type': 'financial_statement_item',
+...     'name': 'Revenue',
+...     'values': {'2023': 1000.0}
+... }
+&gt;&gt;&gt; node = NodeFactory.create_from_dict(data)
+</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Node with dependencies
+&gt;&gt;&gt; calc_data = {
+...     'type': 'calculation',
+...     'name': 'GrossProfit',
+...     'inputs': ['Revenue', 'COGS'],
+...     'calculation_type': 'subtraction'
+... }
+&gt;&gt;&gt; context = {'Revenue': revenue_node, 'COGS': cogs_node}
+&gt;&gt;&gt; calc_node = NodeFactory.create_from_dict(calc_data, context)
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.core" href="index.html">fin_statement_model.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.core.node_factory.NodeFactory" href="#fin_statement_model.core.node_factory.NodeFactory">NodeFactory</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.node_factory.NodeFactory.create_calculation_node" href="#fin_statement_model.core.node_factory.NodeFactory.create_calculation_node">create_calculation_node</a></code></li>
+<li><code><a title="fin_statement_model.core.node_factory.NodeFactory.create_financial_statement_item" href="#fin_statement_model.core.node_factory.NodeFactory.create_financial_statement_item">create_financial_statement_item</a></code></li>
+<li><code><a title="fin_statement_model.core.node_factory.NodeFactory.create_forecast_node" href="#fin_statement_model.core.node_factory.NodeFactory.create_forecast_node">create_forecast_node</a></code></li>
+<li><code><a title="fin_statement_model.core.node_factory.NodeFactory.create_from_dict" href="#fin_statement_model.core.node_factory.NodeFactory.create_from_dict">create_from_dict</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

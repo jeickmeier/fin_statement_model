@@ -37,7 +37,15 @@ class TransformerFactory:
     def register_transformer(
         cls, name: str, transformer_class: type[DataTransformer]
     ) -> None:
-        """Register a transformer class with the factory."""
+        """Register a transformer class with the factory.
+
+        Args:
+            name: Name to register the transformer under.
+            transformer_class: Transformer class to register.
+
+        Raises:
+            TransformerRegistrationError: If a transformer with the given name is already registered or if the transformer_class is not a subclass of DataTransformer.
+        """
         if name in cls._transformers:
             raise TransformerRegistrationError(
                 f"Transformer name '{name}' is already registered",
@@ -54,7 +62,18 @@ class TransformerFactory:
 
     @classmethod
     def create_transformer(cls, name: str, **kwargs: Any) -> DataTransformer:
-        """Create a transformer instance by name."""
+        """Create a transformer instance by its registered name.
+
+        Args:
+            name: Name of the registered transformer.
+            **kwargs: Keyword arguments to pass to the transformer constructor.
+
+        Returns:
+            A DataTransformer instance.
+
+        Raises:
+            TransformerConfigurationError: If no transformer is registered under the given name.
+        """
         if name not in cls._transformers:
             raise TransformerConfigurationError(
                 f"No transformer registered with name '{name}'",
@@ -67,12 +86,26 @@ class TransformerFactory:
 
     @classmethod
     def list_transformers(cls) -> list[str]:
-        """List all registered transformer names."""
+        """List all registered transformer names.
+
+        Returns:
+            List of registered transformer names.
+        """
         return list(cls._transformers.keys())
 
     @classmethod
     def get_transformer_class(cls, name: str) -> type[DataTransformer]:
-        """Get a transformer class by name."""
+        """Get a transformer class by its registered name.
+
+        Args:
+            name: Name of the registered transformer.
+
+        Returns:
+            Transformer class corresponding to the given name.
+
+        Raises:
+            TransformerConfigurationError: If no transformer is registered under the given name.
+        """
         if name not in cls._transformers:
             raise TransformerConfigurationError(
                 f"No transformer registered with name '{name}'",
@@ -82,7 +115,14 @@ class TransformerFactory:
 
     @classmethod
     def discover_transformers(cls, package_name: str) -> None:
-        """Discover and register all transformers in a package."""
+        """Discover and register all transformers in a package.
+
+        Args:
+            package_name: Full package path to scan for transformers.
+
+        Raises:
+            ImportError: If the specified package cannot be imported.
+        """
         try:
             package = importlib.import_module(package_name)
             package_path = package.__path__
@@ -111,7 +151,15 @@ class TransformerFactory:
     def create_composite_transformer(
         cls, transformer_names: list[str], **kwargs: Any
     ) -> DataTransformer:
-        """Create a composite transformer from a list of transformer names."""
+        """Create a composite transformer from a list of transformer names.
+
+        Args:
+            transformer_names: List of transformer names to include in the composite.
+            **kwargs: Keyword arguments to pass to each transformer constructor.
+
+        Returns:
+            CompositeTransformer instance combining the specified transformers.
+        """
         transformers = [
             cls.create_transformer(name, **kwargs) for name in transformer_names
         ]
@@ -132,7 +180,21 @@ class TransformationService:
         reference: Optional[str] = None,
         scale_factor: Optional[float] = None,
     ) -> Union[pd.DataFrame, dict[str, Any]]:
-        """Normalize financial data."""
+        """Normalize financial data.
+
+        Args:
+            data: DataFrame or dict of financial data to normalize.
+            normalization_type: Type of normalization to apply.
+            reference: Reference column for 'percent_of' normalization.
+            scale_factor: Scale factor for 'scale_by' normalization.
+
+        Returns:
+            Normalized data of the same type as input.
+
+        Raises:
+            TransformerConfigurationError: If the normalization transformer is not registered.
+            NormalizationError: If normalization fails due to invalid parameters or data.
+        """
         # Determine normalization type default
         default_norm_type = cfg("preprocessing.default_normalization_type")
         norm_type = (
@@ -153,7 +215,21 @@ class TransformationService:
         periods: Optional[int] = None,
         window_size: Optional[int] = None,
     ) -> Union[pd.DataFrame, dict[str, Any]]:
-        """Apply time series transformations to financial data."""
+        """Apply time series transformations to financial data.
+
+        Args:
+            data: DataFrame or dict of financial data.
+            transformation_type: Type of time series transformation to apply.
+            periods: Number of periods for lag-based transformations.
+            window_size: Window size for moving average calculations.
+
+        Returns:
+            Transformed data of the same type as input.
+
+        Raises:
+            TransformerConfigurationError: If the time series transformer is not registered.
+            TimeSeriesError: If the transformation fails due to invalid parameters or data.
+        """
         # Determine defaults from config
         default_transform_type = cfg("preprocessing.default_transformation_type")
         transform_type = (
@@ -179,7 +255,20 @@ class TransformationService:
         conversion_type: str,
         aggregation: Optional[str] = None,
     ) -> pd.DataFrame:
-        """Convert data between different period types."""
+        """Convert data between different reporting periods.
+
+        Args:
+            data: DataFrame with time-based data to convert.
+            conversion_type: Conversion type (e.g., 'quarterly_to_annual').
+            aggregation: Aggregation method (e.g., 'sum', 'mean', 'last').
+
+        Returns:
+            DataFrame with converted periods.
+
+        Raises:
+            TransformerConfigurationError: If the period conversion transformer is not registered.
+            PeriodConversionError: If period conversion fails due to invalid data or parameters.
+        """
         default_agg = cfg("preprocessing.default_conversion_aggregation")
         agg = aggregation if aggregation is not None else default_agg
         transformer = TransformerFactory.create_transformer(
@@ -196,7 +285,21 @@ class TransformationService:
         add_subtotals: Optional[bool] = None,
         apply_sign_convention: Optional[bool] = None,
     ) -> pd.DataFrame:
-        """Format a financial statement DataFrame."""
+        """Format a financial statement DataFrame.
+
+        Args:
+            data: DataFrame representing the statement to format.
+            statement_type: Type of statement (e.g., 'income_statement').
+            add_subtotals: Whether to include subtotal lines.
+            apply_sign_convention: Whether to apply standard sign conventions.
+
+        Returns:
+            Formatted DataFrame with applied subtotals and sign conventions.
+
+        Raises:
+            TransformerConfigurationError: If the statement formatting transformer is not registered.
+            PreprocessingError: If formatting fails due to invalid data or parameters.
+        """
         # Determine defaults from preprocessing config
         stmt_cfg = cfg("preprocessing.statement_formatting")
         default_stmt_type = stmt_cfg.statement_type or "income_statement"
@@ -224,7 +327,18 @@ class TransformationService:
     def create_transformation_pipeline(
         self, transformers_config: list[dict[str, Any]]
     ) -> DataTransformer:
-        """Create a composite transformer from configurations."""
+        """Create a composite transformer from configurations.
+
+        Args:
+            transformers_config: List of transformer configuration dictionaries, each containing a 'name' key and optional parameters.
+
+        Returns:
+            CompositeTransformer instance combining the specified transformers.
+
+        Raises:
+            ValueError: If any configuration dictionary is missing the 'name' key.
+            TransformerConfigurationError: If transformer creation fails for a given name.
+        """
         transformers = []
         for config in transformers_config:
             if "name" not in config:
@@ -239,17 +353,41 @@ class TransformationService:
     def apply_transformation_pipeline(
         self, data: object, transformers_config: list[dict[str, Any]]
     ) -> object:
-        """Apply a transformation pipeline to data."""
+        """Apply a transformation pipeline to data.
+
+        Args:
+            data: Input data to transform.
+            transformers_config: List of transformer configuration dictionaries.
+
+        Returns:
+            Transformed data after applying the pipeline.
+
+        Raises:
+            ValueError: If transformer configuration is invalid.
+            TransformerConfigurationError: If transformer creation fails.
+        """
         pipeline = self.create_transformation_pipeline(transformers_config)
         return pipeline.execute(data)
 
     def register_custom_transformer(
         self, name: str, transformer_class: type[DataTransformer]
     ) -> None:
-        """Register a custom transformer with the factory."""
+        """Register a custom transformer with the factory.
+
+        Args:
+            name: Name under which to register the custom transformer.
+            transformer_class: Custom transformer class to register.
+
+        Raises:
+            TransformerRegistrationError: If registration fails due to name conflicts or invalid class.
+        """
         TransformerFactory.register_transformer(name, transformer_class)
         logger.info(f"Registered custom transformer: {name}")
 
     def list_available_transformers(self) -> list[str]:
-        """List all available transformer types."""
+        """List all available transformer types.
+
+        Returns:
+            List of transformer names registered in the factory.
+        """
         return TransformerFactory.list_transformers()

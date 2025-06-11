@@ -1,7 +1,7 @@
-"""Custom Exception classes for the preprocessing package.
+"""Define custom exception classes for the preprocessing package.
 
-These exceptions provide specific error information related to data
-preprocessing, transformation, and validation operations.
+This module provides specific error types for data preprocessing,
+transformation, and validation operations in the preprocessing layer.
 """
 
 from typing import Optional, Any

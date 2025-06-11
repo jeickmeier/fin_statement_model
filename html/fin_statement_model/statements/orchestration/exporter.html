@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.statements.orchestration.exporter API documentation</title>
+<meta name="description" content="Statement export functionality …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.statements.orchestration.exporter</code></h1>
+</header>
+<section id="section-intro">
+<p>Statement export functionality.</p>
+<p>This module handles exporting financial statements to various file formats
+including Excel and JSON. It provides both internal helper functions and
+public API functions for exporting statements.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.statements.orchestration.exporter.export_statements"><code class="name flex">
+<span>def <span class="ident">export_statements</span></span>(<span>dfs: dict[str, pandas.core.frame.DataFrame],<br>output_dir: str,<br>writer_func: Callable[..., None],<br>writer_kwargs: dict[str, typing.Any],<br>file_suffix: str) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_statements(
+    dfs: dict[str, pd.DataFrame],
+    output_dir: str,
+    writer_func: Callable[..., None],
+    writer_kwargs: dict[str, Any],
+    file_suffix: str,
+) -&gt; None:
+    &#34;&#34;&#34;Export pre-generated statement DataFrames using the provided writer.
+
+    This function is intentionally *dumb*: it assumes the heavy-lifting has
+    already been done by :pyfunc:`create_statement_dataframe` and focuses solely
+    on persisting the resulting pandas objects to disk.
+
+    Args:
+        dfs: A mapping of ``statement_id`` to pandas ``DataFrame`` instances
+            returned by :pyfunc:`create_statement_dataframe`.
+        output_dir: Target directory where the files will be written. The
+            directory (and any missing parents) is created if it does not yet
+            exist.
+        writer_func: Concrete low-level writer (e.g.
+            :pyfunc:`write_statement_to_excel`). Must accept the dataframe as
+            first argument and the destination path as second argument.
+        writer_kwargs: Arbitrary keyword arguments forwarded verbatim to
+            *writer_func*.
+        file_suffix: Extension used for the generated files (e.g. ``&#34;.xlsx&#34;``).
+
+    Raises:
+        TypeError: If *dfs* is not a mapping of ``str -&gt; DataFrame``.
+        WriteError: Propagated if the underlying *writer_func* fails for any
+            individual statement.
+    &#34;&#34;&#34;
+
+    if not isinstance(dfs, dict):
+        raise TypeError(
+            &#34;&#39;dfs&#39; must be a mapping of statement_id to pandas DataFrame. &#34;
+            &#34;Call &#39;create_statement_dataframe&#39; first and pass the result here.&#34;
+        )
+
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    if not dfs:
+        logger.warning(&#34;Received an empty mapping of DataFrames – nothing to export.&#34;)
+        return
+
+    export_errors: list[tuple[str, str]] = []
+
+    for stmt_id, df in dfs.items():
+        # Ensure stmt_id is filename-safe (replace path separators)
+        safe_stmt_id = stmt_id.replace(&#34;/&#34;, &#34;_&#34;).replace(&#34;\\&#34;, &#34;_&#34;)
+        file_path = output_path / f&#34;{safe_stmt_id}{file_suffix}&#34;
+
+        try:
+            writer_func(df, str(file_path), **writer_kwargs)
+            logger.info(
+                &#34;Successfully exported statement &#39;%s&#39; to %s&#34;, stmt_id, file_path
+            )
+        except WriteError as e:
+            logger.exception(
+                &#34;Failed to write %s file for statement &#39;%s&#39;&#34;, file_suffix, stmt_id
+            )
+            export_errors.append((stmt_id, str(e)))
+        except Exception as e:  # noqa: BLE001 – re-wrap unknown exceptions
+            logger.exception(
+                &#34;Unexpected error exporting statement &#39;%s&#39; to %s&#34;, stmt_id, file_path
+            )
+            export_errors.append((stmt_id, f&#34;Unexpected export error: {e!s}&#34;))
+
+    if export_errors:
+        error_summary = &#34;; &#34;.join(f&#34;{sid}: {err}&#34; for sid, err in export_errors)
+        raise WriteError(
+            f&#34;Encountered {len(export_errors)} errors during {file_suffix} export: &#34;
+            f&#34;{error_summary}&#34;
+        )</code></pre>
+</details>
+<div class="desc"><p>Export pre-generated statement DataFrames using the provided writer.</p>
+<p>This function is intentionally <em>dumb</em>: it assumes the heavy-lifting has
+already been done by :pyfunc:<code>create_statement_dataframe</code> and focuses solely
+on persisting the resulting pandas objects to disk.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>dfs</code></strong></dt>
+<dd>A mapping of <code>statement_id</code> to pandas <code>DataFrame</code> instances
+returned by :pyfunc:<code>create_statement_dataframe</code>.</dd>
+<dt><strong><code>output_dir</code></strong></dt>
+<dd>Target directory where the files will be written. The
+directory (and any missing parents) is created if it does not yet
+exist.</dd>
+<dt><strong><code>writer_func</code></strong></dt>
+<dd>Concrete low-level writer (e.g.
+:pyfunc:<code>write_statement_to_excel</code>). Must accept the dataframe as
+first argument and the destination path as second argument.</dd>
+<dt><strong><code>writer_kwargs</code></strong></dt>
+<dd>Arbitrary keyword arguments forwarded verbatim to
+<em>writer_func</em>.</dd>
+<dt><strong><code>file_suffix</code></strong></dt>
+<dd>Extension used for the generated files (e.g. <code>".xlsx"</code>).</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If <em>dfs</em> is not a mapping of <code>str -&gt; DataFrame</code>.</dd>
+<dt><code>WriteError</code></dt>
+<dd>Propagated if the underlying <em>writer_func</em> fails for any
+individual statement.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.statements.orchestration.exporter.export_statements_to_excel"><code class="name flex">
+<span>def <span class="ident">export_statements_to_excel</span></span>(<span>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>raw_configs: dict[str, dict[str, typing.Any]],<br>output_dir: str,<br>format_kwargs: dict[str, typing.Any] | None = None,<br>writer_kwargs: dict[str, typing.Any] | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_statements_to_excel(
+    graph: Graph,
+    raw_configs: dict[str, dict[str, Any]],
+    output_dir: str,
+    format_kwargs: Optional[dict[str, Any]] = None,
+    writer_kwargs: Optional[dict[str, Any]] = None,
+) -&gt; None:
+    &#34;&#34;&#34;Generate statement DataFrames and export them to individual Excel files.
+
+    Loads configurations, builds statements, populates the graph (if necessary),
+    generates DataFrames for each statement, and saves each DataFrame to a
+    separate `.xlsx` file in the specified `output_dir`.
+
+    Args:
+        graph: The core.graph.Graph instance containing necessary data.
+        raw_configs: Mapping of statement IDs to configuration dictionaries.
+        output_dir: The directory where the resulting Excel files will be saved.
+            File names will be derived from the statement IDs (e.g.,
+            &#39;income_statement.xlsx&#39;).
+        format_kwargs: Optional dictionary of arguments passed to
+            `StatementFormatter.generate_dataframe` when creating the DataFrames.
+        writer_kwargs: Optional dictionary of arguments passed to the underlying
+            Excel writer (`write_statement_to_excel`), such as
+            `sheet_name` or engine options.
+
+    Raises:
+        ConfigurationError: If loading or validating configurations fails.
+        StatementError: If processing statements fails critically.
+        TypeError: If `raw_configs` is not a valid mapping.
+        WriteError: If writing any of the Excel files fails.
+        FinancialModelError: Potentially other errors from graph operations.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.graph import Graph
+        &gt;&gt;&gt; # Assume &#39;my_graph&#39; is a pre-populated Graph instance
+        &gt;&gt;&gt; # Assume configs exist in &#39;./statement_configs/&#39;
+        &gt;&gt;&gt; try:
+        ...     export_statements_to_excel(
+        ...         graph=my_graph,
+        ...         raw_configs=my_configs,
+        ...         output_dir=&#39;./output_excel/&#39;,
+        ...         writer_kwargs={&#39;freeze_panes&#39;: (1, 1)} # Freeze header row/col
+        ...     )
+        ...     # Use logger.info
+        ...     logger.info(&#34;Statements exported to ./output_excel/&#34;)
+        ... except (FileNotFoundError, ConfigurationError, StatementError, WriteError) as e:
+        ...     # Use logger.error or logger.exception
+        ...     logger.error(f&#34;Export failed: {e}&#34;)
+    &#34;&#34;&#34;
+    try:
+        dfs = create_statement_dataframe(graph, raw_configs, format_kwargs or {})
+    except FinancialModelError:
+        logger.exception(&#34;Failed to generate statement DataFrames for Excel export:&#34;)
+        raise
+
+    export_statements(
+        dfs=dfs,
+        output_dir=output_dir,
+        writer_func=write_statement_to_excel,
+        writer_kwargs=writer_kwargs or {},
+        file_suffix=&#34;.xlsx&#34;,
+    )</code></pre>
+</details>
+<div class="desc"><p>Generate statement DataFrames and export them to individual Excel files.</p>
+<p>Loads configurations, builds statements, populates the graph (if necessary),
+generates DataFrames for each statement, and saves each DataFrame to a
+separate <code>.xlsx</code> file in the specified <code>output_dir</code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The core.graph.Graph instance containing necessary data.</dd>
+<dt><strong><code>raw_configs</code></strong></dt>
+<dd>Mapping of statement IDs to configuration dictionaries.</dd>
+<dt><strong><code>output_dir</code></strong></dt>
+<dd>The directory where the resulting Excel files will be saved.
+File names will be derived from the statement IDs (e.g.,
+'income_statement.xlsx').</dd>
+<dt><strong><code>format_kwargs</code></strong></dt>
+<dd>Optional dictionary of arguments passed to
+<code>StatementFormatter.generate_dataframe</code> when creating the DataFrames.</dd>
+<dt><strong><code>writer_kwargs</code></strong></dt>
+<dd>Optional dictionary of arguments passed to the underlying
+Excel writer (<code>write_statement_to_excel</code>), such as
+<code>sheet_name</code> or engine options.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ConfigurationError</code></dt>
+<dd>If loading or validating configurations fails.</dd>
+<dt><code>StatementError</code></dt>
+<dd>If processing statements fails critically.</dd>
+<dt><code>TypeError</code></dt>
+<dd>If <code>raw_configs</code> is not a valid mapping.</dd>
+<dt><code>WriteError</code></dt>
+<dd>If writing any of the Excel files fails.</dd>
+<dt><code>FinancialModelError</code></dt>
+<dd>Potentially other errors from graph operations.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.graph import Graph
+&gt;&gt;&gt; # Assume 'my_graph' is a pre-populated Graph instance
+&gt;&gt;&gt; # Assume configs exist in './statement_configs/'
+&gt;&gt;&gt; try:
+...     export_statements_to_excel(
+...         graph=my_graph,
+...         raw_configs=my_configs,
+...         output_dir='./output_excel/',
+...         writer_kwargs={'freeze_panes': (1, 1)} # Freeze header row/col
+...     )
+...     # Use logger.info
+...     logger.info(&quot;Statements exported to ./output_excel/&quot;)
+... except (FileNotFoundError, ConfigurationError, StatementError, WriteError) as e:
+...     # Use logger.error or logger.exception
+...     logger.error(f&quot;Export failed: {e}&quot;)
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.statements.orchestration.exporter.export_statements_to_json"><code class="name flex">
+<span>def <span class="ident">export_statements_to_json</span></span>(<span>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>raw_configs: dict[str, dict[str, typing.Any]],<br>output_dir: str,<br>format_kwargs: dict[str, typing.Any] | None = None,<br>writer_kwargs: dict[str, typing.Any] | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_statements_to_json(
+    graph: Graph,
+    raw_configs: dict[str, dict[str, Any]],
+    output_dir: str,
+    format_kwargs: Optional[dict[str, Any]] = None,
+    writer_kwargs: Optional[dict[str, Any]] = None,
+) -&gt; None:
+    &#34;&#34;&#34;Generate statement DataFrames and export them to individual JSON files.
+
+    Loads configurations, builds statements, populates the graph (if necessary),
+    generates DataFrames for each statement, and saves each DataFrame to a
+    separate `.json` file in the specified `output_dir`.
+
+    Args:
+        graph: The core.graph.Graph instance containing necessary data.
+        raw_configs: Mapping of statement IDs to configuration dictionaries.
+        output_dir: The directory where the resulting JSON files will be saved.
+            File names will be derived from the statement IDs (e.g.,
+            &#39;balance_sheet.json&#39;).
+        format_kwargs: Optional dictionary of arguments passed to
+            `StatementFormatter.generate_dataframe` when creating the DataFrames.
+        writer_kwargs: Optional dictionary of arguments passed to the underlying
+            JSON writer (`write_statement_to_json`). Common options
+            include `orient` (e.g., &#39;records&#39;, &#39;columns&#39;, &#39;split&#39;) and `indent`.
+            Defaults to &#39;records&#39; orient and indent=2 if not provided.
+
+    Raises:
+        ConfigurationError: If loading or validating configurations fails.
+        StatementError: If processing statements fails critically.
+        TypeError: If `raw_configs` is not a valid mapping.
+        WriteError: If writing any of the JSON files fails.
+        FinancialModelError: Potentially other errors from graph operations.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.graph import Graph
+        &gt;&gt;&gt; # Assume &#39;my_graph&#39; is a pre-populated Graph instance
+        &gt;&gt;&gt; # Assume configs exist in &#39;./statement_configs/&#39;
+        &gt;&gt;&gt; try:
+        ...     export_statements_to_json(
+        ...         graph=my_graph,
+        ...         raw_configs=my_configs,
+        ...         output_dir=&#39;./output_json/&#39;,
+        ...         writer_kwargs={&#39;orient&#39;: &#39;split&#39;, &#39;indent&#39;: 4}
+        ...     )
+        ...     # Use logger.info
+        ...     logger.info(&#34;Statements exported to ./output_json/&#34;)
+        ... except (FileNotFoundError, ConfigurationError, StatementError, WriteError) as e:
+        ...     # Use logger.error or logger.exception
+        ...     logger.error(f&#34;Export failed: {e}&#34;)
+    &#34;&#34;&#34;
+    final_writer_kwargs = writer_kwargs or {}
+    # Set JSON specific defaults if not provided
+    final_writer_kwargs.setdefault(&#34;orient&#34;, &#34;records&#34;)
+    final_writer_kwargs.setdefault(&#34;indent&#34;, 2)
+
+    try:
+        dfs = create_statement_dataframe(graph, raw_configs, format_kwargs or {})
+    except FinancialModelError:
+        logger.exception(&#34;Failed to generate statement DataFrames for JSON export:&#34;)
+        raise
+
+    export_statements(
+        dfs=dfs,
+        output_dir=output_dir,
+        writer_func=write_statement_to_json,
+        writer_kwargs=final_writer_kwargs,
+        file_suffix=&#34;.json&#34;,
+    )</code></pre>
+</details>
+<div class="desc"><p>Generate statement DataFrames and export them to individual JSON files.</p>
+<p>Loads configurations, builds statements, populates the graph (if necessary),
+generates DataFrames for each statement, and saves each DataFrame to a
+separate <code>.json</code> file in the specified <code>output_dir</code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The core.graph.Graph instance containing necessary data.</dd>
+<dt><strong><code>raw_configs</code></strong></dt>
+<dd>Mapping of statement IDs to configuration dictionaries.</dd>
+<dt><strong><code>output_dir</code></strong></dt>
+<dd>The directory where the resulting JSON files will be saved.
+File names will be derived from the statement IDs (e.g.,
+'balance_sheet.json').</dd>
+<dt><strong><code>format_kwargs</code></strong></dt>
+<dd>Optional dictionary of arguments passed to
+<code>StatementFormatter.generate_dataframe</code> when creating the DataFrames.</dd>
+<dt><strong><code>writer_kwargs</code></strong></dt>
+<dd>Optional dictionary of arguments passed to the underlying
+JSON writer (<code>write_statement_to_json</code>). Common options
+include <code>orient</code> (e.g., 'records', 'columns', 'split') and <code>indent</code>.
+Defaults to 'records' orient and indent=2 if not provided.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ConfigurationError</code></dt>
+<dd>If loading or validating configurations fails.</dd>
+<dt><code>StatementError</code></dt>
+<dd>If processing statements fails critically.</dd>
+<dt><code>TypeError</code></dt>
+<dd>If <code>raw_configs</code> is not a valid mapping.</dd>
+<dt><code>WriteError</code></dt>
+<dd>If writing any of the JSON files fails.</dd>
+<dt><code>FinancialModelError</code></dt>
+<dd>Potentially other errors from graph operations.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.graph import Graph
+&gt;&gt;&gt; # Assume 'my_graph' is a pre-populated Graph instance
+&gt;&gt;&gt; # Assume configs exist in './statement_configs/'
+&gt;&gt;&gt; try:
+...     export_statements_to_json(
+...         graph=my_graph,
+...         raw_configs=my_configs,
+...         output_dir='./output_json/',
+...         writer_kwargs={'orient': 'split', 'indent': 4}
+...     )
+...     # Use logger.info
+...     logger.info(&quot;Statements exported to ./output_json/&quot;)
+... except (FileNotFoundError, ConfigurationError, StatementError, WriteError) as e:
+...     # Use logger.error or logger.exception
+...     logger.error(f&quot;Export failed: {e}&quot;)
+</code></pre></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.statements.orchestration" href="index.html">fin_statement_model.statements.orchestration</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.orchestration.exporter.export_statements" href="#fin_statement_model.statements.orchestration.exporter.export_statements">export_statements</a></code></li>
+<li><code><a title="fin_statement_model.statements.orchestration.exporter.export_statements_to_excel" href="#fin_statement_model.statements.orchestration.exporter.export_statements_to_excel">export_statements_to_excel</a></code></li>
+<li><code><a title="fin_statement_model.statements.orchestration.exporter.export_statements_to_json" href="#fin_statement_model.statements.orchestration.exporter.export_statements_to_json">export_statements_to_json</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

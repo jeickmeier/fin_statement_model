@@ -45,7 +45,13 @@ class StatementType(Enum):
 
 
 class NormalizationConfig(BaseModel):
-    """Configuration for normalization transformations."""
+    """Configuration for normalization transformations.
+
+    Attributes:
+        normalization_type: Type of normalization to apply (e.g., 'percent_of', 'minmax', 'standard', 'scale_by').
+        reference: Reference column name for 'percent_of' normalization.
+        scale_factor: Scaling factor for 'scale_by' normalization.
+    """
 
     normalization_type: Optional[str] = None
     reference: Optional[str] = None
@@ -53,7 +59,13 @@ class NormalizationConfig(BaseModel):
 
 
 class TimeSeriesConfig(BaseModel):
-    """Configuration for time series transformations."""
+    """Configuration for time series transformations.
+
+    Attributes:
+        transformation_type: Type of time series transformation (e.g., 'growth_rate', 'moving_avg', 'cagr', 'yoy', 'qoq').
+        periods: Number of periods for lag-based calculations.
+        window_size: Window size for moving average calculations.
+    """
 
     transformation_type: Optional[str] = None
     periods: Optional[int] = None
@@ -61,14 +73,25 @@ class TimeSeriesConfig(BaseModel):
 
 
 class PeriodConversionConfig(BaseModel):
-    """Configuration for period conversion transformations."""
+    """Configuration for period conversion transformations.
+
+    Attributes:
+        conversion_type: Type of period conversion (e.g., 'quarterly_to_annual', 'monthly_to_quarterly', 'monthly_to_annual', 'quarterly_to_ttm').
+        aggregation: Aggregation method for conversion (e.g., 'sum', 'mean', 'last', 'first', 'max', 'min').
+    """
 
     conversion_type: Optional[str] = None
     aggregation: Optional[str] = None
 
 
 class StatementFormattingConfig(BaseModel):
-    """Configuration for formatting statement output."""
+    """Configuration for formatting statement output.
+
+    Attributes:
+        statement_type: Type of financial statement (e.g., 'income_statement', 'balance_sheet', 'cash_flow').
+        add_subtotals: Whether to include subtotal lines in formatted output.
+        apply_sign_convention: Whether to apply standard sign conventions (e.g., liabilities as negative).
+    """
 
     statement_type: Optional[str] = None
     add_subtotals: Optional[bool] = None

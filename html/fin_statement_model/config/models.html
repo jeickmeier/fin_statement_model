@@ -1,0 +1,1903 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.config.models API documentation</title>
+<meta name="description" content="Define configuration schemas for fin_statement_model …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.config.models</code></h1>
+</header>
+<section id="section-intro">
+<p>Define configuration schemas for fin_statement_model.</p>
+<p>This module provides Pydantic models to validate and type-check the
+application's configuration settings, including logging, I/O, forecasting,
+preprocessing, display, API, metrics, validation, and statement options.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.config.models import Config
+&gt;&gt;&gt; config = Config()
+&gt;&gt;&gt; config.logging.level
+'WARNING'
+</code></pre>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.config.models.APIConfig"><code class="flex name class">
+<span>class <span class="ident">APIConfig</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class APIConfig(BaseModel):
+    &#34;&#34;&#34;Settings for external API integrations.
+
+    Attributes:
+        fmp_api_key (Optional[str]): Financial Modeling Prep API key.
+        fmp_base_url (str): Base URL for FMP API.
+        api_timeout (int): HTTP request timeout in seconds.
+        api_retry_count (int): Number of retries for failed requests.
+        cache_api_responses (bool): Cache API responses to reduce calls.
+        cache_ttl_hours (int): Time-to-live for cache entries in hours.
+
+    Example:
+        &gt;&gt;&gt; APIConfig(api_timeout=60).api_timeout
+        60
+    &#34;&#34;&#34;
+
+    fmp_api_key: Optional[str] = Field(
+        None, description=&#34;Financial Modeling Prep API key&#34;
+    )
+    fmp_base_url: str = Field(
+        &#34;https://financialmodelingprep.com/api/v3&#34;, description=&#34;FMP API base URL&#34;
+    )
+    api_timeout: int = Field(30, description=&#34;API request timeout in seconds&#34;)
+    api_retry_count: int = Field(
+        3, description=&#34;Number of retries for failed API requests&#34;
+    )
+    cache_api_responses: bool = Field(
+        True, description=&#34;Cache API responses to reduce API calls&#34;
+    )
+    cache_ttl_hours: int = Field(24, description=&#34;Cache time-to-live in hours&#34;)
+
+    @field_validator(&#34;api_timeout&#34;, &#34;api_retry_count&#34;, &#34;cache_ttl_hours&#34;)
+    def validate_positive(cls, v: int) -&gt; int:
+        &#34;&#34;&#34;Ensure values are positive.&#34;&#34;&#34;
+        if v &lt;= 0:
+            raise ValueError(&#34;Value must be positive&#34;)
+        return v
+
+    model_config = ConfigDict(extra=&#34;forbid&#34;)</code></pre>
+</details>
+<div class="desc"><p>Settings for external API integrations.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>fmp_api_key</code></strong> :&ensp;<code>Optional[str]</code></dt>
+<dd>Financial Modeling Prep API key.</dd>
+<dt><strong><code>fmp_base_url</code></strong> :&ensp;<code>str</code></dt>
+<dd>Base URL for FMP API.</dd>
+<dt><strong><code>api_timeout</code></strong> :&ensp;<code>int</code></dt>
+<dd>HTTP request timeout in seconds.</dd>
+<dt><strong><code>api_retry_count</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of retries for failed requests.</dd>
+<dt><strong><code>cache_api_responses</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Cache API responses to reduce calls.</dd>
+<dt><strong><code>cache_ttl_hours</code></strong> :&ensp;<code>int</code></dt>
+<dd>Time-to-live for cache entries in hours.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; APIConfig(api_timeout=60).api_timeout
+60
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.config.models.APIConfig.api_retry_count"><code class="name">var <span class="ident">api_retry_count</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.APIConfig.api_timeout"><code class="name">var <span class="ident">api_timeout</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.APIConfig.cache_api_responses"><code class="name">var <span class="ident">cache_api_responses</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.APIConfig.cache_ttl_hours"><code class="name">var <span class="ident">cache_ttl_hours</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.APIConfig.fmp_api_key"><code class="name">var <span class="ident">fmp_api_key</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.APIConfig.fmp_base_url"><code class="name">var <span class="ident">fmp_base_url</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.APIConfig.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="fin_statement_model.config.models.APIConfig.validate_positive"><code class="name flex">
+<span>def <span class="ident">validate_positive</span></span>(<span>v: int) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ensure values are positive.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.config.models.Config"><code class="flex name class">
+<span>class <span class="ident">Config</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Config(BaseModel):
+    &#34;&#34;&#34;Primary configuration container aggregating all sub-configurations.
+
+    Attributes:
+        logging (LoggingConfig): Logging configuration.
+        io (IOConfig): I/O configuration.
+        forecasting (ForecastingConfig): Forecasting settings.
+        preprocessing (PreprocessingConfig): Data preprocessing settings.
+        display (DisplayConfig): Display and formatting settings.
+        api (APIConfig): API integration settings.
+        metrics (MetricsConfig): Metrics registry settings.
+        validation (ValidationConfig): Data validation settings.
+        statements (StatementsConfig): Statement building settings.
+        project_name (str): Identifier for the project.
+        config_file_path (Optional[Path]): Path to the loaded config file.
+        auto_save_config (bool): Auto-save overrides to file.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.config.models import Config
+        &gt;&gt;&gt; config = Config()
+        &gt;&gt;&gt; config.to_dict()
+        {...}
+    &#34;&#34;&#34;
+
+    # Sub-configurations
+    logging: LoggingConfig = Field(
+        default=LoggingConfig.model_validate({}), description=&#34;Logging configuration&#34;
+    )
+    io: IOConfig = Field(
+        default=IOConfig.model_validate({}), description=&#34;Input/Output configuration&#34;
+    )
+    forecasting: ForecastingConfig = Field(
+        default=ForecastingConfig.model_validate({}),
+        description=&#34;Forecasting configuration&#34;,
+    )
+    preprocessing: PreprocessingConfig = Field(
+        default=PreprocessingConfig.model_validate({}),
+        description=&#34;Data preprocessing configuration&#34;,
+    )
+    display: DisplayConfig = Field(
+        default=DisplayConfig.model_validate({}),
+        description=&#34;Display and formatting configuration&#34;,
+    )
+    api: APIConfig = Field(
+        default=APIConfig.model_validate({}),
+        description=&#34;API and external service configuration&#34;,
+    )
+    metrics: MetricsConfig = Field(
+        default=MetricsConfig.model_validate({}), description=&#34;Metrics configuration&#34;
+    )
+    validation: ValidationConfig = Field(
+        default=ValidationConfig.model_validate({}),
+        description=&#34;Data validation configuration&#34;,
+    )
+    statements: StatementsConfig = Field(
+        default=StatementsConfig.model_validate({}),
+        description=&#34;Statement structure and formatting configuration&#34;,
+    )
+
+    # Global settings
+    project_name: str = Field(
+        &#34;fin_statement_model&#34;, description=&#34;Project name for identification&#34;
+    )
+    config_file_path: Optional[Path] = Field(
+        None, description=&#34;Path to user configuration file&#34;
+    )
+    auto_save_config: bool = Field(
+        False, description=&#34;Automatically save configuration changes to file&#34;
+    )
+
+    model_config = ConfigDict(extra=&#34;forbid&#34;, validate_assignment=True)
+
+    def to_dict(self) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Convert configuration to a JSON-serializable dict.
+
+        Uses Pydantic&#39;s `model_dump` in JSON mode to convert complex types
+        to primitive representations.
+
+        Returns:
+            A dict with no None values and JSON-compatible types.
+
+        Example:
+            &gt;&gt;&gt; isinstance(Config().to_dict(), dict)
+            True
+        &#34;&#34;&#34;
+        return self.model_dump(exclude_none=True, mode=&#34;json&#34;)
+
+    def to_yaml(self) -&gt; str:
+        &#34;&#34;&#34;Serialize configuration to a YAML formatted string.
+
+        Returns:
+            YAML string representing the configuration.
+
+        Example:
+            &gt;&gt;&gt; yaml_str = Config().to_yaml()
+            &gt;&gt;&gt; &#39;logging&#39; in yaml_str
+            True
+        &#34;&#34;&#34;
+        import yaml
+
+        return yaml.dump(self.to_dict(), default_flow_style=False, sort_keys=True)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -&gt; &#34;Config&#34;:
+        &#34;&#34;&#34;Instantiate Config from a dictionary.
+
+        Args:
+            data: Dictionary with configuration values.
+
+        Returns:
+            A validated Config instance.
+
+        Example:
+            &gt;&gt;&gt; data = {&#39;project_name&#39;: &#39;test&#39;}
+            &gt;&gt;&gt; isinstance(Config.from_dict(data), Config)
+            True
+        &#34;&#34;&#34;
+        return cls(**data)
+
+    @classmethod
+    def from_yaml(cls, yaml_str: str) -&gt; &#34;Config&#34;:
+        &#34;&#34;&#34;Instantiate Config from a YAML-formatted string.
+
+        Args:
+            yaml_str: YAML string containing configuration.
+
+        Returns:
+            A validated Config instance.
+
+        Example:
+            &gt;&gt;&gt; yaml_str = Config().to_yaml()
+            &gt;&gt;&gt; isinstance(Config.from_yaml(yaml_str), Config)
+            True
+        &#34;&#34;&#34;
+        import yaml
+
+        data = yaml.safe_load(yaml_str)
+        return cls.from_dict(data)
+
+    @classmethod
+    def from_file(cls, path: Path) -&gt; &#34;Config&#34;:
+        &#34;&#34;&#34;Load and parse configuration from a file.
+
+        Args:
+            path: Path to a .yaml, .yml, or .json configuration file.
+
+        Returns:
+            A validated Config instance.
+
+        Raises:
+            ValueError: If the file suffix is not supported.
+
+        Example:
+            &gt;&gt;&gt; from pathlib import Path
+            &gt;&gt;&gt; config = Config.from_file(Path(&#39;config.yaml&#39;))
+            &gt;&gt;&gt; isinstance(config, Config)
+            True
+        &#34;&#34;&#34;
+        if path.suffix in [&#34;.yaml&#34;, &#34;.yml&#34;]:
+            return cls.from_yaml(path.read_text())
+        elif path.suffix == &#34;.json&#34;:
+            import json
+
+            return cls.from_dict(json.loads(path.read_text()))
+        else:
+            raise ValueError(f&#34;Unsupported config file format: {path.suffix}&#34;)</code></pre>
+</details>
+<div class="desc"><p>Primary configuration container aggregating all sub-configurations.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>logging</code></strong> :&ensp;<code><a title="fin_statement_model.config.models.LoggingConfig" href="#fin_statement_model.config.models.LoggingConfig">LoggingConfig</a></code></dt>
+<dd>Logging configuration.</dd>
+<dt><strong><code>io</code></strong> :&ensp;<code><a title="fin_statement_model.config.models.IOConfig" href="#fin_statement_model.config.models.IOConfig">IOConfig</a></code></dt>
+<dd>I/O configuration.</dd>
+<dt><strong><code>forecasting</code></strong> :&ensp;<code><a title="fin_statement_model.config.models.ForecastingConfig" href="#fin_statement_model.config.models.ForecastingConfig">ForecastingConfig</a></code></dt>
+<dd>Forecasting settings.</dd>
+<dt><strong><code>preprocessing</code></strong> :&ensp;<code><a title="fin_statement_model.config.models.PreprocessingConfig" href="#fin_statement_model.config.models.PreprocessingConfig">PreprocessingConfig</a></code></dt>
+<dd>Data preprocessing settings.</dd>
+<dt><strong><code>display</code></strong> :&ensp;<code><a title="fin_statement_model.config.models.DisplayConfig" href="#fin_statement_model.config.models.DisplayConfig">DisplayConfig</a></code></dt>
+<dd>Display and formatting settings.</dd>
+<dt><strong><code>api</code></strong> :&ensp;<code><a title="fin_statement_model.config.models.APIConfig" href="#fin_statement_model.config.models.APIConfig">APIConfig</a></code></dt>
+<dd>API integration settings.</dd>
+<dt><strong><code>metrics</code></strong> :&ensp;<code><a title="fin_statement_model.config.models.MetricsConfig" href="#fin_statement_model.config.models.MetricsConfig">MetricsConfig</a></code></dt>
+<dd>Metrics registry settings.</dd>
+<dt><strong><code>validation</code></strong> :&ensp;<code><a title="fin_statement_model.config.models.ValidationConfig" href="#fin_statement_model.config.models.ValidationConfig">ValidationConfig</a></code></dt>
+<dd>Data validation settings.</dd>
+<dt><strong><code>statements</code></strong> :&ensp;<code><a title="fin_statement_model.config.models.StatementsConfig" href="#fin_statement_model.config.models.StatementsConfig">StatementsConfig</a></code></dt>
+<dd>Statement building settings.</dd>
+<dt><strong><code>project_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Identifier for the project.</dd>
+<dt><strong><code>config_file_path</code></strong> :&ensp;<code>Optional[Path]</code></dt>
+<dd>Path to the loaded config file.</dd>
+<dt><strong><code>auto_save_config</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Auto-save overrides to file.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.config.models import Config
+&gt;&gt;&gt; config = Config()
+&gt;&gt;&gt; config.to_dict()
+{...}
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.config.models.Config.api"><code class="name">var <span class="ident">api</span> : <a title="fin_statement_model.config.models.APIConfig" href="#fin_statement_model.config.models.APIConfig">APIConfig</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.auto_save_config"><code class="name">var <span class="ident">auto_save_config</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.config_file_path"><code class="name">var <span class="ident">config_file_path</span> : pathlib.Path | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.display"><code class="name">var <span class="ident">display</span> : <a title="fin_statement_model.config.models.DisplayConfig" href="#fin_statement_model.config.models.DisplayConfig">DisplayConfig</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.forecasting"><code class="name">var <span class="ident">forecasting</span> : <a title="fin_statement_model.config.models.ForecastingConfig" href="#fin_statement_model.config.models.ForecastingConfig">ForecastingConfig</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.io"><code class="name">var <span class="ident">io</span> : <a title="fin_statement_model.config.models.IOConfig" href="#fin_statement_model.config.models.IOConfig">IOConfig</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.logging"><code class="name">var <span class="ident">logging</span> : <a title="fin_statement_model.config.models.LoggingConfig" href="#fin_statement_model.config.models.LoggingConfig">LoggingConfig</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.metrics"><code class="name">var <span class="ident">metrics</span> : <a title="fin_statement_model.config.models.MetricsConfig" href="#fin_statement_model.config.models.MetricsConfig">MetricsConfig</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.preprocessing"><code class="name">var <span class="ident">preprocessing</span> : <a title="fin_statement_model.config.models.PreprocessingConfig" href="#fin_statement_model.config.models.PreprocessingConfig">PreprocessingConfig</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.project_name"><code class="name">var <span class="ident">project_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.statements"><code class="name">var <span class="ident">statements</span> : <a title="fin_statement_model.config.models.StatementsConfig" href="#fin_statement_model.config.models.StatementsConfig">StatementsConfig</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.validation"><code class="name">var <span class="ident">validation</span> : <a title="fin_statement_model.config.models.ValidationConfig" href="#fin_statement_model.config.models.ValidationConfig">ValidationConfig</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="fin_statement_model.config.models.Config.from_dict"><code class="name flex">
+<span>def <span class="ident">from_dict</span></span>(<span>data: dict[str, typing.Any]) ‑> <a title="fin_statement_model.config.models.Config" href="#fin_statement_model.config.models.Config">Config</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Instantiate Config from a dictionary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>Dictionary with configuration values.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A validated Config instance.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; data = {'project_name': 'test'}
+&gt;&gt;&gt; isinstance(Config.from_dict(data), Config)
+True
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.from_file"><code class="name flex">
+<span>def <span class="ident">from_file</span></span>(<span>path: pathlib.Path) ‑> <a title="fin_statement_model.config.models.Config" href="#fin_statement_model.config.models.Config">Config</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load and parse configuration from a file.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong></dt>
+<dd>Path to a .yaml, .yml, or .json configuration file.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A validated Config instance.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the file suffix is not supported.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from pathlib import Path
+&gt;&gt;&gt; config = Config.from_file(Path('config.yaml'))
+&gt;&gt;&gt; isinstance(config, Config)
+True
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.from_yaml"><code class="name flex">
+<span>def <span class="ident">from_yaml</span></span>(<span>yaml_str: str) ‑> <a title="fin_statement_model.config.models.Config" href="#fin_statement_model.config.models.Config">Config</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Instantiate Config from a YAML-formatted string.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>yaml_str</code></strong></dt>
+<dd>YAML string containing configuration.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A validated Config instance.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; yaml_str = Config().to_yaml()
+&gt;&gt;&gt; isinstance(Config.from_yaml(yaml_str), Config)
+True
+</code></pre></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.config.models.Config.to_dict"><code class="name flex">
+<span>def <span class="ident">to_dict</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_dict(self) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Convert configuration to a JSON-serializable dict.
+
+    Uses Pydantic&#39;s `model_dump` in JSON mode to convert complex types
+    to primitive representations.
+
+    Returns:
+        A dict with no None values and JSON-compatible types.
+
+    Example:
+        &gt;&gt;&gt; isinstance(Config().to_dict(), dict)
+        True
+    &#34;&#34;&#34;
+    return self.model_dump(exclude_none=True, mode=&#34;json&#34;)</code></pre>
+</details>
+<div class="desc"><p>Convert configuration to a JSON-serializable dict.</p>
+<p>Uses Pydantic's <code>model_dump</code> in JSON mode to convert complex types
+to primitive representations.</p>
+<h2 id="returns">Returns</h2>
+<p>A dict with no None values and JSON-compatible types.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; isinstance(Config().to_dict(), dict)
+True
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.config.models.Config.to_yaml"><code class="name flex">
+<span>def <span class="ident">to_yaml</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_yaml(self) -&gt; str:
+    &#34;&#34;&#34;Serialize configuration to a YAML formatted string.
+
+    Returns:
+        YAML string representing the configuration.
+
+    Example:
+        &gt;&gt;&gt; yaml_str = Config().to_yaml()
+        &gt;&gt;&gt; &#39;logging&#39; in yaml_str
+        True
+    &#34;&#34;&#34;
+    import yaml
+
+    return yaml.dump(self.to_dict(), default_flow_style=False, sort_keys=True)</code></pre>
+</details>
+<div class="desc"><p>Serialize configuration to a YAML formatted string.</p>
+<h2 id="returns">Returns</h2>
+<p>YAML string representing the configuration.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; yaml_str = Config().to_yaml()
+&gt;&gt;&gt; 'logging' in yaml_str
+True
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig"><code class="flex name class">
+<span>class <span class="ident">DisplayConfig</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DisplayConfig(BaseModel):
+    &#34;&#34;&#34;Settings for formatting and displaying statement outputs.
+
+    Attributes:
+        default_number_format (str): Format string for numbers.
+        default_currency_format (str): Format string for currency.
+        default_percentage_format (str): Format string for percentages.
+        hide_zero_rows (bool): Hide rows with all zero values.
+        contra_display_style (Literal[&#39;parentheses&#39;, &#39;brackets&#39;,&#39;negative&#39;]): Style for contra items.
+        thousands_separator (str): Character for thousands separator.
+        decimal_separator (str): Character for decimal separator.
+        default_units (str): Default currency or unit label.
+        scale_factor (float): Scale factor applied to values.
+        indent_character (str): Characters used for indentation.
+        subtotal_style (str): Style keyword for subtotal rows.
+        total_style (str): Style keyword for total rows.
+        header_style (str): Style keyword for headers.
+        contra_css_class (str): CSS class for contra items.
+        show_negative_sign (bool): Show minus sign instead of parentheses.
+        apply_sign_conventions (bool): Apply default sign conventions.
+        include_empty_items (bool): Include items with no data.
+        include_metadata_cols (bool): Include metadata columns.
+        add_is_adjusted_column (bool): Add &#39;is_adjusted&#39; column.
+        include_units_column (bool): Add units column.
+        include_css_classes (bool): Add CSS class column.
+        include_notes_column (bool): Add notes column.
+        apply_item_scaling (bool): Apply item-specific scaling.
+        apply_item_formatting (bool): Apply item-specific formatting.
+        apply_contra_formatting (bool): Apply contra-specific formatting.
+        add_contra_indicator_column (bool): Add contra indicator column.
+
+    Example:
+        &gt;&gt;&gt; DisplayConfig(default_number_format=&#39;.1%&#39;).default_number_format
+        &#39;.1%&#39;
+    &#34;&#34;&#34;
+
+    default_number_format: str = Field(
+        &#34;,.2f&#34;, description=&#34;Default number format string&#34;
+    )
+    default_currency_format: str = Field(
+        &#34;,.2f&#34;, description=&#34;Default currency format string&#34;
+    )
+    default_percentage_format: str = Field(
+        &#34;.1%&#34;, description=&#34;Default percentage format string&#34;
+    )
+    hide_zero_rows: bool = Field(
+        False, description=&#34;Hide rows where all values are zero&#34;
+    )
+    contra_display_style: Literal[&#34;parentheses&#34;, &#34;brackets&#34;, &#34;negative&#34;] = Field(
+        &#34;parentheses&#34;, description=&#34;How to display contra items&#34;
+    )
+    thousands_separator: str = Field(&#34;,&#34;, description=&#34;Thousands separator character&#34;)
+    decimal_separator: str = Field(&#34;.&#34;, description=&#34;Decimal separator character&#34;)
+    default_units: str = Field(&#34;USD&#34;, description=&#34;Default currency/units for display&#34;)
+    scale_factor: float = Field(
+        1.0, description=&#34;Default scale factor for display (e.g., 0.001 for thousands)&#34;
+    )
+
+    # --- New advanced formatting options ---
+    indent_character: str = Field(
+        &#34;  &#34;, description=&#34;Indentation characters used for nested line items&#34;
+    )
+    subtotal_style: str = Field(
+        &#34;bold&#34;, description=&#34;CSS/markup style keyword for subtotal rows&#34;
+    )
+    total_style: str = Field(
+        &#34;bold&#34;, description=&#34;CSS/markup style keyword for total rows&#34;
+    )
+    header_style: str = Field(
+        &#34;bold&#34;, description=&#34;CSS/markup style keyword for header cells&#34;
+    )
+    contra_css_class: str = Field(
+        &#34;contra-item&#34;, description=&#34;Default CSS class name for contra items&#34;
+    )
+    show_negative_sign: bool = Field(
+        True,
+        description=&#34;Whether to prefix negative numbers with a minus sign when not using parentheses&#34;,
+    )
+    # Statement formatting defaults
+    apply_sign_conventions: bool = Field(
+        True, description=&#34;Whether to apply sign conventions by default&#34;
+    )
+    include_empty_items: bool = Field(
+        False, description=&#34;Whether to include items with no data by default&#34;
+    )
+    include_metadata_cols: bool = Field(
+        False, description=&#34;Whether to include metadata columns by default&#34;
+    )
+    add_is_adjusted_column: bool = Field(
+        False, description=&#34;Whether to add an &#39;is_adjusted&#39; column by default&#34;
+    )
+    include_units_column: bool = Field(
+        False, description=&#34;Whether to include units column by default&#34;
+    )
+    include_css_classes: bool = Field(
+        False, description=&#34;Whether to include CSS class column by default&#34;
+    )
+    include_notes_column: bool = Field(
+        False, description=&#34;Whether to include notes column by default&#34;
+    )
+    apply_item_scaling: bool = Field(
+        True, description=&#34;Whether to apply item-specific scaling by default&#34;
+    )
+    apply_item_formatting: bool = Field(
+        True, description=&#34;Whether to apply item-specific formatting by default&#34;
+    )
+    apply_contra_formatting: bool = Field(
+        True, description=&#34;Whether to apply contra-specific formatting by default&#34;
+    )
+    add_contra_indicator_column: bool = Field(
+        False, description=&#34;Whether to add a contra indicator column by default&#34;
+    )
+
+    @field_validator(&#34;scale_factor&#34;)
+    def validate_scale_factor(cls, v: float) -&gt; float:
+        &#34;&#34;&#34;Ensure scale factor is positive.&#34;&#34;&#34;
+        if v &lt;= 0:
+            raise ValueError(&#34;scale_factor must be positive&#34;)
+        return v
+
+    model_config = ConfigDict(extra=&#34;forbid&#34;)</code></pre>
+</details>
+<div class="desc"><p>Settings for formatting and displaying statement outputs.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>default_number_format</code></strong> :&ensp;<code>str</code></dt>
+<dd>Format string for numbers.</dd>
+<dt><strong><code>default_currency_format</code></strong> :&ensp;<code>str</code></dt>
+<dd>Format string for currency.</dd>
+<dt><strong><code>default_percentage_format</code></strong> :&ensp;<code>str</code></dt>
+<dd>Format string for percentages.</dd>
+<dt><strong><code>hide_zero_rows</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Hide rows with all zero values.</dd>
+<dt>contra_display_style (Literal['parentheses', 'brackets','negative']): Style for contra items.</dt>
+<dt><strong><code>thousands_separator</code></strong> :&ensp;<code>str</code></dt>
+<dd>Character for thousands separator.</dd>
+<dt><strong><code>decimal_separator</code></strong> :&ensp;<code>str</code></dt>
+<dd>Character for decimal separator.</dd>
+<dt><strong><code>default_units</code></strong> :&ensp;<code>str</code></dt>
+<dd>Default currency or unit label.</dd>
+<dt><strong><code>scale_factor</code></strong> :&ensp;<code>float</code></dt>
+<dd>Scale factor applied to values.</dd>
+<dt><strong><code>indent_character</code></strong> :&ensp;<code>str</code></dt>
+<dd>Characters used for indentation.</dd>
+<dt><strong><code>subtotal_style</code></strong> :&ensp;<code>str</code></dt>
+<dd>Style keyword for subtotal rows.</dd>
+<dt><strong><code>total_style</code></strong> :&ensp;<code>str</code></dt>
+<dd>Style keyword for total rows.</dd>
+<dt><strong><code>header_style</code></strong> :&ensp;<code>str</code></dt>
+<dd>Style keyword for headers.</dd>
+<dt><strong><code>contra_css_class</code></strong> :&ensp;<code>str</code></dt>
+<dd>CSS class for contra items.</dd>
+<dt><strong><code>show_negative_sign</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Show minus sign instead of parentheses.</dd>
+<dt><strong><code>apply_sign_conventions</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Apply default sign conventions.</dd>
+<dt><strong><code>include_empty_items</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Include items with no data.</dd>
+<dt><strong><code>include_metadata_cols</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Include metadata columns.</dd>
+<dt><strong><code>add_is_adjusted_column</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Add 'is_adjusted' column.</dd>
+<dt><strong><code>include_units_column</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Add units column.</dd>
+<dt><strong><code>include_css_classes</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Add CSS class column.</dd>
+<dt><strong><code>include_notes_column</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Add notes column.</dd>
+<dt><strong><code>apply_item_scaling</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Apply item-specific scaling.</dd>
+<dt><strong><code>apply_item_formatting</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Apply item-specific formatting.</dd>
+<dt><strong><code>apply_contra_formatting</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Apply contra-specific formatting.</dd>
+<dt><strong><code>add_contra_indicator_column</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Add contra indicator column.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; DisplayConfig(default_number_format='.1%').default_number_format
+'.1%'
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.config.models.DisplayConfig.add_contra_indicator_column"><code class="name">var <span class="ident">add_contra_indicator_column</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.add_is_adjusted_column"><code class="name">var <span class="ident">add_is_adjusted_column</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.apply_contra_formatting"><code class="name">var <span class="ident">apply_contra_formatting</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.apply_item_formatting"><code class="name">var <span class="ident">apply_item_formatting</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.apply_item_scaling"><code class="name">var <span class="ident">apply_item_scaling</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.apply_sign_conventions"><code class="name">var <span class="ident">apply_sign_conventions</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.contra_css_class"><code class="name">var <span class="ident">contra_css_class</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.contra_display_style"><code class="name">var <span class="ident">contra_display_style</span> : Literal['parentheses', 'brackets', 'negative']</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.decimal_separator"><code class="name">var <span class="ident">decimal_separator</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.default_currency_format"><code class="name">var <span class="ident">default_currency_format</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.default_number_format"><code class="name">var <span class="ident">default_number_format</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.default_percentage_format"><code class="name">var <span class="ident">default_percentage_format</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.default_units"><code class="name">var <span class="ident">default_units</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.header_style"><code class="name">var <span class="ident">header_style</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.hide_zero_rows"><code class="name">var <span class="ident">hide_zero_rows</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.include_css_classes"><code class="name">var <span class="ident">include_css_classes</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.include_empty_items"><code class="name">var <span class="ident">include_empty_items</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.include_metadata_cols"><code class="name">var <span class="ident">include_metadata_cols</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.include_notes_column"><code class="name">var <span class="ident">include_notes_column</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.include_units_column"><code class="name">var <span class="ident">include_units_column</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.indent_character"><code class="name">var <span class="ident">indent_character</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.scale_factor"><code class="name">var <span class="ident">scale_factor</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.show_negative_sign"><code class="name">var <span class="ident">show_negative_sign</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.subtotal_style"><code class="name">var <span class="ident">subtotal_style</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.thousands_separator"><code class="name">var <span class="ident">thousands_separator</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.DisplayConfig.total_style"><code class="name">var <span class="ident">total_style</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="fin_statement_model.config.models.DisplayConfig.validate_scale_factor"><code class="name flex">
+<span>def <span class="ident">validate_scale_factor</span></span>(<span>v: float) ‑> float</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ensure scale factor is positive.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.config.models.ForecastingConfig"><code class="flex name class">
+<span>class <span class="ident">ForecastingConfig</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ForecastingConfig(BaseModel):
+    &#34;&#34;&#34;Settings for forecasting behavior.
+
+    Attributes:
+        default_method (Literal): Default forecasting method (&#39;simple&#39;, &#39;historical_growth&#39;, &#39;curve&#39;,
+            &#39;statistical&#39;, or &#39;ml&#39;).
+        default_periods (int): Default number of periods to forecast.
+        default_growth_rate (float): Default growth rate for simple forecasting.
+        min_historical_periods (int): Minimum historical periods required.
+        allow_negative_forecasts (bool): Allow negative forecast values.
+        add_missing_periods (bool): Add missing forecast periods.
+        default_bad_forecast_value (float): Value for invalid forecasts.
+        continue_on_error (bool): Continue forecasting other nodes if one fails.
+        historical_growth_aggregation (Literal[&#39;mean&#39;, &#39;median&#39;]): Aggregation method.
+        random_seed (Optional[int]): Seed for statistical forecasting.
+        base_period_strategy (Literal): Strategy for selecting base period.
+
+    Example:
+        &gt;&gt;&gt; ForecastingConfig(default_periods=10).default_periods
+        10
+    &#34;&#34;&#34;
+
+    default_method: Literal[
+        &#34;simple&#34;, &#34;historical_growth&#34;, &#34;curve&#34;, &#34;statistical&#34;, &#34;ml&#34;
+    ] = Field(&#34;simple&#34;, description=&#34;Default forecasting method&#34;)
+    default_periods: int = Field(5, description=&#34;Default number of periods to forecast&#34;)
+    default_growth_rate: float = Field(
+        0.0, description=&#34;Default growth rate for simple forecasting&#34;
+    )
+    min_historical_periods: int = Field(
+        3, description=&#34;Minimum historical periods required for forecasting&#34;
+    )
+    allow_negative_forecasts: bool = Field(
+        True, description=&#34;Allow negative values in forecasts&#34;
+    )
+    add_missing_periods: bool = Field(
+        True, description=&#34;Whether to add missing forecast periods to the graph&#34;
+    )
+    default_bad_forecast_value: float = Field(
+        0.0, description=&#34;Default value to use for NaN, Inf, or error forecasts&#34;
+    )
+    continue_on_error: bool = Field(
+        True,
+        description=&#34;Whether to continue forecasting other nodes if one node fails&#34;,
+    )
+    historical_growth_aggregation: Literal[&#34;mean&#34;, &#34;median&#34;] = Field(
+        &#34;mean&#34;,
+        description=&#34;Aggregation method for historical growth rate: &#39;mean&#39; or &#39;median&#39;&#34;,
+    )
+    random_seed: Optional[int] = Field(
+        None,
+        description=&#34;Random seed for statistical forecasting to ensure reproducible results&#34;,
+    )
+    base_period_strategy: Literal[
+        &#34;preferred_then_most_recent&#34;, &#34;most_recent&#34;, &#34;last_historical&#34;
+    ] = Field(
+        &#34;preferred_then_most_recent&#34;,
+        description=(
+            &#34;Strategy for selecting base period: &#39;preferred_then_most_recent&#39; (default), &#34;
+            &#34;&#39;most_recent&#39; (ignore preferred, pick most recent with data), or &#34;
+            &#34;&#39;last_historical&#39; (always use last historical period).&#34;
+        ),
+    )
+
+    @field_validator(&#34;default_periods&#34;)
+    def validate_periods(cls, v: int) -&gt; int:
+        &#34;&#34;&#34;Validate that `default_periods` is positive.
+
+        Args:
+            v (int): Number of periods.
+
+        Returns:
+            The validated period count.
+
+        Raises:
+            ValueError: If `v` is not positive.
+
+        Example:
+            &gt;&gt;&gt; ForecastingConfig.validate_periods(5)
+            5
+        &#34;&#34;&#34;
+        if v &lt;= 0:
+            raise ValueError(&#34;default_periods must be positive&#34;)
+        return v
+
+    model_config = ConfigDict(extra=&#34;forbid&#34;)</code></pre>
+</details>
+<div class="desc"><p>Settings for forecasting behavior.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>default_method</code></strong> :&ensp;<code>Literal</code></dt>
+<dd>Default forecasting method ('simple', 'historical_growth', 'curve',
+'statistical', or 'ml').</dd>
+<dt><strong><code>default_periods</code></strong> :&ensp;<code>int</code></dt>
+<dd>Default number of periods to forecast.</dd>
+<dt><strong><code>default_growth_rate</code></strong> :&ensp;<code>float</code></dt>
+<dd>Default growth rate for simple forecasting.</dd>
+<dt><strong><code>min_historical_periods</code></strong> :&ensp;<code>int</code></dt>
+<dd>Minimum historical periods required.</dd>
+<dt><strong><code>allow_negative_forecasts</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Allow negative forecast values.</dd>
+<dt><strong><code>add_missing_periods</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Add missing forecast periods.</dd>
+<dt><strong><code>default_bad_forecast_value</code></strong> :&ensp;<code>float</code></dt>
+<dd>Value for invalid forecasts.</dd>
+<dt><strong><code>continue_on_error</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Continue forecasting other nodes if one fails.</dd>
+<dt>historical_growth_aggregation (Literal['mean', 'median']): Aggregation method.</dt>
+<dt><strong><code>random_seed</code></strong> :&ensp;<code>Optional[int]</code></dt>
+<dd>Seed for statistical forecasting.</dd>
+<dt><strong><code>base_period_strategy</code></strong> :&ensp;<code>Literal</code></dt>
+<dd>Strategy for selecting base period.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; ForecastingConfig(default_periods=10).default_periods
+10
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.config.models.ForecastingConfig.add_missing_periods"><code class="name">var <span class="ident">add_missing_periods</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ForecastingConfig.allow_negative_forecasts"><code class="name">var <span class="ident">allow_negative_forecasts</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ForecastingConfig.base_period_strategy"><code class="name">var <span class="ident">base_period_strategy</span> : Literal['preferred_then_most_recent', 'most_recent', 'last_historical']</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ForecastingConfig.continue_on_error"><code class="name">var <span class="ident">continue_on_error</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ForecastingConfig.default_bad_forecast_value"><code class="name">var <span class="ident">default_bad_forecast_value</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ForecastingConfig.default_growth_rate"><code class="name">var <span class="ident">default_growth_rate</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ForecastingConfig.default_method"><code class="name">var <span class="ident">default_method</span> : Literal['simple', 'historical_growth', 'curve', 'statistical', 'ml']</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ForecastingConfig.default_periods"><code class="name">var <span class="ident">default_periods</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ForecastingConfig.historical_growth_aggregation"><code class="name">var <span class="ident">historical_growth_aggregation</span> : Literal['mean', 'median']</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ForecastingConfig.min_historical_periods"><code class="name">var <span class="ident">min_historical_periods</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ForecastingConfig.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ForecastingConfig.random_seed"><code class="name">var <span class="ident">random_seed</span> : int | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="fin_statement_model.config.models.ForecastingConfig.validate_periods"><code class="name flex">
+<span>def <span class="ident">validate_periods</span></span>(<span>v: int) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validate that <code>default_periods</code> is positive.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>v</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of periods.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The validated period count.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If <code>v</code> is not positive.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; ForecastingConfig.validate_periods(5)
+5
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.config.models.IOConfig"><code class="flex name class">
+<span>class <span class="ident">IOConfig</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IOConfig(BaseModel):
+    &#34;&#34;&#34;Configuration for input/output operations.
+
+    Attributes:
+        default_excel_sheet (str): Default sheet name for Excel operations.
+        default_csv_delimiter (str): Default delimiter for CSV files.
+        auto_create_output_dirs (bool): Automatically create output directories.
+        validate_on_read (bool): Validate data when reading.
+        default_mapping_configs_dir (Optional[Path]): Directory for mapping configs.
+        auto_standardize_columns (bool): Standardize column names on read.
+        skip_invalid_rows (bool): Skip rows with invalid data.
+        strict_validation (bool): Enforce strict data validation on read.
+    &#34;&#34;&#34;
+
+    default_excel_sheet: str = Field(
+        &#34;Sheet1&#34;, description=&#34;Default sheet name for Excel operations&#34;
+    )
+    default_csv_delimiter: str = Field(
+        &#34;,&#34;, description=&#34;Default delimiter for CSV files&#34;
+    )
+    auto_create_output_dirs: bool = Field(
+        True, description=&#34;Automatically create output directories if they don&#39;t exist&#34;
+    )
+    validate_on_read: bool = Field(True, description=&#34;Validate data on read operations&#34;)
+    default_mapping_configs_dir: Optional[Path] = Field(
+        None, description=&#34;Directory containing custom mapping configuration files&#34;
+    )
+    auto_standardize_columns: bool = Field(
+        True, description=&#34;Automatically standardize column names when reading data&#34;
+    )
+    skip_invalid_rows: bool = Field(
+        False, description=&#34;Skip rows with invalid data instead of raising errors&#34;
+    )
+    strict_validation: bool = Field(
+        False, description=&#34;Use strict validation when reading data&#34;
+    )
+
+    model_config = ConfigDict(extra=&#34;forbid&#34;)</code></pre>
+</details>
+<div class="desc"><p>Configuration for input/output operations.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>default_excel_sheet</code></strong> :&ensp;<code>str</code></dt>
+<dd>Default sheet name for Excel operations.</dd>
+<dt><strong><code>default_csv_delimiter</code></strong> :&ensp;<code>str</code></dt>
+<dd>Default delimiter for CSV files.</dd>
+<dt><strong><code>auto_create_output_dirs</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Automatically create output directories.</dd>
+<dt><strong><code>validate_on_read</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Validate data when reading.</dd>
+<dt><strong><code>default_mapping_configs_dir</code></strong> :&ensp;<code>Optional[Path]</code></dt>
+<dd>Directory for mapping configs.</dd>
+<dt><strong><code>auto_standardize_columns</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Standardize column names on read.</dd>
+<dt><strong><code>skip_invalid_rows</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Skip rows with invalid data.</dd>
+<dt><strong><code>strict_validation</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Enforce strict data validation on read.</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.config.models.IOConfig.auto_create_output_dirs"><code class="name">var <span class="ident">auto_create_output_dirs</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.IOConfig.auto_standardize_columns"><code class="name">var <span class="ident">auto_standardize_columns</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.IOConfig.default_csv_delimiter"><code class="name">var <span class="ident">default_csv_delimiter</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.IOConfig.default_excel_sheet"><code class="name">var <span class="ident">default_excel_sheet</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.IOConfig.default_mapping_configs_dir"><code class="name">var <span class="ident">default_mapping_configs_dir</span> : pathlib.Path | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.IOConfig.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.IOConfig.skip_invalid_rows"><code class="name">var <span class="ident">skip_invalid_rows</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.IOConfig.strict_validation"><code class="name">var <span class="ident">strict_validation</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.IOConfig.validate_on_read"><code class="name">var <span class="ident">validate_on_read</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.config.models.LoggingConfig"><code class="flex name class">
+<span>class <span class="ident">LoggingConfig</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class LoggingConfig(BaseModel):
+    &#34;&#34;&#34;Settings for library logging.
+
+    Attributes:
+        level (Literal): Default logging level (&#39;DEBUG&#39;, &#39;INFO&#39;, &#39;WARNING&#39;, &#39;ERROR&#39;, or &#39;CRITICAL&#39;).
+        format (str): Log message format string.
+        detailed (bool): Enable detailed logging with file and line numbers.
+        log_file_path (Optional[Path]): Path for rotating log files; None disables file logging.
+
+    Example:
+        &gt;&gt;&gt; LoggingConfig(level=&#39;DEBUG&#39;).level
+        &#39;DEBUG&#39;
+    &#34;&#34;&#34;
+
+    level: Literal[&#34;DEBUG&#34;, &#34;INFO&#34;, &#34;WARNING&#34;, &#34;ERROR&#34;, &#34;CRITICAL&#34;] = Field(
+        &#34;WARNING&#34;, description=&#34;Default logging level for the library&#34;
+    )
+    format: str = Field(
+        &#34;%(asctime)s - %(name)s - %(levelname)s - %(message)s&#34;,
+        description=&#34;Log message format string&#34;,
+    )
+    detailed: bool = Field(
+        False, description=&#34;Enable detailed logging with file and line numbers&#34;
+    )
+    log_file_path: Optional[Path] = Field(
+        None,
+        description=(
+            &#34;If provided, logs are written to this path (rotating handler). &#34;
+            &#34;If None, file logging is disabled.&#34;
+        ),
+    )
+
+    model_config = ConfigDict(extra=&#34;forbid&#34;)</code></pre>
+</details>
+<div class="desc"><p>Settings for library logging.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>level</code></strong> :&ensp;<code>Literal</code></dt>
+<dd>Default logging level ('DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL').</dd>
+<dt><strong><code>format</code></strong> :&ensp;<code>str</code></dt>
+<dd>Log message format string.</dd>
+<dt><strong><code>detailed</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Enable detailed logging with file and line numbers.</dd>
+<dt><strong><code>log_file_path</code></strong> :&ensp;<code>Optional[Path]</code></dt>
+<dd>Path for rotating log files; None disables file logging.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; LoggingConfig(level='DEBUG').level
+'DEBUG'
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.config.models.LoggingConfig.detailed"><code class="name">var <span class="ident">detailed</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.LoggingConfig.format"><code class="name">var <span class="ident">format</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.LoggingConfig.level"><code class="name">var <span class="ident">level</span> : Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.LoggingConfig.log_file_path"><code class="name">var <span class="ident">log_file_path</span> : pathlib.Path | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.LoggingConfig.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.config.models.MetricsConfig"><code class="flex name class">
+<span>class <span class="ident">MetricsConfig</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MetricsConfig(BaseModel):
+    &#34;&#34;&#34;Settings for metric registry behavior.
+
+    Attributes:
+        custom_metrics_dir (Optional[Path]): Directory for custom metric definitions.
+        validate_metric_inputs (bool): Check that metric input nodes exist.
+        auto_register_metrics (bool): Auto-register metrics from definition files.
+    &#34;&#34;&#34;
+
+    custom_metrics_dir: Optional[Path] = Field(
+        None, description=&#34;Directory containing custom metric definitions&#34;
+    )
+    validate_metric_inputs: bool = Field(
+        True, description=&#34;Validate metric inputs exist in graph&#34;
+    )
+    auto_register_metrics: bool = Field(
+        True, description=&#34;Automatically register metrics from definition files&#34;
+    )
+
+    model_config = ConfigDict(extra=&#34;forbid&#34;)</code></pre>
+</details>
+<div class="desc"><p>Settings for metric registry behavior.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>custom_metrics_dir</code></strong> :&ensp;<code>Optional[Path]</code></dt>
+<dd>Directory for custom metric definitions.</dd>
+<dt><strong><code>validate_metric_inputs</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Check that metric input nodes exist.</dd>
+<dt><strong><code>auto_register_metrics</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Auto-register metrics from definition files.</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.config.models.MetricsConfig.auto_register_metrics"><code class="name">var <span class="ident">auto_register_metrics</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.MetricsConfig.custom_metrics_dir"><code class="name">var <span class="ident">custom_metrics_dir</span> : pathlib.Path | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.MetricsConfig.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.MetricsConfig.validate_metric_inputs"><code class="name">var <span class="ident">validate_metric_inputs</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.config.models.PreprocessingConfig"><code class="flex name class">
+<span>class <span class="ident">PreprocessingConfig</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PreprocessingConfig(BaseModel):
+    &#34;&#34;&#34;Settings for data preprocessing operations.
+
+    Attributes:
+        auto_clean_data (bool): Automatically clean data on import.
+        fill_missing_with_zero (bool): Fill missing values with zero.
+        remove_empty_periods (bool): Remove periods with no data.
+        standardize_period_format (bool): Standardize period name formats.
+        default_normalization_type (Optional[Literal[...] ): Default normalization method.
+        default_transformation_type (TransformationType): Default time series transformation.
+        default_time_series_periods (int): Number of periods for transformations.
+        default_time_series_window_size (int): Window size for transformations.
+        default_conversion_aggregation (str): Aggregation method for period conversion.
+        statement_formatting (StatementFormattingConfig): Formatting settings.
+    &#34;&#34;&#34;
+
+    auto_clean_data: bool = Field(
+        True, description=&#34;Automatically clean data on import&#34;
+    )
+    fill_missing_with_zero: bool = Field(
+        False, description=&#34;Fill missing values with zero instead of None&#34;
+    )
+    remove_empty_periods: bool = Field(
+        True, description=&#34;Remove periods with all empty values&#34;
+    )
+    standardize_period_format: bool = Field(
+        True, description=&#34;Standardize period names to consistent format&#34;
+    )
+    default_normalization_type: Optional[
+        Literal[&#34;percent_of&#34;, &#34;minmax&#34;, &#34;standard&#34;, &#34;scale_by&#34;]
+    ] = Field(None, description=&#34;Default normalization method&#34;)
+    default_transformation_type: TransformationType = Field(
+        TransformationType.GROWTH_RATE,
+        description=&#34;Default time series transformation type&#34;,
+    )
+    default_time_series_periods: int = Field(
+        1, description=&#34;Default number of periods for time series transformations&#34;
+    )
+    default_time_series_window_size: int = Field(
+        3, description=&#34;Default window size for time series transformations&#34;
+    )
+    default_conversion_aggregation: str = Field(
+        &#34;sum&#34;, description=&#34;Default aggregation method for period conversion&#34;
+    )
+    statement_formatting: StatementFormattingConfig = Field(
+        default=StatementFormattingConfig.model_validate({}),
+        description=&#34;Default statement formatting configuration for preprocessing&#34;,
+    )
+
+    model_config = ConfigDict(extra=&#34;forbid&#34;)</code></pre>
+</details>
+<div class="desc"><p>Settings for data preprocessing operations.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>auto_clean_data</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Automatically clean data on import.</dd>
+<dt><strong><code>fill_missing_with_zero</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Fill missing values with zero.</dd>
+<dt><strong><code>remove_empty_periods</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Remove periods with no data.</dd>
+<dt><strong><code>standardize_period_format</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Standardize period name formats.</dd>
+<dt><strong><code>default_normalization_type</code></strong> :&ensp;<code>Optional[Literal[&hellip;] </code></dt>
+<dd>Default normalization method.</dd>
+<dt><strong><code>default_transformation_type</code></strong> :&ensp;<code>TransformationType</code></dt>
+<dd>Default time series transformation.</dd>
+<dt><strong><code>default_time_series_periods</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of periods for transformations.</dd>
+<dt><strong><code>default_time_series_window_size</code></strong> :&ensp;<code>int</code></dt>
+<dd>Window size for transformations.</dd>
+<dt><strong><code>default_conversion_aggregation</code></strong> :&ensp;<code>str</code></dt>
+<dd>Aggregation method for period conversion.</dd>
+<dt><strong><code>statement_formatting</code></strong> :&ensp;<code>StatementFormattingConfig</code></dt>
+<dd>Formatting settings.</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.config.models.PreprocessingConfig.auto_clean_data"><code class="name">var <span class="ident">auto_clean_data</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.PreprocessingConfig.default_conversion_aggregation"><code class="name">var <span class="ident">default_conversion_aggregation</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.PreprocessingConfig.default_normalization_type"><code class="name">var <span class="ident">default_normalization_type</span> : Literal['percent_of', 'minmax', 'standard', 'scale_by'] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.PreprocessingConfig.default_time_series_periods"><code class="name">var <span class="ident">default_time_series_periods</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.PreprocessingConfig.default_time_series_window_size"><code class="name">var <span class="ident">default_time_series_window_size</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.PreprocessingConfig.default_transformation_type"><code class="name">var <span class="ident">default_transformation_type</span> : <a title="fin_statement_model.preprocessing.config.TransformationType" href="../preprocessing/config.html#fin_statement_model.preprocessing.config.TransformationType">TransformationType</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.PreprocessingConfig.fill_missing_with_zero"><code class="name">var <span class="ident">fill_missing_with_zero</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.PreprocessingConfig.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.PreprocessingConfig.remove_empty_periods"><code class="name">var <span class="ident">remove_empty_periods</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.PreprocessingConfig.standardize_period_format"><code class="name">var <span class="ident">standardize_period_format</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.PreprocessingConfig.statement_formatting"><code class="name">var <span class="ident">statement_formatting</span> : <a title="fin_statement_model.preprocessing.config.StatementFormattingConfig" href="../preprocessing/config.html#fin_statement_model.preprocessing.config.StatementFormattingConfig">StatementFormattingConfig</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.config.models.StatementsConfig"><code class="flex name class">
+<span>class <span class="ident">StatementsConfig</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StatementsConfig(BaseModel):
+    &#34;&#34;&#34;Settings for building and formatting financial statements.
+
+    Attributes:
+        default_adjustment_filter (Optional[Union[AdjustmentFilterSpec,list[str]]]): Default filter spec or tag list.
+        enable_node_validation (bool): Enable node ID validation during building.
+        node_validation_strict (bool): Treat validation failures as errors.
+    &#34;&#34;&#34;
+
+    default_adjustment_filter: Optional[Union[AdjustmentFilterSpec, list[str]]] = Field(
+        None,
+        description=&#34;Default adjustment filter spec or list of tags to apply when building statements&#34;,
+    )
+    enable_node_validation: bool = Field(
+        False,
+        description=&#34;Whether to enable node ID validation during statement building by default&#34;,
+    )
+    node_validation_strict: bool = Field(
+        False,
+        description=&#34;Whether to treat node validation failures as errors (strict) by default&#34;,
+    )
+
+    model_config = ConfigDict(extra=&#34;forbid&#34;)</code></pre>
+</details>
+<div class="desc"><p>Settings for building and formatting financial statements.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>default_adjustment_filter</code></strong> :&ensp;<code>Optional[Union[AdjustmentFilterSpec,list[str]]]</code></dt>
+<dd>Default filter spec or tag list.</dd>
+<dt><strong><code>enable_node_validation</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Enable node ID validation during building.</dd>
+<dt><strong><code>node_validation_strict</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Treat validation failures as errors.</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.config.models.StatementsConfig.default_adjustment_filter"><code class="name">var <span class="ident">default_adjustment_filter</span> : <a title="fin_statement_model.statements.configs.models.AdjustmentFilterSpec" href="../statements/configs/models.html#fin_statement_model.statements.configs.models.AdjustmentFilterSpec">AdjustmentFilterSpec</a> | list[str] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.StatementsConfig.enable_node_validation"><code class="name">var <span class="ident">enable_node_validation</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.StatementsConfig.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.StatementsConfig.node_validation_strict"><code class="name">var <span class="ident">node_validation_strict</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.config.models.ValidationConfig"><code class="flex name class">
+<span>class <span class="ident">ValidationConfig</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ValidationConfig(BaseModel):
+    &#34;&#34;&#34;Settings for data validation within the graph.
+
+    Attributes:
+        strict_mode (bool): Enable strict validation mode.
+        auto_standardize_names (bool): Standardize node names to canonical form.
+        warn_on_non_standard (bool): Warn on non-standard names.
+        check_balance_sheet_balance (bool): Validate Assets = Liabilities + Equity.
+        balance_tolerance (float): Tolerance for balance sheet validation.
+        warn_on_negative_assets (bool): Warn on negative asset values.
+        validate_sign_conventions (bool): Enforce expected sign conventions.
+    &#34;&#34;&#34;
+
+    strict_mode: bool = Field(False, description=&#34;Enable strict validation mode&#34;)
+    auto_standardize_names: bool = Field(
+        True, description=&#34;Automatically standardize node names to canonical form&#34;
+    )
+    warn_on_non_standard: bool = Field(
+        True, description=&#34;Warn when using non-standard node names&#34;
+    )
+    check_balance_sheet_balance: bool = Field(
+        True, description=&#34;Validate that Assets = Liabilities + Equity&#34;
+    )
+    balance_tolerance: float = Field(
+        1.0, description=&#34;Maximum acceptable difference for balance sheet validation&#34;
+    )
+    warn_on_negative_assets: bool = Field(
+        True, description=&#34;Warn when asset values are negative&#34;
+    )
+    validate_sign_conventions: bool = Field(
+        True, description=&#34;Validate that items follow expected sign conventions&#34;
+    )
+
+    @field_validator(&#34;balance_tolerance&#34;)
+    def validate_tolerance(cls, v: float) -&gt; float:
+        &#34;&#34;&#34;Ensure tolerance is non-negative.&#34;&#34;&#34;
+        if v &lt; 0:
+            raise ValueError(&#34;balance_tolerance must be non-negative&#34;)
+        return v
+
+    model_config = ConfigDict(extra=&#34;forbid&#34;)</code></pre>
+</details>
+<div class="desc"><p>Settings for data validation within the graph.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>strict_mode</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Enable strict validation mode.</dd>
+<dt><strong><code>auto_standardize_names</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Standardize node names to canonical form.</dd>
+<dt><strong><code>warn_on_non_standard</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Warn on non-standard names.</dd>
+<dt><strong><code>check_balance_sheet_balance</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Validate Assets = Liabilities + Equity.</dd>
+<dt><strong><code>balance_tolerance</code></strong> :&ensp;<code>float</code></dt>
+<dd>Tolerance for balance sheet validation.</dd>
+<dt><strong><code>warn_on_negative_assets</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Warn on negative asset values.</dd>
+<dt><strong><code>validate_sign_conventions</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Enforce expected sign conventions.</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.config.models.ValidationConfig.auto_standardize_names"><code class="name">var <span class="ident">auto_standardize_names</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ValidationConfig.balance_tolerance"><code class="name">var <span class="ident">balance_tolerance</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ValidationConfig.check_balance_sheet_balance"><code class="name">var <span class="ident">check_balance_sheet_balance</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ValidationConfig.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ValidationConfig.strict_mode"><code class="name">var <span class="ident">strict_mode</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ValidationConfig.validate_sign_conventions"><code class="name">var <span class="ident">validate_sign_conventions</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ValidationConfig.warn_on_negative_assets"><code class="name">var <span class="ident">warn_on_negative_assets</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.models.ValidationConfig.warn_on_non_standard"><code class="name">var <span class="ident">warn_on_non_standard</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="fin_statement_model.config.models.ValidationConfig.validate_tolerance"><code class="name flex">
+<span>def <span class="ident">validate_tolerance</span></span>(<span>v: float) ‑> float</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ensure tolerance is non-negative.</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.config" href="index.html">fin_statement_model.config</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.config.models.APIConfig" href="#fin_statement_model.config.models.APIConfig">APIConfig</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.config.models.APIConfig.api_retry_count" href="#fin_statement_model.config.models.APIConfig.api_retry_count">api_retry_count</a></code></li>
+<li><code><a title="fin_statement_model.config.models.APIConfig.api_timeout" href="#fin_statement_model.config.models.APIConfig.api_timeout">api_timeout</a></code></li>
+<li><code><a title="fin_statement_model.config.models.APIConfig.cache_api_responses" href="#fin_statement_model.config.models.APIConfig.cache_api_responses">cache_api_responses</a></code></li>
+<li><code><a title="fin_statement_model.config.models.APIConfig.cache_ttl_hours" href="#fin_statement_model.config.models.APIConfig.cache_ttl_hours">cache_ttl_hours</a></code></li>
+<li><code><a title="fin_statement_model.config.models.APIConfig.fmp_api_key" href="#fin_statement_model.config.models.APIConfig.fmp_api_key">fmp_api_key</a></code></li>
+<li><code><a title="fin_statement_model.config.models.APIConfig.fmp_base_url" href="#fin_statement_model.config.models.APIConfig.fmp_base_url">fmp_base_url</a></code></li>
+<li><code><a title="fin_statement_model.config.models.APIConfig.model_config" href="#fin_statement_model.config.models.APIConfig.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.config.models.APIConfig.validate_positive" href="#fin_statement_model.config.models.APIConfig.validate_positive">validate_positive</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.config.models.Config" href="#fin_statement_model.config.models.Config">Config</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.config.models.Config.api" href="#fin_statement_model.config.models.Config.api">api</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.auto_save_config" href="#fin_statement_model.config.models.Config.auto_save_config">auto_save_config</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.config_file_path" href="#fin_statement_model.config.models.Config.config_file_path">config_file_path</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.display" href="#fin_statement_model.config.models.Config.display">display</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.forecasting" href="#fin_statement_model.config.models.Config.forecasting">forecasting</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.from_dict" href="#fin_statement_model.config.models.Config.from_dict">from_dict</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.from_file" href="#fin_statement_model.config.models.Config.from_file">from_file</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.from_yaml" href="#fin_statement_model.config.models.Config.from_yaml">from_yaml</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.io" href="#fin_statement_model.config.models.Config.io">io</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.logging" href="#fin_statement_model.config.models.Config.logging">logging</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.metrics" href="#fin_statement_model.config.models.Config.metrics">metrics</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.model_config" href="#fin_statement_model.config.models.Config.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.preprocessing" href="#fin_statement_model.config.models.Config.preprocessing">preprocessing</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.project_name" href="#fin_statement_model.config.models.Config.project_name">project_name</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.statements" href="#fin_statement_model.config.models.Config.statements">statements</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.to_dict" href="#fin_statement_model.config.models.Config.to_dict">to_dict</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.to_yaml" href="#fin_statement_model.config.models.Config.to_yaml">to_yaml</a></code></li>
+<li><code><a title="fin_statement_model.config.models.Config.validation" href="#fin_statement_model.config.models.Config.validation">validation</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.config.models.DisplayConfig" href="#fin_statement_model.config.models.DisplayConfig">DisplayConfig</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.add_contra_indicator_column" href="#fin_statement_model.config.models.DisplayConfig.add_contra_indicator_column">add_contra_indicator_column</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.add_is_adjusted_column" href="#fin_statement_model.config.models.DisplayConfig.add_is_adjusted_column">add_is_adjusted_column</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.apply_contra_formatting" href="#fin_statement_model.config.models.DisplayConfig.apply_contra_formatting">apply_contra_formatting</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.apply_item_formatting" href="#fin_statement_model.config.models.DisplayConfig.apply_item_formatting">apply_item_formatting</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.apply_item_scaling" href="#fin_statement_model.config.models.DisplayConfig.apply_item_scaling">apply_item_scaling</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.apply_sign_conventions" href="#fin_statement_model.config.models.DisplayConfig.apply_sign_conventions">apply_sign_conventions</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.contra_css_class" href="#fin_statement_model.config.models.DisplayConfig.contra_css_class">contra_css_class</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.contra_display_style" href="#fin_statement_model.config.models.DisplayConfig.contra_display_style">contra_display_style</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.decimal_separator" href="#fin_statement_model.config.models.DisplayConfig.decimal_separator">decimal_separator</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.default_currency_format" href="#fin_statement_model.config.models.DisplayConfig.default_currency_format">default_currency_format</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.default_number_format" href="#fin_statement_model.config.models.DisplayConfig.default_number_format">default_number_format</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.default_percentage_format" href="#fin_statement_model.config.models.DisplayConfig.default_percentage_format">default_percentage_format</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.default_units" href="#fin_statement_model.config.models.DisplayConfig.default_units">default_units</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.header_style" href="#fin_statement_model.config.models.DisplayConfig.header_style">header_style</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.hide_zero_rows" href="#fin_statement_model.config.models.DisplayConfig.hide_zero_rows">hide_zero_rows</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.include_css_classes" href="#fin_statement_model.config.models.DisplayConfig.include_css_classes">include_css_classes</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.include_empty_items" href="#fin_statement_model.config.models.DisplayConfig.include_empty_items">include_empty_items</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.include_metadata_cols" href="#fin_statement_model.config.models.DisplayConfig.include_metadata_cols">include_metadata_cols</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.include_notes_column" href="#fin_statement_model.config.models.DisplayConfig.include_notes_column">include_notes_column</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.include_units_column" href="#fin_statement_model.config.models.DisplayConfig.include_units_column">include_units_column</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.indent_character" href="#fin_statement_model.config.models.DisplayConfig.indent_character">indent_character</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.model_config" href="#fin_statement_model.config.models.DisplayConfig.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.scale_factor" href="#fin_statement_model.config.models.DisplayConfig.scale_factor">scale_factor</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.show_negative_sign" href="#fin_statement_model.config.models.DisplayConfig.show_negative_sign">show_negative_sign</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.subtotal_style" href="#fin_statement_model.config.models.DisplayConfig.subtotal_style">subtotal_style</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.thousands_separator" href="#fin_statement_model.config.models.DisplayConfig.thousands_separator">thousands_separator</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.total_style" href="#fin_statement_model.config.models.DisplayConfig.total_style">total_style</a></code></li>
+<li><code><a title="fin_statement_model.config.models.DisplayConfig.validate_scale_factor" href="#fin_statement_model.config.models.DisplayConfig.validate_scale_factor">validate_scale_factor</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.config.models.ForecastingConfig" href="#fin_statement_model.config.models.ForecastingConfig">ForecastingConfig</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.config.models.ForecastingConfig.add_missing_periods" href="#fin_statement_model.config.models.ForecastingConfig.add_missing_periods">add_missing_periods</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ForecastingConfig.allow_negative_forecasts" href="#fin_statement_model.config.models.ForecastingConfig.allow_negative_forecasts">allow_negative_forecasts</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ForecastingConfig.base_period_strategy" href="#fin_statement_model.config.models.ForecastingConfig.base_period_strategy">base_period_strategy</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ForecastingConfig.continue_on_error" href="#fin_statement_model.config.models.ForecastingConfig.continue_on_error">continue_on_error</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ForecastingConfig.default_bad_forecast_value" href="#fin_statement_model.config.models.ForecastingConfig.default_bad_forecast_value">default_bad_forecast_value</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ForecastingConfig.default_growth_rate" href="#fin_statement_model.config.models.ForecastingConfig.default_growth_rate">default_growth_rate</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ForecastingConfig.default_method" href="#fin_statement_model.config.models.ForecastingConfig.default_method">default_method</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ForecastingConfig.default_periods" href="#fin_statement_model.config.models.ForecastingConfig.default_periods">default_periods</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ForecastingConfig.historical_growth_aggregation" href="#fin_statement_model.config.models.ForecastingConfig.historical_growth_aggregation">historical_growth_aggregation</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ForecastingConfig.min_historical_periods" href="#fin_statement_model.config.models.ForecastingConfig.min_historical_periods">min_historical_periods</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ForecastingConfig.model_config" href="#fin_statement_model.config.models.ForecastingConfig.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ForecastingConfig.random_seed" href="#fin_statement_model.config.models.ForecastingConfig.random_seed">random_seed</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ForecastingConfig.validate_periods" href="#fin_statement_model.config.models.ForecastingConfig.validate_periods">validate_periods</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.config.models.IOConfig" href="#fin_statement_model.config.models.IOConfig">IOConfig</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.config.models.IOConfig.auto_create_output_dirs" href="#fin_statement_model.config.models.IOConfig.auto_create_output_dirs">auto_create_output_dirs</a></code></li>
+<li><code><a title="fin_statement_model.config.models.IOConfig.auto_standardize_columns" href="#fin_statement_model.config.models.IOConfig.auto_standardize_columns">auto_standardize_columns</a></code></li>
+<li><code><a title="fin_statement_model.config.models.IOConfig.default_csv_delimiter" href="#fin_statement_model.config.models.IOConfig.default_csv_delimiter">default_csv_delimiter</a></code></li>
+<li><code><a title="fin_statement_model.config.models.IOConfig.default_excel_sheet" href="#fin_statement_model.config.models.IOConfig.default_excel_sheet">default_excel_sheet</a></code></li>
+<li><code><a title="fin_statement_model.config.models.IOConfig.default_mapping_configs_dir" href="#fin_statement_model.config.models.IOConfig.default_mapping_configs_dir">default_mapping_configs_dir</a></code></li>
+<li><code><a title="fin_statement_model.config.models.IOConfig.model_config" href="#fin_statement_model.config.models.IOConfig.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.config.models.IOConfig.skip_invalid_rows" href="#fin_statement_model.config.models.IOConfig.skip_invalid_rows">skip_invalid_rows</a></code></li>
+<li><code><a title="fin_statement_model.config.models.IOConfig.strict_validation" href="#fin_statement_model.config.models.IOConfig.strict_validation">strict_validation</a></code></li>
+<li><code><a title="fin_statement_model.config.models.IOConfig.validate_on_read" href="#fin_statement_model.config.models.IOConfig.validate_on_read">validate_on_read</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.config.models.LoggingConfig" href="#fin_statement_model.config.models.LoggingConfig">LoggingConfig</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.config.models.LoggingConfig.detailed" href="#fin_statement_model.config.models.LoggingConfig.detailed">detailed</a></code></li>
+<li><code><a title="fin_statement_model.config.models.LoggingConfig.format" href="#fin_statement_model.config.models.LoggingConfig.format">format</a></code></li>
+<li><code><a title="fin_statement_model.config.models.LoggingConfig.level" href="#fin_statement_model.config.models.LoggingConfig.level">level</a></code></li>
+<li><code><a title="fin_statement_model.config.models.LoggingConfig.log_file_path" href="#fin_statement_model.config.models.LoggingConfig.log_file_path">log_file_path</a></code></li>
+<li><code><a title="fin_statement_model.config.models.LoggingConfig.model_config" href="#fin_statement_model.config.models.LoggingConfig.model_config">model_config</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.config.models.MetricsConfig" href="#fin_statement_model.config.models.MetricsConfig">MetricsConfig</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.config.models.MetricsConfig.auto_register_metrics" href="#fin_statement_model.config.models.MetricsConfig.auto_register_metrics">auto_register_metrics</a></code></li>
+<li><code><a title="fin_statement_model.config.models.MetricsConfig.custom_metrics_dir" href="#fin_statement_model.config.models.MetricsConfig.custom_metrics_dir">custom_metrics_dir</a></code></li>
+<li><code><a title="fin_statement_model.config.models.MetricsConfig.model_config" href="#fin_statement_model.config.models.MetricsConfig.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.config.models.MetricsConfig.validate_metric_inputs" href="#fin_statement_model.config.models.MetricsConfig.validate_metric_inputs">validate_metric_inputs</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.config.models.PreprocessingConfig" href="#fin_statement_model.config.models.PreprocessingConfig">PreprocessingConfig</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.config.models.PreprocessingConfig.auto_clean_data" href="#fin_statement_model.config.models.PreprocessingConfig.auto_clean_data">auto_clean_data</a></code></li>
+<li><code><a title="fin_statement_model.config.models.PreprocessingConfig.default_conversion_aggregation" href="#fin_statement_model.config.models.PreprocessingConfig.default_conversion_aggregation">default_conversion_aggregation</a></code></li>
+<li><code><a title="fin_statement_model.config.models.PreprocessingConfig.default_normalization_type" href="#fin_statement_model.config.models.PreprocessingConfig.default_normalization_type">default_normalization_type</a></code></li>
+<li><code><a title="fin_statement_model.config.models.PreprocessingConfig.default_time_series_periods" href="#fin_statement_model.config.models.PreprocessingConfig.default_time_series_periods">default_time_series_periods</a></code></li>
+<li><code><a title="fin_statement_model.config.models.PreprocessingConfig.default_time_series_window_size" href="#fin_statement_model.config.models.PreprocessingConfig.default_time_series_window_size">default_time_series_window_size</a></code></li>
+<li><code><a title="fin_statement_model.config.models.PreprocessingConfig.default_transformation_type" href="#fin_statement_model.config.models.PreprocessingConfig.default_transformation_type">default_transformation_type</a></code></li>
+<li><code><a title="fin_statement_model.config.models.PreprocessingConfig.fill_missing_with_zero" href="#fin_statement_model.config.models.PreprocessingConfig.fill_missing_with_zero">fill_missing_with_zero</a></code></li>
+<li><code><a title="fin_statement_model.config.models.PreprocessingConfig.model_config" href="#fin_statement_model.config.models.PreprocessingConfig.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.config.models.PreprocessingConfig.remove_empty_periods" href="#fin_statement_model.config.models.PreprocessingConfig.remove_empty_periods">remove_empty_periods</a></code></li>
+<li><code><a title="fin_statement_model.config.models.PreprocessingConfig.standardize_period_format" href="#fin_statement_model.config.models.PreprocessingConfig.standardize_period_format">standardize_period_format</a></code></li>
+<li><code><a title="fin_statement_model.config.models.PreprocessingConfig.statement_formatting" href="#fin_statement_model.config.models.PreprocessingConfig.statement_formatting">statement_formatting</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.config.models.StatementsConfig" href="#fin_statement_model.config.models.StatementsConfig">StatementsConfig</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.config.models.StatementsConfig.default_adjustment_filter" href="#fin_statement_model.config.models.StatementsConfig.default_adjustment_filter">default_adjustment_filter</a></code></li>
+<li><code><a title="fin_statement_model.config.models.StatementsConfig.enable_node_validation" href="#fin_statement_model.config.models.StatementsConfig.enable_node_validation">enable_node_validation</a></code></li>
+<li><code><a title="fin_statement_model.config.models.StatementsConfig.model_config" href="#fin_statement_model.config.models.StatementsConfig.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.config.models.StatementsConfig.node_validation_strict" href="#fin_statement_model.config.models.StatementsConfig.node_validation_strict">node_validation_strict</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.config.models.ValidationConfig" href="#fin_statement_model.config.models.ValidationConfig">ValidationConfig</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.config.models.ValidationConfig.auto_standardize_names" href="#fin_statement_model.config.models.ValidationConfig.auto_standardize_names">auto_standardize_names</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ValidationConfig.balance_tolerance" href="#fin_statement_model.config.models.ValidationConfig.balance_tolerance">balance_tolerance</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ValidationConfig.check_balance_sheet_balance" href="#fin_statement_model.config.models.ValidationConfig.check_balance_sheet_balance">check_balance_sheet_balance</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ValidationConfig.model_config" href="#fin_statement_model.config.models.ValidationConfig.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ValidationConfig.strict_mode" href="#fin_statement_model.config.models.ValidationConfig.strict_mode">strict_mode</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ValidationConfig.validate_sign_conventions" href="#fin_statement_model.config.models.ValidationConfig.validate_sign_conventions">validate_sign_conventions</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ValidationConfig.validate_tolerance" href="#fin_statement_model.config.models.ValidationConfig.validate_tolerance">validate_tolerance</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ValidationConfig.warn_on_negative_assets" href="#fin_statement_model.config.models.ValidationConfig.warn_on_negative_assets">warn_on_negative_assets</a></code></li>
+<li><code><a title="fin_statement_model.config.models.ValidationConfig.warn_on_non_standard" href="#fin_statement_model.config.models.ValidationConfig.warn_on_non_standard">warn_on_non_standard</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

@@ -1,6 +1,7 @@
-"""Define base DataTransformer interface for preprocessing layer.
+"""Define the base DataTransformer interface for the preprocessing layer.
 
-This module provides the DataTransformer abstract base class and CompositeTransformer.
+This module provides the DataTransformer abstract base class and CompositeTransformer
+for building and composing data transformation pipelines.
 """
 
 from abc import ABC, abstractmethod

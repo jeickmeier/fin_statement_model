@@ -1,0 +1,1926 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.forecasting.methods API documentation</title>
+<meta name="description" content="Provide built-in forecast method implementations …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.forecasting.methods</code></h1>
+</header>
+<section id="section-intro">
+<p>Provide built-in forecast method implementations.</p>
+<p>This module exports all built-in forecast methods available in the library.</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.forecasting.methods.average" href="average.html">fin_statement_model.forecasting.methods.average</a></code></dt>
+<dd>
+<div class="desc"><p>Forecast future values as the historical average of available data …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.forecasting.methods.base" href="base.html">fin_statement_model.forecasting.methods.base</a></code></dt>
+<dd>
+<div class="desc"><p>Define base protocol and abstract class for forecast methods …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.forecasting.methods.curve" href="curve.html">fin_statement_model.forecasting.methods.curve</a></code></dt>
+<dd>
+<div class="desc"><p>Forecast future values using variable growth rates per period …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.forecasting.methods.historical_growth" href="historical_growth.html">fin_statement_model.forecasting.methods.historical_growth</a></code></dt>
+<dd>
+<div class="desc"><p>Forecast future values based on average historical growth patterns …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.forecasting.methods.simple" href="simple.html">fin_statement_model.forecasting.methods.simple</a></code></dt>
+<dd>
+<div class="desc"><p>Forecast future values using a constant growth rate …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.forecasting.methods.statistical" href="statistical.html">fin_statement_model.forecasting.methods.statistical</a></code></dt>
+<dd>
+<div class="desc"><p>Forecast future values by sampling from statistical distributions …</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.forecasting.methods.AverageForecastMethod"><code class="flex name class">
+<span>class <span class="ident">AverageForecastMethod</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AverageForecastMethod(BaseForecastMethod):
+    &#34;&#34;&#34;Forecast future values as the historical average of available data.
+
+    This method calculates forecast values as the historical average of available
+    data points. Useful for stable metrics or when expecting mean reversion.
+
+    Configuration:
+        - Not required (pass None or 0)
+
+    Example:
+        &gt;&gt;&gt; method = AverageForecastMethod()
+        &gt;&gt;&gt; params = method.get_forecast_params(None, [&#34;2024&#34;, &#34;2025&#34;])
+        &gt;&gt;&gt; # Returns: {&#34;forecast_type&#34;: &#34;average&#34;, &#34;growth_params&#34;: None}
+    &#34;&#34;&#34;
+
+    @property
+    def name(self) -&gt; str:
+        &#34;&#34;&#34;Return the method name.&#34;&#34;&#34;
+        return &#34;average&#34;
+
+    @property
+    def internal_type(self) -&gt; str:
+        &#34;&#34;&#34;Return the internal forecast type for NodeFactory.&#34;&#34;&#34;
+        return &#34;average&#34;
+
+    def validate_config(self, config: Any) -&gt; None:
+        &#34;&#34;&#34;Validate the configuration for average method.
+
+        Args:
+            config: Not used for average method, can be None or 0.
+
+        Note:
+            Average method doesn&#39;t require configuration as it uses
+            historical data automatically.
+        &#34;&#34;&#34;
+        # Average method doesn&#39;t need specific configuration
+        # Accept None, 0, or any placeholder value
+
+    def normalize_params(
+        self, config: Any, forecast_periods: list[str]
+    ) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Normalize parameters for the NodeFactory.
+
+        Args:
+            config: Not used for average method.
+            forecast_periods: List of periods to forecast (not used).
+
+        Returns:
+            Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+            For average method, growth_params is None.
+        &#34;&#34;&#34;
+        return {
+            &#34;forecast_type&#34;: self.internal_type,
+            &#34;growth_params&#34;: None,  # Average method doesn&#39;t use growth params
+        }
+
+    def prepare_historical_data(
+        self, node: Node, historical_periods: list[str]
+    ) -&gt; Optional[list[float]]:
+        &#34;&#34;&#34;Prepare historical data for average calculation.
+
+        Args:
+            node: The node to extract historical data from.
+            historical_periods: List of historical periods.
+
+        Returns:
+            List of valid historical values.
+
+        Raises:
+            ValueError: If no valid historical data is available.
+        &#34;&#34;&#34;
+        if not hasattr(node, &#34;calculate&#34;) or not callable(node.calculate):
+            raise ValueError(
+                f&#34;Node {node.name} cannot be calculated for average method&#34;
+            )
+
+        if not hasattr(node, &#34;values&#34;) or not isinstance(node.values, dict):
+            raise ValueError(
+                f&#34;Node {node.name} does not have values dictionary for average method&#34;
+            )
+
+        # Extract historical values
+        historical_values = []
+        for period in historical_periods:
+            if period in node.values:
+                try:
+                    value = node.calculate(period)
+                    if (
+                        value is not None
+                        and not np.isnan(value)
+                        and not np.isinf(value)
+                    ):
+                        historical_values.append(float(value))
+                except Exception as e:
+                    # Log the exception and skip this period
+                    logger.debug(
+                        f&#34;Skipping period {period} for node {node.name} in average calculation: {e}&#34;
+                    )
+                    continue
+
+        if not historical_values:
+            raise ValueError(
+                f&#34;No valid historical data available for node {node.name} to compute average&#34;
+            )
+
+        return historical_values</code></pre>
+</details>
+<div class="desc"><p>Forecast future values as the historical average of available data.</p>
+<p>This method calculates forecast values as the historical average of available
+data points. Useful for stable metrics or when expecting mean reversion.</p>
+<h2 id="configuration">Configuration</h2>
+<ul>
+<li>Not required (pass None or 0)</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; method = AverageForecastMethod()
+&gt;&gt;&gt; params = method.get_forecast_params(None, [&quot;2024&quot;, &quot;2025&quot;])
+&gt;&gt;&gt; # Returns: {&quot;forecast_type&quot;: &quot;average&quot;, &quot;growth_params&quot;: None}
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod">BaseForecastMethod</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.forecasting.methods.AverageForecastMethod.normalize_params"><code class="name flex">
+<span>def <span class="ident">normalize_params</span></span>(<span>self, config: Any, forecast_periods: list[str]) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def normalize_params(
+    self, config: Any, forecast_periods: list[str]
+) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Normalize parameters for the NodeFactory.
+
+    Args:
+        config: Not used for average method.
+        forecast_periods: List of periods to forecast (not used).
+
+    Returns:
+        Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+        For average method, growth_params is None.
+    &#34;&#34;&#34;
+    return {
+        &#34;forecast_type&#34;: self.internal_type,
+        &#34;growth_params&#34;: None,  # Average method doesn&#39;t use growth params
+    }</code></pre>
+</details>
+<div class="desc"><p>Normalize parameters for the NodeFactory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Not used for average method.</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of periods to forecast (not used).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dict with 'forecast_type' and 'growth_params' keys.
+For average method, growth_params is None.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.AverageForecastMethod.prepare_historical_data"><code class="name flex">
+<span>def <span class="ident">prepare_historical_data</span></span>(<span>self,<br>node: <a title="fin_statement_model.core.nodes.base.Node" href="../../core/nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>,<br>historical_periods: list[str]) ‑> list[float] | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def prepare_historical_data(
+    self, node: Node, historical_periods: list[str]
+) -&gt; Optional[list[float]]:
+    &#34;&#34;&#34;Prepare historical data for average calculation.
+
+    Args:
+        node: The node to extract historical data from.
+        historical_periods: List of historical periods.
+
+    Returns:
+        List of valid historical values.
+
+    Raises:
+        ValueError: If no valid historical data is available.
+    &#34;&#34;&#34;
+    if not hasattr(node, &#34;calculate&#34;) or not callable(node.calculate):
+        raise ValueError(
+            f&#34;Node {node.name} cannot be calculated for average method&#34;
+        )
+
+    if not hasattr(node, &#34;values&#34;) or not isinstance(node.values, dict):
+        raise ValueError(
+            f&#34;Node {node.name} does not have values dictionary for average method&#34;
+        )
+
+    # Extract historical values
+    historical_values = []
+    for period in historical_periods:
+        if period in node.values:
+            try:
+                value = node.calculate(period)
+                if (
+                    value is not None
+                    and not np.isnan(value)
+                    and not np.isinf(value)
+                ):
+                    historical_values.append(float(value))
+            except Exception as e:
+                # Log the exception and skip this period
+                logger.debug(
+                    f&#34;Skipping period {period} for node {node.name} in average calculation: {e}&#34;
+                )
+                continue
+
+    if not historical_values:
+        raise ValueError(
+            f&#34;No valid historical data available for node {node.name} to compute average&#34;
+        )
+
+    return historical_values</code></pre>
+</details>
+<div class="desc"><p>Prepare historical data for average calculation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd>The node to extract historical data from.</dd>
+<dt><strong><code>historical_periods</code></strong></dt>
+<dd>List of historical periods.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of valid historical values.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If no valid historical data is available.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.AverageForecastMethod.validate_config"><code class="name flex">
+<span>def <span class="ident">validate_config</span></span>(<span>self, config: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_config(self, config: Any) -&gt; None:
+    &#34;&#34;&#34;Validate the configuration for average method.
+
+    Args:
+        config: Not used for average method, can be None or 0.
+
+    Note:
+        Average method doesn&#39;t require configuration as it uses
+        historical data automatically.
+    &#34;&#34;&#34;
+    # Average method doesn&#39;t need specific configuration
+    # Accept None, 0, or any placeholder value</code></pre>
+</details>
+<div class="desc"><p>Validate the configuration for average method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Not used for average method, can be None or 0.</dd>
+</dl>
+<h2 id="note">Note</h2>
+<p>Average method doesn't require configuration as it uses
+historical data automatically.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod">BaseForecastMethod</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.get_forecast_params" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.get_forecast_params">get_forecast_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.internal_type" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.internal_type">internal_type</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.name" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.name">name</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.BaseForecastMethod"><code class="flex name class">
+<span>class <span class="ident">BaseForecastMethod</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BaseForecastMethod(ABC):
+    &#34;&#34;&#34;Provide an abstract base class for forecast methods.
+
+    Enforces the forecast method interface and provides common functionality,
+    including the get_forecast_params convenience method.
+    &#34;&#34;&#34;
+
+    @property
+    @abstractmethod
+    def name(self) -&gt; str:
+        &#34;&#34;&#34;Return the method name.&#34;&#34;&#34;
+
+    @property
+    @abstractmethod
+    def internal_type(self) -&gt; str:
+        &#34;&#34;&#34;Return the internal forecast type for NodeFactory.&#34;&#34;&#34;
+
+    @abstractmethod
+    def validate_config(self, config: Any) -&gt; None:
+        &#34;&#34;&#34;Validate the configuration for this method.&#34;&#34;&#34;
+
+    @abstractmethod
+    def normalize_params(
+        self, config: Any, forecast_periods: list[str]
+    ) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Normalize parameters for the NodeFactory.&#34;&#34;&#34;
+
+    def prepare_historical_data(
+        self, node: Node, historical_periods: list[str]
+    ) -&gt; Optional[list[float]]:
+        &#34;&#34;&#34;Prepare historical data for methods that need it.
+
+        Default implementation returns None (not needed).
+        Override in methods that require historical data.
+        &#34;&#34;&#34;
+        return None
+
+    def get_forecast_params(
+        self, config: Any, forecast_periods: list[str]
+    ) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Get complete forecast parameters.
+
+        This is a convenience method that validates and normalizes in one call.
+
+        Args:
+            config: The method-specific configuration.
+            forecast_periods: List of periods to forecast.
+
+        Returns:
+            Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+
+        Raises:
+            ValueError: If configuration is invalid.
+        &#34;&#34;&#34;
+        self.validate_config(config)
+        return self.normalize_params(config, forecast_periods)</code></pre>
+</details>
+<div class="desc"><p>Provide an abstract base class for forecast methods.</p>
+<p>Enforces the forecast method interface and provides common functionality,
+including the get_forecast_params convenience method.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.forecasting.methods.average.AverageForecastMethod" href="average.html#fin_statement_model.forecasting.methods.average.AverageForecastMethod">AverageForecastMethod</a></li>
+<li><a title="fin_statement_model.forecasting.methods.curve.CurveForecastMethod" href="curve.html#fin_statement_model.forecasting.methods.curve.CurveForecastMethod">CurveForecastMethod</a></li>
+<li><a title="fin_statement_model.forecasting.methods.historical_growth.HistoricalGrowthForecastMethod" href="historical_growth.html#fin_statement_model.forecasting.methods.historical_growth.HistoricalGrowthForecastMethod">HistoricalGrowthForecastMethod</a></li>
+<li><a title="fin_statement_model.forecasting.methods.simple.SimpleForecastMethod" href="simple.html#fin_statement_model.forecasting.methods.simple.SimpleForecastMethod">SimpleForecastMethod</a></li>
+<li><a title="fin_statement_model.forecasting.methods.statistical.StatisticalForecastMethod" href="statistical.html#fin_statement_model.forecasting.methods.statistical.StatisticalForecastMethod">StatisticalForecastMethod</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.forecasting.methods.BaseForecastMethod.internal_type"><code class="name">prop <span class="ident">internal_type</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+@abstractmethod
+def internal_type(self) -&gt; str:
+    &#34;&#34;&#34;Return the internal forecast type for NodeFactory.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Return the internal forecast type for NodeFactory.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.BaseForecastMethod.name"><code class="name">prop <span class="ident">name</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+@abstractmethod
+def name(self) -&gt; str:
+    &#34;&#34;&#34;Return the method name.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Return the method name.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.forecasting.methods.BaseForecastMethod.get_forecast_params"><code class="name flex">
+<span>def <span class="ident">get_forecast_params</span></span>(<span>self, config: Any, forecast_periods: list[str]) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_forecast_params(
+    self, config: Any, forecast_periods: list[str]
+) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Get complete forecast parameters.
+
+    This is a convenience method that validates and normalizes in one call.
+
+    Args:
+        config: The method-specific configuration.
+        forecast_periods: List of periods to forecast.
+
+    Returns:
+        Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+
+    Raises:
+        ValueError: If configuration is invalid.
+    &#34;&#34;&#34;
+    self.validate_config(config)
+    return self.normalize_params(config, forecast_periods)</code></pre>
+</details>
+<div class="desc"><p>Get complete forecast parameters.</p>
+<p>This is a convenience method that validates and normalizes in one call.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>The method-specific configuration.</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of periods to forecast.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dict with 'forecast_type' and 'growth_params' keys.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If configuration is invalid.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.BaseForecastMethod.normalize_params"><code class="name flex">
+<span>def <span class="ident">normalize_params</span></span>(<span>self, config: Any, forecast_periods: list[str]) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def normalize_params(
+    self, config: Any, forecast_periods: list[str]
+) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Normalize parameters for the NodeFactory.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Normalize parameters for the NodeFactory.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.BaseForecastMethod.prepare_historical_data"><code class="name flex">
+<span>def <span class="ident">prepare_historical_data</span></span>(<span>self,<br>node: <a title="fin_statement_model.core.nodes.base.Node" href="../../core/nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>,<br>historical_periods: list[str]) ‑> list[float] | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def prepare_historical_data(
+    self, node: Node, historical_periods: list[str]
+) -&gt; Optional[list[float]]:
+    &#34;&#34;&#34;Prepare historical data for methods that need it.
+
+    Default implementation returns None (not needed).
+    Override in methods that require historical data.
+    &#34;&#34;&#34;
+    return None</code></pre>
+</details>
+<div class="desc"><p>Prepare historical data for methods that need it.</p>
+<p>Default implementation returns None (not needed).
+Override in methods that require historical data.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.BaseForecastMethod.validate_config"><code class="name flex">
+<span>def <span class="ident">validate_config</span></span>(<span>self, config: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def validate_config(self, config: Any) -&gt; None:
+    &#34;&#34;&#34;Validate the configuration for this method.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Validate the configuration for this method.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.CurveForecastMethod"><code class="flex name class">
+<span>class <span class="ident">CurveForecastMethod</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CurveForecastMethod(BaseForecastMethod):
+    &#34;&#34;&#34;Forecast future values using variable growth rates per period.
+
+    This method applies different growth rates for each forecast period,
+    allowing non-linear growth patterns across periods.
+
+    Configuration:
+        - Single numeric value: Will be expanded to match forecast periods
+        - List of numeric values: One growth rate per forecast period
+
+    Example:
+        &gt;&gt;&gt; method = CurveForecastMethod()
+        &gt;&gt;&gt; params = method.get_forecast_params([0.05, 0.04, 0.03], [&#34;2024&#34;, &#34;2025&#34;, &#34;2026&#34;])
+        &gt;&gt;&gt; # Returns: {&#34;forecast_type&#34;: &#34;curve&#34;, &#34;growth_params&#34;: [0.05, 0.04, 0.03]}
+    &#34;&#34;&#34;
+
+    @property
+    def name(self) -&gt; str:
+        &#34;&#34;&#34;Return the method name.&#34;&#34;&#34;
+        return &#34;curve&#34;
+
+    @property
+    def internal_type(self) -&gt; str:
+        &#34;&#34;&#34;Return the internal forecast type for NodeFactory.&#34;&#34;&#34;
+        return &#34;curve&#34;
+
+    def validate_config(self, config: Any) -&gt; None:
+        &#34;&#34;&#34;Validate the configuration for curve method.
+
+        Args:
+            config: Should be a numeric value or a list of numeric values.
+
+        Raises:
+            ValueError: If config is empty list.
+            TypeError: If config is not numeric or list of numerics.
+        &#34;&#34;&#34;
+        if isinstance(config, list):
+            if not config:
+                raise ValueError(&#34;Curve method: empty list provided&#34;)
+            for i, value in enumerate(config):
+                if not isinstance(value, int | float):
+                    raise TypeError(
+                        f&#34;Curve method: non-numeric value at index {i}: {type(value)}&#34;
+                    )
+        elif not isinstance(config, int | float):
+            raise TypeError(
+                f&#34;Curve method requires numeric or list of numeric values, got {type(config)}&#34;
+            )
+
+    def normalize_params(
+        self, config: Any, forecast_periods: list[str]
+    ) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Normalize parameters for the NodeFactory.
+
+        Args:
+            config: Growth rates (single value or list).
+            forecast_periods: List of periods to forecast.
+
+        Returns:
+            Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+
+        Raises:
+            ValueError: If list length doesn&#39;t match forecast periods.
+        &#34;&#34;&#34;
+        if not isinstance(config, list):
+            # Single value - expand to match forecast periods
+            growth_rates = [float(config)] * len(forecast_periods)
+        else:
+            # List of values - must match forecast periods length
+            if len(config) != len(forecast_periods):
+                raise ValueError(
+                    f&#34;Curve method: growth rate list length ({len(config)}) &#34;
+                    f&#34;must match forecast periods ({len(forecast_periods)})&#34;
+                )
+            growth_rates = [float(x) for x in config]
+
+        return {&#34;forecast_type&#34;: self.internal_type, &#34;growth_params&#34;: growth_rates}</code></pre>
+</details>
+<div class="desc"><p>Forecast future values using variable growth rates per period.</p>
+<p>This method applies different growth rates for each forecast period,
+allowing non-linear growth patterns across periods.</p>
+<h2 id="configuration">Configuration</h2>
+<ul>
+<li>Single numeric value: Will be expanded to match forecast periods</li>
+<li>List of numeric values: One growth rate per forecast period</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; method = CurveForecastMethod()
+&gt;&gt;&gt; params = method.get_forecast_params([0.05, 0.04, 0.03], [&quot;2024&quot;, &quot;2025&quot;, &quot;2026&quot;])
+&gt;&gt;&gt; # Returns: {&quot;forecast_type&quot;: &quot;curve&quot;, &quot;growth_params&quot;: [0.05, 0.04, 0.03]}
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod">BaseForecastMethod</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.forecasting.methods.CurveForecastMethod.normalize_params"><code class="name flex">
+<span>def <span class="ident">normalize_params</span></span>(<span>self, config: Any, forecast_periods: list[str]) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def normalize_params(
+    self, config: Any, forecast_periods: list[str]
+) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Normalize parameters for the NodeFactory.
+
+    Args:
+        config: Growth rates (single value or list).
+        forecast_periods: List of periods to forecast.
+
+    Returns:
+        Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+
+    Raises:
+        ValueError: If list length doesn&#39;t match forecast periods.
+    &#34;&#34;&#34;
+    if not isinstance(config, list):
+        # Single value - expand to match forecast periods
+        growth_rates = [float(config)] * len(forecast_periods)
+    else:
+        # List of values - must match forecast periods length
+        if len(config) != len(forecast_periods):
+            raise ValueError(
+                f&#34;Curve method: growth rate list length ({len(config)}) &#34;
+                f&#34;must match forecast periods ({len(forecast_periods)})&#34;
+            )
+        growth_rates = [float(x) for x in config]
+
+    return {&#34;forecast_type&#34;: self.internal_type, &#34;growth_params&#34;: growth_rates}</code></pre>
+</details>
+<div class="desc"><p>Normalize parameters for the NodeFactory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Growth rates (single value or list).</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of periods to forecast.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dict with 'forecast_type' and 'growth_params' keys.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If list length doesn't match forecast periods.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.CurveForecastMethod.validate_config"><code class="name flex">
+<span>def <span class="ident">validate_config</span></span>(<span>self, config: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_config(self, config: Any) -&gt; None:
+    &#34;&#34;&#34;Validate the configuration for curve method.
+
+    Args:
+        config: Should be a numeric value or a list of numeric values.
+
+    Raises:
+        ValueError: If config is empty list.
+        TypeError: If config is not numeric or list of numerics.
+    &#34;&#34;&#34;
+    if isinstance(config, list):
+        if not config:
+            raise ValueError(&#34;Curve method: empty list provided&#34;)
+        for i, value in enumerate(config):
+            if not isinstance(value, int | float):
+                raise TypeError(
+                    f&#34;Curve method: non-numeric value at index {i}: {type(value)}&#34;
+                )
+    elif not isinstance(config, int | float):
+        raise TypeError(
+            f&#34;Curve method requires numeric or list of numeric values, got {type(config)}&#34;
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate the configuration for curve method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Should be a numeric value or a list of numeric values.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If config is empty list.</dd>
+<dt><code>TypeError</code></dt>
+<dd>If config is not numeric or list of numerics.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod">BaseForecastMethod</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.get_forecast_params" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.get_forecast_params">get_forecast_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.internal_type" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.internal_type">internal_type</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.name" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.name">name</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.prepare_historical_data" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.prepare_historical_data">prepare_historical_data</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.ForecastMethod"><code class="flex name class">
+<span>class <span class="ident">ForecastMethod</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@runtime_checkable
+class ForecastMethod(Protocol):
+    &#34;&#34;&#34;Protocol for forecast methods to implement.
+
+    All forecast methods must provide a name property and implement
+    validate_config and normalize_params, optionally prepare_historical_data.
+    &#34;&#34;&#34;
+
+    @property
+    def name(self) -&gt; str:
+        &#34;&#34;&#34;Return the method name.&#34;&#34;&#34;
+        ...
+
+    def validate_config(self, config: Any) -&gt; None:
+        &#34;&#34;&#34;Validate the configuration for this method.
+
+        Args:
+            config: The method-specific configuration to validate.
+
+        Raises:
+            ValueError: If configuration is invalid.
+        &#34;&#34;&#34;
+        ...
+
+    def normalize_params(
+        self, config: Any, forecast_periods: list[str]
+    ) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Normalize parameters for the NodeFactory.
+
+        Args:
+            config: The method-specific configuration.
+            forecast_periods: List of periods to forecast.
+
+        Returns:
+            Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+        &#34;&#34;&#34;
+        ...
+
+    def prepare_historical_data(
+        self, node: Node, historical_periods: list[str]
+    ) -&gt; Optional[list[float]]:
+        &#34;&#34;&#34;Prepare historical data for methods that need it.
+
+        Args:
+            node: The node to extract historical data from.
+            historical_periods: List of historical periods.
+
+        Returns:
+            List of historical values or None if not needed.
+        &#34;&#34;&#34;
+        ...</code></pre>
+</details>
+<div class="desc"><p>Protocol for forecast methods to implement.</p>
+<p>All forecast methods must provide a name property and implement
+validate_config and normalize_params, optionally prepare_historical_data.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>typing.Protocol</li>
+<li>typing.Generic</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.forecasting.methods.ForecastMethod.name"><code class="name">prop <span class="ident">name</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def name(self) -&gt; str:
+    &#34;&#34;&#34;Return the method name.&#34;&#34;&#34;
+    ...</code></pre>
+</details>
+<div class="desc"><p>Return the method name.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.forecasting.methods.ForecastMethod.normalize_params"><code class="name flex">
+<span>def <span class="ident">normalize_params</span></span>(<span>self, config: Any, forecast_periods: list[str]) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def normalize_params(
+    self, config: Any, forecast_periods: list[str]
+) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Normalize parameters for the NodeFactory.
+
+    Args:
+        config: The method-specific configuration.
+        forecast_periods: List of periods to forecast.
+
+    Returns:
+        Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+    &#34;&#34;&#34;
+    ...</code></pre>
+</details>
+<div class="desc"><p>Normalize parameters for the NodeFactory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>The method-specific configuration.</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of periods to forecast.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dict with 'forecast_type' and 'growth_params' keys.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.ForecastMethod.prepare_historical_data"><code class="name flex">
+<span>def <span class="ident">prepare_historical_data</span></span>(<span>self,<br>node: <a title="fin_statement_model.core.nodes.base.Node" href="../../core/nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>,<br>historical_periods: list[str]) ‑> list[float] | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def prepare_historical_data(
+    self, node: Node, historical_periods: list[str]
+) -&gt; Optional[list[float]]:
+    &#34;&#34;&#34;Prepare historical data for methods that need it.
+
+    Args:
+        node: The node to extract historical data from.
+        historical_periods: List of historical periods.
+
+    Returns:
+        List of historical values or None if not needed.
+    &#34;&#34;&#34;
+    ...</code></pre>
+</details>
+<div class="desc"><p>Prepare historical data for methods that need it.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd>The node to extract historical data from.</dd>
+<dt><strong><code>historical_periods</code></strong></dt>
+<dd>List of historical periods.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of historical values or None if not needed.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.ForecastMethod.validate_config"><code class="name flex">
+<span>def <span class="ident">validate_config</span></span>(<span>self, config: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_config(self, config: Any) -&gt; None:
+    &#34;&#34;&#34;Validate the configuration for this method.
+
+    Args:
+        config: The method-specific configuration to validate.
+
+    Raises:
+        ValueError: If configuration is invalid.
+    &#34;&#34;&#34;
+    ...</code></pre>
+</details>
+<div class="desc"><p>Validate the configuration for this method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>The method-specific configuration to validate.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If configuration is invalid.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod"><code class="flex name class">
+<span>class <span class="ident">HistoricalGrowthForecastMethod</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class HistoricalGrowthForecastMethod(BaseForecastMethod):
+    &#34;&#34;&#34;Forecast future values based on average historical growth patterns.
+
+    This method calculates the average historical growth rate and applies it to
+    forecast future values. Useful when past growth patterns are expected to
+    continue.
+
+    Configuration:
+        - Not required (pass None or 0)
+        - Automatically calculates growth from historical data requiring at least
+          cfg(&#34;forecasting.min_historical_periods&#34;) data points
+
+    Example:
+        &gt;&gt;&gt; method = HistoricalGrowthForecastMethod()
+        &gt;&gt;&gt; params = method.get_forecast_params(None, [&#34;2024&#34;, &#34;2025&#34;])
+        &gt;&gt;&gt; # Returns: {&#34;forecast_type&#34;: &#34;historical_growth&#34;, &#34;growth_params&#34;: None}
+    &#34;&#34;&#34;
+
+    @property
+    def name(self) -&gt; str:
+        &#34;&#34;&#34;Return the method name.&#34;&#34;&#34;
+        return &#34;historical_growth&#34;
+
+    @property
+    def internal_type(self) -&gt; str:
+        &#34;&#34;&#34;Return the internal forecast type for NodeFactory.&#34;&#34;&#34;
+        return &#34;historical_growth&#34;
+
+    def validate_config(self, config: Any) -&gt; None:
+        &#34;&#34;&#34;Validate the configuration for historical growth method.
+
+        Args:
+            config: Not used for historical growth method, can be None or 0.
+
+        Note:
+            Historical growth method doesn&#39;t require configuration as it
+            calculates growth from historical data automatically.
+        &#34;&#34;&#34;
+        # Historical growth method doesn&#39;t need specific configuration
+        # Accept None, 0, or any placeholder value
+
+    def normalize_params(
+        self, config: Any, forecast_periods: list[str]
+    ) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Normalize parameters for the NodeFactory.
+
+        Args:
+            config: Not used for historical growth method.
+            forecast_periods: List of periods to forecast (not used).
+
+        Returns:
+            Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+            For historical growth method, growth_params is None.
+        &#34;&#34;&#34;
+        return {
+            &#34;forecast_type&#34;: self.internal_type,
+            &#34;growth_params&#34;: None,  # Historical growth method calculates internally
+        }
+
+    def prepare_historical_data(
+        self, node: Node, historical_periods: list[str]
+    ) -&gt; Optional[list[float]]:
+        &#34;&#34;&#34;Prepare historical data for growth calculation.
+
+        Args:
+            node: The node to extract historical data from.
+            historical_periods: List of historical periods.
+
+        Returns:
+            List of valid historical values (at least 2 needed for growth).
+
+        Raises:
+            ValueError: If insufficient historical data is available.
+        &#34;&#34;&#34;
+        if not hasattr(node, &#34;calculate&#34;) or not callable(node.calculate):
+            raise ValueError(
+                f&#34;Node {node.name} cannot be calculated for historical growth method&#34;
+            )
+
+        if not hasattr(node, &#34;values&#34;) or not isinstance(node.values, dict):
+            raise ValueError(
+                f&#34;Node {node.name} does not have values dictionary for historical growth method&#34;
+            )
+
+        # Extract historical values in chronological order
+        historical_values = []
+        for period in historical_periods:
+            if period in node.values:
+                try:
+                    value = node.calculate(period)
+                    if (
+                        value is not None
+                        and not np.isnan(value)
+                        and not np.isinf(value)
+                    ):
+                        historical_values.append(float(value))
+                except Exception as e:
+                    # Log the exception and skip this period
+                    logger.debug(
+                        f&#34;Skipping period {period} for node {node.name} in historical growth calculation: {e}&#34;
+                    )
+                    continue
+
+        min_periods = cfg(&#34;forecasting.min_historical_periods&#34;)
+        if len(historical_values) &lt; min_periods:
+            raise ValueError(
+                f&#34;Need at least {min_periods} historical data points for node {node.name} &#34;
+                f&#34;to compute growth rate, found {len(historical_values)}&#34;
+            )
+
+        return historical_values
+
+    def calculate_average_growth_rate(self, historical_values: list[float]) -&gt; float:
+        &#34;&#34;&#34;Calculate the average growth rate from historical values.
+
+        Args:
+            historical_values: List of historical values in chronological order.
+
+        Returns:
+            Average growth rate.
+
+        Note:
+            This is a helper method that can be used by the forecast node
+            implementation to calculate the growth rate.
+        &#34;&#34;&#34;
+        # Calculate period-over-period growth rates
+        if len(historical_values) &lt; 2:
+            return 0.0
+
+        growth_rates: list[float] = []
+        for i in range(1, len(historical_values)):
+            previous_value = historical_values[i - 1]
+            if previous_value != 0:
+                growth_rates.append(
+                    (historical_values[i] - previous_value) / previous_value
+                )
+
+        if not growth_rates:
+            return 0.0
+
+        # Determine aggregation method: &#39;mean&#39; or &#39;median&#39;
+        agg_method = cfg(&#34;forecasting.historical_growth_aggregation&#34;)
+        if agg_method == &#34;median&#34;:
+            try:
+                return float(np.median(growth_rates))
+            except (ValueError, TypeError) as e:
+                logger.warning(
+                    f&#34;Failed to calculate median growth rate, falling back to mean: {e}&#34;
+                )
+                return float(np.mean(growth_rates))
+        # Default to mean
+        return float(np.mean(growth_rates))</code></pre>
+</details>
+<div class="desc"><p>Forecast future values based on average historical growth patterns.</p>
+<p>This method calculates the average historical growth rate and applies it to
+forecast future values. Useful when past growth patterns are expected to
+continue.</p>
+<h2 id="configuration">Configuration</h2>
+<ul>
+<li>Not required (pass None or 0)</li>
+<li>Automatically calculates growth from historical data requiring at least
+cfg("forecasting.min_historical_periods") data points</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; method = HistoricalGrowthForecastMethod()
+&gt;&gt;&gt; params = method.get_forecast_params(None, [&quot;2024&quot;, &quot;2025&quot;])
+&gt;&gt;&gt; # Returns: {&quot;forecast_type&quot;: &quot;historical_growth&quot;, &quot;growth_params&quot;: None}
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod">BaseForecastMethod</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod.calculate_average_growth_rate"><code class="name flex">
+<span>def <span class="ident">calculate_average_growth_rate</span></span>(<span>self, historical_values: list[float]) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate_average_growth_rate(self, historical_values: list[float]) -&gt; float:
+    &#34;&#34;&#34;Calculate the average growth rate from historical values.
+
+    Args:
+        historical_values: List of historical values in chronological order.
+
+    Returns:
+        Average growth rate.
+
+    Note:
+        This is a helper method that can be used by the forecast node
+        implementation to calculate the growth rate.
+    &#34;&#34;&#34;
+    # Calculate period-over-period growth rates
+    if len(historical_values) &lt; 2:
+        return 0.0
+
+    growth_rates: list[float] = []
+    for i in range(1, len(historical_values)):
+        previous_value = historical_values[i - 1]
+        if previous_value != 0:
+            growth_rates.append(
+                (historical_values[i] - previous_value) / previous_value
+            )
+
+    if not growth_rates:
+        return 0.0
+
+    # Determine aggregation method: &#39;mean&#39; or &#39;median&#39;
+    agg_method = cfg(&#34;forecasting.historical_growth_aggregation&#34;)
+    if agg_method == &#34;median&#34;:
+        try:
+            return float(np.median(growth_rates))
+        except (ValueError, TypeError) as e:
+            logger.warning(
+                f&#34;Failed to calculate median growth rate, falling back to mean: {e}&#34;
+            )
+            return float(np.mean(growth_rates))
+    # Default to mean
+    return float(np.mean(growth_rates))</code></pre>
+</details>
+<div class="desc"><p>Calculate the average growth rate from historical values.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>historical_values</code></strong></dt>
+<dd>List of historical values in chronological order.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Average growth rate.</p>
+<h2 id="note">Note</h2>
+<p>This is a helper method that can be used by the forecast node
+implementation to calculate the growth rate.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod.normalize_params"><code class="name flex">
+<span>def <span class="ident">normalize_params</span></span>(<span>self, config: Any, forecast_periods: list[str]) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def normalize_params(
+    self, config: Any, forecast_periods: list[str]
+) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Normalize parameters for the NodeFactory.
+
+    Args:
+        config: Not used for historical growth method.
+        forecast_periods: List of periods to forecast (not used).
+
+    Returns:
+        Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+        For historical growth method, growth_params is None.
+    &#34;&#34;&#34;
+    return {
+        &#34;forecast_type&#34;: self.internal_type,
+        &#34;growth_params&#34;: None,  # Historical growth method calculates internally
+    }</code></pre>
+</details>
+<div class="desc"><p>Normalize parameters for the NodeFactory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Not used for historical growth method.</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of periods to forecast (not used).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dict with 'forecast_type' and 'growth_params' keys.
+For historical growth method, growth_params is None.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod.prepare_historical_data"><code class="name flex">
+<span>def <span class="ident">prepare_historical_data</span></span>(<span>self,<br>node: <a title="fin_statement_model.core.nodes.base.Node" href="../../core/nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>,<br>historical_periods: list[str]) ‑> list[float] | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def prepare_historical_data(
+    self, node: Node, historical_periods: list[str]
+) -&gt; Optional[list[float]]:
+    &#34;&#34;&#34;Prepare historical data for growth calculation.
+
+    Args:
+        node: The node to extract historical data from.
+        historical_periods: List of historical periods.
+
+    Returns:
+        List of valid historical values (at least 2 needed for growth).
+
+    Raises:
+        ValueError: If insufficient historical data is available.
+    &#34;&#34;&#34;
+    if not hasattr(node, &#34;calculate&#34;) or not callable(node.calculate):
+        raise ValueError(
+            f&#34;Node {node.name} cannot be calculated for historical growth method&#34;
+        )
+
+    if not hasattr(node, &#34;values&#34;) or not isinstance(node.values, dict):
+        raise ValueError(
+            f&#34;Node {node.name} does not have values dictionary for historical growth method&#34;
+        )
+
+    # Extract historical values in chronological order
+    historical_values = []
+    for period in historical_periods:
+        if period in node.values:
+            try:
+                value = node.calculate(period)
+                if (
+                    value is not None
+                    and not np.isnan(value)
+                    and not np.isinf(value)
+                ):
+                    historical_values.append(float(value))
+            except Exception as e:
+                # Log the exception and skip this period
+                logger.debug(
+                    f&#34;Skipping period {period} for node {node.name} in historical growth calculation: {e}&#34;
+                )
+                continue
+
+    min_periods = cfg(&#34;forecasting.min_historical_periods&#34;)
+    if len(historical_values) &lt; min_periods:
+        raise ValueError(
+            f&#34;Need at least {min_periods} historical data points for node {node.name} &#34;
+            f&#34;to compute growth rate, found {len(historical_values)}&#34;
+        )
+
+    return historical_values</code></pre>
+</details>
+<div class="desc"><p>Prepare historical data for growth calculation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd>The node to extract historical data from.</dd>
+<dt><strong><code>historical_periods</code></strong></dt>
+<dd>List of historical periods.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of valid historical values (at least 2 needed for growth).</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If insufficient historical data is available.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod.validate_config"><code class="name flex">
+<span>def <span class="ident">validate_config</span></span>(<span>self, config: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_config(self, config: Any) -&gt; None:
+    &#34;&#34;&#34;Validate the configuration for historical growth method.
+
+    Args:
+        config: Not used for historical growth method, can be None or 0.
+
+    Note:
+        Historical growth method doesn&#39;t require configuration as it
+        calculates growth from historical data automatically.
+    &#34;&#34;&#34;
+    # Historical growth method doesn&#39;t need specific configuration
+    # Accept None, 0, or any placeholder value</code></pre>
+</details>
+<div class="desc"><p>Validate the configuration for historical growth method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Not used for historical growth method, can be None or 0.</dd>
+</dl>
+<h2 id="note">Note</h2>
+<p>Historical growth method doesn't require configuration as it
+calculates growth from historical data automatically.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod">BaseForecastMethod</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.get_forecast_params" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.get_forecast_params">get_forecast_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.internal_type" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.internal_type">internal_type</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.name" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.name">name</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.SimpleForecastMethod"><code class="flex name class">
+<span>class <span class="ident">SimpleForecastMethod</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SimpleForecastMethod(BaseForecastMethod):
+    &#34;&#34;&#34;Forecast future values using a constant growth rate.
+
+    This method applies a constant growth rate to the base value for all forecast
+    periods.
+
+    Configuration:
+        - Single numeric value: The growth rate (e.g., 0.05 for 5% growth)
+        - List with single value: Will use the first value
+
+    Example:
+        &gt;&gt;&gt; method = SimpleForecastMethod()
+        &gt;&gt;&gt; params = method.get_forecast_params(0.05, [&#34;2024&#34;, &#34;2025&#34;])
+        &gt;&gt;&gt; # Returns: {&#34;forecast_type&#34;: &#34;simple&#34;, &#34;growth_params&#34;: 0.05}
+    &#34;&#34;&#34;
+
+    @property
+    def name(self) -&gt; str:
+        &#34;&#34;&#34;Return the method name.&#34;&#34;&#34;
+        return &#34;simple&#34;
+
+    @property
+    def internal_type(self) -&gt; str:
+        &#34;&#34;&#34;Return the internal forecast type for NodeFactory.&#34;&#34;&#34;
+        return &#34;simple&#34;
+
+    def validate_config(self, config: Any) -&gt; None:
+        &#34;&#34;&#34;Validate the configuration for simple method.
+
+        Args:
+            config: Should be a numeric value or a list containing a numeric value.
+
+        Raises:
+            ValueError: If config is empty list.
+            TypeError: If config is not numeric or a list with numeric value.
+        &#34;&#34;&#34;
+        if isinstance(config, list):
+            if not config:
+                raise ValueError(&#34;Simple method: empty list provided&#34;)
+            if not isinstance(config[0], int | float):
+                raise TypeError(
+                    f&#34;Simple method requires numeric growth rate, got {type(config[0])}&#34;
+                )
+        elif not isinstance(config, int | float):
+            raise TypeError(
+                f&#34;Simple method requires numeric growth rate, got {type(config)}&#34;
+            )
+
+    def normalize_params(
+        self, config: Any, forecast_periods: list[str]
+    ) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Normalize parameters for the NodeFactory.
+
+        Args:
+            config: The growth rate (numeric or list with numeric).
+            forecast_periods: List of periods to forecast (not used for simple method).
+
+        Returns:
+            Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+        &#34;&#34;&#34;
+        # Handle list input - take first value
+        growth_rate = float(config[0]) if isinstance(config, list) else float(config)
+
+        return {&#34;forecast_type&#34;: self.internal_type, &#34;growth_params&#34;: growth_rate}</code></pre>
+</details>
+<div class="desc"><p>Forecast future values using a constant growth rate.</p>
+<p>This method applies a constant growth rate to the base value for all forecast
+periods.</p>
+<h2 id="configuration">Configuration</h2>
+<ul>
+<li>Single numeric value: The growth rate (e.g., 0.05 for 5% growth)</li>
+<li>List with single value: Will use the first value</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; method = SimpleForecastMethod()
+&gt;&gt;&gt; params = method.get_forecast_params(0.05, [&quot;2024&quot;, &quot;2025&quot;])
+&gt;&gt;&gt; # Returns: {&quot;forecast_type&quot;: &quot;simple&quot;, &quot;growth_params&quot;: 0.05}
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod">BaseForecastMethod</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.forecasting.methods.SimpleForecastMethod.normalize_params"><code class="name flex">
+<span>def <span class="ident">normalize_params</span></span>(<span>self, config: Any, forecast_periods: list[str]) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def normalize_params(
+    self, config: Any, forecast_periods: list[str]
+) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Normalize parameters for the NodeFactory.
+
+    Args:
+        config: The growth rate (numeric or list with numeric).
+        forecast_periods: List of periods to forecast (not used for simple method).
+
+    Returns:
+        Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+    &#34;&#34;&#34;
+    # Handle list input - take first value
+    growth_rate = float(config[0]) if isinstance(config, list) else float(config)
+
+    return {&#34;forecast_type&#34;: self.internal_type, &#34;growth_params&#34;: growth_rate}</code></pre>
+</details>
+<div class="desc"><p>Normalize parameters for the NodeFactory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>The growth rate (numeric or list with numeric).</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of periods to forecast (not used for simple method).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dict with 'forecast_type' and 'growth_params' keys.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.SimpleForecastMethod.validate_config"><code class="name flex">
+<span>def <span class="ident">validate_config</span></span>(<span>self, config: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_config(self, config: Any) -&gt; None:
+    &#34;&#34;&#34;Validate the configuration for simple method.
+
+    Args:
+        config: Should be a numeric value or a list containing a numeric value.
+
+    Raises:
+        ValueError: If config is empty list.
+        TypeError: If config is not numeric or a list with numeric value.
+    &#34;&#34;&#34;
+    if isinstance(config, list):
+        if not config:
+            raise ValueError(&#34;Simple method: empty list provided&#34;)
+        if not isinstance(config[0], int | float):
+            raise TypeError(
+                f&#34;Simple method requires numeric growth rate, got {type(config[0])}&#34;
+            )
+    elif not isinstance(config, int | float):
+        raise TypeError(
+            f&#34;Simple method requires numeric growth rate, got {type(config)}&#34;
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate the configuration for simple method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Should be a numeric value or a list containing a numeric value.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If config is empty list.</dd>
+<dt><code>TypeError</code></dt>
+<dd>If config is not numeric or a list with numeric value.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod">BaseForecastMethod</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.get_forecast_params" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.get_forecast_params">get_forecast_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.internal_type" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.internal_type">internal_type</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.name" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.name">name</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.prepare_historical_data" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.prepare_historical_data">prepare_historical_data</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.StatisticalForecastMethod"><code class="flex name class">
+<span>class <span class="ident">StatisticalForecastMethod</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StatisticalForecastMethod(BaseForecastMethod):
+    &#34;&#34;&#34;Forecast future values by sampling from statistical distributions.
+
+    This method generates forecast values by sampling from specified statistical
+    distributions, useful for Monte Carlo simulations and uncertainty analysis.
+
+    Configuration:
+        - &#39;distribution&#39;: &#39;normal&#39; or &#39;uniform&#39;
+        - &#39;params&#39;: Distribution-specific parameters
+            - For &#39;normal&#39;: {&#39;mean&#39;: float, &#39;std&#39;: float}
+            - For &#39;uniform&#39;: {&#39;low&#39;: float, &#39;high&#39;: float}
+
+    Example:
+        &gt;&gt;&gt; method = StatisticalForecastMethod()
+        &gt;&gt;&gt; config = {
+        ...     &#34;distribution&#34;: &#34;normal&#34;,
+        ...     &#34;params&#34;: {&#34;mean&#34;: 0.05, &#34;std&#34;: 0.02}
+        ... }
+        &gt;&gt;&gt; params = method.get_forecast_params(config, [&#34;2024&#34;, &#34;2025&#34;])
+        &gt;&gt;&gt; # Returns: {&#34;forecast_type&#34;: &#34;statistical&#34;, &#34;growth_params&#34;: &lt;callable&gt;}
+    &#34;&#34;&#34;
+
+    @property
+    def name(self) -&gt; str:
+        &#34;&#34;&#34;Return the method name.&#34;&#34;&#34;
+        return &#34;statistical&#34;
+
+    @property
+    def internal_type(self) -&gt; str:
+        &#34;&#34;&#34;Return the internal forecast type for NodeFactory.&#34;&#34;&#34;
+        return &#34;statistical&#34;
+
+    def validate_config(self, config: Any) -&gt; None:
+        &#34;&#34;&#34;Validate the configuration for statistical method.
+
+        Args:
+            config: Should be a dict with &#39;distribution&#39; and &#39;params&#39; keys.
+
+        Raises:
+            TypeError: If config is invalid.
+        &#34;&#34;&#34;
+        if not isinstance(config, dict):
+            raise TypeError(
+                f&#34;Statistical method requires dict configuration, got {type(config)}&#34;
+            )
+
+        if &#34;distribution&#34; not in config:
+            raise ValueError(&#34;Statistical method requires &#39;distribution&#39; key&#34;)
+
+        if &#34;params&#34; not in config:
+            raise ValueError(&#34;Statistical method requires &#39;params&#39; key&#34;)
+
+        # Validate using StatisticalConfig model (raises ValidationError or ForecastConfigurationError)
+        try:
+            StatisticalConfig(
+                distribution=config[&#34;distribution&#34;], params=config[&#34;params&#34;]
+            )
+        except (ValueError, TypeError, ValidationError) as e:
+            raise ValueError(f&#34;Invalid statistical configuration: {e}&#34;) from e
+
+    def normalize_params(
+        self, config: Any, forecast_periods: list[str]
+    ) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Normalize parameters for the NodeFactory.
+
+        Args:
+            config: Statistical distribution configuration.
+            forecast_periods: List of periods to forecast (not used).
+
+        Returns:
+            Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+            The &#39;growth_params&#39; value is a callable that generates random values.
+        &#34;&#34;&#34;
+        # Create validated config
+        stat_config = StatisticalConfig(
+            distribution=config[&#34;distribution&#34;], params=config[&#34;params&#34;]
+        )
+
+        # Seed RNG if configured
+        seed = cfg(&#34;forecasting.random_seed&#34;)
+        if seed is not None:
+            rng = np.random.RandomState(seed)
+        else:
+            rng = np.random.RandomState()
+
+        # Create generator function based on distribution
+        def generator() -&gt; float:
+            &#34;&#34;&#34;Generate a random growth rate from the specified distribution.&#34;&#34;&#34;
+            if stat_config.distribution == &#34;normal&#34;:
+                return float(
+                    rng.normal(stat_config.params[&#34;mean&#34;], stat_config.params[&#34;std&#34;])
+                )
+            elif stat_config.distribution == &#34;uniform&#34;:
+                return float(
+                    rng.uniform(stat_config.params[&#34;low&#34;], stat_config.params[&#34;high&#34;])
+                )
+            else:
+                # This shouldn&#39;t happen due to validation, but just in case
+                raise ValueError(
+                    f&#34;Unsupported distribution: {stat_config.distribution}&#34;
+                )
+
+        return {&#34;forecast_type&#34;: self.internal_type, &#34;growth_params&#34;: generator}</code></pre>
+</details>
+<div class="desc"><p>Forecast future values by sampling from statistical distributions.</p>
+<p>This method generates forecast values by sampling from specified statistical
+distributions, useful for Monte Carlo simulations and uncertainty analysis.</p>
+<h2 id="configuration">Configuration</h2>
+<ul>
+<li>'distribution': 'normal' or 'uniform'</li>
+<li>'params': Distribution-specific parameters<ul>
+<li>For 'normal': {'mean': float, 'std': float}</li>
+<li>For 'uniform': {'low': float, 'high': float}</li>
+</ul>
+</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; method = StatisticalForecastMethod()
+&gt;&gt;&gt; config = {
+...     &quot;distribution&quot;: &quot;normal&quot;,
+...     &quot;params&quot;: {&quot;mean&quot;: 0.05, &quot;std&quot;: 0.02}
+... }
+&gt;&gt;&gt; params = method.get_forecast_params(config, [&quot;2024&quot;, &quot;2025&quot;])
+&gt;&gt;&gt; # Returns: {&quot;forecast_type&quot;: &quot;statistical&quot;, &quot;growth_params&quot;: &lt;callable&gt;}
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod">BaseForecastMethod</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.forecasting.methods.StatisticalForecastMethod.normalize_params"><code class="name flex">
+<span>def <span class="ident">normalize_params</span></span>(<span>self, config: Any, forecast_periods: list[str]) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def normalize_params(
+    self, config: Any, forecast_periods: list[str]
+) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Normalize parameters for the NodeFactory.
+
+    Args:
+        config: Statistical distribution configuration.
+        forecast_periods: List of periods to forecast (not used).
+
+    Returns:
+        Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+        The &#39;growth_params&#39; value is a callable that generates random values.
+    &#34;&#34;&#34;
+    # Create validated config
+    stat_config = StatisticalConfig(
+        distribution=config[&#34;distribution&#34;], params=config[&#34;params&#34;]
+    )
+
+    # Seed RNG if configured
+    seed = cfg(&#34;forecasting.random_seed&#34;)
+    if seed is not None:
+        rng = np.random.RandomState(seed)
+    else:
+        rng = np.random.RandomState()
+
+    # Create generator function based on distribution
+    def generator() -&gt; float:
+        &#34;&#34;&#34;Generate a random growth rate from the specified distribution.&#34;&#34;&#34;
+        if stat_config.distribution == &#34;normal&#34;:
+            return float(
+                rng.normal(stat_config.params[&#34;mean&#34;], stat_config.params[&#34;std&#34;])
+            )
+        elif stat_config.distribution == &#34;uniform&#34;:
+            return float(
+                rng.uniform(stat_config.params[&#34;low&#34;], stat_config.params[&#34;high&#34;])
+            )
+        else:
+            # This shouldn&#39;t happen due to validation, but just in case
+            raise ValueError(
+                f&#34;Unsupported distribution: {stat_config.distribution}&#34;
+            )
+
+    return {&#34;forecast_type&#34;: self.internal_type, &#34;growth_params&#34;: generator}</code></pre>
+</details>
+<div class="desc"><p>Normalize parameters for the NodeFactory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Statistical distribution configuration.</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of periods to forecast (not used).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dict with 'forecast_type' and 'growth_params' keys.
+The 'growth_params' value is a callable that generates random values.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.methods.StatisticalForecastMethod.validate_config"><code class="name flex">
+<span>def <span class="ident">validate_config</span></span>(<span>self, config: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_config(self, config: Any) -&gt; None:
+    &#34;&#34;&#34;Validate the configuration for statistical method.
+
+    Args:
+        config: Should be a dict with &#39;distribution&#39; and &#39;params&#39; keys.
+
+    Raises:
+        TypeError: If config is invalid.
+    &#34;&#34;&#34;
+    if not isinstance(config, dict):
+        raise TypeError(
+            f&#34;Statistical method requires dict configuration, got {type(config)}&#34;
+        )
+
+    if &#34;distribution&#34; not in config:
+        raise ValueError(&#34;Statistical method requires &#39;distribution&#39; key&#34;)
+
+    if &#34;params&#34; not in config:
+        raise ValueError(&#34;Statistical method requires &#39;params&#39; key&#34;)
+
+    # Validate using StatisticalConfig model (raises ValidationError or ForecastConfigurationError)
+    try:
+        StatisticalConfig(
+            distribution=config[&#34;distribution&#34;], params=config[&#34;params&#34;]
+        )
+    except (ValueError, TypeError, ValidationError) as e:
+        raise ValueError(f&#34;Invalid statistical configuration: {e}&#34;) from e</code></pre>
+</details>
+<div class="desc"><p>Validate the configuration for statistical method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Should be a dict with 'distribution' and 'params' keys.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If config is invalid.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod">BaseForecastMethod</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.get_forecast_params" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.get_forecast_params">get_forecast_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.internal_type" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.internal_type">internal_type</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.name" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.name">name</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.base.BaseForecastMethod.prepare_historical_data" href="base.html#fin_statement_model.forecasting.methods.base.BaseForecastMethod.prepare_historical_data">prepare_historical_data</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.forecasting" href="../index.html">fin_statement_model.forecasting</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.forecasting.methods.average" href="average.html">fin_statement_model.forecasting.methods.average</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.base" href="base.html">fin_statement_model.forecasting.methods.base</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.curve" href="curve.html">fin_statement_model.forecasting.methods.curve</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.historical_growth" href="historical_growth.html">fin_statement_model.forecasting.methods.historical_growth</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.simple" href="simple.html">fin_statement_model.forecasting.methods.simple</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.statistical" href="statistical.html">fin_statement_model.forecasting.methods.statistical</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.forecasting.methods.AverageForecastMethod" href="#fin_statement_model.forecasting.methods.AverageForecastMethod">AverageForecastMethod</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.forecasting.methods.AverageForecastMethod.normalize_params" href="#fin_statement_model.forecasting.methods.AverageForecastMethod.normalize_params">normalize_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.AverageForecastMethod.prepare_historical_data" href="#fin_statement_model.forecasting.methods.AverageForecastMethod.prepare_historical_data">prepare_historical_data</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.AverageForecastMethod.validate_config" href="#fin_statement_model.forecasting.methods.AverageForecastMethod.validate_config">validate_config</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.forecasting.methods.BaseForecastMethod" href="#fin_statement_model.forecasting.methods.BaseForecastMethod">BaseForecastMethod</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.forecasting.methods.BaseForecastMethod.get_forecast_params" href="#fin_statement_model.forecasting.methods.BaseForecastMethod.get_forecast_params">get_forecast_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.BaseForecastMethod.internal_type" href="#fin_statement_model.forecasting.methods.BaseForecastMethod.internal_type">internal_type</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.BaseForecastMethod.name" href="#fin_statement_model.forecasting.methods.BaseForecastMethod.name">name</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.BaseForecastMethod.normalize_params" href="#fin_statement_model.forecasting.methods.BaseForecastMethod.normalize_params">normalize_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.BaseForecastMethod.prepare_historical_data" href="#fin_statement_model.forecasting.methods.BaseForecastMethod.prepare_historical_data">prepare_historical_data</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.BaseForecastMethod.validate_config" href="#fin_statement_model.forecasting.methods.BaseForecastMethod.validate_config">validate_config</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.forecasting.methods.CurveForecastMethod" href="#fin_statement_model.forecasting.methods.CurveForecastMethod">CurveForecastMethod</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.forecasting.methods.CurveForecastMethod.normalize_params" href="#fin_statement_model.forecasting.methods.CurveForecastMethod.normalize_params">normalize_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.CurveForecastMethod.validate_config" href="#fin_statement_model.forecasting.methods.CurveForecastMethod.validate_config">validate_config</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.forecasting.methods.ForecastMethod" href="#fin_statement_model.forecasting.methods.ForecastMethod">ForecastMethod</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.forecasting.methods.ForecastMethod.name" href="#fin_statement_model.forecasting.methods.ForecastMethod.name">name</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.ForecastMethod.normalize_params" href="#fin_statement_model.forecasting.methods.ForecastMethod.normalize_params">normalize_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.ForecastMethod.prepare_historical_data" href="#fin_statement_model.forecasting.methods.ForecastMethod.prepare_historical_data">prepare_historical_data</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.ForecastMethod.validate_config" href="#fin_statement_model.forecasting.methods.ForecastMethod.validate_config">validate_config</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod" href="#fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod">HistoricalGrowthForecastMethod</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod.calculate_average_growth_rate" href="#fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod.calculate_average_growth_rate">calculate_average_growth_rate</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod.normalize_params" href="#fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod.normalize_params">normalize_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod.prepare_historical_data" href="#fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod.prepare_historical_data">prepare_historical_data</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod.validate_config" href="#fin_statement_model.forecasting.methods.HistoricalGrowthForecastMethod.validate_config">validate_config</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.forecasting.methods.SimpleForecastMethod" href="#fin_statement_model.forecasting.methods.SimpleForecastMethod">SimpleForecastMethod</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.forecasting.methods.SimpleForecastMethod.normalize_params" href="#fin_statement_model.forecasting.methods.SimpleForecastMethod.normalize_params">normalize_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.SimpleForecastMethod.validate_config" href="#fin_statement_model.forecasting.methods.SimpleForecastMethod.validate_config">validate_config</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.forecasting.methods.StatisticalForecastMethod" href="#fin_statement_model.forecasting.methods.StatisticalForecastMethod">StatisticalForecastMethod</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.forecasting.methods.StatisticalForecastMethod.normalize_params" href="#fin_statement_model.forecasting.methods.StatisticalForecastMethod.normalize_params">normalize_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.methods.StatisticalForecastMethod.validate_config" href="#fin_statement_model.forecasting.methods.StatisticalForecastMethod.validate_config">validate_config</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

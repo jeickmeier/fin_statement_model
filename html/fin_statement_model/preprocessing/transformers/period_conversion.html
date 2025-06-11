@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.preprocessing.transformers.period_conversion API documentation</title>
+<meta name="description" content="Provide the PeriodConversionTransformer for converting between financial reporting periods …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.preprocessing.transformers.period_conversion</code></h1>
+</header>
+<section id="section-intro">
+<p>Provide the PeriodConversionTransformer for converting between financial reporting periods.</p>
+<p>This module defines the transformer for aggregating higher-frequency data to lower-frequency periods
+and calculating trailing metrics such as trailing twelve months (TTM). Supported conversions include:
+quarterly_to_annual, monthly_to_quarterly, monthly_to_annual, and quarterly_to_ttm.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer"><code class="flex name class">
+<span>class <span class="ident">PeriodConversionTransformer</span></span>
+<span>(</span><span>conversion_type: str | <a title="fin_statement_model.preprocessing.config.ConversionType" href="../config.html#fin_statement_model.preprocessing.config.ConversionType">ConversionType</a> = ConversionType.QUARTERLY_TO_ANNUAL,<br>aggregation: str = 'sum',<br>config: <a title="fin_statement_model.preprocessing.config.PeriodConversionConfig" href="../config.html#fin_statement_model.preprocessing.config.PeriodConversionConfig">PeriodConversionConfig</a> | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PeriodConversionTransformer(DataTransformer):
+    &#34;&#34;&#34;Transformer for converting between different financial reporting periods.
+
+    This transformer aggregates financial data from higher-frequency periods
+    (e.g., monthly, quarterly) to lower-frequency periods (e.g., quarterly, annual)
+    or calculates trailing metrics like TTM (Trailing Twelve Months).
+
+    Supported conversion types:
+        - **quarterly_to_annual**: Aggregate 4 quarters into annual data
+        - **monthly_to_quarterly**: Aggregate 3 months into quarterly data
+        - **monthly_to_annual**: Aggregate 12 months into annual data
+        - **quarterly_to_ttm**: Calculate trailing twelve months from quarterly data
+
+    Input Data Requirements:
+        - Data must have a DatetimeIndex or an index convertible to datetime
+        - The index should represent the period-end dates
+        - Data frequency should match the conversion type (e.g., quarterly data
+          for quarterly_to_annual conversion)
+
+    Aggregation Methods:
+        - **sum**: Total values (default) - use for flow items like revenue, expenses
+        - **mean**: Average values - use for rates, ratios, or average balances
+        - **last**: Take last value - use for balance sheet items (point-in-time)
+        - **first**: Take first value - use for opening balances
+        - **max/min**: Maximum/minimum values - use for peak/trough analysis
+
+    Examples:
+        Convert quarterly revenue to annual totals:
+
+        &gt;&gt;&gt; import pandas as pd
+        &gt;&gt;&gt; from fin_statement_model.preprocessing.transformers import PeriodConversionTransformer
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Quarterly revenue and expense data
+        &gt;&gt;&gt; quarterly_data = pd.DataFrame({
+        ...     &#39;revenue&#39;: [100, 110, 120, 130, 140, 150, 160, 170],
+        ...     &#39;expenses&#39;: [80, 85, 90, 95, 100, 105, 110, 115]
+        ... }, index=pd.date_range(&#39;2022-03-31&#39;, periods=8, freq=&#39;Q&#39;))
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Convert to annual data (sum 4 quarters)
+        &gt;&gt;&gt; annual_converter = PeriodConversionTransformer(
+        ...     conversion_type=&#39;quarterly_to_annual&#39;,
+        ...     aggregation=&#39;sum&#39;
+        ... )
+        &gt;&gt;&gt; annual_data = annual_converter.transform(quarterly_data)
+        &gt;&gt;&gt; print(annual_data)
+        #       revenue  expenses
+        # 2022      460       350
+        # 2023      620       430
+
+        Convert monthly balance sheet to quarterly (taking last value):
+
+        &gt;&gt;&gt; # Monthly balance sheet data
+        &gt;&gt;&gt; monthly_bs = pd.DataFrame({
+        ...     &#39;total_assets&#39;: [1000, 1020, 1050, 1080, 1100, 1150],
+        ...     &#39;total_equity&#39;: [600, 610, 620, 630, 640, 650]
+        ... }, index=pd.date_range(&#39;2023-01-31&#39;, periods=6, freq=&#39;M&#39;))
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Convert to quarterly, taking last month&#39;s value
+        &gt;&gt;&gt; quarterly_converter = PeriodConversionTransformer(
+        ...     conversion_type=&#39;monthly_to_quarterly&#39;,
+        ...     aggregation=&#39;last&#39;
+        ... )
+        &gt;&gt;&gt; quarterly_bs = quarterly_converter.transform(monthly_bs)
+        &gt;&gt;&gt; print(quarterly_bs)
+        #                  total_assets  total_equity
+        # (2023, 1)              1050           620
+        # (2023, 2)              1150           650
+
+        Calculate trailing twelve months (TTM) from quarterly data:
+
+        &gt;&gt;&gt; # Quarterly earnings data
+        &gt;&gt;&gt; quarterly_earnings = pd.DataFrame({
+        ...     &#39;net_income&#39;: [25, 30, 35, 40, 45, 50, 55, 60]
+        ... }, index=pd.date_range(&#39;2022-03-31&#39;, periods=8, freq=&#39;Q&#39;))
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Calculate TTM (rolling 4-quarter sum)
+        &gt;&gt;&gt; ttm_converter = PeriodConversionTransformer(
+        ...     conversion_type=&#39;quarterly_to_ttm&#39;,
+        ...     aggregation=&#39;sum&#39;
+        ... )
+        &gt;&gt;&gt; ttm_data = ttm_converter.transform(quarterly_earnings)
+        &gt;&gt;&gt; print(ttm_data.iloc[3:])  # First 3 periods will be NaN
+        #             net_income
+        # 2023-03-31       130.0
+        # 2023-06-30       150.0
+        # 2023-09-30       170.0
+        # 2023-12-31       190.0
+        # 2024-03-31       210.0
+
+    Note:
+        - The resulting index format depends on the conversion type
+        - Annual conversions group by year (integer index)
+        - Quarterly conversions group by (year, quarter) tuple
+        - TTM conversions maintain the original datetime index
+        - Ensure your aggregation method matches the financial item type
+    &#34;&#34;&#34;
+
+    # All valid conversion types
+    CONVERSION_TYPES: ClassVar[list[str]] = [t.value for t in ConversionType]
+
+    def __init__(
+        self,
+        conversion_type: Union[
+            str, ConversionType
+        ] = ConversionType.QUARTERLY_TO_ANNUAL,
+        aggregation: str = &#34;sum&#34;,
+        config: Optional[PeriodConversionConfig] = None,
+    ):
+        &#34;&#34;&#34;Initialize the period conversion transformer.
+
+        Args:
+            conversion_type: Type of period conversion to apply. Can be either
+                a string or ConversionType enum value:
+                - &#39;quarterly_to_annual&#39;: Convert 4 quarters to 1 year
+                - &#39;monthly_to_quarterly&#39;: Convert 3 months to 1 quarter
+                - &#39;monthly_to_annual&#39;: Convert 12 months to 1 year
+                - &#39;quarterly_to_ttm&#39;: Calculate trailing twelve months
+            aggregation: How to aggregate data within each period:
+                - &#39;sum&#39;: Add up all values (default) - for flow items
+                - &#39;mean&#39;: Calculate average - for rates/ratios
+                - &#39;last&#39;: Take last value - for balance sheet items
+                - &#39;first&#39;: Take first value - for opening balances
+                - &#39;max&#39;: Take maximum value
+                - &#39;min&#39;: Take minimum value
+                - &#39;std&#39;: Calculate standard deviation
+                - &#39;count&#39;: Count non-null values
+            config: Optional PeriodConversionConfig object containing configuration.
+                If provided, overrides other parameters.
+
+        Raises:
+            ValueError: If conversion_type is invalid.
+
+        Examples:
+            &gt;&gt;&gt; # Annual totals from quarterly data
+            &gt;&gt;&gt; converter = PeriodConversionTransformer(&#39;quarterly_to_annual&#39;, &#39;sum&#39;)
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Quarter-end balances from monthly data
+            &gt;&gt;&gt; converter = PeriodConversionTransformer(&#39;monthly_to_quarterly&#39;, &#39;last&#39;)
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # TTM revenue from quarterly data
+            &gt;&gt;&gt; converter = PeriodConversionTransformer(&#39;quarterly_to_ttm&#39;, &#39;sum&#39;)
+        &#34;&#34;&#34;
+        super().__init__(config.model_dump() if config else None)
+        # Normalize enum to string
+        if isinstance(conversion_type, ConversionType):
+            ctype = conversion_type.value
+        else:
+            ctype = conversion_type
+        if ctype not in self.CONVERSION_TYPES:
+            raise ValueError(
+                f&#34;Invalid conversion type: {ctype}. Must be one of {self.CONVERSION_TYPES}&#34;
+            )
+        self.conversion_type = ctype
+        self.aggregation = aggregation
+
+    def transform(self, data: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Transform data by converting between period types.
+
+        Args:
+            data: DataFrame with time-based data to convert. Must have either:
+                - A DatetimeIndex
+                - An index containing date/time strings parsable by pd.to_datetime
+                - Period labels that can be converted to datetime
+
+                The data frequency should match the source period type (e.g.,
+                quarterly data for &#39;quarterly_to_annual&#39; conversion).
+
+        Returns:
+            DataFrame with converted periods:
+            - For annual conversions: Index will be years (integers)
+            - For quarterly conversions: Index will be (year, quarter) tuples
+            - For TTM conversions: Original datetime index is preserved
+
+            All columns are aggregated according to the specified method.
+
+        Raises:
+            TypeError: If data is not a pandas DataFrame.
+            ValueError: If index cannot be converted to datetime or if
+                aggregation=&#39;sum&#39; is used with &#39;quarterly_to_ttm&#39; and a
+                different aggregation method is specified.
+
+        Examples:
+            &gt;&gt;&gt; # Convert quarterly data to annual
+            &gt;&gt;&gt; df = pd.DataFrame({
+            ...     &#39;revenue&#39;: [100, 110, 120, 130],
+            ...     &#39;costs&#39;: [60, 65, 70, 75]
+            ... }, index=[&#39;2023-Q1&#39;, &#39;2023-Q2&#39;, &#39;2023-Q3&#39;, &#39;2023-Q4&#39;])
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; converter = PeriodConversionTransformer(&#39;quarterly_to_annual&#39;)
+            &gt;&gt;&gt; annual = converter.transform(df)
+            &gt;&gt;&gt; print(annual)
+            #       revenue  costs
+            # 2023      460    270
+        &#34;&#34;&#34;
+        # Ensure we have a DataFrame
+        if not isinstance(data, pd.DataFrame):
+            raise TypeError(&#34;Period conversion requires a pandas DataFrame&#34;)
+
+        return super().transform(data)
+
+    def _transform_impl(
+        self, data: Union[pd.DataFrame, pd.Series]
+    ) -&gt; Union[pd.DataFrame, pd.Series]:
+        &#34;&#34;&#34;Apply the period conversion transformation.
+
+        Args:
+            data: The data to transform.
+
+        Returns:
+            The transformed data.
+
+        Raises:
+            DataValidationError: If data is not a DataFrame or Series.
+            ValueError: If conversion fails.
+        &#34;&#34;&#34;
+        if not isinstance(data, pd.DataFrame | pd.Series):
+            raise DataValidationError(
+                &#34;Period conversion requires a pandas DataFrame or Series&#34;,
+                validation_errors=[f&#34;Got type: {type(data).__name__}&#34;],
+            )
+
+        # Handle Series by converting to DataFrame temporarily
+        if isinstance(data, pd.Series):
+            temp_df = data.to_frame()
+            result_df = self._convert_periods(temp_df)
+            return result_df.iloc[:, 0]  # Return as Series
+        else:
+            return self._convert_periods(data)
+
+    def _convert_periods(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Apply period conversion to a DataFrame.
+
+        Args:
+            df: DataFrame to convert.
+
+        Returns:
+            Converted DataFrame with the new period index.
+
+        Raises:
+            ValueError: If the DataFrame index cannot be converted to datetime or if TTM conversion is requested with unsupported aggregation.
+            NotImplementedError: If the conversion_type is not supported by this transformer.
+        &#34;&#34;&#34;
+        df_copy = df.copy()
+
+        # Try to convert index to datetime if it&#39;s not already
+        if not isinstance(df_copy.index, pd.DatetimeIndex):
+            try:
+                df_copy.index = pd.to_datetime(df_copy.index)
+                logger.debug(&#34;Successfully converted DataFrame index to DatetimeIndex.&#34;)
+            except Exception as e:
+                logger.exception(
+                    &#34;Failed to convert DataFrame index to DatetimeIndex. Ensure index contains standard date/time strings or is already a DatetimeIndex.&#34;
+                )
+                raise ValueError(
+                    f&#34;Index must be convertible to datetime for period conversion: {e}&#34;
+                )
+
+        if self.conversion_type == ConversionType.QUARTERLY_TO_ANNUAL.value:
+            # Group by year and aggregate
+            return df_copy.groupby(df_copy.index.year).agg(self.aggregation)
+
+        elif self.conversion_type == ConversionType.MONTHLY_TO_QUARTERLY.value:
+            # Group by year and quarter
+            return df_copy.groupby([df_copy.index.year, df_copy.index.quarter]).agg(
+                self.aggregation
+            )
+
+        elif self.conversion_type == ConversionType.MONTHLY_TO_ANNUAL.value:
+            # Group by year
+            return df_copy.groupby(df_copy.index.year).agg(self.aggregation)
+
+        elif self.conversion_type == ConversionType.QUARTERLY_TO_TTM.value:
+            # Implement TTM as rolling sum with window=4 for quarterly data
+            if self.aggregation == &#34;sum&#34;:
+                return df_copy.rolling(window=4, min_periods=4).sum()
+            else:
+                # For other aggregation methods, we need custom logic
+                raise ValueError(
+                    &#34;QUARTERLY_TO_TTM conversion currently only supports &#39;sum&#39; aggregation for TTM. &#34;
+                    &#34;TTM typically represents the sum of the last 4 quarters for flow items like revenue.&#34;
+                )
+        else:
+            raise NotImplementedError(
+                f&#34;Conversion type &#39;{self.conversion_type}&#39; is defined in ConversionType enum but not implemented in PeriodConversionTransformer.&#34;
+            )</code></pre>
+</details>
+<div class="desc"><p>Transformer for converting between different financial reporting periods.</p>
+<p>This transformer aggregates financial data from higher-frequency periods
+(e.g., monthly, quarterly) to lower-frequency periods (e.g., quarterly, annual)
+or calculates trailing metrics like TTM (Trailing Twelve Months).</p>
+<p>Supported conversion types:
+- <strong>quarterly_to_annual</strong>: Aggregate 4 quarters into annual data
+- <strong>monthly_to_quarterly</strong>: Aggregate 3 months into quarterly data
+- <strong>monthly_to_annual</strong>: Aggregate 12 months into annual data
+- <strong>quarterly_to_ttm</strong>: Calculate trailing twelve months from quarterly data</p>
+<p>Input Data Requirements:
+- Data must have a DatetimeIndex or an index convertible to datetime
+- The index should represent the period-end dates
+- Data frequency should match the conversion type (e.g., quarterly data
+for quarterly_to_annual conversion)</p>
+<p>Aggregation Methods:
+- <strong>sum</strong>: Total values (default) - use for flow items like revenue, expenses
+- <strong>mean</strong>: Average values - use for rates, ratios, or average balances
+- <strong>last</strong>: Take last value - use for balance sheet items (point-in-time)
+- <strong>first</strong>: Take first value - use for opening balances
+- <strong>max/min</strong>: Maximum/minimum values - use for peak/trough analysis</p>
+<h2 id="examples">Examples</h2>
+<p>Convert quarterly revenue to annual totals:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; import pandas as pd
+&gt;&gt;&gt; from fin_statement_model.preprocessing.transformers import PeriodConversionTransformer
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Quarterly revenue and expense data
+&gt;&gt;&gt; quarterly_data = pd.DataFrame({
+...     'revenue': [100, 110, 120, 130, 140, 150, 160, 170],
+...     'expenses': [80, 85, 90, 95, 100, 105, 110, 115]
+... }, index=pd.date_range('2022-03-31', periods=8, freq='Q'))
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Convert to annual data (sum 4 quarters)
+&gt;&gt;&gt; annual_converter = PeriodConversionTransformer(
+...     conversion_type='quarterly_to_annual',
+...     aggregation='sum'
+... )
+&gt;&gt;&gt; annual_data = annual_converter.transform(quarterly_data)
+&gt;&gt;&gt; print(annual_data)
+#       revenue  expenses
+# 2022      460       350
+# 2023      620       430
+</code></pre>
+<p>Convert monthly balance sheet to quarterly (taking last value):</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Monthly balance sheet data
+&gt;&gt;&gt; monthly_bs = pd.DataFrame({
+...     'total_assets': [1000, 1020, 1050, 1080, 1100, 1150],
+...     'total_equity': [600, 610, 620, 630, 640, 650]
+... }, index=pd.date_range('2023-01-31', periods=6, freq='M'))
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Convert to quarterly, taking last month's value
+&gt;&gt;&gt; quarterly_converter = PeriodConversionTransformer(
+...     conversion_type='monthly_to_quarterly',
+...     aggregation='last'
+... )
+&gt;&gt;&gt; quarterly_bs = quarterly_converter.transform(monthly_bs)
+&gt;&gt;&gt; print(quarterly_bs)
+#                  total_assets  total_equity
+# (2023, 1)              1050           620
+# (2023, 2)              1150           650
+</code></pre>
+<p>Calculate trailing twelve months (TTM) from quarterly data:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Quarterly earnings data
+&gt;&gt;&gt; quarterly_earnings = pd.DataFrame({
+...     'net_income': [25, 30, 35, 40, 45, 50, 55, 60]
+... }, index=pd.date_range('2022-03-31', periods=8, freq='Q'))
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Calculate TTM (rolling 4-quarter sum)
+&gt;&gt;&gt; ttm_converter = PeriodConversionTransformer(
+...     conversion_type='quarterly_to_ttm',
+...     aggregation='sum'
+... )
+&gt;&gt;&gt; ttm_data = ttm_converter.transform(quarterly_earnings)
+&gt;&gt;&gt; print(ttm_data.iloc[3:])  # First 3 periods will be NaN
+#             net_income
+# 2023-03-31       130.0
+# 2023-06-30       150.0
+# 2023-09-30       170.0
+# 2023-12-31       190.0
+# 2024-03-31       210.0
+</code></pre>
+<h2 id="note">Note</h2>
+<ul>
+<li>The resulting index format depends on the conversion type</li>
+<li>Annual conversions group by year (integer index)</li>
+<li>Quarterly conversions group by (year, quarter) tuple</li>
+<li>TTM conversions maintain the original datetime index</li>
+<li>Ensure your aggregation method matches the financial item type</li>
+</ul>
+<p>Initialize the period conversion transformer.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>conversion_type</code></strong></dt>
+<dd>Type of period conversion to apply. Can be either
+a string or ConversionType enum value:
+- 'quarterly_to_annual': Convert 4 quarters to 1 year
+- 'monthly_to_quarterly': Convert 3 months to 1 quarter
+- 'monthly_to_annual': Convert 12 months to 1 year
+- 'quarterly_to_ttm': Calculate trailing twelve months</dd>
+<dt><strong><code>aggregation</code></strong></dt>
+<dd>How to aggregate data within each period:
+- 'sum': Add up all values (default) - for flow items
+- 'mean': Calculate average - for rates/ratios
+- 'last': Take last value - for balance sheet items
+- 'first': Take first value - for opening balances
+- 'max': Take maximum value
+- 'min': Take minimum value
+- 'std': Calculate standard deviation
+- 'count': Count non-null values</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional PeriodConversionConfig object containing configuration.
+If provided, overrides other parameters.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If conversion_type is invalid.</dd>
+</dl>
+<h2 id="examples_1">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Annual totals from quarterly data
+&gt;&gt;&gt; converter = PeriodConversionTransformer('quarterly_to_annual', 'sum')
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Quarter-end balances from monthly data
+&gt;&gt;&gt; converter = PeriodConversionTransformer('monthly_to_quarterly', 'last')
+&gt;&gt;&gt;
+&gt;&gt;&gt; # TTM revenue from quarterly data
+&gt;&gt;&gt; converter = PeriodConversionTransformer('quarterly_to_ttm', 'sum')
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer.CONVERSION_TYPES"><code class="name">var <span class="ident">CONVERSION_TYPES</span> : ClassVar[list[str]]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer.transform"><code class="name flex">
+<span>def <span class="ident">transform</span></span>(<span>self, data: pandas.core.frame.DataFrame) ‑> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform(self, data: pd.DataFrame) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;Transform data by converting between period types.
+
+    Args:
+        data: DataFrame with time-based data to convert. Must have either:
+            - A DatetimeIndex
+            - An index containing date/time strings parsable by pd.to_datetime
+            - Period labels that can be converted to datetime
+
+            The data frequency should match the source period type (e.g.,
+            quarterly data for &#39;quarterly_to_annual&#39; conversion).
+
+    Returns:
+        DataFrame with converted periods:
+        - For annual conversions: Index will be years (integers)
+        - For quarterly conversions: Index will be (year, quarter) tuples
+        - For TTM conversions: Original datetime index is preserved
+
+        All columns are aggregated according to the specified method.
+
+    Raises:
+        TypeError: If data is not a pandas DataFrame.
+        ValueError: If index cannot be converted to datetime or if
+            aggregation=&#39;sum&#39; is used with &#39;quarterly_to_ttm&#39; and a
+            different aggregation method is specified.
+
+    Examples:
+        &gt;&gt;&gt; # Convert quarterly data to annual
+        &gt;&gt;&gt; df = pd.DataFrame({
+        ...     &#39;revenue&#39;: [100, 110, 120, 130],
+        ...     &#39;costs&#39;: [60, 65, 70, 75]
+        ... }, index=[&#39;2023-Q1&#39;, &#39;2023-Q2&#39;, &#39;2023-Q3&#39;, &#39;2023-Q4&#39;])
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; converter = PeriodConversionTransformer(&#39;quarterly_to_annual&#39;)
+        &gt;&gt;&gt; annual = converter.transform(df)
+        &gt;&gt;&gt; print(annual)
+        #       revenue  costs
+        # 2023      460    270
+    &#34;&#34;&#34;
+    # Ensure we have a DataFrame
+    if not isinstance(data, pd.DataFrame):
+        raise TypeError(&#34;Period conversion requires a pandas DataFrame&#34;)
+
+    return super().transform(data)</code></pre>
+</details>
+<div class="desc"><p>Transform data by converting between period types.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>
+<p>DataFrame with time-based data to convert. Must have either:
+- A DatetimeIndex
+- An index containing date/time strings parsable by pd.to_datetime
+- Period labels that can be converted to datetime</p>
+<p>The data frequency should match the source period type (e.g.,
+quarterly data for 'quarterly_to_annual' conversion).</p>
+</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>DataFrame with converted periods:
+- For annual conversions: Index will be years (integers)
+- For quarterly conversions: Index will be (year, quarter) tuples
+- For TTM conversions: Original datetime index is preserved</p>
+<p>All columns are aggregated according to the specified method.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If data is not a pandas DataFrame.</dd>
+<dt><code>ValueError</code></dt>
+<dd>If index cannot be converted to datetime or if
+aggregation='sum' is used with 'quarterly_to_ttm' and a
+different aggregation method is specified.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Convert quarterly data to annual
+&gt;&gt;&gt; df = pd.DataFrame({
+...     'revenue': [100, 110, 120, 130],
+...     'costs': [60, 65, 70, 75]
+... }, index=['2023-Q1', '2023-Q2', '2023-Q3', '2023-Q4'])
+&gt;&gt;&gt;
+&gt;&gt;&gt; converter = PeriodConversionTransformer('quarterly_to_annual')
+&gt;&gt;&gt; annual = converter.transform(df)
+&gt;&gt;&gt; print(annual)
+#       revenue  costs
+# 2023      460    270
+</code></pre></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.execute" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer.execute">execute</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config">validate_config</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_input" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_input">validate_input</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.preprocessing.transformers" href="index.html">fin_statement_model.preprocessing.transformers</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer" href="#fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer">PeriodConversionTransformer</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer.CONVERSION_TYPES" href="#fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer.CONVERSION_TYPES">CONVERSION_TYPES</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer.transform" href="#fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer.transform">transform</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

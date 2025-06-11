@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.forecasting.strategies API documentation</title>
+<meta name="description" content="Provide a registry and selection strategies for forecast methods …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.forecasting.strategies</code></h1>
+</header>
+<section id="section-intro">
+<p>Provide a registry and selection strategies for forecast methods.</p>
+<p>This module manages the ForecastMethodRegistry for registering and retrieving
+forecast methods, and exposes convenience functions for global access.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.forecasting.strategies.get_forecast_method"><code class="name flex">
+<span>def <span class="ident">get_forecast_method</span></span>(<span>name: str) ‑> <a title="fin_statement_model.forecasting.methods.base.ForecastMethod" href="methods/base.html#fin_statement_model.forecasting.methods.base.ForecastMethod">ForecastMethod</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_forecast_method(name: str) -&gt; ForecastMethod:
+    &#34;&#34;&#34;Retrieve a forecast method from the global registry.
+
+    Args:
+        name: The name of the method to retrieve.
+
+    Returns:
+        The requested forecast method.
+
+    Raises:
+        ValueError: If the method is not registered.
+    &#34;&#34;&#34;
+    return forecast_registry.get_method(name)</code></pre>
+</details>
+<div class="desc"><p>Retrieve a forecast method from the global registry.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The name of the method to retrieve.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The requested forecast method.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the method is not registered.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.forecasting.strategies.register_forecast_method"><code class="name flex">
+<span>def <span class="ident">register_forecast_method</span></span>(<span>method: <a title="fin_statement_model.forecasting.methods.base.ForecastMethod" href="methods/base.html#fin_statement_model.forecasting.methods.base.ForecastMethod">ForecastMethod</a>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def register_forecast_method(method: ForecastMethod) -&gt; None:
+    &#34;&#34;&#34;Register a custom forecast method in the global registry.
+
+    Args:
+        method: The forecast method to register.
+
+    Raises:
+        ValueError: If a method with the same name is already registered.
+    &#34;&#34;&#34;
+    forecast_registry.register(method)</code></pre>
+</details>
+<div class="desc"><p>Register a custom forecast method in the global registry.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>method</code></strong></dt>
+<dd>The forecast method to register.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If a method with the same name is already registered.</dd>
+</dl></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.forecasting.strategies.ForecastMethodRegistry"><code class="flex name class">
+<span>class <span class="ident">ForecastMethodRegistry</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ForecastMethodRegistry:
+    &#34;&#34;&#34;Manage forecast methods in a registry.
+
+    Provides methods to register, unregister, retrieve, and list available
+    forecast methods. Supports querying method metadata.
+
+    Example:
+        &gt;&gt;&gt; registry = ForecastMethodRegistry()
+        &gt;&gt;&gt; method = registry.get_method(&#39;simple&#39;)
+        &gt;&gt;&gt; print(registry.list_methods())
+        [&#39;simple&#39;, &#39;curve&#39;, &#39;statistical&#39;, &#39;average&#39;, &#39;historical_growth&#39;]
+    &#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        &#34;&#34;&#34;Initialize the registry with built-in methods.&#34;&#34;&#34;
+        self._methods: dict[str, ForecastMethod] = {}
+        self._register_builtin_methods()
+
+    def _register_builtin_methods(self) -&gt; None:
+        &#34;&#34;&#34;Register all built-in forecast methods.&#34;&#34;&#34;
+        builtin_methods = [
+            SimpleForecastMethod(),
+            CurveForecastMethod(),
+            StatisticalForecastMethod(),
+            AverageForecastMethod(),
+            HistoricalGrowthForecastMethod(),
+        ]
+
+        for method in builtin_methods:
+            self.register(method)
+            logger.debug(f&#34;Registered built-in forecast method: {method.name}&#34;)
+
+    def register(self, method: ForecastMethod) -&gt; None:
+        &#34;&#34;&#34;Register a new forecast method.
+
+        Args:
+            method: The forecast method to register.
+
+        Raises:
+            ValueError: If a method with the same name is already registered.
+        &#34;&#34;&#34;
+        if method.name in self._methods:
+            raise ValueError(f&#34;Forecast method &#39;{method.name}&#39; is already registered&#34;)
+
+        self._methods[method.name] = method
+        logger.info(f&#34;Registered forecast method: {method.name}&#34;)
+
+    def unregister(self, name: str) -&gt; None:
+        &#34;&#34;&#34;Unregister a forecast method.
+
+        Args:
+            name: The name of the method to unregister.
+
+        Raises:
+            KeyError: If the method is not registered.
+        &#34;&#34;&#34;
+        if name not in self._methods:
+            raise KeyError(f&#34;Forecast method &#39;{name}&#39; is not registered&#34;)
+
+        del self._methods[name]
+        logger.info(f&#34;Unregistered forecast method: {name}&#34;)
+
+    def get_method(self, name: str) -&gt; ForecastMethod:
+        &#34;&#34;&#34;Get a forecast method by name.
+
+        Args:
+            name: The name of the method to retrieve.
+
+        Returns:
+            The requested forecast method.
+
+        Raises:
+            ValueError: If the method is not registered.
+        &#34;&#34;&#34;
+        if name not in self._methods:
+            available = &#34;, &#34;.join(sorted(self._methods.keys()))
+            raise ValueError(
+                f&#34;Unknown forecast method: &#39;{name}&#39;. Available methods: {available}&#34;
+            )
+
+        return self._methods[name]
+
+    def list_methods(self) -&gt; list[str]:
+        &#34;&#34;&#34;List all available forecast methods.
+
+        Returns:
+            Sorted list of registered method names.
+        &#34;&#34;&#34;
+        return sorted(self._methods.keys())
+
+    def has_method(self, name: str) -&gt; bool:
+        &#34;&#34;&#34;Check if a method is registered.
+
+        Args:
+            name: The name of the method to check.
+
+        Returns:
+            True if the method is registered, False otherwise.
+        &#34;&#34;&#34;
+        return name in self._methods
+
+    def get_method_info(self, name: str) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Get information about a forecast method.
+
+        Args:
+            name: The name of the method.
+
+        Returns:
+            Dictionary with method information including docstring.
+
+        Raises:
+            ValueError: If the method is not registered.
+        &#34;&#34;&#34;
+        method = self.get_method(name)
+        return {
+            &#34;name&#34;: method.name,
+            &#34;class&#34;: method.__class__.__name__,
+            &#34;description&#34;: method.__class__.__doc__ or &#34;No description available&#34;,
+            &#34;module&#34;: method.__class__.__module__,
+        }</code></pre>
+</details>
+<div class="desc"><p>Manage forecast methods in a registry.</p>
+<p>Provides methods to register, unregister, retrieve, and list available
+forecast methods. Supports querying method metadata.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; registry = ForecastMethodRegistry()
+&gt;&gt;&gt; method = registry.get_method('simple')
+&gt;&gt;&gt; print(registry.list_methods())
+['simple', 'curve', 'statistical', 'average', 'historical_growth']
+</code></pre>
+<p>Initialize the registry with built-in methods.</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.forecasting.strategies.ForecastMethodRegistry.get_method"><code class="name flex">
+<span>def <span class="ident">get_method</span></span>(<span>self, name: str) ‑> <a title="fin_statement_model.forecasting.methods.base.ForecastMethod" href="methods/base.html#fin_statement_model.forecasting.methods.base.ForecastMethod">ForecastMethod</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_method(self, name: str) -&gt; ForecastMethod:
+    &#34;&#34;&#34;Get a forecast method by name.
+
+    Args:
+        name: The name of the method to retrieve.
+
+    Returns:
+        The requested forecast method.
+
+    Raises:
+        ValueError: If the method is not registered.
+    &#34;&#34;&#34;
+    if name not in self._methods:
+        available = &#34;, &#34;.join(sorted(self._methods.keys()))
+        raise ValueError(
+            f&#34;Unknown forecast method: &#39;{name}&#39;. Available methods: {available}&#34;
+        )
+
+    return self._methods[name]</code></pre>
+</details>
+<div class="desc"><p>Get a forecast method by name.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The name of the method to retrieve.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The requested forecast method.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the method is not registered.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.forecasting.strategies.ForecastMethodRegistry.get_method_info"><code class="name flex">
+<span>def <span class="ident">get_method_info</span></span>(<span>self, name: str) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_method_info(self, name: str) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Get information about a forecast method.
+
+    Args:
+        name: The name of the method.
+
+    Returns:
+        Dictionary with method information including docstring.
+
+    Raises:
+        ValueError: If the method is not registered.
+    &#34;&#34;&#34;
+    method = self.get_method(name)
+    return {
+        &#34;name&#34;: method.name,
+        &#34;class&#34;: method.__class__.__name__,
+        &#34;description&#34;: method.__class__.__doc__ or &#34;No description available&#34;,
+        &#34;module&#34;: method.__class__.__module__,
+    }</code></pre>
+</details>
+<div class="desc"><p>Get information about a forecast method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The name of the method.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dictionary with method information including docstring.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the method is not registered.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.forecasting.strategies.ForecastMethodRegistry.has_method"><code class="name flex">
+<span>def <span class="ident">has_method</span></span>(<span>self, name: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_method(self, name: str) -&gt; bool:
+    &#34;&#34;&#34;Check if a method is registered.
+
+    Args:
+        name: The name of the method to check.
+
+    Returns:
+        True if the method is registered, False otherwise.
+    &#34;&#34;&#34;
+    return name in self._methods</code></pre>
+</details>
+<div class="desc"><p>Check if a method is registered.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The name of the method to check.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if the method is registered, False otherwise.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.strategies.ForecastMethodRegistry.list_methods"><code class="name flex">
+<span>def <span class="ident">list_methods</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_methods(self) -&gt; list[str]:
+    &#34;&#34;&#34;List all available forecast methods.
+
+    Returns:
+        Sorted list of registered method names.
+    &#34;&#34;&#34;
+    return sorted(self._methods.keys())</code></pre>
+</details>
+<div class="desc"><p>List all available forecast methods.</p>
+<h2 id="returns">Returns</h2>
+<p>Sorted list of registered method names.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.strategies.ForecastMethodRegistry.register"><code class="name flex">
+<span>def <span class="ident">register</span></span>(<span>self,<br>method: <a title="fin_statement_model.forecasting.methods.base.ForecastMethod" href="methods/base.html#fin_statement_model.forecasting.methods.base.ForecastMethod">ForecastMethod</a>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def register(self, method: ForecastMethod) -&gt; None:
+    &#34;&#34;&#34;Register a new forecast method.
+
+    Args:
+        method: The forecast method to register.
+
+    Raises:
+        ValueError: If a method with the same name is already registered.
+    &#34;&#34;&#34;
+    if method.name in self._methods:
+        raise ValueError(f&#34;Forecast method &#39;{method.name}&#39; is already registered&#34;)
+
+    self._methods[method.name] = method
+    logger.info(f&#34;Registered forecast method: {method.name}&#34;)</code></pre>
+</details>
+<div class="desc"><p>Register a new forecast method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>method</code></strong></dt>
+<dd>The forecast method to register.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If a method with the same name is already registered.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.forecasting.strategies.ForecastMethodRegistry.unregister"><code class="name flex">
+<span>def <span class="ident">unregister</span></span>(<span>self, name: str) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unregister(self, name: str) -&gt; None:
+    &#34;&#34;&#34;Unregister a forecast method.
+
+    Args:
+        name: The name of the method to unregister.
+
+    Raises:
+        KeyError: If the method is not registered.
+    &#34;&#34;&#34;
+    if name not in self._methods:
+        raise KeyError(f&#34;Forecast method &#39;{name}&#39; is not registered&#34;)
+
+    del self._methods[name]
+    logger.info(f&#34;Unregistered forecast method: {name}&#34;)</code></pre>
+</details>
+<div class="desc"><p>Unregister a forecast method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The name of the method to unregister.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>KeyError</code></dt>
+<dd>If the method is not registered.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.forecasting" href="index.html">fin_statement_model.forecasting</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.forecasting.strategies.get_forecast_method" href="#fin_statement_model.forecasting.strategies.get_forecast_method">get_forecast_method</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.strategies.register_forecast_method" href="#fin_statement_model.forecasting.strategies.register_forecast_method">register_forecast_method</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.forecasting.strategies.ForecastMethodRegistry" href="#fin_statement_model.forecasting.strategies.ForecastMethodRegistry">ForecastMethodRegistry</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.forecasting.strategies.ForecastMethodRegistry.get_method" href="#fin_statement_model.forecasting.strategies.ForecastMethodRegistry.get_method">get_method</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.strategies.ForecastMethodRegistry.get_method_info" href="#fin_statement_model.forecasting.strategies.ForecastMethodRegistry.get_method_info">get_method_info</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.strategies.ForecastMethodRegistry.has_method" href="#fin_statement_model.forecasting.strategies.ForecastMethodRegistry.has_method">has_method</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.strategies.ForecastMethodRegistry.list_methods" href="#fin_statement_model.forecasting.strategies.ForecastMethodRegistry.list_methods">list_methods</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.strategies.ForecastMethodRegistry.register" href="#fin_statement_model.forecasting.strategies.ForecastMethodRegistry.register">register</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.strategies.ForecastMethodRegistry.unregister" href="#fin_statement_model.forecasting.strategies.ForecastMethodRegistry.unregister">unregister</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

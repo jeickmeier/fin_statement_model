@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.forecasting.validators API documentation</title>
+<meta name="description" content="Validate inputs for forecasting operations …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.forecasting.validators</code></h1>
+</header>
+<section id="section-intro">
+<p>Validate inputs for forecasting operations.</p>
+<p>This module provides utilities to check forecast parameters, node configurations,
+and period information before performing forecasting operations.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.forecasting.validators.ForecastValidator"><code class="flex name class">
+<span>class <span class="ident">ForecastValidator</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ForecastValidator:
+    &#34;&#34;&#34;Validate input parameters for forecasting operations.
+
+    Contains methods to validate periods, node configurations, forecast configs,
+    and forecast results before executing forecasting logic.
+    &#34;&#34;&#34;
+
+    @staticmethod
+    def validate_forecast_inputs(
+        historical_periods: list[str],
+        forecast_periods: list[str],
+        node_configs: Optional[dict[str, dict[str, Any]]] = None,
+    ) -&gt; None:
+        &#34;&#34;&#34;Validate basic forecast inputs.
+
+        Args:
+            historical_periods: List of historical periods.
+            forecast_periods: List of periods to forecast.
+            node_configs: Optional node configuration mapping.
+
+        Raises:
+            ValueError: If inputs are logically invalid.
+            TypeError: If inputs are of wrong type.
+        &#34;&#34;&#34;
+        # Validate historical periods
+        if not historical_periods:
+            raise ValueError(&#34;No historical periods provided for forecasting&#34;)
+
+        if not isinstance(historical_periods, list):
+            raise TypeError(
+                f&#34;Historical periods must be a list, got {type(historical_periods)}&#34;
+            )
+
+        # Validate forecast periods
+        if not forecast_periods:
+            raise ValueError(&#34;No forecast periods provided&#34;)
+
+        if not isinstance(forecast_periods, list):
+            raise TypeError(
+                f&#34;Forecast periods must be a list, got {type(forecast_periods)}&#34;
+            )
+
+        # Check for overlapping periods
+        historical_set = set(historical_periods)
+        forecast_set = set(forecast_periods)
+        overlap = historical_set &amp; forecast_set
+        if overlap:
+            logger.warning(
+                f&#34;Forecast periods overlap with historical periods: {overlap}. &#34;
+                f&#34;This may overwrite historical data.&#34;
+            )
+
+        # Validate node configs if provided
+        if node_configs is not None:
+            if not isinstance(node_configs, dict):
+                raise TypeError(
+                    f&#34;Node configs must be a dict, got {type(node_configs)}&#34;
+                )
+
+            for node_name, config in node_configs.items():
+                ForecastValidator.validate_node_config(node_name, config)
+
+    @staticmethod
+    def validate_node_config(node_name: str, config: dict[str, Any]) -&gt; None:
+        &#34;&#34;&#34;Validate configuration for a single node.
+
+        Args:
+            node_name: Name of the node being configured.
+            config: Configuration dictionary for the node.
+
+        Raises:
+            ValueError: If configuration is logically invalid.
+            TypeError: If configuration is of wrong type.
+        &#34;&#34;&#34;
+        if not isinstance(config, dict):
+            raise TypeError(
+                f&#34;Configuration for node &#39;{node_name}&#39; must be a dict, got {type(config)}&#34;
+            )
+
+        # Validate method
+        if &#34;method&#34; not in config:
+            raise ValueError(
+                f&#34;Configuration for node &#39;{node_name}&#39; missing required &#39;method&#39; key&#34;
+            )
+
+        method = config[&#34;method&#34;]
+        valid_methods: list[ForecastMethodType] = [
+            &#34;simple&#34;,
+            &#34;curve&#34;,
+            &#34;statistical&#34;,
+            &#34;average&#34;,
+            &#34;historical_growth&#34;,
+        ]
+        if method not in valid_methods:
+            raise ValueError(
+                f&#34;Invalid forecast method &#39;{method}&#39; for node &#39;{node_name}&#39;. &#34;
+                f&#34;Valid methods: {valid_methods}&#34;
+            )
+
+        # Validate config exists (can be None for some methods)
+        if &#34;config&#34; not in config:
+            raise ValueError(
+                f&#34;Configuration for node &#39;{node_name}&#39; missing required &#39;config&#39; key&#34;
+            )
+
+    @staticmethod
+    def validate_node_for_forecast(node: Node, method: str) -&gt; None:
+        &#34;&#34;&#34;Validate that a node can be forecasted with the given method.
+
+        Args:
+            node: The node to validate.
+            method: The forecast method to use.
+
+        Raises:
+            ValueError: If node cannot be forecasted.
+        &#34;&#34;&#34;
+        # Check if node has values dictionary
+        if not hasattr(node, &#34;values&#34;) or not isinstance(node.values, dict):
+            raise ValueError(
+                f&#34;Node &#39;{node.name}&#39; cannot be forecasted: missing or invalid &#34;
+                f&#34;&#39;values&#39; attribute. Only nodes with values dictionaries can &#34;
+                f&#34;be forecasted.&#34;
+            )
+
+        # Check if node has calculate method for certain forecast types
+        if method in [&#34;average&#34;, &#34;historical_growth&#34;] and (
+            not hasattr(node, &#34;calculate&#34;) or not callable(node.calculate)
+        ):
+            raise ValueError(
+                f&#34;Node &#39;{node.name}&#39; cannot use &#39;{method}&#39; forecast method: &#34;
+                f&#34;missing calculate() method&#34;
+            )
+
+    @staticmethod
+    def validate_forecast_config(config: dict[str, Any]) -&gt; ForecastConfig:
+        &#34;&#34;&#34;Validate and convert a forecast configuration dictionary.
+
+        Args:
+            config: Raw configuration dictionary.
+
+        Returns:
+            Validated ForecastConfig instance.
+
+        Raises:
+            ValueError: If configuration is logically invalid.
+            TypeError: If configuration is of wrong type.
+        &#34;&#34;&#34;
+        if not isinstance(config, dict):
+            raise TypeError(f&#34;Forecast config must be a dict, got {type(config)}&#34;)
+
+        if &#34;method&#34; not in config:
+            raise ValueError(&#34;Forecast config missing required &#39;method&#39; key&#34;)
+
+        if &#34;config&#34; not in config:
+            raise ValueError(&#34;Forecast config missing required &#39;config&#39; key&#34;)
+
+        # Create and validate using dataclass
+        return ForecastConfig(method=config[&#34;method&#34;], config=config[&#34;config&#34;])
+
+    @staticmethod
+    def validate_base_period(
+        base_period: str, available_periods: list[str], node_name: str
+    ) -&gt; None:
+        &#34;&#34;&#34;Validate that a base period is valid for forecasting.
+
+        Args:
+            base_period: The proposed base period.
+            available_periods: List of available periods.
+            node_name: Name of the node (for error messages).
+
+        Raises:
+            ValueError: If base period is invalid.
+        &#34;&#34;&#34;
+        if not base_period:
+            raise ValueError(f&#34;No base period determined for node &#39;{node_name}&#39;&#34;)
+
+        if base_period not in available_periods:
+            raise ValueError(
+                f&#34;Base period &#39;{base_period}&#39; for node &#39;{node_name}&#39; not found in available periods&#34;
+            )
+
+    @staticmethod
+    def validate_forecast_result(
+        result: dict[str, float], expected_periods: list[str], node_name: str
+    ) -&gt; None:
+        &#34;&#34;&#34;Validate forecast results.
+
+        Args:
+            result: Dictionary of period -&gt; value mappings.
+            expected_periods: List of expected forecast periods.
+            node_name: Name of the node (for error messages).
+
+        Raises:
+            ValueError: If results are logically invalid or incomplete.
+            TypeError: If results are of wrong type.
+        &#34;&#34;&#34;
+        if not isinstance(result, dict):
+            raise TypeError(
+                f&#34;Forecast result for node &#39;{node_name}&#39; must be a dict, got {type(result)}&#34;
+            )
+
+        # Check all expected periods are present
+        missing_periods = set(expected_periods) - set(result.keys())
+        if missing_periods:
+            raise ValueError(
+                f&#34;Forecast result for node &#39;{node_name}&#39; missing periods: {missing_periods}&#34;
+            )
+
+        # Validate all values are numeric
+        for period, value in result.items():
+            if not isinstance(value, int | float):
+                raise TypeError(
+                    f&#34;Forecast value for node &#39;{node_name}&#39; period &#39;{period}&#39; &#34;
+                    f&#34;must be numeric, got {type(value)}&#34;
+                )</code></pre>
+</details>
+<div class="desc"><p>Validate input parameters for forecasting operations.</p>
+<p>Contains methods to validate periods, node configurations, forecast configs,
+and forecast results before executing forecasting logic.</p></div>
+<h3>Static methods</h3>
+<dl>
+<dt id="fin_statement_model.forecasting.validators.ForecastValidator.validate_base_period"><code class="name flex">
+<span>def <span class="ident">validate_base_period</span></span>(<span>base_period: str, available_periods: list[str], node_name: str) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def validate_base_period(
+    base_period: str, available_periods: list[str], node_name: str
+) -&gt; None:
+    &#34;&#34;&#34;Validate that a base period is valid for forecasting.
+
+    Args:
+        base_period: The proposed base period.
+        available_periods: List of available periods.
+        node_name: Name of the node (for error messages).
+
+    Raises:
+        ValueError: If base period is invalid.
+    &#34;&#34;&#34;
+    if not base_period:
+        raise ValueError(f&#34;No base period determined for node &#39;{node_name}&#39;&#34;)
+
+    if base_period not in available_periods:
+        raise ValueError(
+            f&#34;Base period &#39;{base_period}&#39; for node &#39;{node_name}&#39; not found in available periods&#34;
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate that a base period is valid for forecasting.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>base_period</code></strong></dt>
+<dd>The proposed base period.</dd>
+<dt><strong><code>available_periods</code></strong></dt>
+<dd>List of available periods.</dd>
+<dt><strong><code>node_name</code></strong></dt>
+<dd>Name of the node (for error messages).</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If base period is invalid.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.forecasting.validators.ForecastValidator.validate_forecast_config"><code class="name flex">
+<span>def <span class="ident">validate_forecast_config</span></span>(<span>config: dict[str, typing.Any]) ‑> <a title="fin_statement_model.forecasting.types.ForecastConfig" href="types.html#fin_statement_model.forecasting.types.ForecastConfig">ForecastConfig</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def validate_forecast_config(config: dict[str, Any]) -&gt; ForecastConfig:
+    &#34;&#34;&#34;Validate and convert a forecast configuration dictionary.
+
+    Args:
+        config: Raw configuration dictionary.
+
+    Returns:
+        Validated ForecastConfig instance.
+
+    Raises:
+        ValueError: If configuration is logically invalid.
+        TypeError: If configuration is of wrong type.
+    &#34;&#34;&#34;
+    if not isinstance(config, dict):
+        raise TypeError(f&#34;Forecast config must be a dict, got {type(config)}&#34;)
+
+    if &#34;method&#34; not in config:
+        raise ValueError(&#34;Forecast config missing required &#39;method&#39; key&#34;)
+
+    if &#34;config&#34; not in config:
+        raise ValueError(&#34;Forecast config missing required &#39;config&#39; key&#34;)
+
+    # Create and validate using dataclass
+    return ForecastConfig(method=config[&#34;method&#34;], config=config[&#34;config&#34;])</code></pre>
+</details>
+<div class="desc"><p>Validate and convert a forecast configuration dictionary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Raw configuration dictionary.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Validated ForecastConfig instance.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If configuration is logically invalid.</dd>
+<dt><code>TypeError</code></dt>
+<dd>If configuration is of wrong type.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.forecasting.validators.ForecastValidator.validate_forecast_inputs"><code class="name flex">
+<span>def <span class="ident">validate_forecast_inputs</span></span>(<span>historical_periods: list[str],<br>forecast_periods: list[str],<br>node_configs: dict[str, dict[str, typing.Any]] | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def validate_forecast_inputs(
+    historical_periods: list[str],
+    forecast_periods: list[str],
+    node_configs: Optional[dict[str, dict[str, Any]]] = None,
+) -&gt; None:
+    &#34;&#34;&#34;Validate basic forecast inputs.
+
+    Args:
+        historical_periods: List of historical periods.
+        forecast_periods: List of periods to forecast.
+        node_configs: Optional node configuration mapping.
+
+    Raises:
+        ValueError: If inputs are logically invalid.
+        TypeError: If inputs are of wrong type.
+    &#34;&#34;&#34;
+    # Validate historical periods
+    if not historical_periods:
+        raise ValueError(&#34;No historical periods provided for forecasting&#34;)
+
+    if not isinstance(historical_periods, list):
+        raise TypeError(
+            f&#34;Historical periods must be a list, got {type(historical_periods)}&#34;
+        )
+
+    # Validate forecast periods
+    if not forecast_periods:
+        raise ValueError(&#34;No forecast periods provided&#34;)
+
+    if not isinstance(forecast_periods, list):
+        raise TypeError(
+            f&#34;Forecast periods must be a list, got {type(forecast_periods)}&#34;
+        )
+
+    # Check for overlapping periods
+    historical_set = set(historical_periods)
+    forecast_set = set(forecast_periods)
+    overlap = historical_set &amp; forecast_set
+    if overlap:
+        logger.warning(
+            f&#34;Forecast periods overlap with historical periods: {overlap}. &#34;
+            f&#34;This may overwrite historical data.&#34;
+        )
+
+    # Validate node configs if provided
+    if node_configs is not None:
+        if not isinstance(node_configs, dict):
+            raise TypeError(
+                f&#34;Node configs must be a dict, got {type(node_configs)}&#34;
+            )
+
+        for node_name, config in node_configs.items():
+            ForecastValidator.validate_node_config(node_name, config)</code></pre>
+</details>
+<div class="desc"><p>Validate basic forecast inputs.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>historical_periods</code></strong></dt>
+<dd>List of historical periods.</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of periods to forecast.</dd>
+<dt><strong><code>node_configs</code></strong></dt>
+<dd>Optional node configuration mapping.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If inputs are logically invalid.</dd>
+<dt><code>TypeError</code></dt>
+<dd>If inputs are of wrong type.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.forecasting.validators.ForecastValidator.validate_forecast_result"><code class="name flex">
+<span>def <span class="ident">validate_forecast_result</span></span>(<span>result: dict[str, float], expected_periods: list[str], node_name: str) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def validate_forecast_result(
+    result: dict[str, float], expected_periods: list[str], node_name: str
+) -&gt; None:
+    &#34;&#34;&#34;Validate forecast results.
+
+    Args:
+        result: Dictionary of period -&gt; value mappings.
+        expected_periods: List of expected forecast periods.
+        node_name: Name of the node (for error messages).
+
+    Raises:
+        ValueError: If results are logically invalid or incomplete.
+        TypeError: If results are of wrong type.
+    &#34;&#34;&#34;
+    if not isinstance(result, dict):
+        raise TypeError(
+            f&#34;Forecast result for node &#39;{node_name}&#39; must be a dict, got {type(result)}&#34;
+        )
+
+    # Check all expected periods are present
+    missing_periods = set(expected_periods) - set(result.keys())
+    if missing_periods:
+        raise ValueError(
+            f&#34;Forecast result for node &#39;{node_name}&#39; missing periods: {missing_periods}&#34;
+        )
+
+    # Validate all values are numeric
+    for period, value in result.items():
+        if not isinstance(value, int | float):
+            raise TypeError(
+                f&#34;Forecast value for node &#39;{node_name}&#39; period &#39;{period}&#39; &#34;
+                f&#34;must be numeric, got {type(value)}&#34;
+            )</code></pre>
+</details>
+<div class="desc"><p>Validate forecast results.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>result</code></strong></dt>
+<dd>Dictionary of period -&gt; value mappings.</dd>
+<dt><strong><code>expected_periods</code></strong></dt>
+<dd>List of expected forecast periods.</dd>
+<dt><strong><code>node_name</code></strong></dt>
+<dd>Name of the node (for error messages).</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If results are logically invalid or incomplete.</dd>
+<dt><code>TypeError</code></dt>
+<dd>If results are of wrong type.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.forecasting.validators.ForecastValidator.validate_node_config"><code class="name flex">
+<span>def <span class="ident">validate_node_config</span></span>(<span>node_name: str, config: dict[str, typing.Any]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def validate_node_config(node_name: str, config: dict[str, Any]) -&gt; None:
+    &#34;&#34;&#34;Validate configuration for a single node.
+
+    Args:
+        node_name: Name of the node being configured.
+        config: Configuration dictionary for the node.
+
+    Raises:
+        ValueError: If configuration is logically invalid.
+        TypeError: If configuration is of wrong type.
+    &#34;&#34;&#34;
+    if not isinstance(config, dict):
+        raise TypeError(
+            f&#34;Configuration for node &#39;{node_name}&#39; must be a dict, got {type(config)}&#34;
+        )
+
+    # Validate method
+    if &#34;method&#34; not in config:
+        raise ValueError(
+            f&#34;Configuration for node &#39;{node_name}&#39; missing required &#39;method&#39; key&#34;
+        )
+
+    method = config[&#34;method&#34;]
+    valid_methods: list[ForecastMethodType] = [
+        &#34;simple&#34;,
+        &#34;curve&#34;,
+        &#34;statistical&#34;,
+        &#34;average&#34;,
+        &#34;historical_growth&#34;,
+    ]
+    if method not in valid_methods:
+        raise ValueError(
+            f&#34;Invalid forecast method &#39;{method}&#39; for node &#39;{node_name}&#39;. &#34;
+            f&#34;Valid methods: {valid_methods}&#34;
+        )
+
+    # Validate config exists (can be None for some methods)
+    if &#34;config&#34; not in config:
+        raise ValueError(
+            f&#34;Configuration for node &#39;{node_name}&#39; missing required &#39;config&#39; key&#34;
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate configuration for a single node.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_name</code></strong></dt>
+<dd>Name of the node being configured.</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Configuration dictionary for the node.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If configuration is logically invalid.</dd>
+<dt><code>TypeError</code></dt>
+<dd>If configuration is of wrong type.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.forecasting.validators.ForecastValidator.validate_node_for_forecast"><code class="name flex">
+<span>def <span class="ident">validate_node_for_forecast</span></span>(<span>node: <a title="fin_statement_model.core.nodes.base.Node" href="../core/nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>,<br>method: str) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def validate_node_for_forecast(node: Node, method: str) -&gt; None:
+    &#34;&#34;&#34;Validate that a node can be forecasted with the given method.
+
+    Args:
+        node: The node to validate.
+        method: The forecast method to use.
+
+    Raises:
+        ValueError: If node cannot be forecasted.
+    &#34;&#34;&#34;
+    # Check if node has values dictionary
+    if not hasattr(node, &#34;values&#34;) or not isinstance(node.values, dict):
+        raise ValueError(
+            f&#34;Node &#39;{node.name}&#39; cannot be forecasted: missing or invalid &#34;
+            f&#34;&#39;values&#39; attribute. Only nodes with values dictionaries can &#34;
+            f&#34;be forecasted.&#34;
+        )
+
+    # Check if node has calculate method for certain forecast types
+    if method in [&#34;average&#34;, &#34;historical_growth&#34;] and (
+        not hasattr(node, &#34;calculate&#34;) or not callable(node.calculate)
+    ):
+        raise ValueError(
+            f&#34;Node &#39;{node.name}&#39; cannot use &#39;{method}&#39; forecast method: &#34;
+            f&#34;missing calculate() method&#34;
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate that a node can be forecasted with the given method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd>The node to validate.</dd>
+<dt><strong><code>method</code></strong></dt>
+<dd>The forecast method to use.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If node cannot be forecasted.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.forecasting" href="index.html">fin_statement_model.forecasting</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.forecasting.validators.ForecastValidator" href="#fin_statement_model.forecasting.validators.ForecastValidator">ForecastValidator</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.forecasting.validators.ForecastValidator.validate_base_period" href="#fin_statement_model.forecasting.validators.ForecastValidator.validate_base_period">validate_base_period</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.validators.ForecastValidator.validate_forecast_config" href="#fin_statement_model.forecasting.validators.ForecastValidator.validate_forecast_config">validate_forecast_config</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.validators.ForecastValidator.validate_forecast_inputs" href="#fin_statement_model.forecasting.validators.ForecastValidator.validate_forecast_inputs">validate_forecast_inputs</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.validators.ForecastValidator.validate_forecast_result" href="#fin_statement_model.forecasting.validators.ForecastValidator.validate_forecast_result">validate_forecast_result</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.validators.ForecastValidator.validate_node_config" href="#fin_statement_model.forecasting.validators.ForecastValidator.validate_node_config">validate_node_config</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.validators.ForecastValidator.validate_node_for_forecast" href="#fin_statement_model.forecasting.validators.ForecastValidator.validate_node_for_forecast">validate_node_for_forecast</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

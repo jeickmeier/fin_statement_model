@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.preprocessing.config API documentation</title>
+<meta name="description" content="Configuration models and enums for preprocessing transformers …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.preprocessing.config</code></h1>
+</header>
+<section id="section-intro">
+<p>Configuration models and enums for preprocessing transformers.</p>
+<p>This module contains Pydantic models and Enums for configuring preprocessing transformations.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.preprocessing.config.ConversionType"><code class="flex name class">
+<span>class <span class="ident">ConversionType</span></span>
+<span>(</span><span>*args, **kwds)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ConversionType(Enum):
+    &#34;&#34;&#34;Available conversion types for PeriodConversionTransformer.&#34;&#34;&#34;
+
+    QUARTERLY_TO_ANNUAL = &#34;quarterly_to_annual&#34;
+    MONTHLY_TO_QUARTERLY = &#34;monthly_to_quarterly&#34;
+    MONTHLY_TO_ANNUAL = &#34;monthly_to_annual&#34;
+    QUARTERLY_TO_TTM = &#34;quarterly_to_ttm&#34;</code></pre>
+</details>
+<div class="desc"><p>Available conversion types for PeriodConversionTransformer.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.config.ConversionType.MONTHLY_TO_ANNUAL"><code class="name">var <span class="ident">MONTHLY_TO_ANNUAL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.ConversionType.MONTHLY_TO_QUARTERLY"><code class="name">var <span class="ident">MONTHLY_TO_QUARTERLY</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.ConversionType.QUARTERLY_TO_ANNUAL"><code class="name">var <span class="ident">QUARTERLY_TO_ANNUAL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.ConversionType.QUARTERLY_TO_TTM"><code class="name">var <span class="ident">QUARTERLY_TO_TTM</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.NormalizationConfig"><code class="flex name class">
+<span>class <span class="ident">NormalizationConfig</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NormalizationConfig(BaseModel):
+    &#34;&#34;&#34;Configuration for normalization transformations.
+
+    Attributes:
+        normalization_type: Type of normalization to apply (e.g., &#39;percent_of&#39;, &#39;minmax&#39;, &#39;standard&#39;, &#39;scale_by&#39;).
+        reference: Reference column name for &#39;percent_of&#39; normalization.
+        scale_factor: Scaling factor for &#39;scale_by&#39; normalization.
+    &#34;&#34;&#34;
+
+    normalization_type: Optional[str] = None
+    reference: Optional[str] = None
+    scale_factor: Optional[float] = None</code></pre>
+</details>
+<div class="desc"><p>Configuration for normalization transformations.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>normalization_type</code></strong></dt>
+<dd>Type of normalization to apply (e.g., 'percent_of', 'minmax', 'standard', 'scale_by').</dd>
+<dt><strong><code>reference</code></strong></dt>
+<dd>Reference column name for 'percent_of' normalization.</dd>
+<dt><strong><code>scale_factor</code></strong></dt>
+<dd>Scaling factor for 'scale_by' normalization.</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.config.NormalizationConfig.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.NormalizationConfig.normalization_type"><code class="name">var <span class="ident">normalization_type</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.NormalizationConfig.reference"><code class="name">var <span class="ident">reference</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.NormalizationConfig.scale_factor"><code class="name">var <span class="ident">scale_factor</span> : float | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.NormalizationType"><code class="flex name class">
+<span>class <span class="ident">NormalizationType</span></span>
+<span>(</span><span>*args, **kwds)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NormalizationType(Enum):
+    &#34;&#34;&#34;Available normalization types for NormalizationTransformer.&#34;&#34;&#34;
+
+    PERCENT_OF = &#34;percent_of&#34;
+    MINMAX = &#34;minmax&#34;
+    STANDARD = &#34;standard&#34;
+    SCALE_BY = &#34;scale_by&#34;</code></pre>
+</details>
+<div class="desc"><p>Available normalization types for NormalizationTransformer.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.config.NormalizationType.MINMAX"><code class="name">var <span class="ident">MINMAX</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.NormalizationType.PERCENT_OF"><code class="name">var <span class="ident">PERCENT_OF</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.NormalizationType.SCALE_BY"><code class="name">var <span class="ident">SCALE_BY</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.NormalizationType.STANDARD"><code class="name">var <span class="ident">STANDARD</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.PeriodConversionConfig"><code class="flex name class">
+<span>class <span class="ident">PeriodConversionConfig</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PeriodConversionConfig(BaseModel):
+    &#34;&#34;&#34;Configuration for period conversion transformations.
+
+    Attributes:
+        conversion_type: Type of period conversion (e.g., &#39;quarterly_to_annual&#39;, &#39;monthly_to_quarterly&#39;, &#39;monthly_to_annual&#39;, &#39;quarterly_to_ttm&#39;).
+        aggregation: Aggregation method for conversion (e.g., &#39;sum&#39;, &#39;mean&#39;, &#39;last&#39;, &#39;first&#39;, &#39;max&#39;, &#39;min&#39;).
+    &#34;&#34;&#34;
+
+    conversion_type: Optional[str] = None
+    aggregation: Optional[str] = None</code></pre>
+</details>
+<div class="desc"><p>Configuration for period conversion transformations.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>conversion_type</code></strong></dt>
+<dd>Type of period conversion (e.g., 'quarterly_to_annual', 'monthly_to_quarterly', 'monthly_to_annual', 'quarterly_to_ttm').</dd>
+<dt><strong><code>aggregation</code></strong></dt>
+<dd>Aggregation method for conversion (e.g., 'sum', 'mean', 'last', 'first', 'max', 'min').</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.config.PeriodConversionConfig.aggregation"><code class="name">var <span class="ident">aggregation</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.PeriodConversionConfig.conversion_type"><code class="name">var <span class="ident">conversion_type</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.PeriodConversionConfig.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.StatementFormattingConfig"><code class="flex name class">
+<span>class <span class="ident">StatementFormattingConfig</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StatementFormattingConfig(BaseModel):
+    &#34;&#34;&#34;Configuration for formatting statement output.
+
+    Attributes:
+        statement_type: Type of financial statement (e.g., &#39;income_statement&#39;, &#39;balance_sheet&#39;, &#39;cash_flow&#39;).
+        add_subtotals: Whether to include subtotal lines in formatted output.
+        apply_sign_convention: Whether to apply standard sign conventions (e.g., liabilities as negative).
+    &#34;&#34;&#34;
+
+    statement_type: Optional[str] = None
+    add_subtotals: Optional[bool] = None
+    apply_sign_convention: Optional[bool] = None</code></pre>
+</details>
+<div class="desc"><p>Configuration for formatting statement output.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>statement_type</code></strong></dt>
+<dd>Type of financial statement (e.g., 'income_statement', 'balance_sheet', 'cash_flow').</dd>
+<dt><strong><code>add_subtotals</code></strong></dt>
+<dd>Whether to include subtotal lines in formatted output.</dd>
+<dt><strong><code>apply_sign_convention</code></strong></dt>
+<dd>Whether to apply standard sign conventions (e.g., liabilities as negative).</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.config.StatementFormattingConfig.add_subtotals"><code class="name">var <span class="ident">add_subtotals</span> : bool | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.StatementFormattingConfig.apply_sign_convention"><code class="name">var <span class="ident">apply_sign_convention</span> : bool | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.StatementFormattingConfig.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.StatementFormattingConfig.statement_type"><code class="name">var <span class="ident">statement_type</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.StatementType"><code class="flex name class">
+<span>class <span class="ident">StatementType</span></span>
+<span>(</span><span>*args, **kwds)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StatementType(Enum):
+    &#34;&#34;&#34;Available statement types for StatementFormattingTransformer.&#34;&#34;&#34;
+
+    INCOME_STATEMENT = &#34;income_statement&#34;
+    BALANCE_SHEET = &#34;balance_sheet&#34;
+    CASH_FLOW = &#34;cash_flow&#34;</code></pre>
+</details>
+<div class="desc"><p>Available statement types for StatementFormattingTransformer.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.config.StatementType.BALANCE_SHEET"><code class="name">var <span class="ident">BALANCE_SHEET</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.StatementType.CASH_FLOW"><code class="name">var <span class="ident">CASH_FLOW</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.StatementType.INCOME_STATEMENT"><code class="name">var <span class="ident">INCOME_STATEMENT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.TimeSeriesConfig"><code class="flex name class">
+<span>class <span class="ident">TimeSeriesConfig</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TimeSeriesConfig(BaseModel):
+    &#34;&#34;&#34;Configuration for time series transformations.
+
+    Attributes:
+        transformation_type: Type of time series transformation (e.g., &#39;growth_rate&#39;, &#39;moving_avg&#39;, &#39;cagr&#39;, &#39;yoy&#39;, &#39;qoq&#39;).
+        periods: Number of periods for lag-based calculations.
+        window_size: Window size for moving average calculations.
+    &#34;&#34;&#34;
+
+    transformation_type: Optional[str] = None
+    periods: Optional[int] = None
+    window_size: Optional[int] = None</code></pre>
+</details>
+<div class="desc"><p>Configuration for time series transformations.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>transformation_type</code></strong></dt>
+<dd>Type of time series transformation (e.g., 'growth_rate', 'moving_avg', 'cagr', 'yoy', 'qoq').</dd>
+<dt><strong><code>periods</code></strong></dt>
+<dd>Number of periods for lag-based calculations.</dd>
+<dt><strong><code>window_size</code></strong></dt>
+<dd>Window size for moving average calculations.</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.config.TimeSeriesConfig.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.TimeSeriesConfig.periods"><code class="name">var <span class="ident">periods</span> : int | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.TimeSeriesConfig.transformation_type"><code class="name">var <span class="ident">transformation_type</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.TimeSeriesConfig.window_size"><code class="name">var <span class="ident">window_size</span> : int | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.TransformationType"><code class="flex name class">
+<span>class <span class="ident">TransformationType</span></span>
+<span>(</span><span>*args, **kwds)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TransformationType(Enum):
+    &#34;&#34;&#34;Available transformation types for TimeSeriesTransformer.&#34;&#34;&#34;
+
+    GROWTH_RATE = &#34;growth_rate&#34;
+    MOVING_AVG = &#34;moving_avg&#34;
+    CAGR = &#34;cagr&#34;
+    YOY = &#34;yoy&#34;
+    QOQ = &#34;qoq&#34;</code></pre>
+</details>
+<div class="desc"><p>Available transformation types for TimeSeriesTransformer.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.config.TransformationType.CAGR"><code class="name">var <span class="ident">CAGR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.TransformationType.GROWTH_RATE"><code class="name">var <span class="ident">GROWTH_RATE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.TransformationType.MOVING_AVG"><code class="name">var <span class="ident">MOVING_AVG</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.TransformationType.QOQ"><code class="name">var <span class="ident">QOQ</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.config.TransformationType.YOY"><code class="name">var <span class="ident">YOY</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.preprocessing" href="index.html">fin_statement_model.preprocessing</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.config.ConversionType" href="#fin_statement_model.preprocessing.config.ConversionType">ConversionType</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.config.ConversionType.MONTHLY_TO_ANNUAL" href="#fin_statement_model.preprocessing.config.ConversionType.MONTHLY_TO_ANNUAL">MONTHLY_TO_ANNUAL</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.ConversionType.MONTHLY_TO_QUARTERLY" href="#fin_statement_model.preprocessing.config.ConversionType.MONTHLY_TO_QUARTERLY">MONTHLY_TO_QUARTERLY</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.ConversionType.QUARTERLY_TO_ANNUAL" href="#fin_statement_model.preprocessing.config.ConversionType.QUARTERLY_TO_ANNUAL">QUARTERLY_TO_ANNUAL</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.ConversionType.QUARTERLY_TO_TTM" href="#fin_statement_model.preprocessing.config.ConversionType.QUARTERLY_TO_TTM">QUARTERLY_TO_TTM</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.config.NormalizationConfig" href="#fin_statement_model.preprocessing.config.NormalizationConfig">NormalizationConfig</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.config.NormalizationConfig.model_config" href="#fin_statement_model.preprocessing.config.NormalizationConfig.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.NormalizationConfig.normalization_type" href="#fin_statement_model.preprocessing.config.NormalizationConfig.normalization_type">normalization_type</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.NormalizationConfig.reference" href="#fin_statement_model.preprocessing.config.NormalizationConfig.reference">reference</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.NormalizationConfig.scale_factor" href="#fin_statement_model.preprocessing.config.NormalizationConfig.scale_factor">scale_factor</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.config.NormalizationType" href="#fin_statement_model.preprocessing.config.NormalizationType">NormalizationType</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.config.NormalizationType.MINMAX" href="#fin_statement_model.preprocessing.config.NormalizationType.MINMAX">MINMAX</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.NormalizationType.PERCENT_OF" href="#fin_statement_model.preprocessing.config.NormalizationType.PERCENT_OF">PERCENT_OF</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.NormalizationType.SCALE_BY" href="#fin_statement_model.preprocessing.config.NormalizationType.SCALE_BY">SCALE_BY</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.NormalizationType.STANDARD" href="#fin_statement_model.preprocessing.config.NormalizationType.STANDARD">STANDARD</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.config.PeriodConversionConfig" href="#fin_statement_model.preprocessing.config.PeriodConversionConfig">PeriodConversionConfig</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.config.PeriodConversionConfig.aggregation" href="#fin_statement_model.preprocessing.config.PeriodConversionConfig.aggregation">aggregation</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.PeriodConversionConfig.conversion_type" href="#fin_statement_model.preprocessing.config.PeriodConversionConfig.conversion_type">conversion_type</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.PeriodConversionConfig.model_config" href="#fin_statement_model.preprocessing.config.PeriodConversionConfig.model_config">model_config</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.config.StatementFormattingConfig" href="#fin_statement_model.preprocessing.config.StatementFormattingConfig">StatementFormattingConfig</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.config.StatementFormattingConfig.add_subtotals" href="#fin_statement_model.preprocessing.config.StatementFormattingConfig.add_subtotals">add_subtotals</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.StatementFormattingConfig.apply_sign_convention" href="#fin_statement_model.preprocessing.config.StatementFormattingConfig.apply_sign_convention">apply_sign_convention</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.StatementFormattingConfig.model_config" href="#fin_statement_model.preprocessing.config.StatementFormattingConfig.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.StatementFormattingConfig.statement_type" href="#fin_statement_model.preprocessing.config.StatementFormattingConfig.statement_type">statement_type</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.config.StatementType" href="#fin_statement_model.preprocessing.config.StatementType">StatementType</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.config.StatementType.BALANCE_SHEET" href="#fin_statement_model.preprocessing.config.StatementType.BALANCE_SHEET">BALANCE_SHEET</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.StatementType.CASH_FLOW" href="#fin_statement_model.preprocessing.config.StatementType.CASH_FLOW">CASH_FLOW</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.StatementType.INCOME_STATEMENT" href="#fin_statement_model.preprocessing.config.StatementType.INCOME_STATEMENT">INCOME_STATEMENT</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.config.TimeSeriesConfig" href="#fin_statement_model.preprocessing.config.TimeSeriesConfig">TimeSeriesConfig</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.config.TimeSeriesConfig.model_config" href="#fin_statement_model.preprocessing.config.TimeSeriesConfig.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.TimeSeriesConfig.periods" href="#fin_statement_model.preprocessing.config.TimeSeriesConfig.periods">periods</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.TimeSeriesConfig.transformation_type" href="#fin_statement_model.preprocessing.config.TimeSeriesConfig.transformation_type">transformation_type</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.TimeSeriesConfig.window_size" href="#fin_statement_model.preprocessing.config.TimeSeriesConfig.window_size">window_size</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.config.TransformationType" href="#fin_statement_model.preprocessing.config.TransformationType">TransformationType</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.config.TransformationType.CAGR" href="#fin_statement_model.preprocessing.config.TransformationType.CAGR">CAGR</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.TransformationType.GROWTH_RATE" href="#fin_statement_model.preprocessing.config.TransformationType.GROWTH_RATE">GROWTH_RATE</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.TransformationType.MOVING_AVG" href="#fin_statement_model.preprocessing.config.TransformationType.MOVING_AVG">MOVING_AVG</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.TransformationType.QOQ" href="#fin_statement_model.preprocessing.config.TransformationType.QOQ">QOQ</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.config.TransformationType.YOY" href="#fin_statement_model.preprocessing.config.TransformationType.YOY">YOY</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

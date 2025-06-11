@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.statements.structure.builder API documentation</title>
+<meta name="description" content="Builds StatementStructure objects from validated StatementConfig models …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.statements.structure.builder</code></h1>
+</header>
+<section id="section-intro">
+<p>Builds StatementStructure objects from validated StatementConfig models.</p>
+<p>This module provides the <code><a title="fin_statement_model.statements.structure.builder.StatementStructureBuilder" href="#fin_statement_model.statements.structure.builder.StatementStructureBuilder">StatementStructureBuilder</a></code>, which translates the
+deserialized and validated configuration (represented by <code>StatementConfig</code>
+containing Pydantic models) into the hierarchical <code>StatementStructure</code> object
+used internally for representing the layout and components of a financial
+statement.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.statements.structure.builder.StatementStructureBuilder"><code class="flex name class">
+<span>class <span class="ident">StatementStructureBuilder</span></span>
+<span>(</span><span>enable_node_validation: bool | None = None,<br>node_validation_strict: bool | None = None,<br>node_validator: <a title="fin_statement_model.io.validation.UnifiedNodeValidator" href="../../io/validation.html#fin_statement_model.io.validation.UnifiedNodeValidator">UnifiedNodeValidator</a> | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StatementStructureBuilder:
+    &#34;&#34;&#34;Constructs a `StatementStructure` object from a validated configuration.
+
+    Takes a `StatementConfig` instance (which should have successfully passed
+    validation, populating its `.model` attribute) and recursively builds the
+    corresponding `StatementStructure`, including its sections, line items,
+    calculated items, subtotals, and nested sections.
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        enable_node_validation: Optional[bool] = None,
+        node_validation_strict: Optional[bool] = None,
+        node_validator: Optional[UnifiedNodeValidator] = None,
+    ) -&gt; None:
+        &#34;&#34;&#34;Initialize the StatementStructureBuilder.
+
+        Defaults for validation flags come from the global statements config, but can be overridden locally.
+        Args:
+            enable_node_validation: If True, validates node IDs during build.
+            node_validation_strict: If True, treats validation failures as errors.
+            node_validator: Optional pre-configured UnifiedNodeValidator instance.
+        &#34;&#34;&#34;
+        # Pull defaults from global config if not provided
+        if enable_node_validation is None:
+            enable_node_validation = cfg(&#34;statements.enable_node_validation&#34;)
+        if node_validation_strict is None:
+            node_validation_strict = cfg(&#34;statements.node_validation_strict&#34;)
+        self.enable_node_validation = enable_node_validation
+        self.node_validation_strict = node_validation_strict
+
+        # Initialize node_validator
+        self.node_validator: Optional[UnifiedNodeValidator] = None
+        if self.enable_node_validation:
+            if node_validator is not None:
+                self.node_validator = node_validator
+            else:
+                # Create default validator using strict flag
+                self.node_validator = UnifiedNodeValidator(
+                    standard_node_registry,
+                    strict_mode=self.node_validation_strict,
+                    auto_standardize=True,
+                    warn_on_non_standard=True,
+                    enable_patterns=True,
+                )
+        else:
+            self.node_validator = None
+
+    def _convert_adjustment_filter(
+        self, filter_input: Optional[Union[AdjustmentFilterSpec, list[str]]]
+    ) -&gt; Optional[Any]:
+        &#34;&#34;&#34;Convert configuration adjustment filter to core AdjustmentFilter or tag set.
+
+        Args:
+            filter_input: The filter specification from configuration.
+
+        Returns:
+            AdjustmentFilter instance, set of tags, or None.
+        &#34;&#34;&#34;
+        # Use global default adjustment filter if none provided
+        if filter_input is None:
+            default_filter = cfg(&#34;statements.default_adjustment_filter&#34;)
+            if default_filter is None:
+                return None
+            filter_input = default_filter
+        # Simple list of tags - convert to set
+        elif isinstance(filter_input, list):
+            return set(filter_input)
+        # Configuration spec to core filter conversion
+        elif isinstance(filter_input, AdjustmentFilterSpec):
+            # Convert AdjustmentFilterSpec to AdjustmentFilter
+            kwargs: dict[str, Any] = {}
+
+            # Convert list fields to sets
+            if filter_input.include_scenarios:
+                kwargs[&#34;include_scenarios&#34;] = set(filter_input.include_scenarios)
+            if filter_input.exclude_scenarios:
+                kwargs[&#34;exclude_scenarios&#34;] = set(filter_input.exclude_scenarios)
+            if filter_input.include_tags:
+                kwargs[&#34;include_tags&#34;] = set(filter_input.include_tags)
+            if filter_input.exclude_tags:
+                kwargs[&#34;exclude_tags&#34;] = set(filter_input.exclude_tags)
+            if filter_input.require_all_tags:
+                kwargs[&#34;require_all_tags&#34;] = set(filter_input.require_all_tags)
+
+            # Convert string types to AdjustmentType enums
+            if filter_input.include_types:
+                kwargs[&#34;include_types&#34;] = cast(
+                    set[AdjustmentType],
+                    {
+                        AdjustmentType(type_str)
+                        for type_str in filter_input.include_types
+                    },
+                )
+            if filter_input.exclude_types:
+                kwargs[&#34;exclude_types&#34;] = cast(
+                    set[AdjustmentType],
+                    {
+                        AdjustmentType(type_str)
+                        for type_str in filter_input.exclude_types
+                    },
+                )
+
+            # Pass through period
+            if filter_input.period:
+                kwargs[&#34;period&#34;] = filter_input.period
+
+            # Create AdjustmentFilter from kwargs
+            return AdjustmentFilter(**kwargs)
+
+        # Unknown type - log warning and return None
+        logger.warning(f&#34;Unknown adjustment filter type: {type(filter_input)}&#34;)
+        return None
+
+    def build(self, config: StatementConfig) -&gt; StatementStructure:
+        &#34;&#34;&#34;Build a `StatementStructure` from a validated `StatementConfig`.
+
+        This is the main public method of the builder. It orchestrates the
+        conversion process, calling internal helper methods to build sections
+        and items.
+
+        Args:
+            config: A `StatementConfig` instance whose `.validate_config()`
+                method has been successfully called, populating `config.model`.
+
+        Returns:
+            The fully constructed `StatementStructure` object, ready to be
+            registered or used.
+
+        Raises:
+            ValueError: If the provided `config` object has not been validated
+                (i.e., `config.model` is `None`).
+            ConfigurationError: If an unexpected error occurs during the building
+                process, potentially indicating an issue not caught by the
+                initial Pydantic validation or an internal inconsistency.
+        &#34;&#34;&#34;
+        if config.model is None:
+            # Ensure validation has run successfully before building
+            raise ValueError(
+                &#34;StatementConfig must be validated (config.model must be set) &#34;
+                &#34;before building the structure.&#34;
+            )
+
+        # Build from the validated Pydantic model stored in config.model
+        try:
+            stmt_model = config.model  # Use validated model from config
+
+            # Optional node validation during build
+            if self.enable_node_validation and self.node_validator:
+                error_collector = ErrorCollector()
+                self._validate_structure_node_ids(stmt_model, error_collector)
+
+                # Handle validation results
+                if error_collector.has_errors() and self.node_validation_strict:
+                    # Fail build on validation errors in strict mode
+                    error_messages = [
+                        str(error) for error in error_collector.get_errors()
+                    ]
+                    raise ConfigurationError(
+                        message=f&#34;Node validation failed for statement &#39;{stmt_model.id}&#39;&#34;,
+                        errors=error_messages,
+                    )
+                elif error_collector.has_warnings() or error_collector.has_errors():
+                    # Log warnings and non-strict errors
+                    for warning in error_collector.get_warnings():
+                        logger.warning(f&#34;Build-time node validation: {warning}&#34;)
+                    if not self.node_validation_strict:
+                        for error in error_collector.get_errors():
+                            logger.warning(f&#34;Build-time node validation: {error}&#34;)
+
+            statement = StatementStructure(
+                id=stmt_model.id,
+                name=stmt_model.name,
+                description=cast(str, stmt_model.description),
+                metadata=stmt_model.metadata,
+                units=stmt_model.units,
+                display_scale_factor=stmt_model.display_scale_factor,
+            )
+            for sec_model in stmt_model.sections:
+                section = self._build_section_model(sec_model)
+                statement.add_section(section)
+            logger.info(
+                f&#34;Successfully built StatementStructure for ID &#39;{statement.id}&#39;&#34;
+            )
+            return statement
+        except Exception as e:
+            # Catch potential errors during the building process itself
+            logger.exception(
+                f&#34;Error building statement structure from validated model for ID &#39;{config.model.id}&#39;&#34;
+            )
+            raise ConfigurationError(
+                message=f&#34;Failed to build statement structure from validated config: {e}&#34;,
+                errors=[str(e)],
+            ) from e
+
+    def _validate_structure_node_ids(
+        self, stmt_model: StatementModel, error_collector: ErrorCollector
+    ) -&gt; None:
+        &#34;&#34;&#34;Validate node IDs in the statement structure during build.
+
+        This is a simpler validation focused on the final structure,
+        complementing the config-level validation.
+
+        Args:
+            stmt_model: The StatementModel to validate.
+            error_collector: ErrorCollector to accumulate validation issues.
+        &#34;&#34;&#34;
+        logger.debug(f&#34;Build-time node validation for statement &#39;{stmt_model.id}&#39;&#34;)
+
+        # Validate key node references that will be used in the built structure
+        collected_node_refs = set()
+
+        # Collect all node references from the structure
+        def collect_node_refs(items: list[Any]) -&gt; None:
+            for item in items:
+                if isinstance(item, LineItemModel):
+                    if item.node_id:
+                        collected_node_refs.add(
+                            (item.node_id, &#34;line_item_node&#34;, f&#34;item.{item.id}.node_id&#34;)
+                        )
+                    if item.standard_node_ref:
+                        collected_node_refs.add(
+                            (
+                                item.standard_node_ref,
+                                &#34;standard_node&#34;,
+                                f&#34;item.{item.id}.standard_node_ref&#34;,
+                            )
+                        )
+                elif isinstance(item, CalculatedItemModel):
+                    collected_node_refs.add(
+                        (item.id, &#34;calculated_node&#34;, f&#34;item.{item.id}.id&#34;)
+                    )
+                elif isinstance(item, MetricItemModel):
+                    collected_node_refs.add(
+                        (item.id, &#34;metric_node&#34;, f&#34;item.{item.id}.id&#34;)
+                    )
+                elif isinstance(item, SubtotalModel):
+                    collected_node_refs.add(
+                        (item.id, &#34;subtotal_node&#34;, f&#34;item.{item.id}.id&#34;)
+                    )
+                elif isinstance(item, SectionModel):
+                    collect_node_refs(item.items)
+                    collect_node_refs(item.subsections)
+                    if item.subtotal:
+                        collected_node_refs.add(
+                            (
+                                item.subtotal.id,
+                                &#34;subtotal_node&#34;,
+                                f&#34;section.{item.id}.subtotal.id&#34;,
+                            )
+                        )
+
+        # Collect all node references
+        for section in stmt_model.sections:
+            collect_node_refs([section, *section.items, *section.subsections])
+
+        # Validate collected references
+        for node_id, node_type, context in collected_node_refs:
+            self._validate_single_build_node_id(
+                node_id, node_type, context, error_collector
+            )
+
+    def _validate_single_build_node_id(
+        self,
+        node_id: str,
+        node_type: str,
+        context: str,
+        error_collector: ErrorCollector,
+    ) -&gt; None:
+        &#34;&#34;&#34;Validate a single node ID during build process.
+
+        Args:
+            node_id: The node ID to validate.
+            node_type: Type description for error messages.
+            context: Context string for error reporting.
+            error_collector: ErrorCollector to accumulate validation issues.
+        &#34;&#34;&#34;
+        if not self.node_validator:
+            return
+
+        try:
+            validation_result = self.node_validator.validate(
+                node_id,
+                node_type=node_type,
+                use_cache=True,
+            )
+
+            # Only report significant issues during build
+            if not validation_result.is_valid:
+                severity = (
+                    ErrorSeverity.ERROR
+                    if self.node_validation_strict
+                    else ErrorSeverity.WARNING
+                )
+                message = f&#34;Build validation: Invalid {node_type} &#39;{node_id}&#39;: {validation_result.message}&#34;
+
+                if severity == ErrorSeverity.ERROR:
+                    error_collector.add_error(
+                        code=&#34;build_invalid_node_id&#34;,
+                        message=message,
+                        context=context,
+                        source=node_id,
+                    )
+                else:
+                    error_collector.add_warning(
+                        code=&#34;build_invalid_node_id&#34;,
+                        message=message,
+                        context=context,
+                        source=node_id,
+                    )
+
+        except Exception as e:
+            logger.exception(
+                f&#34;Error during build-time validation of node ID &#39;{node_id}&#39;&#34;
+            )
+            error_collector.add_warning(
+                code=&#34;build_node_validation_error&#34;,
+                message=f&#34;Build validation error for {node_type} &#39;{node_id}&#39;: {e}&#34;,
+                context=context,
+                source=node_id,
+            )
+
+    def _build_section_model(self, section_model: SectionModel) -&gt; Section:
+        &#34;&#34;&#34;Build a `Section` object from a `SectionModel`.
+
+        Recursively builds the items and subsections within this section.
+
+        Args:
+            section_model: The Pydantic model representing the section configuration.
+
+        Returns:
+            A `Section` instance corresponding to the model.
+        &#34;&#34;&#34;
+        # Convert adjustment filter
+        adjustment_filter = self._convert_adjustment_filter(
+            section_model.default_adjustment_filter
+        )
+
+        section = Section(
+            id=section_model.id,
+            name=section_model.name,
+            description=cast(str, section_model.description),
+            metadata=section_model.metadata,
+            default_adjustment_filter=adjustment_filter,
+            display_format=section_model.display_format,
+            hide_if_all_zero=section_model.hide_if_all_zero,
+            css_class=section_model.css_class,
+            notes_references=section_model.notes_references,
+            units=section_model.units,
+            display_scale_factor=section_model.display_scale_factor,
+        )
+        for item in section_model.items:
+            section.add_item(self._build_item_model(item))
+        for sub in section_model.subsections:
+            # Recursively build subsections
+            section.add_item(self._build_section_model(sub))
+        if section_model.subtotal:
+            section.subtotal = self._build_subtotal_model(section_model.subtotal)
+        return section
+
+    def _build_item_model(
+        self, item_model: BaseItemModel
+    ) -&gt; Union[LineItem, CalculatedLineItem, MetricLineItem, SubtotalLineItem, Section]:
+        &#34;&#34;&#34;Build a statement item object from its corresponding Pydantic model.
+
+        Dispatches the building process based on the specific type of the input
+        model (`LineItemModel`, `CalculatedItemModel`, `MetricItemModel`,
+        `SubtotalModel`, or `SectionModel` for nested sections).
+
+        Args:
+            item_model: The Pydantic model representing a line item, calculated
+                item, metric item, subtotal, or nested section.
+
+        Returns:
+            The corresponding `StatementStructure` component (`LineItem`,
+            `CalculatedLineItem`, `MetricLineItem`, `SubtotalLineItem`, or `Section`).
+
+        Raises:
+            TypeError: If an unexpected model type is encountered.
+        &#34;&#34;&#34;
+        # Convert adjustment filter for all item types
+        adjustment_filter = self._convert_adjustment_filter(
+            item_model.default_adjustment_filter
+        )
+
+        # Dispatch by model instance type
+        if isinstance(item_model, SectionModel):
+            # Handle nested sections directly
+            return self._build_section_model(item_model)
+        if isinstance(item_model, LineItemModel):
+            return LineItem(
+                id=item_model.id,
+                name=item_model.name,
+                node_id=item_model.node_id,
+                standard_node_ref=item_model.standard_node_ref,
+                description=cast(str, item_model.description),
+                sign_convention=item_model.sign_convention,
+                metadata=item_model.metadata,
+                default_adjustment_filter=adjustment_filter,
+                display_format=item_model.display_format,
+                hide_if_all_zero=item_model.hide_if_all_zero,
+                css_class=item_model.css_class,
+                notes_references=item_model.notes_references,
+                units=item_model.units,
+                display_scale_factor=item_model.display_scale_factor,
+                is_contra=item_model.is_contra,
+            )
+        if isinstance(item_model, CalculatedItemModel):
+            # Pass the calculation model directly or its dict representation
+            return CalculatedLineItem(
+                id=item_model.id,
+                name=item_model.name,
+                # Pass the nested Pydantic model if structure expects dict
+                calculation=item_model.calculation.model_dump(),
+                description=cast(str, item_model.description),
+                sign_convention=item_model.sign_convention,
+                metadata=item_model.metadata,
+                default_adjustment_filter=adjustment_filter,
+                display_format=item_model.display_format,
+                hide_if_all_zero=item_model.hide_if_all_zero,
+                css_class=item_model.css_class,
+                notes_references=item_model.notes_references,
+                units=item_model.units,
+                display_scale_factor=item_model.display_scale_factor,
+                is_contra=item_model.is_contra,
+            )
+        if isinstance(item_model, MetricItemModel):
+            return MetricLineItem(
+                id=item_model.id,
+                name=item_model.name,
+                metric_id=item_model.metric_id,
+                inputs=item_model.inputs,
+                description=cast(str, item_model.description),
+                sign_convention=item_model.sign_convention,
+                metadata=item_model.metadata,
+                default_adjustment_filter=adjustment_filter,
+                display_format=item_model.display_format,
+                hide_if_all_zero=item_model.hide_if_all_zero,
+                css_class=item_model.css_class,
+                notes_references=item_model.notes_references,
+                units=item_model.units,
+                display_scale_factor=item_model.display_scale_factor,
+                is_contra=item_model.is_contra,
+            )
+        if isinstance(item_model, SubtotalModel):
+            return self._build_subtotal_model(item_model)
+
+        # Should be unreachable if Pydantic validation works
+        raise TypeError(f&#34;Unhandled type: {type(item_model)}&#34;)
+
+    def _build_subtotal_model(self, subtotal_model: SubtotalModel) -&gt; SubtotalLineItem:
+        &#34;&#34;&#34;Build a `SubtotalLineItem` object from a `SubtotalModel`.
+
+        Extracts the relevant item IDs to be summed, either from the explicit
+        `items_to_sum` list or from the `calculation.inputs` if provided.
+
+        Args:
+            subtotal_model: The Pydantic model representing the subtotal configuration.
+
+        Returns:
+            A `SubtotalLineItem` instance.
+        &#34;&#34;&#34;
+        # Convert adjustment filter
+        adjustment_filter = self._convert_adjustment_filter(
+            subtotal_model.default_adjustment_filter
+        )
+
+        # Consolidate logic for getting item IDs
+        item_ids = (
+            subtotal_model.calculation.inputs
+            if subtotal_model.calculation and subtotal_model.calculation.inputs
+            else subtotal_model.items_to_sum
+        )
+        if not item_ids:
+            logger.warning(
+                f&#34;Subtotal &#39;{subtotal_model.id}&#39; has no items_to_sum or calculation inputs defined.&#34;
+            )
+            # Decide handling: error or allow empty subtotal?
+            # Allowing for now, may need adjustment based on desired behavior.
+
+        return SubtotalLineItem(
+            id=subtotal_model.id,
+            name=subtotal_model.name,
+            item_ids=item_ids or [],  # Ensure it&#39;s a list
+            description=cast(str, subtotal_model.description),
+            sign_convention=subtotal_model.sign_convention,
+            metadata=subtotal_model.metadata,
+            default_adjustment_filter=adjustment_filter,
+            display_format=subtotal_model.display_format,
+            hide_if_all_zero=subtotal_model.hide_if_all_zero,
+            css_class=subtotal_model.css_class,
+            notes_references=subtotal_model.notes_references,
+            units=subtotal_model.units,
+            display_scale_factor=subtotal_model.display_scale_factor,
+            is_contra=subtotal_model.is_contra,
+        )</code></pre>
+</details>
+<div class="desc"><p>Constructs a <code>StatementStructure</code> object from a validated configuration.</p>
+<p>Takes a <code>StatementConfig</code> instance (which should have successfully passed
+validation, populating its <code>.model</code> attribute) and recursively builds the
+corresponding <code>StatementStructure</code>, including its sections, line items,
+calculated items, subtotals, and nested sections.</p>
+<p>Initialize the StatementStructureBuilder.</p>
+<p>Defaults for validation flags come from the global statements config, but can be overridden locally.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>enable_node_validation</code></strong></dt>
+<dd>If True, validates node IDs during build.</dd>
+<dt><strong><code>node_validation_strict</code></strong></dt>
+<dd>If True, treats validation failures as errors.</dd>
+<dt><strong><code>node_validator</code></strong></dt>
+<dd>Optional pre-configured UnifiedNodeValidator instance.</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.structure.builder.StatementStructureBuilder.build"><code class="name flex">
+<span>def <span class="ident">build</span></span>(<span>self,<br>config: <a title="fin_statement_model.statements.configs.validator.StatementConfig" href="../configs/validator.html#fin_statement_model.statements.configs.validator.StatementConfig">StatementConfig</a>) ‑> <a title="fin_statement_model.statements.structure.containers.StatementStructure" href="containers.html#fin_statement_model.statements.structure.containers.StatementStructure">StatementStructure</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build(self, config: StatementConfig) -&gt; StatementStructure:
+    &#34;&#34;&#34;Build a `StatementStructure` from a validated `StatementConfig`.
+
+    This is the main public method of the builder. It orchestrates the
+    conversion process, calling internal helper methods to build sections
+    and items.
+
+    Args:
+        config: A `StatementConfig` instance whose `.validate_config()`
+            method has been successfully called, populating `config.model`.
+
+    Returns:
+        The fully constructed `StatementStructure` object, ready to be
+        registered or used.
+
+    Raises:
+        ValueError: If the provided `config` object has not been validated
+            (i.e., `config.model` is `None`).
+        ConfigurationError: If an unexpected error occurs during the building
+            process, potentially indicating an issue not caught by the
+            initial Pydantic validation or an internal inconsistency.
+    &#34;&#34;&#34;
+    if config.model is None:
+        # Ensure validation has run successfully before building
+        raise ValueError(
+            &#34;StatementConfig must be validated (config.model must be set) &#34;
+            &#34;before building the structure.&#34;
+        )
+
+    # Build from the validated Pydantic model stored in config.model
+    try:
+        stmt_model = config.model  # Use validated model from config
+
+        # Optional node validation during build
+        if self.enable_node_validation and self.node_validator:
+            error_collector = ErrorCollector()
+            self._validate_structure_node_ids(stmt_model, error_collector)
+
+            # Handle validation results
+            if error_collector.has_errors() and self.node_validation_strict:
+                # Fail build on validation errors in strict mode
+                error_messages = [
+                    str(error) for error in error_collector.get_errors()
+                ]
+                raise ConfigurationError(
+                    message=f&#34;Node validation failed for statement &#39;{stmt_model.id}&#39;&#34;,
+                    errors=error_messages,
+                )
+            elif error_collector.has_warnings() or error_collector.has_errors():
+                # Log warnings and non-strict errors
+                for warning in error_collector.get_warnings():
+                    logger.warning(f&#34;Build-time node validation: {warning}&#34;)
+                if not self.node_validation_strict:
+                    for error in error_collector.get_errors():
+                        logger.warning(f&#34;Build-time node validation: {error}&#34;)
+
+        statement = StatementStructure(
+            id=stmt_model.id,
+            name=stmt_model.name,
+            description=cast(str, stmt_model.description),
+            metadata=stmt_model.metadata,
+            units=stmt_model.units,
+            display_scale_factor=stmt_model.display_scale_factor,
+        )
+        for sec_model in stmt_model.sections:
+            section = self._build_section_model(sec_model)
+            statement.add_section(section)
+        logger.info(
+            f&#34;Successfully built StatementStructure for ID &#39;{statement.id}&#39;&#34;
+        )
+        return statement
+    except Exception as e:
+        # Catch potential errors during the building process itself
+        logger.exception(
+            f&#34;Error building statement structure from validated model for ID &#39;{config.model.id}&#39;&#34;
+        )
+        raise ConfigurationError(
+            message=f&#34;Failed to build statement structure from validated config: {e}&#34;,
+            errors=[str(e)],
+        ) from e</code></pre>
+</details>
+<div class="desc"><p>Build a <code>StatementStructure</code> from a validated <code>StatementConfig</code>.</p>
+<p>This is the main public method of the builder. It orchestrates the
+conversion process, calling internal helper methods to build sections
+and items.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>A <code>StatementConfig</code> instance whose <code>.validate_config()</code>
+method has been successfully called, populating <code>config.model</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The fully constructed <code>StatementStructure</code> object, ready to be
+registered or used.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the provided <code>config</code> object has not been validated
+(i.e., <code>config.model</code> is <code>None</code>).</dd>
+<dt><code>ConfigurationError</code></dt>
+<dd>If an unexpected error occurs during the building
+process, potentially indicating an issue not caught by the
+initial Pydantic validation or an internal inconsistency.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.statements.structure" href="index.html">fin_statement_model.statements.structure</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.statements.structure.builder.StatementStructureBuilder" href="#fin_statement_model.statements.structure.builder.StatementStructureBuilder">StatementStructureBuilder</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.structure.builder.StatementStructureBuilder.build" href="#fin_statement_model.statements.structure.builder.StatementStructureBuilder.build">build</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

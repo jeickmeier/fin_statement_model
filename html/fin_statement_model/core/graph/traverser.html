@@ -1,0 +1,1146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.core.graph.traverser API documentation</title>
+<meta name="description" content="Read-only traversal helpers for :class:`~fin_statement_model.core.graph.graph.Graph` …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.core.graph.traverser</code></h1>
+</header>
+<section id="section-intro">
+<p>Read-only traversal helpers for :class:<code>~fin_statement_model.core.graph.graph.Graph</code>.</p>
+<p><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser" href="#fin_statement_model.core.graph.traverser.GraphTraverser">GraphTraverser</a></code> complements :class:<code>~fin_statement_model.core.graph.manipulator.GraphManipulator</code> by
+offering a <em>read-only</em> view on a graph's structure.
+It collects utility
+methods required by higher-level APIs such as:</p>
+<ul>
+<li>dependency inspection (predecessors/successors)</li>
+<li>topological sorting</li>
+<li>cycle detection and validation</li>
+<li>breadth-first searches for visualisation or debugging</li>
+</ul>
+<p>Unlike the manipulator, the traverser <strong>never mutates</strong> the graph; this makes it
+safe to call from anywhere, including within calculation routines.</p>
+<p>Examples
+~~~~~~~~</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.graph import Graph
+&gt;&gt;&gt; g = Graph(periods=[&quot;2023&quot;, &quot;2024&quot;])
+&gt;&gt;&gt; _ = g.add_financial_statement_item(&quot;Revenue&quot;, {&quot;2023&quot;: 100, &quot;2024&quot;: 110})
+&gt;&gt;&gt; _ = g.add_financial_statement_item(&quot;COGS&quot;, {&quot;2023&quot;: 60, &quot;2024&quot;: 70})
+&gt;&gt;&gt; _ = g.add_calculation(&quot;GrossProfit&quot;, [&quot;Revenue&quot;, &quot;COGS&quot;], &quot;addition&quot;, formula=&quot;input_0 - input_1&quot;, formula_variable_names=[&quot;input_0&quot;, &quot;input_1&quot;])
+&gt;&gt;&gt; g.traverser.get_dependencies(&quot;GrossProfit&quot;)
+['Revenue', 'COGS']
+</code></pre>
+<p>You can also validate the full graph:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; g.traverser.validate()
+[]
+</code></pre>
+<p>As with the manipulator, end-users reach the traverser via
+<code>graph.traverser</code> rather than instantiating it directly.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser"><code class="flex name class">
+<span>class <span class="ident">GraphTraverser</span></span>
+<span>(</span><span>graph: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GraphTraverser:
+    &#34;&#34;&#34;Encapsulate traversal and validation helpers for Graph.
+
+    Attributes:
+        graph: The Graph instance this traverser operates on.
+    &#34;&#34;&#34;
+
+    def __init__(self, graph: Any) -&gt; None:
+        &#34;&#34;&#34;Initialize the GraphTraverser with a Graph reference.
+
+        Args:
+            graph: The Graph instance to traverse.
+        &#34;&#34;&#34;
+        self.graph = graph
+
+    def get_node(self, name: str) -&gt; Optional[Node]:
+        &#34;&#34;&#34;Retrieve a node from the graph by its name.
+
+        Args:
+            name: The unique name of the node to retrieve.
+
+        Returns:
+            The Node instance if found, else None.
+
+        Examples:
+            &gt;&gt;&gt; traverser.get_node(&#34;Revenue&#34;)
+        &#34;&#34;&#34;
+        return cast(Optional[Node], self.graph.manipulator.get_node(name))
+
+    def has_node(self, node_id: str) -&gt; bool:
+        &#34;&#34;&#34;Check if a node exists in the graph.
+
+        Args:
+            node_id: The name of the node to check.
+
+        Returns:
+            True if the node exists, False otherwise.
+
+        Examples:
+            &gt;&gt;&gt; traverser.has_node(&#34;Revenue&#34;)
+        &#34;&#34;&#34;
+        return cast(bool, self.graph.manipulator.has_node(node_id))
+
+    @property
+    def nodes(self) -&gt; dict[str, Node]:
+        &#34;&#34;&#34;Access the full node registry dictionary.
+
+        Returns:
+            A dict mapping node names to Node instances.
+
+        Examples:
+            &gt;&gt;&gt; list(traverser.nodes.keys())
+        &#34;&#34;&#34;
+        return cast(dict[str, Node], self.graph.nodes)
+
+    def get_direct_successors(self, node_id: str) -&gt; list[str]:
+        &#34;&#34;&#34;Get immediate successor node IDs for a given node.
+
+        Args:
+            node_id: The name of the node whose successors to retrieve.
+
+        Returns:
+            A list of node IDs that directly follow the given node.
+
+        Examples:
+            &gt;&gt;&gt; traverser.get_direct_successors(&#34;Revenue&#34;)
+        &#34;&#34;&#34;
+        successors: list[str] = []
+        for other_id, node in self.nodes.items():
+            if hasattr(node, &#34;inputs&#34;):
+                input_nodes: list[Node] = []
+                if isinstance(node.inputs, list):
+                    input_nodes = node.inputs
+                elif isinstance(node.inputs, dict):
+                    input_nodes = list(node.inputs.values())
+
+                if any(
+                    inp.name == node_id for inp in input_nodes if hasattr(inp, &#34;name&#34;)
+                ):
+                    successors.append(other_id)
+        return successors
+
+    def get_direct_predecessors(self, node_id: str) -&gt; list[str]:
+        &#34;&#34;&#34;Get immediate predecessor node IDs (dependencies) for a given node.
+
+        Args:
+            node_id: The name of the node whose dependencies to retrieve.
+
+        Returns:
+            A list of node IDs that the given node depends on.
+
+        Raises:
+            NodeError: If the node does not exist.
+
+        Examples:
+            &gt;&gt;&gt; traverser.get_direct_predecessors(&#34;GrossProfit&#34;)
+        &#34;&#34;&#34;
+        node = self.get_node(node_id)
+        if not node:
+            raise NodeError(message=f&#34;Node &#39;{node_id}&#39; does not exist&#34;, node_id=node_id)
+        if hasattr(node, &#34;inputs&#34;):
+            return [inp.name for inp in node.inputs]
+        return []
+
+    def topological_sort(self) -&gt; list[str]:
+        &#34;&#34;&#34;Perform a topological sort of nodes based on dependencies.
+
+        Returns:
+            A list of node IDs in topological order.
+
+        Raises:
+            ValueError: If a cycle is detected in the graph.
+
+        Examples:
+            &gt;&gt;&gt; traverser.topological_sort()
+        &#34;&#34;&#34;
+        in_degree: dict[str, int] = {n: 0 for n in self.nodes}
+        adjacency: dict[str, list[str]] = {n: [] for n in self.nodes}
+        for name, node in self.nodes.items():
+            if hasattr(node, &#34;inputs&#34;):
+                for inp in node.inputs:
+                    adjacency[inp.name].append(name)
+                    in_degree[name] += 1
+        queue: list[str] = [n for n, d in in_degree.items() if d == 0]
+        topo_order: list[str] = []
+        while queue:
+            current = queue.pop()
+            topo_order.append(current)
+            for nbr in adjacency[current]:
+                in_degree[nbr] -= 1
+                if in_degree[nbr] == 0:
+                    queue.append(nbr)
+        if len(topo_order) != len(self.nodes):
+            raise ValueError(
+                &#34;Cycle detected in graph, can&#39;t do a valid topological sort.&#34;
+            )
+        return topo_order
+
+    def get_calculation_nodes(self) -&gt; list[str]:
+        &#34;&#34;&#34;Identify all nodes in the graph that represent calculations.
+
+        Returns:
+            A list of node IDs for nodes with calculations.
+
+        Examples:
+            &gt;&gt;&gt; traverser.get_calculation_nodes()
+        &#34;&#34;&#34;
+        return [
+            node_id for node_id, node in self.nodes.items() if is_calculation_node(node)
+        ]
+
+    def get_dependencies(self, node_id: str) -&gt; list[str]:
+        &#34;&#34;&#34;Retrieve the direct dependencies (inputs) of a specific node.
+
+        Args:
+            node_id: The name of the node to inspect.
+
+        Returns:
+            A list of node IDs that the given node depends on.
+
+        Raises:
+            NodeError: If the node does not exist.
+
+        Examples:
+            &gt;&gt;&gt; traverser.get_dependencies(&#34;GrossProfit&#34;)
+        &#34;&#34;&#34;
+        node = self.get_node(node_id)
+        if not node:
+            raise NodeError(message=f&#34;Node &#39;{node_id}&#39; does not exist&#34;, node_id=node_id)
+        if hasattr(node, &#34;inputs&#34;):
+            return [inp.name for inp in node.inputs]
+        return []
+
+    def get_dependency_graph(self) -&gt; dict[str, list[str]]:
+        &#34;&#34;&#34;Construct a representation of the full dependency graph.
+
+        Returns:
+            A dict mapping each node ID to its list of dependency node IDs.
+
+        Examples:
+            &gt;&gt;&gt; traverser.get_dependency_graph()
+        &#34;&#34;&#34;
+        dependencies: dict[str, list[str]] = {}
+        for node_id, node in self.nodes.items():
+            try:
+                if hasattr(node, &#34;inputs&#34;):
+                    dependencies[node_id] = [inp.name for inp in node.inputs]
+                else:
+                    dependencies[node_id] = []
+            except NodeError:
+                dependencies[node_id] = []
+        return dependencies
+
+    def detect_cycles(self) -&gt; list[list[str]]:
+        &#34;&#34;&#34;Detect all cycles present in the graph&#39;s dependency structure.
+
+        Returns:
+            A list of cycles, each cycle is a list of node IDs forming the cycle.
+
+        Examples:
+            &gt;&gt;&gt; traverser.detect_cycles()
+        &#34;&#34;&#34;
+        dependency_graph = self.get_dependency_graph()
+        visited: set[str] = set()
+        rec_stack: set[str] = set()
+        cycles: list[list[str]] = []
+
+        def dfs_detect_cycles(n_id: str, path: Optional[list[str]] = None) -&gt; None:
+            if path is None:
+                path = []
+            if n_id in rec_stack:
+                cycle_start = path.index(n_id)
+                cycle = path[cycle_start:] + [n_id]
+                if cycle not in cycles:
+                    cycles.append(cycle)
+                return
+            if n_id in visited:
+                return
+            visited.add(n_id)
+            rec_stack.add(n_id)
+            path.append(n_id)
+            for dep in dependency_graph.get(n_id, []):
+                dfs_detect_cycles(dep, path[:])
+            rec_stack.remove(n_id)
+
+        for node_id in self.nodes:
+            if node_id not in visited:
+                dfs_detect_cycles(node_id)
+        return cycles
+
+    def validate(self) -&gt; list[str]:
+        &#34;&#34;&#34;Perform validation checks on the graph structure.
+
+        Returns:
+            A list of validation error messages; empty list if graph is valid.
+
+        Examples:
+            &gt;&gt;&gt; traverser.validate()
+        &#34;&#34;&#34;
+        errors: list[str] = [
+            f&#34;Circular dependency detected: {&#39; -&gt; &#39;.join(cycle)}&#34;
+            for cycle in self.detect_cycles()
+        ]
+        errors.extend(
+            f&#34;Node &#39;{node_id}&#39; depends on non-existent node &#39;{inp.name}&#39;&#34;
+            for node_id, node in self.nodes.items()
+            if hasattr(node, &#34;inputs&#34;)
+            for inp in node.inputs
+            if not self.has_node(inp.name)
+        )
+        return errors
+
+    def breadth_first_search(
+        self, start_node: str, direction: str = &#34;successors&#34;
+    ) -&gt; list[list[str]]:
+        &#34;&#34;&#34;Perform a breadth-first search (BFS) traversal of the graph.
+
+        Args:
+            start_node: The starting node ID for the traversal.
+            direction: The traversal direction, either &#39;successors&#39; or &#39;predecessors&#39;.
+
+        Returns:
+            A list of levels, each level is a list of node IDs visited at that depth.
+
+        Raises:
+            ValueError: If `direction` is not &#39;successors&#39; or &#39;predecessors&#39;.
+
+        Examples:
+            &gt;&gt;&gt; traverser.breadth_first_search(&#34;Revenue&#34;, &#34;successors&#34;)
+        &#34;&#34;&#34;
+        if direction not in [&#34;successors&#34;, &#34;predecessors&#34;]:
+            raise ValueError(&#34;Invalid direction. Use &#39;successors&#39; or &#39;predecessors&#39;.&#34;)
+
+        visited = set()
+        queue = deque([start_node])
+        visited.add(start_node)
+        traversal_order = []
+
+        while queue:
+            level_size = len(queue)
+            current_level = []
+
+            for _ in range(level_size):
+                n_id = queue.popleft()
+                current_level.append(n_id)
+
+                if direction == &#34;successors&#34;:
+                    for successor in self.get_direct_successors(n_id):
+                        if successor not in visited:
+                            visited.add(successor)
+                            queue.append(successor)
+                elif direction == &#34;predecessors&#34;:
+                    for predecessor in self.get_direct_predecessors(n_id):
+                        if predecessor not in visited:
+                            visited.add(predecessor)
+                            queue.append(predecessor)
+
+            traversal_order.append(current_level)
+
+        return traversal_order
+
+    def would_create_cycle(self, new_node: &#34;Node&#34;) -&gt; bool:
+        &#34;&#34;&#34;Check if adding a node would create a cycle.
+
+        Args:
+            new_node: The node to be added (must have &#39;inputs&#39; attribute)
+
+        Returns:
+            True if adding the node would create a cycle
+        &#34;&#34;&#34;
+        if not hasattr(new_node, &#34;inputs&#34;) or not new_node.inputs:
+            return False
+
+        # For each input, check if new_node is reachable from it
+        for input_node in new_node.inputs:
+            if hasattr(input_node, &#34;name&#34;) and self._is_reachable(
+                input_node.name, new_node.name
+            ):
+                return True
+        return False
+
+    def _is_reachable(self, from_node: str, to_node: str) -&gt; bool:
+        &#34;&#34;&#34;Check if to_node is reachable from from_node.
+
+        Args:
+            from_node: Starting node name
+            to_node: Target node name
+
+        Returns:
+            True if to_node is reachable from from_node via successors
+        &#34;&#34;&#34;
+        # If from_node doesn&#39;t exist, no reachability
+        if from_node not in self.graph._nodes:
+            return False
+
+        # If to_node doesn&#39;t exist yet, check temporary reachability
+        if to_node not in self.graph._nodes:
+            return False
+
+        try:
+            bfs_levels = self.breadth_first_search(
+                start_node=from_node, direction=&#34;successors&#34;
+            )
+            reachable_nodes = {n for level in bfs_levels for n in level}
+            return to_node in reachable_nodes
+        except (ValueError, KeyError):
+            # Handle cases where BFS fails (e.g., invalid node)
+            return False
+
+    def find_cycle_path(self, from_node: str, to_node: str) -&gt; Optional[list[str]]:
+        &#34;&#34;&#34;Find the actual cycle path if one exists.
+
+        Args:
+            from_node: Starting node name
+            to_node: Target node name that would complete the cycle
+
+        Returns:
+            List of node names forming the cycle path, or None if no cycle
+        &#34;&#34;&#34;
+        if not self._is_reachable(from_node, to_node):
+            return None
+
+        # Use DFS to find the actual path
+        visited = set()
+        path: list[str] = []
+
+        def dfs_find_path(current: str, target: str) -&gt; bool:
+            if current == target and len(path) &gt; 0:
+                return True
+            if current in visited:
+                return False
+
+            visited.add(current)
+            path.append(current)
+
+            # Get successors of current node
+            for successor in self.get_direct_successors(current):
+                if dfs_find_path(successor, target):
+                    return True
+
+            path.pop()
+            return False
+
+        if dfs_find_path(from_node, to_node):
+            return [*path, to_node]  # Complete the cycle
+        return None</code></pre>
+</details>
+<div class="desc"><p>Encapsulate traversal and validation helpers for Graph.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The Graph instance this traverser operates on.</dd>
+</dl>
+<p>Initialize the GraphTraverser with a Graph reference.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The Graph instance to traverse.</dd>
+</dl></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser.nodes"><code class="name">prop <span class="ident">nodes</span> : dict[str, <a title="fin_statement_model.core.nodes.base.Node" href="../nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>]</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def nodes(self) -&gt; dict[str, Node]:
+    &#34;&#34;&#34;Access the full node registry dictionary.
+
+    Returns:
+        A dict mapping node names to Node instances.
+
+    Examples:
+        &gt;&gt;&gt; list(traverser.nodes.keys())
+    &#34;&#34;&#34;
+    return cast(dict[str, Node], self.graph.nodes)</code></pre>
+</details>
+<div class="desc"><p>Access the full node registry dictionary.</p>
+<h2 id="returns">Returns</h2>
+<p>A dict mapping node names to Node instances.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; list(traverser.nodes.keys())
+</code></pre></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser.breadth_first_search"><code class="name flex">
+<span>def <span class="ident">breadth_first_search</span></span>(<span>self, start_node: str, direction: str = 'successors') ‑> list[list[str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def breadth_first_search(
+    self, start_node: str, direction: str = &#34;successors&#34;
+) -&gt; list[list[str]]:
+    &#34;&#34;&#34;Perform a breadth-first search (BFS) traversal of the graph.
+
+    Args:
+        start_node: The starting node ID for the traversal.
+        direction: The traversal direction, either &#39;successors&#39; or &#39;predecessors&#39;.
+
+    Returns:
+        A list of levels, each level is a list of node IDs visited at that depth.
+
+    Raises:
+        ValueError: If `direction` is not &#39;successors&#39; or &#39;predecessors&#39;.
+
+    Examples:
+        &gt;&gt;&gt; traverser.breadth_first_search(&#34;Revenue&#34;, &#34;successors&#34;)
+    &#34;&#34;&#34;
+    if direction not in [&#34;successors&#34;, &#34;predecessors&#34;]:
+        raise ValueError(&#34;Invalid direction. Use &#39;successors&#39; or &#39;predecessors&#39;.&#34;)
+
+    visited = set()
+    queue = deque([start_node])
+    visited.add(start_node)
+    traversal_order = []
+
+    while queue:
+        level_size = len(queue)
+        current_level = []
+
+        for _ in range(level_size):
+            n_id = queue.popleft()
+            current_level.append(n_id)
+
+            if direction == &#34;successors&#34;:
+                for successor in self.get_direct_successors(n_id):
+                    if successor not in visited:
+                        visited.add(successor)
+                        queue.append(successor)
+            elif direction == &#34;predecessors&#34;:
+                for predecessor in self.get_direct_predecessors(n_id):
+                    if predecessor not in visited:
+                        visited.add(predecessor)
+                        queue.append(predecessor)
+
+        traversal_order.append(current_level)
+
+    return traversal_order</code></pre>
+</details>
+<div class="desc"><p>Perform a breadth-first search (BFS) traversal of the graph.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>start_node</code></strong></dt>
+<dd>The starting node ID for the traversal.</dd>
+<dt><strong><code>direction</code></strong></dt>
+<dd>The traversal direction, either 'successors' or 'predecessors'.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A list of levels, each level is a list of node IDs visited at that depth.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If <code>direction</code> is not 'successors' or 'predecessors'.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; traverser.breadth_first_search(&quot;Revenue&quot;, &quot;successors&quot;)
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser.detect_cycles"><code class="name flex">
+<span>def <span class="ident">detect_cycles</span></span>(<span>self) ‑> list[list[str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def detect_cycles(self) -&gt; list[list[str]]:
+    &#34;&#34;&#34;Detect all cycles present in the graph&#39;s dependency structure.
+
+    Returns:
+        A list of cycles, each cycle is a list of node IDs forming the cycle.
+
+    Examples:
+        &gt;&gt;&gt; traverser.detect_cycles()
+    &#34;&#34;&#34;
+    dependency_graph = self.get_dependency_graph()
+    visited: set[str] = set()
+    rec_stack: set[str] = set()
+    cycles: list[list[str]] = []
+
+    def dfs_detect_cycles(n_id: str, path: Optional[list[str]] = None) -&gt; None:
+        if path is None:
+            path = []
+        if n_id in rec_stack:
+            cycle_start = path.index(n_id)
+            cycle = path[cycle_start:] + [n_id]
+            if cycle not in cycles:
+                cycles.append(cycle)
+            return
+        if n_id in visited:
+            return
+        visited.add(n_id)
+        rec_stack.add(n_id)
+        path.append(n_id)
+        for dep in dependency_graph.get(n_id, []):
+            dfs_detect_cycles(dep, path[:])
+        rec_stack.remove(n_id)
+
+    for node_id in self.nodes:
+        if node_id not in visited:
+            dfs_detect_cycles(node_id)
+    return cycles</code></pre>
+</details>
+<div class="desc"><p>Detect all cycles present in the graph's dependency structure.</p>
+<h2 id="returns">Returns</h2>
+<p>A list of cycles, each cycle is a list of node IDs forming the cycle.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; traverser.detect_cycles()
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser.find_cycle_path"><code class="name flex">
+<span>def <span class="ident">find_cycle_path</span></span>(<span>self, from_node: str, to_node: str) ‑> list[str] | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_cycle_path(self, from_node: str, to_node: str) -&gt; Optional[list[str]]:
+    &#34;&#34;&#34;Find the actual cycle path if one exists.
+
+    Args:
+        from_node: Starting node name
+        to_node: Target node name that would complete the cycle
+
+    Returns:
+        List of node names forming the cycle path, or None if no cycle
+    &#34;&#34;&#34;
+    if not self._is_reachable(from_node, to_node):
+        return None
+
+    # Use DFS to find the actual path
+    visited = set()
+    path: list[str] = []
+
+    def dfs_find_path(current: str, target: str) -&gt; bool:
+        if current == target and len(path) &gt; 0:
+            return True
+        if current in visited:
+            return False
+
+        visited.add(current)
+        path.append(current)
+
+        # Get successors of current node
+        for successor in self.get_direct_successors(current):
+            if dfs_find_path(successor, target):
+                return True
+
+        path.pop()
+        return False
+
+    if dfs_find_path(from_node, to_node):
+        return [*path, to_node]  # Complete the cycle
+    return None</code></pre>
+</details>
+<div class="desc"><p>Find the actual cycle path if one exists.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>from_node</code></strong></dt>
+<dd>Starting node name</dd>
+<dt><strong><code>to_node</code></strong></dt>
+<dd>Target node name that would complete the cycle</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of node names forming the cycle path, or None if no cycle</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser.get_calculation_nodes"><code class="name flex">
+<span>def <span class="ident">get_calculation_nodes</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_calculation_nodes(self) -&gt; list[str]:
+    &#34;&#34;&#34;Identify all nodes in the graph that represent calculations.
+
+    Returns:
+        A list of node IDs for nodes with calculations.
+
+    Examples:
+        &gt;&gt;&gt; traverser.get_calculation_nodes()
+    &#34;&#34;&#34;
+    return [
+        node_id for node_id, node in self.nodes.items() if is_calculation_node(node)
+    ]</code></pre>
+</details>
+<div class="desc"><p>Identify all nodes in the graph that represent calculations.</p>
+<h2 id="returns">Returns</h2>
+<p>A list of node IDs for nodes with calculations.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; traverser.get_calculation_nodes()
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser.get_dependencies"><code class="name flex">
+<span>def <span class="ident">get_dependencies</span></span>(<span>self, node_id: str) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_dependencies(self, node_id: str) -&gt; list[str]:
+    &#34;&#34;&#34;Retrieve the direct dependencies (inputs) of a specific node.
+
+    Args:
+        node_id: The name of the node to inspect.
+
+    Returns:
+        A list of node IDs that the given node depends on.
+
+    Raises:
+        NodeError: If the node does not exist.
+
+    Examples:
+        &gt;&gt;&gt; traverser.get_dependencies(&#34;GrossProfit&#34;)
+    &#34;&#34;&#34;
+    node = self.get_node(node_id)
+    if not node:
+        raise NodeError(message=f&#34;Node &#39;{node_id}&#39; does not exist&#34;, node_id=node_id)
+    if hasattr(node, &#34;inputs&#34;):
+        return [inp.name for inp in node.inputs]
+    return []</code></pre>
+</details>
+<div class="desc"><p>Retrieve the direct dependencies (inputs) of a specific node.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_id</code></strong></dt>
+<dd>The name of the node to inspect.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A list of node IDs that the given node depends on.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>NodeError</code></dt>
+<dd>If the node does not exist.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; traverser.get_dependencies(&quot;GrossProfit&quot;)
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser.get_dependency_graph"><code class="name flex">
+<span>def <span class="ident">get_dependency_graph</span></span>(<span>self) ‑> dict[str, list[str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_dependency_graph(self) -&gt; dict[str, list[str]]:
+    &#34;&#34;&#34;Construct a representation of the full dependency graph.
+
+    Returns:
+        A dict mapping each node ID to its list of dependency node IDs.
+
+    Examples:
+        &gt;&gt;&gt; traverser.get_dependency_graph()
+    &#34;&#34;&#34;
+    dependencies: dict[str, list[str]] = {}
+    for node_id, node in self.nodes.items():
+        try:
+            if hasattr(node, &#34;inputs&#34;):
+                dependencies[node_id] = [inp.name for inp in node.inputs]
+            else:
+                dependencies[node_id] = []
+        except NodeError:
+            dependencies[node_id] = []
+    return dependencies</code></pre>
+</details>
+<div class="desc"><p>Construct a representation of the full dependency graph.</p>
+<h2 id="returns">Returns</h2>
+<p>A dict mapping each node ID to its list of dependency node IDs.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; traverser.get_dependency_graph()
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser.get_direct_predecessors"><code class="name flex">
+<span>def <span class="ident">get_direct_predecessors</span></span>(<span>self, node_id: str) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_direct_predecessors(self, node_id: str) -&gt; list[str]:
+    &#34;&#34;&#34;Get immediate predecessor node IDs (dependencies) for a given node.
+
+    Args:
+        node_id: The name of the node whose dependencies to retrieve.
+
+    Returns:
+        A list of node IDs that the given node depends on.
+
+    Raises:
+        NodeError: If the node does not exist.
+
+    Examples:
+        &gt;&gt;&gt; traverser.get_direct_predecessors(&#34;GrossProfit&#34;)
+    &#34;&#34;&#34;
+    node = self.get_node(node_id)
+    if not node:
+        raise NodeError(message=f&#34;Node &#39;{node_id}&#39; does not exist&#34;, node_id=node_id)
+    if hasattr(node, &#34;inputs&#34;):
+        return [inp.name for inp in node.inputs]
+    return []</code></pre>
+</details>
+<div class="desc"><p>Get immediate predecessor node IDs (dependencies) for a given node.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_id</code></strong></dt>
+<dd>The name of the node whose dependencies to retrieve.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A list of node IDs that the given node depends on.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>NodeError</code></dt>
+<dd>If the node does not exist.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; traverser.get_direct_predecessors(&quot;GrossProfit&quot;)
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser.get_direct_successors"><code class="name flex">
+<span>def <span class="ident">get_direct_successors</span></span>(<span>self, node_id: str) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_direct_successors(self, node_id: str) -&gt; list[str]:
+    &#34;&#34;&#34;Get immediate successor node IDs for a given node.
+
+    Args:
+        node_id: The name of the node whose successors to retrieve.
+
+    Returns:
+        A list of node IDs that directly follow the given node.
+
+    Examples:
+        &gt;&gt;&gt; traverser.get_direct_successors(&#34;Revenue&#34;)
+    &#34;&#34;&#34;
+    successors: list[str] = []
+    for other_id, node in self.nodes.items():
+        if hasattr(node, &#34;inputs&#34;):
+            input_nodes: list[Node] = []
+            if isinstance(node.inputs, list):
+                input_nodes = node.inputs
+            elif isinstance(node.inputs, dict):
+                input_nodes = list(node.inputs.values())
+
+            if any(
+                inp.name == node_id for inp in input_nodes if hasattr(inp, &#34;name&#34;)
+            ):
+                successors.append(other_id)
+    return successors</code></pre>
+</details>
+<div class="desc"><p>Get immediate successor node IDs for a given node.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_id</code></strong></dt>
+<dd>The name of the node whose successors to retrieve.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A list of node IDs that directly follow the given node.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; traverser.get_direct_successors(&quot;Revenue&quot;)
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser.get_node"><code class="name flex">
+<span>def <span class="ident">get_node</span></span>(<span>self, name: str) ‑> <a title="fin_statement_model.core.nodes.base.Node" href="../nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a> | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_node(self, name: str) -&gt; Optional[Node]:
+    &#34;&#34;&#34;Retrieve a node from the graph by its name.
+
+    Args:
+        name: The unique name of the node to retrieve.
+
+    Returns:
+        The Node instance if found, else None.
+
+    Examples:
+        &gt;&gt;&gt; traverser.get_node(&#34;Revenue&#34;)
+    &#34;&#34;&#34;
+    return cast(Optional[Node], self.graph.manipulator.get_node(name))</code></pre>
+</details>
+<div class="desc"><p>Retrieve a node from the graph by its name.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The unique name of the node to retrieve.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The Node instance if found, else None.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; traverser.get_node(&quot;Revenue&quot;)
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser.has_node"><code class="name flex">
+<span>def <span class="ident">has_node</span></span>(<span>self, node_id: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_node(self, node_id: str) -&gt; bool:
+    &#34;&#34;&#34;Check if a node exists in the graph.
+
+    Args:
+        node_id: The name of the node to check.
+
+    Returns:
+        True if the node exists, False otherwise.
+
+    Examples:
+        &gt;&gt;&gt; traverser.has_node(&#34;Revenue&#34;)
+    &#34;&#34;&#34;
+    return cast(bool, self.graph.manipulator.has_node(node_id))</code></pre>
+</details>
+<div class="desc"><p>Check if a node exists in the graph.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_id</code></strong></dt>
+<dd>The name of the node to check.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if the node exists, False otherwise.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; traverser.has_node(&quot;Revenue&quot;)
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser.topological_sort"><code class="name flex">
+<span>def <span class="ident">topological_sort</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def topological_sort(self) -&gt; list[str]:
+    &#34;&#34;&#34;Perform a topological sort of nodes based on dependencies.
+
+    Returns:
+        A list of node IDs in topological order.
+
+    Raises:
+        ValueError: If a cycle is detected in the graph.
+
+    Examples:
+        &gt;&gt;&gt; traverser.topological_sort()
+    &#34;&#34;&#34;
+    in_degree: dict[str, int] = {n: 0 for n in self.nodes}
+    adjacency: dict[str, list[str]] = {n: [] for n in self.nodes}
+    for name, node in self.nodes.items():
+        if hasattr(node, &#34;inputs&#34;):
+            for inp in node.inputs:
+                adjacency[inp.name].append(name)
+                in_degree[name] += 1
+    queue: list[str] = [n for n, d in in_degree.items() if d == 0]
+    topo_order: list[str] = []
+    while queue:
+        current = queue.pop()
+        topo_order.append(current)
+        for nbr in adjacency[current]:
+            in_degree[nbr] -= 1
+            if in_degree[nbr] == 0:
+                queue.append(nbr)
+    if len(topo_order) != len(self.nodes):
+        raise ValueError(
+            &#34;Cycle detected in graph, can&#39;t do a valid topological sort.&#34;
+        )
+    return topo_order</code></pre>
+</details>
+<div class="desc"><p>Perform a topological sort of nodes based on dependencies.</p>
+<h2 id="returns">Returns</h2>
+<p>A list of node IDs in topological order.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If a cycle is detected in the graph.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; traverser.topological_sort()
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser.validate"><code class="name flex">
+<span>def <span class="ident">validate</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate(self) -&gt; list[str]:
+    &#34;&#34;&#34;Perform validation checks on the graph structure.
+
+    Returns:
+        A list of validation error messages; empty list if graph is valid.
+
+    Examples:
+        &gt;&gt;&gt; traverser.validate()
+    &#34;&#34;&#34;
+    errors: list[str] = [
+        f&#34;Circular dependency detected: {&#39; -&gt; &#39;.join(cycle)}&#34;
+        for cycle in self.detect_cycles()
+    ]
+    errors.extend(
+        f&#34;Node &#39;{node_id}&#39; depends on non-existent node &#39;{inp.name}&#39;&#34;
+        for node_id, node in self.nodes.items()
+        if hasattr(node, &#34;inputs&#34;)
+        for inp in node.inputs
+        if not self.has_node(inp.name)
+    )
+    return errors</code></pre>
+</details>
+<div class="desc"><p>Perform validation checks on the graph structure.</p>
+<h2 id="returns">Returns</h2>
+<p>A list of validation error messages; empty list if graph is valid.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; traverser.validate()
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.graph.traverser.GraphTraverser.would_create_cycle"><code class="name flex">
+<span>def <span class="ident">would_create_cycle</span></span>(<span>self, new_node: Node) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def would_create_cycle(self, new_node: &#34;Node&#34;) -&gt; bool:
+    &#34;&#34;&#34;Check if adding a node would create a cycle.
+
+    Args:
+        new_node: The node to be added (must have &#39;inputs&#39; attribute)
+
+    Returns:
+        True if adding the node would create a cycle
+    &#34;&#34;&#34;
+    if not hasattr(new_node, &#34;inputs&#34;) or not new_node.inputs:
+        return False
+
+    # For each input, check if new_node is reachable from it
+    for input_node in new_node.inputs:
+        if hasattr(input_node, &#34;name&#34;) and self._is_reachable(
+            input_node.name, new_node.name
+        ):
+            return True
+    return False</code></pre>
+</details>
+<div class="desc"><p>Check if adding a node would create a cycle.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>new_node</code></strong></dt>
+<dd>The node to be added (must have 'inputs' attribute)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if adding the node would create a cycle</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.core.graph" href="index.html">fin_statement_model.core.graph</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser" href="#fin_statement_model.core.graph.traverser.GraphTraverser">GraphTraverser</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser.breadth_first_search" href="#fin_statement_model.core.graph.traverser.GraphTraverser.breadth_first_search">breadth_first_search</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser.detect_cycles" href="#fin_statement_model.core.graph.traverser.GraphTraverser.detect_cycles">detect_cycles</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser.find_cycle_path" href="#fin_statement_model.core.graph.traverser.GraphTraverser.find_cycle_path">find_cycle_path</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser.get_calculation_nodes" href="#fin_statement_model.core.graph.traverser.GraphTraverser.get_calculation_nodes">get_calculation_nodes</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser.get_dependencies" href="#fin_statement_model.core.graph.traverser.GraphTraverser.get_dependencies">get_dependencies</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser.get_dependency_graph" href="#fin_statement_model.core.graph.traverser.GraphTraverser.get_dependency_graph">get_dependency_graph</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser.get_direct_predecessors" href="#fin_statement_model.core.graph.traverser.GraphTraverser.get_direct_predecessors">get_direct_predecessors</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser.get_direct_successors" href="#fin_statement_model.core.graph.traverser.GraphTraverser.get_direct_successors">get_direct_successors</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser.get_node" href="#fin_statement_model.core.graph.traverser.GraphTraverser.get_node">get_node</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser.has_node" href="#fin_statement_model.core.graph.traverser.GraphTraverser.has_node">has_node</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser.nodes" href="#fin_statement_model.core.graph.traverser.GraphTraverser.nodes">nodes</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser.topological_sort" href="#fin_statement_model.core.graph.traverser.GraphTraverser.topological_sort">topological_sort</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser.validate" href="#fin_statement_model.core.graph.traverser.GraphTraverser.validate">validate</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.traverser.GraphTraverser.would_create_cycle" href="#fin_statement_model.core.graph.traverser.GraphTraverser.would_create_cycle">would_create_cycle</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

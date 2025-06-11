@@ -1,6 +1,7 @@
-"""Financial data transformers for the Financial Statement Model.
+"""Provide the PeriodConversionTransformer for converting between financial reporting periods.
 
-This module provides the PeriodConversionTransformer for converting between period types:
+This module defines the transformer for aggregating higher-frequency data to lower-frequency periods
+and calculating trailing metrics such as trailing twelve months (TTM). Supported conversions include:
 quarterly_to_annual, monthly_to_quarterly, monthly_to_annual, and quarterly_to_ttm.
 """
 
@@ -255,7 +256,11 @@ class PeriodConversionTransformer(DataTransformer):
             df: DataFrame to convert.
 
         Returns:
-            Converted DataFrame.
+            Converted DataFrame with the new period index.
+
+        Raises:
+            ValueError: If the DataFrame index cannot be converted to datetime or if TTM conversion is requested with unsupported aggregation.
+            NotImplementedError: If the conversion_type is not supported by this transformer.
         """
         df_copy = df.copy()
 

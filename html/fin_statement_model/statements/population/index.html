@@ -1,0 +1,1867 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.statements.population API documentation</title>
+<meta name="description" content="Graph population functionality for financial statements …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.statements.population</code></h1>
+</header>
+<section id="section-intro">
+<p>Graph population functionality for financial statements.</p>
+<p>This package handles the conversion of statement structures into graph nodes:
+- ID resolution between statement items and graph nodes
+- Processing different item types (metrics, calculations, subtotals)
+- Managing dependencies and retry logic</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.statements.population.id_resolver" href="id_resolver.html">fin_statement_model.statements.population.id_resolver</a></code></dt>
+<dd>
+<div class="desc"><p>ID resolution for statement items to graph nodes …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.statements.population.item_processors" href="item_processors.html">fin_statement_model.statements.population.item_processors</a></code></dt>
+<dd>
+<div class="desc"><p>Item processors for converting statement items into graph nodes …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.statements.population.populator" href="populator.html">fin_statement_model.statements.population.populator</a></code></dt>
+<dd>
+<div class="desc"><p>Populates a <code><a title="fin_statement_model.core.graph.Graph" href="../../core/graph/index.html#fin_statement_model.core.graph.Graph">Graph</a></code> with calculation nodes …</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.statements.population.populate_graph_from_statement"><code class="name flex">
+<span>def <span class="ident">populate_graph_from_statement</span></span>(<span>statement: <a title="fin_statement_model.statements.structure.containers.StatementStructure" href="../structure/containers.html#fin_statement_model.statements.structure.containers.StatementStructure">StatementStructure</a>,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>) ‑> list[tuple[str, str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def populate_graph_from_statement(
+    statement: StatementStructure, graph: Graph
+) -&gt; list[tuple[str, str]]:
+    &#34;&#34;&#34;Add calculation nodes defined in a StatementStructure to a Graph.
+
+    This function bridges the gap between static statement definitions and the
+    dynamic calculation graph. It processes three types of items:
+
+    1. **CalculatedLineItem**: Creates calculation nodes with specified operations
+    2. **SubtotalLineItem**: Creates addition nodes that sum multiple items
+    3. **MetricLineItem**: Creates metric-based calculation nodes
+
+    ID Resolution Logic:
+    - Input IDs in statement configurations are resolved to graph node IDs using
+      the `IDResolver` class
+    - This handles the mapping between statement item IDs and actual graph nodes
+    - Resolution accounts for LineItem.node_id vs other items using their ID directly
+
+    Dependency Handling:
+    - Items may depend on other items that haven&#39;t been created yet
+    - The function uses a retry mechanism: failed items are retried after
+      successful ones, allowing dependencies to be resolved
+    - Circular dependencies are detected and reported as errors
+
+    Idempotency:
+    - If a node already exists in the graph, it will be skipped
+    - This allows the function to be called multiple times safely
+
+    Args:
+        statement: The `StatementStructure` object containing the definitions
+            of calculated items, subtotals, and metrics.
+        graph: The `core.graph.Graph` instance that will be populated with
+            the calculation nodes.
+
+    Returns:
+        A list of tuples, where each tuple contains `(item_id, error_message)`
+        for any items that could not be successfully added to the graph. An
+        empty list indicates that all applicable items were added (or already
+        existed) without critical errors.
+
+    Raises:
+        TypeError: If `statement` is not a `StatementStructure` or `graph` is
+            not a `Graph` instance.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.graph import Graph
+        &gt;&gt;&gt; from fin_statement_model.statements.structure import StatementStructure
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Create graph with data nodes
+        &gt;&gt;&gt; graph = Graph()
+        &gt;&gt;&gt; graph.add_financial_statement_item(&#39;revenue_node&#39;, {&#39;2023&#39;: 1000})
+        &gt;&gt;&gt; graph.add_financial_statement_item(&#39;cogs_node&#39;, {&#39;2023&#39;: 600})
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Create statement with calculations
+        &gt;&gt;&gt; statement = StatementStructure(id=&#34;IS&#34;, name=&#34;Income Statement&#34;)
+        &gt;&gt;&gt; # Add a LineItem that maps to &#39;revenue_node&#39;
+        &gt;&gt;&gt; revenue_item = LineItem(id=&#39;revenue&#39;, name=&#39;Revenue&#39;, node_id=&#39;revenue_node&#39;)
+        &gt;&gt;&gt; # Add a CalculatedLineItem that references the LineItem
+        &gt;&gt;&gt; gross_profit = CalculatedLineItem(
+        ...     id=&#39;gross_profit&#39;,
+        ...     name=&#39;Gross Profit&#39;,
+        ...     calculation_type=&#39;subtraction&#39;,
+        ...     input_ids=[&#39;revenue&#39;, &#39;cogs&#39;]  # Uses LineItem IDs
+        ... )
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; errors = populate_graph_from_statement(statement, graph)
+        &gt;&gt;&gt; # The function will:
+        &gt;&gt;&gt; # 1. Resolve &#39;revenue&#39; to &#39;revenue_node&#39; via LineItem.node_id
+        &gt;&gt;&gt; # 2. Resolve &#39;cogs&#39; to &#39;cogs_node&#39; (if it exists in statement or graph)
+        &gt;&gt;&gt; # 3. Create a calculation node &#39;gross_profit&#39; with the resolved inputs
+    &#34;&#34;&#34;
+    # Validate inputs
+    if not isinstance(statement, StatementStructure):
+        raise TypeError(&#34;statement must be a StatementStructure instance&#34;)
+    if not isinstance(graph, Graph):
+        raise TypeError(&#34;graph must be a Graph instance&#34;)
+
+    # Initialize components
+    id_resolver = IDResolver(statement, standard_node_registry)
+    processor_manager = ItemProcessorManager(id_resolver, graph, statement)
+
+    # Get all items to process
+    calculation_items = statement.get_calculation_items()
+    metric_items = statement.get_metric_items()
+    all_items_to_process = calculation_items + metric_items
+
+    # Track results
+    errors_encountered: list[tuple[str, str]] = []
+    nodes_added_count = 0
+
+    logger.info(
+        f&#34;Starting graph population for statement &#39;{statement.id}&#39;. &#34;
+        f&#34;Processing {len(all_items_to_process)} calculation/metric items.&#34;
+    )
+
+    # Process items with retry mechanism
+    items_to_process = list(all_items_to_process)
+    processed_in_pass = -1  # Initialize to enter loop
+
+    while items_to_process and processed_in_pass != 0:
+        items_failed_this_pass = []
+        processed_in_pass = 0
+
+        logger.debug(f&#34;Population loop: Processing {len(items_to_process)} items...&#34;)
+
+        for item in items_to_process:
+            # Determine if this is a retry (not the first overall pass)
+            is_retry = len(items_to_process) &lt; len(all_items_to_process)
+
+            # Process the item
+            result = processor_manager.process_item(item, is_retry)
+
+            if result.success:
+                processed_in_pass += 1
+                if result.node_added:
+                    nodes_added_count += 1
+            else:
+                items_failed_this_pass.append(item)
+                # Only record errors on retry or for non-dependency errors
+                if is_retry and result.error_message:
+                    errors_encountered.append((item.id, result.error_message))
+
+        # Prepare for next iteration
+        items_to_process = items_failed_this_pass
+
+        # Check for stalled progress
+        if processed_in_pass == 0 and items_to_process:
+            logger.warning(
+                f&#34;Population loop stalled. {len(items_to_process)} items could not be processed: &#34;
+                f&#34;{[item.id for item in items_to_process]}&#34;
+            )
+            # Add errors for items that couldn&#39;t be processed
+            for item in items_to_process:
+                if not any(err[0] == item.id for err in errors_encountered):
+                    errors_encountered.append(
+                        (
+                            item.id,
+                            &#34;Failed to process due to unresolved dependencies or circular reference.&#34;,
+                        )
+                    )
+            break
+
+    # Log results
+    if errors_encountered:
+        logger.warning(
+            f&#34;Graph population for statement &#39;{statement.id}&#39; completed with &#34;
+            f&#34;{len(errors_encountered)} persistent errors.&#34;
+        )
+    else:
+        log_level = logging.INFO if nodes_added_count &gt; 0 else logging.DEBUG
+        logger.log(
+            log_level,
+            f&#34;Graph population for statement &#39;{statement.id}&#39; completed. &#34;
+            f&#34;Added {nodes_added_count} new nodes.&#34;,
+        )
+
+    return errors_encountered</code></pre>
+</details>
+<div class="desc"><p>Add calculation nodes defined in a StatementStructure to a Graph.</p>
+<p>This function bridges the gap between static statement definitions and the
+dynamic calculation graph. It processes three types of items:</p>
+<ol>
+<li><strong>CalculatedLineItem</strong>: Creates calculation nodes with specified operations</li>
+<li><strong>SubtotalLineItem</strong>: Creates addition nodes that sum multiple items</li>
+<li><strong>MetricLineItem</strong>: Creates metric-based calculation nodes</li>
+</ol>
+<p>ID Resolution Logic:
+- Input IDs in statement configurations are resolved to graph node IDs using
+the <code><a title="fin_statement_model.statements.population.IDResolver" href="#fin_statement_model.statements.population.IDResolver">IDResolver</a></code> class
+- This handles the mapping between statement item IDs and actual graph nodes
+- Resolution accounts for LineItem.node_id vs other items using their ID directly</p>
+<p>Dependency Handling:
+- Items may depend on other items that haven't been created yet
+- The function uses a retry mechanism: failed items are retried after
+successful ones, allowing dependencies to be resolved
+- Circular dependencies are detected and reported as errors</p>
+<p>Idempotency:
+- If a node already exists in the graph, it will be skipped
+- This allows the function to be called multiple times safely</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>statement</code></strong></dt>
+<dd>The <code>StatementStructure</code> object containing the definitions
+of calculated items, subtotals, and metrics.</dd>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The <code>core.graph.Graph</code> instance that will be populated with
+the calculation nodes.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A list of tuples, where each tuple contains <code>(item_id, error_message)</code>
+for any items that could not be successfully added to the graph. An
+empty list indicates that all applicable items were added (or already
+existed) without critical errors.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If <code>statement</code> is not a <code>StatementStructure</code> or <code>graph</code> is
+not a <code>Graph</code> instance.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.graph import Graph
+&gt;&gt;&gt; from fin_statement_model.statements.structure import StatementStructure
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Create graph with data nodes
+&gt;&gt;&gt; graph = Graph()
+&gt;&gt;&gt; graph.add_financial_statement_item('revenue_node', {'2023': 1000})
+&gt;&gt;&gt; graph.add_financial_statement_item('cogs_node', {'2023': 600})
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Create statement with calculations
+&gt;&gt;&gt; statement = StatementStructure(id=&quot;IS&quot;, name=&quot;Income Statement&quot;)
+&gt;&gt;&gt; # Add a LineItem that maps to 'revenue_node'
+&gt;&gt;&gt; revenue_item = LineItem(id='revenue', name='Revenue', node_id='revenue_node')
+&gt;&gt;&gt; # Add a CalculatedLineItem that references the LineItem
+&gt;&gt;&gt; gross_profit = CalculatedLineItem(
+...     id='gross_profit',
+...     name='Gross Profit',
+...     calculation_type='subtraction',
+...     input_ids=['revenue', 'cogs']  # Uses LineItem IDs
+... )
+&gt;&gt;&gt;
+&gt;&gt;&gt; errors = populate_graph_from_statement(statement, graph)
+&gt;&gt;&gt; # The function will:
+&gt;&gt;&gt; # 1. Resolve 'revenue' to 'revenue_node' via LineItem.node_id
+&gt;&gt;&gt; # 2. Resolve 'cogs' to 'cogs_node' (if it exists in statement or graph)
+&gt;&gt;&gt; # 3. Create a calculation node 'gross_profit' with the resolved inputs
+</code></pre></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.statements.population.CalculatedItemProcessor"><code class="flex name class">
+<span>class <span class="ident">CalculatedItemProcessor</span></span>
+<span>(</span><span>id_resolver: <a title="fin_statement_model.statements.population.id_resolver.IDResolver" href="id_resolver.html#fin_statement_model.statements.population.id_resolver.IDResolver">IDResolver</a>,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>statement: <a title="fin_statement_model.statements.structure.containers.StatementStructure" href="../structure/containers.html#fin_statement_model.statements.structure.containers.StatementStructure">StatementStructure</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CalculatedItemProcessor(ItemProcessor):
+    &#34;&#34;&#34;Processor for CalculatedLineItem objects.
+
+    Handles the creation of calculation nodes with specific operations by:
+    1. Resolving input IDs to graph nodes
+    2. Getting sign conventions from input items
+    3. Creating the calculation node with proper sign handling
+    &#34;&#34;&#34;
+
+    def can_process(self, item: StatementItem) -&gt; bool:
+        &#34;&#34;&#34;Check if item is a CalculatedLineItem.&#34;&#34;&#34;
+        return isinstance(item, CalculatedLineItem)
+
+    def process(self, item: StatementItem, is_retry: bool = False) -&gt; ProcessorResult:
+        &#34;&#34;&#34;Process a CalculatedLineItem and add it to the graph.&#34;&#34;&#34;
+        if not isinstance(item, CalculatedLineItem):
+            return ProcessorResult(success=False, error_message=&#34;Invalid item type&#34;)
+
+        # Check if node already exists
+        if self.graph.has_node(item.id):
+            return ProcessorResult(success=True, node_added=False)
+
+        # Command: create any needed signed nodes
+        neg_base_ids: list[str] = []
+        for input_id in item.input_ids:
+            input_item = self.statement.find_item_by_id(input_id)
+            if input_item and getattr(input_item, &#34;sign_convention&#34;, 1) == -1:
+                node_id = self.id_resolver.resolve(input_id, self.graph)
+                if node_id:
+                    neg_base_ids.append(node_id)
+        if neg_base_ids:
+            self.graph.ensure_signed_nodes(neg_base_ids)
+
+        # Query: resolve inputs without mutating graph
+        resolved_inputs, missing = self._resolve_inputs(item)
+        if missing:
+            return self._handle_missing_inputs(item, missing, is_retry)
+
+        # Add calculation node
+        error_message = None
+        try:
+            self.graph.add_calculation(
+                name=item.id,
+                input_names=resolved_inputs,
+                operation_type=item.calculation_type,
+                **item.parameters,
+            )
+        except (
+            NodeError,
+            CircularDependencyError,
+            CalculationError,
+            ConfigurationError,
+        ) as e:
+            error_msg = f&#34;Failed to add calculation node &#39;{item.id}&#39;: {e}&#34;
+            logger.exception(error_msg)
+            error_message = str(e)
+        except Exception as e:
+            error_msg = f&#34;Unexpected error adding calculation node &#39;{item.id}&#39;: {e}&#34;
+            logger.exception(error_msg)
+            error_message = f&#34;Unexpected error: {e}&#34;
+
+        if error_message:
+            return ProcessorResult(success=False, error_message=error_message)
+        return ProcessorResult(success=True, node_added=True)
+
+    def _resolve_inputs(
+        self, item: CalculatedLineItem
+    ) -&gt; tuple[list[str], list[tuple[str, Optional[str]]]]:
+        &#34;&#34;&#34;Resolve input IDs to graph node or signed-node IDs without side effects.
+
+        Args:
+            item: The CalculatedLineItem being processed.
+
+        Returns:
+            Tuple of (resolved_node_ids, missing_details).
+        &#34;&#34;&#34;
+        resolved: list[str] = []
+        missing: list[tuple[str, Optional[str]]] = []
+
+        for input_id in item.input_ids:
+            node_id = self.id_resolver.resolve(input_id, self.graph)
+            # Missing base node
+            if not node_id or not self.graph.has_node(node_id):
+                missing.append((input_id, node_id))
+                continue
+            # Determine sign
+            input_item = self.statement.find_item_by_id(input_id)
+            sign = getattr(input_item, &#34;sign_convention&#34;, 1) if input_item else 1
+            if sign == -1:
+                signed_id = f&#34;{node_id}_signed&#34;
+                # Represent signed node if exists, else missing
+                if signed_id in self.graph.nodes:
+                    resolved.append(signed_id)
+                else:
+                    missing.append((input_id, signed_id))
+            else:
+                resolved.append(node_id)
+        return resolved, missing</code></pre>
+</details>
+<div class="desc"><p>Processor for CalculatedLineItem objects.</p>
+<p>Handles the creation of calculation nodes with specific operations by:
+1. Resolving input IDs to graph nodes
+2. Getting sign conventions from input items
+3. Creating the calculation node with proper sign handling</p>
+<p>Initialize the processor.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>id_resolver</code></strong></dt>
+<dd>ID resolver for mapping statement IDs to graph node IDs.</dd>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The graph to add nodes to.</dd>
+<dt><strong><code>statement</code></strong></dt>
+<dd>The statement structure being processed.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.statements.population.item_processors.ItemProcessor" href="item_processors.html#fin_statement_model.statements.population.item_processors.ItemProcessor">ItemProcessor</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.population.CalculatedItemProcessor.can_process"><code class="name flex">
+<span>def <span class="ident">can_process</span></span>(<span>self,<br>item: <a title="fin_statement_model.statements.structure.items.StatementItem" href="../structure/items.html#fin_statement_model.statements.structure.items.StatementItem">StatementItem</a>) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def can_process(self, item: StatementItem) -&gt; bool:
+    &#34;&#34;&#34;Check if item is a CalculatedLineItem.&#34;&#34;&#34;
+    return isinstance(item, CalculatedLineItem)</code></pre>
+</details>
+<div class="desc"><p>Check if item is a CalculatedLineItem.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.CalculatedItemProcessor.process"><code class="name flex">
+<span>def <span class="ident">process</span></span>(<span>self,<br>item: <a title="fin_statement_model.statements.structure.items.StatementItem" href="../structure/items.html#fin_statement_model.statements.structure.items.StatementItem">StatementItem</a>,<br>is_retry: bool = False) ‑> <a title="fin_statement_model.statements.population.item_processors.ProcessorResult" href="item_processors.html#fin_statement_model.statements.population.item_processors.ProcessorResult">ProcessorResult</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process(self, item: StatementItem, is_retry: bool = False) -&gt; ProcessorResult:
+    &#34;&#34;&#34;Process a CalculatedLineItem and add it to the graph.&#34;&#34;&#34;
+    if not isinstance(item, CalculatedLineItem):
+        return ProcessorResult(success=False, error_message=&#34;Invalid item type&#34;)
+
+    # Check if node already exists
+    if self.graph.has_node(item.id):
+        return ProcessorResult(success=True, node_added=False)
+
+    # Command: create any needed signed nodes
+    neg_base_ids: list[str] = []
+    for input_id in item.input_ids:
+        input_item = self.statement.find_item_by_id(input_id)
+        if input_item and getattr(input_item, &#34;sign_convention&#34;, 1) == -1:
+            node_id = self.id_resolver.resolve(input_id, self.graph)
+            if node_id:
+                neg_base_ids.append(node_id)
+    if neg_base_ids:
+        self.graph.ensure_signed_nodes(neg_base_ids)
+
+    # Query: resolve inputs without mutating graph
+    resolved_inputs, missing = self._resolve_inputs(item)
+    if missing:
+        return self._handle_missing_inputs(item, missing, is_retry)
+
+    # Add calculation node
+    error_message = None
+    try:
+        self.graph.add_calculation(
+            name=item.id,
+            input_names=resolved_inputs,
+            operation_type=item.calculation_type,
+            **item.parameters,
+        )
+    except (
+        NodeError,
+        CircularDependencyError,
+        CalculationError,
+        ConfigurationError,
+    ) as e:
+        error_msg = f&#34;Failed to add calculation node &#39;{item.id}&#39;: {e}&#34;
+        logger.exception(error_msg)
+        error_message = str(e)
+    except Exception as e:
+        error_msg = f&#34;Unexpected error adding calculation node &#39;{item.id}&#39;: {e}&#34;
+        logger.exception(error_msg)
+        error_message = f&#34;Unexpected error: {e}&#34;
+
+    if error_message:
+        return ProcessorResult(success=False, error_message=error_message)
+    return ProcessorResult(success=True, node_added=True)</code></pre>
+</details>
+<div class="desc"><p>Process a CalculatedLineItem and add it to the graph.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.statements.population.item_processors.ItemProcessor" href="item_processors.html#fin_statement_model.statements.population.item_processors.ItemProcessor">ItemProcessor</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.statements.population.item_processors.ItemProcessor.resolve_inputs" href="item_processors.html#fin_statement_model.statements.population.item_processors.ItemProcessor.resolve_inputs">resolve_inputs</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.statements.population.IDResolver"><code class="flex name class">
+<span>class <span class="ident">IDResolver</span></span>
+<span>(</span><span>statement: <a title="fin_statement_model.statements.structure.containers.StatementStructure" href="../structure/containers.html#fin_statement_model.statements.structure.containers.StatementStructure">StatementStructure</a>,<br>registry: <a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry" href="../../core/nodes/standard_registry.html#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry">StandardNodeRegistry</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IDResolver:
+    &#34;&#34;&#34;Centralizes ID resolution from statement items to graph nodes.
+
+    This class handles the complexity of mapping statement item IDs to graph
+    node IDs, accounting for the fact that:
+    - LineItems can have either a direct node_id property OR a standard_node_ref
+      that gets resolved through the provided registry
+    - Other items (CalculatedLineItem, SubtotalLineItem, MetricLineItem) use
+      their ID directly as the node ID
+    - Some nodes may exist directly in the graph without being statement items
+
+    The resolver caches mappings for performance and provides both single and
+    batch resolution methods. Standard node references are resolved at cache
+    build time for optimal performance.
+    &#34;&#34;&#34;
+
+    def __init__(self, statement: StatementStructure, registry: StandardNodeRegistry):
+        &#34;&#34;&#34;Initialize the resolver with a statement structure and a registry.
+
+        Args:
+            statement: The statement structure containing items to resolve.
+            registry: The standard node registry for resolving references.
+        &#34;&#34;&#34;
+        self.statement = statement
+        self._registry = registry
+        self._item_to_node_cache: dict[str, str] = {}
+        self._node_to_items_cache: dict[str, list[str]] = {}
+        self._build_cache()
+
+    def _build_cache(self) -&gt; None:
+        &#34;&#34;&#34;Pre-build ID mappings for all items in the statement.&#34;&#34;&#34;
+        logger.debug(f&#34;Building ID cache for statement &#39;{self.statement.id}&#39;&#34;)
+
+        for item in self.statement.get_all_items():
+            if isinstance(item, LineItem):
+                # Get the resolved node ID (handles both direct node_id and standard_node_ref)
+                resolved_node_id = item.get_resolved_node_id(self._registry)
+                if resolved_node_id:
+                    # LineItems map their ID to their resolved node_id
+                    self._item_to_node_cache[item.id] = resolved_node_id
+                    self._node_to_items_cache.setdefault(resolved_node_id, []).append(
+                        item.id
+                    )
+
+                    # Log if using standard node reference for debugging
+                    if item.standard_node_ref:
+                        logger.debug(
+                            f&#34;Resolved standard node reference &#39;{item.standard_node_ref}&#39; &#34;
+                            f&#34;to &#39;{resolved_node_id}&#39; for item &#39;{item.id}&#39;&#34;
+                        )
+                else:
+                    logger.warning(
+                        f&#34;Could not resolve node reference for LineItem &#39;{item.id}&#39;. &#34;
+                        f&#34;node_id: {item.node_id}, standard_node_ref: {item.standard_node_ref}&#34;
+                    )
+            else:
+                # Other items use their ID directly as the node ID
+                self._item_to_node_cache[item.id] = item.id
+                self._node_to_items_cache.setdefault(item.id, []).append(item.id)
+
+        logger.debug(
+            f&#34;ID cache built: {len(self._item_to_node_cache)} item-&gt;node mappings, &#34;
+            f&#34;{len(self._node_to_items_cache)} unique nodes&#34;
+        )
+
+    def resolve(self, item_id: str, graph: Optional[Graph] = None) -&gt; Optional[str]:
+        &#34;&#34;&#34;Resolve a statement item ID to its graph node ID.
+
+        Resolution process:
+        1. Check the pre-built cache for the item ID
+        2. If not found and a graph is provided, check if the ID exists
+           directly as a node in the graph
+        3. Return None if not found anywhere
+
+        Args:
+            item_id: The statement item ID to resolve.
+            graph: Optional graph to check for direct node existence.
+
+        Returns:
+            The resolved graph node ID if found, None otherwise.
+        &#34;&#34;&#34;
+        # Rebuild cache if it&#39;s empty (e.g., after invalidation)
+        if not self._item_to_node_cache:
+            self._build_cache()
+
+        # Check cache first
+        if item_id in self._item_to_node_cache:
+            return self._item_to_node_cache[item_id]
+
+        # Check if it exists directly in graph
+        if graph and graph.has_node(item_id):
+            # Cache this discovery for future lookups
+            self._item_to_node_cache[item_id] = item_id
+            self._node_to_items_cache.setdefault(item_id, []).append(item_id)
+            return item_id
+
+        return None
+
+    def resolve_multiple(
+        self, item_ids: list[str], graph: Optional[Graph] = None
+    ) -&gt; dict[str, Optional[str]]:
+        &#34;&#34;&#34;Resolve multiple item IDs at once.
+
+        Args:
+            item_ids: List of statement item IDs to resolve.
+            graph: Optional graph to check for direct node existence.
+
+        Returns:
+            Dictionary mapping each item ID to its resolved node ID (or None).
+        &#34;&#34;&#34;
+        return {item_id: self.resolve(item_id, graph) for item_id in item_ids}
+
+    def get_items_for_node(self, node_id: str) -&gt; list[str]:
+        &#34;&#34;&#34;Get all statement item IDs that map to a given node ID.
+
+        This reverse lookup can be useful for debugging and understanding
+        which statement items contribute to a particular graph node.
+
+        Args:
+            node_id: The graph node ID to look up.
+
+        Returns:
+            List of statement item IDs that map to this node (may be empty).
+        &#34;&#34;&#34;
+        # Rebuild cache if it&#39;s empty
+        if not self._node_to_items_cache:
+            self._build_cache()
+        return self._node_to_items_cache.get(node_id, [])
+
+    def get_all_mappings(self) -&gt; dict[str, str]:
+        &#34;&#34;&#34;Get all item ID to node ID mappings.
+
+        Returns:
+            Dictionary of all cached mappings.
+        &#34;&#34;&#34;
+        # Rebuild cache if it&#39;s empty
+        if not self._item_to_node_cache:
+            self._build_cache()
+        return self._item_to_node_cache.copy()
+
+    def invalidate_cache(self) -&gt; None:
+        &#34;&#34;&#34;Clear the cache, forcing a rebuild on next resolution.
+
+        This should be called if the statement structure changes after
+        the resolver was created.
+        &#34;&#34;&#34;
+        self._item_to_node_cache.clear()
+        self._node_to_items_cache.clear()
+        logger.debug(f&#34;ID cache invalidated for statement &#39;{self.statement.id}&#39;&#34;)
+
+    def refresh_cache(self) -&gt; None:
+        &#34;&#34;&#34;Rebuild the cache from the current statement structure.&#34;&#34;&#34;
+        self.invalidate_cache()
+        self._build_cache()</code></pre>
+</details>
+<div class="desc"><p>Centralizes ID resolution from statement items to graph nodes.</p>
+<p>This class handles the complexity of mapping statement item IDs to graph
+node IDs, accounting for the fact that:
+- LineItems can have either a direct node_id property OR a standard_node_ref
+that gets resolved through the provided registry
+- Other items (CalculatedLineItem, SubtotalLineItem, MetricLineItem) use
+their ID directly as the node ID
+- Some nodes may exist directly in the graph without being statement items</p>
+<p>The resolver caches mappings for performance and provides both single and
+batch resolution methods. Standard node references are resolved at cache
+build time for optimal performance.</p>
+<p>Initialize the resolver with a statement structure and a registry.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>statement</code></strong></dt>
+<dd>The statement structure containing items to resolve.</dd>
+<dt><strong><code>registry</code></strong></dt>
+<dd>The standard node registry for resolving references.</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.population.IDResolver.get_all_mappings"><code class="name flex">
+<span>def <span class="ident">get_all_mappings</span></span>(<span>self) ‑> dict[str, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_all_mappings(self) -&gt; dict[str, str]:
+    &#34;&#34;&#34;Get all item ID to node ID mappings.
+
+    Returns:
+        Dictionary of all cached mappings.
+    &#34;&#34;&#34;
+    # Rebuild cache if it&#39;s empty
+    if not self._item_to_node_cache:
+        self._build_cache()
+    return self._item_to_node_cache.copy()</code></pre>
+</details>
+<div class="desc"><p>Get all item ID to node ID mappings.</p>
+<h2 id="returns">Returns</h2>
+<p>Dictionary of all cached mappings.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.IDResolver.get_items_for_node"><code class="name flex">
+<span>def <span class="ident">get_items_for_node</span></span>(<span>self, node_id: str) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_items_for_node(self, node_id: str) -&gt; list[str]:
+    &#34;&#34;&#34;Get all statement item IDs that map to a given node ID.
+
+    This reverse lookup can be useful for debugging and understanding
+    which statement items contribute to a particular graph node.
+
+    Args:
+        node_id: The graph node ID to look up.
+
+    Returns:
+        List of statement item IDs that map to this node (may be empty).
+    &#34;&#34;&#34;
+    # Rebuild cache if it&#39;s empty
+    if not self._node_to_items_cache:
+        self._build_cache()
+    return self._node_to_items_cache.get(node_id, [])</code></pre>
+</details>
+<div class="desc"><p>Get all statement item IDs that map to a given node ID.</p>
+<p>This reverse lookup can be useful for debugging and understanding
+which statement items contribute to a particular graph node.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_id</code></strong></dt>
+<dd>The graph node ID to look up.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of statement item IDs that map to this node (may be empty).</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.IDResolver.invalidate_cache"><code class="name flex">
+<span>def <span class="ident">invalidate_cache</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def invalidate_cache(self) -&gt; None:
+    &#34;&#34;&#34;Clear the cache, forcing a rebuild on next resolution.
+
+    This should be called if the statement structure changes after
+    the resolver was created.
+    &#34;&#34;&#34;
+    self._item_to_node_cache.clear()
+    self._node_to_items_cache.clear()
+    logger.debug(f&#34;ID cache invalidated for statement &#39;{self.statement.id}&#39;&#34;)</code></pre>
+</details>
+<div class="desc"><p>Clear the cache, forcing a rebuild on next resolution.</p>
+<p>This should be called if the statement structure changes after
+the resolver was created.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.IDResolver.refresh_cache"><code class="name flex">
+<span>def <span class="ident">refresh_cache</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def refresh_cache(self) -&gt; None:
+    &#34;&#34;&#34;Rebuild the cache from the current statement structure.&#34;&#34;&#34;
+    self.invalidate_cache()
+    self._build_cache()</code></pre>
+</details>
+<div class="desc"><p>Rebuild the cache from the current statement structure.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.IDResolver.resolve"><code class="name flex">
+<span>def <span class="ident">resolve</span></span>(<span>self,<br>item_id: str,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a> | None = None) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resolve(self, item_id: str, graph: Optional[Graph] = None) -&gt; Optional[str]:
+    &#34;&#34;&#34;Resolve a statement item ID to its graph node ID.
+
+    Resolution process:
+    1. Check the pre-built cache for the item ID
+    2. If not found and a graph is provided, check if the ID exists
+       directly as a node in the graph
+    3. Return None if not found anywhere
+
+    Args:
+        item_id: The statement item ID to resolve.
+        graph: Optional graph to check for direct node existence.
+
+    Returns:
+        The resolved graph node ID if found, None otherwise.
+    &#34;&#34;&#34;
+    # Rebuild cache if it&#39;s empty (e.g., after invalidation)
+    if not self._item_to_node_cache:
+        self._build_cache()
+
+    # Check cache first
+    if item_id in self._item_to_node_cache:
+        return self._item_to_node_cache[item_id]
+
+    # Check if it exists directly in graph
+    if graph and graph.has_node(item_id):
+        # Cache this discovery for future lookups
+        self._item_to_node_cache[item_id] = item_id
+        self._node_to_items_cache.setdefault(item_id, []).append(item_id)
+        return item_id
+
+    return None</code></pre>
+</details>
+<div class="desc"><p>Resolve a statement item ID to its graph node ID.</p>
+<p>Resolution process:
+1. Check the pre-built cache for the item ID
+2. If not found and a graph is provided, check if the ID exists
+directly as a node in the graph
+3. Return None if not found anywhere</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>item_id</code></strong></dt>
+<dd>The statement item ID to resolve.</dd>
+<dt><strong><code>graph</code></strong></dt>
+<dd>Optional graph to check for direct node existence.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The resolved graph node ID if found, None otherwise.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.IDResolver.resolve_multiple"><code class="name flex">
+<span>def <span class="ident">resolve_multiple</span></span>(<span>self,<br>item_ids: list[str],<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a> | None = None) ‑> dict[str, str | None]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resolve_multiple(
+    self, item_ids: list[str], graph: Optional[Graph] = None
+) -&gt; dict[str, Optional[str]]:
+    &#34;&#34;&#34;Resolve multiple item IDs at once.
+
+    Args:
+        item_ids: List of statement item IDs to resolve.
+        graph: Optional graph to check for direct node existence.
+
+    Returns:
+        Dictionary mapping each item ID to its resolved node ID (or None).
+    &#34;&#34;&#34;
+    return {item_id: self.resolve(item_id, graph) for item_id in item_ids}</code></pre>
+</details>
+<div class="desc"><p>Resolve multiple item IDs at once.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>item_ids</code></strong></dt>
+<dd>List of statement item IDs to resolve.</dd>
+<dt><strong><code>graph</code></strong></dt>
+<dd>Optional graph to check for direct node existence.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dictionary mapping each item ID to its resolved node ID (or None).</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.population.ItemProcessor"><code class="flex name class">
+<span>class <span class="ident">ItemProcessor</span></span>
+<span>(</span><span>id_resolver: <a title="fin_statement_model.statements.population.id_resolver.IDResolver" href="id_resolver.html#fin_statement_model.statements.population.id_resolver.IDResolver">IDResolver</a>,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>statement: <a title="fin_statement_model.statements.structure.containers.StatementStructure" href="../structure/containers.html#fin_statement_model.statements.structure.containers.StatementStructure">StatementStructure</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ItemProcessor(ABC):
+    &#34;&#34;&#34;Abstract base class for processing statement items into graph nodes.
+
+    This base class provides common functionality for resolving input IDs
+    and handling missing inputs across different item types.
+    &#34;&#34;&#34;
+
+    def __init__(
+        self, id_resolver: IDResolver, graph: Graph, statement: StatementStructure
+    ):
+        &#34;&#34;&#34;Initialize the processor.
+
+        Args:
+            id_resolver: ID resolver for mapping statement IDs to graph node IDs.
+            graph: The graph to add nodes to.
+            statement: The statement structure being processed.
+        &#34;&#34;&#34;
+        self.id_resolver = id_resolver
+        self.graph = graph
+        self.statement = statement
+
+    @abstractmethod
+    def can_process(self, item: StatementItem) -&gt; bool:
+        &#34;&#34;&#34;Check if this processor can handle the given item type.
+
+        Args:
+            item: The statement item to check.
+
+        Returns:
+            True if this processor can handle the item type.
+        &#34;&#34;&#34;
+
+    @abstractmethod
+    def process(self, item: StatementItem, is_retry: bool = False) -&gt; ProcessorResult:
+        &#34;&#34;&#34;Process the item and add it to the graph if needed.
+
+        Args:
+            item: The statement item to process.
+            is_retry: Whether this is a retry attempt (affects error logging).
+
+        Returns:
+            ProcessorResult indicating success/failure and details.
+        &#34;&#34;&#34;
+
+    def resolve_inputs(
+        self, input_ids: list[str]
+    ) -&gt; tuple[list[str], list[tuple[str, Optional[str]]]]:
+        &#34;&#34;&#34;Resolve input IDs to graph node IDs.
+
+        Args:
+            input_ids: List of statement item IDs to resolve.
+
+        Returns:
+            Tuple of (resolved_node_ids, missing_details).
+            missing_details contains tuples of (item_id, resolved_node_id_or_none).
+        &#34;&#34;&#34;
+        resolved = []
+        missing = []
+
+        for input_id in input_ids:
+            node_id = self.id_resolver.resolve(input_id, self.graph)
+            if node_id and self.graph.has_node(node_id):
+                resolved.append(node_id)
+            else:
+                missing.append((input_id, node_id))
+
+        return resolved, missing
+
+    def _handle_missing_inputs(
+        self,
+        item: StatementItem,
+        missing: list[tuple[str, Optional[str]]],
+        is_retry: bool,
+    ) -&gt; ProcessorResult:
+        &#34;&#34;&#34;Handle missing input nodes consistently across processors.
+
+        Args:
+            item: The item being processed.
+            missing: List of missing input details.
+            is_retry: Whether this is a retry attempt.
+
+        Returns:
+            ProcessorResult with appropriate error details.
+        &#34;&#34;&#34;
+        missing_summary = [
+            (
+                f&#34;item &#39;{i_id}&#39; needs node &#39;{n_id}&#39;&#34;
+                if n_id
+                else f&#34;item &#39;{i_id}&#39; not found/mappable&#34;
+            )
+            for i_id, n_id in missing
+        ]
+
+        if is_retry:
+            logger.error(
+                f&#34;Retry failed for {type(item).__name__} &#39;{item.id}&#39; in statement &#39;{self.statement.id}&#39;: &#34;
+                f&#34;missing required inputs: {&#39;; &#39;.join(missing_summary)}&#34;
+            )
+            return ProcessorResult(
+                success=False,
+                error_message=f&#34;Missing inputs on retry: {missing_summary}&#34;,
+                missing_inputs=missing,
+            )
+        else:
+            # Don&#39;t log on first attempt - allows dependency resolution
+            return ProcessorResult(success=False, missing_inputs=missing)</code></pre>
+</details>
+<div class="desc"><p>Abstract base class for processing statement items into graph nodes.</p>
+<p>This base class provides common functionality for resolving input IDs
+and handling missing inputs across different item types.</p>
+<p>Initialize the processor.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>id_resolver</code></strong></dt>
+<dd>ID resolver for mapping statement IDs to graph node IDs.</dd>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The graph to add nodes to.</dd>
+<dt><strong><code>statement</code></strong></dt>
+<dd>The statement structure being processed.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.statements.population.item_processors.CalculatedItemProcessor" href="item_processors.html#fin_statement_model.statements.population.item_processors.CalculatedItemProcessor">CalculatedItemProcessor</a></li>
+<li><a title="fin_statement_model.statements.population.item_processors.MetricItemProcessor" href="item_processors.html#fin_statement_model.statements.population.item_processors.MetricItemProcessor">MetricItemProcessor</a></li>
+<li><a title="fin_statement_model.statements.population.item_processors.SubtotalItemProcessor" href="item_processors.html#fin_statement_model.statements.population.item_processors.SubtotalItemProcessor">SubtotalItemProcessor</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.population.ItemProcessor.can_process"><code class="name flex">
+<span>def <span class="ident">can_process</span></span>(<span>self,<br>item: <a title="fin_statement_model.statements.structure.items.StatementItem" href="../structure/items.html#fin_statement_model.statements.structure.items.StatementItem">StatementItem</a>) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def can_process(self, item: StatementItem) -&gt; bool:
+    &#34;&#34;&#34;Check if this processor can handle the given item type.
+
+    Args:
+        item: The statement item to check.
+
+    Returns:
+        True if this processor can handle the item type.
+    &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Check if this processor can handle the given item type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>item</code></strong></dt>
+<dd>The statement item to check.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if this processor can handle the item type.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.ItemProcessor.process"><code class="name flex">
+<span>def <span class="ident">process</span></span>(<span>self,<br>item: <a title="fin_statement_model.statements.structure.items.StatementItem" href="../structure/items.html#fin_statement_model.statements.structure.items.StatementItem">StatementItem</a>,<br>is_retry: bool = False) ‑> <a title="fin_statement_model.statements.population.item_processors.ProcessorResult" href="item_processors.html#fin_statement_model.statements.population.item_processors.ProcessorResult">ProcessorResult</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def process(self, item: StatementItem, is_retry: bool = False) -&gt; ProcessorResult:
+    &#34;&#34;&#34;Process the item and add it to the graph if needed.
+
+    Args:
+        item: The statement item to process.
+        is_retry: Whether this is a retry attempt (affects error logging).
+
+    Returns:
+        ProcessorResult indicating success/failure and details.
+    &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Process the item and add it to the graph if needed.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>item</code></strong></dt>
+<dd>The statement item to process.</dd>
+<dt><strong><code>is_retry</code></strong></dt>
+<dd>Whether this is a retry attempt (affects error logging).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>ProcessorResult indicating success/failure and details.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.ItemProcessor.resolve_inputs"><code class="name flex">
+<span>def <span class="ident">resolve_inputs</span></span>(<span>self, input_ids: list[str]) ‑> tuple[list[str], list[tuple[str, str | None]]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resolve_inputs(
+    self, input_ids: list[str]
+) -&gt; tuple[list[str], list[tuple[str, Optional[str]]]]:
+    &#34;&#34;&#34;Resolve input IDs to graph node IDs.
+
+    Args:
+        input_ids: List of statement item IDs to resolve.
+
+    Returns:
+        Tuple of (resolved_node_ids, missing_details).
+        missing_details contains tuples of (item_id, resolved_node_id_or_none).
+    &#34;&#34;&#34;
+    resolved = []
+    missing = []
+
+    for input_id in input_ids:
+        node_id = self.id_resolver.resolve(input_id, self.graph)
+        if node_id and self.graph.has_node(node_id):
+            resolved.append(node_id)
+        else:
+            missing.append((input_id, node_id))
+
+    return resolved, missing</code></pre>
+</details>
+<div class="desc"><p>Resolve input IDs to graph node IDs.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>input_ids</code></strong></dt>
+<dd>List of statement item IDs to resolve.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Tuple of (resolved_node_ids, missing_details).
+missing_details contains tuples of (item_id, resolved_node_id_or_none).</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.population.ItemProcessorManager"><code class="flex name class">
+<span>class <span class="ident">ItemProcessorManager</span></span>
+<span>(</span><span>id_resolver: <a title="fin_statement_model.statements.population.id_resolver.IDResolver" href="id_resolver.html#fin_statement_model.statements.population.id_resolver.IDResolver">IDResolver</a>,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>statement: <a title="fin_statement_model.statements.structure.containers.StatementStructure" href="../structure/containers.html#fin_statement_model.statements.structure.containers.StatementStructure">StatementStructure</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ItemProcessorManager:
+    &#34;&#34;&#34;Manages the collection of item processors.
+
+    This class coordinates the processing of different statement item types
+    by delegating to the appropriate processor based on the item type.
+    &#34;&#34;&#34;
+
+    def __init__(
+        self, id_resolver: IDResolver, graph: Graph, statement: StatementStructure
+    ):
+        &#34;&#34;&#34;Initialize the processor manager with all available processors.
+
+        Args:
+            id_resolver: ID resolver for mapping statement IDs to graph node IDs.
+            graph: The graph to add nodes to.
+            statement: The statement structure being processed.
+        &#34;&#34;&#34;
+        self.processors = [
+            MetricItemProcessor(id_resolver, graph, statement),
+            CalculatedItemProcessor(id_resolver, graph, statement),
+            SubtotalItemProcessor(id_resolver, graph, statement),
+        ]
+
+    def process_item(
+        self, item: StatementItem, is_retry: bool = False
+    ) -&gt; ProcessorResult:
+        &#34;&#34;&#34;Process a statement item using the appropriate processor.
+
+        Args:
+            item: The statement item to process.
+            is_retry: Whether this is a retry attempt.
+
+        Returns:
+            ProcessorResult from the appropriate processor, or a success result
+            if no processor handles the item type (e.g., for LineItem).
+        &#34;&#34;&#34;
+        for processor in self.processors:
+            if processor.can_process(item):
+                return processor.process(item, is_retry)
+
+        # No processor found - this is OK for non-calculation items like LineItem
+        logger.debug(
+            f&#34;No processor for item type {type(item).__name__} with ID &#39;{item.id}&#39;. &#34;
+            &#34;This is expected for non-calculation items.&#34;
+        )
+        return ProcessorResult(success=True, node_added=False)</code></pre>
+</details>
+<div class="desc"><p>Manages the collection of item processors.</p>
+<p>This class coordinates the processing of different statement item types
+by delegating to the appropriate processor based on the item type.</p>
+<p>Initialize the processor manager with all available processors.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>id_resolver</code></strong></dt>
+<dd>ID resolver for mapping statement IDs to graph node IDs.</dd>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The graph to add nodes to.</dd>
+<dt><strong><code>statement</code></strong></dt>
+<dd>The statement structure being processed.</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.population.ItemProcessorManager.process_item"><code class="name flex">
+<span>def <span class="ident">process_item</span></span>(<span>self,<br>item: <a title="fin_statement_model.statements.structure.items.StatementItem" href="../structure/items.html#fin_statement_model.statements.structure.items.StatementItem">StatementItem</a>,<br>is_retry: bool = False) ‑> <a title="fin_statement_model.statements.population.item_processors.ProcessorResult" href="item_processors.html#fin_statement_model.statements.population.item_processors.ProcessorResult">ProcessorResult</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_item(
+    self, item: StatementItem, is_retry: bool = False
+) -&gt; ProcessorResult:
+    &#34;&#34;&#34;Process a statement item using the appropriate processor.
+
+    Args:
+        item: The statement item to process.
+        is_retry: Whether this is a retry attempt.
+
+    Returns:
+        ProcessorResult from the appropriate processor, or a success result
+        if no processor handles the item type (e.g., for LineItem).
+    &#34;&#34;&#34;
+    for processor in self.processors:
+        if processor.can_process(item):
+            return processor.process(item, is_retry)
+
+    # No processor found - this is OK for non-calculation items like LineItem
+    logger.debug(
+        f&#34;No processor for item type {type(item).__name__} with ID &#39;{item.id}&#39;. &#34;
+        &#34;This is expected for non-calculation items.&#34;
+    )
+    return ProcessorResult(success=True, node_added=False)</code></pre>
+</details>
+<div class="desc"><p>Process a statement item using the appropriate processor.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>item</code></strong></dt>
+<dd>The statement item to process.</dd>
+<dt><strong><code>is_retry</code></strong></dt>
+<dd>Whether this is a retry attempt.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>ProcessorResult from the appropriate processor, or a success result
+if no processor handles the item type (e.g., for LineItem).</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.population.MetricItemProcessor"><code class="flex name class">
+<span>class <span class="ident">MetricItemProcessor</span></span>
+<span>(</span><span>id_resolver: <a title="fin_statement_model.statements.population.id_resolver.IDResolver" href="id_resolver.html#fin_statement_model.statements.population.id_resolver.IDResolver">IDResolver</a>,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>statement: <a title="fin_statement_model.statements.structure.containers.StatementStructure" href="../structure/containers.html#fin_statement_model.statements.structure.containers.StatementStructure">StatementStructure</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MetricItemProcessor(ItemProcessor):
+    &#34;&#34;&#34;Processor for MetricLineItem objects.
+
+    Handles the creation of metric-based calculation nodes by:
+    1. Looking up the metric in the registry
+    2. Validating input mappings
+    3. Resolving input IDs to graph nodes
+    4. Adding the metric node to the graph
+    &#34;&#34;&#34;
+
+    def can_process(self, item: StatementItem) -&gt; bool:
+        &#34;&#34;&#34;Check if item is a MetricLineItem.&#34;&#34;&#34;
+        return isinstance(item, MetricLineItem)
+
+    def process(self, item: StatementItem, is_retry: bool = False) -&gt; ProcessorResult:
+        &#34;&#34;&#34;Process a MetricLineItem and add it to the graph.&#34;&#34;&#34;
+        # Early validation
+        if not isinstance(item, MetricLineItem):
+            return ProcessorResult(success=False, error_message=&#34;Invalid item type&#34;)
+
+        # Check if node already exists
+        if self.graph.has_node(item.id):
+            return ProcessorResult(success=True, node_added=False)
+
+        # Initialize result variables
+        error_message = None
+        node_added = False
+
+        # Get metric from registry
+        try:
+            metric = metric_registry.get(item.metric_id)
+        except MetricError as e:
+            logger.exception(
+                f&#34;Cannot populate item &#39;{item.id}&#39;: Metric &#39;{item.metric_id}&#39; not found in registry&#34;
+            )
+            error_message = f&#34;Metric &#39;{item.metric_id}&#39; not found: {e}&#34;
+
+        # Validate input mappings if no error yet
+        if not error_message:
+            error_message = self._validate_metric_inputs(metric, item)
+
+        # Resolve metric inputs if no error yet
+        if not error_message:
+            resolved_map, missing = self._resolve_metric_inputs(metric, item)
+            if missing:
+                return self._handle_missing_inputs(item, missing, is_retry)
+
+            # Add to graph
+            try:
+                self.graph.add_metric(
+                    metric_name=item.metric_id,
+                    node_name=item.id,
+                    input_node_map=resolved_map,
+                )
+                node_added = True
+            except Exception as e:
+                logger.exception(f&#34;Failed to add metric node &#39;{item.id}&#39;&#34;)
+                error_message = f&#34;Failed to add metric node: {e}&#34;
+
+        # Single exit point
+        if error_message:
+            return ProcessorResult(success=False, error_message=error_message)
+        return ProcessorResult(success=True, node_added=node_added)
+
+    def _validate_metric_inputs(
+        self, metric: Any, item: MetricLineItem
+    ) -&gt; Optional[str]:
+        &#34;&#34;&#34;Validate that the item provides all required metric inputs.&#34;&#34;&#34;
+        provided_inputs = set(item.inputs.keys())
+        required_inputs = set(metric.inputs)
+
+        if provided_inputs != required_inputs:
+            missing_req = required_inputs - provided_inputs
+            extra_prov = provided_inputs - required_inputs
+            error_msg = f&#34;Input mapping mismatch for metric &#39;{item.metric_id}&#39; in item &#39;{item.id}&#39;.&#34;
+
+            if missing_req:
+                error_msg += f&#34; Missing required metric inputs: {missing_req}.&#34;
+            if extra_prov:
+                error_msg += f&#34; Unexpected inputs provided: {extra_prov}.&#34;
+
+            logger.error(error_msg)
+            return error_msg
+
+        return None
+
+    def _resolve_metric_inputs(
+        self, metric: Any, item: MetricLineItem
+    ) -&gt; tuple[dict[str, str], list[tuple[str, Optional[str]]]]:
+        &#34;&#34;&#34;Resolve metric input mappings to graph node IDs.&#34;&#34;&#34;
+        resolved_map = {}
+        missing = []
+
+        for metric_input_name in metric.inputs:
+            input_item_id = item.inputs[metric_input_name]
+            node_id = self.id_resolver.resolve(input_item_id, self.graph)
+
+            if node_id and self.graph.has_node(node_id):
+                resolved_map[metric_input_name] = node_id
+            else:
+                missing.append((input_item_id, node_id))
+
+        return resolved_map, missing</code></pre>
+</details>
+<div class="desc"><p>Processor for MetricLineItem objects.</p>
+<p>Handles the creation of metric-based calculation nodes by:
+1. Looking up the metric in the registry
+2. Validating input mappings
+3. Resolving input IDs to graph nodes
+4. Adding the metric node to the graph</p>
+<p>Initialize the processor.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>id_resolver</code></strong></dt>
+<dd>ID resolver for mapping statement IDs to graph node IDs.</dd>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The graph to add nodes to.</dd>
+<dt><strong><code>statement</code></strong></dt>
+<dd>The statement structure being processed.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.statements.population.item_processors.ItemProcessor" href="item_processors.html#fin_statement_model.statements.population.item_processors.ItemProcessor">ItemProcessor</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.population.MetricItemProcessor.can_process"><code class="name flex">
+<span>def <span class="ident">can_process</span></span>(<span>self,<br>item: <a title="fin_statement_model.statements.structure.items.StatementItem" href="../structure/items.html#fin_statement_model.statements.structure.items.StatementItem">StatementItem</a>) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def can_process(self, item: StatementItem) -&gt; bool:
+    &#34;&#34;&#34;Check if item is a MetricLineItem.&#34;&#34;&#34;
+    return isinstance(item, MetricLineItem)</code></pre>
+</details>
+<div class="desc"><p>Check if item is a MetricLineItem.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.MetricItemProcessor.process"><code class="name flex">
+<span>def <span class="ident">process</span></span>(<span>self,<br>item: <a title="fin_statement_model.statements.structure.items.StatementItem" href="../structure/items.html#fin_statement_model.statements.structure.items.StatementItem">StatementItem</a>,<br>is_retry: bool = False) ‑> <a title="fin_statement_model.statements.population.item_processors.ProcessorResult" href="item_processors.html#fin_statement_model.statements.population.item_processors.ProcessorResult">ProcessorResult</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process(self, item: StatementItem, is_retry: bool = False) -&gt; ProcessorResult:
+    &#34;&#34;&#34;Process a MetricLineItem and add it to the graph.&#34;&#34;&#34;
+    # Early validation
+    if not isinstance(item, MetricLineItem):
+        return ProcessorResult(success=False, error_message=&#34;Invalid item type&#34;)
+
+    # Check if node already exists
+    if self.graph.has_node(item.id):
+        return ProcessorResult(success=True, node_added=False)
+
+    # Initialize result variables
+    error_message = None
+    node_added = False
+
+    # Get metric from registry
+    try:
+        metric = metric_registry.get(item.metric_id)
+    except MetricError as e:
+        logger.exception(
+            f&#34;Cannot populate item &#39;{item.id}&#39;: Metric &#39;{item.metric_id}&#39; not found in registry&#34;
+        )
+        error_message = f&#34;Metric &#39;{item.metric_id}&#39; not found: {e}&#34;
+
+    # Validate input mappings if no error yet
+    if not error_message:
+        error_message = self._validate_metric_inputs(metric, item)
+
+    # Resolve metric inputs if no error yet
+    if not error_message:
+        resolved_map, missing = self._resolve_metric_inputs(metric, item)
+        if missing:
+            return self._handle_missing_inputs(item, missing, is_retry)
+
+        # Add to graph
+        try:
+            self.graph.add_metric(
+                metric_name=item.metric_id,
+                node_name=item.id,
+                input_node_map=resolved_map,
+            )
+            node_added = True
+        except Exception as e:
+            logger.exception(f&#34;Failed to add metric node &#39;{item.id}&#39;&#34;)
+            error_message = f&#34;Failed to add metric node: {e}&#34;
+
+    # Single exit point
+    if error_message:
+        return ProcessorResult(success=False, error_message=error_message)
+    return ProcessorResult(success=True, node_added=node_added)</code></pre>
+</details>
+<div class="desc"><p>Process a MetricLineItem and add it to the graph.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.statements.population.item_processors.ItemProcessor" href="item_processors.html#fin_statement_model.statements.population.item_processors.ItemProcessor">ItemProcessor</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.statements.population.item_processors.ItemProcessor.resolve_inputs" href="item_processors.html#fin_statement_model.statements.population.item_processors.ItemProcessor.resolve_inputs">resolve_inputs</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.statements.population.ProcessorResult"><code class="flex name class">
+<span>class <span class="ident">ProcessorResult</span></span>
+<span>(</span><span>success: bool,<br>node_added: bool = False,<br>error_message: str | None = None,<br>missing_inputs: list[tuple[str, str | None]] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class ProcessorResult:
+    &#34;&#34;&#34;Result of processing a statement item.
+
+    Attributes:
+        success: Whether the processing was successful.
+        node_added: Whether a new node was added to the graph.
+        error_message: Error message if processing failed.
+        missing_inputs: List of missing input details (item_id, resolved_node_id).
+    &#34;&#34;&#34;
+
+    success: bool
+    node_added: bool = False
+    error_message: Optional[str] = None
+    missing_inputs: Optional[list[tuple[str, Optional[str]]]] = None
+
+    def to_result(self) -&gt; Result[bool]:
+        &#34;&#34;&#34;Convert to the new Result type.&#34;&#34;&#34;
+        if self.success:
+            return Success(value=self.node_added)
+
+        errors = []
+        if self.error_message:
+            errors.append(
+                ErrorDetail(
+                    code=&#34;processing_error&#34;,
+                    message=self.error_message,
+                    severity=ErrorSeverity.ERROR,
+                )
+            )
+
+        if self.missing_inputs:
+            for item_id, node_id in self.missing_inputs:
+                msg = (
+                    f&#34;Missing input: item &#39;{item_id}&#39; needs node &#39;{node_id}&#39;&#34;
+                    if node_id
+                    else f&#34;Missing input: item &#39;{item_id}&#39; not found/mappable&#34;
+                )
+                errors.append(
+                    ErrorDetail(
+                        code=&#34;missing_input&#34;,
+                        message=msg,
+                        context=f&#34;item_id={item_id}, node_id={node_id}&#34;,
+                        severity=ErrorSeverity.ERROR,
+                    )
+                )
+
+        return Failure(errors=errors)</code></pre>
+</details>
+<div class="desc"><p>Result of processing a statement item.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>success</code></strong></dt>
+<dd>Whether the processing was successful.</dd>
+<dt><strong><code>node_added</code></strong></dt>
+<dd>Whether a new node was added to the graph.</dd>
+<dt><strong><code>error_message</code></strong></dt>
+<dd>Error message if processing failed.</dd>
+<dt><strong><code>missing_inputs</code></strong></dt>
+<dd>List of missing input details (item_id, resolved_node_id).</dd>
+</dl></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.statements.population.ProcessorResult.error_message"><code class="name">var <span class="ident">error_message</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.population.ProcessorResult.missing_inputs"><code class="name">var <span class="ident">missing_inputs</span> : list[tuple[str, str | None]] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.population.ProcessorResult.node_added"><code class="name">var <span class="ident">node_added</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.population.ProcessorResult.success"><code class="name">var <span class="ident">success</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.population.ProcessorResult.to_result"><code class="name flex">
+<span>def <span class="ident">to_result</span></span>(<span>self) ‑> <a title="fin_statement_model.statements.utilities.result_types.Result" href="../utilities/result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a>[bool]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_result(self) -&gt; Result[bool]:
+    &#34;&#34;&#34;Convert to the new Result type.&#34;&#34;&#34;
+    if self.success:
+        return Success(value=self.node_added)
+
+    errors = []
+    if self.error_message:
+        errors.append(
+            ErrorDetail(
+                code=&#34;processing_error&#34;,
+                message=self.error_message,
+                severity=ErrorSeverity.ERROR,
+            )
+        )
+
+    if self.missing_inputs:
+        for item_id, node_id in self.missing_inputs:
+            msg = (
+                f&#34;Missing input: item &#39;{item_id}&#39; needs node &#39;{node_id}&#39;&#34;
+                if node_id
+                else f&#34;Missing input: item &#39;{item_id}&#39; not found/mappable&#34;
+            )
+            errors.append(
+                ErrorDetail(
+                    code=&#34;missing_input&#34;,
+                    message=msg,
+                    context=f&#34;item_id={item_id}, node_id={node_id}&#34;,
+                    severity=ErrorSeverity.ERROR,
+                )
+            )
+
+    return Failure(errors=errors)</code></pre>
+</details>
+<div class="desc"><p>Convert to the new Result type.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.population.SubtotalItemProcessor"><code class="flex name class">
+<span>class <span class="ident">SubtotalItemProcessor</span></span>
+<span>(</span><span>id_resolver: <a title="fin_statement_model.statements.population.id_resolver.IDResolver" href="id_resolver.html#fin_statement_model.statements.population.id_resolver.IDResolver">IDResolver</a>,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>statement: <a title="fin_statement_model.statements.structure.containers.StatementStructure" href="../structure/containers.html#fin_statement_model.statements.structure.containers.StatementStructure">StatementStructure</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SubtotalItemProcessor(ItemProcessor):
+    &#34;&#34;&#34;Processor for SubtotalLineItem objects.
+
+    Handles the creation of subtotal (addition) nodes by:
+    1. Resolving input IDs to graph nodes
+    2. Adding an addition calculation node
+    &#34;&#34;&#34;
+
+    def can_process(self, item: StatementItem) -&gt; bool:
+        &#34;&#34;&#34;Check if item is a SubtotalLineItem.&#34;&#34;&#34;
+        return isinstance(item, SubtotalLineItem)
+
+    def process(self, item: StatementItem, is_retry: bool = False) -&gt; ProcessorResult:
+        &#34;&#34;&#34;Process a SubtotalLineItem and add it to the graph.&#34;&#34;&#34;
+        if not isinstance(item, SubtotalLineItem):
+            return ProcessorResult(success=False, error_message=&#34;Invalid item type&#34;)
+
+        # Check if node already exists
+        if self.graph.has_node(item.id):
+            return ProcessorResult(success=True, node_added=False)
+
+        # Handle empty subtotals
+        if not item.item_ids:
+            logger.debug(f&#34;Subtotal item &#39;{item.id}&#39; has no input items&#34;)
+            return ProcessorResult(success=True, node_added=False)
+
+        # Resolve inputs
+        resolved, missing = self.resolve_inputs(item.item_ids)
+        if missing:
+            return self._handle_missing_inputs(item, missing, is_retry)
+
+        # Add subtotal as addition calculation
+        error_message = None
+        try:
+            self.graph.add_calculation(
+                name=item.id, input_names=resolved, operation_type=&#34;addition&#34;
+            )
+        except (
+            NodeError,
+            CircularDependencyError,
+            CalculationError,
+            ConfigurationError,
+        ) as e:
+            error_msg = f&#34;Failed to add subtotal node &#39;{item.id}&#39;: {e}&#34;
+            logger.exception(error_msg)
+            error_message = str(e)
+        except Exception as e:
+            error_msg = f&#34;Unexpected error adding subtotal node &#39;{item.id}&#39;: {e}&#34;
+            logger.exception(error_msg)
+            error_message = f&#34;Unexpected error: {e}&#34;
+
+        if error_message:
+            return ProcessorResult(success=False, error_message=error_message)
+        return ProcessorResult(success=True, node_added=True)</code></pre>
+</details>
+<div class="desc"><p>Processor for SubtotalLineItem objects.</p>
+<p>Handles the creation of subtotal (addition) nodes by:
+1. Resolving input IDs to graph nodes
+2. Adding an addition calculation node</p>
+<p>Initialize the processor.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>id_resolver</code></strong></dt>
+<dd>ID resolver for mapping statement IDs to graph node IDs.</dd>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The graph to add nodes to.</dd>
+<dt><strong><code>statement</code></strong></dt>
+<dd>The statement structure being processed.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.statements.population.item_processors.ItemProcessor" href="item_processors.html#fin_statement_model.statements.population.item_processors.ItemProcessor">ItemProcessor</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.population.SubtotalItemProcessor.can_process"><code class="name flex">
+<span>def <span class="ident">can_process</span></span>(<span>self,<br>item: <a title="fin_statement_model.statements.structure.items.StatementItem" href="../structure/items.html#fin_statement_model.statements.structure.items.StatementItem">StatementItem</a>) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def can_process(self, item: StatementItem) -&gt; bool:
+    &#34;&#34;&#34;Check if item is a SubtotalLineItem.&#34;&#34;&#34;
+    return isinstance(item, SubtotalLineItem)</code></pre>
+</details>
+<div class="desc"><p>Check if item is a SubtotalLineItem.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.population.SubtotalItemProcessor.process"><code class="name flex">
+<span>def <span class="ident">process</span></span>(<span>self,<br>item: <a title="fin_statement_model.statements.structure.items.StatementItem" href="../structure/items.html#fin_statement_model.statements.structure.items.StatementItem">StatementItem</a>,<br>is_retry: bool = False) ‑> <a title="fin_statement_model.statements.population.item_processors.ProcessorResult" href="item_processors.html#fin_statement_model.statements.population.item_processors.ProcessorResult">ProcessorResult</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process(self, item: StatementItem, is_retry: bool = False) -&gt; ProcessorResult:
+    &#34;&#34;&#34;Process a SubtotalLineItem and add it to the graph.&#34;&#34;&#34;
+    if not isinstance(item, SubtotalLineItem):
+        return ProcessorResult(success=False, error_message=&#34;Invalid item type&#34;)
+
+    # Check if node already exists
+    if self.graph.has_node(item.id):
+        return ProcessorResult(success=True, node_added=False)
+
+    # Handle empty subtotals
+    if not item.item_ids:
+        logger.debug(f&#34;Subtotal item &#39;{item.id}&#39; has no input items&#34;)
+        return ProcessorResult(success=True, node_added=False)
+
+    # Resolve inputs
+    resolved, missing = self.resolve_inputs(item.item_ids)
+    if missing:
+        return self._handle_missing_inputs(item, missing, is_retry)
+
+    # Add subtotal as addition calculation
+    error_message = None
+    try:
+        self.graph.add_calculation(
+            name=item.id, input_names=resolved, operation_type=&#34;addition&#34;
+        )
+    except (
+        NodeError,
+        CircularDependencyError,
+        CalculationError,
+        ConfigurationError,
+    ) as e:
+        error_msg = f&#34;Failed to add subtotal node &#39;{item.id}&#39;: {e}&#34;
+        logger.exception(error_msg)
+        error_message = str(e)
+    except Exception as e:
+        error_msg = f&#34;Unexpected error adding subtotal node &#39;{item.id}&#39;: {e}&#34;
+        logger.exception(error_msg)
+        error_message = f&#34;Unexpected error: {e}&#34;
+
+    if error_message:
+        return ProcessorResult(success=False, error_message=error_message)
+    return ProcessorResult(success=True, node_added=True)</code></pre>
+</details>
+<div class="desc"><p>Process a SubtotalLineItem and add it to the graph.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.statements.population.item_processors.ItemProcessor" href="item_processors.html#fin_statement_model.statements.population.item_processors.ItemProcessor">ItemProcessor</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.statements.population.item_processors.ItemProcessor.resolve_inputs" href="item_processors.html#fin_statement_model.statements.population.item_processors.ItemProcessor.resolve_inputs">resolve_inputs</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.statements" href="../index.html">fin_statement_model.statements</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.statements.population.id_resolver" href="id_resolver.html">fin_statement_model.statements.population.id_resolver</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.item_processors" href="item_processors.html">fin_statement_model.statements.population.item_processors</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.populator" href="populator.html">fin_statement_model.statements.population.populator</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.population.populate_graph_from_statement" href="#fin_statement_model.statements.population.populate_graph_from_statement">populate_graph_from_statement</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.statements.population.CalculatedItemProcessor" href="#fin_statement_model.statements.population.CalculatedItemProcessor">CalculatedItemProcessor</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.population.CalculatedItemProcessor.can_process" href="#fin_statement_model.statements.population.CalculatedItemProcessor.can_process">can_process</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.CalculatedItemProcessor.process" href="#fin_statement_model.statements.population.CalculatedItemProcessor.process">process</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.population.IDResolver" href="#fin_statement_model.statements.population.IDResolver">IDResolver</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.statements.population.IDResolver.get_all_mappings" href="#fin_statement_model.statements.population.IDResolver.get_all_mappings">get_all_mappings</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.IDResolver.get_items_for_node" href="#fin_statement_model.statements.population.IDResolver.get_items_for_node">get_items_for_node</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.IDResolver.invalidate_cache" href="#fin_statement_model.statements.population.IDResolver.invalidate_cache">invalidate_cache</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.IDResolver.refresh_cache" href="#fin_statement_model.statements.population.IDResolver.refresh_cache">refresh_cache</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.IDResolver.resolve" href="#fin_statement_model.statements.population.IDResolver.resolve">resolve</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.IDResolver.resolve_multiple" href="#fin_statement_model.statements.population.IDResolver.resolve_multiple">resolve_multiple</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.population.ItemProcessor" href="#fin_statement_model.statements.population.ItemProcessor">ItemProcessor</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.population.ItemProcessor.can_process" href="#fin_statement_model.statements.population.ItemProcessor.can_process">can_process</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.ItemProcessor.process" href="#fin_statement_model.statements.population.ItemProcessor.process">process</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.ItemProcessor.resolve_inputs" href="#fin_statement_model.statements.population.ItemProcessor.resolve_inputs">resolve_inputs</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.population.ItemProcessorManager" href="#fin_statement_model.statements.population.ItemProcessorManager">ItemProcessorManager</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.population.ItemProcessorManager.process_item" href="#fin_statement_model.statements.population.ItemProcessorManager.process_item">process_item</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.population.MetricItemProcessor" href="#fin_statement_model.statements.population.MetricItemProcessor">MetricItemProcessor</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.population.MetricItemProcessor.can_process" href="#fin_statement_model.statements.population.MetricItemProcessor.can_process">can_process</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.MetricItemProcessor.process" href="#fin_statement_model.statements.population.MetricItemProcessor.process">process</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.population.ProcessorResult" href="#fin_statement_model.statements.population.ProcessorResult">ProcessorResult</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.population.ProcessorResult.error_message" href="#fin_statement_model.statements.population.ProcessorResult.error_message">error_message</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.ProcessorResult.missing_inputs" href="#fin_statement_model.statements.population.ProcessorResult.missing_inputs">missing_inputs</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.ProcessorResult.node_added" href="#fin_statement_model.statements.population.ProcessorResult.node_added">node_added</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.ProcessorResult.success" href="#fin_statement_model.statements.population.ProcessorResult.success">success</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.ProcessorResult.to_result" href="#fin_statement_model.statements.population.ProcessorResult.to_result">to_result</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.population.SubtotalItemProcessor" href="#fin_statement_model.statements.population.SubtotalItemProcessor">SubtotalItemProcessor</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.population.SubtotalItemProcessor.can_process" href="#fin_statement_model.statements.population.SubtotalItemProcessor.can_process">can_process</a></code></li>
+<li><code><a title="fin_statement_model.statements.population.SubtotalItemProcessor.process" href="#fin_statement_model.statements.population.SubtotalItemProcessor.process">process</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>
