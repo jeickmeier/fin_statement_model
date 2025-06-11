@@ -203,7 +203,9 @@ def register_reader(
     """
     # Require schema at registration time (legacy schema-less removed)
     if schema is None:
-        raise ValueError(f"Schema required for reader '{format_type}'; legacy schema-less mode removed.")
+        raise ValueError(
+            f"Schema required for reader '{format_type}'; legacy schema-less mode removed."
+        )
     return _reader_registry.register(format_type, schema=schema)
 
 
@@ -226,7 +228,9 @@ def register_writer(
     """
     # Require schema at registration time (legacy schema-less removed)
     if schema is None:
-        raise ValueError(f"Schema required for writer '{format_type}'; legacy schema-less mode removed.")
+        raise ValueError(
+            f"Schema required for writer '{format_type}'; legacy schema-less mode removed."
+        )
     return _writer_registry.register(format_type, schema=schema)
 
 
@@ -313,6 +317,9 @@ def _get_handler(
                 original_error=e,
                 **error_context,
             ) from e
+
+    # Explicitly handle unreachable code paths
+    raise RuntimeError(f"Unhandled handler instantiation for {handler_type} '{format_type}'")
 
 
 # ===== Registry Access Functions =====

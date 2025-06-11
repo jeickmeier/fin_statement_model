@@ -31,7 +31,7 @@ from .helpers import cfg, cfg_or_param, get_typed_config
 # during the initialization of sub-packages (e.g., io.formats.api.fmp).
 
 from .models import Config
-from .manager import get_config, update_config, reset_config
+from .manager import get_config, update_config
 
 __all__ = [
     "Config",
@@ -39,6 +39,5 @@ __all__ = [
     "cfg_or_param",
     "get_config",
     "get_typed_config",
-    "reset_config",
     "update_config",
 ]

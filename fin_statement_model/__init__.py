@@ -22,7 +22,7 @@ from fin_statement_model.core.nodes import (
 )
 
 # Import configuration management
-from fin_statement_model.config import get_config, update_config, reset_config
+from fin_statement_model.config import get_config, update_config
 
 # ensure our library-wide logging policy is applied immediately
 from . import logging_config  # noqa: F401
@@ -45,7 +45,6 @@ __all__ = [
     "YoYGrowthNode",
     "__version__",
     "get_config",
-    "reset_config",
     "update_config",
 ]
 

@@ -55,14 +55,7 @@ timeout = get_typed_config('api.api_timeout', int, default=30)
 
 Supported config file formats: YAML (`.yaml`, `.yml`) and JSON (`.json`).
 
-## Environment Variables
-
-Variable mappings are auto-generated from the Pydantic `Config` model. For example:
-
-- `FSM_LOGGING_LEVEL` → `logging.level`
-- `FSM_API_FMP_API_KEY` → `api.fmp_api_key`
-
-You may set these directly in your environment or in a `.env` file at your project root.
+Environment variables are no longer auto-consumed; use `update_config()` for overrides.
 
 ## Adding New Configuration Options
 

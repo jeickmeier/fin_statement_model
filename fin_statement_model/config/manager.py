@@ -15,86 +15,15 @@ Example:
     'WARNING'
 """
 
-import os
 from pathlib import Path
-from typing import Any, Optional, Union, get_origin, get_args, cast
+from typing import Any, Optional, cast
 import logging
 from threading import Lock
-from pydantic import BaseModel
 
 from .models import Config
 from fin_statement_model.core.errors import FinancialModelError
 
 logger = logging.getLogger(__name__)
-
-
-# ----------------------------------------------------------------------
-# Environment variable mapping utility
-def generate_env_mappings(
-    model: type[BaseModel], prefix: Optional[str] = None, path: list[str] | None = None
-) -> dict[str, list[str]]:
-    """Generate environment variable mappings for a Pydantic model.
-
-    Recursively traverse the fields of a Pydantic BaseModel class to map
-    environment variable names to config path segments.
-
-    Args:
-        model: The Pydantic model class to inspect.
-        prefix: Optional prefix for environment variable names; defaults to
-            the ConfigManager.ENV_PREFIX without trailing underscore.
-        path: Internal parameter for recursive calls representing the
-            current path of nested model fields.
-
-    Returns:
-        A dict mapping environment variable names to lists of config path
-        segments, e.g. {'FSM_DATABASE_HOST': ['database', 'host']}.
-
-    Examples:
-        >>> from fin_statement_model.config.manager import generate_env_mappings
-        >>> mappings = generate_env_mappings(Config)
-        >>> 'FSM_LOGGING_LEVEL' in mappings
-        True
-    """
-    from .manager import ConfigManager
-
-    if prefix is None:
-        prefix = ConfigManager.ENV_PREFIX.rstrip("_")
-    if path is None:
-        path = []
-
-    mappings: dict[str, list[str]] = {}
-    for field_name, field in model.model_fields.items():
-        # Field annotation gives the declared type
-        annotation = field.annotation
-        origin = get_origin(annotation)
-        # Handle Optional or Union types
-        if origin is Union:
-            args = get_args(annotation)
-            nested = next(
-                (
-                    arg
-                    for arg in args
-                    if isinstance(arg, type) and issubclass(arg, BaseModel)
-                ),
-                None,
-            )
-            if nested:
-                mappings.update(
-                    generate_env_mappings(nested, prefix, [*path, field_name])
-                )
-                continue
-        # Nested BaseModel
-        if isinstance(annotation, type) and issubclass(annotation, BaseModel):
-            mappings.update(
-                generate_env_mappings(annotation, prefix, [*path, field_name])
-            )
-        else:
-            leaf_path = [*path, field_name]
-            env_name = prefix + "_" + "_".join(p.upper() for p in leaf_path)
-            mappings[env_name] = leaf_path
-
-    logger.debug(f"Generated {len(mappings)} environment variable mappings")
-    return mappings
 
 
 # ----------------------------------------------------------------------
@@ -185,15 +114,6 @@ class ConfigManager:
             self._runtime_overrides = self._deep_merge(self._runtime_overrides, updates)
             self._config = None  # Force reload on next get()
 
-    def reset(self) -> None:
-        """Clear runtime overrides and reset configuration to defaults.
-
-        After calling this, the next `get()` will rebuild config from base sources.
-        """
-        with self._lock:
-            self._runtime_overrides = {}
-            self._config = None
-
     def _load_config(self) -> None:
         """Load and merge configuration from all supported sources.
 
@@ -226,12 +146,6 @@ class ConfigManager:
         if user_config:
             logger.debug(f"Loading user config from {user_config}")
             config_dict = self._deep_merge(config_dict, self._load_file(user_config))
-
-        # Layer 3: Environment variables
-        env_config = self._load_from_env()
-        if env_config:
-            logger.debug("Loading config from environment variables")
-            config_dict = self._deep_merge(config_dict, env_config)
 
         # Layer 4: Runtime overrides
         if self._runtime_overrides:
@@ -315,64 +229,6 @@ class ConfigManager:
         except Exception as e:
             raise ConfigurationError(f"Failed to load config from {path}: {e}") from e
 
-    def _load_from_env(self) -> dict[str, Any]:
-        """Load configuration overrides from environment variables.
-
-        Generates env var to config path mappings from the Config model,
-        parses raw values, and builds nested override dict.
-
-        Returns:
-            A nested dict of config values set via environment variables.
-        """
-        config: dict[str, Any] = {}
-
-        # Generate mappings dynamically from the Config model
-        env_mappings = generate_env_mappings(Config)
-        # Import helper to parse raw environment variable values
-        from .helpers import parse_env_value
-
-        for env_key, config_path in env_mappings.items():
-            if env_key in os.environ:
-                # Parse the raw environment variable string into proper type
-                raw_value = os.environ[env_key]
-                value = parse_env_value(raw_value)
-
-                # Build nested dictionary with the parsed value
-                current = config
-                for key in config_path[:-1]:
-                    if key not in current:
-                        current[key] = {}
-                    current = current[key]
-                current[config_path[-1]] = value
-
-        return config
-
-    def _deep_merge(
-        self, base: dict[str, Any], update: dict[str, Any]
-    ) -> dict[str, Any]:
-        """Recursively merge two dictionaries with `update` taking precedence.
-
-        Args:
-            base: Original dict.
-            update: Dict of new values to merge.
-
-        Returns:
-            A new dict representing the deep merge of base and update.
-        """
-        result = base.copy()
-
-        for key, value in update.items():
-            if (
-                key in result
-                and isinstance(result[key], dict)
-                and isinstance(value, dict)
-            ):
-                result[key] = self._deep_merge(result[key], value)
-            else:
-                result[key] = value
-
-        return result
-
     def _apply_logging_config(self) -> None:
         """Configure library logging based on current settings.
 
@@ -392,6 +248,24 @@ class ConfigManager:
                     else None
                 ),
             )
+
+    def _deep_merge(
+        self, base: dict[str, Any], update: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Recursively merge two dictionaries with `update` taking precedence."""
+        result = base.copy()
+
+        for key, value in update.items():
+            if (
+                key in result
+                and isinstance(result[key], dict)
+                and isinstance(value, dict)
+            ):
+                result[key] = self._deep_merge(result[key], value)
+            else:
+                result[key] = value
+
+        return result
 
     # ------------------------------------------------------------------
     # .env loading utilities
@@ -485,10 +359,4 @@ def update_config(updates: dict[str, Any]) -> None:
     _config_manager.update(updates)
 
 
-def reset_config() -> None:
-    """Reset the global configuration singleton to defaults.
-
-    Clears runtime overrides so that subsequent `get_config()` calls rebuild
-    from static sources.
-    """
-    _config_manager.reset()
+# Removed reset() method: use context manager for test isolation
