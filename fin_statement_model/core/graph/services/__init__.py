@@ -13,6 +13,7 @@ from .adjustment_service import AdjustmentService
 from .data_item_service import DataItemService
 from .merge_service import MergeService
 from .introspector import GraphIntrospector
+from .node_registry import NodeRegistryService
 
 __all__: list[str] = [
     "CalculationEngine",
@@ -21,4 +22,5 @@ __all__: list[str] = [
     "DataItemService",
     "MergeService",
     "GraphIntrospector",
+    "NodeRegistryService",
 ]

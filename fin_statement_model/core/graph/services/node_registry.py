@@ -1,0 +1,125 @@
+"""NodeRegistryService – centralises node-registry integrity checks.
+
+This service owns the authoritative ``dict[str, Node]`` node registry and
+encapsulates all validation logic that was previously scattered across
+``Graph``.  Keeping the rules here lets alternative graph implementations reuse
+these guarantees without dragging in the rest of the Graph façade.
+"""
+
+from __future__ import annotations
+
+import logging
+from typing import Callable, List, TYPE_CHECKING, Dict
+
+from fin_statement_model.core.nodes import Node
+from fin_statement_model.core.errors import NodeError, CircularDependencyError
+
+__all__: list[str] = ["NodeRegistryService"]
+
+logger = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from fin_statement_model.core.graph.traverser import GraphTraverser
+
+
+class NodeRegistryService:  # pylint: disable=too-few-public-methods
+    """Manage the node mapping and related validation helpers."""
+
+    def __init__(
+        self,
+        *,
+        nodes_dict: Dict[str, Node],
+        traverser_provider: Callable[[], "GraphTraverser"],
+        add_periods: Callable[[List[str]], None],
+    ) -> None:
+        # We store a direct reference to the shared node dict so mutations are visible.
+        self._nodes = nodes_dict
+        self._traverser_provider = traverser_provider
+        self._add_periods = add_periods
+
+    # ------------------------------------------------------------------
+    # Public helpers (used by other services) ---------------------------
+    # ------------------------------------------------------------------
+    def add_node_with_validation(
+        self,
+        node: Node,
+        *,
+        check_cycles: bool = True,
+        validate_inputs: bool = True,
+    ) -> Node:
+        """Add *node* to the registry while enforcing invariants."""
+        # 1. Name validation
+        if not node.name or not isinstance(node.name, str):
+            raise ValueError("Node name must be a non-empty string")
+
+        # 2. Overwrite warning
+        if node.name in self._nodes:
+            logger.warning("Overwriting existing node '%s'", node.name)
+
+        # 3. Validate inputs exist
+        if validate_inputs and hasattr(node, "inputs") and node.inputs:
+            self.validate_node_inputs(node)
+
+        # 4. Optional cycle detection
+        if (
+            check_cycles
+            and hasattr(node, "inputs")
+            and node.inputs
+            and self._traverser_provider().would_create_cycle(node)
+        ):
+            cycle_path = None
+            for inp in node.inputs:
+                if hasattr(inp, "name"):
+                    path = self._traverser_provider().find_cycle_path(
+                        inp.name, node.name
+                    )
+                    if path:
+                        cycle_path = path
+                        break
+            raise CircularDependencyError(
+                f"Adding node '{node.name}' would create a cycle",
+                cycle=cycle_path or [node.name, "...", node.name],
+            )
+
+        # 5. Register node
+        self._nodes[node.name] = node
+
+        # 6. Period tracking (data nodes)
+        if hasattr(node, "values") and isinstance(node.values, dict):
+            self._add_periods(list(node.values.keys()))
+
+        logger.debug("Added node '%s' to registry", node.name)
+        return node
+
+    def resolve_input_nodes(self, input_names: List[str]) -> List[Node]:
+        """Convert a list of *names* into real Node objects with validation."""
+        resolved: List[Node] = []
+        missing: List[str] = []
+        for name in input_names:
+            nd = self._nodes.get(name)
+            if nd is None:
+                missing.append(name)
+            else:
+                resolved.append(nd)
+        if missing:
+            raise NodeError(f"Cannot resolve input nodes: missing nodes {missing}")
+        return resolved
+
+    def validate_node_inputs(self, node: Node) -> None:  # noqa: D401
+        """Raise NodeError if any input reference is missing."""
+        if not hasattr(node, "inputs") or not node.inputs:
+            return
+
+        missing: List[str] = []
+        for inp in node.inputs:
+            if hasattr(inp, "name"):
+                if inp.name not in self._nodes:
+                    missing.append(inp.name)
+            elif isinstance(inp, str) and inp not in self._nodes:
+                missing.append(inp)
+
+        if missing:
+            raise NodeError(
+                f"Cannot add node '{node.name}': missing required input nodes {missing}",
+                node_id=node.name,
+            )

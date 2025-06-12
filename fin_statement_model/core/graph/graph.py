@@ -17,6 +17,8 @@ Example:
     100.0
 """
 
+from __future__ import annotations
+
 import logging
 from typing import Any, Optional, cast
 from collections.abc import Callable
@@ -24,10 +26,6 @@ from uuid import UUID
 
 from fin_statement_model.core.node_factory import NodeFactory
 from fin_statement_model.core.nodes import Node, FinancialStatementItemNode
-from fin_statement_model.core.errors import (
-    NodeError,
-    CircularDependencyError,
-)
 from fin_statement_model.core.graph.services import (
     CalculationEngine,
     PeriodService,
@@ -38,13 +36,13 @@ from fin_statement_model.core.graph.services import (
 from fin_statement_model.core.graph.manipulator import GraphManipulator
 from fin_statement_model.core.graph.traverser import GraphTraverser
 from fin_statement_model.core.adjustments.models import (
-    Adjustment,
+    AdjustmentFilterInput,
     AdjustmentType,
     AdjustmentTag,
-    AdjustmentFilterInput,
 )
 from fin_statement_model.core.adjustments.manager import AdjustmentManager
 from fin_statement_model.core.graph.services import GraphIntrospector
+from fin_statement_model.core.graph.services import NodeRegistryService
 
 
 # Configure logging
@@ -83,6 +81,7 @@ class Graph:
         data_item_service_cls: type["DataItemService"] | None = None,
         merge_service_cls: type["MergeService"] | None = None,
         introspector_cls: type["GraphIntrospector"] | None = None,
+        registry_service_cls: type["NodeRegistryService"] | None = None,
     ):
         """Initialize a new `Graph` instance.
 
@@ -118,6 +117,18 @@ class Graph:
         self._node_factory: NodeFactory = NodeFactory()
 
         # ------------------------------------------------------------------
+        # Registry service --------------------------------------------------
+        # ------------------------------------------------------------------
+        if registry_service_cls is None:
+            registry_service_cls = NodeRegistryService
+
+        self._registry_service = registry_service_cls(
+            nodes_dict=self._nodes,
+            traverser_provider=lambda: self.traverser,
+            add_periods=self.add_periods,
+        )
+
+        # ------------------------------------------------------------------
         # Service layer instantiation (new)
         # ------------------------------------------------------------------
         # Period management – share underlying list reference so legacy code remains valid
@@ -131,8 +142,8 @@ class Graph:
             cache=self._cache,
             node_factory=self._node_factory,
             nodes_dict=self._nodes,
-            add_node_with_validation=lambda node: self._add_node_with_validation(node),
-            resolve_input_nodes=self._resolve_input_nodes,
+            add_node_with_validation=self._registry_service.add_node_with_validation,
+            resolve_input_nodes=self._registry_service.resolve_input_nodes,
             add_periods=self.add_periods,
         )
 
@@ -150,7 +161,7 @@ class Graph:
 
         self._data_item_service = data_item_service_cls(
             node_factory=self._node_factory,
-            add_node_with_validation=self._add_node_with_validation,
+            add_node_with_validation=self._registry_service.add_node_with_validation,
             add_periods=self.add_periods,
             node_getter=self.get_node,
             node_names_provider=lambda: list(self._nodes.keys()),
@@ -505,236 +516,57 @@ class Graph:
         return self._introspector.make_repr()
 
     def has_cycle(self, source_node: Node, target_node: Node) -> bool:
-        """Check if a cycle exists from a source node to a target node.
-
-        This method delegates to GraphTraverser to determine if `target_node` is
-        reachable from `source_node` via successors, indicating that adding an edge
-        from `target_node` to `source_node` would create a cycle.
-
-        Args:
-            source_node: The starting node for cycle detection.
-            target_node: The node to detect return path to.
-
-        Returns:
-            True if a cycle exists, False otherwise.
-        """
+        """Return ``True`` if an edge from *target_node* to *source_node* forms a cycle."""
         return self._introspector.has_cycle(source_node, target_node)
 
-    def get_node(self, name: str) -> Optional[Node]:
-        """Retrieve a node from the graph by its name.
+    # ------------------------------------------------------------------
+    # Thin registry/manipulator façades needed by external services
+    # ------------------------------------------------------------------
+
+    def add_node(self, node: Node) -> None:  # noqa: D401
+        """Add a node via ``NodeRegistryService`` (kept for backward-compat helpers)."""
+        self._registry_service.add_node_with_validation(node)
+
+    def get_node(self, node_name: str) -> Optional[Node]:
+        """Return the node with the given name, if it exists in the graph.
 
         Args:
-            name: The unique name of the node to retrieve.
+            node_name: Name of the node to retrieve.
 
         Returns:
-            The `Node` instance if found, else None.
+            The Node corresponding to `node_name` if it exists in the graph, or None.
 
         Examples:
-            >>> node = graph.get_node("Revenue")
+            >>> graph = Graph()
+            >>> item_node = graph.add_financial_statement_item("Revenue", {"2023": 100})
+            >>> logger.info(graph.get_node("Revenue") == item_node)
         """
-        return self.manipulator.get_node(name)
+        return self._nodes.get(node_name)
 
-    def _add_node_with_validation(
-        self, node: Node, check_cycles: bool = True, validate_inputs: bool = True
-    ) -> Node:
-        """Internal method for adding nodes with common validation logic.
+    def has_node(self, node_id: str) -> bool:  # noqa: D401
+        """Return True if a node with *node_id* is present in the graph."""
+        return node_id in self._nodes
 
-        Args:
-            node: The Node instance to add
-            check_cycles: Whether to perform cycle detection
-            validate_inputs: Whether to validate input node references
+    # ---------------- Adjustment helpers requested by external packages ----
 
-        Returns:
-            The added node
+    def list_all_adjustments(self) -> list[Any]:  # noqa: D401
+        """Return a list of every adjustment managed by the graph."""
+        return self._adjustment_service.list_all_adjustments()
 
-        Raises:
-            ValueError: If node name is invalid
-            NodeError: If input validation fails
-            CircularDependencyError: If adding the node would create a cycle
-        """
-        # 1. Name validation
-        if not node.name or not isinstance(node.name, str):
-            raise ValueError("Node name must be a non-empty string")
+    def was_adjusted(
+        self,
+        node_name: str,
+        period: str,
+        filter_input: "AdjustmentFilterInput" = None,
+    ) -> bool:  # noqa: D401
+        """Return True if any adjustments match the criteria for the given node/period."""
+        return self._adjustment_service.was_adjusted(node_name, period, filter_input)
 
-        # 2. Check for existing node
-        if node.name in self._nodes:
-            logger.warning(f"Overwriting existing node '{node.name}'")
-
-        # 3. Input validation (if applicable)
-        if validate_inputs and hasattr(node, "inputs") and node.inputs:
-            self._validate_node_inputs(node)
-
-        # 4. Cycle detection (if applicable)
-        if (
-            check_cycles
-            and hasattr(node, "inputs")
-            and node.inputs
-            and self.traverser.would_create_cycle(node)
-        ):
-            # Try to find the actual cycle path for better error message
-            cycle_path = None
-            for input_node in node.inputs:
-                if hasattr(input_node, "name"):
-                    path = self.traverser.find_cycle_path(input_node.name, node.name)
-                    if path:
-                        cycle_path = path
-                        break
-
-            raise CircularDependencyError(
-                f"Adding node '{node.name}' would create a cycle",
-                cycle=cycle_path or [node.name, "...", node.name],
-            )
-
-        # 5. Register node
-        self._nodes[node.name] = node
-
-        # 6. Update periods if applicable
-        if hasattr(node, "values") and isinstance(node.values, dict):
-            self.add_periods(list(node.values.keys()))
-
-        logger.debug(f"Added node '{node.name}' to graph")
-        return node
-
-    def _validate_node_inputs(self, node: Node) -> None:
-        """Validate that all input nodes exist in the graph.
-
-        Args:
-            node: The node whose inputs to validate
-
-        Raises:
-            NodeError: If any input node is missing
-        """
-        missing_inputs = []
-
-        if hasattr(node, "inputs") and node.inputs:
-            for input_node in node.inputs:
-                if hasattr(input_node, "name"):
-                    if input_node.name not in self._nodes:
-                        missing_inputs.append(input_node.name)
-                # Handle case where inputs might be strings instead of Node objects
-                elif isinstance(input_node, str) and input_node not in self._nodes:
-                    missing_inputs.append(input_node)
-
-        if missing_inputs:
-            raise NodeError(
-                f"Cannot add node '{node.name}': missing required input nodes {missing_inputs}",
-                node_id=node.name,
-            )
-
-    def _resolve_input_nodes(self, input_names: list[str]) -> list[Node]:
-        """Resolve input node names to Node objects.
-
-        Args:
-            input_names: List of node names to resolve
-
-        Returns:
-            List of resolved Node objects
-
-        Raises:
-            NodeError: If any input node name does not exist
-        """
-        resolved_inputs: list[Node] = []
-        missing = []
-
-        for name in input_names:
-            node = self._nodes.get(name)
-            if node is None:
-                missing.append(name)
-            else:
-                resolved_inputs.append(node)
-
-        if missing:
-            raise NodeError(f"Cannot resolve input nodes: missing nodes {missing}")
-
-        return resolved_inputs
-
-    def add_node(self, node: Node) -> None:
-        """Add a node to the graph.
-
-        Args:
-            node: A ``Node`` instance to add to the graph.
-
-        Raises:
-            TypeError: If the provided object is not a Node instance.
-
-        Examples:
-            >>> from fin_statement_model.core.nodes import FinancialStatementItemNode
-            >>> node = FinancialStatementItemNode("Revenue", {"2023": 1000})
-            >>> graph.add_node(node)
-        """
-        from fin_statement_model.core.nodes.base import Node as _NodeBase
-
-        if not isinstance(node, _NodeBase):
-            raise TypeError(f"Expected Node instance, got {type(node).__name__}")
-
-        return self.manipulator.add_node(node)
-
-    def remove_node(self, node_name: str) -> None:
-        """Remove a node from the graph by name, updating dependencies.
-
-        Args:
-            node_name: The name of the node to remove.
-
-        Returns:
-            None
-
-        Examples:
-            >>> graph.remove_node("OldItem")
-        """
-        return self.manipulator.remove_node(node_name)
-
-    def replace_node(self, node_name: str, new_node: Node) -> None:
-        """Replace an existing node with a new node instance.
-
-        Args:
-            node_name: Name of the node to replace.
-            new_node: The new `Node` instance to substitute.
-
-        Returns:
-            None
-
-        Examples:
-            >>> graph.replace_node("Item", updated_node)
-        """
-        return self.manipulator.replace_node(node_name, new_node)
-
-    def has_node(self, node_id: str) -> bool:
-        """Check if a node with the given ID exists in the graph.
-
-        Args:
-            node_id: The name of the node to check.
-
-        Returns:
-            True if the node exists, False otherwise.
-
-        Examples:
-            >>> graph.has_node("Revenue")
-        """
-        return self.manipulator.has_node(node_id)
-
-    def set_value(self, node_id: str, period: str, value: float) -> None:
-        """Set or update the value for a node in a specific period.
-
-        Args:
-            node_id: The name of the node.
-            period: The period identifier to set the value for.
-            value: The float value to assign.
-
-        Returns:
-            None
-
-        Raises:
-            ValueError: If the period is not recognized by the graph.
-            NodeError: If the node does not exist.
-            TypeError: If the node does not support setting a value.
-
-        Examples:
-            >>> graph.set_value("SG&A", "2024", 55.0)
-        """
-        return self.manipulator.set_value(node_id, period, value)
+    # ------------------------------------------------------------------
+    # Traversal façade wrappers (used by tests and external modules)
+    # ------------------------------------------------------------------
 
     def topological_sort(self) -> list[str]:  # noqa: D401
-        """Delegate to ``GraphTraverser.topological_sort``."""
         return self.traverser.topological_sort()
 
     def get_calculation_nodes(self) -> list[str]:  # noqa: D401
@@ -763,14 +595,9 @@ class Graph:
     def get_direct_predecessors(self, node_id: str) -> list[str]:  # noqa: D401
         return self.traverser.get_direct_predecessors(node_id)
 
-    def merge_from(self, other_graph: "Graph") -> None:
-        """Thin façade delegating to ``MergeService``."""
-        if not isinstance(other_graph, Graph):
-            raise TypeError("Can only merge from another Graph instance.")
-
-        self._merge_service.merge_from(other_graph)
-
-    # --- Adjustment Management API ---
+    # ------------------------------------------------------------------
+    # Adjustment API façade ---------------------------------------------
+    # ------------------------------------------------------------------
 
     def add_adjustment(
         self,
@@ -778,17 +605,15 @@ class Graph:
         period: str,
         value: float,
         reason: str,
-        adj_type: AdjustmentType = AdjustmentType.ADDITIVE,
+        adj_type: "AdjustmentType" = AdjustmentType.ADDITIVE,
         scale: float = 1.0,
         priority: int = 0,
-        tags: Optional[set[AdjustmentTag]] = None,
+        tags: Optional[set["AdjustmentTag"]] = None,
         scenario: Optional[str] = None,
         user: Optional[str] = None,
-        start_period: Optional[str] = None,  # Phase 2 (ignored by service for now)
-        end_period: Optional[str] = None,  # Phase 2
-        adj_id: Optional[UUID] = None,
-    ) -> UUID:  # noqa: D401
-        """Delegate to ``AdjustmentService``."""
+        *,
+        adj_id: Optional["UUID"] = None,
+    ) -> "UUID":  # noqa: D401
         return self._adjustment_service.add_adjustment(
             node_name,
             period,
@@ -803,60 +628,27 @@ class Graph:
             adj_id=adj_id,
         )
 
-    def remove_adjustment(self, adj_id: UUID) -> bool:
-        """Removes an adjustment by its unique ID.
-
-        Args:
-            adj_id: The UUID of the adjustment to remove.
-
-        Returns:
-            True if an adjustment was found and removed, False otherwise.
-        """
+    def remove_adjustment(self, adj_id: "UUID") -> bool:  # noqa: D401
         return self._adjustment_service.remove_adjustment(adj_id)
 
-    def get_adjustments(
-        self, node_name: str, period: str, *, scenario: Optional[str] = None
-    ) -> list[Adjustment]:
-        """Retrieves all adjustments for a specific node, period, and scenario.
+    # ------------------------------------------------------------------
+    # Manipulator wrappers ----------------------------------------------
+    # ------------------------------------------------------------------
 
-        Args:
-            node_name: The name of the target node.
-            period: The target period.
-            scenario: The scenario to retrieve adjustments for. Defaults to DEFAULT_SCENARIO if None.
+    def remove_node(self, node_name: str) -> None:  # noqa: D401
+        self.manipulator.remove_node(node_name)
 
-        Returns:
-            A list of Adjustment objects matching the criteria, sorted by application order.
-        """
-        return self._adjustment_service.get_adjustments(
-            node_name, period, scenario=scenario
-        )
+    def replace_node(self, node_name: str, new_node: Node) -> None:  # noqa: D401
+        self.manipulator.replace_node(node_name, new_node)
 
-    def list_all_adjustments(self) -> list[Adjustment]:
-        """Returns a list of all adjustments currently managed by the graph.
+    def set_value(self, node_id: str, period: str, value: float) -> None:  # noqa: D401
+        self.manipulator.set_value(node_id, period, value)
 
-        Returns:
-            A list containing all Adjustment objects across all nodes, periods, and scenarios.
-        """
-        return self._adjustment_service.list_all_adjustments()
+    # ------------------------------------------------------------------
+    # Merge façade ------------------------------------------------------
 
-    def was_adjusted(
-        self, node_name: str, period: str, filter_input: "AdjustmentFilterInput" = None
-    ) -> bool:
-        """Checks if a node's value for a given period was affected by any selected adjustments.
-
-        Args:
-            node_name: The name of the node to check.
-            period: The time period identifier.
-            filter_input: Criteria for selecting which adjustments to consider (same as get_adjusted_value).
-
-        Returns:
-            True if any adjustment matching the filter was applied to the base value, False otherwise.
-
-        Raises:
-            NodeError: If the specified node does not exist.
-            CalculationError: If an error occurs during the underlying calculation.
-            TypeError: If filter_input is an invalid type.
-        """
-        return self._adjustment_service.was_adjusted(node_name, period, filter_input)
-
-    # --- End Adjustment Management API ---
+    def merge_from(self, other_graph: "Graph") -> None:  # noqa: D401
+        """Merge nodes and periods from *other_graph* into this graph."""
+        if not isinstance(other_graph, Graph):
+            raise TypeError("Can only merge from another Graph instance.")
+        self._merge_service.merge_from(other_graph)
