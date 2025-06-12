@@ -37,6 +37,7 @@ from fin_statement_model.core.graph.services import (
     PeriodService,
     AdjustmentService,
     DataItemService,
+    MergeService,
 )
 from fin_statement_model.core.graph.manipulator import GraphManipulator
 from fin_statement_model.core.graph.traverser import GraphTraverser
@@ -83,6 +84,7 @@ class Graph:
         period_service_cls: type["PeriodService"] = PeriodService,
         adjustment_service_cls: type["AdjustmentService"] = AdjustmentService,
         data_item_service_cls: type["DataItemService"] | None = None,
+        merge_service_cls: type["MergeService"] | None = None,
     ):
         """Initialize a new `Graph` instance.
 
@@ -154,6 +156,20 @@ class Graph:
             add_periods=self.add_periods,
             node_getter=self.get_node,
             node_names_provider=lambda: list(self._nodes.keys()),
+        )
+
+        # ------------------------------------------------------------------
+        # Merge service ----------------------------------------------------
+        # ------------------------------------------------------------------
+        if merge_service_cls is None:
+            merge_service_cls = MergeService
+
+        self._merge_service = merge_service_cls(
+            add_periods=self.add_periods,
+            periods_provider=lambda: self.periods,
+            node_getter=self.get_node,
+            add_node=self.add_node,
+            nodes_provider=lambda: self._nodes,
         )
 
         # Handle initial periods via service
@@ -795,78 +811,11 @@ class Graph:
         return self.traverser.get_direct_predecessors(node_id)
 
     def merge_from(self, other_graph: "Graph") -> None:
-        """Merge nodes and periods from another Graph into this one.
-
-        Adds periods from the other graph if they don't exist in this graph.
-        Adds nodes from the other graph if they don't exist.
-        If a node exists in both graphs, attempts to merge the 'values' dictionary
-        from the other graph's node into this graph's node.
-
-        Args:
-            other_graph: The Graph instance to merge data from.
-
-        Raises:
-            TypeError: If other_graph is not a Graph instance.
-        """
+        """Thin façade delegating to ``MergeService``."""
         if not isinstance(other_graph, Graph):
             raise TypeError("Can only merge from another Graph instance.")
 
-        logger.info(f"Starting merge from graph {other_graph!r} into {self!r}")
-
-        # 1. Update periods
-        new_periods = [p for p in other_graph.periods if p not in self.periods]
-        if new_periods:
-            self.add_periods(new_periods)
-            logger.debug(f"Merged periods: {new_periods}")
-
-        # 2. Merge nodes
-        nodes_added = 0
-        nodes_updated = 0
-        for node_name, other_node in other_graph.nodes.items():
-            existing_node = self.get_node(node_name)
-            if existing_node is not None:
-                # Node exists, merge values if applicable
-                if (
-                    hasattr(existing_node, "values")
-                    and hasattr(other_node, "values")
-                    and isinstance(getattr(existing_node, "values", None), dict)
-                    and isinstance(getattr(other_node, "values", None), dict)
-                ):
-                    try:
-                        # Perform the update
-                        existing_node.values.update(other_node.values)
-                        nodes_updated += 1
-                        logger.debug(f"Merged values into existing node '{node_name}'")
-                        # No need to call self.add_node(existing_node) as it's already there
-                    except AttributeError:
-                        # Should not happen due to hasattr checks, but defensive
-                        logger.warning(
-                            f"Could not merge values for node '{node_name}' due to missing 'values' attribute despite hasattr check."
-                        )
-                    except Exception as e:
-                        logger.warning(
-                            f"Could not merge values for node '{node_name}': {e}"
-                        )
-                else:
-                    # Nodes exist but cannot merge values (e.g., calculation nodes without stored values)
-                    logger.debug(
-                        f"Node '{node_name}' exists in both graphs, but values not merged (missing/incompatible 'values' attribute). Keeping target graph's node."
-                    )
-            else:
-                # Node doesn't exist in target graph, add it
-                try:
-                    # Ensure we add a copy if nodes might be shared or mutable in complex ways,
-                    # but for now, assume adding the instance is okay.
-                    self.add_node(other_node)
-                    nodes_added += 1
-                except Exception:
-                    logger.exception(
-                        f"Failed to add new node '{node_name}' during merge:"
-                    )
-
-        logger.info(
-            f"Merge complete. Nodes added: {nodes_added}, Nodes updated (values merged): {nodes_updated}"
-        )
+        self._merge_service.merge_from(other_graph)
 
     # --- Adjustment Management API ---
 
