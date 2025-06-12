@@ -36,6 +36,7 @@ from fin_statement_model.core.graph.services import (
     CalculationEngine,
     PeriodService,
     AdjustmentService,
+    DataItemService,
 )
 from fin_statement_model.core.graph.manipulator import GraphManipulator
 from fin_statement_model.core.graph.traverser import GraphTraverser
@@ -81,6 +82,7 @@ class Graph:
         calc_engine_cls: type["CalculationEngine"] = CalculationEngine,
         period_service_cls: type["PeriodService"] = PeriodService,
         adjustment_service_cls: type["AdjustmentService"] = AdjustmentService,
+        data_item_service_cls: type["DataItemService"] | None = None,
     ):
         """Initialize a new `Graph` instance.
 
@@ -138,6 +140,20 @@ class Graph:
         self.adjustment_manager = AdjustmentManager()
         self._adjustment_service = adjustment_service_cls(
             manager=self.adjustment_manager
+        )
+
+        # ------------------------------------------------------------------
+        # Data-item helper service -----------------------------------------
+        # ------------------------------------------------------------------
+        if data_item_service_cls is None:
+            data_item_service_cls = DataItemService
+
+        self._data_item_service = data_item_service_cls(
+            node_factory=self._node_factory,
+            add_node_with_validation=self._add_node_with_validation,
+            add_periods=self.add_periods,
+            node_getter=self.get_node,
+            node_names_provider=lambda: list(self._nodes.keys()),
         )
 
         # Handle initial periods via service
@@ -431,107 +447,23 @@ class Graph:
 
     def add_financial_statement_item(
         self, name: str, values: dict[str, float]
-    ) -> FinancialStatementItemNode:
-        """Add a basic financial statement item (data node) to the graph.
-
-        Args:
-            name: Unique name for the financial statement item node.
-            values: Mapping of period strings to float values for this item.
-
-        Returns:
-            The newly created `FinancialStatementItemNode`.
-
-        Raises:
-            ValueError: If node name is invalid.
-            TypeError: If `values` is not a dict or contains invalid types.
-
-        Examples:
-            >>> item_node = graph.add_financial_statement_item("SG&A", {"2023": 50.0})
-            >>> item_node.calculate("2023")
-            50.0
-        """
-        # Validate inputs
-        if not isinstance(values, dict):
-            raise TypeError("Values must be provided as a dict[str, float]")
-
-        # Create a new financial statement item node
-        new_node = self._node_factory.create_financial_statement_item(
-            name=name, values=values.copy()
-        )
-
-        # Add with validation (no cycle detection needed for data nodes)
-        # Cast to FinancialStatementItemNode for correct return type
-        from typing import cast
-
-        added_node = cast(
-            FinancialStatementItemNode,
-            self._add_node_with_validation(
-                new_node,
-                check_cycles=False,  # Data nodes don't have inputs, so no cycles possible
-                validate_inputs=False,  # Data nodes don't have inputs to validate
-            ),
-        )
-
-        logger.info(
-            f"Added FinancialStatementItemNode '{name}' with periods {list(values.keys())}"
-        )
-        return added_node
+    ) -> FinancialStatementItemNode:  # noqa: D401
+        """Thin façade delegating to ``DataItemService``."""
+        return self._data_item_service.add_financial_statement_item(name, values)
 
     def update_financial_statement_item(
         self, name: str, values: dict[str, float], replace_existing: bool = False
-    ) -> FinancialStatementItemNode:
-        """Update values for an existing financial statement item node.
-
-        Args:
-            name: Name of the existing financial statement item node.
-            values: Mapping of new period strings to float values.
-            replace_existing: If True, replace existing values entirely; otherwise merge.
-
-        Returns:
-            The updated `FinancialStatementItemNode`.
-
-        Raises:
-            NodeError: If the node does not exist.
-            TypeError: If the node is not a `FinancialStatementItemNode` or `values` is not a dict.
-
-        Examples:
-            >>> graph.update_financial_statement_item("SG&A", {"2024": 60.0})
-        """
-        node = self.manipulator.get_node(name)
-        if node is None:
-            raise NodeError("Node not found", node_id=name)
-        if not isinstance(node, FinancialStatementItemNode):
-            raise TypeError(f"Node '{name}' is not a FinancialStatementItemNode")
-        if not isinstance(values, dict):
-            raise TypeError("Values must be provided as a dict[str, float]")
-        if replace_existing:
-            node.values = values.copy()
-        else:
-            node.values.update(values)
-        self.add_periods(list(values.keys()))
-        logger.info(
-            f"Updated FinancialStatementItemNode '{name}' with periods {list(values.keys())}; replace_existing={replace_existing}"
+    ) -> FinancialStatementItemNode:  # noqa: D401
+        """Thin façade delegating to ``DataItemService``."""
+        return self._data_item_service.update_financial_statement_item(
+            name, values, replace_existing=replace_existing
         )
-        return node
 
-    def get_financial_statement_items(self) -> list[Node]:
-        """Retrieve all financial statement item nodes from the graph.
-
-        Returns:
-            A list of `FinancialStatementItemNode` objects currently in the graph.
-
-        Examples:
-            >>> items = graph.get_financial_statement_items()
-        """
-        from fin_statement_model.core.nodes import (
-            FinancialStatementItemNode,
-        )  # Keep import local as it's specific
-
-        return [
-            node
-            for node in self.nodes.values()
-            if isinstance(node, FinancialStatementItemNode)
-        ]
+    def get_financial_statement_items(
+        self,
+    ) -> list[FinancialStatementItemNode]:  # noqa: D401
+        """Thin façade delegating to ``DataItemService``."""
+        return self._data_item_service.get_financial_statement_items()
 
     def __repr__(self) -> str:
         """Provide a concise, developer-friendly string representation of the graph.
