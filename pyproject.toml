@@ -37,6 +37,7 @@ dev = [
     "pytest-mock>=3.14.0",
     "types-pyyaml>=6.0.12.20250516",
     "pdoc3>=0.11.6",
+    "pre-commit>=4.2.0",
 ]
 
 [tool.coverage.run]
@@ -76,8 +77,6 @@ target-version = "py312" # Ensure compatibility with Python 3.12
 exclude = [
     "*.ipynb",
 ]
-
-
 
 [tool.ruff.lint]
 # Select rule sets: E/F/W (pycodestyle/pyflakes), ANN (annotations), D (pydocstyle),
@@ -120,17 +119,6 @@ mypy-init-return = true          # Require __init__ to have no return type annot
 suppress-none-returning = true   # Don't require annotation for functions that don't return None explicitly
 allow-star-arg-any = true        # Allow *args and **kwargs without explicit types for now
 
-# Configuration for mypy - although mypy runs separately, ruff can integrate some checks
-# This section remains top-level as it's for the mypy tool itself
-[tool.mypy]
-python_version = "3.12"
-strict = true
-warn_unused_ignores = true
-warn_redundant_casts = true
-# Add path if needed, assuming source is in 'fin_statement_model'
-# mypy_path = "fin_statement_model"
-# Add plugins if used
-
 # Configuration for formatting (using ruff format)
 # This section remains top-level as it configures the formatter
 [tool.ruff.format]
@@ -138,3 +126,15 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "lf"
+
+# Configuration for mypy - although mypy runs separately, ruff can integrate some checks
+# This section remains top-level as it's for the mypy tool itself
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+plugins = ['pydantic.mypy']
+# Add path if needed, assuming source is in 'fin_statement_model'
+# mypy_path = "fin_statement_model"
+# Add plugins if used

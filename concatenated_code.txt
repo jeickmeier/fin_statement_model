@@ -10398,188 +10398,16 @@ __all__ = [
 
 
 ================================================================================
-File: fin_statement_model/extensions/__init__.py
-================================================================================
-
-"""Extensions package for fin_statement_model.
-
-This package hosts optional in-repo extensions and third-party plugins discovered via entry-points under
-`fin_statement_model.extensions`.
-"""
-
-
-
-================================================================================
-File: fin_statement_model/extensions/llm/__init__.py
-================================================================================
-
-"""LLM extension subpackage for fin_statement_model.
-
-Provides built-in OpenAI-based LLM client extension for generating and injecting content.
-"""
-
-
-
-================================================================================
-File: fin_statement_model/extensions/llm/llm_client.py
-================================================================================
-
-"""LLM client module for OpenAI and backoff integration.
-
-This module provides `LLMConfig` for client configuration and `LLMClient` for
-asynchronous interactions with OpenAI's ChatCompletion API, including retry logic.
-"""
-
-import logging
-import openai
-from openai.api_resources.chat_completion import ChatCompletion
-import backoff
-from dataclasses import dataclass, field
-from typing import Optional, Any, cast
-from types import TracebackType
-
-from fin_statement_model.config import cfg
-from fin_statement_model.core.errors import FinancialModelError
-
-logger = logging.getLogger(__name__)
-
-
-@dataclass
-class LLMConfig:
-    """Configuration data for LLMClient.
-
-    Attributes:
-        api_key: API key for OpenAI authentication.
-        model_name: Model to use (e.g., 'gpt-4o').
-        temperature: Sampling temperature setting.
-        max_tokens: Maximum tokens to generate.
-        timeout: Request timeout in seconds.
-        max_retries: Number of retries on failure.
-    """
-
-    api_key: str
-    model_name: str = "gpt-4o"
-    temperature: float = 0.7
-    max_tokens: int = 1500
-    timeout: int = field(default_factory=lambda: cfg("api.api_timeout", 30))
-    max_retries: int = field(default_factory=lambda: cfg("api.api_retry_count", 3))
-    # base_url is no longer needed as the openai library handles the endpoint configuration.
-
-
-class LLMClientError(FinancialModelError):
-    """Base exception for LLM client errors."""
-
-
-class LLMTimeoutError(LLMClientError):
-    """Exception for timeout errors."""
-
-
-class LLMClient:
-    """Asynchronous client for OpenAI ChatCompletion API with retry logic.
-
-    Utilizes `LLMConfig` and supports retries on rate limits and timeouts.
-
-    Methods:
-        _make_api_call: Internal method for performing the API call with retry logic.
-        get_completion: High-level method to obtain chat completions.
-    """
-
-    def __init__(self, config: Optional[LLMConfig] = None):
-        """Initialize the async LLM client with configuration."""
-        self.config = config or LLMConfig(api_key="")
-        openai.api_key = self.config.api_key
-
-    @backoff.on_exception(
-        backoff.expo,
-        (Exception, LLMTimeoutError),
-        max_tries=3,
-        giveup=lambda e: isinstance(e, LLMTimeoutError),
-    )
-    @backoff.on_exception(backoff.expo, openai.RateLimitError, max_tries=8)
-    async def _make_api_call(self, messages: list[dict[str, str]]) -> dict[str, Any]:
-        """Make the async API call to OpenAI with retry logic.
-
-        Args:
-            messages: List of message dicts for the ChatCompletion API
-
-        Returns:
-            Dict containing the API response
-
-        Raises:
-            LLMClientError: For any client-related errors, including timeout if applicable
-        """
-        try:
-            logger.debug(
-                f"Sending async request to OpenAI API with model {self.config.model_name}"
-            )
-            response = await ChatCompletion.acreate(
-                model=self.config.model_name,
-                messages=messages,
-                temperature=self.config.temperature,
-                max_tokens=self.config.max_tokens,
-                timeout=self.config.timeout,
-            )
-
-            if not response.get("choices"):
-                logger.error("No suggestions received from OpenAI API")
-                raise LLMClientError("No suggestions received from API")
-
-            return cast(dict[str, Any], response)
-        except Exception as e:
-            if "timeout" in str(e).lower():
-                logger.exception("Async request timed out")
-                raise LLMTimeoutError("Request timed out") from e
-            logger.exception("OpenAI async API request failed")
-            raise LLMClientError(f"API request failed: {e!s}") from e
-
-    async def get_completion(self, messages: list[dict[str, str]]) -> str:
-        """Get a completion result from the LLM using async API.
-
-        Args:
-            messages: List of message dictionaries for the ChatCompletion API
-
-        Returns:
-            str: The suggested completion from the LLM
-
-        Raises:
-            LLMClientError: For any client-related errors
-        """
-        try:
-            logger.info("Requesting completion from OpenAI async API")
-            response = await self._make_api_call(messages)
-            completion = cast(str, response["choices"][0]["message"]["content"]).strip()
-            logger.info("Successfully received completion")
-            return completion
-        except Exception as e:
-            logger.exception("Error getting completion")
-            raise LLMClientError(f"Failed to get completion: {e!s}") from e
-
-    async def __aenter__(self) -> "LLMClient":
-        """Enter the asynchronous context manager, returning the client."""
-        return self
-
-    async def __aexit__(
-        self,
-        exc_type: Optional[type[BaseException]],
-        exc: Optional[BaseException],
-        tb: Optional[TracebackType],
-    ) -> None:
-        """Exit the asynchronous context manager, performing cleanup."""
-        # Ensure method has a body
-
-
-
-================================================================================
 File: fin_statement_model/forecasting/__init__.py
 ================================================================================
 
-"""Forecasting sub-module for financial statement models.
+"""Provide forecasting capabilities for financial statement graphs.
 
-This module provides comprehensive forecasting capabilities including:
-- Multiple forecast methods (simple, curve, statistical, average, historical growth)
-- Mutating and non-mutating forecast operations
-- Extensible architecture for custom forecast methods
-- Period management and validation utilities
+This sub-module offers:
+- Multiple forecast methods (simple, curve, statistical, average, historical_growth)
+- Mutating and non-mutating forecast operations on graphs
+- Extensible registry for custom forecast methods
+- Utilities for period management and validation
 
 Example:
     >>> from fin_statement_model.forecasting import StatementForecaster
@@ -10587,18 +10415,18 @@ Example:
     >>>
     >>> # Mutating forecast - modifies the graph
     >>> forecaster.create_forecast(
-    ...     forecast_periods=['2024', '2025'],
+    ...     forecast_periods=["2024", "2025"],
     ...     node_configs={
-    ...         'revenue': {'method': 'simple', 'config': 0.05},
-    ...         'costs': {'method': 'curve', 'config': [0.03, 0.04]}
+    ...         "revenue": {"method": "simple", "config": 0.05},
+    ...         "costs": {"method": "curve", "config": [0.03, 0.04]}
     ...     }
     ... )
     >>>
     >>> # Non-mutating forecast - returns values without modifying graph
     >>> values = forecaster.forecast_value(
-    ...     'revenue',
-    ...     forecast_periods=['2024', '2025'],
-    ...     forecast_config={'method': 'simple', 'config': 0.05}
+    ...     "revenue",
+    ...     forecast_periods=["2024", "2025"],
+    ...     forecast_config={"method": "simple", "config": 0.05}
     ... )
 """
 
@@ -10677,10 +10505,10 @@ __all__ = [
 File: fin_statement_model/forecasting/errors.py
 ================================================================================
 
-"""Custom Exception classes for the forecasting package.
+"""Define custom exceptions for forecasting operations.
 
-These exceptions provide specific error information related to forecasting
-operations, method configuration, and forecast result handling.
+This module provides exception classes for forecasting methods, configuration,
+node handling, and result validation within the forecasting sub-module.
 """
 
 from typing import Optional, Any
@@ -10863,12 +10691,11 @@ class ForecastResultError(ForecastingError):
 File: fin_statement_model/forecasting/forecaster.py
 ================================================================================
 
-"""Forecasting operations dedicated to statement-level financial graphs.
+"""Provide forecasting operations for financial statement graphs.
 
-This module provides the StatementForecaster class, which handles forecasting
-operations for financial statement graphs. It offers both mutating operations
-(that modify the graph) and non-mutating operations (that return forecast values
-without changing the graph state).
+This module defines the StatementForecaster class to perform mutating and
+non-mutating forecast operations on financial statement graphs, handling
+period management, validation, and method selection.
 """
 
 import logging
@@ -10894,24 +10721,14 @@ logger = logging.getLogger(__name__)
 
 
 class StatementForecaster:
-    """Handles forecasting operations specifically for a FinancialStatementGraph.
-
-    This class provides two main approaches to forecasting:
-
-    1. **Mutating operations** (`create_forecast`): Modifies the graph by adding
-       forecast periods and updating node values directly. This is useful when
-       you want to extend the graph with forecast data for further analysis.
-
-    2. **Non-mutating operations** (`forecast_value`): Returns forecast values
-       without modifying the graph state. This is useful for what-if scenarios
-       or when you need forecast values without altering the original data.
-
-    The forecaster supports multiple forecasting methods:
-    - simple: Simple growth rate
-    - curve: Variable growth rates per period
-    - statistical: Random sampling from distributions
-    - average: Average of historical values
-    - historical_growth: Based on historical growth patterns
+    """Perform forecasting operations on a financial statement graph.
+    
+    This class supports both mutating and non-mutating forecasts:
+    
+    - Mutating forecasts (`create_forecast`): adds forecast periods and updates node values.
+    - Non-mutating forecasts (`forecast_value`): computes and returns forecast values without modifying the graph.
+    
+    Supported forecasting methods: simple, curve, statistical, average, historical_growth.
     """
 
     def __init__(self, fsg: Any) -> None:
@@ -11466,9 +11283,9 @@ class StatementForecaster:
 File: fin_statement_model/forecasting/methods/__init__.py
 ================================================================================
 
-"""Forecast method implementations.
+"""Provide built-in forecast method implementations.
 
-This module contains all the built-in forecast methods available in the library.
+This module exports all built-in forecast methods available in the library.
 """
 
 from .base import ForecastMethod, BaseForecastMethod
@@ -11494,9 +11311,18 @@ __all__ = [
 File: fin_statement_model/forecasting/methods/average.py
 ================================================================================
 
-"""Average forecasting method based on historical values.
+"""Forecast future values as the historical average of available data.
 
-This method forecasts future values as the average of historical values.
+This method calculates forecast values as the historical average of available
+data points. Useful for stable metrics or when expecting mean reversion.
+
+Configuration:
+    - Not required (pass None or 0)
+
+Example:
+    >>> method = AverageForecastMethod()
+    >>> params = method.get_forecast_params(None, ["2024", "2025"])
+    >>> # Returns: {"forecast_type": "average", "growth_params": None}
 """
 
 import logging
@@ -11510,19 +11336,18 @@ logger = logging.getLogger(__name__)
 
 
 class AverageForecastMethod(BaseForecastMethod):
-    """Historical average forecasting.
+    """Forecast future values as the historical average of available data.
 
-    This method calculates forecast values as the average of historical
-    values. Useful for stable metrics or when expecting mean reversion.
+    This method calculates forecast values as the historical average of available
+    data points. Useful for stable metrics or when expecting mean reversion.
 
     Configuration:
-        - Not required (pass 0 or None)
-        - The method will automatically use all available historical data
+        - Not required (pass None or 0)
 
     Example:
         >>> method = AverageForecastMethod()
-        >>> params = method.get_forecast_params(None, ['2024', '2025'])
-        >>> # Returns: {'forecast_type': 'average', 'growth_params': None}
+        >>> params = method.get_forecast_params(None, ["2024", "2025"])
+        >>> # Returns: {"forecast_type": "average", "growth_params": None}
     """
 
     @property
@@ -11623,9 +11448,10 @@ class AverageForecastMethod(BaseForecastMethod):
 File: fin_statement_model/forecasting/methods/base.py
 ================================================================================
 
-"""Base protocol and abstract class for forecast methods.
+"""Define base protocol and abstract class for forecast methods.
 
-This module defines the interface that all forecast methods must implement.
+This module defines the interface that all forecast methods must implement
+and provides an abstract base class with common functionality.
 """
 
 from typing import Protocol, Any, Optional, runtime_checkable
@@ -11636,7 +11462,11 @@ from fin_statement_model.core.nodes import Node
 
 @runtime_checkable
 class ForecastMethod(Protocol):
-    """Protocol that all forecast methods must implement."""
+    """Protocol for forecast methods to implement.
+
+    All forecast methods must provide a name property and implement
+    validate_config and normalize_params, optionally prepare_historical_data.
+    """
 
     @property
     def name(self) -> str:
@@ -11684,9 +11514,10 @@ class ForecastMethod(Protocol):
 
 
 class BaseForecastMethod(ABC):
-    """Abstract base class for forecast methods.
+    """Provide an abstract base class for forecast methods.
 
-    Provides common functionality and enforces the interface.
+    Enforces the forecast method interface and provides common functionality,
+    including the get_forecast_params convenience method.
     """
 
     @property
@@ -11745,9 +11576,19 @@ class BaseForecastMethod(ABC):
 File: fin_statement_model/forecasting/methods/curve.py
 ================================================================================
 
-"""Curve forecasting method with variable growth rates.
+"""Forecast future values using variable growth rates per period.
 
-This method applies different growth rates for each forecast period.
+This method applies different growth rates for each forecast period,
+allowing non-linear growth patterns across periods.
+
+Configuration:
+    - Single numeric value: Will be expanded to match forecast periods
+    - List of numeric values: One growth rate per forecast period
+
+Example:
+    >>> method = CurveForecastMethod()
+    >>> params = method.get_forecast_params([0.05, 0.04, 0.03], ["2024", "2025", "2026"])
+    >>> # Returns: {"forecast_type": "curve", "growth_params": [0.05, 0.04, 0.03]}
 """
 
 from typing import Any
@@ -11756,19 +11597,19 @@ from .base import BaseForecastMethod
 
 
 class CurveForecastMethod(BaseForecastMethod):
-    """Variable growth rate forecasting.
+    """Forecast future values using variable growth rates per period.
 
     This method applies different growth rates for each forecast period,
-    allowing for non-linear growth patterns.
+    allowing non-linear growth patterns across periods.
 
     Configuration:
-        - List of numeric values: One growth rate per forecast period
         - Single numeric value: Will be expanded to match forecast periods
+        - List of numeric values: One growth rate per forecast period
 
     Example:
         >>> method = CurveForecastMethod()
-        >>> params = method.get_forecast_params([0.05, 0.04, 0.03], ['2024', '2025', '2026'])
-        >>> # Returns: {'forecast_type': 'curve', 'growth_params': [0.05, 0.04, 0.03]}
+        >>> params = method.get_forecast_params([0.05, 0.04, 0.03], ["2024", "2025", "2026"])
+        >>> # Returns: {"forecast_type": "curve", "growth_params": [0.05, 0.04, 0.03]}
     """
 
     @property
@@ -11839,9 +11680,19 @@ class CurveForecastMethod(BaseForecastMethod):
 File: fin_statement_model/forecasting/methods/historical_growth.py
 ================================================================================
 
-"""Historical growth forecasting method based on past growth patterns.
+"""Forecast future values based on average historical growth patterns.
 
-This method calculates future values based on the average historical growth rate.
+This method calculates future values by determining the average historical
+growth rate and applying it to the base value for forecast periods.
+
+Configuration:
+    - Not required (pass None or 0)
+    - Automatically calculates growth from historical data based on minimum periods configured
+
+Example:
+    >>> method = HistoricalGrowthForecastMethod()
+    >>> params = method.get_forecast_params(None, ["2024", "2025"])
+    >>> # Returns: {"forecast_type": "historical_growth", "growth_params": None}
 """
 
 import logging
@@ -11856,20 +11707,21 @@ logger = logging.getLogger(__name__)
 
 
 class HistoricalGrowthForecastMethod(BaseForecastMethod):
-    """Historical growth pattern forecasting.
+    """Forecast future values based on average historical growth patterns.
 
-    This method calculates the average historical growth rate and applies
-    it to forecast future values. It's useful when past growth patterns
-    are expected to continue.
+    This method calculates the average historical growth rate and applies it to
+    forecast future values. Useful when past growth patterns are expected to
+    continue.
 
     Configuration:
-        - Not required (pass 0 or None)
-        - The method will automatically calculate growth from historical data
+        - Not required (pass None or 0)
+        - Automatically calculates growth from historical data requiring at least
+          cfg("forecasting.min_historical_periods") data points
 
     Example:
         >>> method = HistoricalGrowthForecastMethod()
-        >>> params = method.get_forecast_params(None, ['2024', '2025'])
-        >>> # Returns: {'forecast_type': 'historical_growth', 'growth_params': None}
+        >>> params = method.get_forecast_params(None, ["2024", "2025"])
+        >>> # Returns: {"forecast_type": "historical_growth", "growth_params": None}
     """
 
     @property
@@ -12013,9 +11865,19 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
 File: fin_statement_model/forecasting/methods/simple.py
 ================================================================================
 
-"""Simple growth rate forecasting method.
+"""Forecast future values using a constant growth rate.
 
-This method applies a constant growth rate to forecast future values.
+This method applies a constant growth rate to the base value for all forecast
+periods.
+
+Configuration:
+    - Single numeric value: The growth rate (e.g., 0.05 for 5% growth)
+    - List with single value: Will use the first value
+
+Example:
+    >>> method = SimpleForecastMethod()
+    >>> params = method.get_forecast_params(0.05, ["2024", "2025"])
+    >>> # Returns: {"forecast_type": "simple", "growth_params": 0.05}
 """
 
 from typing import Any
@@ -12024,10 +11886,10 @@ from .base import BaseForecastMethod
 
 
 class SimpleForecastMethod(BaseForecastMethod):
-    """Simple growth rate forecasting.
+    """Forecast future values using a constant growth rate.
 
-    This method applies a constant growth rate to the base value
-    for all forecast periods.
+    This method applies a constant growth rate to the base value for all forecast
+    periods.
 
     Configuration:
         - Single numeric value: The growth rate (e.g., 0.05 for 5% growth)
@@ -12035,8 +11897,8 @@ class SimpleForecastMethod(BaseForecastMethod):
 
     Example:
         >>> method = SimpleForecastMethod()
-        >>> params = method.get_forecast_params(0.05, ['2024', '2025'])
-        >>> # Returns: {'forecast_type': 'simple', 'growth_params': 0.05}
+        >>> params = method.get_forecast_params(0.05, ["2024", "2025"])
+        >>> # Returns: {"forecast_type": "simple", "growth_params": 0.05}
     """
 
     @property
@@ -12094,9 +11956,25 @@ class SimpleForecastMethod(BaseForecastMethod):
 File: fin_statement_model/forecasting/methods/statistical.py
 ================================================================================
 
-"""Statistical forecasting method using random sampling.
+"""Forecast future values by sampling from statistical distributions.
 
-This method generates forecast values by sampling from statistical distributions.
+This method generates forecast values by sampling from specified statistical
+distributions, useful for Monte Carlo simulations and uncertainty analysis.
+
+Configuration:
+    - 'distribution': 'normal' or 'uniform'
+    - 'params': Distribution-specific parameters
+        - For 'normal': {'mean': float, 'std': float}
+        - For 'uniform': {'low': float, 'high': float}
+
+Example:
+    >>> method = StatisticalForecastMethod()
+    >>> config = {
+    ...     "distribution": "normal",
+    ...     "params": {"mean": 0.05, "std": 0.02}
+    ... }
+    >>> params = method.get_forecast_params(config, ["2024", "2025"])
+    >>> # Returns: {"forecast_type": "statistical", "growth_params": <callable>}
 """
 
 from typing import Any
@@ -12109,14 +11987,12 @@ from fin_statement_model.forecasting.types import StatisticalConfig
 
 
 class StatisticalForecastMethod(BaseForecastMethod):
-    """Statistical forecasting using random distributions.
+    """Forecast future values by sampling from statistical distributions.
 
-    This method generates forecast values by sampling from specified
-    statistical distributions, useful for Monte Carlo simulations
-    and uncertainty analysis.
+    This method generates forecast values by sampling from specified statistical
+    distributions, useful for Monte Carlo simulations and uncertainty analysis.
 
     Configuration:
-        Dict with:
         - 'distribution': 'normal' or 'uniform'
         - 'params': Distribution-specific parameters
             - For 'normal': {'mean': float, 'std': float}
@@ -12125,11 +12001,11 @@ class StatisticalForecastMethod(BaseForecastMethod):
     Example:
         >>> method = StatisticalForecastMethod()
         >>> config = {
-        ...     'distribution': 'normal',
-        ...     'params': {'mean': 0.05, 'std': 0.02}
+        ...     "distribution": "normal",
+        ...     "params": {"mean": 0.05, "std": 0.02}
         ... }
-        >>> params = method.get_forecast_params(config, ['2024', '2025'])
-        >>> # Returns: {'forecast_type': 'statistical', 'growth_params': <callable>}
+        >>> params = method.get_forecast_params(config, ["2024", "2025"])
+        >>> # Returns: {"forecast_type": "statistical", "growth_params": <callable>}
     """
 
     @property
@@ -12220,10 +12096,13 @@ class StatisticalForecastMethod(BaseForecastMethod):
 File: fin_statement_model/forecasting/period_manager.py
 ================================================================================
 
-"""Period inference and management utilities for forecasting.
+"""Provide utilities for inferring and managing periods in forecasting.
 
-This module handles the logic for determining historical periods,
-base periods, and managing period-related operations.
+This module handles:
+- Inferring historical periods from graph state
+- Determining base periods for forecasting
+- Validating period sequences
+- Ensuring forecast periods exist in the graph
 """
 
 import logging
@@ -12236,13 +12115,10 @@ logger = logging.getLogger(__name__)
 
 
 class PeriodManager:
-    """Handles period inference and management for forecasting.
+    """Infer and manage forecasting periods.
 
-    This class provides utilities for:
-    - Inferring historical periods from graph state
-    - Determining base periods for forecasting
-    - Validating period sequences
-    - Managing period transitions
+    Provides utilities to infer historical periods, determine base periods,
+    validate period sequences, and manage period transitions on the graph.
     """
 
     @staticmethod
@@ -12456,10 +12332,10 @@ class PeriodManager:
 File: fin_statement_model/forecasting/strategies.py
 ================================================================================
 
-"""Forecast method registry and selection strategies.
+"""Provide a registry and selection strategies for forecast methods.
 
-This module provides a registry for forecast methods and handles method
-selection and configuration.
+This module manages the ForecastMethodRegistry for registering and retrieving
+forecast methods, and exposes convenience functions for global access.
 """
 
 import logging
@@ -12478,10 +12354,10 @@ logger = logging.getLogger(__name__)
 
 
 class ForecastMethodRegistry:
-    """Registry for forecast methods.
+    """Manage forecast methods in a registry.
 
-    This class manages the available forecast methods and provides
-    a centralized way to access and register them.
+    Provides methods to register, unregister, retrieve, and list available
+    forecast methods. Supports querying method metadata.
 
     Example:
         >>> registry = ForecastMethodRegistry()
@@ -12604,9 +12480,7 @@ forecast_registry = ForecastMethodRegistry()
 
 
 def get_forecast_method(name: str) -> ForecastMethod:
-    """Get a forecast method from the global registry.
-
-    This is a convenience function that uses the global registry.
+    """Retrieve a forecast method from the global registry.
 
     Args:
         name: The name of the method to retrieve.
@@ -12623,8 +12497,6 @@ def get_forecast_method(name: str) -> ForecastMethod:
 def register_forecast_method(method: ForecastMethod) -> None:
     """Register a custom forecast method in the global registry.
 
-    This is a convenience function that uses the global registry.
-
     Args:
         method: The forecast method to register.
 
@@ -12639,10 +12511,10 @@ def register_forecast_method(method: ForecastMethod) -> None:
 File: fin_statement_model/forecasting/types.py
 ================================================================================
 
-"""Type definitions and data structures for forecasting module.
+"""Define types and data structures for the forecasting module.
 
-This module contains all the type aliases, enums, and data structures
-used throughout the forecasting sub-module.
+This module provides type aliases, Pydantic models for configuration and
+results, and error types used throughout the forecasting sub-module.
 """
 
 from typing import Any, Union, Literal
@@ -12673,7 +12545,10 @@ ForecastMethodType = Literal[
 
 
 class StatisticalConfig(BaseModel):
-    """Configuration for statistical forecasting method."""
+    """Define configuration schema for statistical forecasting method.
+
+    Validates 'distribution' and 'params' based on the distribution type.
+    """
 
     distribution: str
     params: dict[str, float]
@@ -12714,7 +12589,10 @@ class StatisticalConfig(BaseModel):
 
 
 class ForecastConfig(BaseModel):
-    """Configuration for a forecast operation."""
+    """Define configuration for a forecast operation.
+
+    Enforces method selection and method-specific parameters.
+    """
 
     method: ForecastMethodType
     config: Any  # Method-specific configuration
@@ -12760,7 +12638,10 @@ class ForecastConfig(BaseModel):
 
 
 class ForecastResult(BaseModel):
-    """Result of a forecast operation."""
+    """Represent forecast results for a node.
+
+    Contains the node name, forecast periods, result values, method, and base period.
+    """
 
     node_name: str
     periods: list[str]
@@ -12786,10 +12667,10 @@ class ForecastResult(BaseModel):
 File: fin_statement_model/forecasting/validators.py
 ================================================================================
 
-"""Input validation and error checking for forecasting operations.
+"""Validate inputs for forecasting operations.
 
-This module provides validation utilities to ensure forecast inputs
-are valid before processing.
+This module provides utilities to check forecast parameters, node configurations,
+and period information before performing forecasting operations.
 """
 
 import logging
@@ -12802,10 +12683,10 @@ logger = logging.getLogger(__name__)
 
 
 class ForecastValidator:
-    """Validates inputs for forecasting operations.
+    """Validate input parameters for forecasting operations.
 
-    This class provides methods to validate various aspects of forecast
-    inputs including periods, node configurations, and method parameters.
+    Contains methods to validate periods, node configurations, forecast configs,
+    and forecast results before executing forecasting logic.
     """
 
     @staticmethod
@@ -14852,8 +14733,6 @@ from fin_statement_model.io.exceptions import (
     FormatNotSupportedError,
     ReadError,
     WriteError,
-    UnsupportedReaderError,
-    UnsupportedWriterError,
 )
 
 logger = logging.getLogger(__name__)
@@ -15104,19 +14983,11 @@ def _get_handler(
 
     # Determine Pydantic schema from registry
     schema = registry.get_schema(format_type)
-    # Enforce schema-only mode for readers (remove legacy schema-less support)
-    if handler_type == "read" and schema is None:
-        raise UnsupportedReaderError(
-            f"Reader '{format_type}' requires a Pydantic schema; legacy schema-less mode removed.",
-            source=kwargs.get("source"),
-            reader_type=format_type,
-        )
-    # Enforce schema-only mode for writers (remove legacy schema-less support)
-    if handler_type == "write" and schema is None:
-        raise UnsupportedWriterError(
-            f"Writer '{format_type}' requires a Pydantic schema; legacy schema-less mode removed.",
-            target=kwargs.get("target"),
-            writer_type=format_type,
+    # If no schema is registered for this format, treat it as unsupported
+    if schema is None:
+        raise FormatNotSupportedError(
+            format_type=format_type,
+            operation=f"{handler_type} operations",
         )
 
     # Prepare error context based on handler type
@@ -15404,46 +15275,6 @@ class FormatNotSupportedError(IOError):
         """
         message = f"Format '{format_type}' is not supported for {operation} operations."
         super().__init__(message=message, format_type=format_type)
-
-
-# Add new exception for unsupported readers (schema-less mode removed)
-class UnsupportedReaderError(ReadError):
-    """Exception raised when a requested reader is unsupported (no schema)."""
-
-    def __init__(
-        self,
-        message: str,
-        source: Optional[str] = None,
-        reader_type: Optional[str] = None,
-        original_error: Optional[Exception] = None,
-    ):
-        """Initializes the UnsupportedReaderError."""
-        super().__init__(
-            message=message,
-            source=source,
-            reader_type=reader_type,
-            original_error=original_error,
-        )
-
-
-# Add new exception for unsupported writers (schema-less mode removed)
-class UnsupportedWriterError(WriteError):
-    """Exception raised when a requested writer is unsupported (no schema)."""
-
-    def __init__(
-        self,
-        message: str,
-        target: Optional[str] = None,
-        writer_type: Optional[str] = None,
-        original_error: Optional[Exception] = None,
-    ):
-        """Initializes the UnsupportedWriterError."""
-        super().__init__(
-            message=message,
-            target=target,
-            writer_type=writer_type,
-            original_error=original_error,
-        )
 
 
 
@@ -17698,7 +17529,7 @@ File: fin_statement_model/io/formats/markdown/writer.py
 """Writes a financial statement graph to a Markdown table."""
 
 import logging
-from typing import Any, Optional, TypedDict, Union
+from typing import Any, Optional, Union
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.base import DataWriter
@@ -17711,17 +17542,6 @@ from fin_statement_model.io.formats.markdown.formatter import MarkdownTableForma
 from fin_statement_model.io.formats.markdown.notes import MarkdownNotesBuilder
 
 logger = logging.getLogger(__name__)
-
-
-# Legacy structure for backward compatibility
-class StatementItem(TypedDict):
-    """Represents a line item with its values for Markdown output."""
-
-    name: str
-    # value: Union[float, int, str, None] # Replaced single value
-    values: dict[str, Union[float, int, str, None]]  # Values per period
-    level: int
-    is_subtotal: bool  # Indicates if the row is a subtotal or section header
 
 
 @register_writer("markdown", schema=MarkdownWriterConfig)
@@ -19295,11 +19115,11 @@ def create_validator(
 File: fin_statement_model/logging_config.py
 ================================================================================
 
-"""Centralized logging configuration for the fin_statement_model library.
+"""Configure centralized logging for the fin_statement_model library.
 
 This module provides consistent logging configuration across the entire package.
-It sets up appropriate formatters, handlers, and logging levels for different
-components of the library.
+It defines formatters, handlers, and logging levels for different components of
+the library.
 """
 
 import logging
@@ -19321,14 +19141,19 @@ LOG_FORMAT_ENV = "FSM_LOG_FORMAT"
 def get_logger(name: str) -> logging.Logger:
     """Get a logger instance with the given name.
 
-    This is a convenience function that ensures all loggers are properly
-    namespaced under the fin_statement_model package.
+    Ensure the logger is namespaced under the fin_statement_model package.
+    If `name` starts with '.', it will be prefixed with 'fin_statement_model'.
 
     Args:
         name: The name of the logger, typically __name__
 
     Returns:
-        A configured logger instance
+        A configured logger instance.
+
+    Example:
+        >>> from fin_statement_model.logging_config import get_logger
+        >>> logger = get_logger(__name__)
+        >>> logger.debug("Debug message")
     """
     if not name.startswith("fin_statement_model") and name.startswith("."):
         name = f"fin_statement_model{name}"
@@ -19354,6 +19179,9 @@ def setup_logging(
                       If None, uses FSM_LOG_FORMAT env var or default format.
         log_file_path: Optional file path to write logs to.
         detailed: If True, uses detailed format with file/line information.
+
+    Returns:
+        None
 
     Example:
         >>> from fin_statement_model import logging_config
@@ -19413,6 +19241,9 @@ def configure_library_logging() -> None:
     This is called automatically when the library is imported and sets up
     a NullHandler to prevent "no handler" warnings. Users should call
     setup_logging() to enable actual logging output.
+
+    Returns:
+        None
     """
     # Attach a NullHandler to the base fin_statement_model logger so that
     # all child loggers inherit it and avoid 'No handler' warnings by default.
@@ -19460,9 +19291,32 @@ configure_library_logging()
 File: fin_statement_model/preprocessing/__init__.py
 ================================================================================
 
-"""Export DataTransformer, CompositeTransformer, and TransformerFactory for preprocessing.
+"""Preprocessing module entrypoint.
 
-This module exposes core transformer interfaces and factory for the preprocessing layer.
+Provides the core interfaces, services, and exceptions for data preprocessing:
+
+- DataTransformer: Abstract base class for defining data transformations.
+- CompositeTransformer: Compose multiple transformers into sequential pipelines.
+- TransformerFactory: Discover, register, and instantiate transformers by name.
+- TransformationService: High-level API for common tasks:
+  - normalize_data
+  - transform_time_series
+  - convert_periods
+  - format_statement
+  - create/apply transformation pipelines
+- Exceptions: PreprocessingError, TransformerRegistrationError, TransformerConfigurationError,
+  PeriodConversionError, NormalizationError, TimeSeriesError.
+
+Built-in transformers in `fin_statement_model.preprocessing.transformers`
+are automatically discovered and registered on import.
+
+Usage Example:
+    >>> import pandas as pd
+    >>> from fin_statement_model.preprocessing import TransformationService
+    >>> df = pd.DataFrame({'revenue': [1000, 1100], 'cogs': [600, 650]}, index=['2022', '2023'])
+    >>> service = TransformationService()
+    >>> normalized = service.normalize_data(df, normalization_type='percent_of', reference='revenue')
+    >>> print(normalized)
 """
 
 from .base_transformer import DataTransformer, CompositeTransformer
@@ -19500,9 +19354,10 @@ __all__ = [
 File: fin_statement_model/preprocessing/base_transformer.py
 ================================================================================
 
-"""Define base DataTransformer interface for preprocessing layer.
+"""Define the base DataTransformer interface for the preprocessing layer.
 
-This module provides the DataTransformer abstract base class and CompositeTransformer.
+This module provides the DataTransformer abstract base class and CompositeTransformer
+for building and composing data transformation pipelines.
 """
 
 from abc import ABC, abstractmethod
@@ -19787,7 +19642,13 @@ class StatementType(Enum):
 
 
 class NormalizationConfig(BaseModel):
-    """Configuration for normalization transformations."""
+    """Configuration for normalization transformations.
+
+    Attributes:
+        normalization_type: Type of normalization to apply (e.g., 'percent_of', 'minmax', 'standard', 'scale_by').
+        reference: Reference column name for 'percent_of' normalization.
+        scale_factor: Scaling factor for 'scale_by' normalization.
+    """
 
     normalization_type: Optional[str] = None
     reference: Optional[str] = None
@@ -19795,7 +19656,13 @@ class NormalizationConfig(BaseModel):
 
 
 class TimeSeriesConfig(BaseModel):
-    """Configuration for time series transformations."""
+    """Configuration for time series transformations.
+
+    Attributes:
+        transformation_type: Type of time series transformation (e.g., 'growth_rate', 'moving_avg', 'cagr', 'yoy', 'qoq').
+        periods: Number of periods for lag-based calculations.
+        window_size: Window size for moving average calculations.
+    """
 
     transformation_type: Optional[str] = None
     periods: Optional[int] = None
@@ -19803,14 +19670,25 @@ class TimeSeriesConfig(BaseModel):
 
 
 class PeriodConversionConfig(BaseModel):
-    """Configuration for period conversion transformations."""
+    """Configuration for period conversion transformations.
+
+    Attributes:
+        conversion_type: Type of period conversion (e.g., 'quarterly_to_annual', 'monthly_to_quarterly', 'monthly_to_annual', 'quarterly_to_ttm').
+        aggregation: Aggregation method for conversion (e.g., 'sum', 'mean', 'last', 'first', 'max', 'min').
+    """
 
     conversion_type: Optional[str] = None
     aggregation: Optional[str] = None
 
 
 class StatementFormattingConfig(BaseModel):
-    """Configuration for formatting statement output."""
+    """Configuration for formatting statement output.
+
+    Attributes:
+        statement_type: Type of financial statement (e.g., 'income_statement', 'balance_sheet', 'cash_flow').
+        add_subtotals: Whether to include subtotal lines in formatted output.
+        apply_sign_convention: Whether to apply standard sign conventions (e.g., liabilities as negative).
+    """
 
     statement_type: Optional[str] = None
     add_subtotals: Optional[bool] = None
@@ -19834,10 +19712,10 @@ __all__ = [
 File: fin_statement_model/preprocessing/errors.py
 ================================================================================
 
-"""Custom Exception classes for the preprocessing package.
+"""Define custom exception classes for the preprocessing package.
 
-These exceptions provide specific error information related to data
-preprocessing, transformation, and validation operations.
+This module provides specific error types for data preprocessing,
+transformation, and validation operations in the preprocessing layer.
 """
 
 from typing import Optional, Any
@@ -20098,7 +19976,15 @@ class TransformerFactory:
     def register_transformer(
         cls, name: str, transformer_class: type[DataTransformer]
     ) -> None:
-        """Register a transformer class with the factory."""
+        """Register a transformer class with the factory.
+
+        Args:
+            name: Name to register the transformer under.
+            transformer_class: Transformer class to register.
+
+        Raises:
+            TransformerRegistrationError: If a transformer with the given name is already registered or if the transformer_class is not a subclass of DataTransformer.
+        """
         if name in cls._transformers:
             raise TransformerRegistrationError(
                 f"Transformer name '{name}' is already registered",
@@ -20115,7 +20001,18 @@ class TransformerFactory:
 
     @classmethod
     def create_transformer(cls, name: str, **kwargs: Any) -> DataTransformer:
-        """Create a transformer instance by name."""
+        """Create a transformer instance by its registered name.
+
+        Args:
+            name: Name of the registered transformer.
+            **kwargs: Keyword arguments to pass to the transformer constructor.
+
+        Returns:
+            A DataTransformer instance.
+
+        Raises:
+            TransformerConfigurationError: If no transformer is registered under the given name.
+        """
         if name not in cls._transformers:
             raise TransformerConfigurationError(
                 f"No transformer registered with name '{name}'",
@@ -20128,12 +20025,26 @@ class TransformerFactory:
 
     @classmethod
     def list_transformers(cls) -> list[str]:
-        """List all registered transformer names."""
+        """List all registered transformer names.
+
+        Returns:
+            List of registered transformer names.
+        """
         return list(cls._transformers.keys())
 
     @classmethod
     def get_transformer_class(cls, name: str) -> type[DataTransformer]:
-        """Get a transformer class by name."""
+        """Get a transformer class by its registered name.
+
+        Args:
+            name: Name of the registered transformer.
+
+        Returns:
+            Transformer class corresponding to the given name.
+
+        Raises:
+            TransformerConfigurationError: If no transformer is registered under the given name.
+        """
         if name not in cls._transformers:
             raise TransformerConfigurationError(
                 f"No transformer registered with name '{name}'",
@@ -20143,7 +20054,14 @@ class TransformerFactory:
 
     @classmethod
     def discover_transformers(cls, package_name: str) -> None:
-        """Discover and register all transformers in a package."""
+        """Discover and register all transformers in a package.
+
+        Args:
+            package_name: Full package path to scan for transformers.
+
+        Raises:
+            ImportError: If the specified package cannot be imported.
+        """
         try:
             package = importlib.import_module(package_name)
             package_path = package.__path__
@@ -20172,7 +20090,15 @@ class TransformerFactory:
     def create_composite_transformer(
         cls, transformer_names: list[str], **kwargs: Any
     ) -> DataTransformer:
-        """Create a composite transformer from a list of transformer names."""
+        """Create a composite transformer from a list of transformer names.
+
+        Args:
+            transformer_names: List of transformer names to include in the composite.
+            **kwargs: Keyword arguments to pass to each transformer constructor.
+
+        Returns:
+            CompositeTransformer instance combining the specified transformers.
+        """
         transformers = [
             cls.create_transformer(name, **kwargs) for name in transformer_names
         ]
@@ -20193,7 +20119,21 @@ class TransformationService:
         reference: Optional[str] = None,
         scale_factor: Optional[float] = None,
     ) -> Union[pd.DataFrame, dict[str, Any]]:
-        """Normalize financial data."""
+        """Normalize financial data.
+
+        Args:
+            data: DataFrame or dict of financial data to normalize.
+            normalization_type: Type of normalization to apply.
+            reference: Reference column for 'percent_of' normalization.
+            scale_factor: Scale factor for 'scale_by' normalization.
+
+        Returns:
+            Normalized data of the same type as input.
+
+        Raises:
+            TransformerConfigurationError: If the normalization transformer is not registered.
+            NormalizationError: If normalization fails due to invalid parameters or data.
+        """
         # Determine normalization type default
         default_norm_type = cfg("preprocessing.default_normalization_type")
         norm_type = (
@@ -20214,7 +20154,21 @@ class TransformationService:
         periods: Optional[int] = None,
         window_size: Optional[int] = None,
     ) -> Union[pd.DataFrame, dict[str, Any]]:
-        """Apply time series transformations to financial data."""
+        """Apply time series transformations to financial data.
+
+        Args:
+            data: DataFrame or dict of financial data.
+            transformation_type: Type of time series transformation to apply.
+            periods: Number of periods for lag-based transformations.
+            window_size: Window size for moving average calculations.
+
+        Returns:
+            Transformed data of the same type as input.
+
+        Raises:
+            TransformerConfigurationError: If the time series transformer is not registered.
+            TimeSeriesError: If the transformation fails due to invalid parameters or data.
+        """
         # Determine defaults from config
         default_transform_type = cfg("preprocessing.default_transformation_type")
         transform_type = (
@@ -20240,7 +20194,20 @@ class TransformationService:
         conversion_type: str,
         aggregation: Optional[str] = None,
     ) -> pd.DataFrame:
-        """Convert data between different period types."""
+        """Convert data between different reporting periods.
+
+        Args:
+            data: DataFrame with time-based data to convert.
+            conversion_type: Conversion type (e.g., 'quarterly_to_annual').
+            aggregation: Aggregation method (e.g., 'sum', 'mean', 'last').
+
+        Returns:
+            DataFrame with converted periods.
+
+        Raises:
+            TransformerConfigurationError: If the period conversion transformer is not registered.
+            PeriodConversionError: If period conversion fails due to invalid data or parameters.
+        """
         default_agg = cfg("preprocessing.default_conversion_aggregation")
         agg = aggregation if aggregation is not None else default_agg
         transformer = TransformerFactory.create_transformer(
@@ -20257,7 +20224,21 @@ class TransformationService:
         add_subtotals: Optional[bool] = None,
         apply_sign_convention: Optional[bool] = None,
     ) -> pd.DataFrame:
-        """Format a financial statement DataFrame."""
+        """Format a financial statement DataFrame.
+
+        Args:
+            data: DataFrame representing the statement to format.
+            statement_type: Type of statement (e.g., 'income_statement').
+            add_subtotals: Whether to include subtotal lines.
+            apply_sign_convention: Whether to apply standard sign conventions.
+
+        Returns:
+            Formatted DataFrame with applied subtotals and sign conventions.
+
+        Raises:
+            TransformerConfigurationError: If the statement formatting transformer is not registered.
+            PreprocessingError: If formatting fails due to invalid data or parameters.
+        """
         # Determine defaults from preprocessing config
         stmt_cfg = cfg("preprocessing.statement_formatting")
         default_stmt_type = stmt_cfg.statement_type or "income_statement"
@@ -20285,7 +20266,18 @@ class TransformationService:
     def create_transformation_pipeline(
         self, transformers_config: list[dict[str, Any]]
     ) -> DataTransformer:
-        """Create a composite transformer from configurations."""
+        """Create a composite transformer from configurations.
+
+        Args:
+            transformers_config: List of transformer configuration dictionaries, each containing a 'name' key and optional parameters.
+
+        Returns:
+            CompositeTransformer instance combining the specified transformers.
+
+        Raises:
+            ValueError: If any configuration dictionary is missing the 'name' key.
+            TransformerConfigurationError: If transformer creation fails for a given name.
+        """
         transformers = []
         for config in transformers_config:
             if "name" not in config:
@@ -20300,19 +20292,43 @@ class TransformationService:
     def apply_transformation_pipeline(
         self, data: object, transformers_config: list[dict[str, Any]]
     ) -> object:
-        """Apply a transformation pipeline to data."""
+        """Apply a transformation pipeline to data.
+
+        Args:
+            data: Input data to transform.
+            transformers_config: List of transformer configuration dictionaries.
+
+        Returns:
+            Transformed data after applying the pipeline.
+
+        Raises:
+            ValueError: If transformer configuration is invalid.
+            TransformerConfigurationError: If transformer creation fails.
+        """
         pipeline = self.create_transformation_pipeline(transformers_config)
         return pipeline.execute(data)
 
     def register_custom_transformer(
         self, name: str, transformer_class: type[DataTransformer]
     ) -> None:
-        """Register a custom transformer with the factory."""
+        """Register a custom transformer with the factory.
+
+        Args:
+            name: Name under which to register the custom transformer.
+            transformer_class: Custom transformer class to register.
+
+        Raises:
+            TransformerRegistrationError: If registration fails due to name conflicts or invalid class.
+        """
         TransformerFactory.register_transformer(name, transformer_class)
         logger.info(f"Registered custom transformer: {name}")
 
     def list_available_transformers(self) -> list[str]:
-        """List all available transformer types."""
+        """List all available transformer types.
+
+        Returns:
+            List of transformer names registered in the factory.
+        """
         return TransformerFactory.list_transformers()
 
 
@@ -20342,11 +20358,10 @@ __all__ = [
 File: fin_statement_model/preprocessing/transformers/normalization.py
 ================================================================================
 
-"""Provide a NormalizationTransformer to normalize financial data.
+"""Provide the NormalizationTransformer for normalizing financial data.
 
-Transforms data by percent_of, minmax, standard, or scale_by methods.
-
-This module implements the NormalizationTransformer for the preprocessing layer.
+This module defines the transformer to normalize data using percent_of, minmax,
+standard, or scale_by methods within the preprocessing layer.
 """
 
 from typing import Optional, Union, ClassVar
@@ -20367,7 +20382,7 @@ logger = logging.getLogger(__name__)
 
 
 class NormalizationTransformer(DataTransformer):
-    """Transformer that normalizes financial data using various methods.
+    """Normalize financial data using various methods.
 
     This transformer provides multiple normalization strategies commonly used in
     financial analysis to make data comparable across different scales or to
@@ -20652,9 +20667,10 @@ class NormalizationTransformer(DataTransformer):
 File: fin_statement_model/preprocessing/transformers/period_conversion.py
 ================================================================================
 
-"""Financial data transformers for the Financial Statement Model.
+"""Provide the PeriodConversionTransformer for converting between financial reporting periods.
 
-This module provides the PeriodConversionTransformer for converting between period types:
+This module defines the transformer for aggregating higher-frequency data to lower-frequency periods
+and calculating trailing metrics such as trailing twelve months (TTM). Supported conversions include:
 quarterly_to_annual, monthly_to_quarterly, monthly_to_annual, and quarterly_to_ttm.
 """
 
@@ -20909,7 +20925,11 @@ class PeriodConversionTransformer(DataTransformer):
             df: DataFrame to convert.
 
         Returns:
-            Converted DataFrame.
+            Converted DataFrame with the new period index.
+
+        Raises:
+            ValueError: If the DataFrame index cannot be converted to datetime or if TTM conversion is requested with unsupported aggregation.
+            NotImplementedError: If the conversion_type is not supported by this transformer.
         """
         df_copy = df.copy()
 
@@ -20961,10 +20981,10 @@ class PeriodConversionTransformer(DataTransformer):
 File: fin_statement_model/preprocessing/transformers/time_series.py
 ================================================================================
 
-"""Financial data transformers for the Financial Statement Model.
+"""Provide the TimeSeriesTransformer for applying common financial time series transformations.
 
-This module provides the TimeSeriesTransformer which applies growth rates,
-moving averages, CAGR, year-over-year, and quarter-over-quarter conversions.
+This module defines the transformer for computing growth rates, moving averages,
+compound annual growth rate (CAGR), year-over-year (YoY), and quarter-over-quarter (QoQ) changes.
 """
 
 import logging
@@ -21188,7 +21208,14 @@ class TimeSeriesTransformer(DataTransformer):
     def _transform_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
         """Transform a DataFrame with time series data.
 
-        Internal method that performs the actual transformation on DataFrames.
+        Args:
+            df: DataFrame containing time series data with a time-based index.
+
+        Returns:
+            DataFrame with new columns added for the specified transformation type.
+
+        Raises:
+            NotImplementedError: If the specified transformation_type is not supported.
         """
         result = df.copy()
 
@@ -28448,139 +28475,5 @@ def retry_on_specific_errors(
     )
     handler = RetryHandler(config)
     return handler.retry(operation, operation_name)
-
-
-
-================================================================================
-File: tests/smoke/test_adjustments_api.py
-================================================================================
-
-from fin_statement_model.core.graph.graph import Graph
-from fin_statement_model.core.adjustments.models import AdjustmentType
-
-
-def test_adjustment_application() -> None:
-    """Ensure a simple additive adjustment is applied to the base node value."""
-    graph = Graph(periods=["2023"])
-    graph.add_financial_statement_item("Revenue", {"2023": 100.0})
-
-    graph.add_adjustment(
-        "Revenue",
-        "2023",
-        value=10.0,
-        reason="Manual adjustment",
-        scenario="default",
-        adj_type=AdjustmentType.ADDITIVE,
-    )
-
-    adjusted_value = graph.get_adjusted_value("Revenue", "2023")
-    assert adjusted_value == 110.0
-
-
-
-================================================================================
-File: tests/smoke/test_build_and_export.py
-================================================================================
-
-import pytest
-from pathlib import Path
-
-from fin_statement_model.core.graph.graph import Graph
-from fin_statement_model.io.formats.markdown.writer import MarkdownWriter
-from fin_statement_model.io.formats.excel.writer import ExcelWriter
-from fin_statement_model.io.config.models import ExcelWriterConfig
-from fin_statement_model.statements.structure import (
-    StatementStructure,
-    Section,
-    LineItem,
-)
-
-
-def _build_sample_graph() -> Graph:
-    """Create a minimal Graph with a single data node."""
-    graph = Graph(periods=["2023"])
-    graph.add_financial_statement_item("Revenue", {"2023": 1000.0})
-    return graph
-
-
-def _build_sample_structure() -> StatementStructure:
-    """Construct a bare-bones StatementStructure that references the sample Graph."""
-    statement = StatementStructure(
-        id="IS",
-        name="Income Statement",
-        display_scale_factor=1.0,
-    )
-    section = Section(
-        id="revenue_section",
-        name="Revenue Section",
-        display_scale_factor=1.0,
-    )
-    section.add_item(
-        LineItem(
-            id="rev",
-            name="Revenue",
-            node_id="Revenue",
-            display_scale_factor=1.0,
-        )
-    )
-    statement.add_section(section)
-    return statement
-
-
-@pytest.mark.parametrize("sheet_name", ["Sheet1"])
-def test_markdown_and_excel_export(tmp_path: Path, sheet_name: str) -> None:
-    """Ensure Markdown and Excel writers produce non-empty outputs."""
-    graph = _build_sample_graph()
-    structure = _build_sample_structure()
-
-    # Markdown export (returns string)
-    md_writer = MarkdownWriter()
-    markdown_out = md_writer.write(graph, statement_structure=structure)
-    assert isinstance(markdown_out, str) and markdown_out.strip(), (
-        "Markdown output is empty"
-    )
-
-    # Excel export (writes file)
-    target_file = tmp_path / "export.xlsx"
-    cfg = ExcelWriterConfig(
-        format_type="excel",
-        target=str(target_file),
-        sheet_name=sheet_name,
-    )
-    excel_writer = ExcelWriter(cfg)
-    excel_writer.write(graph, target=str(target_file))
-
-    assert target_file.exists() and target_file.stat().st_size > 0, (
-        "Excel file not created or empty"
-    )
-
-
-
-================================================================================
-File: tests/smoke/test_forecasting_api.py
-================================================================================
-
-from fin_statement_model.core.graph.graph import Graph
-from fin_statement_model.forecasting import StatementForecaster
-
-
-def test_forecasting_api_simple() -> None:
-    """Verify StatementForecaster.forecast_value returns expected length and dtype."""
-    graph = Graph(periods=["2023"])
-    graph.add_financial_statement_item("revenue", {"2023": 100.0})
-
-    forecaster = StatementForecaster(graph)
-    forecast_periods = ["2024", "2025", "2026", "2027"]
-
-    results = forecaster.forecast_value(
-        "revenue",
-        forecast_periods=forecast_periods,
-        forecast_config={"method": "simple", "config": 0.05},
-    )
-
-    assert list(results.keys()) == forecast_periods, "Forecast periods mismatch"
-    for value in results.values():
-        assert isinstance(value, float), "Forecast value is not a float"
-        assert value > 0, "Forecast value should be positive"
 
 

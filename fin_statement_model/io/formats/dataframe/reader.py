@@ -96,7 +96,7 @@ class DataFrameReader(DataReader):
         graph = Graph(periods=graph_periods)
 
         # --- Populate Graph ---
-        validation_errors = []
+        validation_errors: list[str] = []
         nodes_added = 0
         for node_name_df, row in df_subset.iterrows():
             if pd.isna(node_name_df) or not node_name_df:

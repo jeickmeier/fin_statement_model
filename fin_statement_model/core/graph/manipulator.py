@@ -33,6 +33,8 @@ Now update the value via the manipulator and observe caches being cleared:
 The manipulator is *internal API*; it is documented here solely to aid
 contributors.  End-users should prefer the higher-level convenience methods on
 `Graph` itself whenever possible.
+
+# pragma: no cover
 """
 
 import logging

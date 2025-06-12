@@ -43,6 +43,23 @@ class GraphDefinitionReader(DataReader):
         """Initialize the GraphDefinitionReader. Config currently unused."""
         self.cfg = cfg
 
+    # --- Internal helper ---------------------------------------------------------------
+    class _TempNode(Node):
+        """Lightweight stand-in used only for dependency analysis during deserialization."""
+
+        def __init__(self, name: str) -> None:  # noqa: D401
+            super().__init__(name)
+            # GraphTraverser expects a list[Node] attribute named ``inputs``
+            self.inputs: list[Node] = []
+
+        # Stub implementations required by the Node ABC ---------------------------------
+        def calculate(self, period: str) -> float:  # noqa: D401
+            return 0.0
+
+        def to_dict(self) -> dict[str, Any]:  # noqa: D401
+            # Serialization is irrelevant for the temp node – return minimal payload.
+            return {}
+
     def _get_node_dependencies(self, node_def: dict[str, Any]) -> list[str]:
         """Extract dependency names from a node definition.
 
@@ -100,49 +117,51 @@ class GraphDefinitionReader(DataReader):
                 raise ReadError("Invalid format: 'periods' must be a list.")
             graph = Graph(periods=periods)
 
-            # 2. Reconstruct Nodes using topological sort of definitions
+            # 2. Reconstruct Nodes using topological sort of definitions -----------------
             nodes_dict = source.get("nodes", {})
             if not isinstance(nodes_dict, dict):
                 raise ReadError("Invalid format: 'nodes' must be a dictionary.")
-            # Build dependency graph from definitions
-            dep_graph: dict[str, list[str]] = {
-                name: self._get_node_dependencies(defn)
-                for name, defn in nodes_dict.items()
-            }
-            # Perform topological sort
-            in_degree = {n: 0 for n in dep_graph}
-            adjacency: dict[str, list[str]] = {n: [] for n in dep_graph}
-            for n, deps in dep_graph.items():
-                for dep in deps:
-                    if dep not in dep_graph:
-                        raise ReadError(
-                            f"Dependency '{dep}' for node '{n}' not found in definitions.",
-                            source="graph_definition_dict",
-                        )
-                    adjacency[dep].append(n)
-                    in_degree[n] += 1
-            queue = [n for n, d in in_degree.items() if d == 0]
-            sorted_names: list[str] = []
-            while queue:
-                current = queue.pop()
-                sorted_names.append(current)
-                for neighbor in adjacency[current]:
-                    in_degree[neighbor] -= 1
-                    if in_degree[neighbor] == 0:
-                        queue.append(neighbor)
-            if len(sorted_names) != len(dep_graph):
+
+            # Build *temporary* graph comprised of minimal stub nodes so we can delegate
+            # the topological ordering to `GraphTraverser`, the single source of truth
+            # for graph algorithms in the core layer.
+            from_nodes: dict[str, GraphDefinitionReader._TempNode] = {}
+            temp_graph = Graph(periods=[])  # periods are irrelevant for dependency sort
+
+            # First pass – create all stub nodes so dependencies can be resolved regardless of order
+            for node_name in nodes_dict:
+                temp_node = GraphDefinitionReader._TempNode(node_name)
+                temp_graph.add_node(temp_node)
+                from_nodes[node_name] = temp_node
+
+            # Second pass – wire up the inputs attribute based on serialized dependencies
+            for node_name, node_def in nodes_dict.items():
+                dep_names = self._get_node_dependencies(node_def)
+                try:
+                    from_nodes[node_name].inputs = [from_nodes[d] for d in dep_names]
+                except KeyError as missing:
+                    raise ReadError(
+                        message=f"Dependency '{missing.args[0]}' for node '{node_name}' not found in definitions.",
+                        source="graph_definition_dict",
+                    ) from None
+
+            # Delegate ordering to GraphTraverser ----------------------------------------
+            try:
+                sorted_names: list[str] = temp_graph.traverser.topological_sort()
+            except ValueError as e:
                 raise ReadError(
-                    f"Circular dependency detected among nodes: {set(dep_graph) - set(sorted_names)}",
+                    message=str(e),
                     source="graph_definition_dict",
-                )
-            # Create and add nodes in sorted order
+                ) from e
+
+            # Create and add real nodes in topological order -----------------------------
             for node_name in sorted_names:
                 node_def = nodes_dict[node_name]
                 existing_nodes = {name: graph.nodes[name] for name in graph.nodes}
                 node = NodeFactory.create_from_dict(node_def, context=existing_nodes)
                 graph.add_node(node)
 
-            # 3. Load Adjustments
+            # 3. Load Adjustments --------------------------------------------------------
             adjustments_list = source.get("adjustments")  # Optional
             if adjustments_list is not None:
                 if not isinstance(adjustments_list, list):

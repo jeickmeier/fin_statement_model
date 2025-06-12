@@ -16,8 +16,6 @@ from fin_statement_model.io.exceptions import (
     FormatNotSupportedError,
     ReadError,
     WriteError,
-    UnsupportedReaderError,
-    UnsupportedWriterError,
 )
 
 logger = logging.getLogger(__name__)
@@ -268,19 +266,11 @@ def _get_handler(
 
     # Determine Pydantic schema from registry
     schema = registry.get_schema(format_type)
-    # Enforce schema-only mode for readers (remove legacy schema-less support)
-    if handler_type == "read" and schema is None:
-        raise UnsupportedReaderError(
-            f"Reader '{format_type}' requires a Pydantic schema; legacy schema-less mode removed.",
-            source=kwargs.get("source"),
-            reader_type=format_type,
-        )
-    # Enforce schema-only mode for writers (remove legacy schema-less support)
-    if handler_type == "write" and schema is None:
-        raise UnsupportedWriterError(
-            f"Writer '{format_type}' requires a Pydantic schema; legacy schema-less mode removed.",
-            target=kwargs.get("target"),
-            writer_type=format_type,
+    # If no schema is registered for this format, treat it as unsupported
+    if schema is None:
+        raise FormatNotSupportedError(
+            format_type=format_type,
+            operation=f"{handler_type} operations",
         )
 
     # Prepare error context based on handler type

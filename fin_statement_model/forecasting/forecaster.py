@@ -29,12 +29,12 @@ logger = logging.getLogger(__name__)
 
 class StatementForecaster:
     """Perform forecasting operations on a financial statement graph.
-    
+
     This class supports both mutating and non-mutating forecasts:
-    
+
     - Mutating forecasts (`create_forecast`): adds forecast periods and updates node values.
     - Non-mutating forecasts (`forecast_value`): computes and returns forecast values without modifying the graph.
-    
+
     Supported forecasting methods: simple, curve, statistical, average, historical_growth.
     """
 

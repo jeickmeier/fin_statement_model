@@ -1,0 +1,38 @@
+# .pre-commit-config.yaml
+repos:
+  # 1. Black – opinionated formatter
+  - repo: https://github.com/psf/black
+    rev: 25.1.0          
+    hooks:
+      - id: black
+        name: formatter
+        args: ["."]      # unnecessary but explicit
+
+  # 2. Ruff – linter / fixer (runs *after* Black)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.13
+    hooks:
+      - id: ruff
+        name: linter
+        args: ["--fix"]
+
+  # 3. Mypy – local, uses the active interpreter
+  - repo: local
+    hooks:
+      - id: mypy
+        name: type checker
+        entry: .venv/bin/python -m mypy fin_statement_model --strict
+        language: system        #  ⬅ use whatever python is on PATH
+        pass_filenames: false
+
+  # 4. Pytest
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: .venv/bin/python -m pytest tests
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: true
+        require_serial: true

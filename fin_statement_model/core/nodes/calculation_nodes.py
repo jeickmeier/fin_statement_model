@@ -531,6 +531,10 @@ class CustomCalculationNode(Node):
                 details={"function": self.formula_func.__name__, "error": str(e)},
             ) from e
 
+    def clear_cache(self) -> None:
+        """Clear cached calculation results for this node."""
+        self._values.clear()
+
     def get_dependencies(self) -> list[str]:
         """Get names of nodes used by the function.
 

@@ -1,7 +1,7 @@
 """Writes a financial statement graph to a Markdown table."""
 
 import logging
-from typing import Any, Optional, TypedDict, Union
+from typing import Any, Optional, Union
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.base import DataWriter
@@ -16,17 +16,6 @@ from fin_statement_model.io.formats.markdown.notes import MarkdownNotesBuilder
 logger = logging.getLogger(__name__)
 
 
-# Legacy structure for backward compatibility
-class StatementItem(TypedDict):
-    """Represents a line item with its values for Markdown output."""
-
-    name: str
-    # value: Union[float, int, str, None] # Replaced single value
-    values: dict[str, Union[float, int, str, None]]  # Values per period
-    level: int
-    is_subtotal: bool  # Indicates if the row is a subtotal or section header
-
-
 @register_writer("markdown", schema=MarkdownWriterConfig)
 class MarkdownWriter(DataWriter):
     """Writes a financial statement structure to a Markdown table."""
@@ -36,7 +25,7 @@ class MarkdownWriter(DataWriter):
         # Provide a default config; missing fields are handled by Pydantic defaults.
         self.config = config or MarkdownWriterConfig(
             format_type="markdown",
-            target=None,  # type: ignore[call-arg]
+            target=None,
         )
         logger.debug(f"Initialized MarkdownWriter with config: {self.config}")
 
