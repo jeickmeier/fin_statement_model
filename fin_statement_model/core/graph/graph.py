@@ -23,11 +23,7 @@ from collections.abc import Callable
 from uuid import UUID
 
 from fin_statement_model.core.node_factory import NodeFactory
-from fin_statement_model.core.nodes import (
-    Node,
-    FinancialStatementItemNode,
-    is_calculation_node,
-)
+from fin_statement_model.core.nodes import Node, FinancialStatementItemNode
 from fin_statement_model.core.errors import (
     NodeError,
     CircularDependencyError,
@@ -48,6 +44,7 @@ from fin_statement_model.core.adjustments.models import (
     AdjustmentFilterInput,
 )
 from fin_statement_model.core.adjustments.manager import AdjustmentManager
+from fin_statement_model.core.graph.services import GraphIntrospector
 
 
 # Configure logging
@@ -85,6 +82,7 @@ class Graph:
         adjustment_service_cls: type["AdjustmentService"] = AdjustmentService,
         data_item_service_cls: type["DataItemService"] | None = None,
         merge_service_cls: type["MergeService"] | None = None,
+        introspector_cls: type["GraphIntrospector"] | None = None,
     ):
         """Initialize a new `Graph` instance.
 
@@ -170,6 +168,18 @@ class Graph:
             node_getter=self.get_node,
             add_node=self.add_node,
             nodes_provider=lambda: self._nodes,
+        )
+
+        # ------------------------------------------------------------------
+        # Introspector service ---------------------------------------------
+        # ------------------------------------------------------------------
+        if introspector_cls is None:
+            introspector_cls = GraphIntrospector
+
+        self._introspector = introspector_cls(
+            nodes_provider=lambda: self._nodes,
+            periods_provider=lambda: self.periods,
+            traverser_provider=lambda: self.traverser,
         )
 
         # Handle initial periods via service
@@ -492,60 +502,7 @@ class Graph:
         Examples:
             >>> logger.info(repr(graph))
         """
-        from fin_statement_model.core.nodes import (
-            FinancialStatementItemNode,
-        )  # Keep import local
-
-        num_nodes = len(self.nodes)
-        periods_str = ", ".join(map(repr, self.periods)) if self.periods else "None"
-
-        fs_item_count = 0
-        calc_node_count = 0
-        other_node_count = 0
-        dependencies_count = 0
-
-        for node in self.nodes.values():
-            if isinstance(node, FinancialStatementItemNode):
-                fs_item_count += 1
-            elif is_calculation_node(node):
-                calc_node_count += 1
-                # Prioritize get_dependencies if available, otherwise check inputs
-                if hasattr(node, "get_dependencies"):
-                    try:
-                        dependencies_count += len(node.get_dependencies())
-                    except Exception as e:
-                        logger.warning(
-                            f"Error calling get_dependencies for node '{node.name}': {e}"
-                        )
-                elif hasattr(node, "inputs"):
-                    try:
-                        if isinstance(node.inputs, list):
-                            # Ensure inputs are nodes with names
-                            dep_names = [
-                                inp.name for inp in node.inputs if hasattr(inp, "name")
-                            ]
-                            dependencies_count += len(dep_names)
-                        elif isinstance(node.inputs, dict):
-                            # Assume keys are dependency names for dict inputs
-                            dependencies_count += len(node.inputs)
-                    except Exception as e:
-                        logger.warning(
-                            f"Error processing inputs for node '{node.name}': {e}"
-                        )
-            else:
-                other_node_count += 1
-
-        repr_parts = [
-            f"Total Nodes: {num_nodes}",
-            f"FS Items: {fs_item_count}",
-            f"Calculations: {calc_node_count}",
-        ]
-        if other_node_count > 0:
-            repr_parts.append(f"Other: {other_node_count}")
-        repr_parts.append(f"Dependencies: {dependencies_count}")
-        repr_parts.append(f"Periods: [{periods_str}]")
-
-        return f"<{type(self).__name__}({', '.join(repr_parts)})>"
+        return self._introspector.make_repr()
 
     def has_cycle(self, source_node: Node, target_node: Node) -> bool:
         """Check if a cycle exists from a source node to a target node.
@@ -561,11 +518,7 @@ class Graph:
         Returns:
             True if a cycle exists, False otherwise.
         """
-        if source_node.name not in self._nodes or target_node.name not in self._nodes:
-            return False
-
-        # Use GraphTraverser's reachability check
-        return self.traverser._is_reachable(source_node.name, target_node.name)
+        return self._introspector.has_cycle(source_node, target_node)
 
     def get_node(self, name: str) -> Optional[Node]:
         """Retrieve a node from the graph by its name.
