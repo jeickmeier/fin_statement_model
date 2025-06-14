@@ -1,10 +1,18 @@
-"""Data-item helper service for ``fin_statement_model.core.graph``.
+"""DataItemService – CRUD helper for *financial-statement item* (data) nodes.
 
-This module extracts the logic previously embedded in ``Graph`` that is
-responsible for managing *data nodes* (``FinancialStatementItemNode``).
-It deliberately avoids importing ``Graph`` directly – all required
-collaborators are injected via the constructor so the service remains
-framework-agnostic and re-usable.
+The service owns the logic for adding, updating, and listing
+``FinancialStatementItemNode`` instances while delegating all structural
+validation (cycles, input resolution, etc.) to injected collaborators.  By
+working through callables it stays independent of the concrete `Graph`
+implementation and is therefore easily reusable.
+
+Example
+~~~~~~~
+>>> from fin_statement_model.core.graph import Graph
+>>> g = Graph()
+>>> g.add_financial_statement_item("Revenue", {"2023": 100})
+>>> g.get_financial_statement_items()[0].name
+'Revenue'
 """
 
 from __future__ import annotations

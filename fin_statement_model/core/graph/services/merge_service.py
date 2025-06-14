@@ -1,9 +1,21 @@
-"""MergeService – encapsulates Graph.merge_from logic.
+"""MergeService – reusable helper that implements *graph-to-graph* merging.
 
-This service takes in the minimal set of collaborators required to merge one
-Graph-like object into another without importing or depending on the concrete
-``Graph`` class.  That makes the logic reusable for alternative graph
-implementations and shrinks the monolithic ``Graph`` class.
+The service operates purely through dependency-injected callables so it
+remains agnostic of the concrete `Graph` implementation.  Typical tasks
+performed during a merge include:
+
+1. Union of period lists while maintaining sort order.
+2. Addition of new nodes absent from the target graph.
+3. In-place update of value dictionaries on nodes that exist in both graphs.
+
+Example
+~~~~~~~
+>>> from fin_statement_model.core.graph import Graph
+>>> base = Graph(periods=["2023"])
+>>> other = Graph(periods=["2023", "2024"])
+>>> _ = other.add_financial_statement_item("Revenue", {"2024": 120})
+>>> base.merge_from(other)  # internally delegates to MergeService
+(1, 0)  # nodes_added, nodes_updated
 """
 
 from __future__ import annotations

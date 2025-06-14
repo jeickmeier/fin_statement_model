@@ -22,6 +22,7 @@ from threading import Lock
 
 from .models import Config
 from fin_statement_model.core.errors import FinancialModelError
+from fin_statement_model.utils.dicts import deep_merge
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +112,7 @@ class ConfigManager:
             >>> cm.update({'logging': {'level': 'DEBUG'}})
         """
         with self._lock:
-            self._runtime_overrides = self._deep_merge(self._runtime_overrides, updates)
+            self._runtime_overrides = deep_merge(self._runtime_overrides, updates)
             self._config = None  # Force reload on next get()
 
     def _load_config(self) -> None:
@@ -139,18 +140,18 @@ class ConfigManager:
         project_config = self._find_project_config()
         if project_config:
             logger.debug(f"Loading project config from {project_config}")
-            config_dict = self._deep_merge(config_dict, self._load_file(project_config))
+            config_dict = deep_merge(config_dict, self._load_file(project_config))
 
         # Layer 2: User config file
         user_config = self._find_user_config()
         if user_config:
             logger.debug(f"Loading user config from {user_config}")
-            config_dict = self._deep_merge(config_dict, self._load_file(user_config))
+            config_dict = deep_merge(config_dict, self._load_file(user_config))
 
         # Layer 4: Runtime overrides
         if self._runtime_overrides:
             logger.debug("Applying runtime overrides")
-            config_dict = self._deep_merge(config_dict, self._runtime_overrides)
+            config_dict = deep_merge(config_dict, self._runtime_overrides)
 
         # Create and validate final config
         self._config = Config.from_dict(config_dict)
@@ -248,24 +249,6 @@ class ConfigManager:
                     else None
                 ),
             )
-
-    def _deep_merge(
-        self, base: dict[str, Any], update: dict[str, Any]
-    ) -> dict[str, Any]:
-        """Recursively merge two dictionaries with `update` taking precedence."""
-        result = base.copy()
-
-        for key, value in update.items():
-            if (
-                key in result
-                and isinstance(result[key], dict)
-                and isinstance(value, dict)
-            ):
-                result[key] = self._deep_merge(result[key], value)
-            else:
-                result[key] = value
-
-        return result
 
     # ------------------------------------------------------------------
     # .env loading utilities

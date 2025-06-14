@@ -1,11 +1,36 @@
-"""Calculation engine stub extracted from Graph.
+"""CalculationEngine orchestrates evaluation and caching of nodes in the
+`fin_statement_model` graph layer.
 
-# pragma: no cover
+The engine is intentionally *graph-agnostic*: it receives all needed
+collaborators (e.g. a node resolver and period provider) via dependency
+injection rather than importing the concrete `Graph` implementation.  This
+keeps the component reusable for alternative graph back-ends while preserving
+strict separation of concerns.
 
-This module defines ``CalculationEngine`` – an isolated service that will
-orchestrate calculations and cache management for ``Graph``.  At this stage it
-contains only minimal scaffolding so that other modules can import it without
-runtime errors.  Full logic will be migrated in step 1.3 of the refactor plan.
+Basic usage (through the public `Graph` façade):
+
+>>> from fin_statement_model.core.graph import Graph
+>>> g = Graph(periods=["2023"])
+>>> g.add_financial_statement_item("Revenue", {"2023": 100})
+>>> g.add_financial_statement_item("COGS", {"2023": 60})
+>>> _ = g.add_calculation(
+...     name="GrossProfit",
+...     input_names=["Revenue", "COGS"],
+...     operation_type="formula",
+...     formula="input_0 - input_1",
+...     formula_variable_names=["input_0", "input_1"],
+... )
+>>> g.calculate("GrossProfit", "2023")
+40.0
+
+Key responsibilities
+--------------------
+1. Resolve nodes via the injected *node_resolver* callable.
+2. Provide fast memoisation through an in-memory two-level cache
+   (`node_name -> period -> value`).
+3. Expose helper builders such as `add_calculation`, `add_metric`,
+   `add_custom_calculation`, and utilities for bulk recalculation
+   (`recalc_all`) and cache management (`clear_all`).
 """
 
 from __future__ import annotations
@@ -140,15 +165,15 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
         return value
 
     def recalc_all(self, periods: Optional[List[str]] = None) -> None:  # noqa: D401
-        """Recalculate every node for *periods*.
+        """Recalculate every node in the graph for the requested *periods*.
 
-        Implementation mimics original ``Graph.recalculate_all`` but requires the
-        caller to iterate over all node names.  Because *CalculationEngine* does
-        not (and should not) know the graph's registry, we expose a simple
-        fallback behaviour: raise *NotImplementedError* until the graph passes
-        an explicit list of node names via ``periods`` parameter being *not*
-        `None` **and** provides a helper attribute ``_all_node_names``.
-        The Graph façade will shim this in step 1.3.
+        If *periods* is ``None`` all registered periods are used.  A single
+        period string is automatically promoted to a list.  The method clears
+        the central calculation cache first and then iterates over every
+        ``(node, period)`` pair, invoking :py:meth:`calculate`.  Any
+        calculation error is logged and swallowed so that one failing node
+        does not abort the entire pass – matching the behaviour of
+        :pymeth:`Graph.recalculate_all`.
         """
         import logging
 
@@ -191,7 +216,7 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
 
     # Cache-management helpers ------------------------------------------------
     def clear_all(self) -> None:  # noqa: D401
-        """Clear the internal calculation cache (stub)."""
+        """Clear **all** entries from the internal calculation cache."""
         self._cache.clear()
 
     # Convenience: expose cache for future injection/tests -------------------

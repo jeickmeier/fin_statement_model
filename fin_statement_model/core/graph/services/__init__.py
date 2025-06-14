@@ -1,8 +1,10 @@
-"""Service layer package for `fin_statement_model.core.graph`.
+"""Service layer for `fin_statement_model.core.graph`.
 
-Contains isolated helper classes extracted from the monolithic ``Graph`` class.
-At the end of the refactor each class here should be *independent of* ``Graph``
-and reusable in other contexts (e.g., alternative graph implementations).
+This sub-package groups **graph-agnostic utilities** that are reused by the
+high-level `Graph` façade but do **not** depend on its concrete implementation.
+Keeping stateful concerns (period management, calculation caching, etc.) in
+dedicated services improves testability, maintainability, and allows future
+graphs or pipelines to compose only the pieces they need.
 """
 
 from __future__ import annotations

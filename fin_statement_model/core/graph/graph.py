@@ -220,11 +220,11 @@ class Graph:
 
     @property
     def periods(self) -> list[str]:
-        """Return periods via ``PeriodService`` (refactor)."""
+        """Return the sorted list of period identifiers managed by :class:`PeriodService`."""
         return self._period_service.periods
 
     def add_periods(self, periods: list[str]) -> None:
-        """Delegate to ``PeriodService`` (refactor)."""
+        """Add additional periods via the underlying :class:`PeriodService`."""
         self._period_service.add_periods(periods)
 
     def add_calculation(
@@ -235,7 +235,7 @@ class Graph:
         formula_variable_names: Optional[list[str]] = None,
         **calculation_kwargs: Any,
     ) -> Node:  # noqa: D401
-        """Delegate to ``CalculationEngine`` (refactor)."""
+        """Create and register a calculation node via the injected :class:`CalculationEngine`."""
         return self._calc_engine.add_calculation(
             name,
             input_names,
@@ -416,7 +416,7 @@ class Graph:
         return (adjusted_value, was_adjusted) if return_flag else adjusted_value
 
     def calculate(self, node_name: str, period: str) -> float:
-        """Thin façade delegating to ``CalculationEngine``."""
+        """Compute the value of *node_name* for *period* using :class:`CalculationEngine`."""
         return self._calc_engine.calculate(node_name, period)
 
     def recalculate_all(self, periods: Optional[list[str]] = None) -> None:
@@ -434,7 +434,7 @@ class Graph:
         Examples:
             >>> graph.recalculate_all(["2023", "2024"])
         """
-        """Delegate to ``CalculationEngine`` (refactor)."""
+        # Delegate to engine after validating *periods* parameter
         self._calc_engine.recalc_all(periods)
 
     def clear_all_caches(self) -> None:
@@ -582,6 +582,10 @@ class Graph:
         return self.traverser.detect_cycles()
 
     def validate(self) -> list[str]:  # noqa: D401
+        """Run structural validation checks on the graph and return a list of error strings.
+
+        An empty list indicates that the graph passes all validation rules
+        enforced by :class:`GraphTraverser`."""
         return self.traverser.validate()
 
     def breadth_first_search(

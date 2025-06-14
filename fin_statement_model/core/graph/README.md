@@ -2,11 +2,27 @@
 
 This directory contains the core graph implementation for the Financial Statement Model library.  The Graph API lets you build, mutate, traverse, and evaluate directed graphs of financial statement items and calculations.
 
-## Key Classes
+## Key Public Classes
 
-- **Graph**: Central orchestrator for constructing and evaluating graphs of financial data and metrics.
-- **GraphManipulator**: Helper for structural mutations (adding/removing/replacing nodes, setting values, clearing caches).
-- **GraphTraverser**: Read-only utilities for dependency inspection, traversal, validation, cycle detection, and topological sorting.
+| Class | Responsibility |
+|-------|---------------|
+| `Graph` | End-user façade that wires together all sub-services and exposes a friendly API for building and analysing models. |
+| `GraphManipulator` | *Write* helper – add / remove / replace nodes, update values, clear caches. |
+| `GraphTraverser` | *Read-only* helper – dependency inspection, cycle detection, topological sorts, etc. |
+
+### Behind the scenes – service layer
+
+The public classes delegate heavy lifting to a **service layer** of small, testable components:
+
+* `CalculationEngine` – memoised value evaluation
+* `PeriodService` – unique & sorted period management
+* `AdjustmentService` – discretionary adjustments (audit, scenarios…)
+* `DataItemService` – CRUD for `FinancialStatementItemNode`
+* `MergeService` – graph-to-graph merging
+* `GraphIntrospector` – developer-friendly diagnostics
+* `NodeRegistryService` – central node-mapping & validation
+
+These services are injected into `Graph` rather than imported directly, keeping the architecture modular and easier to test.
 
 ## Features
 

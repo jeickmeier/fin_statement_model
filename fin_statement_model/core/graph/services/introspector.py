@@ -1,9 +1,22 @@
-"""GraphIntrospector – developer-facing inspection helpers.
+"""GraphIntrospector – developer-focused, *read-only* inspection helpers.
 
-Separated from the monolithic ``Graph`` class to keep it below the 300-line
-budget and to provide re-usable, graph-agnostic utilities.  The
-``GraphIntrospector`` owns non-mutating, read-only diagnostics such as a
-compact ``repr`` string and ad-hoc helpers like ``has_cycle``.
+The class exposes convenience utilities for:
+
+* Generating a compact summary string used by ``Graph.__repr__``.
+* Checking whether adding a new edge would introduce a cycle.
+* Computing reachability between two nodes.
+
+GraphIntrospector **never mutates** graph state; it relies solely on
+dependency-injected callables so it can be reused with any graph
+implementation that fulfils the expected interfaces.
+
+Example
+~~~~~~~
+>>> from fin_statement_model.core.graph import Graph
+>>> g = Graph(periods=["2023"])
+>>> _ = g.add_financial_statement_item("Revenue", {"2023": 100})
+>>> print(repr(g))  # Behind the scenes GraphIntrospector builds this string
+<Graph(Total Nodes: 1, FS Items: 1, Calculations: 0, Dependencies: 0, Periods: ['2023'])>
 """
 
 from __future__ import annotations

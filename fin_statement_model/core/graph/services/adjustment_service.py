@@ -1,4 +1,24 @@
-"""AdjustmentService stub – wraps ``AdjustmentManager`` for Graph refactor."""
+"""AdjustmentService – thin wrapper around :class:`~fin_statement_model.core.adjustments.manager.AdjustmentManager`.
+
+The service exposes a **Graph-compatible** API for storing, filtering and
+applying discretionary adjustments to calculated node values.  All heavy-
+lifting is delegated to the underlying :class:`AdjustmentManager` so the
+graph layer can remain agnostic of implementation details.
+
+Basic usage (via the public `Graph` façade):
+
+>>> from fin_statement_model.core.graph import Graph
+>>> g = Graph(periods=["2023"])
+>>> g.add_financial_statement_item("Revenue", {"2023": 100})
+>>> g.add_adjustment(
+...     node_name="Revenue",
+...     period="2023",
+...     value=-10,
+...     reason="Correction after audit",
+... )
+>>> g.get_adjusted_value("Revenue", "2023")
+90.0
+"""
 
 from __future__ import annotations
 
@@ -47,7 +67,11 @@ class AdjustmentService:  # pylint: disable=too-few-public-methods
         *,
         adj_id: Optional[UUID] = None,
     ) -> UUID:
-        """Create ``Adjustment`` and add to manager (stub)."""
+        """Create an :class:`~fin_statement_model.core.adjustments.models.Adjustment` instance and store it.
+
+        The helper mirrors :pymeth:`Graph.add_adjustment` so external callers
+        can interact with either API transparently.
+        """
         scenario = scenario or DEFAULT_SCENARIO
         adj = Adjustment(
             id=adj_id or uuid4(),

@@ -1,9 +1,18 @@
-"""Simple PeriodService stub – manages the list of unique, sorted periods.
+"""PeriodService – single source of truth for period management in the graph layer.
 
-This service will eventually hold all period-deduplication, validation and
-sorting logic previously embedded in ``Graph``.  For now it offers the same
-public surface in a minimal form so that ``Graph`` can delegate during the
-incremental refactor.
+The service owns a mutable list of *unique*, *sorted* period identifiers and
+provides helpers to query or extend that list.  A direct list reference is
+kept so that legacy code paths accessing ``Graph._periods`` remain in sync.
+
+Example:
+
+>>> from fin_statement_model.core.graph.services.period_service import PeriodService
+>>> ps = PeriodService(["2023", "2022"])
+>>> ps.periods
+["2022", "2023"]
+>>> ps.add_periods(["2021", "2023"])
+>>> ps.periods
+["2021", "2022", "2023"]
 """
 
 from __future__ import annotations

@@ -1,9 +1,22 @@
-"""NodeRegistryService – centralises node-registry integrity checks.
+"""NodeRegistryService – single source of truth for the graph's node registry.
 
-This service owns the authoritative ``dict[str, Node]`` node registry and
-encapsulates all validation logic that was previously scattered across
-``Graph``.  Keeping the rules here lets alternative graph implementations reuse
-these guarantees without dragging in the rest of the Graph façade.
+The class maintains the mapping ``name → Node`` and enforces structural
+invariants such as:
+
+* unique, non-empty node names,
+* presence of all referenced input nodes,
+* optional cycle detection before registration.
+
+Because the service works exclusively through callables it can be reused by
+any object that behaves like a graph.
+
+Example
+~~~~~~~
+>>> from fin_statement_model.core.graph import Graph
+>>> g = Graph()
+>>> g.add_financial_statement_item("Cash", {"2023": 50})
+>>> "Cash" in g.nodes  # NodeRegistryService performed the registration
+True
 """
 
 from __future__ import annotations
