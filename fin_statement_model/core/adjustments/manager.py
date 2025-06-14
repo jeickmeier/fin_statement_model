@@ -7,6 +7,7 @@ import inspect
 from collections import defaultdict
 from typing import Optional
 from uuid import UUID
+import math
 
 from .models import (
     Adjustment,
@@ -15,6 +16,9 @@ from .models import (
     AdjustmentType,
     DEFAULT_SCENARIO,
 )
+
+# Core errors
+from fin_statement_model.core.errors import AdjustmentError
 
 
 logger = logging.getLogger(__name__)
@@ -37,11 +41,18 @@ class AdjustmentManager:
         load_adjustments: Load a new list of adjustments.
     """
 
-    def __init__(self) -> None:
-        """Initialize the adjustment manager with empty storage.
+    def __init__(self, *, strict: bool = False) -> None:
+        """Initialize the adjustment manager.
 
-        This sets up internal indices for storing and retrieving adjustments.
+        Args:
+            strict: When *True*, invalid or overflow adjustments raise
+                :class:`~fin_statement_model.core.errors.AdjustmentError` instead of
+                being silently ignored. Defaults to *False* for backwards-compatible
+                behaviour.
         """
+        # Toggle for error handling strategy
+        self.strict = strict
+
         # Primary index: (scenario, node_name, period) -> list[Adjustment]
         self._by_location: dict[tuple[str, str, str], list[Adjustment]] = defaultdict(
             list
@@ -109,17 +120,34 @@ class AdjustmentManager:
             # Ensuring result is float
             return float(base_value + adj.value * adj.scale)
         elif adj.type == AdjustmentType.MULTIPLICATIVE:
-            # Ensure base_value is not zero to avoid issues with 0**(negative scale)
-            # If base is 0, multiplicative adjustment usually results in 0 unless value is 0.
-            # We also need to handle potential complex numbers if base is negative and scale is fractional.
-            # For simplicity, let's assume standard financial contexts where this is less common
-            # or handle it by convention (e.g., multiplicative doesn't apply to zero/negative base).
-            # Let's default to returning 0 if base is 0 for multiplicative.
-            if base_value == 0:
-                return 0.0
-            # Consider adding checks or specific handling for negative base + fractional scale if needed.
-            # Cast to float after exponentiation and multiplication
-            return float(base_value * (adj.value**adj.scale))
+            # Guard against complex results when the base is non-positive and the
+            # exponent (``scale``) is fractional.
+            if base_value <= 0 and 0 < adj.scale < 1:
+                msg = (
+                    "Invalid multiplicative adjustment on non-positive base with a "
+                    "fractional scale; returning base value unchanged."
+                )
+                logger.warning(msg)
+                if self.strict:
+                    raise AdjustmentError(msg)
+                return base_value
+
+            try:
+                # ``math.pow`` provides better error signalling (raises ValueError on
+                # negative bases with fractional exponents) and handles huge
+                # exponents consistently across platforms.
+                result = base_value * math.pow(adj.value, adj.scale)
+                if math.isfinite(result):
+                    return float(result)
+                logger.error("Adjustment produced non-finite result (inf/nan)")
+                if self.strict:
+                    raise AdjustmentError("Adjustment resulted in non-finite value")
+                return base_value
+            except (OverflowError, ValueError) as exc:
+                logger.error("Adjustment overflow/invalid: %s", exc)
+                if self.strict:
+                    raise AdjustmentError(str(exc)) from exc
+                return base_value
         elif adj.type == AdjustmentType.REPLACEMENT:
             # Scale is ignored for replacement type as per spec
             # Cast to float to satisfy return type
@@ -156,8 +184,11 @@ class AdjustmentManager:
         )
 
         for adj in sorted_adjustments:
-            current_value = self._apply_one(current_value, adj)
-            applied_flag = True
+            new_value = self._apply_one(current_value, adj)
+            # Only mark as applied if the adjustment actually changed the value.
+            if new_value != current_value:
+                applied_flag = True
+            current_value = new_value
 
         return current_value, applied_flag
 

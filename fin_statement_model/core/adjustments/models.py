@@ -28,7 +28,7 @@ class AdjustmentType(Enum):
     """Defines how an adjustment modifies a base value."""
 
     ADDITIVE = "additive"  # base + (value * scale)
-    MULTIPLICATIVE = "multiplicative"  # base * (value ** scale)
+    MULTIPLICATIVE = "multiplicative"  # base * (value ** scale) – if base<=0 and 0<scale<1 the adjustment is ignored (or raises if strict)
     REPLACEMENT = "replacement"  # use value (scale ignored)
 
 

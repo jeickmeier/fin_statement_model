@@ -470,3 +470,14 @@ class MetricError(FinancialModelError):
         )
 
         super().__init__(full_message)
+
+
+class AdjustmentError(FinancialModelError):
+    """Error raised when an invalid adjustment is encountered.
+
+    Used by :class:`fin_statement_model.core.adjustments.manager.AdjustmentManager` when
+    ``strict=True`` and a mathematical domain error or overflow is detected while
+    applying an adjustment.
+    """
+
+    pass
