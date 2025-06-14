@@ -38,6 +38,7 @@ dev = [
     "types-pyyaml>=6.0.12.20250516",
     "pdoc3>=0.11.6",
     "pre-commit>=4.2.0",
+    "pytest-doctestplus>=1.4.0",
 ]
 
 [tool.coverage.run]
