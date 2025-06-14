@@ -6,47 +6,47 @@ accounts_payable:
   category: balance_sheet_liabilities
   subcategory: current_liabilities
   description: Trade payables
-  alternate_names: [ap, payables]
+  alternate_names: [ap, payables, Accounts Payable]
   sign_convention: positive
 
 accrued_expenses:
   category: balance_sheet_liabilities
   subcategory: current_liabilities
   description: Accrued expenses
-  alternate_names: [accruals, accrued_liabilities]
+  alternate_names: [accruals, accrued_liabilities, Accrued Expenses]
   sign_convention: positive
 
 short_term_debt:
   category: balance_sheet_liabilities
   subcategory: current_liabilities
   description: Short-term debt and current portion of long-term debt
-  alternate_names: [st_debt, current_debt]
+  alternate_names: [st_debt, current_debt, Short-Term Debt]
   sign_convention: positive
 
 current_liabilities:
   category: balance_sheet_liabilities
   subcategory: subtotal
   description: Total current liabilities
-  alternate_names: [cl, current_liabilities_total]
+  alternate_names: [cl, current_liabilities_total, Current Liabilities]
   sign_convention: positive
 
 long_term_debt:
   category: balance_sheet_liabilities
   subcategory: non_current_liabilities
   description: Long-term debt excluding current portion
-  alternate_names: [lt_debt, ltb]
+  alternate_names: [lt_debt, ltb, Long-Term Debt]
   sign_convention: positive
 
 total_debt:
   category: balance_sheet_liabilities
   subcategory: calculated
   description: Total debt (short_term_debt + long_term_debt)
-  alternate_names: [debt]
+  alternate_names: [debt, Total Debt]
   sign_convention: positive
 
 total_liabilities:
   category: balance_sheet_liabilities
   subcategory: total
   description: Total liabilities
-  alternate_names: [tl, liabilities]
+  alternate_names: [tl, liabilities, Total Liabilities]
   sign_convention: positive 

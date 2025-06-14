@@ -6,33 +6,33 @@ operating_expenses:
   category: income_statement
   subcategory: operating_costs
   description: Total operating expenses
-  alternate_names: [opex, operating_costs]
+  alternate_names: [opex, operating_costs, Operating Expenses]
   sign_convention: negative
 
 sg_and_a:
   category: income_statement
   subcategory: operating_costs
   description: Selling, general & administrative expenses
-  alternate_names: [sga, selling_general_admin]
+  alternate_names: [sga, selling_general_admin, Selling, General & Administrative Expenses]
   sign_convention: negative
 
 r_and_d:
   category: income_statement
   subcategory: operating_costs
   description: Research & development expenses
-  alternate_names: [rd, research_development, research_and_development]
+  alternate_names: [rd, research_development, research_and_development, Research & Development Expenses]
   sign_convention: negative
 
 depreciation_and_amortization:
   category: income_statement
   subcategory: operating_costs
   description: D&A expense
-  alternate_names: [d_and_a, da, depreciation_amortization]
+  alternate_names: [d_and_a, da, depreciation_amortization, Depreciation & Amortization Expenses]
   sign_convention: negative
 
 operating_income:
   category: income_statement
   subcategory: profit_measure
   description: Operating income/EBIT
-  alternate_names: [ebit, operating_profit, oi]
+  alternate_names: [ebit, operating_profit, oi, Operating Income] 
   sign_convention: positive 

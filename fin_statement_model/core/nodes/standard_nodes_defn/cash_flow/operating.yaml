@@ -6,5 +6,5 @@ operating_cash_flow:
   category: cash_flow_statement
   subcategory: operating_activities
   description: Cash flow from operations
-  alternate_names: [cfo, ocf, cffo]
+  alternate_names: [cfo, ocf, cffo, Cash Flow from Operations]
   sign_convention: positive 

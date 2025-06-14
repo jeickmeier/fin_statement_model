@@ -6,12 +6,12 @@ working_capital:
   category: calculated
   subcategory: liquidity_measure
   description: Working capital (current_assets - current_liabilities)
-  alternate_names: [wc]
+  alternate_names: [wc, Working Capital]
   sign_convention: positive
 
 net_working_capital:
   category: calculated
   subcategory: liquidity_measure
   description: Operating working capital (excluding cash and debt)
-  alternate_names: [nwc, operating_working_capital]
+  alternate_names: [nwc, Net Working Capital]
   sign_convention: positive 

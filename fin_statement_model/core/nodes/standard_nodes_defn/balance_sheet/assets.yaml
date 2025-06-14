@@ -6,68 +6,68 @@ cash_and_equivalents:
   category: balance_sheet_assets
   subcategory: current_assets
   description: Cash and cash equivalents
-  alternate_names: [cash, cash_equivalents, c_and_e]
+  alternate_names: [cash, cash_equivalents, c_and_e, Cash & Cash Equivalents]
   sign_convention: positive
 
 short_term_investments:
   category: balance_sheet_assets
   subcategory: current_assets
   description: Short-term marketable securities
-  alternate_names: [st_investments, marketable_securities]
+  alternate_names: [st_investments, marketable_securities, Short-Term Investments]
   sign_convention: positive
 
 accounts_receivable:
   category: balance_sheet_assets
   subcategory: current_assets
   description: Trade receivables
-  alternate_names: [ar, receivables, trade_receivables]
+  alternate_names: [ar, receivables, trade_receivables, Trade Receivables]
   sign_convention: positive
 
 inventory:
   category: balance_sheet_assets
   subcategory: current_assets
   description: Total inventory
-  alternate_names: [inventories, inv]
+  alternate_names: [inventories, inv, Inventory]
   sign_convention: positive
 
 prepaid_expenses:
   category: balance_sheet_assets
   subcategory: current_assets
   description: Prepaid expenses and other current assets
-  alternate_names: [prepaids]
+  alternate_names: [prepaids, Prepaid Expenses]
   sign_convention: positive
 
 current_assets:
   category: balance_sheet_assets
   subcategory: subtotal
   description: Total current assets
-  alternate_names: [ca, current_assets_total]
+  alternate_names: [ca, current_assets_total, Current Assets]
   sign_convention: positive
 
 property_plant_equipment:
   category: balance_sheet_assets
   subcategory: non_current_assets
   description: Net property, plant and equipment
-  alternate_names: [ppe, fixed_assets, pp_and_e]
+  alternate_names: [ppe, fixed_assets, pp_and_e, Property, Plant & Equipment]
   sign_convention: positive
 
 intangible_assets:
   category: balance_sheet_assets
   subcategory: non_current_assets
   description: Intangible assets including goodwill
-  alternate_names: [intangibles]
+  alternate_names: [intangibles, Intangible Assets]
   sign_convention: positive
 
 long_term_investments:
   category: balance_sheet_assets
   subcategory: non_current_assets
   description: Long-term investments
-  alternate_names: [lt_investments, long_term_marketable_securities]
+  alternate_names: [lt_investments, long_term_marketable_securities, Long-Term Investments]
   sign_convention: positive
 
 total_assets:
   category: balance_sheet_assets
   subcategory: total
   description: Total assets
-  alternate_names: [ta, assets]
+  alternate_names: [ta, assets, Total Assets]
   sign_convention: positive 

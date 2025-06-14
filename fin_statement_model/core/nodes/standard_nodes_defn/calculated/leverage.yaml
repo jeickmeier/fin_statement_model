@@ -6,19 +6,19 @@ net_debt:
   category: calculated
   subcategory: leverage_measure
   description: Net debt (total_debt - cash_and_equivalents)
-  alternate_names: []
+  alternate_names: [net_debt, Net Debt]
   sign_convention: positive
 
 invested_capital:
   category: calculated
   subcategory: capital_measure
   description: Total invested capital
-  alternate_names: [ic]
+  alternate_names: [ic, Invested Capital]
   sign_convention: positive
 
 tangible_book_value:
   category: calculated
   subcategory: equity_measure
   description: Book value excluding intangibles
-  alternate_names: [tbv]
+  alternate_names: [tbv, Tangible Book Value]
   sign_convention: positive 

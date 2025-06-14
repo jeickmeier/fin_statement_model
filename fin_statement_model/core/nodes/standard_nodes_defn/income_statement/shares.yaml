@@ -6,12 +6,12 @@ shares_outstanding:
   category: income_statement
   subcategory: shares
   description: Weighted average shares outstanding
-  alternate_names: [shares, common_shares_outstanding]
+  alternate_names: [shares, common_shares_outstanding, Shares Outstanding]
   sign_convention: positive
 
 diluted_shares_outstanding:
   category: income_statement
   subcategory: shares
   description: Diluted shares outstanding
-  alternate_names: [diluted_shares]
+  alternate_names: [diluted_shares, Diluted Shares Outstanding]
   sign_convention: positive 

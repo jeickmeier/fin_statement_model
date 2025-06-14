@@ -6,5 +6,5 @@ enterprise_value:
   category: calculated
   subcategory: valuation_measure
   description: Enterprise value (market_cap + net_debt + minority_interest)
-  alternate_names: [ev]
+  alternate_names: [ev, Enterprise Value]
   sign_convention: positive 

@@ -7,28 +7,28 @@ loan_commitments:
   category: banking_off_balance_sheet
   subcategory: commitments
   description: Loan commitments and unused credit lines
-  alternate_names: [credit_commitments, unused_commitments]
+  alternate_names: [credit_commitments, unused_commitments, Loan Commitments]
   sign_convention: positive
 
 standby_letters_of_credit:
   category: banking_off_balance_sheet
   subcategory: commitments
   description: Standby letters of credit
-  alternate_names: [standby_lc, financial_guarantees]
+  alternate_names: [standby_lc, financial_guarantees, Standby Letters of Credit]
   sign_convention: positive
 
 commercial_letters_of_credit:
   category: banking_off_balance_sheet
   subcategory: commitments
   description: Commercial letters of credit
-  alternate_names: [commercial_lc, trade_letters_credit]
+  alternate_names: [commercial_lc, trade_letters_credit, Commercial Letters of Credit]
   sign_convention: positive
 
 total_commitments:
   category: banking_off_balance_sheet
   subcategory: commitments
   description: Total commitments and contingencies
-  alternate_names: [total_off_balance_sheet]
+  alternate_names: [total_off_balance_sheet, Total Commitments]
   sign_convention: positive
 
 # Derivatives
@@ -36,42 +36,42 @@ interest_rate_derivatives_notional:
   category: banking_off_balance_sheet
   subcategory: derivatives
   description: Interest rate derivatives notional amount
-  alternate_names: [ir_derivatives, interest_rate_swaps]
+  alternate_names: [ir_derivatives, interest_rate_swaps, Interest Rate Derivatives]
   sign_convention: positive
 
 foreign_exchange_derivatives_notional:
   category: banking_off_balance_sheet
   subcategory: derivatives
   description: Foreign exchange derivatives notional amount
-  alternate_names: [fx_derivatives, currency_derivatives]
+  alternate_names: [fx_derivatives, currency_derivatives, Foreign Exchange Derivatives]
   sign_convention: positive
 
 credit_derivatives_notional:
   category: banking_off_balance_sheet
   subcategory: derivatives
   description: Credit derivatives notional amount
-  alternate_names: [credit_default_swaps, cds_notional]
+  alternate_names: [credit_default_swaps, cds_notional, Credit Default Swaps]
   sign_convention: positive
 
 commodity_derivatives_notional:
   category: banking_off_balance_sheet
   subcategory: derivatives
   description: Commodity derivatives notional amount
-  alternate_names: [commodity_swaps]
+  alternate_names: [commodity_swaps, Commodity Derivatives]
   sign_convention: positive
 
 equity_derivatives_notional:
   category: banking_off_balance_sheet
   subcategory: derivatives
   description: Equity derivatives notional amount
-  alternate_names: [equity_swaps, stock_derivatives]
+  alternate_names: [equity_swaps, stock_derivatives, Equity Derivatives]
   sign_convention: positive
 
 total_derivatives_notional:
   category: banking_off_balance_sheet
   subcategory: derivatives
   description: Total derivatives notional amount
-  alternate_names: [derivatives_notional, total_notional]
+  alternate_names: [derivatives_notional, total_notional, Total Derivatives]
   sign_convention: positive
 
 # Derivative Fair Values
@@ -79,21 +79,21 @@ derivatives_assets_fair_value:
   category: banking_off_balance_sheet
   subcategory: derivative_fair_values
   description: Fair value of derivative assets
-  alternate_names: [derivative_assets, positive_fair_value]
+  alternate_names: [derivative_assets, positive_fair_value, Derivative Assets]
   sign_convention: positive
 
 derivatives_liabilities_fair_value:
   category: banking_off_balance_sheet
   subcategory: derivative_fair_values
   description: Fair value of derivative liabilities
-  alternate_names: [derivative_liabilities, negative_fair_value]
+  alternate_names: [derivative_liabilities, negative_fair_value, Derivative Liabilities]
   sign_convention: positive
 
 net_derivative_fair_value:
   category: banking_off_balance_sheet
   subcategory: derivative_fair_values
   description: Net fair value of derivatives
-  alternate_names: [net_derivatives]
+  alternate_names: [net_derivatives, Net Derivatives]
   sign_convention: positive
 
 # Trust and Fiduciary Activities
@@ -101,21 +101,21 @@ assets_under_management:
   category: banking_off_balance_sheet
   subcategory: fiduciary_activities
   description: Assets under management
-  alternate_names: [aum, managed_assets]
+  alternate_names: [aum, managed_assets, Assets Under Management]
   sign_convention: positive
 
 assets_under_administration:
   category: banking_off_balance_sheet
   subcategory: fiduciary_activities
   description: Assets under administration
-  alternate_names: [aua, custody_assets]
+  alternate_names: [aua, custody_assets, Assets Under Administration]
   sign_convention: positive
 
 trust_assets:
   category: banking_off_balance_sheet
   subcategory: fiduciary_activities
   description: Trust assets
-  alternate_names: [fiduciary_assets]
+  alternate_names: [fiduciary_assets, Trust Assets]
   sign_convention: positive
 
 # Securitizations and Asset Sales
@@ -123,21 +123,21 @@ securitized_assets_outstanding:
   category: banking_off_balance_sheet
   subcategory: securitizations
   description: Outstanding securitized assets
-  alternate_names: [securitized_loans, sold_loans_outstanding]
+  alternate_names: [securitized_loans, sold_loans_outstanding, Securitized Loans]
   sign_convention: positive
 
 retained_interests_securitizations:
   category: banking_off_balance_sheet
   subcategory: securitizations
   description: Retained interests in securitizations
-  alternate_names: [retained_strips, io_strips]
+  alternate_names: [retained_strips, io_strips, Retained Interests in Securitizations]
   sign_convention: positive
 
 servicing_assets:
   category: banking_off_balance_sheet
   subcategory: securitizations
   description: Mortgage servicing rights and other servicing assets
-  alternate_names: [msr, servicing_rights]
+  alternate_names: [msr, servicing_rights, Mortgage Servicing Rights]
   sign_convention: positive
 
 # Other Off-Balance Sheet Items
@@ -145,19 +145,19 @@ recourse_obligations:
   category: banking_off_balance_sheet
   subcategory: other_contingencies
   description: Recourse obligations on loans sold
-  alternate_names: [loan_sale_recourse]
+  alternate_names: [loan_sale_recourse, Recourse Obligations]
   sign_convention: positive
 
 performance_bonds:
   category: banking_off_balance_sheet
   subcategory: other_contingencies
   description: Performance bonds and guarantees
-  alternate_names: [performance_guarantees]
+  alternate_names: [performance_guarantees, Performance Bonds]
   sign_convention: positive
 
 other_contingencies:
   category: banking_off_balance_sheet
   subcategory: other_contingencies
   description: Other contingent liabilities
-  alternate_names: [misc_contingencies]
+  alternate_names: [misc_contingencies, Other Contingencies]
   sign_convention: positive 

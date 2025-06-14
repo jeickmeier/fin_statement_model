@@ -7,28 +7,28 @@ credit_risk_weighted_assets:
   category: banking_regulatory
   subcategory: risk_weighted_assets
   description: Credit risk-weighted assets
-  alternate_names: [credit_rwa, credit_risk_assets]
+  alternate_names: [credit_rwa, credit_risk_assets, Credit Risk-Weighted Assets]
   sign_convention: positive
 
 market_risk_weighted_assets:
   category: banking_regulatory
   subcategory: risk_weighted_assets
   description: Market risk-weighted assets
-  alternate_names: [market_rwa, market_risk_assets]
+  alternate_names: [market_rwa, market_risk_assets, Market Risk-Weighted Assets]
   sign_convention: positive
 
 operational_risk_weighted_assets:
   category: banking_regulatory
   subcategory: risk_weighted_assets
   description: Operational risk-weighted assets
-  alternate_names: [operational_rwa, operational_risk_assets]
+  alternate_names: [operational_rwa, operational_risk_assets, Operational Risk-Weighted Assets]
   sign_convention: positive
 
 total_risk_weighted_assets:
   category: banking_regulatory
   subcategory: risk_weighted_assets
   description: Total risk-weighted assets
-  alternate_names: [rwa, total_rwa]
+  alternate_names: [rwa, total_rwa, Total Risk-Weighted Assets]
   sign_convention: positive
 
 # Tier 1 Capital
@@ -36,21 +36,21 @@ common_equity_tier_1:
   category: banking_regulatory
   subcategory: tier_1_capital
   description: Common Equity Tier 1 capital
-  alternate_names: [cet1, common_equity_tier_1_capital]
+  alternate_names: [cet1, common_equity_tier_1_capital, Common Equity Tier 1 Capital]
   sign_convention: positive
 
 additional_tier_1_capital:
   category: banking_regulatory
   subcategory: tier_1_capital
   description: Additional Tier 1 capital
-  alternate_names: [at1, additional_tier_1]
+  alternate_names: [at1, additional_tier_1, Additional Tier 1 Capital]
   sign_convention: positive
 
 total_tier_1_capital:
   category: banking_regulatory
   subcategory: tier_1_capital
   description: Total Tier 1 capital
-  alternate_names: [tier_1_capital, t1_capital]
+  alternate_names: [tier_1_capital, t1_capital, Total Tier 1 Capital]
   sign_convention: positive
 
 # Tier 2 Capital
@@ -58,7 +58,7 @@ tier_2_capital:
   category: banking_regulatory
   subcategory: tier_2_capital
   description: Tier 2 capital
-  alternate_names: [t2_capital, supplementary_capital]
+  alternate_names: [t2_capital, supplementary_capital, Tier 2 Capital]
   sign_convention: positive
 
 # Total Capital
@@ -66,7 +66,7 @@ total_capital:
   category: banking_regulatory
   subcategory: total_capital
   description: Total regulatory capital
-  alternate_names: [total_regulatory_capital, regulatory_capital]
+  alternate_names: [total_regulatory_capital, regulatory_capital, Total Regulatory Capital]
   sign_convention: positive
 
 # Capital Ratios
@@ -74,21 +74,21 @@ common_equity_tier_1_ratio:
   category: banking_regulatory
   subcategory: capital_ratios
   description: Common Equity Tier 1 ratio
-  alternate_names: [cet1_ratio, common_equity_ratio]
+  alternate_names: [cet1_ratio, common_equity_ratio, Common Equity Tier 1 Ratio]
   sign_convention: positive
 
 tier_1_capital_ratio:
   category: banking_regulatory
   subcategory: capital_ratios
   description: Tier 1 capital ratio
-  alternate_names: [tier_1_ratio, t1_ratio]
+  alternate_names: [tier_1_ratio, t1_ratio, Tier 1 Capital Ratio]
   sign_convention: positive
 
 total_capital_ratio:
   category: banking_regulatory
   subcategory: capital_ratios
   description: Total capital ratio
-  alternate_names: [total_cap_ratio, regulatory_capital_ratio]
+  alternate_names: [total_cap_ratio, regulatory_capital_ratio, Total Capital Ratio]
   sign_convention: positive
 
 # Leverage Ratio
@@ -96,7 +96,7 @@ tier_1_leverage_ratio:
   category: banking_regulatory
   subcategory: leverage_ratios
   description: Tier 1 leverage ratio
-  alternate_names: [leverage_ratio, tier_1_leverage]
+  alternate_names: [leverage_ratio, tier_1_leverage, Tier 1 Leverage Ratio]
   sign_convention: positive
 
 # Supplementary Leverage Ratio (for large banks)
@@ -104,7 +104,7 @@ supplementary_leverage_ratio:
   category: banking_regulatory
   subcategory: leverage_ratios
   description: Supplementary leverage ratio
-  alternate_names: [slr, enhanced_leverage_ratio]
+  alternate_names: [slr, enhanced_leverage_ratio, Supplementary Leverage Ratio]
   sign_convention: positive
 
 # Liquidity Ratios
@@ -112,14 +112,14 @@ liquidity_coverage_ratio:
   category: banking_regulatory
   subcategory: liquidity_ratios
   description: Liquidity Coverage Ratio
-  alternate_names: [lcr]
+  alternate_names: [lcr, Liquidity Coverage Ratio]
   sign_convention: positive
 
 net_stable_funding_ratio:
   category: banking_regulatory
   subcategory: liquidity_ratios
   description: Net Stable Funding Ratio
-  alternate_names: [nsfr]
+  alternate_names: [nsfr, Net Stable Funding Ratio]
   sign_convention: positive
 
 # Stress Test Capital
@@ -127,7 +127,7 @@ stress_test_capital_buffer:
   category: banking_regulatory
   subcategory: stress_testing
   description: Stress test capital buffer
-  alternate_names: [stress_buffer, ccar_buffer]
+  alternate_names: [stress_buffer, ccar_buffer, Stress Test Capital Buffer]
   sign_convention: positive
 
 # Regulatory Minimums and Buffers
@@ -135,7 +135,7 @@ minimum_cet1_ratio:
   category: banking_regulatory
   subcategory: regulatory_minimums
   description: Minimum required CET1 ratio
-  alternate_names: [min_cet1_ratio]
+  alternate_names: [min_cet1_ratio, Minimum CET1 Ratio]
   sign_convention: positive
 
 capital_conservation_buffer:
@@ -149,12 +149,12 @@ countercyclical_capital_buffer:
   category: banking_regulatory
   subcategory: regulatory_buffers
   description: Countercyclical capital buffer
-  alternate_names: [countercyclical_buffer, ccyb]
+  alternate_names: [countercyclical_buffer, ccyb, Countercyclical Capital Buffer]
   sign_convention: positive
 
 gsib_buffer:
   category: banking_regulatory
   subcategory: regulatory_buffers
   description: Global systemically important bank buffer
-  alternate_names: [g_sib_buffer, systemic_buffer]
+  alternate_names: [g_sib_buffer, systemic_buffer, Global Systemically Important Bank Buffer]
   sign_convention: positive 

@@ -6,19 +6,19 @@ revenue:
   category: income_statement
   subcategory: top_line
   description: Total revenue/sales
-  alternate_names: [sales, total_revenue, revenues]
+  alternate_names: [sales, total_revenue, revenues, Revenue]
   sign_convention: positive
 
 cost_of_goods_sold:
   category: income_statement
   subcategory: direct_costs
   description: Cost of goods sold
-  alternate_names: [cogs, cost_of_sales, cos]
+  alternate_names: [cogs, cost_of_sales, cos, Cost of Goods Sold]
   sign_convention: negative
 
 gross_profit:
   category: income_statement
   subcategory: profit_measure
   description: Gross profit
-  alternate_names: [gp, gross_margin_dollars]
+  alternate_names: [gp, gross_margin_dollars, Gross Profit]
   sign_convention: positive 

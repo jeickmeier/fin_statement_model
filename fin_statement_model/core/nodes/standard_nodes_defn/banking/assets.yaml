@@ -7,14 +7,14 @@ cash_and_due_from_banks:
   category: banking_assets
   subcategory: cash_equivalents
   description: Cash and due from banks
-  alternate_names: [cash_due_from_banks, bank_cash]
+  alternate_names: [cash_due_from_banks, bank_cash, Cash & Due from Banks]
   sign_convention: positive
 
 federal_funds_sold:
   category: banking_assets
   subcategory: cash_equivalents
   description: Federal funds sold and securities purchased under resale agreements
-  alternate_names: [fed_funds_sold, reverse_repos]
+  alternate_names: [fed_funds_sold, reverse_repos, Federal Funds Sold]
   sign_convention: positive
 
 # Securities Portfolio
@@ -22,28 +22,28 @@ securities_available_for_sale:
   category: banking_assets
   subcategory: securities
   description: Securities available for sale
-  alternate_names: [afs_securities, available_for_sale]
+  alternate_names: [afs_securities, available_for_sale, Available-for-Sale Securities]
   sign_convention: positive
 
 securities_held_to_maturity:
   category: banking_assets
   subcategory: securities
   description: Securities held to maturity
-  alternate_names: [htm_securities, held_to_maturity]
+  alternate_names: [htm_securities, held_to_maturity, Held-to-Maturity Securities]
   sign_convention: positive
 
 trading_securities:
   category: banking_assets
   subcategory: securities
   description: Trading securities
-  alternate_names: [trading_assets]
+  alternate_names: [trading_assets, Trading Securities]
   sign_convention: positive
 
 total_securities:
   category: banking_assets
   subcategory: securities
   description: Total securities portfolio
-  alternate_names: [investment_securities]
+  alternate_names: [investment_securities, Total Securities]
   sign_convention: positive
 
 # Loan Portfolio
@@ -51,49 +51,49 @@ commercial_loans:
   category: banking_assets
   subcategory: loans
   description: Commercial and industrial loans
-  alternate_names: [c_and_i_loans, commercial_industrial]
+  alternate_names: [c_and_i_loans, commercial_industrial, Commercial & Industrial Loans]
   sign_convention: positive
 
 real_estate_loans:
   category: banking_assets
   subcategory: loans
   description: Real estate loans
-  alternate_names: [re_loans, mortgage_loans]
+  alternate_names: [re_loans, mortgage_loans, Real Estate Loans]
   sign_convention: positive
 
 consumer_loans:
   category: banking_assets
   subcategory: loans
   description: Consumer loans
-  alternate_names: [retail_loans, personal_loans]
+  alternate_names: [retail_loans, personal_loans, Consumer Loans]
   sign_convention: positive
 
 credit_card_loans:
   category: banking_assets
   subcategory: loans
   description: Credit card loans
-  alternate_names: [credit_cards, card_receivables]
+  alternate_names: [credit_cards, card_receivables, Credit Card Loans]
   sign_convention: positive
 
 total_loans:
   category: banking_assets
   subcategory: loans
   description: Total loans before allowance
-  alternate_names: [gross_loans, loans_gross]
+  alternate_names: [gross_loans, loans_gross, Total Loans]
   sign_convention: positive
 
 allowance_for_loan_losses:
   category: banking_assets
   subcategory: loan_adjustments
   description: Allowance for credit losses
-  alternate_names: [acl, loan_loss_allowance, alll]
+  alternate_names: [acl, loan_loss_allowance, alll, Allowance for Credit Losses]
   sign_convention: negative
 
 net_loans:
   category: banking_assets
   subcategory: loans
   description: Net loans after allowance
-  alternate_names: [loans_net, net_loan_portfolio]
+  alternate_names: [loans_net, net_loan_portfolio, Net Loans]
   sign_convention: positive
 
 # Non-Performing Assets
@@ -101,14 +101,14 @@ non_performing_loans:
   category: banking_assets
   subcategory: asset_quality
   description: Non-performing loans
-  alternate_names: [npl, nonperforming_loans]
+  alternate_names: [npl, nonperforming_loans, Non-Performing Loans]
   sign_convention: positive
 
 other_real_estate_owned:
   category: banking_assets
   subcategory: asset_quality
   description: Other real estate owned (foreclosed properties)
-  alternate_names: [oreo, foreclosed_assets]
+  alternate_names: [oreo, foreclosed_assets, Other Real Estate Owned]
   sign_convention: positive
 
 # Other Assets
@@ -116,35 +116,35 @@ premises_and_equipment:
   category: banking_assets
   subcategory: fixed_assets
   description: Premises and equipment
-  alternate_names: [bank_premises, fixed_assets]
+  alternate_names: [bank_premises, fixed_assets, Bank Premises]
   sign_convention: positive
 
 goodwill:
   category: banking_assets
   subcategory: intangible_assets
   description: Goodwill
-  alternate_names: [goodwill_intangible]
+  alternate_names: [goodwill_intangible, Goodwill]
   sign_convention: positive
 
 other_intangible_assets:
   category: banking_assets
   subcategory: intangible_assets
   description: Other intangible assets
-  alternate_names: [intangibles_other]
+  alternate_names: [intangibles_other, Other Intangible Assets]
   sign_convention: positive
 
 accrued_interest_receivable:
   category: banking_assets
   subcategory: accruals
   description: Accrued interest receivable
-  alternate_names: [interest_receivable, accrued_interest]
+  alternate_names: [interest_receivable, accrued_interest, Accrued Interest Receivable]
   sign_convention: positive
 
 other_assets:
   category: banking_assets
   subcategory: other
   description: Other assets
-  alternate_names: [miscellaneous_assets]
+  alternate_names: [miscellaneous_assets, Other Assets]
   sign_convention: positive
 
 # Liquidity-Specific Assets
@@ -152,40 +152,40 @@ high_quality_liquid_assets:
   category: banking_assets
   subcategory: liquidity
   description: High-quality liquid assets for LCR calculation
-  alternate_names: [hqla, liquid_assets_hqla]
+  alternate_names: [hqla, liquid_assets_hqla, High-Quality Liquid Assets]
   sign_convention: positive
 
 liquid_assets:
   category: banking_assets
   subcategory: liquidity
   description: Total liquid assets
-  alternate_names: [liquidity_buffer, liquid_securities]
+  alternate_names: [liquidity_buffer, liquid_securities, Total Liquid Assets]
   sign_convention: positive
 
 net_cash_outflows_30_days:
   category: banking_assets
   subcategory: liquidity
   description: Net cash outflows over 30 days for LCR calculation
-  alternate_names: [lcr_outflows, stress_outflows]
+  alternate_names: [lcr_outflows, stress_outflows, Net Cash Outflows over 30 Days]
   sign_convention: positive
 
 available_stable_funding:
   category: banking_assets
   subcategory: liquidity
   description: Available stable funding for NSFR calculation
-  alternate_names: [asf, stable_funding_available]
+  alternate_names: [asf, stable_funding_available, Available Stable Funding]
   sign_convention: positive
 
 required_stable_funding:
   category: banking_assets
   subcategory: liquidity
   description: Required stable funding for NSFR calculation
-  alternate_names: [rsf, stable_funding_required]
+  alternate_names: [rsf, stable_funding_required, Required Stable Funding]
   sign_convention: positive
 
 total_assets:
   category: banking_assets
   subcategory: total
   description: Total assets
-  alternate_names: [ta, assets]
+  alternate_names: [ta, assets, Total Assets]
   sign_convention: positive 
