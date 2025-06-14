@@ -20,7 +20,7 @@ Example:
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional, cast
+from typing import Any, Optional, cast, Union, Iterable
 from collections.abc import Callable
 from uuid import UUID
 
@@ -43,6 +43,7 @@ from fin_statement_model.core.adjustments.models import (
 from fin_statement_model.core.adjustments.manager import AdjustmentManager
 from fin_statement_model.core.graph.services import GraphIntrospector
 from fin_statement_model.core.graph.services import NodeRegistryService
+from fin_statement_model.core.time.period import Period  # local import
 
 
 # Configure logging
@@ -112,7 +113,7 @@ class Graph:
         self._nodes: dict[str, Node] = {}
 
         # Initialize core attributes for periods, cache, and node factory
-        self._periods: list[str] = []  # Kept temporarily; shared with PeriodService
+        self._periods: list[str] = []
         self._cache: dict[str, dict[str, float]] = {}
         self._node_factory: NodeFactory = NodeFactory()
 
@@ -219,13 +220,21 @@ class Graph:
         return self._nodes
 
     @property
-    def periods(self) -> list[str]:
-        """Return the sorted list of period identifiers managed by :class:`PeriodService`."""
+    def periods(self) -> list[str]:  # noqa: D401
+        """Return the **string identifiers** of all periods in chronological order."""
         return self._period_service.periods
 
-    def add_periods(self, periods: list[str]) -> None:
-        """Add additional periods via the underlying :class:`PeriodService`."""
-        self._period_service.add_periods(periods)
+    def add_periods(self, periods: Iterable[Union[str, Period]]) -> None:
+        """Add additional periods (raw strings or :class:`Period` instances)."""
+        if isinstance(periods, str):  # Preserve legacy validation semantics
+            raise TypeError(
+                "Periods must be provided as a list/iterable, not a string."
+            )
+
+        period_strings: list[str] = [
+            str(p) if isinstance(p, Period) else p for p in periods
+        ]
+        self._period_service.add_periods(period_strings)
 
     def add_calculation(
         self,
@@ -415,11 +424,13 @@ class Graph:
 
         return (adjusted_value, was_adjusted) if return_flag else adjusted_value
 
-    def calculate(self, node_name: str, period: str) -> float:
-        """Compute the value of *node_name* for *period* using :class:`CalculationEngine`."""
+    def calculate(self, node_name: str, period: Union[str, Period]) -> float:
+        """Compute ``node_name`` for *period* via the :class:`CalculationEngine`."""
         return self._calc_engine.calculate(node_name, period)
 
-    def recalculate_all(self, periods: Optional[list[str]] = None) -> None:
+    def recalculate_all(
+        self, periods: Optional[Iterable[Union[str, Period]]] = None
+    ) -> None:
         """Recalculate all nodes for given periods, clearing all caches first.
 
         Args:
@@ -435,7 +446,9 @@ class Graph:
             >>> graph.recalculate_all(["2023", "2024"])
         """
         # Delegate to engine after validating *periods* parameter
-        self._calc_engine.recalc_all(periods)
+        self._calc_engine.recalc_all(
+            list(periods) if isinstance(periods, Iterable) else periods
+        )
 
     def clear_all_caches(self) -> None:
         """Clear all node-level and central calculation caches.
@@ -581,13 +594,6 @@ class Graph:
     def detect_cycles(self) -> list[list[str]]:  # noqa: D401
         return self.traverser.detect_cycles()
 
-    def validate(self) -> list[str]:  # noqa: D401
-        """Run structural validation checks on the graph and return a list of error strings.
-
-        An empty list indicates that the graph passes all validation rules
-        enforced by :class:`GraphTraverser`."""
-        return self.traverser.validate()
-
     def breadth_first_search(
         self, start_node: str, direction: str = "successors"
     ) -> list[list[str]]:  # noqa: D401
@@ -656,3 +662,7 @@ class Graph:
         if not isinstance(other_graph, Graph):
             raise TypeError("Can only merge from another Graph instance.")
         self._merge_service.merge_from(other_graph)
+
+    def validate(self) -> list[str]:  # noqa: D401
+        """Run structural validation checks and return list of problems (empty if none)."""
+        return self.traverser.validate()

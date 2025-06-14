@@ -39,8 +39,9 @@ contributors.  End-users should prefer the higher-level convenience methods on
 
 import logging
 from typing import Optional, Any, cast
-from fin_statement_model.core.errors import NodeError
+from fin_statement_model.core.errors import NodeError, PeriodError
 from fin_statement_model.core.nodes import Node
+from fin_statement_model.core.time.period import Period
 
 logger = logging.getLogger(__name__)
 
@@ -201,8 +202,20 @@ class GraphManipulator:
         Examples:
             >>> manipulator.set_value("Revenue", "2023", 1100.0)
         """
-        if period not in self.graph._periods:
+        # Normalize *period* to a Period object for validation
+        if isinstance(period, Period):
+            period_obj = period
+        elif isinstance(period, str):
+            try:
+                period_obj = Period.parse(period)
+            except PeriodError as exc:
+                raise ValueError(str(exc)) from exc
+        else:
+            raise TypeError("period must be str or Period instance")
+
+        if str(period_obj) not in self.graph._periods:
             raise ValueError(f"Period '{period}' not in graph periods")
+
         nd = self.get_node(node_id)
         if not nd:
             raise NodeError(message=f"Node '{node_id}' does not exist", node_id=node_id)
@@ -210,7 +223,7 @@ class GraphManipulator:
             raise TypeError(
                 f"Node '{node_id}' of type {type(nd).__name__} does not support set_value."
             )
-        nd.set_value(period, value)
+        nd.set_value(str(period_obj), value)
         self.graph.clear_all_caches()
 
     def clear_all_caches(self) -> None:

@@ -35,7 +35,7 @@ Key responsibilities
 
 from __future__ import annotations
 
-from typing import Callable, Optional, Dict, Any, List
+from typing import Callable, Optional, Dict, Any, List, Union
 
 from typing import TYPE_CHECKING
 
@@ -44,6 +44,8 @@ if TYPE_CHECKING:  # pragma: no cover
 
 # Local imports deliberately avoid importing Graph to meet step 1.2 criteria
 from fin_statement_model.core.nodes import Node  # allowed (core-level)
+
+from fin_statement_model.core.time.period import Period
 
 __all__: list[str] = ["CalculationEngine"]
 
@@ -94,7 +96,9 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
     # ---------------------------------------------------------------------
     # Public API (stubs)
     # ---------------------------------------------------------------------
-    def calculate(self, node_name: str, period: str) -> float:  # noqa: D401
+    def calculate(
+        self, node_name: str, period: Union[str, Period]
+    ) -> float:  # noqa: D401
         """Calculate and return the value of *node_name* for *period*.
 
         This is mostly a verbatim copy of the original ``Graph.calculate`` method,
@@ -118,10 +122,13 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
 
         logger = logging.getLogger(__name__)
 
+        # Convert *period* to its canonical string representation for caching
+        period_str = str(period) if isinstance(period, Period) else period
+
         # Fast-path cache hit ------------------------------------------------
-        if node_name in self._cache and period in self._cache[node_name]:
-            logger.debug("Cache hit for node '%s', period '%s'", node_name, period)
-            return self._cache[node_name][period]
+        if node_name in self._cache and period_str in self._cache[node_name]:
+            logger.debug("Cache hit for node '%s', period '%s'", node_name, period_str)
+            return self._cache[node_name][period_str]
 
         # Resolve node ------------------------------------------------------
         node = self._node_resolver(node_name)
@@ -134,7 +141,7 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
 
         # Perform calculation ---------------------------------------------
         try:
-            value = node.calculate(period)
+            value = node.calculate(period_str)
         except (
             NodeError,
             ConfigurationError,
@@ -153,18 +160,20 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
             raise CalculationError(
                 message=f"Failed to calculate node '{node_name}'",
                 node_id=node_name,
-                period=period,
+                period=period_str,
                 details={"original_error": str(exc)},
             ) from exc
 
         # Cache & return ----------------------------------------------------
-        self._cache.setdefault(node_name, {})[period] = value
+        self._cache.setdefault(node_name, {})[period_str] = value
         logger.debug(
-            "Cached value for node '%s', period '%s': %s", node_name, period, value
+            "Cached value for node '%s', period '%s': %s", node_name, period_str, value
         )
         return value
 
-    def recalc_all(self, periods: Optional[List[str]] = None) -> None:  # noqa: D401
+    def recalc_all(
+        self, periods: Optional[List[Union[str, Period]]] = None
+    ) -> None:  # noqa: D401
         """Recalculate every node in the graph for the requested *periods*.
 
         If *periods* is ``None`` all registered periods are used.  A single
@@ -184,8 +193,12 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
         logger = logging.getLogger(__name__)
 
         # Determine periods list – mirror Graph logic ----------------------
+        periods_to_use: List[Union[str, Period]]
+
         if periods is None:
-            periods_to_use = self._period_provider()
+            from typing import cast
+
+            periods_to_use = cast(List[Union[str, Period]], self._period_provider())
         elif isinstance(periods, str):
             periods_to_use = [periods]
         elif isinstance(periods, list):

@@ -18,14 +18,17 @@ from fin_statement_model.core.errors import NodeError
 
 
 def test_period_service_reference_mutation() -> None:
-    periods = ["a", "c"]
+    # Use valid period identifiers to align with new Period parsing logic
+    periods = ["2022", "2024"]
     ps = PeriodService(periods)
-    # Add missing period 'b', in-place mutation
-    ps.add_periods(["b"])
-    assert periods == ["a", "b", "c"]
-    # Adding duplicate or unsorted periods
-    ps.add_periods(["c", "d"])
-    assert periods == ["a", "b", "c", "d"]
+
+    # Add missing period '2023' (should insert in chronological order)
+    ps.add_periods(["2023"])
+    assert periods == ["2022", "2023", "2024"]
+
+    # Adding duplicates and a new future period '2025'
+    ps.add_periods(["2024", "2025"])
+    assert periods == ["2022", "2023", "2024", "2025"]
 
 
 # ---------------------------------------------------------------------------
