@@ -17,10 +17,11 @@ def test_manipulator_add_and_remove_node() -> None:
     assert not g.has_node("X")
 
 
-def test_manipulator_replace_node_and_update_calculation(monkeypatch) -> None:
+def test_manipulator_replace_node_updates_calculation_result() -> None:
+    """Replacing a node should propagate to dependent calculation nodes."""
     g = Graph(periods=["2023"])
     m = GraphManipulator(g)
-    # Setup two nodes and a calc
+
     g.add_financial_statement_item("A", {"2023": 2.0})
     g.add_financial_statement_item("B", {"2023": 3.0})
     g.add_calculation(
@@ -28,24 +29,48 @@ def test_manipulator_replace_node_and_update_calculation(monkeypatch) -> None:
         input_names=["A", "B"],
         operation_type="addition",
     )
-    # Replace B
+
+    # Verify initial calculation
+    assert g.calculate("SumAB", "2023") == 5.0
+
+    # Replace node B with different value
     new_b = FinancialStatementItemNode("B", {"2023": 4.0})
-    # Spy on update calculation nodes
-    called = False
-
-    def fake_update():
-        nonlocal called
-        called = True
-
-    # monkeypatch the private update method
-    m._update_calculation_nodes = fake_update  # type: ignore
     m.replace_node("B", new_b)
-    # Should have invoked update
-    assert called
-    # Inputs were updated via replacement hook; calculation may still use old inputs until real update.
+
+    # Recalculation should reflect new value (2 + 4)
+    assert g.calculate("SumAB", "2023") == 6.0
 
 
-def test_set_value_clears_node_cache(monkeypatch) -> None:
+def test_replace_node_performance() -> None:
+    """Replacing a single node in a large graph should be fast (<5 ms)."""
+    import time
+
+    periods = ["2023"]
+    g = Graph(periods=periods)
+    m = GraphManipulator(g)
+
+    # Create 5 000 independent data nodes
+    for i in range(5000):
+        g.add_financial_statement_item(f"N{i}", {"2023": float(i)})
+
+    # Add a calculation node that depends on one of them to ensure linkage
+    g.add_calculation(
+        name="TestCalc",
+        input_names=["N0", "N1"],
+        operation_type="addition",
+    )
+
+    # Time the replacement of N1
+    start = time.perf_counter()
+    m.replace_node("N1", FinancialStatementItemNode("N1", {"2023": 123.0}))
+    elapsed_ms = (time.perf_counter() - start) * 1000
+
+    assert (
+        elapsed_ms < 5.0
+    ), f"Node replacement took {elapsed_ms:.3f} ms, expected <5 ms"
+
+
+def test_set_value_clears_node_cache() -> None:
     g = Graph(periods=["2023"])
     m = GraphManipulator(g)
     g.add_financial_statement_item("Z", {"2023": 5.0})

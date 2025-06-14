@@ -22,9 +22,10 @@ True
 from __future__ import annotations
 
 import logging
-from typing import Callable, List, TYPE_CHECKING, Dict
+from typing import Callable, List, TYPE_CHECKING, Dict, Any
+from collections import defaultdict
 
-from fin_statement_model.core.nodes import Node
+from fin_statement_model.core.nodes import Node, CalculationNode
 from fin_statement_model.core.errors import NodeError, CircularDependencyError
 
 __all__: list[str] = ["NodeRegistryService"]
@@ -49,6 +50,16 @@ class NodeRegistryService:  # pylint: disable=too-few-public-methods
         self._nodes = nodes_dict
         self._traverser_provider = traverser_provider
         self._add_periods = add_periods
+
+        # ------------------------------------------------------------------
+        # Simple signal/slot mechanism -------------------------------------
+        # ------------------------------------------------------------------
+
+        # Map event name -> list of subscriber callables.
+        self._callbacks: defaultdict[str, list[Callable[..., None]]] = defaultdict(list)
+
+        # Register internal listeners
+        self.on("node_replaced", self._rebind_calculation_inputs)
 
     # ------------------------------------------------------------------
     # Public helpers (used by other services) ---------------------------
@@ -136,3 +147,53 @@ class NodeRegistryService:  # pylint: disable=too-few-public-methods
                 f"Cannot add node '{node.name}': missing required input nodes {missing}",
                 node_id=node.name,
             )
+
+    # ------------------------------------------------------------------
+    # Event / callback helpers ------------------------------------------
+    # ------------------------------------------------------------------
+
+    def on(self, event: str, fn: Callable[..., None]) -> None:
+        """Register *fn* to be invoked whenever *event* is emitted."""
+        self._callbacks[event].append(fn)
+
+    def emit(self, event: str, /, **kwargs: Any) -> None:
+        """Invoke all subscribers for *event* with keyword arguments.*"""
+        for subscriber in self._callbacks.get(event, []):
+            try:
+                subscriber(**kwargs)
+            except Exception as exc:  # pragma: no cover
+                logger.exception("Callback for event '%s' failed: %s", event, exc)
+
+    # ------------------------------------------------------------------
+    # Internal subscribers ----------------------------------------------
+    # ------------------------------------------------------------------
+
+    def _rebind_calculation_inputs(self, *, old: Node, new: Node) -> None:  # noqa: D401
+        """Replace references to *old* with *new* inside calculation nodes.
+
+        The operation iterates **only** over calculation nodes to keep the
+        complexity O(#calculation_nodes) instead of O(N²) rescans of the
+        entire graph.
+        """
+        from typing import cast
+
+        for nd in self._nodes.values():
+            if not isinstance(nd, CalculationNode):
+                continue
+
+            # At this point, mypy knows nd is a CalculationNode, so inputs exists.
+            if not nd.inputs:
+                continue
+
+            # Update by identity comparison for maximum reliability.
+            nd.inputs = [new if inp is old else inp for inp in nd.inputs]
+
+            # Clear per-node cache if available so downstream calculations
+            # pick up the new dependency immediately.
+            if hasattr(nd, "clear_cache"):
+                try:
+                    cast(Any, nd).clear_cache()
+                except Exception:  # pragma: no cover
+                    logger.debug(
+                        "Failed to clear cache on node '%s' after replacement", nd.name
+                    )

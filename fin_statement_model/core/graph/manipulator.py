@@ -40,7 +40,7 @@ contributors.  End-users should prefer the higher-level convenience methods on
 import logging
 from typing import Optional, Any, cast
 from fin_statement_model.core.errors import NodeError
-from fin_statement_model.core.nodes import Node, CalculationNode
+from fin_statement_model.core.nodes import Node
 
 logger = logging.getLogger(__name__)
 
@@ -81,40 +81,6 @@ class GraphManipulator:
             self.remove_node(node.name)
         self.graph._nodes[node.name] = node
 
-    def _update_calculation_nodes(self) -> None:
-        """Refresh input references for all calculation nodes after structure changes.
-
-        This method re-resolves `input_names` to current Node objects and clears
-        individual node caches.
-
-        Returns:
-            None
-        """
-        for nd in self.graph._nodes.values():
-            if (
-                isinstance(nd, CalculationNode)
-                and hasattr(nd, "input_names")
-                and nd.input_names
-            ):
-                try:
-                    resolved_inputs: list[Node] = []
-                    for name in nd.input_names:
-                        input_node = self.get_node(name)
-                        if input_node is None:
-                            raise NodeError(
-                                f"Input node '{name}' not found for calculation node '{nd.name}'"
-                            )
-                        resolved_inputs.append(input_node)
-                    nd.inputs = resolved_inputs
-                    if hasattr(nd, "clear_cache"):
-                        nd.clear_cache()
-                except NodeError:
-                    logger.exception(f"Error updating inputs for node '{nd.name}'")
-                except AttributeError:
-                    logger.warning(
-                        f"Node '{nd.name}' has input_names but no 'inputs' attribute to update."
-                    )
-
     def get_node(self, name: str) -> Optional[Node]:
         """Retrieve a node from the graph by its unique name.
 
@@ -152,8 +118,34 @@ class GraphManipulator:
             raise ValueError(
                 "New node name must match the name of the node being replaced."
             )
-        self.remove_node(node_name)
-        self.add_node(new_node)
+        # ------------------------------------------------------------------
+        # Emit replacement event *before* the old reference disappears so
+        # subscribers can still access the original node object.
+        # ------------------------------------------------------------------
+        old_node = self.graph._nodes[node_name]
+
+        registry = getattr(self.graph, "_registry_service", None)
+        if registry is not None and hasattr(registry, "emit"):
+            registry.emit("node_replaced", old=old_node, new=new_node)
+
+        if registry is not None:
+            # Replace node via registry service so name validation & period tracking
+            # remain centralised. We skip cycle detection and input validation as the
+            # node already existed under the same name, hence the overall structure
+            # cannot introduce a new cycle by substitution alone.
+            registry.add_node_with_validation(
+                new_node,
+                check_cycles=False,
+                validate_inputs=False,
+            )
+        else:  # Fallback: direct dictionary replacement (should not happen in prod)
+            self.graph._nodes[node_name] = new_node
+
+        # Clearing calculation cache is delegated to subscribers; however we
+        # explicitly clear central cache to avoid stale values referencing the
+        # old node implementation.
+        if hasattr(self.graph, "clear_calculation_cache"):
+            self.graph.clear_calculation_cache()
 
     def has_node(self, node_id: str) -> bool:
         """Check if a node with the given ID exists.
@@ -184,7 +176,11 @@ class GraphManipulator:
         if not self.has_node(node_name):
             return
         self.graph._nodes.pop(node_name, None)
-        self._update_calculation_nodes()
+
+        # Clear central calculation cache to ensure no stale values reference the
+        # removed node.
+        if hasattr(self.graph, "clear_calculation_cache"):
+            self.graph.clear_calculation_cache()
 
     def set_value(self, node_id: str, period: str, value: float) -> None:
         """Set the value for a specific node and period, clearing all caches.

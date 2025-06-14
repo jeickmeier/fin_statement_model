@@ -66,17 +66,16 @@ def test_manipulator_replace_and_set_value(sample_graph: Graph) -> None:
     new_b = FinancialStatementItemNode("B", {"2022": 7.0, "2023": 8.0})
     man.replace_node("B", new_b)
 
-    # C should now recalc with new value
+    # C should now recalc with new value (A=10, B=7)
     sample_graph.clear_all_caches()
     val = sample_graph.calculate("C", "2022")
-    # replace_node did not update calculation inputs, so still uses old B=5
-    assert math.isclose(val, 15.0)
+    assert math.isclose(val, 17.0)
 
     # set_value should invalidate caches implicitly via manipulator
     man.set_value("A", "2022", 11.0)
     val2 = sample_graph.calculate("C", "2022")
-    # set_value changes A to 11; B remains 5 => C = 11 + 5 = 16
-    assert math.isclose(val2, 16.0)
+    # set_value changes A to 11; B remains 7 => C = 18
+    assert math.isclose(val2, 18.0)
 
 
 # ---------------------------------------------------------------------------
