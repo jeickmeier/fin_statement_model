@@ -7,7 +7,7 @@ as well as related constants and enums.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Final, Optional
 from collections.abc import Callable
@@ -92,7 +92,7 @@ class Adjustment(BaseModel):
     # Metadata
     reason: str
     user: Optional[str] = None
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     model_config = ConfigDict(frozen=True)
 
