@@ -5,6 +5,7 @@ import pytest
 
 import fin_statement_model.config.manager as cm_module
 from fin_statement_model.config.manager import ConfigManager, ConfigurationError
+from fin_statement_model.utils.dicts import deep_merge
 
 
 @pytest.fixture(autouse=True)
@@ -48,10 +49,9 @@ def test_load_file_unsupported(tmp_path):
 
 
 def test_deep_merge():
-    cm = ConfigManager()
     base = {"a": {"b": 1, "c": 2}, "d": 3}
     update = {"a": {"b": 10}, "e": 4}
-    result = cm._deep_merge(base, update)
+    result = deep_merge(base, update)
     assert result["a"]["b"] == 10
     assert result["a"]["c"] == 2
     assert result["d"] == 3
