@@ -1,9 +1,8 @@
-"""Tests for GraphTraverser traversal and validation helpers."""
+"""Tests for Graph traversal and validation helpers (formerly GraphTraverser)."""
 
 import pytest
 
-from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.graph.traverser import GraphTraverser
+from fin_statement_model.core.graph import GraphFacade as Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 
 
@@ -55,7 +54,7 @@ def test_detect_and_find_cycle():
     g.add_calculation("X_calc", ["Y"], "addition")
     # rename Y calculation to match node name collision
     g.add_calculation("Y", ["X_calc"], "addition")
-    trav = GraphTraverser(g)
+    trav = g.traverser
     cycles = trav.detect_cycles()
     assert any(isinstance(cycle, list) for cycle in cycles)
     # Find a cycle path for known nodes

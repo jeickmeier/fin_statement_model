@@ -2,15 +2,13 @@
 
 from __future__ import annotations
 
-from uuid import UUID
-
 import pytest
 
-from fin_statement_model.core.adjustments.models import AdjustmentType
 from fin_statement_model.core.errors import NodeError
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.graph.services.adjustment_service import AdjustmentService
-from fin_statement_model.core.graph.services.period_service import PeriodService
+from fin_statement_model.core.graph.domain.adjustment import Adjustment, AdjustmentType
+from fin_statement_model.core.graph.services.adjustments import AdjustmentService
+from fin_statement_model.core.graph.services.periods import PeriodService
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 
 # ---------------------------------------------------------------------------
@@ -19,17 +17,17 @@ from fin_statement_model.core.nodes import FinancialStatementItemNode
 
 
 def test_period_service_reference_mutation() -> None:
-    # Use valid period identifiers to align with new Period parsing logic
-    periods = ["2022", "2024"]
-    ps = PeriodService(periods)
+    # Validate ordering and duplicate handling of the *new* PeriodService
+    initial_periods = ["2022", "2024"]
+    ps = PeriodService(initial_periods)
 
     # Add missing period '2023' (should insert in chronological order)
-    ps.add_periods(["2023"])
-    assert periods == ["2022", "2023", "2024"]
+    ps.add_many(["2023"])
+    assert ps.periods == ["2022", "2023", "2024"]
 
     # Adding duplicates and a new future period '2025'
-    ps.add_periods(["2024", "2025"])
-    assert periods == ["2022", "2023", "2024", "2025"]
+    ps.add_many(["2024", "2025"])
+    assert ps.periods == ["2022", "2023", "2024", "2025"]
 
 
 # ---------------------------------------------------------------------------
@@ -39,31 +37,34 @@ def test_period_service_reference_mutation() -> None:
 
 def test_adjustment_service_basic_flow() -> None:
     svc = AdjustmentService()
+
     # No adjustments initially
-    assert svc.list_all_adjustments() == []
-    # Add adjustment
-    adj_id = svc.add_adjustment(
-        node_name="n",
+    assert svc.list_all() == []
+
+    # Construct and add an adjustment
+    adj = Adjustment(
+        node="n",
         period="p",
         value=2.0,
         reason="r",
-        adj_type=AdjustmentType.ADDITIVE,
+        type=AdjustmentType.ADDITIVE,
     )
-    assert isinstance(adj_id, UUID)
+    svc.add(adj)
+
     # Retrieve
-    adjs = svc.get_adjustments("n", "p")
-    assert len(adjs) == 1
+    adjs = svc.get_for("n", "p")
+    assert adjs == [adj]
+
     # Apply
     val, flag = svc.apply_adjustments(1.0, adjs)
     assert val == 3.0 and flag
-    # was_adjusted
-    assert svc.was_adjusted("n", "p")
-    # Remove
-    assert svc.remove_adjustment(adj_id)
-    assert svc.list_all_adjustments() == []
-    # clear_all resets
-    svc.clear_all()
-    assert svc.list_all_adjustments() == []
+
+    # Filter (no filter)
+    assert svc.get_filtered("n", "p") == [adj]
+
+    # clear resets store
+    svc.clear()
+    assert svc.list_all() == []
 
 
 # ---------------------------------------------------------------------------
@@ -145,7 +146,7 @@ def test_recalculate_and_clear_caches() -> None:
     g.recalculate_all()
     assert g.calculate("D", "2022") == 2.0
     # clear caches
-    g.clear_calculation_cache()
+    g.clear_caches()
     assert g.calculate("D", "2022") == 2.0
     # Facade traversal methods
     calc_nodes = g.get_calculation_nodes()
@@ -172,9 +173,9 @@ def test_recalculate_and_clear_caches() -> None:
     # recalculate_all wrong input type
     with pytest.raises(TypeError):
         g.recalculate_all(123)  # type error
-    # replace_node on non-existent node should raise NodeError
+    # replace_node on non-existent node (keyword variant) should raise NodeError
     with pytest.raises(NodeError):
-        g.replace_node("missing", "notanode")
+        g.replace_node(code="missing", values={"2022": 1.0})
     # set_value errors
     with pytest.raises(ValueError):
         g.set_value("D", "2021", 1.0)  # period not exists

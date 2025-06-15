@@ -4,8 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.graph.traverser import GraphTraverser
+from fin_statement_model.core.graph import GraphFacade as Graph
 from fin_statement_model.core.metrics.interpretation import MetricInterpreter
 from fin_statement_model.core.metrics.registry import MetricRegistry
 from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
@@ -27,7 +26,7 @@ def _add_doctest_namespace(doctest_namespace):  # pylint: disable=unused-argumen
     revenue_node = graph.add_financial_statement_item("revenue", {"2023": 100.0})
 
     # Common helpers -----------------------------------------------------
-    traverser = GraphTraverser(graph)
+    traverser = graph.traverser
     registry = MetricRegistry()
 
     # Minimal metric definition to satisfy interpreter examples
@@ -56,23 +55,23 @@ def _add_doctest_namespace(doctest_namespace):  # pylint: disable=unused-argumen
     doctest_namespace["interpreter"] = interpreter
     doctest_namespace["FinancialStatementItemNode"] = FinancialStatementItemNode
     doctest_namespace["revenue"] = revenue_node
-    doctest_namespace["manipulator"] = graph.manipulator
-    # Extra helpers needed for GraphManipulator docstrings
+    # 'manipulator' is alias to graph itself for backwards-compat examples
+    doctest_namespace["manipulator"] = graph
+    # Helper nodes for doctest examples that refer to 'node' / 'updated_node'
     node = FinancialStatementItemNode("NewItem", {"2023": 50})
     updated_node = FinancialStatementItemNode("Revenue", {"2023": 200})
     doctest_namespace["node"] = node
     doctest_namespace["updated_node"] = updated_node
 
-    # Ensure a 'revenue' node exists and is in the manipulator's graph so
-    # replace_node / set_value examples succeed.
+    # Ensure a 'Revenue' node exists in graph for replace/set examples
     revenue_existing = graph.get_node("Revenue")
     if revenue_existing is None:  # pragma: no cover – safety
         revenue_existing = graph.add_financial_statement_item(
             "Revenue", {"2023": 100.0}
         )
 
-    # Also add the generic 'node' object so add_node example has something to add
-    _ = graph.manipulator.add_node(node)
+    # Add the generic 'node' object so add_node example has something to add
+    graph.add_node(node)
     doctest_namespace["revenue_existing"] = revenue_existing
 
     for mid in [

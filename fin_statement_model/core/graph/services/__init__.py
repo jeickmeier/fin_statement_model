@@ -1,28 +1,37 @@
-"""Service layer for `fin_statement_model.core.graph`.
+"""Graph service layer (dependency injection).
 
-This sub-package groups **graph-agnostic utilities** that are reused by the
-high-level `Graph` façade but do **not** depend on its concrete implementation.
-Keeping stateful concerns (period management, calculation caching, etc.) in
-dedicated services improves testability, maintainability, and allows future
-graphs or pipelines to compose only the pieces they need.
+Services provide side-effecting capabilities (e.g., caching, period
+normalisation) that are orchestrated by the imperative shell.  They **MUST NOT**
+be imported by pure layers (`domain`, `engine`).
 """
 
 from __future__ import annotations
 
-from .adjustment_service import AdjustmentService
-from .calculation_engine import CalculationEngine
-from .data_item_service import DataItemService
-from .introspector import GraphIntrospector
-from .merge_service import MergeService
-from .node_registry import NodeRegistryService
-from .period_service import PeriodService
-
 __all__: list[str] = [
-    "CalculationEngine",
-    "PeriodService",
     "AdjustmentService",
-    "DataItemService",
-    "MergeService",
-    "GraphIntrospector",
-    "NodeRegistryService",
+    "PeriodService",
+    "MetricService",
 ]
+
+from importlib import import_module
+from types import ModuleType
+from typing import TYPE_CHECKING, Any, Mapping
+
+if TYPE_CHECKING:  # pragma: no cover
+    from .adjustments import AdjustmentService
+    from .periods import PeriodService
+else:
+
+    def __getattr__(name: str) -> Any:
+        if name in __all__:
+            module_name = (
+                "adjustments"
+                if name == "AdjustmentService"
+                else "periods" if name == "PeriodService" else "metrics"
+            )
+            module: ModuleType = import_module(f"{__name__}.{module_name}")
+            return getattr(module, name)
+        raise AttributeError(name)
+
+    def __dir__() -> Mapping[str, Any]:  # type: ignore[override]
+        return sorted(globals().keys() | set(__all__))

@@ -7,10 +7,6 @@ into the sub-package layout.
 Specifically, it makes the following symbols directly available:
 
 * `Graph` – central orchestrator that builds and evaluates calculation graphs.
-* `GraphManipulator` – helper for structural mutations (add/remove/replace
-  nodes, set values, etc.).
-* `GraphTraverser` – read-only utilities for traversal, validation, and cycle
-  detection.
 
 Examples:
     Basic usage::
@@ -25,33 +21,15 @@ Keeping these high-level classes here provides a stable import path should the
 internal file structure change in future versions.
 """
 
-# Public façade -----------------------------------------------------------
-# Deprecation shim – keep old name alive ---------------------------------
-import warnings
+from typing import TypeAlias
 
-from fin_statement_model.core.graph.facade import GraphFacade as _GraphFacade
+from fin_statement_model.core.graph.api.facade import GraphFacade as GraphFacade
 
-warnings.warn(
-    "Importing 'Graph' from 'fin_statement_model.core.graph' is deprecated. "
-    "Import 'GraphFacade' instead.",
-    DeprecationWarning,
-    stacklevel=2,
-)
+# Keep historical alias `Graph` for backward compatibility, pointing to v2 facade
+Graph: TypeAlias = GraphFacade
 
-# Alias names ------------------------------------------------------------
-
-GraphFacade = _GraphFacade  # new preferred name
-Graph = _GraphFacade  # historical alias
-
-# Import helper sub-APIs **after** aliases are in place to avoid circular imports.
-
-from fin_statement_model.core.graph.manipulator import GraphManipulator  # noqa: E402
-from fin_statement_model.core.graph.traverser import GraphTraverser  # noqa: E402
-
-# Update the public export list.
 __all__ = [
     "GraphFacade",
     "Graph",
-    "GraphManipulator",
-    "GraphTraverser",
+    # API is intentionally minimal – only Graph & GraphFacade are public.
 ]

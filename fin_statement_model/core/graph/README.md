@@ -1,40 +1,50 @@
-# Graph Module
+# Graph Module (v2)
 
-This directory contains the core graph implementation for the Financial Statement Model library.  The Graph API lets you build, mutate, traverse, and evaluate directed graphs of financial statement items and calculations.
+> **Status:** Stable v2 implementation; legacy v1 removed.
+
+This module implements the modular, test-friendly graph engine with a functional-core / imperative-shell design.
+
+Key public entry points:
+- `GraphFacade` (importable as `Graph`)
+- `GraphManipulator`
+- `GraphTraverser`
+
+```text
+fin_statement_model/core/graph/
+├── api/        # Public façade & tracing
+├── domain/     # Pure dataclasses (Node, Period, Adjustment)
+├── engine/     # Immutable GraphState, pure GraphBuilder, CalculationEngine
+├── services/   # Side-effecting helpers injected via ServiceContainer
+└── impl/       # Thin imperative shell wiring everything together
+```
+
+## Guiding principles
+
+| Principle                             | Expression in code                                                   |
+|---------------------------------------|----------------------------------------------------------------------|
+| Functional core, imperative shell     | `CalculationEngine` & `GraphState` are pure; IO lives in services    |
+| Immutability at rest                  | `Node`, `Period`, `GraphState` are **frozen** dataclasses            |
+| Explicit dependency injection         | `ServiceContainer` supplies collaborators                            |
+| Small, cohesive modules               | ≤ 400 LOC per module, ≤ 2 public symbols                             |
+| Observable & debuggable               | `CalcTrace` exposes timings & dependencies when `trace=True`         |
+
+### Migration path
+
+1. **Bootstrap** – directory scaffolding (**done ✅**)
+2. **Domain layer** – immutable dataclasses *(WIP)*
+3. **Engine** – builder, state, topo sort, calculator *(todo)*
+4. **Services** – adjustments & periods *(todo)*
+5. **Shell** – new `impl.graph.Graph` *(todo)*
+6. **Facade** – thin public API *(todo)*
+7. **Remove v1** – when tests & docs are ported *(future)*
+
+---
+
+*Last updated:* <!--DATE--> by automated scaffolding script.
 
 ## Key Public Classes
 
-| Class | Responsibility |
-|-------|---------------|
-| `Graph` | End-user façade that wires together all sub-services and exposes a friendly API for building and analysing models. |
-| `GraphManipulator` | *Write* helper – add / remove / replace nodes, update values, clear caches. |
-| `GraphTraverser` | *Read-only* helper – dependency inspection, cycle detection, topological sorts, etc. |
-
-### Behind the scenes – service layer
-
-The public classes delegate heavy lifting to a **service layer** of small, testable components:
-
-* `CalculationEngine` – memoised value evaluation
-* `PeriodService` – unique & sorted period management
-* `AdjustmentService` – discretionary adjustments (audit, scenarios…)
-* `DataItemService` – CRUD for `FinancialStatementItemNode`
-* `MergeService` – graph-to-graph merging
-* `GraphIntrospector` – developer-friendly diagnostics
-* `NodeRegistryService` – central node-mapping & validation
-
-These services are injected into `Graph` rather than imported directly, keeping the architecture modular and easier to test.
-
 ## Features
-
-- Add and update financial statement items with time-series values.
-- Define calculation nodes using built-in operations or custom formulas.
-- Register and compute metrics from the registry (e.g., `current_ratio`).
-- Manage periods automatically (deduplication and sorting).
-- Apply and manage discretionary adjustments for scenario analysis.
-- Mutate graph structure safely with automatic cache invalidation.
-- Traverse and inspect graph structure: dependencies, successors, predecessors.
-- Detect cycles and validate graph integrity.
-- Perform topological sorts for ordered evaluations.
 
 ## Basic Usage
 

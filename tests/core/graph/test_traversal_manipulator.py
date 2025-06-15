@@ -61,19 +61,19 @@ def test_topological_and_dependency_graph(sample_graph: Graph) -> None:
 
 
 def test_manipulator_replace_and_set_value(sample_graph: Graph) -> None:
-    man = sample_graph.manipulator
 
-    # Replace node B with new data node B2
+    # Replace node B by first removing then adding a new one with updated data
+    sample_graph.remove_node("B")
     new_b = FinancialStatementItemNode("B", {"2022": 7.0, "2023": 8.0})
-    man.replace_node("B", new_b)
+    sample_graph.add_node(new_b)
 
     # C should now recalc with new value (A=10, B=7)
-    sample_graph.clear_all_caches()
+    sample_graph.clear_caches()
     val = sample_graph.calculate("C", "2022")
     assert math.isclose(val, 17.0)
 
-    # set_value should invalidate caches implicitly via manipulator
-    man.set_value("A", "2022", 11.0)
+    # set_value should invalidate caches implicitly via graph
+    sample_graph.set_value("A", "2022", 11.0)
     val2 = sample_graph.calculate("C", "2022")
     # set_value changes A to 11; B remains 7 => C = 18
     assert math.isclose(val2, 18.0)

@@ -342,7 +342,11 @@ class CalculatedItemProcessor(ItemProcessor):
                 if node_id:
                     neg_base_ids.append(node_id)
         if neg_base_ids:
-            self.graph.ensure_signed_nodes(neg_base_ids)
+            # Create negative sign clones for required base nodes if missing
+            for base_id in neg_base_ids:
+                signed_id = f"{base_id}_signed"
+                if not self.graph.has_node(signed_id):
+                    self.graph.add_item(signed_id, formula=f"-({base_id})")
 
         # Query: resolve inputs without mutating graph
         resolved_inputs, missing = self._resolve_inputs(item)

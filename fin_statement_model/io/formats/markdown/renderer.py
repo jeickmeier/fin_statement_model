@@ -166,7 +166,7 @@ class MarkdownStatementRenderer:
                         logger.warning(
                             f"Calculation failed for node '{node_id}' period '{period}': {calc_error}"
                         )
-                        raw_value = "CALC_ERR"  # type: ignore[assignment]
+                        raw_value = "CALC_ERR"
                 elif isinstance(item, LineItem):
                     # Direct value from node for basic line items
                     raw_value = node.calculate(period)

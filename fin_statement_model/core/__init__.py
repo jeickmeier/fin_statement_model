@@ -6,7 +6,7 @@ higher-level layers build upon.
 
 Sub-packages / key modules:
 
-* `graph/` – directed-graph data structure (`Graph`, `GraphManipulator`, `GraphTraverser`).
+* `graph/` – directed-graph data structure (`Graph`).
 * `nodes/` – raw data, calculation, statistical and forecast nodes plus helpers.
 * `calculations/` – strategy objects implementing arithmetic and formula logic, with a global `Registry`.
 * `metrics/` – YAML-driven metric definitions, registry and interpretation helpers.

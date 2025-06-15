@@ -67,14 +67,12 @@ def test_add_calculation_formula() -> None:
 def test_ensure_signed_nodes_and_change_method() -> None:
     g = _make_simple_graph()
 
-    # Signed node should be created successfully
-    created = g.ensure_signed_nodes(["Revenue"])
-    assert created == ["Revenue_signed"]
+    # Create negative sign node explicitly
+    g.add_item("Revenue_signed", formula="-(Revenue)")
     assert math.isclose(g.calculate("Revenue_signed", "2023"), -100.0)
 
-    # Switch signed node to additive (identity) via change_calculation_method
-    g.change_calculation_method("Revenue_signed", "addition")
-    # Addition sums the single input (Revenue) = 100.0
+    # Change formula to identity (addition of single input)
+    g.replace_node(code="Revenue_signed", formula="Revenue")
     assert math.isclose(g.calculate("Revenue_signed", "2023"), 100.0)
 
 
