@@ -495,8 +495,24 @@ class Graph:
         Examples:
             >>> graph.clear_calculation_cache()
         """
+        # Clear central calculation cache via CalculationEngine
         self._calc_engine.clear_all()
-        logger.debug("Cleared graph calculation cache via CalculationEngine.")
+
+        # Also clear cached traversal results (e.g., topological_sort)
+        self.traverser.topological_sort.cache_clear()
+
+        # Clear cached formula ASTs (handled in calculation module)
+        try:
+            from fin_statement_model.core.calculations.calculation import (
+                _parse_formula,
+            )  # noqa: E501
+
+            _parse_formula.cache_clear()
+        except Exception as exc:  # pragma: no cover
+            # Avoid hard dependency if implementation changes.
+            logger.debug("Unable to clear _parse_formula cache: %s", exc)
+
+        logger.debug("Cleared graph calculation, traversal, and formula caches.")
 
     def clear(self) -> None:
         """Reset the graph by clearing nodes, periods, adjustments, and caches."""

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import inspect
 from collections import defaultdict
 from typing import Optional
 from uuid import UUID
@@ -16,6 +15,9 @@ from .models import (
     AdjustmentType,
     DEFAULT_SCENARIO,
 )
+
+# Helper utilities
+from .helpers import tag_matches
 
 # Core errors
 from fin_statement_model.core.errors import AdjustmentError
@@ -256,97 +258,99 @@ class AdjustmentManager:
     def get_filtered_adjustments(
         self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None
     ) -> list[Adjustment]:
-        """Retrieve adjustments for a node and period that match given filter criteria.
+        """Retrieve adjustments for *node_name* and *period* satisfying *filter_input*.
 
-        Args:
-            node_name: The target node name.
-            period: The period to retrieve adjustments for.
-            filter_input: Criteria for selecting adjustments. Can be:
-                - None: applies default filter (default scenario, all adjustments).
-                - AdjustmentFilter: filter by scenarios, tags, types, and period window.
-                - set of tags: shorthand for include_tags filter.
-                - Callable[[Adjustment], bool] or Callable[[Adjustment, str], bool]:
-                    predicate to select adjustments. Two-arg predicates receive
-                    the current period as the second argument.
-
-        Returns:
-            A list of matching Adjustment objects sorted by priority and timestamp.
+        The heavy-lifting is delegated to
+        :func:`fin_statement_model.core.adjustments.filters.filter_adjustments` to
+        ensure a single source of truth for adjustment filtering across the
+        code-base.
         """
+
+        from .filters import filter_adjustments  # local import to avoid cycles
+
+        # ------------------------------------------------------------------
+        # Build the *candidate_adjustments* list in the same way as before – we
+        # need to inspect the internal index structure to avoid scanning the
+        # entire manager when only a subset of scenarios contains data for the
+        # requested location.
+        # ------------------------------------------------------------------
         normalized_filter = self._normalize_filter(filter_input, period)
 
-        candidate_adjustments: list[Adjustment] = []
-
-        # Determine which scenarios to check based on the filter
-        scenarios_to_check: set[str]
+        # Determine relevant scenarios.
         if normalized_filter.include_scenarios is not None:
-            scenarios_to_check = (
-                normalized_filter.include_scenarios.copy()
-            )  # Work on a copy
+            scenarios_to_check: set[str] = normalized_filter.include_scenarios.copy()
             if normalized_filter.exclude_scenarios is not None:
                 scenarios_to_check -= normalized_filter.exclude_scenarios
         elif normalized_filter.exclude_scenarios is not None:
-            # Get all scenarios currently known to the manager
             all_known_scenarios = {adj.scenario for adj in self._by_id.values()}
             scenarios_to_check = (
                 all_known_scenarios - normalized_filter.exclude_scenarios
             )
         else:
-            # No include/exclude specified: check all scenarios relevant for this node/period
-            # This requires checking keys in _by_location
             scenarios_to_check = {
                 key[0]
                 for key in self._by_location
                 if key[1] == node_name and key[2] == period
             }
-            # If no specific adjustments exist for this node/period, we might check default?
-            # Let's assume we only check scenarios that *have* adjustments for this location.
-            if not scenarios_to_check:
-                # Maybe return empty list early if no scenarios found for location?
-                # Or should it behave differently? For now, proceed with empty set.
-                pass
 
-        # Gather candidates from relevant locations
+        # Gather candidates.
+        candidate_adjustments: list[Adjustment] = []
         for scenario in scenarios_to_check:
             key = (scenario, node_name, period)
             candidate_adjustments.extend(self._by_location.get(key, []))
 
-        # Apply the filter logic
-        matching_adjustments: list[Adjustment] = []
+        # ------------------------------------------------------------------
+        # Compose the filter specification that combines *filter_input* (if any)
+        # with the baseline scenario/period logic held in *normalized_filter*.
+        # ------------------------------------------------------------------
+
+        combined_spec: AdjustmentFilterInput
+
         if callable(filter_input):
-            # Determine how many positional arguments the predicate expects. If it
-            # accepts two parameters we pass the current period as contextual
-            # information. This allows users to write filters that combine
-            # adjustment attributes with the calculation period in their logic.
+            # Wrap the predicate so that the baseline filter is also enforced.
+            import inspect
+
             try:
                 param_count = len(inspect.signature(filter_input).parameters)
             except (TypeError, ValueError):
-                # Fallback in case the predicate is not introspectable (e.g., built-ins)
                 param_count = 1
 
             if param_count == 1:
-                matching_adjustments = [
-                    adj
-                    for adj in candidate_adjustments
-                    if filter_input(adj) and normalized_filter.matches(adj)
-                ]
+                # Define a small wrapper instead of assigning a lambda (ruff E731)
+                def combined_spec(adj: Adjustment) -> bool:  # noqa: D401
+                    return normalized_filter.matches(adj) and filter_input(adj)
+
             elif param_count == 2:
-                matching_adjustments = [
-                    adj
-                    for adj in candidate_adjustments
-                    if filter_input(adj, period) and normalized_filter.matches(adj)
-                ]
+
+                def combined_spec(adj: Adjustment) -> bool:  # noqa: D401
+                    return normalized_filter.matches(adj) and filter_input(adj, period)
+
             else:
                 raise TypeError(
                     "Callable adjustment filter must accept one or two positional arguments"
                 )
-        else:
-            # Apply the normalized AdjustmentFilter's matches method
-            matching_adjustments = [
-                adj for adj in candidate_adjustments if normalized_filter.matches(adj)
-            ]
+        elif isinstance(filter_input, set):
 
-        # Return sorted list (sorting might be redundant if fetched lists are pre-sorted
-        # and filtering maintains order, but ensures correctness)
+            def combined_spec(adj: Adjustment) -> bool:  # noqa: D401
+                return normalized_filter.matches(adj) and tag_matches(
+                    adj.tags, filter_input
+                )
+
+        elif isinstance(filter_input, AdjustmentFilter):
+
+            def combined_spec(adj: Adjustment) -> bool:  # noqa: D401
+                return normalized_filter.matches(adj) and filter_input.matches(adj)
+
+        else:
+            # No additional filter – use baseline only.
+            combined_spec = normalized_filter
+
+        # ------------------------------------------------------------------
+        # Delegate actual filtering.
+        # ------------------------------------------------------------------
+        matching_adjustments = filter_adjustments(candidate_adjustments, combined_spec)
+
+        # Ensure deterministic ordering.
         return sorted(matching_adjustments, key=lambda x: (x.priority, x.timestamp))
 
     def get_all_adjustments(self) -> list[Adjustment]:

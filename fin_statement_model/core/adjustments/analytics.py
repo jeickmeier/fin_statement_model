@@ -23,53 +23,20 @@ def _filter_adjustments_static(
         Union[AdjustmentFilter, set[AdjustmentTag], Callable[[Adjustment], bool]]
     ],
 ) -> list[Adjustment]:
-    """Apply filtering to adjustments based on filter_input, excluding period context.
+    """Thin proxy delegating to :pyfunc:`filters.filter_adjustments`.
 
-    This helper function centralizes the common filtering logic used by both
-    summary() and list_by_tag() methods. It applies filters based on the static
-    properties of adjustments (tags, scenario, type, etc.) but ignores any
-    period-based filtering since that requires runtime context.
-
-    Args:
-        all_adjustments: List of all adjustments to filter.
-        filter_input: Filter criteria (AdjustmentFilter, set of tags, callable, or None).
-
-    Returns:
-        Filtered list of adjustments matching the filter criteria.
+    Historically this helper ignored the *period* attribute on
+    :class:`AdjustmentFilter` instances because analytics operates across all
+    periods.  To preserve that behaviour we strip the *period* field before
+    delegating.
     """
-    if filter_input is None:
-        # No filter means include all adjustments
-        logger.debug("No filter applied.")
-        return all_adjustments
 
-    elif isinstance(filter_input, AdjustmentFilter):
-        # Apply filter, ignoring its period attribute
-        temp_filter = filter_input.model_copy(update={"period": None})
-        filtered = [adj for adj in all_adjustments if temp_filter.matches(adj)]
-        logger.debug(
-            f"Applied AdjustmentFilter (ignoring period). Filter: {temp_filter}"
-        )
-        return filtered
+    from .filters import filter_adjustments  # local import to avoid cycles
 
-    elif isinstance(filter_input, set):
-        # Shorthand for include_tags
-        filtered = [
-            adj for adj in all_adjustments if tag_matches(adj.tags, filter_input)
-        ]
-        logger.debug(f"Applied tag filter. Tags: {filter_input}")
-        return filtered
+    if isinstance(filter_input, AdjustmentFilter):
+        filter_input = filter_input.model_copy(update={"period": None})
 
-    elif callable(filter_input):
-        filtered = [adj for adj in all_adjustments if filter_input(adj)]
-        logger.debug("Applied callable filter.")
-        return filtered
-
-    else:
-        # Should not happen due to type hint, but defensive
-        logger.warning(
-            f"Invalid filter_input type: {type(filter_input)}. No filtering applied."
-        )
-        return all_adjustments
+    return filter_adjustments(all_adjustments, filter_input)
 
 
 def summary(

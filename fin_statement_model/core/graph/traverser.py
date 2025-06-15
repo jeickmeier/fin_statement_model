@@ -34,6 +34,7 @@ As with the manipulator, end-users reach the traverser via
 import logging
 from typing import Optional, Any, TYPE_CHECKING, cast
 from collections import deque
+from functools import lru_cache
 
 from fin_statement_model.core.errors import NodeError
 from fin_statement_model.core.nodes import Node, is_calculation_node
@@ -148,6 +149,7 @@ class GraphTraverser:
             return [inp.name for inp in node.inputs]
         return []
 
+    @lru_cache(maxsize=None)
     def topological_sort(self) -> list[str]:
         """Perform a topological sort of nodes based on dependencies.
 

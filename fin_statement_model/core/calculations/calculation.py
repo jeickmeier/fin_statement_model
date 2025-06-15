@@ -10,12 +10,33 @@ import logging
 import operator
 from typing import Optional, ClassVar, Any, Type
 from collections.abc import Callable
+from functools import lru_cache
 
 from fin_statement_model.core.nodes.base import Node  # Absolute
 from fin_statement_model.core.errors import CalculationError, StrategyError
 
 # Configure logging
 logger = logging.getLogger(__name__)
+
+# ----------------------------------------------------------------------
+# Lightweight caching helpers
+# ----------------------------------------------------------------------
+
+
+@lru_cache(maxsize=512)
+def _parse_formula(src: str) -> ast.AST:
+    """Return the AST body for *src* formula string, cached for reuse.
+
+    Parsing Python expressions with ``ast.parse`` is fairly expensive.  By
+    caching up to 512 unique formula strings we avoid repeated parsing when
+    many nodes share identical formulas (a common scenario for metric
+    definitions).  The cache can be cleared via ``_parse_formula.cache_clear``
+    – it is **not** exposed on the public API but is used by
+    :py:meth:`fin_statement_model.core.graph.graph.Graph.clear_calculation_cache`.
+    """
+
+    # We only want the expression body (``.body``) for evaluation later on.
+    return ast.parse(src, mode="eval").body
 
 
 class Calculation(ABC):
@@ -552,8 +573,8 @@ class FormulaCalculation(Calculation):
         self.formula = formula
         self.input_variable_names = input_variable_names
         try:
-            # Parse the formula string into an AST expression
-            self._ast = ast.parse(formula, mode="eval").body
+            # Parse the formula string into a cached AST expression
+            self._ast = _parse_formula(formula)
         except SyntaxError as e:
             raise StrategyError(
                 f"Invalid formula syntax: {formula}",
