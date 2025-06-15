@@ -33,6 +33,7 @@ from fin_statement_model.core.graph.services import (
     DataItemService,
     MergeService,
 )
+from fin_statement_model.core.graph.services.container import ServiceContainer
 from fin_statement_model.core.graph.manipulator import GraphManipulator
 from fin_statement_model.core.graph.traverser import GraphTraverser
 from fin_statement_model.core.adjustments.models import (
@@ -74,6 +75,7 @@ class Graph:
     def __init__(
         self,
         periods: Optional[list[str]] = None,
+        services: ServiceContainer | None = None,
         *,
         # Dependency-injection hooks – allow callers to override services in tests
         calc_engine_cls: type["CalculationEngine"] = CalculationEngine,
@@ -93,6 +95,7 @@ class Graph:
         Args:
             periods: Optional list of period identifiers (str) to initialize.
                      Periods are automatically deduplicated and sorted.
+            services: Optional ServiceContainer instance for additional services.
 
         Raises:
             TypeError: If `periods` is not a list of strings.
@@ -116,6 +119,19 @@ class Graph:
         self._periods: list[str] = []
         self._cache: dict[str, dict[str, float]] = {}
         self._node_factory: NodeFactory = NodeFactory()
+
+        # ------------------------------------------------------------------
+        # Resolve service classes – priority: explicit kwargs > container > default
+        # ------------------------------------------------------------------
+        if services is not None:
+            # Override *cls variables* with the entries from the container.
+            calc_engine_cls = services.calc_engine
+            period_service_cls = services.period_service
+            adjustment_service_cls = services.adjustment_service
+            data_item_service_cls = services.data_item_service
+            merge_service_cls = services.merge_service
+            introspector_cls = services.introspector
+            registry_service_cls = services.registry_service
 
         # ------------------------------------------------------------------
         # Registry service --------------------------------------------------
