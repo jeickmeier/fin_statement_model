@@ -24,8 +24,32 @@ from fin_statement_model.core.nodes import (
 # Import configuration management
 from fin_statement_model.config import get_config, update_config
 
-# ensure our library-wide logging policy is applied immediately
-from . import logging_config  # noqa: F401
+# ---------------------------------------------------------------------------
+# One-shot logging setup (single entry point for the whole library)
+# ---------------------------------------------------------------------------
+
+from fin_statement_model.core.logging import get_logger as _get_logger
+from fin_statement_model.core.logging import setup_logging as _setup_logging
+
+try:
+    _cfg = get_config()
+    _setup_logging(
+        level=_cfg.logging.level,
+        format_string=_cfg.logging.format,
+        detailed=_cfg.logging.detailed,
+        log_file_path=(
+            str(_cfg.logging.log_file_path) if _cfg.logging.log_file_path else None
+        ),
+    )
+except Exception as _err:  # noqa: BLE001
+    import logging as _std_logging
+
+    _std_logging.getLogger(__name__).debug(
+        "Logging initialisation failed: %s", _err, exc_info=False
+    )
+
+# Expose a top-level package logger for convenience
+logger = _get_logger(__name__)
 
 __version__ = "0.2.0"
 

@@ -120,7 +120,7 @@ class ConfigManager:
 
         Reads default settings, then merges in project-level and user-level config
         files, environment variable overrides, and runtime overrides, in order.
-        Finally, validates the result into a `Config` object and applies logging.
+        Finally, validates the result into a `Config` object.
         """
         # Load environment variables from a .env file (if present) before any
         # configuration layers are processed. This allows users to keep secrets
@@ -155,9 +155,6 @@ class ConfigManager:
 
         # Create and validate final config
         self._config = Config.from_dict(config_dict)
-
-        # Apply logging configuration immediately
-        self._apply_logging_config()
 
     def _find_project_config(self) -> Optional[Path]:
         """Locate the project-level config file (.fsm_config.yaml).
@@ -229,26 +226,6 @@ class ConfigManager:
                 )
         except Exception as e:
             raise ConfigurationError(f"Failed to load config from {path}: {e}") from e
-
-    def _apply_logging_config(self) -> None:
-        """Configure library logging based on current settings.
-
-        Reads logging configuration from `self._config` and applies it via
-        `logging_config.setup_logging()`.
-        """
-        if self._config:
-            from fin_statement_model import logging_config
-
-            logging_config.setup_logging(
-                level=self._config.logging.level,
-                format_string=self._config.logging.format,
-                detailed=self._config.logging.detailed,
-                log_file_path=(
-                    str(self._config.logging.log_file_path)
-                    if self._config.logging.log_file_path
-                    else None
-                ),
-            )
 
     # ------------------------------------------------------------------
     # .env loading utilities
