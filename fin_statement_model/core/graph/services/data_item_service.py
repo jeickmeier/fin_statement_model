@@ -18,10 +18,10 @@ Example
 from __future__ import annotations
 
 import logging
-from typing import Callable, Optional, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, List, Optional
 
-from fin_statement_model.core.nodes import FinancialStatementItemNode, Node
 from fin_statement_model.core.errors import NodeError
+from fin_statement_model.core.nodes import FinancialStatementItemNode, Node
 
 __all__: list[str] = ["DataItemService"]
 

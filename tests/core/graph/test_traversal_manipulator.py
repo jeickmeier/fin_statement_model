@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+
 import pytest
 
 from fin_statement_model.core.graph import Graph

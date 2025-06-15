@@ -6,7 +6,7 @@ Currently exposes dictionary helpers such as `deep_merge`.
 from __future__ import annotations
 
 # Public exports -----------------------------------------------------
-from .dicts import deep_merge  # noqa: F401,E402  (re-export)
+from .dicts import deep_merge
 
 __all__: list[str] = [
     "deep_merge",

@@ -22,11 +22,11 @@ True
 from __future__ import annotations
 
 import logging
-from typing import Callable, List, TYPE_CHECKING, Dict, Any
 from collections import defaultdict
+from typing import TYPE_CHECKING, Any, Callable, Dict, List
 
-from fin_statement_model.core.nodes import Node, CalculationNode
-from fin_statement_model.core.errors import NodeError, CircularDependencyError
+from fin_statement_model.core.errors import CircularDependencyError, NodeError
+from fin_statement_model.core.nodes import CalculationNode, Node
 
 __all__: list[str] = ["NodeRegistryService"]
 
@@ -129,7 +129,7 @@ class NodeRegistryService:  # pylint: disable=too-few-public-methods
             raise NodeError(f"Cannot resolve input nodes: missing nodes {missing}")
         return resolved
 
-    def validate_node_inputs(self, node: Node) -> None:  # noqa: D401
+    def validate_node_inputs(self, node: Node) -> None:
         """Raise NodeError if any input reference is missing."""
         if not hasattr(node, "inputs") or not node.inputs:
             return
@@ -168,7 +168,7 @@ class NodeRegistryService:  # pylint: disable=too-few-public-methods
     # Internal subscribers ----------------------------------------------
     # ------------------------------------------------------------------
 
-    def _rebind_calculation_inputs(self, *, old: Node, new: Node) -> None:  # noqa: D401
+    def _rebind_calculation_inputs(self, *, old: Node, new: Node) -> None:
         """Replace references to *old* with *new* inside calculation nodes.
 
         The operation iterates **only** over calculation nodes to keep the

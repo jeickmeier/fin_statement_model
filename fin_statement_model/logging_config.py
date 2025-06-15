@@ -24,7 +24,7 @@ warnings.warn(
 
 # Re-export public helpers ---------------------------------------------------
 
-get_logger = _core_logging.get_logger  # noqa: F401 (re-export)
-setup_logging = _core_logging.setup_logging  # noqa: F401 (re-export)
+get_logger = _core_logging.get_logger
+setup_logging = _core_logging.setup_logging
 
 __all__ = ["get_logger", "setup_logging"]

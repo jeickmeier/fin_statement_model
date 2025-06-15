@@ -6,16 +6,17 @@ abstracting away the complexity of the registry system.
 
 import logging
 import os
-from typing import Union, Any
+from typing import Any, Union
 
 from fin_statement_model.core.graph import Graph
-from .registry import get_reader, get_writer
 from fin_statement_model.io.exceptions import (
+    FormatNotSupportedError,
     IOError,
     ReadError,
     WriteError,
-    FormatNotSupportedError,
 )
+
+from .registry import get_reader, get_writer
 
 logger = logging.getLogger(__name__)
 

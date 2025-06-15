@@ -11,8 +11,6 @@ import pandas as pd
 
 from fin_statement_model.core.errors import StatementError
 from fin_statement_model.core.graph import Graph
-
-from fin_statement_model.statements.structure.builder import StatementStructureBuilder
 from fin_statement_model.statements.formatting.formatter import StatementFormatter
 from fin_statement_model.statements.orchestration.loader import (
     load_build_register_statements,
@@ -21,6 +19,7 @@ from fin_statement_model.statements.population.populator import (
     populate_graph_from_statement,
 )
 from fin_statement_model.statements.registry import StatementRegistry
+from fin_statement_model.statements.structure.builder import StatementStructureBuilder
 
 logger = logging.getLogger(__name__)
 

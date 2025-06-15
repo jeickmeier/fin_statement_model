@@ -1,14 +1,15 @@
 import os
+
 import pytest
 from pydantic import ValidationError
 
 from fin_statement_model.config import update_config
 from fin_statement_model.config.helpers import (
-    cfg,
-    get_typed_config,
-    cfg_or_param,
-    parse_env_value,
     ConfigurationAccessError,
+    cfg,
+    cfg_or_param,
+    get_typed_config,
+    parse_env_value,
 )
 from fin_statement_model.config.manager import ConfigManager
 

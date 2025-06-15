@@ -1,23 +1,22 @@
 """Data reader for the Financial Modeling Prep (FMP) API."""
 
 import logging
-import requests
-from typing import Optional, Any, cast
-import numpy as np
+from typing import Any, Optional, cast
 
+import numpy as np
+import requests
 
 from fin_statement_model.config import cfg
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
+from fin_statement_model.io.config.models import FmpReaderConfig
 from fin_statement_model.io.core.base import DataReader
 from fin_statement_model.io.core.mixins import (
-    MappingAwareMixin,
     ConfigurationMixin,
+    MappingAwareMixin,
 )
 from fin_statement_model.io.core.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
-
-from fin_statement_model.io.config.models import FmpReaderConfig
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +85,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
             logger.debug("FMP API key validated successfully.")
         except requests.exceptions.RequestException as e:
             logger.error(f"FMP API key validation failed: {e}", exc_info=True)
-            raise ReadError(
+            raise ReadError(  # noqa: B904
                 f"FMP API key validation failed: {e}",
                 source="FMP API",
                 reader_type="FmpReader",
@@ -142,7 +141,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
         try:
             mapping = self._get_mapping(statement_type)
         except TypeError as te:
-            raise ReadError(
+            raise ReadError(  # noqa: B904
                 "Invalid mapping_config provided.",
                 source=ticker,
                 reader_type="FmpReader",
@@ -187,7 +186,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
                 f"FMP API request failed for {ticker} {statement_type}: {e}",
                 exc_info=True,
             )
-            raise ReadError(
+            raise ReadError(  # noqa: B904
                 f"FMP API request failed: {e}",
                 source=f"FMP API ({ticker})",
                 reader_type="FmpReader",
@@ -195,7 +194,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
             )
         except Exception as e:
             logger.error(f"Failed to process FMP API response: {e}", exc_info=True)
-            raise ReadError(
+            raise ReadError(  # noqa: B904
                 f"Failed to process FMP API response: {e}",
                 source=f"FMP API ({ticker})",
                 reader_type="FmpReader",

@@ -4,8 +4,8 @@ This module defines the interface that all forecast methods must implement
 and provides an abstract base class with common functionality.
 """
 
-from typing import Protocol, Any, Optional, runtime_checkable
 from abc import ABC, abstractmethod
+from typing import Any, Optional, Protocol, runtime_checkable
 
 from fin_statement_model.core.nodes import Node
 

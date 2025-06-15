@@ -5,6 +5,10 @@ from pathlib import Path
 from typing import Any, Optional
 
 from fin_statement_model.core.graph import Graph
+from fin_statement_model.io.config.models import (
+    DataFrameWriterConfig,
+    ExcelWriterConfig,
+)
 from fin_statement_model.io.core.base import DataWriter
 from fin_statement_model.io.core.mixins import (
     ConfigurationMixin,
@@ -12,10 +16,6 @@ from fin_statement_model.io.core.mixins import (
 )
 from fin_statement_model.io.core.registry import register_writer
 from fin_statement_model.io.formats.dataframe.writer import DataFrameWriter
-from fin_statement_model.io.config.models import (
-    ExcelWriterConfig,
-    DataFrameWriterConfig,
-)
 
 logger = logging.getLogger(__name__)
 

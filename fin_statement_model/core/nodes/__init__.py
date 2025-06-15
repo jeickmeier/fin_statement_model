@@ -32,29 +32,29 @@ import logging
 
 # Import all node classes using actual file names
 from .base import Node
-from .item_node import FinancialStatementItemNode
 from .calculation_nodes import (
     CalculationNode,
-    FormulaCalculationNode,
     CustomCalculationNode,
-)
-from .stats_nodes import (
-    YoYGrowthNode,
-    MultiPeriodStatNode,
-    TwoPeriodAverageNode,
+    FormulaCalculationNode,
 )
 from .forecast_nodes import (
-    ForecastNode,
-    FixedGrowthForecastNode,
-    CurveGrowthForecastNode,
-    StatisticalGrowthForecastNode,
-    CustomGrowthForecastNode,
-    AverageValueForecastNode,
     AverageHistoricalGrowthForecastNode,
+    AverageValueForecastNode,
+    CurveGrowthForecastNode,
+    CustomGrowthForecastNode,
+    FixedGrowthForecastNode,
+    ForecastNode,
+    StatisticalGrowthForecastNode,
 )
+from .item_node import FinancialStatementItemNode
 
 # Import standard registry
 from .standard_registry import standard_node_registry
+from .stats_nodes import (
+    MultiPeriodStatNode,
+    TwoPeriodAverageNode,
+    YoYGrowthNode,
+)
 
 logger = logging.getLogger(__name__)
 

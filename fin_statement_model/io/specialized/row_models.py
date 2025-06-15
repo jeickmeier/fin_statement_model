@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from uuid import UUID
 from typing import Any, Optional, Set
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from fin_statement_model.core.adjustments.models import (
-    Adjustment,
-    AdjustmentType,
-    AdjustmentTag,
     DEFAULT_SCENARIO,
+    Adjustment,
+    AdjustmentTag,
+    AdjustmentType,
 )
 
 
@@ -42,7 +42,7 @@ class AdjustmentRowModel(BaseModel):
             try:
                 return AdjustmentType(v.lower())
             except ValueError:
-                raise ValueError(f"Invalid AdjustmentType: {v}")
+                raise ValueError(f"Invalid AdjustmentType: {v}")  # noqa: B904
         return v
 
     @field_validator("tags", mode="before")
@@ -73,7 +73,7 @@ class AdjustmentRowModel(BaseModel):
         try:
             return UUID(str(v))
         except Exception:
-            raise ValueError(f"Invalid UUID for id: {v}")
+            raise ValueError(f"Invalid UUID for id: {v}")  # noqa: B904
 
     def to_adjustment(self) -> Adjustment:
         """

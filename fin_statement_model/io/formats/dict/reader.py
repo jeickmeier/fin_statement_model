@@ -1,14 +1,14 @@
 """Data reader for Python dictionaries."""
 
 import logging
-from typing import Optional, Any
+from typing import Any, Optional
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
+from fin_statement_model.io.config.models import DictReaderConfig
 from fin_statement_model.io.core.base import DataReader
 from fin_statement_model.io.core.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
-from fin_statement_model.io.config.models import DictReaderConfig
 
 logger = logging.getLogger(__name__)
 
@@ -83,12 +83,7 @@ class DictReader(DataReader):
                     all_periods.add(str(period))
 
             if validation_errors:
-                # Use core DataValidationError if it exists and is suitable
-                # Otherwise, stick to ReadError or a specific IOValidationError
-                # raise DataValidationError(
-                #     message="Input dictionary failed validation",
-                #     validation_errors=validation_errors
-                # )
+                # For now, raise a ReadError; replace with DataValidationError once implemented.
                 raise ReadError(
                     f"Input dictionary failed validation: {'; '.join(validation_errors)}",
                     source="dict_input",

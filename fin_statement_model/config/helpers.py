@@ -7,8 +7,10 @@ strings into native Python types.
 """
 
 from __future__ import annotations
-from typing import Any, Optional, TypeVar, overload
+
 from collections.abc import Sequence
+from typing import Any, Optional, TypeVar, overload
+
 from fin_statement_model.core.errors import FinancialModelError
 
 

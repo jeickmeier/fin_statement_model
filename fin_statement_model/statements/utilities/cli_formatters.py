@@ -26,7 +26,9 @@ def pretty_print_errors(errors: list[ErrorDetail]) -> None:
         )
 
     # Calculate column widths
-    col_widths = [max(len(str(val)) for val in col) for col in zip(headers, *rows)]
+    col_widths = [
+        max(len(str(val)) for val in col) for col in zip(headers, *rows, strict=False)
+    ]
 
     # Build header row and separator
     header_row = " | ".join(

@@ -1,12 +1,13 @@
-import pandas as pd
-import numpy as np
-import pytest
 import pathlib
 
-from fin_statement_model.core.graph.traverser import GraphTraverser
+import numpy as np
+import pandas as pd
+import pytest
+
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.metrics.registry import MetricRegistry
+from fin_statement_model.core.graph.traverser import GraphTraverser
 from fin_statement_model.core.metrics.interpretation import MetricInterpreter
+from fin_statement_model.core.metrics.registry import MetricRegistry
 from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
 
 

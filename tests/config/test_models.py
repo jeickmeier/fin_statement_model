@@ -1,18 +1,19 @@
 import json
+
 import pytest
 from pydantic import ValidationError
 
 from fin_statement_model.config.models import (
-    LoggingConfig,
-    IOConfig,
-    ForecastingConfig,
-    PreprocessingConfig,
-    DisplayConfig,
     APIConfig,
-    MetricsConfig,
-    ValidationConfig,
-    StatementsConfig,
     Config,
+    DisplayConfig,
+    ForecastingConfig,
+    IOConfig,
+    LoggingConfig,
+    MetricsConfig,
+    PreprocessingConfig,
+    StatementsConfig,
+    ValidationConfig,
 )
 
 

@@ -8,29 +8,31 @@ This module provides utilities for parsing and validating statement configuratio
 import logging
 from typing import Any, Optional
 
-# Use absolute imports
-# Import Pydantic models for building from validated configuration
-from fin_statement_model.statements.configs.models import (
-    StatementModel,
-    BaseItemModel,
-    LineItemModel,
-    CalculatedItemModel,
-    MetricItemModel,
-    SubtotalModel,
-    SectionModel,
-    CalculationSpec,
-)
 from pydantic import ValidationError  # Import directly
+
+from fin_statement_model.core.nodes import standard_node_registry
 
 # Import UnifiedNodeValidator for node ID validation
 from fin_statement_model.io.validation import UnifiedNodeValidator
-from fin_statement_model.core.nodes import standard_node_registry
+
+# Use absolute imports
+# Import Pydantic models for building from validated configuration
+from fin_statement_model.statements.configs.models import (
+    BaseItemModel,
+    CalculatedItemModel,
+    CalculationSpec,
+    LineItemModel,
+    MetricItemModel,
+    SectionModel,
+    StatementModel,
+    SubtotalModel,
+)
 
 # Import Result types for enhanced error handling
 from fin_statement_model.statements.utilities.result_types import (
     ErrorCollector,
-    ErrorSeverity,
     ErrorDetail,
+    ErrorSeverity,
 )
 
 # Configure logging

@@ -1,1 +1,5 @@
-exclude = ["concatenate_script.py"] 
+line-length = 100
+exclude = ["concatenate_script.py"]
+
+[lint]
+extend-select = ["ERA", "I", "B", "RUF100"] 

@@ -10,7 +10,7 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Generic, Optional, TypeVar, Any, cast
+from typing import Any, Generic, Optional, TypeVar, cast
 
 logger = logging.getLogger(__name__)
 

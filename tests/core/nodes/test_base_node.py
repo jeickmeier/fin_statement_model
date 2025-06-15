@@ -1,4 +1,5 @@
 import pytest
+
 from fin_statement_model.core.nodes.base import Node
 
 

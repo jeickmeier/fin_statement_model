@@ -9,31 +9,31 @@ reducing complexity and improving testability.
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Any, Optional
 
-from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.errors import (
-    NodeError,
-    CircularDependencyError,
     CalculationError,
+    CircularDependencyError,
     ConfigurationError,
     MetricError,
+    NodeError,
 )
+from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.metrics import metric_registry
+from fin_statement_model.statements.population.id_resolver import IDResolver
 from fin_statement_model.statements.structure import (
-    StatementStructure,
-    StatementItem,
-    MetricLineItem,
     CalculatedLineItem,
+    MetricLineItem,
+    StatementItem,
+    StatementStructure,
     SubtotalLineItem,
 )
-from fin_statement_model.statements.population.id_resolver import IDResolver
 from fin_statement_model.statements.utilities.result_types import (
-    Result,
-    Success,
-    Failure,
     ErrorDetail,
     ErrorSeverity,
+    Failure,
+    Result,
+    Success,
 )
 
 logger = logging.getLogger(__name__)

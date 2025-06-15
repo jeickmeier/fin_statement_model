@@ -26,7 +26,7 @@ version.
 from __future__ import annotations
 
 import warnings
-from typing import Optional, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 # Local import – deliberately inside the function body to avoid circular deps
 from fin_statement_model.core.graph.graph import Graph
@@ -46,7 +46,7 @@ class GraphFacade(Graph):  # pylint: disable=too-many-public-methods
         periods: Optional[List[str]] = None,
         *,
         services: "ServiceContainer | None" = None,
-    ) -> None:  # noqa: D401
+    ) -> None:
         # Emit deprecation warning if legacy positional parameters of Graph are
         # used.  The façade only exposes *periods* and *services*.
         super().__init__(periods=periods, services=services)
@@ -55,7 +55,7 @@ class GraphFacade(Graph):  # pylint: disable=too-many-public-methods
     # Future: restrict / wrap low-level methods
     # ------------------------------------------------------------------
 
-    def __getattr__(self, item: str) -> object:  # noqa: D401
+    def __getattr__(self, item: str) -> object:
         """Delegate unknown attributes to *self* (i.e. the Graph base class)."""
 
         return super().__getattribute__(item)
@@ -68,9 +68,7 @@ class GraphFacade(Graph):  # pylint: disable=too-many-public-methods
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 
-def _deprecated_graph_alias(
-    *args: object, **kwargs: object
-) -> "GraphFacade":  # noqa: D401
+def _deprecated_graph_alias(*args: object, **kwargs: object) -> "GraphFacade":
     warnings.warn(
         "'Graph' has been deprecated – import 'GraphFacade' from"
         " 'fin_statement_model.core.graph' instead.",

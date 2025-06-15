@@ -11,8 +11,8 @@ from typing import Optional
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
 from fin_statement_model.statements.structure import (
-    StatementStructure,
     LineItem,
+    StatementStructure,
 )
 
 logger = logging.getLogger(__name__)

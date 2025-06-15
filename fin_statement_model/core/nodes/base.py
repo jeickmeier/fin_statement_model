@@ -5,7 +5,7 @@ attribute access, and optional caching behavior.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     pass
@@ -68,7 +68,7 @@ class Node(ABC):
             float: Calculated value for the period.
         """
 
-    def clear_cache(self) -> None:
+    def clear_cache(self) -> None:  # noqa: B027
         """Clear cached calculation results for this node.
 
         Subclasses with caching should override this method to clear their internal cache.
@@ -115,7 +115,7 @@ class Node(ABC):
         try:
             return getattr(self, attribute_name)
         except AttributeError:
-            raise AttributeError(
+            raise AttributeError(  # noqa: B904
                 f"Node '{self.name}' has no attribute '{attribute_name}'"
             )
 

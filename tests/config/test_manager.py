@@ -1,7 +1,8 @@
-import os
 import json
-import yaml
+import os
+
 import pytest
+import yaml
 
 import fin_statement_model.config.manager as cm_module
 from fin_statement_model.config.manager import ConfigManager, ConfigurationError

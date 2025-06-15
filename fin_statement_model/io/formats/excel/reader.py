@@ -1,24 +1,23 @@
 """Data reader for Excel files."""
 
 import logging
-from typing import Optional, Any
+from typing import Any, Optional
 
 import pandas as pd
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
+from fin_statement_model.io.config.models import ExcelReaderConfig
 from fin_statement_model.io.core.mixins import (
-    FileBasedReader,
     ConfigurationMixin,
+    FileBasedReader,
     MappingAwareMixin,
     ValidationMixin,
-    handle_read_errors,
     ValidationResultCollector,
+    handle_read_errors,
 )
 from fin_statement_model.io.core.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
-
-from fin_statement_model.io.config.models import ExcelReaderConfig
 
 logger = logging.getLogger(__name__)
 

@@ -11,8 +11,8 @@ from __future__ import annotations
 import math
 from uuid import UUID
 
-from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.adjustments.models import AdjustmentType
+from fin_statement_model.core.graph import Graph
 
 # ---------------------------------------------------------------------------
 # Helpers

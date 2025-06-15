@@ -15,14 +15,15 @@ Example:
     'WARNING'
 """
 
-from pathlib import Path
-from typing import Any, Optional, cast
 import logging
+from pathlib import Path
 from threading import Lock
+from typing import Any, Optional, cast
 
-from .models import Config
 from fin_statement_model.core.errors import FinancialModelError
 from fin_statement_model.utils.dicts import deep_merge
+
+from .models import Config
 
 logger = logging.getLogger(__name__)
 
@@ -277,7 +278,7 @@ class ConfigManager:
                                 "Mapped FMP_API_KEY → FSM_API_FMP_API_KEY for config integration"
                             )
                         break  # Stop searching after the first .env file
-                    except Exception as err:  # noqa: BLE001  (broad but safe here)
+                    except Exception as err:
                         logger.warning(
                             "Failed to load .env file %s: %s", candidate, err
                         )
@@ -286,7 +287,7 @@ class ConfigManager:
                     if current.parent == current:
                         break
                     current = current.parent
-        except Exception as err:  # noqa: BLE001
+        except Exception as err:
             # Never fail config loading due to .env issues
             logger.debug("_load_dotenv encountered an error: %s", err, exc_info=False)
 

@@ -6,14 +6,14 @@ defined, registered, and applied to financial data.
 """
 
 from .calculation import (
-    Calculation,
     AdditionCalculation,
-    SubtractionCalculation,
-    MultiplicationCalculation,
-    DivisionCalculation,
-    WeightedAverageCalculation,
+    Calculation,
     CustomFormulaCalculation,
+    DivisionCalculation,
     FormulaCalculation,
+    MultiplicationCalculation,
+    SubtractionCalculation,
+    WeightedAverageCalculation,
 )
 from .registry import Registry
 

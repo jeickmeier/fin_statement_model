@@ -26,16 +26,16 @@ Usage Example:
     >>> print(normalized)
 """
 
-from .base_transformer import DataTransformer, CompositeTransformer
-from .transformer_service import TransformerFactory, TransformationService
+from .base_transformer import CompositeTransformer, DataTransformer
 from .errors import (
-    PreprocessingError,
-    TransformerRegistrationError,
-    TransformerConfigurationError,
-    PeriodConversionError,
     NormalizationError,
+    PeriodConversionError,
+    PreprocessingError,
     TimeSeriesError,
+    TransformerConfigurationError,
+    TransformerRegistrationError,
 )
+from .transformer_service import TransformationService, TransformerFactory
 
 ## Trigger transformer discovery on package import
 TransformerFactory.discover_transformers(

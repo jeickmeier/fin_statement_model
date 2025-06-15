@@ -5,35 +5,34 @@ for all node types (financial statement items, calculations, forecasts, stats).
 """
 
 import logging
-from typing import Any, Union, Optional, ClassVar, Callable, cast
-
-# Force import of strategies package to ensure registration happens
-
-from .nodes import (
-    Node,
-    FinancialStatementItemNode,
-    CalculationNode,
-    CustomCalculationNode,
-)
-from .nodes.calculation_nodes import FormulaCalculationNode
-from .nodes.stats_nodes import (
-    YoYGrowthNode,
-    MultiPeriodStatNode,
-    TwoPeriodAverageNode,
-)
-from .nodes.forecast_nodes import (
-    ForecastNode,
-    FixedGrowthForecastNode,
-    CurveGrowthForecastNode,
-    StatisticalGrowthForecastNode,
-    AverageValueForecastNode,
-    AverageHistoricalGrowthForecastNode,
-    CustomGrowthForecastNode,
-)
+from typing import Any, Callable, ClassVar, Optional, Union, cast
 
 # Force import of calculations package to ensure registration happens
-from fin_statement_model.core.calculations import Registry, Calculation
+from fin_statement_model.core.calculations import Calculation, Registry
 from fin_statement_model.core.errors import ConfigurationError
+
+# Force import of strategies package to ensure registration happens
+from .nodes import (
+    CalculationNode,
+    CustomCalculationNode,
+    FinancialStatementItemNode,
+    Node,
+)
+from .nodes.calculation_nodes import FormulaCalculationNode
+from .nodes.forecast_nodes import (
+    AverageHistoricalGrowthForecastNode,
+    AverageValueForecastNode,
+    CurveGrowthForecastNode,
+    CustomGrowthForecastNode,
+    FixedGrowthForecastNode,
+    ForecastNode,
+    StatisticalGrowthForecastNode,
+)
+from .nodes.stats_nodes import (
+    MultiPeriodStatNode,
+    TwoPeriodAverageNode,
+    YoYGrowthNode,
+)
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -321,7 +320,7 @@ class NodeFactory:
         return node
 
     @classmethod
-    def create_from_dict(  # noqa: PLR0911
+    def create_from_dict(
         cls, data: dict[str, Any], context: Optional[dict[str, Node]] = None
     ) -> Node:
         """Create a node from its dictionary representation.
@@ -495,7 +494,7 @@ class NodeFactory:
             # Allowing no inputs might be valid for some custom functions (e.g., constants)
             # Reconsider if this check is always needed here.
             logger.warning(f"Creating CustomCalculationNode '{name}' with no inputs.")
-            # raise ValueError("Custom node must have at least one input")
+            # raise ValueError("Custom node must have at least one input")  # noqa: ERA001
 
         if not callable(formula):
             raise TypeError("Formula must be a callable function")

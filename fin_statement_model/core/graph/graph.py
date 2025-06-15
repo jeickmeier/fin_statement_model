@@ -20,32 +20,31 @@ Example:
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional, cast, Union, Iterable
 from collections.abc import Callable
+from typing import Any, Iterable, Optional, Union, cast
 from uuid import UUID
 
-from fin_statement_model.core.node_factory import NodeFactory
-from fin_statement_model.core.nodes import Node, FinancialStatementItemNode
-from fin_statement_model.core.graph.services import (
-    CalculationEngine,
-    PeriodService,
-    AdjustmentService,
-    DataItemService,
-    MergeService,
-)
-from fin_statement_model.core.graph.services.container import ServiceContainer
-from fin_statement_model.core.graph.manipulator import GraphManipulator
-from fin_statement_model.core.graph.traverser import GraphTraverser
+from fin_statement_model.core.adjustments.manager import AdjustmentManager
 from fin_statement_model.core.adjustments.models import (
     AdjustmentFilterInput,
-    AdjustmentType,
     AdjustmentTag,
+    AdjustmentType,
 )
-from fin_statement_model.core.adjustments.manager import AdjustmentManager
-from fin_statement_model.core.graph.services import GraphIntrospector
-from fin_statement_model.core.graph.services import NodeRegistryService
+from fin_statement_model.core.graph.manipulator import GraphManipulator
+from fin_statement_model.core.graph.services import (
+    AdjustmentService,
+    CalculationEngine,
+    DataItemService,
+    GraphIntrospector,
+    MergeService,
+    NodeRegistryService,
+    PeriodService,
+)
+from fin_statement_model.core.graph.services.container import ServiceContainer
+from fin_statement_model.core.graph.traverser import GraphTraverser
+from fin_statement_model.core.node_factory import NodeFactory
+from fin_statement_model.core.nodes import FinancialStatementItemNode, Node
 from fin_statement_model.core.time.period import Period  # local import
-
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -236,7 +235,7 @@ class Graph:
         return self._nodes
 
     @property
-    def periods(self) -> list[str]:  # noqa: D401
+    def periods(self) -> list[str]:
         """Return the **string identifiers** of all periods in chronological order."""
         return self._period_service.periods
 
@@ -259,7 +258,7 @@ class Graph:
         operation_type: str,
         formula_variable_names: Optional[list[str]] = None,
         **calculation_kwargs: Any,
-    ) -> Node:  # noqa: D401
+    ) -> Node:
         """Create and register a calculation node via the injected :class:`CalculationEngine`."""
         return self._calc_engine.add_calculation(
             name,
@@ -505,7 +504,7 @@ class Graph:
         try:
             from fin_statement_model.core.calculations.calculation import (
                 _parse_formula,
-            )  # noqa: E501
+            )
 
             _parse_formula.cache_clear()
         except Exception as exc:  # pragma: no cover
@@ -529,13 +528,13 @@ class Graph:
 
     def add_financial_statement_item(
         self, name: str, values: dict[str, float]
-    ) -> FinancialStatementItemNode:  # noqa: D401
+    ) -> FinancialStatementItemNode:
         """Thin façade delegating to ``DataItemService``."""
         return self._data_item_service.add_financial_statement_item(name, values)
 
     def update_financial_statement_item(
         self, name: str, values: dict[str, float], replace_existing: bool = False
-    ) -> FinancialStatementItemNode:  # noqa: D401
+    ) -> FinancialStatementItemNode:
         """Thin façade delegating to ``DataItemService``."""
         return self._data_item_service.update_financial_statement_item(
             name, values, replace_existing=replace_existing
@@ -543,7 +542,7 @@ class Graph:
 
     def get_financial_statement_items(
         self,
-    ) -> list[FinancialStatementItemNode]:  # noqa: D401
+    ) -> list[FinancialStatementItemNode]:
         """Thin façade delegating to ``DataItemService``."""
         return self._data_item_service.get_financial_statement_items()
 
@@ -568,7 +567,7 @@ class Graph:
     # Thin registry/manipulator façades needed by external services
     # ------------------------------------------------------------------
 
-    def add_node(self, node: Node) -> None:  # noqa: D401
+    def add_node(self, node: Node) -> None:
         """Add a node via ``NodeRegistryService`` (kept for backward-compat helpers)."""
         self._registry_service.add_node_with_validation(node)
 
@@ -588,13 +587,13 @@ class Graph:
         """
         return self._nodes.get(node_name)
 
-    def has_node(self, node_id: str) -> bool:  # noqa: D401
+    def has_node(self, node_id: str) -> bool:
         """Return True if a node with *node_id* is present in the graph."""
         return node_id in self._nodes
 
     # ---------------- Adjustment helpers requested by external packages ----
 
-    def list_all_adjustments(self) -> list[Any]:  # noqa: D401
+    def list_all_adjustments(self) -> list[Any]:
         """Return a list of every adjustment managed by the graph."""
         return self._adjustment_service.list_all_adjustments()
 
@@ -603,7 +602,7 @@ class Graph:
         node_name: str,
         period: str,
         filter_input: "AdjustmentFilterInput" = None,
-    ) -> bool:  # noqa: D401
+    ) -> bool:
         """Return True if any adjustments match the criteria for the given node/period."""
         return self._adjustment_service.was_adjusted(node_name, period, filter_input)
 
@@ -611,30 +610,30 @@ class Graph:
     # Traversal façade wrappers (used by tests and external modules)
     # ------------------------------------------------------------------
 
-    def topological_sort(self) -> list[str]:  # noqa: D401
+    def topological_sort(self) -> list[str]:
         return self.traverser.topological_sort()
 
-    def get_calculation_nodes(self) -> list[str]:  # noqa: D401
+    def get_calculation_nodes(self) -> list[str]:
         return self.traverser.get_calculation_nodes()
 
-    def get_dependencies(self, node_id: str) -> list[str]:  # noqa: D401
+    def get_dependencies(self, node_id: str) -> list[str]:
         return self.traverser.get_dependencies(node_id)
 
-    def get_dependency_graph(self) -> dict[str, list[str]]:  # noqa: D401
+    def get_dependency_graph(self) -> dict[str, list[str]]:
         return self.traverser.get_dependency_graph()
 
-    def detect_cycles(self) -> list[list[str]]:  # noqa: D401
+    def detect_cycles(self) -> list[list[str]]:
         return self.traverser.detect_cycles()
 
     def breadth_first_search(
         self, start_node: str, direction: str = "successors"
-    ) -> list[list[str]]:  # noqa: D401
+    ) -> list[list[str]]:
         return self.traverser.breadth_first_search(start_node, direction)
 
-    def get_direct_successors(self, node_id: str) -> list[str]:  # noqa: D401
+    def get_direct_successors(self, node_id: str) -> list[str]:
         return self.traverser.get_direct_successors(node_id)
 
-    def get_direct_predecessors(self, node_id: str) -> list[str]:  # noqa: D401
+    def get_direct_predecessors(self, node_id: str) -> list[str]:
         return self.traverser.get_direct_predecessors(node_id)
 
     # ------------------------------------------------------------------
@@ -655,7 +654,7 @@ class Graph:
         user: Optional[str] = None,
         *,
         adj_id: Optional["UUID"] = None,
-    ) -> "UUID":  # noqa: D401
+    ) -> "UUID":
         return self._adjustment_service.add_adjustment(
             node_name,
             period,
@@ -670,31 +669,31 @@ class Graph:
             adj_id=adj_id,
         )
 
-    def remove_adjustment(self, adj_id: "UUID") -> bool:  # noqa: D401
+    def remove_adjustment(self, adj_id: "UUID") -> bool:
         return self._adjustment_service.remove_adjustment(adj_id)
 
     # ------------------------------------------------------------------
     # Manipulator wrappers ----------------------------------------------
     # ------------------------------------------------------------------
 
-    def remove_node(self, node_name: str) -> None:  # noqa: D401
+    def remove_node(self, node_name: str) -> None:
         self.manipulator.remove_node(node_name)
 
-    def replace_node(self, node_name: str, new_node: Node) -> None:  # noqa: D401
+    def replace_node(self, node_name: str, new_node: Node) -> None:
         self.manipulator.replace_node(node_name, new_node)
 
-    def set_value(self, node_id: str, period: str, value: float) -> None:  # noqa: D401
+    def set_value(self, node_id: str, period: str, value: float) -> None:
         self.manipulator.set_value(node_id, period, value)
 
     # ------------------------------------------------------------------
     # Merge façade ------------------------------------------------------
 
-    def merge_from(self, other_graph: "Graph") -> None:  # noqa: D401
+    def merge_from(self, other_graph: "Graph") -> None:
         """Merge nodes and periods from *other_graph* into this graph."""
         if not isinstance(other_graph, Graph):
             raise TypeError("Can only merge from another Graph instance.")
         self._merge_service.merge_from(other_graph)
 
-    def validate(self) -> list[str]:  # noqa: D401
+    def validate(self) -> list[str]:
         """Run structural validation checks and return list of problems (empty if none)."""
         return self.traverser.validate()

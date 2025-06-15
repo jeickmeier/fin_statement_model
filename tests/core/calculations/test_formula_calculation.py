@@ -19,17 +19,17 @@ from fin_statement_model.core.nodes.base import Node
 class ConstantNode(Node):
     """A simple test node that returns a constant value for any period."""
 
-    def __init__(self, name: str, value: float):  # noqa: D401 – simple constructor
+    def __init__(self, name: str, value: float):
         super().__init__(name)
         self._value = float(value)
 
     # ------------------------------------------------------------------
     # Node API
     # ------------------------------------------------------------------
-    def calculate(self, period: str) -> float:  # noqa: D401 – simple getter
+    def calculate(self, period: str) -> float:
         return self._value
 
-    def to_dict(self) -> dict[str, float]:  # noqa: D401 – minimal serializer
+    def to_dict(self) -> dict[str, float]:
         return {"name": self.name, "value": self._value}
 
 

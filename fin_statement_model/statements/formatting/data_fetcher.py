@@ -12,23 +12,23 @@ from typing import Optional, cast
 import numpy as np
 import pandas as pd
 
-from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.errors import NodeError, CalculationError
 from fin_statement_model.core.adjustments.models import AdjustmentFilterInput
+from fin_statement_model.core.errors import CalculationError, NodeError
+from fin_statement_model.core.graph import Graph
+from fin_statement_model.core.nodes import standard_node_registry
+from fin_statement_model.statements.population.id_resolver import IDResolver
 from fin_statement_model.statements.structure import (
-    StatementStructure,
     Section,
     StatementItem,
+    StatementStructure,
 )
-from fin_statement_model.statements.population.id_resolver import IDResolver
-from fin_statement_model.core.nodes import standard_node_registry
 from fin_statement_model.statements.utilities.result_types import (
-    Result,
-    Success,
-    Failure,
+    ErrorCollector,
     ErrorDetail,
     ErrorSeverity,
-    ErrorCollector,
+    Failure,
+    Result,
+    Success,
 )
 
 logger = logging.getLogger(__name__)

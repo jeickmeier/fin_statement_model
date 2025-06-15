@@ -7,22 +7,24 @@ period management, validation, and method selection.
 
 import logging
 from typing import Any, Optional, cast
+
 import numpy as np
 
 # Core imports
 from fin_statement_model.config import cfg
-from fin_statement_model.core.nodes import Node
 from fin_statement_model.core.node_factory import NodeFactory
+from fin_statement_model.core.nodes import Node
 from fin_statement_model.forecasting.errors import (
     ForecastNodeError,
 )
 
+from .methods import BaseForecastMethod
+
 # Forecasting module imports
 from .period_manager import PeriodManager
-from .validators import ForecastValidator
 from .strategies import get_forecast_method
 from .types import ForecastConfig, ForecastResult
-from .methods import BaseForecastMethod
+from .validators import ForecastValidator
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +133,7 @@ class StatementForecaster:
             )
         except Exception as e:
             logger.error(f"Error creating forecast: {e}", exc_info=True)
-            raise ForecastNodeError(
+            raise ForecastNodeError(  # noqa: B904
                 f"Error creating forecast: {e}", node_id=None, reason=str(e)
             )
 
@@ -356,7 +358,7 @@ class StatementForecaster:
                 f"Failed to create temporary forecast node for '{node_name}': {e}",
                 exc_info=True,
             )
-            raise ForecastNodeError(
+            raise ForecastNodeError(  # noqa: B904
                 f"Could not create temporary forecast node: {e}",
                 node_id=node_name,
                 reason=str(e),
@@ -469,7 +471,7 @@ class StatementForecaster:
                 logger.exception(f"Error forecasting node {node_name}")
                 if continue_on_err:
                     continue
-                raise ForecastNodeError(
+                raise ForecastNodeError(  # noqa: B904
                     f"Error forecasting node {node_name}: {e}",
                     node_id=node_name,
                     reason=str(e),

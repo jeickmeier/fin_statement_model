@@ -20,12 +20,14 @@ Example:
 """
 
 from typing import Any
+
 import numpy as np
 from pydantic import ValidationError
+
 from fin_statement_model.config.helpers import cfg
+from fin_statement_model.forecasting.types import StatisticalConfig
 
 from .base import BaseForecastMethod
-from fin_statement_model.forecasting.types import StatisticalConfig
 
 
 class StatisticalForecastMethod(BaseForecastMethod):

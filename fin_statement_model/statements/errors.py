@@ -6,9 +6,10 @@ definition, configuration, building, and processing, inheriting from the base
 """
 
 from typing import Optional
+
 from fin_statement_model.core.errors import (
-    StatementError,
     ConfigurationError,
+    StatementError,
 )
 
 __all__ = [

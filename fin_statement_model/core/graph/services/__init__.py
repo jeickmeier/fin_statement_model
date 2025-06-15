@@ -9,13 +9,13 @@ graphs or pipelines to compose only the pieces they need.
 
 from __future__ import annotations
 
-from .calculation_engine import CalculationEngine
-from .period_service import PeriodService
 from .adjustment_service import AdjustmentService
+from .calculation_engine import CalculationEngine
 from .data_item_service import DataItemService
-from .merge_service import MergeService
 from .introspector import GraphIntrospector
+from .merge_service import MergeService
 from .node_registry import NodeRegistryService
+from .period_service import PeriodService
 
 __all__: list[str] = [
     "CalculationEngine",

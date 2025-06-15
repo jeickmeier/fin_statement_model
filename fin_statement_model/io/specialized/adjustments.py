@@ -1,9 +1,9 @@
 """Functions for bulk import and export of adjustments via Excel files."""
 
 import logging
-from typing import Any, cast, Iterable
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
+from typing import Any, Iterable, cast
 
 import pandas as pd
 from pydantic import ValidationError
@@ -13,8 +13,8 @@ from fin_statement_model.core.adjustments.models import (
     AdjustmentType,
 )
 from fin_statement_model.core.graph import Graph  # Needed for Graph convenience methods
-from fin_statement_model.io.exceptions import ReadError, WriteError
 from fin_statement_model.io.core import FileBasedReader, handle_read_errors
+from fin_statement_model.io.exceptions import ReadError, WriteError
 from fin_statement_model.io.specialized.row_models import AdjustmentRowModel
 
 logger = logging.getLogger(__name__)
@@ -86,11 +86,11 @@ def _read_excel_impl(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
     try:
         df = pd.read_excel(file_path, sheet_name=0)
     except FileNotFoundError:
-        raise ReadError(
+        raise ReadError(  # noqa: B904
             f"Adjustment Excel file not found: {file_path}", source=str(file_path)
         )
     except Exception as e:
-        raise ReadError(
+        raise ReadError(  # noqa: B904
             f"Failed to read Excel file {file_path}: {e}",
             source=str(file_path),
             original_error=e,
@@ -188,7 +188,7 @@ def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:
         try:
             pd.DataFrame().to_excel(file_path, index=False)
         except Exception as e:
-            raise WriteError(
+            raise WriteError(  # noqa: B904
                 f"Failed to write empty Excel file {file_path}: {e}",
                 target=str(file_path),
                 original_error=e,
@@ -213,7 +213,7 @@ def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:
         logger.error(
             f"Failed to write adjustments to Excel file {file_path}: {e}", exc_info=True
         )
-        raise WriteError(
+        raise WriteError(  # noqa: B904
             f"Failed to write adjustments to Excel: {e}",
             target=str(file_path),
             original_error=e,
@@ -285,5 +285,5 @@ def export_adjustments_to_excel(graph: Graph, path: str | Path) -> None:
 # Add convenience methods to Graph class directly?
 # This uses module patching which can sometimes be debated, but keeps the Graph API clean.
 # Alternatively, users would call fin_statement_model.io.adjustments_excel.load_adjustments_from_excel(graph, path)
-setattr(Graph, "load_adjustments_from_excel", load_adjustments_from_excel)
-setattr(Graph, "export_adjustments_to_excel", export_adjustments_to_excel)
+Graph.load_adjustments_from_excel = load_adjustments_from_excel  # type: ignore[attr-defined]
+Graph.export_adjustments_to_excel = export_adjustments_to_excel  # type: ignore[attr-defined]

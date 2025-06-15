@@ -6,9 +6,9 @@ including statements, sections, line items, calculations, and subtotals.
 
 from __future__ import annotations
 
-from typing import Any, Optional, Union, Literal
+from typing import Any, Literal, Optional, Union
 
-from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class CalculationSpec(BaseModel):

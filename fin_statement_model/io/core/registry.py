@@ -5,11 +5,10 @@ for readers and writers, along with registration decorators and access functions
 """
 
 import logging
-from typing import TypeVar, Generic, Optional, Any, Union, cast, Type
 from collections.abc import Callable
+from typing import Any, Generic, Optional, Type, TypeVar, Union, cast
 
-from pydantic import ValidationError
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from fin_statement_model.io.core.base import DataReader, DataWriter
 from fin_statement_model.io.exceptions import (

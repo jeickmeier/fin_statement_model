@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 import math
+
+import pytest
+
+from fin_statement_model.core.errors import NodeError
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.graph.services.calculation_engine import CalculationEngine
 
@@ -76,14 +79,14 @@ def test_add_custom_calculation_errors_and_success() -> None:
         calculation_func=lambda x, y: x + y,
         inputs=["X"],
     )
-    with pytest.raises(Exception):
-        # calculating invokes user function with mismatched args
+    # calculating invokes user function with mismatched args
+    with pytest.raises(TypeError):
         g.calculate("BadCustom", "2023")
 
 
 def test_add_metric_with_missing_nodes() -> None:
     engine, _ = setup_simple_engine()
-    with pytest.raises(Exception):
+    with pytest.raises(NodeError):
         engine.add_metric("nonexistent_metric")
 
 
@@ -97,5 +100,6 @@ def test_ensure_signed_nodes() -> None:
 def test_change_calculation_method_invalid() -> None:
     engine, g = setup_simple_engine()
     # changing non-existent node
-    with pytest.raises(Exception):
+    # Attempting to change calculation method on a non-existent node should raise NodeError.
+    with pytest.raises(NodeError):
         engine.change_calculation_method("NoNode", "addition")

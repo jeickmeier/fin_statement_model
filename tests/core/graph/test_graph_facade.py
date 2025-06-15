@@ -7,8 +7,7 @@ without breaking public semantics.
 
 from __future__ import annotations
 
-
-from fin_statement_model.core.graph import GraphFacade, Graph
+from fin_statement_model.core.graph import Graph, GraphFacade
 
 
 def test_facade_basic_calculation():

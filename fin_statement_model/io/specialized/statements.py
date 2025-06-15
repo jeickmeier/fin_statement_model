@@ -6,8 +6,8 @@ file-loading utilities have been removed to enforce an in-memory configuration
 workflow.
 """
 
-import logging
 import importlib.resources
+import logging
 from pathlib import Path
 from typing import Any
 

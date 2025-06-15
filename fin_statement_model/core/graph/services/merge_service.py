@@ -21,7 +21,7 @@ Example
 from __future__ import annotations
 
 import logging
-from typing import Callable, Optional, Any
+from typing import Any, Callable, Optional
 
 from fin_statement_model.core.nodes import Node
 
@@ -105,7 +105,7 @@ class MergeService:  # pylint: disable=too-few-public-methods
                         existing_node.values.update(other_node.values)
                         nodes_updated += 1
                         logger.debug("Merged values into existing node '%s'", node_name)
-                    except Exception as exc:  # noqa: BLE001
+                    except Exception as exc:
                         logger.warning(
                             "Could not merge values for node '%s': %s", node_name, exc
                         )
@@ -114,7 +114,7 @@ class MergeService:  # pylint: disable=too-few-public-methods
                     # Add node directly; assumes immutability or safe sharing.
                     self._add_node(other_node)
                     nodes_added += 1
-                except Exception as exc:  # noqa: BLE001
+                except Exception as exc:
                     logger.exception(
                         "Failed to add new node '%s' during merge: %s", node_name, exc
                     )

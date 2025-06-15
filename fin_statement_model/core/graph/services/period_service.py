@@ -38,9 +38,7 @@ class PeriodService:  # pylint: disable=too-few-public-methods
     reliable chronological ordering.
     """
 
-    def __init__(
-        self, periods: Iterable[_PeriodStr] | None = None
-    ) -> None:  # noqa: D401
+    def __init__(self, periods: Iterable[_PeriodStr] | None = None) -> None:
         """Create a new :class:`PeriodService`.
 
         Args:
@@ -71,13 +69,13 @@ class PeriodService:  # pylint: disable=too-few-public-methods
     # Public API --------------------------------------------------------
     # ------------------------------------------------------------------
     @property
-    def periods(self) -> List[str]:  # noqa: D401
+    def periods(self) -> List[str]:
         """Return an immutable **sorted** list of *string* period identifiers."""
         # Keep external contract (str) for now.  Internally we maintain order
         # via Period objects; converting here preserves that order.
         return self._periods
 
-    def add_periods(self, periods: Iterable[str]) -> None:  # noqa: D401
+    def add_periods(self, periods: Iterable[str]) -> None:
         """Add new periods ensuring uniqueness and chronological ordering.
 
         Args:

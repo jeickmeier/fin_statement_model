@@ -3,25 +3,23 @@
 from __future__ import annotations
 
 import logging
+import math
 from collections import defaultdict
 from typing import Optional
 from uuid import UUID
-import math
-
-from .models import (
-    Adjustment,
-    AdjustmentFilter,
-    AdjustmentFilterInput,
-    AdjustmentType,
-    DEFAULT_SCENARIO,
-)
-
-# Helper utilities
-from .helpers import tag_matches
 
 # Core errors
 from fin_statement_model.core.errors import AdjustmentError
 
+# Helper utilities
+from .helpers import tag_matches
+from .models import (
+    DEFAULT_SCENARIO,
+    Adjustment,
+    AdjustmentFilter,
+    AdjustmentFilterInput,
+    AdjustmentType,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -317,12 +315,12 @@ class AdjustmentManager:
 
             if param_count == 1:
                 # Define a small wrapper instead of assigning a lambda (ruff E731)
-                def combined_spec(adj: Adjustment) -> bool:  # noqa: D401
+                def combined_spec(adj: Adjustment) -> bool:
                     return normalized_filter.matches(adj) and filter_input(adj)
 
             elif param_count == 2:
 
-                def combined_spec(adj: Adjustment) -> bool:  # noqa: D401
+                def combined_spec(adj: Adjustment) -> bool:
                     return normalized_filter.matches(adj) and filter_input(adj, period)
 
             else:
@@ -331,14 +329,14 @@ class AdjustmentManager:
                 )
         elif isinstance(filter_input, set):
 
-            def combined_spec(adj: Adjustment) -> bool:  # noqa: D401
+            def combined_spec(adj: Adjustment) -> bool:
                 return normalized_filter.matches(adj) and tag_matches(
                     adj.tags, filter_input
                 )
 
         elif isinstance(filter_input, AdjustmentFilter):
 
-            def combined_spec(adj: Adjustment) -> bool:  # noqa: D401
+            def combined_spec(adj: Adjustment) -> bool:
                 return normalized_filter.matches(adj) and filter_input.matches(adj)
 
         else:

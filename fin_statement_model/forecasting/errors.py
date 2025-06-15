@@ -4,7 +4,8 @@ This module provides exception classes for forecasting methods, configuration,
 node handling, and result validation within the forecasting sub-module.
 """
 
-from typing import Optional, Any
+from typing import Any, Optional
+
 from fin_statement_model.core.errors import FinancialModelError
 
 __all__ = [

@@ -22,16 +22,16 @@ Basic usage (via the public `Graph` façade):
 
 from __future__ import annotations
 
-from typing import Optional, Set, List
+from typing import List, Optional, Set
 from uuid import UUID, uuid4
 
 from fin_statement_model.core.adjustments.manager import AdjustmentManager
 from fin_statement_model.core.adjustments.models import (
-    Adjustment,
-    AdjustmentType,
-    AdjustmentTag,
-    AdjustmentFilterInput,
     DEFAULT_SCENARIO,
+    Adjustment,
+    AdjustmentFilterInput,
+    AdjustmentTag,
+    AdjustmentType,
 )
 
 __all__: list[str] = ["AdjustmentService"]
@@ -90,7 +90,7 @@ class AdjustmentService:  # pylint: disable=too-few-public-methods
         return adj.id
 
     # Basic delegations -------------------------------------------------
-    def remove_adjustment(self, adj_id: UUID) -> bool:  # noqa: D401
+    def remove_adjustment(self, adj_id: UUID) -> bool:
         return self._manager.remove_adjustment(adj_id)
 
     def get_adjustments(
@@ -110,10 +110,10 @@ class AdjustmentService:  # pylint: disable=too-few-public-methods
     ) -> tuple[float, bool]:
         return self._manager.apply_adjustments(base_value, adjustments)
 
-    def list_all_adjustments(self) -> List[Adjustment]:  # noqa: D401
+    def list_all_adjustments(self) -> List[Adjustment]:
         return self._manager.get_all_adjustments()
 
-    def clear_all(self) -> None:  # noqa: D401
+    def clear_all(self) -> None:
         self._manager.clear_all()
 
     def was_adjusted(

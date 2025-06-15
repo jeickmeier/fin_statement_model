@@ -5,15 +5,16 @@ compound annual growth rate (CAGR), year-over-year (YoY), and quarter-over-quart
 """
 
 import logging
+from typing import ClassVar, Optional, Union
+
 import numpy as np
 import pandas as pd
-from typing import Union, Optional, ClassVar
 
+from fin_statement_model.preprocessing.base_transformer import DataTransformer
 from fin_statement_model.preprocessing.config import (
     TimeSeriesConfig,
     TransformationType,
 )
-from fin_statement_model.preprocessing.base_transformer import DataTransformer
 
 logger = logging.getLogger(__name__)
 

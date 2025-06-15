@@ -1,7 +1,8 @@
 """Utility functions for formatting statement DataFrames."""
 
+from typing import Any, Optional  # Keep necessary imports
+
 import pandas as pd
-from typing import Optional, Any  # Keep necessary imports
 from pandas.api.types import is_numeric_dtype
 
 

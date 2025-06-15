@@ -14,9 +14,11 @@ Example:
 
 import logging
 from typing import Any, Optional
+
 import numpy as np
 
 from fin_statement_model.core.nodes import Node
+
 from .base import BaseForecastMethod
 
 logger = logging.getLogger(__name__)

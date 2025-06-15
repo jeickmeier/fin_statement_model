@@ -2,8 +2,8 @@ import pytest
 
 from fin_statement_model.core.nodes import (
     CalculationNode,
-    FormulaCalculationNode,
     CustomCalculationNode,
+    FormulaCalculationNode,
     is_calculation_node,
 )
 from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode

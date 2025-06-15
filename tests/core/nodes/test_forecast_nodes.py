@@ -1,14 +1,14 @@
 import pytest
 
-from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
 from fin_statement_model.core.nodes.forecast_nodes import (
-    FixedGrowthForecastNode,
-    CurveGrowthForecastNode,
-    StatisticalGrowthForecastNode,
-    CustomGrowthForecastNode,
-    AverageValueForecastNode,
     AverageHistoricalGrowthForecastNode,
+    AverageValueForecastNode,
+    CurveGrowthForecastNode,
+    CustomGrowthForecastNode,
+    FixedGrowthForecastNode,
+    StatisticalGrowthForecastNode,
 )
+from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
 
 
 def test_fixed_growth_forecast_node_and_roundtrip():

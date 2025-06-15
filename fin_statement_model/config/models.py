@@ -11,14 +11,16 @@ Examples:
     'WARNING'
 """
 
-from typing import Optional, Literal, Any, Union
 from pathlib import Path
-from pydantic import BaseModel, Field, field_validator, ConfigDict
-from fin_statement_model.statements.configs.models import AdjustmentFilterSpec
+from typing import Any, Literal, Optional, Union
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
 from fin_statement_model.preprocessing.config import (
     StatementFormattingConfig,
     TransformationType,
 )
+from fin_statement_model.statements.configs.models import AdjustmentFilterSpec
 
 
 class LoggingConfig(BaseModel):

@@ -5,34 +5,34 @@ for display or reporting, including applying formatting rules, adding subtotals,
 and applying sign conventions with enhanced display control.
 """
 
-import pandas as pd
-import numpy as np  # Added numpy for NaN handling
-from typing import Optional, Any, Union
-from collections.abc import Callable
 import logging
 import re
+from collections.abc import Callable
 from dataclasses import dataclass, field
+from typing import Any, Optional, Union
 
-from fin_statement_model.statements.structure import StatementStructure
-from fin_statement_model.statements.structure import (
-    Section,
-    CalculatedLineItem,
-    SubtotalLineItem,
-    StatementItem,
-)
-
-# Add core Graph and errors
-from fin_statement_model.core.graph import Graph
+import numpy as np  # Added numpy for NaN handling
+import pandas as pd
 
 # Import adjustment types for filtering
 from fin_statement_model.core.adjustments.models import AdjustmentFilterInput
 
-# Import the ID resolver
-from fin_statement_model.statements.population.id_resolver import IDResolver
+# Add core Graph and errors
+from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import standard_node_registry
 
 # Import the data fetcher
 from fin_statement_model.statements.formatting.data_fetcher import DataFetcher
+
+# Import the ID resolver
+from fin_statement_model.statements.population.id_resolver import IDResolver
+from fin_statement_model.statements.structure import (
+    CalculatedLineItem,
+    Section,
+    StatementItem,
+    StatementStructure,
+    SubtotalLineItem,
+)
 
 # Import formatting utilities
 from ._formatting_utils import render_values

@@ -6,14 +6,14 @@ as well as related constants and enums.
 
 from __future__ import annotations
 
+import logging
 import uuid
+from collections.abc import Callable
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Final, Optional
-from collections.abc import Callable
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
-import logging
 
 from .helpers import tag_matches
 
@@ -228,11 +228,11 @@ class AdjustmentFilter(BaseModel):
                 logger.debug("Period check passed.")
             else:
                 is_match = False  # Period check failed
-        # else: # Optional log if period check was skipped
+        # else: # Optional log if period check was skipped  # noqa: ERA001
         #     if self.period is not None:
-        #         logger.debug("Period check skipped because is_match was already False")
-        #     else:
-        #         logger.debug("Period check skipped: Filter has no period context.")
+        #         logger.debug("Period check skipped because is_match was already False")  # noqa: ERA001
+        #     else:  # noqa: ERA001
+        #         logger.debug("Period check skipped: Filter has no period context.")  # noqa: ERA001
 
         return is_match
 

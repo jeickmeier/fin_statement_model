@@ -1,16 +1,17 @@
 """Data reader for pandas DataFrames."""
 
 import logging
-import pandas as pd
+from typing import Any, Optional
+
 import numpy as np
-from typing import Optional, Any
+import pandas as pd
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
+from fin_statement_model.io.config.models import DataFrameReaderConfig
 from fin_statement_model.io.core.base import DataReader
 from fin_statement_model.io.core.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
-from fin_statement_model.io.config.models import DataFrameReaderConfig
 
 logger = logging.getLogger(__name__)
 

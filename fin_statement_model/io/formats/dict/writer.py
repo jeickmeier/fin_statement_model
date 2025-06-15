@@ -4,13 +4,13 @@ import logging
 from typing import Any
 
 from fin_statement_model.core.graph import Graph
+from fin_statement_model.io.config.models import DictWriterConfig
 from fin_statement_model.io.core.mixins import (
-    DataFrameBasedWriter,
     ConfigurationMixin,
+    DataFrameBasedWriter,
     handle_write_errors,
 )
 from fin_statement_model.io.core.registry import register_writer
-from fin_statement_model.io.config.models import DictWriterConfig
 
 logger = logging.getLogger(__name__)
 

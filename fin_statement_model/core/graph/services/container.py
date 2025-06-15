@@ -31,23 +31,24 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Iterator
 
+from fin_statement_model.core.graph.services.adjustment_service import (
+    AdjustmentService,
+)
+
 # Import service classes.  These are lightweight at import-time and avoid heavy
 # runtime work, so pulling them into the module top-level is acceptable.
 from fin_statement_model.core.graph.services.calculation_engine import (
     CalculationEngine,
 )
-from fin_statement_model.core.graph.services.period_service import PeriodService
-from fin_statement_model.core.graph.services.adjustment_service import (
-    AdjustmentService,
-)
 from fin_statement_model.core.graph.services.data_item_service import (
     DataItemService,
 )
-from fin_statement_model.core.graph.services.merge_service import MergeService
 from fin_statement_model.core.graph.services.introspector import GraphIntrospector
+from fin_statement_model.core.graph.services.merge_service import MergeService
 from fin_statement_model.core.graph.services.node_registry import (
     NodeRegistryService,
 )
+from fin_statement_model.core.graph.services.period_service import PeriodService
 
 __all__: list[str] = ["ServiceContainer"]
 
@@ -97,7 +98,7 @@ class ServiceContainer:  # pylint: disable=too-many-instance-attributes
         return ServiceContainer(**data)  # type: ignore[arg-type]
 
     # Keep container iterable for convenience (rarely used) ----------------
-    def __iter__(self) -> "Iterator[type[object]]":  # noqa: D401
+    def __iter__(self) -> "Iterator[type[object]]":
         """Iterate over the *class* objects in a deterministic order."""
 
         yield self.calc_engine

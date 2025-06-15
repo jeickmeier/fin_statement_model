@@ -1,7 +1,7 @@
 import pytest
 
-from fin_statement_model.core.graph.graph import Graph
 from fin_statement_model.core.errors import NodeError
+from fin_statement_model.core.graph.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 
 

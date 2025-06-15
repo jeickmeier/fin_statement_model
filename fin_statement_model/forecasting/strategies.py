@@ -8,12 +8,12 @@ import logging
 from typing import Any
 
 from .methods import (
-    ForecastMethod,
-    SimpleForecastMethod,
-    CurveForecastMethod,
-    StatisticalForecastMethod,
     AverageForecastMethod,
+    CurveForecastMethod,
+    ForecastMethod,
     HistoricalGrowthForecastMethod,
+    SimpleForecastMethod,
+    StatisticalForecastMethod,
 )
 
 logger = logging.getLogger(__name__)

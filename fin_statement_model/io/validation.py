@@ -6,8 +6,8 @@ with context-aware pattern recognition for financial statement nodes.
 
 import logging
 import re
-from typing import Optional, ClassVar, Any
 from dataclasses import dataclass, field
+from typing import Any, ClassVar, Optional
 
 from fin_statement_model.core.nodes import Node
 from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry

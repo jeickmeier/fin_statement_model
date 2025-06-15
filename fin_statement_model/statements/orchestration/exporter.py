@@ -90,7 +90,7 @@ def export_statements(
                 "Failed to write %s file for statement '%s'", file_suffix, stmt_id
             )
             export_errors.append((stmt_id, str(e)))
-        except Exception as e:  # noqa: BLE001 – re-wrap unknown exceptions
+        except Exception as e:
             logger.exception(
                 "Unexpected error exporting statement '%s' to %s", stmt_id, file_path
             )

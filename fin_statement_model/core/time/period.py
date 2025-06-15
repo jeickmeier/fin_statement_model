@@ -42,7 +42,7 @@ class Period:  # pylint: disable=too-many-instance-attributes
     # Construction helpers ---------------------------------------------
     # ------------------------------------------------------------------
     @classmethod
-    def parse(cls, s: str) -> "Period":  # noqa: D401
+    def parse(cls, s: str) -> "Period":
         """Parse *s* into a :class:`Period` or raise :class:`PeriodError`."""
         if not isinstance(s, str):
             raise PeriodError("Period string must be of type str", period=str(s))
@@ -65,7 +65,7 @@ class Period:  # pylint: disable=too-many-instance-attributes
 
     # Friendly helper that does *not* raise -----------------------------
     @classmethod
-    def try_parse(cls, s: str) -> Optional["Period"]:  # noqa: D401
+    def try_parse(cls, s: str) -> Optional["Period"]:
         """Return :class:`Period` if *s* is valid else *None* (no exception)."""
         try:
             return cls.parse(s)
@@ -75,7 +75,7 @@ class Period:  # pylint: disable=too-many-instance-attributes
     # ------------------------------------------------------------------
     # Dunder overrides --------------------------------------------------
     # ------------------------------------------------------------------
-    def __str__(self) -> str:  # noqa: D401
+    def __str__(self) -> str:
         if self.quarter is not None:
             return f"{self.year}Q{self.quarter}"
         if self.month is not None:
@@ -85,7 +85,7 @@ class Period:  # pylint: disable=too-many-instance-attributes
     def __repr__(self) -> str:  # pragma: no cover – debugger aid
         return f"Period('{str(self)}')"
 
-    def __eq__(self, other: object) -> bool:  # noqa: D401
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Period):
             return NotImplemented
         return (
@@ -94,29 +94,29 @@ class Period:  # pylint: disable=too-many-instance-attributes
             and self.month == other.month
         )
 
-    def __lt__(self, other: "Period") -> bool:  # noqa: D401
+    def __lt__(self, other: "Period") -> bool:
         if not isinstance(other, Period):  # pragma: no cover – safety
             return NotImplemented
         return self._order_key < other._order_key
 
-    def __hash__(self) -> int:  # noqa: D401
+    def __hash__(self) -> int:
         return hash((self.year, self.quarter, self.month))
 
     # ------------------------------------------------------------------
     # Convenience properties -------------------------------------------
     # ------------------------------------------------------------------
     @property
-    def is_annual(self) -> bool:  # noqa: D401
+    def is_annual(self) -> bool:
         """Return *True* if the period represents a full year."""
         return self.quarter is None and self.month is None
 
     @property
-    def is_quarterly(self) -> bool:  # noqa: D401
+    def is_quarterly(self) -> bool:
         """Return *True* if the period is a fiscal quarter (Q1–Q4)."""
         return self.quarter is not None
 
     @property
-    def is_monthly(self) -> bool:  # noqa: D401
+    def is_monthly(self) -> bool:
         """Return *True* if the period is a calendar month (ISO *YYYY-MM*)."""
         return self.month is not None
 

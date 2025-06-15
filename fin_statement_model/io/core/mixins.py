@@ -4,19 +4,21 @@ This module provides shared functionality for readers and writers including
 error handling decorators and mixins for consistent behavior.
 """
 
-import os
 import functools
-import logging
 import importlib.resources
-import yaml
+import logging
+import os
 from abc import abstractmethod
-from typing import Any, TypeVar, Optional, ClassVar
 from collections.abc import Callable
+from typing import Any, ClassVar, Optional, TypeVar
+
+import yaml
 
 from fin_statement_model.core.graph import Graph
-from .base import DataReader
+from fin_statement_model.io.core.utils import MappingConfig, normalize_mapping
 from fin_statement_model.io.exceptions import ReadError, WriteError
-from fin_statement_model.io.core.utils import normalize_mapping, MappingConfig
+
+from .base import DataReader
 
 logger = logging.getLogger(__name__)
 
@@ -262,7 +264,7 @@ class ValidationMixin:
                 reader_type=getattr(self, "__class__", {}).get("__name__", "Unknown"),
             )
 
-    def validate_numeric_value(  # noqa: PLR0911
+    def validate_numeric_value(
         self,
         value: Any,
         item_name: str,
@@ -407,14 +409,14 @@ def handle_read_errors(source_attr: str = "source") -> Callable[[F], F]:
             except ReadError:
                 raise  # Re-raise our own errors without modification
             except FileNotFoundError as e:
-                raise ReadError(
+                raise ReadError(  # noqa: B904
                     f"File not found: {source}",
                     source=str(source),
                     reader_type=self.__class__.__name__,
                     original_error=e,
                 )
             except ValueError as e:
-                raise ReadError(
+                raise ReadError(  # noqa: B904
                     f"Invalid value encountered: {e}",
                     source=str(source),
                     reader_type=self.__class__.__name__,
@@ -629,7 +631,7 @@ class ConfigurationMixin:
                 # Attempt type conversion
                 value = value_type(value)
             except (ValueError, TypeError) as e:
-                raise ReadError(
+                raise ReadError(  # noqa: B904
                     f"Configuration value '{key}' has invalid type. "
                     f"Expected {value_type.__name__}, got {type(value).__name__}",
                     reader_type=self.__class__.__name__,
@@ -645,7 +647,7 @@ class ConfigurationMixin:
                         reader_type=self.__class__.__name__,
                     )
             except Exception as e:
-                raise ReadError(
+                raise ReadError(  # noqa: B904
                     f"Configuration validation error for '{key}': {e}",
                     reader_type=self.__class__.__name__,
                     original_error=e,

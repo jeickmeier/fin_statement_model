@@ -5,11 +5,11 @@ Each format is organized in its own submodule.
 """
 
 # Import all format handlers to ensure they're registered
+from .api import FmpReader
 from .csv import CsvReader
 from .dataframe import DataFrameReader, DataFrameWriter
 from .dict import DictReader, DictWriter
 from .excel import ExcelReader, ExcelWriter
-from .api import FmpReader
 from .markdown import MarkdownWriter
 
 __all__ = [

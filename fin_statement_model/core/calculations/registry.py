@@ -14,8 +14,8 @@ Examples:
 """
 
 # Use lowercase built-in types
-from typing import ClassVar  # Keep Type for now
 import logging
+from typing import ClassVar  # Keep Type for now
 
 from .calculation import Calculation
 

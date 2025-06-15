@@ -38,7 +38,8 @@ contributors.  End-users should prefer the higher-level convenience methods on
 """
 
 import logging
-from typing import Optional, Any, cast
+from typing import Any, Optional, cast
+
 from fin_statement_model.core.errors import NodeError, PeriodError
 from fin_statement_model.core.nodes import Node
 from fin_statement_model.core.time.period import Period

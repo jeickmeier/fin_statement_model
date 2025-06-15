@@ -5,13 +5,21 @@ using a node-based graph structure.
 """
 
 # Import key components at package level for easier access
+# Import configuration management
+from fin_statement_model.config import get_config, update_config
 from fin_statement_model.core.errors import FinancialModelError
 from fin_statement_model.core.graph import Graph
+
+# ---------------------------------------------------------------------------
+# One-shot logging setup (single entry point for the whole library)
+# ---------------------------------------------------------------------------
+from fin_statement_model.core.logging import get_logger as _get_logger
+from fin_statement_model.core.logging import setup_logging as _setup_logging
 from fin_statement_model.core.node_factory import NodeFactory
 from fin_statement_model.core.nodes import (
     CalculationNode,
-    CustomGrowthForecastNode,
     CurveGrowthForecastNode,
+    CustomGrowthForecastNode,
     FinancialStatementItemNode,
     FixedGrowthForecastNode,
     ForecastNode,
@@ -20,16 +28,6 @@ from fin_statement_model.core.nodes import (
     StatisticalGrowthForecastNode,
     YoYGrowthNode,
 )
-
-# Import configuration management
-from fin_statement_model.config import get_config, update_config
-
-# ---------------------------------------------------------------------------
-# One-shot logging setup (single entry point for the whole library)
-# ---------------------------------------------------------------------------
-
-from fin_statement_model.core.logging import get_logger as _get_logger
-from fin_statement_model.core.logging import setup_logging as _setup_logging
 
 try:
     _cfg = get_config()
@@ -41,7 +39,7 @@ try:
             str(_cfg.logging.log_file_path) if _cfg.logging.log_file_path else None
         ),
     )
-except Exception as _err:  # noqa: BLE001
+except Exception as _err:
     import logging as _std_logging
 
     _std_logging.getLogger(__name__).debug(
@@ -74,10 +72,10 @@ __all__ = [
 
 # Core API Exports (ensure essential classes/functions are accessible)
 # Example:
-# from .core.graph import Graph
-# from .core.nodes import Node, FinancialStatementItemNode
-# from .core.calculation_engine import CalculationEngine
-# from .statements.manager import StatementManager
+# from .core.graph import Graph  # noqa: ERA001
+# from .core.nodes import Node, FinancialStatementItemNode  # noqa: ERA001
+# from .core.calculation_engine import CalculationEngine  # noqa: ERA001
+# from .statements.manager import StatementManager  # noqa: ERA001
 
 # Placeholder: Explicitly list key public API components later.
 # For now, just rely on sub-package __init__ files if they exist.

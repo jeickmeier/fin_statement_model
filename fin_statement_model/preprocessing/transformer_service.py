@@ -12,15 +12,15 @@ from typing import Any, ClassVar, Optional, Union
 
 import pandas as pd
 
+from fin_statement_model.config.helpers import cfg
 from fin_statement_model.preprocessing.base_transformer import (
-    DataTransformer,
     CompositeTransformer,
+    DataTransformer,
 )
 from fin_statement_model.preprocessing.errors import (
-    TransformerRegistrationError,
     TransformerConfigurationError,
+    TransformerRegistrationError,
 )
-from fin_statement_model.config.helpers import cfg
 
 logger = logging.getLogger(__name__)
 

@@ -35,16 +35,13 @@ Key responsibilities
 
 from __future__ import annotations
 
-from typing import Callable, Optional, Dict, Any, List, Union
-
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
 if TYPE_CHECKING:  # pragma: no cover
     from fin_statement_model.core.node_factory import NodeFactory
 
 # Local imports deliberately avoid importing Graph to meet step 1.2 criteria
 from fin_statement_model.core.nodes import Node  # allowed (core-level)
-
 from fin_statement_model.core.time.period import Period
 
 __all__: list[str] = ["CalculationEngine"]
@@ -96,9 +93,7 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
     # ---------------------------------------------------------------------
     # Public API (stubs)
     # ---------------------------------------------------------------------
-    def calculate(
-        self, node_name: str, period: Union[str, Period]
-    ) -> float:  # noqa: D401
+    def calculate(self, node_name: str, period: Union[str, Period]) -> float:
         """Calculate and return the value of *node_name* for *period*.
 
         This is mostly a verbatim copy of the original ``Graph.calculate`` method,
@@ -116,9 +111,9 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
         # re-export expectations.
         from fin_statement_model.core.errors import (
             CalculationError,
-            NodeError,
             ConfigurationError,
-        )  # noqa: F401
+            NodeError,
+        )
 
         logger = logging.getLogger(__name__)
 
@@ -171,9 +166,7 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
         )
         return value
 
-    def recalc_all(
-        self, periods: Optional[List[Union[str, Period]]] = None
-    ) -> None:  # noqa: D401
+    def recalc_all(self, periods: Optional[List[Union[str, Period]]] = None) -> None:
         """Recalculate every node in the graph for the requested *periods*.
 
         If *periods* is ``None`` all registered periods are used.  A single
@@ -218,7 +211,7 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
             for period in periods_to_use:
                 try:
                     self.calculate(node_name, period)
-                except Exception as exc:  # noqa: BLE001
+                except Exception as exc:
                     # Match Graph behaviour: log & continue
                     logger.warning(
                         "Error recalculating node '%s' for period '%s': %s",
@@ -228,13 +221,13 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
                     )
 
     # Cache-management helpers ------------------------------------------------
-    def clear_all(self) -> None:  # noqa: D401
+    def clear_all(self) -> None:
         """Clear **all** entries from the internal calculation cache."""
         self._cache.clear()
 
     # Convenience: expose cache for future injection/tests -------------------
     @property
-    def cache(self) -> Dict[str, Dict[str, float]]:  # noqa: D401
+    def cache(self) -> Dict[str, Dict[str, float]]:
         """Return the underlying two-level cache mapping."""
         return self._cache
 
@@ -308,11 +301,11 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
         This is a direct port of ``Graph.add_metric`` with references adjusted
         to use collaborators injected into ``CalculationEngine``.
         """
-        from fin_statement_model.core.metrics import metric_registry
         from fin_statement_model.core.errors import (
-            NodeError,
             ConfigurationError,
+            NodeError,
         )
+        from fin_statement_model.core.metrics import metric_registry
 
         # Default node_name to metric_name if not provided
         if node_name is None:
@@ -329,8 +322,11 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
         try:
             metric_def = metric_registry.get(metric_name)
         except KeyError as exc:
-            raise ConfigurationError(
-                f"Unknown metric definition: '{metric_name}'"
+            # Align with historical behaviour expected by tests – unknown metric should
+            # be treated as a missing *node* dependency rather than a configuration
+            # error because the model cannot resolve the metric into a node graph.
+            raise NodeError(
+                f"Metric definition '{metric_name}' not found", node_id=metric_name
             ) from exc
 
         required_inputs = metric_def.inputs
@@ -372,7 +368,7 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
                 metric_name=metric_name,
                 metric_description=description,
             )
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             import logging
 
             logging.getLogger(__name__).exception(
@@ -476,10 +472,9 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
         **kwargs: Dict[str, Any],
     ) -> None:
         """Change the calculation method for an existing calculation-based node."""
-        from fin_statement_model.core.nodes import CalculationNode
         from fin_statement_model.core.calculations import Registry
-
         from fin_statement_model.core.errors import NodeError
+        from fin_statement_model.core.nodes import CalculationNode
 
         node = self._nodes.get(node_name)
         if node is None:
@@ -508,7 +503,7 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
         try:
             calculation_instance = calculation_cls(**kwargs)
         except TypeError as exc:
-            raise TypeError(
+            raise TypeError(  # noqa: B904
                 f"Failed to instantiate calculation '{new_method_key}': {exc}"
             )
 
@@ -548,7 +543,7 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
         try:
             metric_def = metric_registry.get(registry_key)
             display_name = metric_def.name
-        except Exception:  # noqa: BLE001
+        except Exception:
             display_name = metric_id
 
         inputs = (

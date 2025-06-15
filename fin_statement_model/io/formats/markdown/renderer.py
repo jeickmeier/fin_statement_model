@@ -4,18 +4,18 @@ import logging
 from typing import Optional, Union
 
 from fin_statement_model.core.graph import Graph
+from fin_statement_model.core.nodes import standard_node_registry
+from fin_statement_model.io.formats.markdown.models import MarkdownStatementItem
 from fin_statement_model.statements.structure import (
+    CalculatedLineItem,
+    LineItem,
+    MetricLineItem,
     Section,
     StatementItem,
     StatementItemType,
     StatementStructure,
-    LineItem,
-    CalculatedLineItem,
     SubtotalLineItem,
-    MetricLineItem,
 )
-from fin_statement_model.io.formats.markdown.models import MarkdownStatementItem
-from fin_statement_model.core.nodes import standard_node_registry
 
 logger = logging.getLogger(__name__)
 

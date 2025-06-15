@@ -11,12 +11,12 @@ import math
 import statistics
 
 # Use lowercase built-in types for annotations
-from typing import Optional, Union, Any
-from typing import Callable
+from typing import Any, Callable, Optional, Union
+
+from fin_statement_model.core.errors import CalculationError
 
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node
-from fin_statement_model.core.errors import CalculationError
 
 # Added logger instance
 logger = logging.getLogger(__name__)

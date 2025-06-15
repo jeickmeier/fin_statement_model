@@ -3,15 +3,15 @@
 Re-export domain model classes from submodules.
 """
 
+from .containers import Section, StatementStructure
 from .items import (
+    CalculatedLineItem,
+    LineItem,
+    MetricLineItem,
     StatementItem,
     StatementItemType,
-    LineItem,
-    CalculatedLineItem,
-    MetricLineItem,
     SubtotalLineItem,
 )
-from .containers import Section, StatementStructure
 
 __all__ = [
     "CalculatedLineItem",

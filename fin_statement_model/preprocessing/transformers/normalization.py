@@ -4,19 +4,19 @@ This module defines the transformer to normalize data using percent_of, minmax,
 standard, or scale_by methods within the preprocessing layer.
 """
 
-from typing import Optional, Union, ClassVar
 import logging
+from typing import ClassVar, Optional, Union
 
 import numpy as np
 import pandas as pd
 
+from fin_statement_model.core.errors import DataValidationError
 from fin_statement_model.preprocessing.base_transformer import DataTransformer
 from fin_statement_model.preprocessing.config import (
     NormalizationConfig,
     NormalizationType,
 )
 from fin_statement_model.preprocessing.errors import NormalizationError
-from fin_statement_model.core.errors import DataValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -282,7 +282,7 @@ class NormalizationTransformer(DataTransformer):
                     result[col] = (
                         0.0  # Or np.nan, depending on desired behavior for constant series
                     )
-                # else: max_val < min_val (should not happen with .min()/.max())
+                # else: max_val < min_val (should not happen with .min()/.max())  # noqa: ERA001
 
         elif self.normalization_type == NormalizationType.STANDARD.value:
             for col in df.columns:
@@ -293,7 +293,7 @@ class NormalizationTransformer(DataTransformer):
                     result[col] = (df[col] - mean) / std
                 elif std == 0:  # Handles constant columns
                     result[col] = 0.0  # Or np.nan, depending on desired behavior
-                # else: std < 0 (not possible)
+                # else: std < 0 (not possible)  # noqa: ERA001
 
         elif self.normalization_type == NormalizationType.SCALE_BY.value:
             for col in df.columns:

@@ -8,43 +8,44 @@ statement.
 """
 
 import logging
-from typing import Union, Optional, Any, cast
+from typing import Any, Optional, Union, cast
 
-# Assuming config and structure modules are accessible
-from fin_statement_model.statements.configs.validator import StatementConfig
-from fin_statement_model.statements.configs.models import (
-    SectionModel,
-    BaseItemModel,
-    LineItemModel,
-    CalculatedItemModel,
-    MetricItemModel,
-    SubtotalModel,
-    StatementModel,
-    AdjustmentFilterSpec,
-)
-from fin_statement_model.statements.structure import (
-    StatementStructure,
-    Section,
-    LineItem,
-    MetricLineItem,
-    CalculatedLineItem,
-    SubtotalLineItem,
-)
-from fin_statement_model.statements.errors import ConfigurationError
+from fin_statement_model.config.helpers import cfg
+
+# Import adjustment types for filter conversion
+from fin_statement_model.core.adjustments.models import AdjustmentFilter, AdjustmentType
+from fin_statement_model.core.nodes import standard_node_registry
 
 # Import UnifiedNodeValidator for optional node validation during build
 from fin_statement_model.io.validation import UnifiedNodeValidator
-from fin_statement_model.config.helpers import cfg
-from fin_statement_model.core.nodes import standard_node_registry
+from fin_statement_model.statements.configs.models import (
+    AdjustmentFilterSpec,
+    BaseItemModel,
+    CalculatedItemModel,
+    LineItemModel,
+    MetricItemModel,
+    SectionModel,
+    StatementModel,
+    SubtotalModel,
+)
+
+# Assuming config and structure modules are accessible
+from fin_statement_model.statements.configs.validator import StatementConfig
+from fin_statement_model.statements.errors import ConfigurationError
+from fin_statement_model.statements.structure import (
+    CalculatedLineItem,
+    LineItem,
+    MetricLineItem,
+    Section,
+    StatementStructure,
+    SubtotalLineItem,
+)
 
 # Import Result types for enhanced error handling
 from fin_statement_model.statements.utilities.result_types import (
     ErrorCollector,
     ErrorSeverity,
 )
-
-# Import adjustment types for filter conversion
-from fin_statement_model.core.adjustments.models import AdjustmentFilter, AdjustmentType
 
 logger = logging.getLogger(__name__)
 

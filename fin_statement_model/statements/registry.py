@@ -74,7 +74,7 @@ class StatementRegistry:
             )
             raise StatementError(
                 message=f"Statement with ID '{statement_id}' is already registered.",
-                # statement_id=statement_id # Add if StatementError accepts this arg
+                # statement_id=statement_id # Add if StatementError accepts this arg  # noqa: ERA001
             )
 
         self._statements[statement_id] = statement

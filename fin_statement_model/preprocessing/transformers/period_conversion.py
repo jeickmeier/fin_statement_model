@@ -6,15 +6,16 @@ quarterly_to_annual, monthly_to_quarterly, monthly_to_annual, and quarterly_to_t
 """
 
 import logging
-import pandas as pd
-from typing import Optional, Union, ClassVar
+from typing import ClassVar, Optional, Union
 
+import pandas as pd
+
+from fin_statement_model.core.errors import DataValidationError
 from fin_statement_model.preprocessing.base_transformer import DataTransformer
 from fin_statement_model.preprocessing.config import (
     ConversionType,
     PeriodConversionConfig,
 )
-from fin_statement_model.core.errors import DataValidationError
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -273,7 +274,7 @@ class PeriodConversionTransformer(DataTransformer):
                 logger.exception(
                     "Failed to convert DataFrame index to DatetimeIndex. Ensure index contains standard date/time strings or is already a DatetimeIndex."
                 )
-                raise ValueError(
+                raise ValueError(  # noqa: B904
                     f"Index must be convertible to datetime for period conversion: {e}"
                 )
 

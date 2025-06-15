@@ -6,7 +6,7 @@ This module defines the different types of calculation nodes available in the sy
 - CustomCalculationNode: Calculates using a Python callable/function
 """
 
-from typing import Optional, Any, Callable
+from typing import Any, Callable, Optional
 
 from fin_statement_model.core.calculations.calculation import (
     Calculation,
@@ -16,7 +16,6 @@ from fin_statement_model.core.errors import (
     CalculationError,
 )
 from fin_statement_model.core.nodes.base import Node
-
 
 # === CalculationNode ===
 
@@ -63,9 +62,7 @@ class CalculationNode(Node):
         super().__init__(name)
         if not isinstance(inputs, list) or not all(isinstance(n, Node) for n in inputs):
             raise TypeError("CalculationNode inputs must be a list of Node instances.")
-        if not hasattr(calculation, "calculate") or not callable(
-            getattr(calculation, "calculate")
-        ):
+        if not hasattr(calculation, "calculate") or not callable(calculation.calculate):
             raise TypeError(
                 "Calculation object must have a callable 'calculate' method."
             )
@@ -127,9 +124,7 @@ class CalculationNode(Node):
         Raises:
             TypeError: If the new calculation is invalid.
         """
-        if not hasattr(calculation, "calculate") or not callable(
-            getattr(calculation, "calculate")
-        ):
+        if not hasattr(calculation, "calculate") or not callable(calculation.calculate):
             raise TypeError(
                 "New calculation object must have a callable 'calculate' method."
             )
@@ -409,7 +404,9 @@ class FormulaCalculationNode(CalculationNode):
 
         # Resolve input nodes from context and create inputs dict
         inputs_dict = {}
-        for var_name, input_name in zip(formula_variable_names, input_names):
+        for var_name, input_name in zip(
+            formula_variable_names, input_names, strict=False
+        ):
             if input_name not in context:
                 raise ValueError(f"Input node '{input_name}' not found in context")
             inputs_dict[var_name] = context[input_name]
@@ -502,28 +499,33 @@ class CustomCalculationNode(Node):
             return self._values[period]
 
         try:
-            # Get input values
-            input_values = []
+            # Gather numeric input values ---------------------------------------------------
+            input_values: list[float] = []
             for node in self.inputs:
                 value = node.calculate(period)
-                if not isinstance(value, int | float):
+                if not isinstance(value, (int, float)):
                     raise TypeError(
-                        f"Input node '{node.name}' did not return a numeric value for period '{period}'. Got {type(value).__name__}."
+                        f"Input node '{node.name}' did not return a numeric value for period '{period}'. "
+                        f"Got {type(value).__name__}."
                     )
-                input_values.append(value)
+                input_values.append(float(value))
 
-            # Calculate the value using the provided function
+            # Execute user-supplied formula -------------------------------------------------
             result = self.formula_func(*input_values)
-            if not isinstance(result, int | float):
+            if not isinstance(result, (int, float)):
                 raise TypeError(
                     f"Formula did not return a numeric value. Got {type(result).__name__}."
                 )
 
-            # Cache and return the result
+            # Cache and return -------------------------------------------------------------
             self._values[period] = float(result)
             return self._values[period]
-        except Exception as e:
-            # Wrap potential errors from the function
+
+        except TypeError:
+            # Let TypeError bubble up – tests rely on the raw TypeError to be raised when
+            # the function signature does not match supplied inputs.
+            raise
+        except Exception as e:  # pragma: no cover – wrap all other errors
             raise CalculationError(
                 message=f"Error during custom calculation for node '{self.name}'",
                 node_id=self.name,

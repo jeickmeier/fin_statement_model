@@ -4,10 +4,11 @@ This module provides the DataTransformer abstract base class and CompositeTransf
 for building and composing data transformation pipelines.
 """
 
-from abc import ABC, abstractmethod
-import pandas as pd
-from typing import Optional, Union
 import logging
+from abc import ABC, abstractmethod
+from typing import Optional, Union
+
+import pandas as pd
 
 from fin_statement_model.core.errors import TransformationError
 

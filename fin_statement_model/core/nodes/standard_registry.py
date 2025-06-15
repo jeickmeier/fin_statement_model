@@ -7,6 +7,7 @@ ensuring consistency across financial models and enabling metrics to work proper
 import logging
 from pathlib import Path
 from typing import Any, Optional
+
 import yaml
 from pydantic import BaseModel, ConfigDict
 

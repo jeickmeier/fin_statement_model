@@ -1,9 +1,10 @@
 """Tests for GraphTraverser traversal and validation helpers."""
 
+import pytest
+
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.graph.traverser import GraphTraverser
 from fin_statement_model.core.nodes import FinancialStatementItemNode
-import pytest
 
 
 @pytest.fixture()

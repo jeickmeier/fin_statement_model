@@ -1,18 +1,18 @@
 """Analytics functions for summarizing and analyzing adjustments."""
 
 import logging
-from typing import Optional, Union
 from collections.abc import Callable
+from typing import Optional, Union
 
 import pandas as pd
 
+from fin_statement_model.core.adjustments.helpers import tag_matches
 from fin_statement_model.core.adjustments.manager import AdjustmentManager
 from fin_statement_model.core.adjustments.models import (
     Adjustment,
     AdjustmentFilter,
     AdjustmentTag,
 )
-from fin_statement_model.core.adjustments.helpers import tag_matches
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ def summary(
     filter_input: Optional[
         Union[AdjustmentFilter, set[AdjustmentTag], Callable[[Adjustment], bool]]
     ] = None,
-    group_by: list[str] = ["period", "node_name"],
+    group_by: Optional[list[str]] = None,
 ) -> pd.DataFrame:
     """Generate a summary DataFrame of adjustments, optionally filtered and grouped.
 
@@ -68,6 +68,8 @@ def summary(
         >>> df.index.names == ["period", "node_name"]
         True
     """
+    if group_by is None:
+        group_by = ["period", "node_name"]
     logger.debug(f"Generating adjustment summary, grouping by: {group_by}")
 
     # Get all adjustments first

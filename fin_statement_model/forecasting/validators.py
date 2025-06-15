@@ -8,7 +8,8 @@ import logging
 from typing import Any, Optional
 
 from fin_statement_model.core.nodes import Node
-from .types import ForecastMethodType, ForecastConfig
+
+from .types import ForecastConfig, ForecastMethodType
 
 logger = logging.getLogger(__name__)
 

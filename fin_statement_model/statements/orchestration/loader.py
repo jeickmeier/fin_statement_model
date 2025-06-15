@@ -8,10 +8,10 @@ import logging
 from typing import Any, Optional
 
 from fin_statement_model.core.errors import ConfigurationError, StatementError
-from fin_statement_model.statements.structure.builder import StatementStructureBuilder
+from fin_statement_model.io.validation import UnifiedNodeValidator
 from fin_statement_model.statements.configs.validator import StatementConfig
 from fin_statement_model.statements.registry import StatementRegistry
-from fin_statement_model.io.validation import UnifiedNodeValidator
+from fin_statement_model.statements.structure.builder import StatementStructureBuilder
 
 logger = logging.getLogger(__name__)
 

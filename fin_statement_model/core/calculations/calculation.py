@@ -4,22 +4,27 @@ This module provides the Calculation Pattern implementation for calculations,
 allowing different calculation types to be encapsulated in calculation classes.
 """
 
-from abc import ABC, abstractmethod
+from __future__ import annotations
+
 import ast
 import logging
 import operator
-from typing import Optional, ClassVar, Any, Type
+from abc import ABC, abstractmethod
 from collections.abc import Callable
 from functools import lru_cache
+from typing import TYPE_CHECKING, Any, ClassVar, Optional, Type
 
 # Third-party – safe expression evaluator (MIT licensed)
 from simpleeval import FunctionNotDefined, NameNotDefined, SimpleEval
 
-from fin_statement_model.core.nodes.base import Node  # Absolute
 from fin_statement_model.core.errors import CalculationError, StrategyError
 
 # Configure logging
 logger = logging.getLogger(__name__)
+
+# Typing-only import to avoid circular dependency at runtime.
+if TYPE_CHECKING:  # pragma: no cover
+    from fin_statement_model.core.nodes.base import Node
 
 # ----------------------------------------------------------------------
 # Lightweight caching helpers
@@ -400,7 +405,7 @@ class WeightedAverageCalculation(Calculation):
                 details={"weights": effective_weights},
             )
 
-        for value, weight in zip(input_values, effective_weights):
+        for value, weight in zip(input_values, effective_weights, strict=False):
             weighted_sum += value * weight
 
         # If weights don't sum to 1, this isn't a standard weighted average.
@@ -609,7 +614,7 @@ class FormulaCalculation(Calculation):
             )
 
         # Create mapping of variable names to nodes
-        variable_map = dict(zip(self.input_variable_names, inputs))
+        variable_map = dict(zip(self.input_variable_names, inputs, strict=False))
 
         logger.debug(f"Applying formula calculation for period {period}")
         try:

@@ -2,6 +2,7 @@
 
 from enum import Enum
 from typing import Any
+
 from fin_statement_model.core.metrics.models import (
     MetricDefinition,
 )

@@ -1,13 +1,14 @@
 import math
 import statistics
+
 import pytest
 
+from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
 from fin_statement_model.core.nodes.stats_nodes import (
-    YoYGrowthNode,
     MultiPeriodStatNode,
     TwoPeriodAverageNode,
+    YoYGrowthNode,
 )
-from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
 
 
 def test_yoy_growth_normal_and_division_by_zero():

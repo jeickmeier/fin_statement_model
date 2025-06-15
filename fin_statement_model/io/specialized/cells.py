@@ -2,7 +2,7 @@
 
 from typing import Any
 
-# from fin_statement_model.statements.graph.financial_graph import FinancialStatementGraph # Removed
+# from fin_statement_model.statements.graph.financial_graph import FinancialStatementGraph # Removed  # noqa: ERA001
 from fin_statement_model.core.graph import Graph  # Added
 
 __all__ = ["import_from_cells"]

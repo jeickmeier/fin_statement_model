@@ -9,16 +9,16 @@ import logging
 import random
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from typing import Generic, Optional, TypeVar, cast
-from collections.abc import Callable
 
 from fin_statement_model.statements.utilities.result_types import (
-    Result,
-    Failure,
-    ErrorDetail,
     ErrorCollector,
+    ErrorDetail,
+    Failure,
+    Result,
 )
 
 logger = logging.getLogger(__name__)
@@ -142,7 +142,7 @@ class ExponentialBackoff(BackoffStrategy):
 
         if self.jitter:
             # Add up to 20% jitter
-            jitter_amount = delay * 0.2 * random.random()  # noqa: S311
+            jitter_amount = delay * 0.2 * random.random()
             delay += jitter_amount
 
         return delay

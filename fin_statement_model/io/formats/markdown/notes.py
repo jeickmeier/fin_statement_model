@@ -4,9 +4,9 @@ import logging
 from typing import Any, Optional
 
 from fin_statement_model.core.adjustments.models import (
+    DEFAULT_SCENARIO,
     Adjustment,
     AdjustmentFilter,
-    DEFAULT_SCENARIO,
 )
 from fin_statement_model.core.graph import Graph
 

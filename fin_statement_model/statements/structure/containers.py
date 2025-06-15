@@ -5,14 +5,15 @@ LineItem and CalculatedLineItem objects into nested groups.
 """
 
 from __future__ import annotations
-from typing import Any, Optional, Union, Sequence
+
+from typing import Any, Optional, Sequence, Union
 
 from fin_statement_model.core.errors import StatementError
 from fin_statement_model.statements.structure.items import (
-    StatementItem,
-    StatementItemType,
     CalculatedLineItem,
     MetricLineItem,
+    StatementItem,
+    StatementItemType,
     SubtotalLineItem,
 )
 

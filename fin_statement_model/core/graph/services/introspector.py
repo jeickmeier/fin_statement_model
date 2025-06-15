@@ -22,11 +22,11 @@ Example
 from __future__ import annotations
 
 import logging
-from typing import Callable, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, List
 
 from fin_statement_model.core.nodes import (
-    Node,
     FinancialStatementItemNode,
+    Node,
     is_calculation_node,
 )
 
@@ -67,7 +67,7 @@ class GraphIntrospector:  # pylint: disable=too-few-public-methods
     # ------------------------------------------------------------------
     # Developer-friendly __repr__ --------------------------------------
     # ------------------------------------------------------------------
-    def make_repr(self) -> str:  # noqa: D401
+    def make_repr(self) -> str:
         """Return the same compact string previously computed in ``Graph.__repr__``."""
         nodes = self._nodes()
         num_nodes = len(nodes)
@@ -88,7 +88,7 @@ class GraphIntrospector:  # pylint: disable=too-few-public-methods
                 if hasattr(node, "get_dependencies"):
                     try:
                         dependencies_count += len(node.get_dependencies())
-                    except Exception as exc:  # noqa: BLE001
+                    except Exception as exc:
                         logger.warning(
                             "Error calling get_dependencies for node '%s': %s",
                             node.name,
@@ -103,7 +103,7 @@ class GraphIntrospector:  # pylint: disable=too-few-public-methods
                             dependencies_count += len(dep_names)
                         elif isinstance(node.inputs, dict):
                             dependencies_count += len(node.inputs)
-                    except Exception as exc:  # noqa: BLE001
+                    except Exception as exc:
                         logger.warning(
                             "Error processing inputs for node '%s': %s", node.name, exc
                         )
@@ -124,7 +124,7 @@ class GraphIntrospector:  # pylint: disable=too-few-public-methods
     # ------------------------------------------------------------------
     # Cycle helper ------------------------------------------------------
     # ------------------------------------------------------------------
-    def has_cycle(self, source_node: Node, target_node: Node) -> bool:  # noqa: D401
+    def has_cycle(self, source_node: Node, target_node: Node) -> bool:
         """Return True if an edge from *target_node → source_node* would form a cycle."""
         trav = self._traverser_provider()
         if (

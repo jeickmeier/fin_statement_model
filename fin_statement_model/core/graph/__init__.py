@@ -26,10 +26,10 @@ internal file structure change in future versions.
 """
 
 # Public façade -----------------------------------------------------------
-from fin_statement_model.core.graph.facade import GraphFacade as _GraphFacade
-
 # Deprecation shim – keep old name alive ---------------------------------
 import warnings
+
+from fin_statement_model.core.graph.facade import GraphFacade as _GraphFacade
 
 warnings.warn(
     "Importing 'Graph' from 'fin_statement_model.core.graph' is deprecated. "
@@ -44,7 +44,7 @@ GraphFacade = _GraphFacade  # new preferred name
 Graph = _GraphFacade  # historical alias
 
 # Import helper sub-APIs **after** aliases are in place to avoid circular imports.
-# noqa comments suppress Ruff E402 (import not at top of file).
+
 from fin_statement_model.core.graph.manipulator import GraphManipulator  # noqa: E402
 from fin_statement_model.core.graph.traverser import GraphTraverser  # noqa: E402
 

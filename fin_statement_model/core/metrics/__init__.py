@@ -27,9 +27,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from fin_statement_model.core.nodes.base import Node
 
+from .interpretation import MetricInterpreter, MetricRating, interpret_metric
 from .models import MetricDefinition, MetricInterpretation
 from .registry import MetricRegistry, metric_registry
-from .interpretation import MetricInterpreter, MetricRating, interpret_metric
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +96,7 @@ def calculate_metric(
         metric_def = metric_registry.get(metric_name)
     except KeyError:
         available_metrics = metric_registry.list_metrics()
-        raise KeyError(
+        raise KeyError(  # noqa: B904
             f"Metric '{metric_name}' not found in registry. "
             f"Available metrics: {available_metrics[:10]}..."  # Show first 10
         )

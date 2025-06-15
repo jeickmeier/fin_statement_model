@@ -3,12 +3,12 @@
 This module exports all built-in forecast methods available in the library.
 """
 
-from .base import ForecastMethod, BaseForecastMethod
-from .simple import SimpleForecastMethod
-from .curve import CurveForecastMethod
-from .statistical import StatisticalForecastMethod
 from .average import AverageForecastMethod
+from .base import BaseForecastMethod, ForecastMethod
+from .curve import CurveForecastMethod
 from .historical_growth import HistoricalGrowthForecastMethod
+from .simple import SimpleForecastMethod
+from .statistical import StatisticalForecastMethod
 
 __all__ = [
     "AverageForecastMethod",

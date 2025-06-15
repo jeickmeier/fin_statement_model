@@ -6,13 +6,13 @@ from typing import Any
 import pandas as pd
 
 from fin_statement_model.core.graph import Graph
+from fin_statement_model.io.config.models import DataFrameWriterConfig
 from fin_statement_model.io.core.mixins import (
-    DataFrameBasedWriter,
     ConfigurationMixin,
+    DataFrameBasedWriter,
     handle_write_errors,
 )
 from fin_statement_model.io.core.registry import register_writer
-from fin_statement_model.io.config.models import DataFrameWriterConfig
 
 logger = logging.getLogger(__name__)
 

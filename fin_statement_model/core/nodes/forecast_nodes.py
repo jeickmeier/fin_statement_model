@@ -7,7 +7,7 @@ custom, average, and historical growth).
 
 import logging
 from collections.abc import Callable
-from typing import Optional, Any
+from typing import Any, Optional
 
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node

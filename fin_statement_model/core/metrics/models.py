@@ -3,9 +3,9 @@
 This module defines Pydantic models for metric definitions and their interpretation guidelines.
 """
 
-from typing import Optional, Any
-from pydantic import BaseModel, Field, model_validator
-from pydantic import ConfigDict
+from typing import Any, Optional
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class MetricInterpretation(BaseModel):

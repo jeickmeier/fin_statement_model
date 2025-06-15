@@ -24,6 +24,11 @@ jobs:
           uv pip install -r uv.lock || true
           pip install -e .
           pip install pytest-doctestplus
+          # Static-analysis tooling
+          pip install nox
+
+      - name: Lint (Ruff, MyPy, policy checks)
+        run: nox -s lint
 
       - name: Test doctests and unit tests
         run: pytest -q 

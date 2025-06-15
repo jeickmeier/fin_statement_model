@@ -4,15 +4,15 @@ This module provides type aliases, Pydantic models for configuration and
 results, and error types used throughout the forecasting sub-module.
 """
 
-from typing import Any, Union, Literal
 from collections.abc import Callable
-import numpy as np
+from typing import Any, Literal, Union
 
-from pydantic import BaseModel, ConfigDict, model_validator, ValidationError
+import numpy as np
+from pydantic import BaseModel, ConfigDict, ValidationError, model_validator
 
 from fin_statement_model.forecasting.errors import (
-    ForecastMethodError,
     ForecastConfigurationError,
+    ForecastMethodError,
     ForecastResultError,
 )
 

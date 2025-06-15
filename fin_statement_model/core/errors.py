@@ -4,7 +4,7 @@ This module defines exception classes for specific error cases,
 allowing for more precise error handling and better error messages.
 """
 
-from typing import Optional, Any
+from typing import Any, Optional
 
 
 class FinancialModelError(Exception):

@@ -10,12 +10,12 @@ import inspect
 import logging
 from typing import Callable
 
+from .helpers import tag_matches
 from .models import (
     Adjustment,
     AdjustmentFilter,
     AdjustmentFilterInput,
 )
-from .helpers import tag_matches
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ def _callable_param_count(fn: Callable[..., bool]) -> int:
 
 def filter_adjustments(
     adjs: list[Adjustment],
-    spec: AdjustmentFilterInput = None,  # noqa: ANN001 – keep signature concise
+    spec: AdjustmentFilterInput = None,
 ) -> list[Adjustment]:
     """Filter a sequence of adjustments according to *spec*.
 

@@ -168,7 +168,7 @@ class MetricRegistry:
             return self._metrics[metric_id]
         except KeyError:
             logger.warning(f"Metric ID '{metric_id}' not found in registry.")
-            raise KeyError(
+            raise KeyError(  # noqa: B904
                 f"Metric ID '{metric_id}' not found. Available: {self.list_metrics()}"
             )
 
