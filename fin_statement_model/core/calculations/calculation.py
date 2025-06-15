@@ -12,6 +12,9 @@ from typing import Optional, ClassVar, Any, Type
 from collections.abc import Callable
 from functools import lru_cache
 
+# Third-party – safe expression evaluator (MIT licensed)
+from simpleeval import FunctionNotDefined, NameNotDefined, SimpleEval
+
 from fin_statement_model.core.nodes.base import Node  # Absolute
 from fin_statement_model.core.errors import CalculationError, StrategyError
 
@@ -619,89 +622,80 @@ class FormulaCalculation(Calculation):
             ) from e
 
     def _evaluate(
-        self, node: ast.AST, period: str, variable_map: dict[str, Node]
+        self, _unused_node: ast.AST, period: str, variable_map: dict[str, Node]
     ) -> float:
-        """Recursively evaluate the parsed AST node for the formula.
+        """Securely evaluate the formula using *SimpleEval*.
+
+        The original recursive AST walker has been replaced with ``simpleeval`` to
+        provide a more robust and maintainable sandbox. Only a minimal set of
+        built-in functions and the variables defined in *variable_map* are
+        exposed to the expression.
 
         Args:
-            node: The current AST node to evaluate.
-            period: The time period context for the evaluation.
-            variable_map: Mapping of variable names to Node objects.
+            _unused_node: Kept for backward-compatibility with the previous
+                signature. It is ignored because *SimpleEval* re-parses the
+                formula string internally.
+            period: The period for which the calculation is executed.
+            variable_map: Mapping of variable names to ``Node`` instances.
 
         Returns:
-            The result of evaluating the AST node.
+            The numeric value resulting from evaluating *self.formula*.
 
         Raises:
-            TypeError: If a non-numeric constant or input node value is encountered.
-            ValueError: If an unknown variable or unsupported operator/syntax is found.
-            ZeroDivisionError: If division by zero occurs.
+            CalculationError: If the expression references unknown variables,
+                calls disallowed functions, produces a non-numeric result, or
+                encounters runtime errors such as division by zero.
         """
-        # Numeric literal (Constant in Python 3.8+)
-        if isinstance(node, ast.Constant):
-            if isinstance(node.value, int | float):
-                return float(node.value)
-            else:
-                raise CalculationError(
-                    f"Unsupported constant type '{type(node.value).__name__}' in formula",
-                    period=period,
-                    details={"constant_type": type(node.value).__name__},
-                )
 
-        # Variable reference
-        elif isinstance(node, ast.Name):
-            var_name = node.id
-            if var_name not in variable_map:
-                raise CalculationError(
-                    f"Unknown variable '{var_name}' in formula. Available: {list(variable_map.keys())}",
-                    period=period,
-                    details={
-                        "unknown_var": var_name,
-                        "available_vars": list(variable_map.keys()),
-                    },
-                )
-            input_node = variable_map[var_name]
-            # Recursively calculate the value of the input node
-            value = input_node.calculate(period)
-            if not isinstance(value, int | float):
-                raise CalculationError(
-                    f"Input node '{input_node.name}' (variable '{var_name}') did not return a numeric value for period '{period}'",
-                    node_id=input_node.name,
-                    period=period,
-                    details={"value_type": type(value).__name__},
-                )
-            return float(value)
+        # Prepare the evaluator with a strict whitelist.
+        se = SimpleEval()
 
-        # Binary operation (e.g., a + b)
-        elif isinstance(node, ast.BinOp):
-            left_val = self._evaluate(node.left, period, variable_map)
-            right_val = self._evaluate(node.right, period, variable_map)
-            op_type = type(node.op)  # type: Type[Any]
-            if op_type not in self.OPERATORS:
-                raise StrategyError(
-                    f"Unsupported binary operator '{op_type.__name__}' in formula",
-                    strategy_type="FormulaCalculation",
-                )
-            # Perform the operation
-            return float(self.OPERATORS[op_type](left_val, right_val))
+        # Explicitly whitelist safe numeric functions only.
+        se.functions = {
+            "abs": abs,
+            "max": max,
+            "min": min,
+            "round": round,
+        }
 
-        # Unary operation (e.g., -a)
-        elif isinstance(node, ast.UnaryOp):
-            operand_val = self._evaluate(node.operand, period, variable_map)
-            unary_op_type = type(node.op)
-            if unary_op_type not in self.OPERATORS:
-                raise StrategyError(
-                    f"Unsupported unary operator '{unary_op_type.__name__}' in formula",
-                    strategy_type="FormulaCalculation",
-                )
-            # Perform the operation
-            return float(self.OPERATORS[unary_op_type](operand_val))
+        # Map variable names to their calculated values for the given period.
+        se.names = {var: node.calculate(period) for var, node in variable_map.items()}
 
-        # If the node type is unsupported
-        else:
-            raise StrategyError(
-                f"Unsupported syntax node type '{type(node).__name__}' in formula: {ast.dump(node)}",
-                strategy_type="FormulaCalculation",
+        try:
+            result = se.eval(self.formula)
+        except (NameNotDefined, FunctionNotDefined) as err:
+            # Unknown variable or disallowed function
+            raise CalculationError(
+                f"Error evaluating formula '{self.formula}': {err}",
+                period=period,
+                details={"formula": self.formula, "original_error": str(err)},
+            ) from err
+        except ZeroDivisionError as err:
+            raise CalculationError(
+                "Division by zero encountered while evaluating formula.",
+                period=period,
+                details={"formula": self.formula},
+            ) from err
+        except Exception as err:  # pragma: no cover – unexpected
+            # Wrap all other errors from SimpleEval in a CalculationError.
+            raise CalculationError(
+                f"Unexpected error evaluating formula '{self.formula}': {err}",
+                period=period,
+                details={"formula": self.formula, "original_error": str(err)},
+            ) from err
+
+        # Ensure the expression produced a numeric result.
+        if not isinstance(result, (int, float)):
+            raise CalculationError(
+                f"Formula result is non-numeric type '{type(result).__name__}'",
+                period=period,
+                details={
+                    "formula": self.formula,
+                    "result_type": type(result).__name__,
+                },
             )
+
+        return float(result)
 
     @property
     def description(self) -> str:
