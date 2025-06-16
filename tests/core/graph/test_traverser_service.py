@@ -2,7 +2,7 @@
 
 import pytest
 
-from fin_statement_model.core.graph import GraphFacade as Graph
+from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 
 

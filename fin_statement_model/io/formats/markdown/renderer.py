@@ -169,7 +169,7 @@ class MarkdownStatementRenderer:
                         raw_value = "CALC_ERR"
                 elif isinstance(item, LineItem):
                     # Direct value from node for basic line items
-                    raw_value = node.calculate(period)
+                    raw_value = node.calculate(period)  # type: ignore[attr-defined]
                 else:
                     logger.warning(
                         f"Unsupported item type: {type(item)} for item: {item.id}"

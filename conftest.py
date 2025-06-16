@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from fin_statement_model.core.graph import GraphFacade as Graph
+from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.metrics.interpretation import MetricInterpreter
 from fin_statement_model.core.metrics.registry import MetricRegistry
 from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode

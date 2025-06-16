@@ -157,8 +157,16 @@ class GraphDefinitionReader(DataReader):
             # Create and add real nodes in topological order -----------------------------
             for node_name in sorted_names:
                 node_def = nodes_dict[node_name]
-                existing_nodes = {name: graph.get_node(name) for name in graph.nodes}
-                node = NodeFactory.create_from_dict(node_def, context=existing_nodes)
+                # mypy: graph.get_node() returns object – cast to Node mapping for factory
+                existing_nodes_obj = {
+                    name: graph.get_node(name) for name in graph.nodes
+                }
+                from typing import cast as _cast
+
+                existing_nodes_cast = _cast(dict[str, Node], existing_nodes_obj)
+                node = NodeFactory.create_from_dict(
+                    node_def, context=existing_nodes_cast
+                )
                 graph.add_node(node)
 
             # 3. Load Adjustments --------------------------------------------------------
@@ -271,12 +279,16 @@ class GraphDefinitionWriter(DataWriter):
             # 2. Serialize Nodes using their to_dict() methods
             serialized_nodes: dict[str, SerializedNode] = {}
             for node_name in graph.nodes:
-                node_obj = graph.get_node(node_name)
-                if node_obj is None:
+                node_obj_any = graph.get_node(node_name)
+                if node_obj_any is None:
                     logger.warning(
                         "Node '%s' not found during serialization.", node_name
                     )
                     continue
+
+                from typing import cast as _cast
+
+                node_obj = _cast(Node, node_obj_any)
                 node_dict = self._serialize_node(node_obj)
                 if node_dict:
                     serialized_nodes[node_name] = node_dict

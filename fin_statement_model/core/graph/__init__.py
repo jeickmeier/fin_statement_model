@@ -21,15 +21,10 @@ Keeping these high-level classes here provides a stable import path should the
 internal file structure change in future versions.
 """
 
-from typing import TypeAlias
+from fin_statement_model.core.graph.graph import Graph
+from fin_statement_model.core.graph.inspect import GraphInspector
 
-from fin_statement_model.core.graph.api.facade import GraphFacade as GraphFacade
-
-# Keep historical alias `Graph` for backward compatibility, pointing to v2 facade
-Graph: TypeAlias = GraphFacade
-
-__all__ = [
-    "GraphFacade",
+__all__: list[str] = [
     "Graph",
-    # API is intentionally minimal – only Graph & GraphFacade are public.
+    "GraphInspector",
 ]
