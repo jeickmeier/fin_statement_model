@@ -13,7 +13,10 @@ from typing import Any, Optional, Union, cast
 from fin_statement_model.config.helpers import cfg
 
 # Import adjustment types for filter conversion
-from fin_statement_model.core.adjustments.models import AdjustmentFilter, AdjustmentType
+from fin_statement_model.core.graph.domain.adjustment import (
+    AdjustmentFilter,
+    AdjustmentType,
+)
 from fin_statement_model.core.nodes import standard_node_registry
 
 # Import UnifiedNodeValidator for optional node validation during build

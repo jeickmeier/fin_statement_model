@@ -244,59 +244,22 @@ class Graph:
     def add_calculation(
         self,
         name: str,
-        input_names: list[str],
-        operation_type: str,
         *,
-        formula: str | None = None,
-        formula_variable_names: list[str] | None = None,
+        formula: str,
     ) -> object:
-        """Convenience wrapper for constructing a calculation node.
+        """Add a **formula** node and return a lightweight proxy.
 
-        Args:
-            name: Code for the *new* node.
-            input_names: Ordered list of dependency codes.
-            operation_type: One of ``"addition"``, ``"subtraction"``,
-                ``"multiplication"``, ``"division"`` or ``"formula"``.
-            formula: Raw expression string required only when
-                *operation_type* is ``"formula"``.
-            formula_variable_names: Optional placeholders (e.g.
-                ``["input_0", "input_1"]``) that will be replaced
-                positionally by *input_names* when *operation_type* equals
-                ``"formula"``.
+        This helper is now a thin wrapper around :pymeth:`add_item` that
+        exists only for nominal API stability.  Callers **must** provide a
+        fully-formed Python expression via the *formula* parameter.  Any
+        former *operation_type* based shortcuts have been removed.
         """
 
-        if not isinstance(input_names, (list, tuple, set)):
-            raise TypeError("input_names must be a list of node codes")
+        if not isinstance(formula, str) or not formula.strip():
+            raise ValueError("A non-empty formula string is required")
 
-        # 1. Build Python expression --------------------------------------
-        op_type = operation_type.lower()
-        expr: str
-        if op_type in {"addition", "add"}:
-            expr = " + ".join(input_names)
-        elif op_type in {"subtraction", "subtract", "minus"}:
-            if len(input_names) != 2:
-                raise ValueError("subtraction requires exactly two inputs in tests")
-            expr = f"{input_names[0]} - {input_names[1]}"
-        elif op_type in {"multiplication", "multiply"}:
-            expr = " * ".join(input_names)
-        elif op_type in {"division", "divide"}:
-            if len(input_names) != 2:
-                raise ValueError("division requires exactly two inputs in tests")
-            expr = f"{input_names[0]} / {input_names[1]}"
-        elif op_type == "formula":
-            if formula is None:
-                raise ValueError("formula operation_type requires a formula string")
-            expr = formula
-            if formula_variable_names is not None:
-                for placeholder, real in zip(
-                    formula_variable_names, input_names, strict=False
-                ):
-                    expr = expr.replace(placeholder, real)
-        else:
-            raise ValueError(f"Unsupported operation_type: {operation_type}")
-
-        # 2. Delegate to generic builder helper ---------------------------
-        self.add_item(name, formula=expr)
+        # Delegate to canonical builder helper ---------------------------
+        self.add_item(name, formula=formula)
         return self.get_node(name)
 
     # ------------------------------------------------------------------

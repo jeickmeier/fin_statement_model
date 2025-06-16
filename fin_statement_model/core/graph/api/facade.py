@@ -204,7 +204,7 @@ class GraphFacade:
     # Calculation helpers ----------------------------------------------
     # ------------------------------------------------------------------
     def add_calculation(self, *args: Any, **kwargs: Any) -> Any:
-        """Proxy to :pymeth:`Graph` implementation preserving return shape."""
+        """Add a formula node and return a lightweight proxy exposing ``name``."""
 
         node = self._impl.add_calculation(*args, **kwargs)
         # Minimal proxy exposing ``name`` attribute expected by tests ------

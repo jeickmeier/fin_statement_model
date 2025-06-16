@@ -4,9 +4,9 @@ import pytest
 from hypothesis import given, settings
 from hypothesis.strategies import floats
 
-from fin_statement_model.core.adjustments.manager import AdjustmentManager
-from fin_statement_model.core.adjustments.models import Adjustment, AdjustmentType
 from fin_statement_model.core.errors import AdjustmentError
+from fin_statement_model.core.graph.domain.adjustment import Adjustment, AdjustmentType
+from fin_statement_model.core.graph.services.adjustments import AdjustmentService
 
 
 @pytest.mark.parametrize(
@@ -18,14 +18,14 @@ def test_negative_base_fractional_scale_returns_unchanged(
 ) -> None:
     """Ensure negative bases with fractional scales are ignored and *flag* is False."""
     adj = Adjustment(
-        node_name="TestNode",
+        node="TestNode",
         period="2023",
         value=value,
         type=AdjustmentType.MULTIPLICATIVE,
         scale=scale,
         reason="unit-test",
     )
-    manager = AdjustmentManager()
+    manager = AdjustmentService()
 
     result, flag = manager.apply_adjustments(base, [adj])
 
@@ -37,7 +37,7 @@ def test_huge_exponent_returns_base() -> None:
     """Ensure extremely large exponents do not overflow and simply return base."""
     base = 100.0
     adj = Adjustment(
-        node_name="TestNode",
+        node="TestNode",
         period="2023",
         value=1e308,
         type=AdjustmentType.MULTIPLICATIVE,
@@ -45,7 +45,7 @@ def test_huge_exponent_returns_base() -> None:
         reason="unit-test",
     )
 
-    manager = AdjustmentManager()
+    manager = AdjustmentService()
     result, flag = manager.apply_adjustments(base, [adj])
 
     assert result == base
@@ -56,14 +56,14 @@ def test_strict_mode_raises_on_invalid() -> None:
     """When *strict* is enabled invalid combos must raise AdjustmentError."""
     base = -50.0
     adj = Adjustment(
-        node_name="TestNode",
+        node="TestNode",
         period="2023",
         value=2.0,
         type=AdjustmentType.MULTIPLICATIVE,
         scale=0.25,
         reason="strict-mode-test",
     )
-    manager = AdjustmentManager(strict=True)
+    manager = AdjustmentService(strict=True)
 
     with pytest.raises(AdjustmentError):
         _ = manager.apply_adjustments(base, [adj])
@@ -80,14 +80,14 @@ def test_fuzz_multiplicative_does_not_return_complex(
 ) -> None:
     """Fuzz test: *apply_adjustments* never returns complex numbers or NaN for a wide range of inputs."""
     adj = Adjustment(
-        node_name="TestNode",
+        node="TestNode",
         period="2023",
         value=value,
         type=AdjustmentType.MULTIPLICATIVE,
         scale=scale,
         reason="fuzz",
     )
-    manager = AdjustmentManager()
+    manager = AdjustmentService()
 
     result, _ = manager.apply_adjustments(base, [adj])
 

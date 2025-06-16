@@ -132,10 +132,7 @@ def test_recalculate_and_clear_caches() -> None:
     g.add_financial_statement_item("B", {"2022": 2.0})
     g.add_calculation(
         name="D",
-        input_names=["A", "B"],
-        operation_type="formula",
-        formula="input_0 / input_1",
-        formula_variable_names=["input_0", "input_1"],
+        formula="A / B",
     )
     # initial calculate
     assert g.calculate("D", "2022") == 5.0

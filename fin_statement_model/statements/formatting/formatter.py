@@ -14,11 +14,11 @@ from typing import Any, Optional, Union
 import numpy as np  # Added numpy for NaN handling
 import pandas as pd
 
-# Import adjustment types for filtering
-from fin_statement_model.core.adjustments.models import AdjustmentFilterInput
-
 # Add core Graph and errors
 from fin_statement_model.core.graph import Graph
+
+# Import adjustment types for filtering
+from fin_statement_model.core.graph.domain.adjustment import AdjustmentFilterInput
 from fin_statement_model.core.nodes import standard_node_registry
 
 # Import the data fetcher

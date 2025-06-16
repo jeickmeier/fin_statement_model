@@ -11,8 +11,8 @@ from __future__ import annotations
 import math
 from uuid import UUID
 
-from fin_statement_model.core.adjustments.models import AdjustmentType
 from fin_statement_model.core.graph import Graph
+from fin_statement_model.core.graph.domain.adjustment import AdjustmentType
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -49,10 +49,7 @@ def test_add_calculation_formula() -> None:
     # Create a formula calculation node for gross profit
     gp_node = g.add_calculation(
         name="GrossProfit",
-        input_names=["Revenue", "COGS"],
-        operation_type="formula",
-        formula="input_0 - input_1",
-        formula_variable_names=["input_0", "input_1"],
+        formula="Revenue - COGS",
     )
 
     assert gp_node.name == "GrossProfit"
@@ -87,10 +84,7 @@ def test_adjustments_workflow() -> None:
     # Gross profit node for testing adjustments
     g.add_calculation(
         name="GrossProfit",
-        input_names=["Revenue", "COGS"],
-        operation_type="formula",
-        formula="input_0 - input_1",
-        formula_variable_names=["input_0", "input_1"],
+        formula="Revenue - COGS",
     )
 
     base_value = g.calculate("GrossProfit", "2023")
@@ -123,10 +117,7 @@ def test_topological_sort_and_cycles() -> None:
     g = _make_simple_graph()
     g.add_calculation(
         name="GrossProfit",
-        input_names=["Revenue", "COGS"],
-        operation_type="formula",
-        formula="input_0 - input_1",
-        formula_variable_names=["input_0", "input_1"],
+        formula="Revenue - COGS",
     )
 
     order = g.topological_sort()

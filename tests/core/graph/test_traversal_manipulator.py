@@ -17,10 +17,7 @@ def sample_graph() -> Graph:
     g.add_financial_statement_item("B", {"2022": 5.0, "2023": 6.0})
     g.add_calculation(
         name="C",
-        input_names=["A", "B"],
-        operation_type="formula",
-        formula="input_0 + input_1",
-        formula_variable_names=["input_0", "input_1"],
+        formula="A + B",
     )
     return g
 
@@ -95,17 +92,11 @@ def test_cycle_detection() -> None:
     # Add calc nodes forming cycle
     g.add_calculation(
         name="X_calc",
-        input_names=["Y"],
-        operation_type="formula",
-        formula="input_0",
-        formula_variable_names=["input_0"],
+        formula="Y",
     )
     g.add_calculation(
         name="Y",
-        input_names=["X_calc"],
-        operation_type="formula",
-        formula="input_0",
-        formula_variable_names=["input_0"],
+        formula="X_calc",
     )
 
     cycles = g.detect_cycles()

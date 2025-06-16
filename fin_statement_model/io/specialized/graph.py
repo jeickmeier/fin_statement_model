@@ -7,8 +7,8 @@ including all nodes, periods, and adjustments.
 import logging
 from typing import Any, Optional, cast
 
-from fin_statement_model.core.adjustments.models import Adjustment
 from fin_statement_model.core.graph import Graph
+from fin_statement_model.core.graph.domain.adjustment import Adjustment
 from fin_statement_model.core.node_factory import NodeFactory
 from fin_statement_model.core.nodes import (
     Node,
@@ -183,7 +183,9 @@ class GraphDefinitionReader(DataReader):
                         # Optionally raise ReadError here to fail fast
 
                 if deserialized_adjustments:
-                    graph.adjustment_manager.load_adjustments(deserialized_adjustments)
+                    # Replace existing adjustments with deserialized list ----
+                    graph.adjustment_manager.clear()
+                    graph.adjustment_manager.add_many(deserialized_adjustments)
                     logger.info(
                         f"Loaded {len(deserialized_adjustments)} adjustments into the graph."
                     )

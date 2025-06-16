@@ -17,6 +17,7 @@ from fin_statement_model.core.errors import (
     ConfigurationError,
     MetricError,
     NodeError,
+    StatementError,
 )
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.metrics import metric_registry
@@ -356,12 +357,40 @@ class CalculatedItemProcessor(ItemProcessor):
         # Add calculation node
         error_message = None
         try:
-            self.graph.add_calculation(
-                name=item.id,
-                input_names=resolved_inputs,
-                operation_type=item.calculation_type,
-                **item.parameters,
-            )
+            # Build explicit formula string based on calculation type --------
+            formula_str: str
+            c_type = item.calculation_type.lower()
+            if c_type in {"addition", "add"}:
+                formula_str = " + ".join(resolved_inputs)
+            elif c_type in {"subtraction", "subtract", "minus"}:
+                if len(resolved_inputs) != 2:
+                    raise StatementError("subtraction requires exactly two inputs")
+                formula_str = f"{resolved_inputs[0]} - {resolved_inputs[1]}"
+            elif c_type in {"multiplication", "multiply"}:
+                formula_str = " * ".join(resolved_inputs)
+            elif c_type in {"division", "divide"}:
+                if len(resolved_inputs) != 2:
+                    raise StatementError("division requires exactly two inputs")
+                formula_str = f"{resolved_inputs[0]} / {resolved_inputs[1]}"
+            elif c_type == "formula":
+                # Expect explicit formula in parameters ------------------
+                formula_raw = item.parameters.get("formula")
+                if not isinstance(formula_raw, str) or not formula_raw.strip():
+                    raise StatementError(
+                        "Missing 'formula' parameter for formula calculation type"
+                    )
+                formula_str = formula_raw
+                # Replace any placeholders if provided ----------------------
+                placeholders = item.parameters.get("formula_variable_names")
+                if placeholders:
+                    for ph, real in zip(placeholders, resolved_inputs, strict=False):
+                        formula_str = formula_str.replace(ph, real)
+            else:
+                raise StatementError(
+                    f"Unsupported calculation type: {item.calculation_type}"
+                )
+
+            self.graph.add_calculation(name=item.id, formula=formula_str)
         except (
             NodeError,
             CircularDependencyError,
@@ -449,9 +478,8 @@ class SubtotalItemProcessor(ItemProcessor):
         # Add subtotal as addition calculation
         error_message = None
         try:
-            self.graph.add_calculation(
-                name=item.id, input_names=resolved, operation_type="addition"
-            )
+            formula_str = " + ".join(resolved)
+            self.graph.add_calculation(name=item.id, formula=formula_str)
         except (
             NodeError,
             CircularDependencyError,

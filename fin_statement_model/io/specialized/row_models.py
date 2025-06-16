@@ -5,12 +5,14 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from fin_statement_model.core.adjustments.models import (
-    DEFAULT_SCENARIO,
+from fin_statement_model.core.graph.domain.adjustment import (
     Adjustment,
     AdjustmentTag,
     AdjustmentType,
 )
+
+# Default scenario constant from domain layer
+DEFAULT_SCENARIO = "default"
 
 
 class AdjustmentRowModel(BaseModel):
@@ -76,10 +78,12 @@ class AdjustmentRowModel(BaseModel):
             raise ValueError(f"Invalid UUID for id: {v}")  # noqa: B904
 
     def to_adjustment(self) -> Adjustment:
-        """
-        Convert this row model into the core Adjustment model.
-        """
+        """Convert validated row into the domain :class:`Adjustment`."""
+
         data = self.model_dump()
-        # Remove None values to allow core model defaults
+        # Map legacy ``node_name`` key to new ``node`` parameter -------------
+        data["node"] = data.pop("node_name")
+
+        # Remove None values to allow dataclass defaults --------------------
         filtered = {k: v for k, v in data.items() if v is not None}
         return Adjustment(**filtered)

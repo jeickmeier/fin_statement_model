@@ -3,14 +3,16 @@
 import logging
 from typing import Any, Optional
 
-from fin_statement_model.core.adjustments.models import (
-    DEFAULT_SCENARIO,
+from fin_statement_model.core.graph import Graph
+from fin_statement_model.core.graph.domain.adjustment import (
     Adjustment,
     AdjustmentFilter,
 )
-from fin_statement_model.core.graph import Graph
 
 logger = logging.getLogger(__name__)
+
+# Default scenario constant used throughout library
+DEFAULT_SCENARIO = "default"
 
 
 class MarkdownNotesBuilder:
@@ -130,13 +132,13 @@ class MarkdownNotesBuilder:
         # Sort adjustments for consistent output
         sorted_adjustments = sorted(
             filtered_adjustments,
-            key=lambda x: (x.node_name, x.period, x.priority, x.timestamp),
+            key=lambda x: (x.node, x.period, x.priority, x.timestamp),
         )
 
         for adj in sorted_adjustments:
             tags_str = ", ".join(sorted(adj.tags)) if adj.tags else "None"
             details = (
-                f"- **{adj.node_name}** ({adj.period}, Scenario: {adj.scenario}, "
+                f"- **{adj.node}** ({adj.period}, Scenario: {adj.scenario}, "
                 f"Prio: {adj.priority}): {adj.type.name.capitalize()} adjustment of {adj.value:.2f}. "
                 f"Reason: {adj.reason}. Tags: [{tags_str}]. (ID: {adj.id})"
             )

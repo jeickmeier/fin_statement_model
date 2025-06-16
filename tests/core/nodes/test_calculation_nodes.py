@@ -125,9 +125,8 @@ def test_is_calculation_node_helper():
         "type": "calculation",
         "name": "sum2",
         "inputs": ["a", "b"],
-        "calculation_type": "formula",
-        "formula_variable_names": ["a", "b"],
-        "calculation_args": {"formula": "a + b"},
+        "formula_variable_names": ["x", "y"],
+        "formula": "x + y",
     }
     from fin_statement_model.core.nodes.calculation_nodes import CalculationNode
 

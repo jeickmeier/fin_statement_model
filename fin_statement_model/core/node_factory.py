@@ -63,17 +63,8 @@ class NodeFactory:
             subclasses used when deserialising from dictionaries.
     """
 
-    # Legacy mapping preserved for <-> YAML round-trips; the concrete classes
-    # no longer exist after removal of the old calculation registry but the string keys
-    # are still used in `CalculationNode.to_dict()` to label the operation.
-    _calculation_methods: ClassVar[dict[str, str]] = {
-        "addition": "AdditionCalculation",
-        "subtraction": "SubtractionCalculation",
-        "formula": "FormulaCalculation",
-        "division": "DivisionCalculation",
-        "weighted_average": "WeightedAverageCalculation",
-        "custom_formula": "CustomFormulaCalculation",
-    }
+    # The legacy *calculation registry* has been fully removed.
+    # Only explicit formula-based calculations are supported going forward.
 
     # Mapping from node type names to Node classes for deserialization
     _node_type_registry: ClassVar[dict[str, type[Node]]] = {
@@ -143,43 +134,27 @@ class NodeFactory:
         cls,
         name: str,
         inputs: list[Node],
-        calculation_type: str,
+        *,
+        formula: str,
         formula_variable_names: Optional[list[str]] = None,
-        **calculation_kwargs: Any,
+        metric_name: Optional[str] = None,
+        metric_description: Optional[str] = None,
     ) -> CalculationNode:
-        """Create a CalculationNode using a pre-defined calculation.
-
-        This method resolves a calculation class from a calculation_type key,
-        instantiates it with optional parameters, and wraps it in
-        a CalculationNode.
+        """Create a **formula** based CalculationNode.
 
         Args:
             name: Identifier for the calculation node instance.
-            inputs: List of Node instances serving as inputs to the calculation.
-            calculation_type: Key for the desired calculation in the registry.
-            formula_variable_names: Optional list of variable names used in the formula
-                string. Required & used only if creating a FormulaCalculationNode
-                via the 'custom_formula' type with a 'formula' kwarg.
-            **calculation_kwargs: Additional parameters for the calculation constructor.
+            inputs: List of input :class:`Node` objects.
+            formula: Python expression string that defines the calculation.
+            formula_variable_names: Optional list of placeholder names in
+                *formula* that will be substituted **positionally** by
+                the corresponding *inputs* (e.g. ``["x", "y"]``).
+            metric_name: Optional metric identifier.
+            metric_description: Optional human readable description.
 
         Returns:
-            A CalculationNode configured with the selected calculation.
-
-        Raises:
-            ValueError: If name is invalid, inputs list is empty, or the
-                calculation_type is unrecognized.
-            TypeError: If the calculation cannot be instantiated with given kwargs.
-
-        Examples:
-            >>> gross_profit = NodeFactory.create_calculation_node(
-            ...     name="GrossProfit",
-            ...     inputs=[revenue, cogs],
-            ...     calculation_type="subtraction"
-            ... )
+            A :class:`FormulaCalculationNode` instance.
         """
-        # Refactored: build a FormulaCalculationNode directly – the legacy Calculation
-        # registry was removed.  Supported *calculation_type*s now map to simple Python
-        # expressions or to an explicit ``formula`` string supplied via **calculation_kwargs.
 
         # ------------------------------------------------------------------
         # Basic validation --------------------------------------------------
@@ -190,60 +165,43 @@ class NodeFactory:
             raise ValueError("Calculation node must have at least one input")
         if not all(isinstance(n, Node) for n in inputs):
             raise TypeError("All items in *inputs* must be Node instances")
+        if not isinstance(formula, str) or not formula.strip():
+            raise ValueError("'formula' must be a non-empty string")
 
-        calc_type = calculation_type.lower()
-
-        # Helper: build formula string from *inputs* -----------------------------------
-        def _expr_from_inputs(op: str) -> str:
-            return f" {op} ".join(node.name for node in inputs)
-
-        if calc_type in {"addition", "add"}:
-            formula_expr = _expr_from_inputs("+")
-        elif calc_type in {"subtraction", "subtract", "minus"}:
-            if len(inputs) != 2:
-                raise ValueError("subtraction requires exactly two inputs")
-            formula_expr = f"{inputs[0].name} - {inputs[1].name}"
-        elif calc_type in {"multiplication", "multiply"}:
-            formula_expr = _expr_from_inputs("*")
-        elif calc_type in {"division", "divide"}:
-            if len(inputs) != 2:
-                raise ValueError("division requires exactly two inputs")
-            formula_expr = f"{inputs[0].name} / {inputs[1].name}"
-        elif calc_type in {"formula", "custom_formula"}:
-            # Expect explicit formula text in kwargs
-            formula_expr = calculation_kwargs.pop("formula", None)
-            if formula_expr is None:
+        # ------------------------------------------------------------------
+        # Substitute placeholders (optional) --------------------------------
+        # ------------------------------------------------------------------
+        final_formula = formula
+        if formula_variable_names is not None:
+            if len(formula_variable_names) != len(inputs):
                 raise ValueError(
-                    "'formula' keyword argument required when calculation_type is 'formula'"
+                    "Length of formula_variable_names must match number of inputs"
                 )
-            # Replace placeholders if variable names provided -----------------
-            if formula_variable_names:
-                for placeholder, node in zip(
-                    formula_variable_names, inputs, strict=False
-                ):
-                    formula_expr = formula_expr.replace(placeholder, node.name)
-        else:
-            raise ValueError(
-                f"Unsupported calculation_type '{calculation_type}'. "
-                "Supported types: addition, subtraction, multiplication, division, formula."
-            )
+            for placeholder, node in zip(formula_variable_names, inputs, strict=False):
+                final_formula = final_formula.replace(placeholder, node.name)
 
         # ------------------------------------------------------------------
         # Build mapping variable → Node instance ---------------------------
         # ------------------------------------------------------------------
-        inputs_dict = {node.name: node for node in inputs}
-
-        # Extract optional metric metadata (pop to avoid passing to FCN) -----
-        metric_name = calculation_kwargs.pop("metric_name", None)
-        metric_description = calculation_kwargs.pop("metric_description", None)
+        inputs_dict: dict[str, Node]
+        if formula_variable_names is None:
+            # Assume formula references *node.name* identifiers directly
+            inputs_dict = {node.name: node for node in inputs}
+        else:
+            inputs_dict = {
+                placeholder: node
+                for placeholder, node in zip(
+                    formula_variable_names, inputs, strict=False
+                )
+            }
 
         # ------------------------------------------------------------------
-        # Return FormulaCalculationNode (subclass of CalculationNode) -------
+        # Return FormulaCalculationNode -----------------------------------
         # ------------------------------------------------------------------
         return FormulaCalculationNode(
             name,
             inputs=inputs_dict,
-            formula=formula_expr,
+            formula=final_formula,
             metric_name=metric_name,
             metric_description=metric_description,
         )

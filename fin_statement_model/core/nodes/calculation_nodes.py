@@ -155,9 +155,6 @@ class CalculationNode(Node):
             to properly serialize the calculation type. Some calculation types
             with non-serializable parameters may include warnings.
         """
-        # Import here to avoid circular imports
-        from fin_statement_model.core.node_factory import NodeFactory
-
         node_dict: dict[str, Any] = {
             "type": "calculation",
             "name": self.name,
@@ -168,32 +165,14 @@ class CalculationNode(Node):
         calc_class_name = type(self.calculation).__name__
         node_dict["calculation_type_class"] = calc_class_name
 
-        # Find the calculation type key from NodeFactory registry
-        inv_map = {v: k for k, v in NodeFactory._calculation_methods.items()}
-        type_key = inv_map.get(calc_class_name)
-        if type_key:
-            node_dict["calculation_type"] = type_key
-
-            # Extract calculation-specific arguments
-            calculation_args = {}
-
-            # Handle specific calculation types
-            if type_key == "weighted_average" and hasattr(self.calculation, "weights"):
-                calculation_args["weights"] = self.calculation.weights
-            elif type_key == "formula" and hasattr(self.calculation, "formula"):
-                calculation_args["formula"] = self.calculation.formula
-                if hasattr(self.calculation, "input_variable_names"):
-                    node_dict["formula_variable_names"] = (
-                        self.calculation.input_variable_names
-                    )
-            elif type_key == "custom_formula":
-                node_dict["serialization_warning"] = (
-                    "CustomFormulaCalculation uses a Python function which cannot be serialized. "
-                    "Manual reconstruction required."
+        # Simplified serialization: mark formula-based calculations explicitly
+        if hasattr(self.calculation, "formula"):
+            node_dict["calculation_type"] = "formula"
+            node_dict["formula"] = self.calculation.formula
+            if hasattr(self.calculation, "input_variable_names"):
+                node_dict["formula_variable_names"] = (
+                    self.calculation.input_variable_names
                 )
-
-            if calculation_args:
-                node_dict["calculation_args"] = calculation_args
 
         # Add any additional attributes (like metric info)
         if hasattr(self, "metric_name") and self.metric_name:
@@ -219,9 +198,6 @@ class CalculationNode(Node):
         Raises:
             ValueError: If the data is invalid or missing required fields.
         """
-        # Import here to avoid circular imports
-        from fin_statement_model.core.node_factory import NodeFactory
-
         if data.get("type") != "calculation":
             raise ValueError(f"Invalid type for CalculationNode: {data.get('type')}")
 
@@ -240,29 +216,43 @@ class CalculationNode(Node):
                 raise ValueError(f"Input node '{input_name}' not found in context")
             input_nodes.append(context[input_name])
 
-        calculation_type = data.get("calculation_type")
-        if not calculation_type:
-            raise ValueError("Missing 'calculation_type' field in CalculationNode data")
+        # ------------------------------------------------------------------
+        # Expect explicit *formula* information -----------------------------
+        # ------------------------------------------------------------------
+        formula = data.get("formula")
+        if not isinstance(formula, str) or not formula.strip():
+            raise ValueError(
+                "Missing or invalid 'formula' field in CalculationNode data"
+            )
 
-        # Get calculation arguments
-        calculation_args = data.get("calculation_args", {})
-
-        # Handle formula variable names for formula calculations
         formula_variable_names = data.get("formula_variable_names")
 
-        # Extract metric information
+        # Extract metric information (optional) ----------------------------
         metric_name = data.get("metric_name")
         metric_description = data.get("metric_description")
 
-        # Create the node using NodeFactory
-        return NodeFactory.create_calculation_node(
+        # Build mapping placeholder → Node --------------------------------
+        if formula_variable_names is None:
+            inputs_dict = {n.name: n for n in input_nodes}
+        else:
+            if len(formula_variable_names) != len(input_nodes):
+                raise ValueError(
+                    "Mismatch between inputs and formula_variable_names in CalculationNode data"
+                )
+            inputs_dict = {
+                placeholder: node
+                for placeholder, node in zip(
+                    formula_variable_names, input_nodes, strict=False
+                )
+            }
+
+        # Return FormulaCalculationNode -----------------------------------
+        return FormulaCalculationNode(
             name=name,
-            inputs=input_nodes,
-            calculation_type=calculation_type,
-            formula_variable_names=formula_variable_names,
+            inputs=inputs_dict,
+            formula=formula,
             metric_name=metric_name,
             metric_description=metric_description,
-            **calculation_args,
         )
 
 

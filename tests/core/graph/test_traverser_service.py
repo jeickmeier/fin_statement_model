@@ -13,8 +13,7 @@ def sample_graph_for_traverser() -> Graph:
     g.add_financial_statement_item("B", {"2021": 3.0, "2022": 4.0})
     g.add_calculation(
         name="C",
-        input_names=["A", "B"],
-        operation_type="addition",
+        formula="A + B",
     )
     return g
 
@@ -51,9 +50,9 @@ def test_detect_and_find_cycle():
     y = FinancialStatementItemNode("Y", {"2021": 1.0})
     g.add_node(x)
     g.add_node(y)
-    g.add_calculation("X_calc", ["Y"], "addition")
+    g.add_calculation("X_calc", formula="Y")
     # rename Y calculation to match node name collision
-    g.add_calculation("Y", ["X_calc"], "addition")
+    g.add_calculation("Y", formula="X_calc")
     trav = g.traverser
     cycles = trav.detect_cycles()
     assert any(isinstance(cycle, list) for cycle in cycles)
@@ -75,7 +74,7 @@ def test_would_create_cycle():
     # A -> B
     g.add_financial_statement_item("A", {"2022": 1.0})
     g.add_financial_statement_item("B", {"2022": 1.0})
-    g.add_calculation("AB", ["A", "B"], "addition")
+    g.add_calculation("AB", formula="A + B")
     trav = g.traverser
     # adding dependency B->AB would create cycle
     fake_node = FinancialStatementItemNode("Fake", {"2022": 0.0})

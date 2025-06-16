@@ -10,9 +10,7 @@ from typing import Any, Literal, Optional, Union
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from fin_statement_model.config.helpers import cfg
-from fin_statement_model.core.adjustments.models import (
-    AdjustmentFilterInput,
-)
+from fin_statement_model.core.graph.domain.adjustment import AdjustmentFilterInput
 
 # Define MappingConfig locally to avoid circular import
 MappingConfig = Union[dict[str, str], dict[Optional[str], dict[str, str]]]

@@ -8,11 +8,11 @@ from typing import Any, Iterable, cast
 import pandas as pd
 from pydantic import ValidationError
 
-from fin_statement_model.core.adjustments.models import (
+from fin_statement_model.core.graph import Graph  # Needed for Graph convenience methods
+from fin_statement_model.core.graph.domain.adjustment import (
     Adjustment,
     AdjustmentType,
 )
-from fin_statement_model.core.graph import Graph  # Needed for Graph convenience methods
 from fin_statement_model.io.core import FileBasedReader, handle_read_errors
 from fin_statement_model.io.exceptions import ReadError, WriteError
 from fin_statement_model.io.specialized.row_models import AdjustmentRowModel
@@ -180,6 +180,8 @@ def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:
         # Cast to AdjustmentType to access .value safely if present
         adj_dict["type"] = cast(AdjustmentType, raw_type).value if raw_type else None
         adj_dict["tags"] = ",".join(sorted(adj_dict.get("tags", set())))
+        if "node" in adj_dict and "node_name" not in adj_dict:
+            adj_dict["node_name"] = adj_dict.pop("node")
         grouped_by_scenario[adj.scenario].append(adj_dict)
 
     if not grouped_by_scenario:
@@ -244,12 +246,12 @@ def load_adjustments_from_excel(
 
     if replace:
         logger.debug("Clearing existing adjustments before loading.")
-        graph.adjustment_manager.clear_all()
+        graph.adjustment_manager.clear()
 
     added_count = 0
     for adj in valid_adjustments:
         try:
-            graph.adjustment_manager.add_adjustment(adj)
+            graph.adjustment_manager.add(adj)
             added_count += 1
         except Exception as e:
             logger.error(

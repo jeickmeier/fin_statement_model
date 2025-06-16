@@ -9,12 +9,15 @@ replaced by a DB-backed implementation without touching the engine.
 
 from __future__ import annotations
 
+import math
 from collections import defaultdict
 from typing import Any, Callable, Iterable, Set
 
+from fin_statement_model.core.errors import AdjustmentError
 from fin_statement_model.core.graph.domain.adjustment import (
     Adjustment,
     AdjustmentTag,
+    AdjustmentType,
 )
 
 # Predicate type alias
@@ -26,11 +29,24 @@ __all__: list[str] = ["AdjustmentService"]
 class AdjustmentService:
     """Store :class:`Adjustment` objects and provide simple lookups."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, strict: bool = False) -> None:
+        """Create a new in-memory adjustment service.
+
+        Args:
+            strict: When *True* mathematical domain errors (e.g. fractional
+                exponents on negative bases) or overflows raise
+                :class:`~fin_statement_model.core.errors.AdjustmentError` instead
+                of being silently ignored.  The default *False* matches the
+                previous permissive behaviour to avoid breaking callers that do
+                not expect exceptions.
+        """
+
         # Nested mapping node_code -> period_str -> list[Adjustment]
         self._store: dict[str, dict[str, list[Adjustment]]] = defaultdict(
             lambda: defaultdict(list)
         )
+
+        self.strict = strict
 
     # ------------------------------------------------------------------
     # Mutating API
@@ -80,9 +96,9 @@ class AdjustmentService:
         # Convert filter_input into predicate --------------------------------
         pred: FilterPredicate
 
-        from fin_statement_model.core.adjustments.models import (
+        from fin_statement_model.core.graph.domain.adjustment import (
             AdjustmentFilter,
-        )  # lazy import
+        )
 
         if isinstance(filter_input, AdjustmentFilter):
             pred = filter_input.matches
@@ -111,6 +127,39 @@ class AdjustmentService:
             value = self._apply_one(value, adj)
         return value, value != base_value
 
-    @staticmethod
-    def _apply_one(base: float, adj: Adjustment) -> float:
-        return adj.type.apply(base, adj.value, adj.scale)
+    def _apply_one(self, base: float, adj: Adjustment) -> float:
+        """Apply *adj* to *base* handling domain errors & overflows.
+
+        The implementation mirrors the legacy ``AdjustmentManager`` semantics
+        so that existing unit-tests continue to pass after the migration.
+        """
+
+        if adj.type is AdjustmentType.ADDITIVE:
+            return float(base + adj.value * adj.scale)
+
+        if adj.type is AdjustmentType.MULTIPLICATIVE:
+            # Guard against complex results when base<=0 and 0<scale<1 --------
+            if base <= 0 and 0 < adj.scale < 1:
+                msg = (
+                    "Invalid multiplicative adjustment on non-positive base with a "
+                    "fractional scale; returning base value unchanged."
+                )
+                if self.strict:
+                    raise AdjustmentError(msg)
+                return base
+
+            try:
+                result = base * math.pow(adj.value, adj.scale)
+                if math.isfinite(result):
+                    return float(result)
+                msg = "Adjustment produced non-finite result (inf/nan)"
+                if self.strict:
+                    raise AdjustmentError(msg)
+                return base
+            except (OverflowError, ValueError) as exc:
+                if self.strict:
+                    raise AdjustmentError(str(exc)) from exc
+                return base
+
+        # Replacement -------------------------------------------------------
+        return float(adj.value)
