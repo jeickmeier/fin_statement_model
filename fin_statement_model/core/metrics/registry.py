@@ -7,19 +7,15 @@ This module defines:
 
 import logging
 from pathlib import Path
-from typing import ClassVar, Union
-
-# Use a try-except block for the YAML import
-try:
-    import yaml
-
-    HAS_YAML = True
-except ImportError:
-    HAS_YAML = False
+from typing import Any, ClassVar, Union
 
 from pydantic import ValidationError
 
 from fin_statement_model.core.metrics.models import MetricDefinition
+from fin_statement_model.core.utils.yaml_loader import (
+    HAS_YAML,
+    iter_yaml_files,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -78,74 +74,61 @@ class MetricRegistry:
 
         dir_path = Path(directory_path)
         if not dir_path.is_dir():
-            logger.error(f"Metric directory not found: {dir_path}")
+            logger.error("Metric directory not found: %s", dir_path)
             raise FileNotFoundError(f"Metric directory not found: {dir_path}")
 
-        logger.info(f"Loading metrics from directory: {dir_path}")
+        logger.info("Loading metrics from directory: %s", dir_path)
         loaded_count = 0
 
-        for filepath in dir_path.glob("*.yaml"):
-            logger.debug(f"Processing file: {filepath}")
-            try:
-                with open(filepath, encoding="utf-8") as f:
-                    content = f.read()
+        for filepath, data in iter_yaml_files(dir_path):
+            if isinstance(data, Exception):
+                logger.warning("Failed to parse YAML file %s: %s", filepath, data)
+                continue
 
-                # Use standard YAML parsing
-                try:
-                    data = yaml.safe_load(content)
-                except yaml.YAMLError as e:
-                    logger.warning(f"Failed to parse YAML file {filepath}: {e}")
-                    continue
+            if not data:
+                logger.debug("Empty or null content in %s, skipping", filepath)
+                continue
 
-                if not data:
-                    logger.debug(f"Empty or null content in {filepath}, skipping")
-                    continue
+            # Accept single-dict or list-of-dicts structures -------------------
+            metrics_to_process: list[dict[str, Any]]
+            if isinstance(data, dict):
+                metrics_to_process = [data]
+            elif isinstance(data, list):
+                metrics_to_process = data
+            else:
+                logger.warning(
+                    "Invalid YAML structure in %s: expected dict or list, got %s",
+                    filepath,
+                    type(data).__name__,
+                )
+                continue
 
-                # Handle both single metric and list of metrics
-                metrics_to_process = []
-
-                if isinstance(data, dict):
-                    # Single metric definition
-                    metrics_to_process = [data]
-                elif isinstance(data, list):
-                    # List of metric definitions
-                    metrics_to_process = data
-                else:
+            for i, metric_data in enumerate(metrics_to_process):
+                if not isinstance(metric_data, dict):
                     logger.warning(
-                        f"Invalid YAML structure in {filepath}: "
-                        f"expected dict or list, got {type(data).__name__}"
+                        "Invalid metric definition at index %s in %s: expected dict, got %s",
+                        i,
+                        filepath,
+                        type(metric_data).__name__,
                     )
                     continue
 
-                # Process each metric definition
-                for i, metric_data in enumerate(metrics_to_process):
-                    if not isinstance(metric_data, dict):
-                        logger.warning(
-                            f"Invalid metric definition at index {i} in {filepath}: "
-                            f"expected dict, got {type(metric_data).__name__}"
-                        )
-                        continue
+                try:
+                    model = MetricDefinition.model_validate(metric_data)
+                    self.register_definition(model)
+                    loaded_count += 1
+                    logger.debug(
+                        "Successfully loaded metric '%s' from %s", model.name, filepath
+                    )
+                except ValidationError as ve:
+                    logger.warning(
+                        "Invalid metric definition at index %s in %s: %s",
+                        i,
+                        filepath,
+                        ve,
+                    )
 
-                    try:
-                        # Validate and register the metric
-                        model = MetricDefinition.model_validate(metric_data)
-                        self.register_definition(model)
-                        loaded_count += 1
-                        logger.debug(
-                            f"Successfully loaded metric '{model.name}' from {filepath}"
-                        )
-
-                    except ValidationError as ve:
-                        logger.warning(
-                            f"Invalid metric definition at index {i} in {filepath}: {ve}"
-                        )
-                        continue
-
-            except Exception:
-                logger.exception(f"Failed to process file {filepath}")
-                continue
-
-        logger.info(f"Successfully loaded {loaded_count} metrics from {dir_path}.")
+        logger.info("Successfully loaded %s metrics from %s.", loaded_count, dir_path)
         return loaded_count
 
     def get(self, metric_id: str) -> MetricDefinition:

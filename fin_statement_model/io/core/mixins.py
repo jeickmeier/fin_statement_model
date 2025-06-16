@@ -902,19 +902,23 @@ class DataFrameBasedWriter(ValueExtractionMixin):
         periods = sorted(graph.periods) if graph.periods else []
         data: dict[str, dict[str, float]] = {}
 
-        # Determine which nodes to process
-        nodes_to_process = include_nodes if include_nodes else list(graph.nodes.keys())
+        # ``graph.nodes`` is a *list* of node codes. For convenience we build
+        # a local helper to fetch node objects on demand via ``graph.get_node``.
+        all_node_ids = graph.nodes
+
+        # Determine which nodes to process --------------------------------
+        nodes_to_process = include_nodes if include_nodes else list(all_node_ids)
 
         # Validate requested nodes exist
         if include_nodes:
-            missing_nodes = [n for n in include_nodes if n not in graph.nodes]
+            missing_nodes = [n for n in include_nodes if n not in all_node_ids]
             if missing_nodes:
                 logger.warning(f"Requested nodes not found in graph: {missing_nodes}")
-                nodes_to_process = [n for n in include_nodes if n in graph.nodes]
+                nodes_to_process = [n for n in include_nodes if n in all_node_ids]
 
         # Extract data for each node
         for node_id in nodes_to_process:
-            node = graph.nodes[node_id]
+            node = graph.get_node(node_id)
             row: dict[str, float] = {}
 
             for period in periods:

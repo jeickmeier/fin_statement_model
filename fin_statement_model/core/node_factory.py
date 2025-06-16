@@ -31,12 +31,6 @@ from .nodes.stats_nodes import (
     YoYGrowthNode,
 )
 
-# ---------------------------------------------------------------------------
-# Legacy calculation registry fully removed – client code should migrate to
-# formula-based nodes via ``NodeFactory.create_calculation_node``.
-# ---------------------------------------------------------------------------
-
-
 # Configure logging
 logger = logging.getLogger(__name__)
 
@@ -48,12 +42,6 @@ class NodeFactory:
     and deserialization logic, so client code can create nodes declaratively
     (e.g., via YAML configs or simple Python calls) without importing every
     concrete node class.
-
-    Notes:
-        • In **v2** the separate calculation registry has been removed.
-          ``NodeFactory.create_calculation_node`` now produces a
-          `FormulaCalculationNode` directly, constructing a Python expression
-          from the provided inputs (or using an explicit *formula* keyword).
 
     Internal lookup tables:
         _calculation_methods: Legacy mapping from *calculation_type* keys to
@@ -323,7 +311,8 @@ class NodeFactory:
             ...     'type': 'calculation',
             ...     'name': 'GrossProfit',
             ...     'inputs': ['Revenue', 'COGS'],
-            ...     'calculation_type': 'subtraction'
+            ...     'formula': 'Revenue - COGS',
+            ...     'formula_variable_names': ['Revenue', 'COGS']
             ... }
             >>> context = {'Revenue': revenue_node, 'COGS': cogs_node}
             >>> calc_node = NodeFactory.create_from_dict(calc_data, context)

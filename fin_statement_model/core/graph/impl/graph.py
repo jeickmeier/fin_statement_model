@@ -263,12 +263,6 @@ class Graph:
         return self.get_node(name)
 
     # ------------------------------------------------------------------
-    def change_calculation_method(self, code: str, new_operation_type: str) -> None:
-        raise AttributeError(
-            "change_calculation_method has been removed; rebuild the node with add_item/add_calculation instead."
-        )
-
-    # ------------------------------------------------------------------
     def clear(self) -> None:
         """Remove *all* nodes and periods keeping services intact."""
         self._state = GraphBuilder().commit()
@@ -353,49 +347,92 @@ class Graph:
                 _order=tuple(builder._nodes),
             )
 
-    def ensure_signed_nodes(self, codes: list[str]) -> None:
-        raise AttributeError(
-            "ensure_signed_nodes has been removed; create negative formula nodes directly."
+    def merge_from(self, other: object) -> None:
+        """Merge *other* graph into *self* (best-effort).
+
+        This keeps the convenient behaviour users had in v1 but re-implements
+        it on top of the v2 API: periods are unified, input-node values are
+        copied/updated, and non-colliding formula nodes are cloned.
+        """
+
+        import warnings
+
+        if not isinstance(other, Graph):
+            raise TypeError("merge_from expects another Graph instance")
+
+        warnings.warn(
+            "merge_from() is deprecated – prefer rebuilding a fresh graph via add_item/add_calculation.",
+            DeprecationWarning,
+            stacklevel=2,
         )
 
-    def merge_from(self, other: object) -> None:
-        raise AttributeError(
-            "merge_from has been removed; use add_item/add_calculation instead."
-        )
+        # 1 – merge periods -------------------------------------------------
+        self.add_periods(other.periods)
+
+        # 2 – merge nodes ---------------------------------------------------
+        for code in other.nodes:
+            other_node = other.get_node(code)
+
+            # If node absent we can clone; if present only merge input values.
+            if not self.has_node(code):
+                if hasattr(other_node, "formula"):
+                    self.add_item(code, formula=other_node.formula)
+                else:
+                    from typing import Any, cast
+
+                    node_any = cast(Any, other_node)
+                    self.add_item(code, values=dict(node_any.values))
+            else:
+                # Only input nodes support value updates
+                if hasattr(other_node, "values"):
+                    from typing import Any, cast
+
+                    node_any2 = cast(Any, other_node)
+                    self.update_financial_statement_item(
+                        code, dict(node_any2.values), replace_existing=True
+                    )
 
     def topological_sort(self) -> list[str]:
-        raise AttributeError(
-            "topological_sort has been removed; use add_item/add_calculation instead."
-        )
+        """Return nodes in dependency order (inputs first)."""
+        return list(self._state.order)
 
     def detect_cycles(self) -> list[list[str]]:
-        raise AttributeError(
-            "detect_cycles has been removed; use add_item/add_calculation instead."
+        from fin_statement_model.core.graph.engine.inspect import (
+            detect_cycles as _cycles,
         )
+
+        return _cycles(self._state)
 
     def validate(self) -> list[str]:
-        raise AttributeError(
-            "validate has been removed; use add_item/add_calculation instead."
-        )
+        errors: list[str] = []
+        # Missing dependency check --------------------------------------
+        for code, node in self._state.nodes.items():
+            for dep in node.inputs:
+                if dep not in self._state.nodes:
+                    errors.append(f"Node '{code}' depends on non-existent node '{dep}'")
+        # Cycle detection ----------------------------------------------
+        for cyc in self.detect_cycles():
+            errors.append(f"Circular dependency: {' -> '.join(cyc)}")
+        return errors
 
     def get_dependencies(self, node: str) -> list[str]:
-        raise AttributeError(
-            "get_dependencies has been removed; use add_item/add_calculation instead."
-        )
+        from fin_statement_model.core.graph.engine.inspect import dependencies as _deps
+
+        return _deps(self._state, node)
 
     def get_direct_successors(self, node: str) -> list[str]:
-        raise AttributeError(
-            "get_direct_successors has been removed; use add_item/add_calculation instead."
-        )
+        from fin_statement_model.core.graph.engine.inspect import successors as _succ
+
+        return _succ(self._state, node)
 
     def get_direct_predecessors(self, node: str) -> list[str]:
-        raise AttributeError(
-            "get_direct_predecessors has been removed; use add_item/add_calculation instead."
-        )
+        from fin_statement_model.core.graph.engine.inspect import predecessors as _pred
+
+        return _pred(self._state, node)
 
     def breadth_first_search(
         self, start_node: str, *, direction: str = "successors"
     ) -> list[list[str]]:
-        raise AttributeError(
-            "breadth_first_search has been removed; use add_item/add_calculation instead."
-        )
+        from fin_statement_model.core.graph.engine.inspect import breadth_first as _bf
+
+        return _bf(self._state, start_node, direction=direction)

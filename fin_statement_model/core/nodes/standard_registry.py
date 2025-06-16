@@ -8,8 +8,12 @@ import logging
 from pathlib import Path
 from typing import Any, Optional
 
-import yaml
 from pydantic import BaseModel, ConfigDict
+
+from fin_statement_model.core.utils.yaml_loader import (
+    HAS_YAML,
+    iter_yaml_files,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -388,14 +392,26 @@ class StandardNodeRegistry:
             FileNotFoundError: If `yaml_path` does not exist.
             ValueError: If YAML is invalid or structure is incorrect.
         """
+        # Reuse shared loader helper for consistency ---------------------
+        if not HAS_YAML:
+            raise ImportError(
+                "PyYAML is required to load YAML files but is not installed."
+            )
+
         if not yaml_path.exists():
             raise FileNotFoundError(f"Standard nodes file not found: {yaml_path}")
 
-        try:
-            with open(yaml_path, encoding="utf-8") as f:
-                data = yaml.safe_load(f)
-        except yaml.YAMLError as e:
-            raise ValueError(f"Invalid YAML in {yaml_path}: {e}") from e
+        loader_iter = iter_yaml_files(yaml_path.parent)
+        data = None
+        for fp, datum in loader_iter:
+            if fp == yaml_path:
+                data = datum
+                break
+
+        if data is None:
+            raise ValueError(f"Failed to parse YAML in {yaml_path}")
+        if isinstance(data, Exception):
+            raise ValueError(f"Invalid YAML in {yaml_path}: {data}")
 
         # Process the data without clearing existing
         nodes_loaded = self._load_nodes_from_data(
@@ -404,7 +420,7 @@ class StandardNodeRegistry:
         if nodes_loaded:
             self._initialized = True
             self._loaded_from = str(yaml_path)
-        logger.debug(f"Loaded {nodes_loaded} nodes from {yaml_path}")
+        logger.debug("Loaded %s nodes from %s", nodes_loaded, yaml_path)
         return nodes_loaded
 
 

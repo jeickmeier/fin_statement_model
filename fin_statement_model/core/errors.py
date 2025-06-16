@@ -4,6 +4,7 @@ This module defines exception classes for specific error cases,
 allowing for more precise error handling and better error messages.
 """
 
+import warnings
 from typing import Any, Optional
 
 
@@ -371,13 +372,12 @@ class StrategyError(FinancialModelError):
         strategy_type: Optional[str] = None,
         node_id: Optional[str] = None,
     ):
-        """Initialize the StrategyError.
-
-        Args:
-            message: The base error message.
-            strategy_type: Optional name or type of the strategy involved.
-            node_id: Optional ID of the node using the strategy.
-        """
+        warnings.warn(
+            "StrategyError is deprecated and will be removed in a future release."
+            " No part of the codebase raises it anymore.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.strategy_type = strategy_type
         self.node_id = node_id
 

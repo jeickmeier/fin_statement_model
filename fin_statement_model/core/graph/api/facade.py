@@ -1,6 +1,4 @@
-"""Public façade for the v2 graph.
-
-# mypy: ignore-errors
+"""Public façade for the graph.
 
 Users interact with :class:`GraphFacade` only; internals are hidden in
 private modules.
@@ -8,7 +6,12 @@ private modules.
 
 from __future__ import annotations
 
-from typing import Any, Iterable
+from typing import TYPE_CHECKING, Any, Iterable, List, NoReturn, Optional, Tuple, Union
+from uuid import UUID
+
+if TYPE_CHECKING:
+    # The façade is still dynamic; we allow untyped defs temporarily
+    pass  # mypy: ignore-errors
 
 from fin_statement_model.core.graph.engine.inspect import (
     breadth_first,
@@ -49,16 +52,14 @@ class GraphFacade:
         >>> g = Graph(periods=["2023"])  # alias for GraphFacade
         >>> g.add_financial_statement_item("revenue", {"2023": 150})
         >>> g.add_financial_statement_item("cogs", {"2023": 90})
-        >>> g.add_calculation(
-        ...     "gross_profit", ["revenue", "cogs"], operation_type="subtraction"
-        ... )
+        >>> g.add_calculation(name="gross_profit", formula="revenue - cogs")
         >>> assert g.calculate("gross_profit", "2023") == 60
     """
 
     # ------------------------------------------------------------------
     # Construction ------------------------------------------------------
     # ------------------------------------------------------------------
-    def __init__(self, *, periods: Iterable[str | Period] | None = None):
+    def __init__(self, *, periods: Iterable[str | Period] | None = None) -> None:
         self._impl = _GraphImpl()
         # Single object now serves as its own traverser/manipulator
         self.manipulator = self  # write helpers
@@ -68,7 +69,14 @@ class GraphFacade:
             self.add_periods(periods)
 
         # Custom calculation registry (per instance) --------------------
-        self._node_cache: dict[str, object] = {}
+        # Cache only **input** nodes so we can update their ``values`` mapping
+        # after recalculations without repeatedly instantiating new wrapper
+        # objects.  The mapping is *internal*; therefore we are comfortable
+        # storing ``Any`` here to avoid a hard dependency on the concrete
+        # node implementation and break potential import cycles.
+        from typing import Any as _Any  # Local import to prevent cycles during runtime
+
+        self._node_cache: dict[str, _Any] = {}
 
     # ------------------------------------------------------------------
     # Structural helpers
@@ -113,7 +121,7 @@ class GraphFacade:
         code: str,
         formula: str | None = None,
         values: dict[str, float] | None = None,
-    ):
+    ) -> None:
         """Replace an existing node *in-place*.
 
         Args:
@@ -144,30 +152,35 @@ class GraphFacade:
         node_name: str | None = None,
         *,
         input_node_map: dict[str, str] | None = None,
-    ):
+    ) -> None:
         self._impl.add_metric(metric_name, node_name, input_node_map=input_node_map)
 
-    def get_metric(self, metric_name: str):
+    def get_metric(self, metric_name: str) -> Optional[str]:
         return self._impl.get_metric(metric_name)
 
-    def get_available_metrics(self):
+    def get_available_metrics(self) -> List[str]:
         return self._impl.get_available_metrics()
 
     def get_adjusted_value(
-        self, node: str, period: str, filter_input=None, *, return_flag: bool = False
-    ):
+        self,
+        node: str,
+        period: str,
+        filter_input: Any = None,
+        *,
+        return_flag: bool = False,
+    ) -> Union[float, Tuple[float, bool]]:
         return self._impl.get_adjusted_value(
             node, period, filter_input, return_flag=return_flag
         )
 
-    def was_adjusted(self, node: str, period: str, filter_input=None):
+    def was_adjusted(self, node: str, period: str, filter_input: Any = None) -> bool:
         return self._impl.was_adjusted(node, period, filter_input)
 
     # ------------------------------------------------------------------
     # Node access helpers ----------------------------------------------
     # ------------------------------------------------------------------
-    def get_node(self, code: str):
-        internal = self._impl.get_node(code)
+    def get_node(self, code: str) -> Any:
+        internal: Any = self._impl.get_node(code)
         if internal is None:
             return None
 
@@ -192,30 +205,27 @@ class GraphFacade:
     def has_node(self, code: str) -> bool:
         return self._impl.has_node(code)
 
-    # ------------------------------------------------------------------
-    # Legacy direct node insertion -------------------------------------
-    # ------------------------------------------------------------------
     def add_node(self, node: Any) -> None:
-        """Insert an *existing* node instance into the graph (backward compat)."""
+        """Insert an *existing* node instance into the graph."""
 
         self._impl.add_node(node)
 
     # ------------------------------------------------------------------
     # Calculation helpers ----------------------------------------------
     # ------------------------------------------------------------------
-    def add_calculation(self, *args: Any, **kwargs: Any) -> Any:
+    def add_calculation(self, *args: Any, **kwargs: Any) -> object:
         """Add a formula node and return a lightweight proxy exposing ``name``."""
 
-        node = self._impl.add_calculation(*args, **kwargs)
+        node_obj = self._impl.add_calculation(*args, **kwargs)
         # Minimal proxy exposing ``name`` attribute expected by tests ------
         from types import SimpleNamespace
 
-        return SimpleNamespace(name=node.code)
+        return SimpleNamespace(name=str(getattr(node_obj, "code", "")))
 
     # ------------------------------------------------------------------
     # Override calculate to support (node, period) signature ------------
     # ------------------------------------------------------------------
-    def calculate(self, *args, trace: bool = False, **kwargs):  # type: ignore[override]
+    def calculate(self, *args: Any, trace: bool = False, **kwargs: Any) -> Any:
         """Support both ``calculate(period)`` and ``calculate(node, period)`` forms."""
 
         # Support legacy keyword signature calculate(period=<str>) ----------
@@ -240,7 +250,7 @@ class GraphFacade:
     # ------------------------------------------------------------------
     # Adjustment helpers -------------------------------------------------
     # ------------------------------------------------------------------
-    def add_adjustment(self, **kwargs):
+    def add_adjustment(self, **kwargs: Any) -> UUID:
         """Create an :class:`~fin_statement_model.core.graph.domain.Adjustment` and
         persist it in the in-memory adjustment service.
 
@@ -296,12 +306,12 @@ class GraphFacade:
     # ------------------------------------------------------------------
     # Misc helpers ------------------------------------------------------
     # ------------------------------------------------------------------
-    def clear(self):
+    def clear(self) -> None:
         self._impl.clear()
 
     def update_financial_statement_item(
         self, code: str, values: dict[str, float], *, replace_existing: bool = False
-    ):
+    ) -> None:
         self._impl.update_financial_statement_item(
             code, values, replace_existing=replace_existing
         )
@@ -312,7 +322,7 @@ class GraphFacade:
             else:
                 self._node_cache[code].values.update(values)
 
-    def get_financial_statement_items(self):
+    def get_financial_statement_items(self) -> List[Any]:
         from fin_statement_model.core.nodes import FinancialStatementItemNode
 
         items = []
@@ -323,7 +333,7 @@ class GraphFacade:
                 items.append(FinancialStatementItemNode(node.code, dict(node.data)))
         return items
 
-    def merge_from(self, other):
+    def merge_from(self, other: "GraphFacade") -> None:
         if not isinstance(other, GraphFacade):
             raise TypeError("merge_from expects Graph instance")
         # Merge periods first
@@ -340,7 +350,7 @@ class GraphFacade:
                         code, other_node.values, replace_existing=True
                     )
 
-    def recalculate_all(self, periods: list[str] | None = None):
+    def recalculate_all(self, periods: Optional[List[str]] = None) -> None:
         if periods is not None and not isinstance(periods, (list, tuple, set)):
             raise TypeError("periods must be iterable or None")
         self._impl.recalculate_all(list(periods) if periods else None)
@@ -348,18 +358,18 @@ class GraphFacade:
     # ------------------------------------------------------------------
     # Traversal helpers (previously via GraphTraverser) -----------------
     # ------------------------------------------------------------------
-    def topological_sort(self):
+    def topological_sort(self) -> List[str]:
         """Return nodes in dependency order (inputs first)."""
-        return list(self._impl._state.order)  # type: ignore[attr-defined]
+        return list(self._impl._state.order)
 
-    def detect_cycles(self):
+    def detect_cycles(self) -> List[List[str]]:
         """Return a list of cycles detected in the graph (may be empty)."""
         return _cycles(self._impl._state)
 
-    def validate(self):
+    def validate(self) -> List[str]:
         """Return a list of validation error strings (empty if valid)."""
-        errs: list[str] = []
-        state = self._impl._state  # type: ignore[attr-defined]
+        errs: List[str] = []
+        state = self._impl._state
         for code, node in state.nodes.items():
             for dep in node.inputs:
                 if dep not in state.nodes:
@@ -368,40 +378,42 @@ class GraphFacade:
             errs.append(f"Circular dependency: {' -> '.join(cyc)}")
         return errs
 
-    def get_dependency_graph(self):
+    def get_dependency_graph(self) -> dict[str, List[str]]:
         return self._impl.get_dependency_graph()
 
     # direct wrappers for utility methods used in tests ------------------
-    def get_calculation_nodes(self):
+    def get_calculation_nodes(self) -> List[str]:
         return self._impl.get_calculation_nodes()
 
-    def get_dependencies(self, node: str):
-        return _deps(self._impl._state, node)  # type: ignore[attr-defined]
+    def get_dependencies(self, node: str) -> List[str]:
+        return _deps(self._impl._state, node)
 
-    def get_direct_successors(self, node: str):
-        return _succ(self._impl._state, node)  # type: ignore[attr-defined]
+    def get_direct_successors(self, node: str) -> List[str]:
+        return _succ(self._impl._state, node)
 
-    def get_direct_predecessors(self, node: str):
-        return _pred(self._impl._state, node)  # type: ignore[attr-defined]
+    def get_direct_predecessors(self, node: str) -> List[str]:
+        return _pred(self._impl._state, node)
 
-    def breadth_first_search(self, start_node: str, *, direction: str = "successors"):
+    def breadth_first_search(
+        self, start_node: str, *, direction: str = "successors"
+    ) -> List[List[str]]:
         return breadth_first(self._impl._state, start_node, direction=direction)
 
     # ------------------------------------------------------------------
     # Properties --------------------------------------------------------
     # ------------------------------------------------------------------
     @property
-    def periods(self):
+    def periods(self) -> List[str]:
         return self._impl.periods
 
     @property
-    def nodes(self):
+    def nodes(self) -> List[str]:
         return self._impl.nodes
 
     # ------------------------------------------------------------------
     # Metric info placeholder ------------------------------------------
     # ------------------------------------------------------------------
-    def get_metric_info(self, metric_name: str):
+    def get_metric_info(self, metric_name: str) -> NoReturn:
         raise ValueError(metric_name)
 
     # ------------------------------------------------------------------
@@ -426,7 +438,7 @@ class GraphFacade:
 
     # Legacy attribute expected by some IO helpers ----------------------
     @property
-    def adjustment_manager(self):  # type: ignore[return-type]
+    def adjustment_manager(self) -> Any:
         """Direct accessor to the underlying adjustment service instance."""
 
         return self._impl.services.adjustment
@@ -435,11 +447,11 @@ class GraphFacade:
     # Compatibility aliases --------------------------------------------
     # ------------------------------------------------------------------
     @property
-    def traverser(self):
+    def traverser(self) -> "GraphFacade":
         """Alias returning *self* so existing code can access traversal helpers."""
         return self
 
-    def would_create_cycle(self, new_node) -> bool:
+    def would_create_cycle(self, new_node: Any) -> bool:
         """Return True if inserting *new_node* would introduce a directed cycle."""
         from fin_statement_model.core.graph.engine.topology import CycleError, toposort
 
@@ -451,20 +463,23 @@ class GraphFacade:
 
         # create proxy mapping and attempt to topo-sort
         class _Proxy:
-            def __init__(self, c: str, d):
-                self.code = c
-                self.inputs = d
+            def __init__(self, c: str, d: Iterable[str]):
+                self.code: str = c
+                self.inputs: Iterable[str] = d
 
         proxy = _Proxy(code, deps)
-        mapping = dict(self._impl._state.nodes)  # type: ignore[attr-defined]
-        mapping[code] = proxy  # type: ignore[arg-type]
+        mapping = dict(self._impl._state.nodes)
+        from typing import Any, Dict, cast
+
+        mapping_cast = cast(Dict[str, Any], mapping)
+        mapping_cast[code] = proxy
         try:
-            toposort(mapping)
+            toposort(mapping_cast)
             return False
         except CycleError:
             return True
 
-    def find_cycle_path(self, start: str, end: str):
+    def find_cycle_path(self, start: str, end: str) -> Optional[List[str]]:
         """Return a simple path list between *start* and *end* if they share a cycle."""
         cycles = self.detect_cycles()
         for cyc in cycles:
