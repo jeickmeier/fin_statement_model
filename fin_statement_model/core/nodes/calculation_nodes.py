@@ -8,10 +8,9 @@ This module defines the different types of calculation nodes available in the sy
 
 from typing import Any, Callable, Optional
 
-from fin_statement_model.core.calculations.calculation import (
-    Calculation,
-    FormulaCalculation,
-)
+# Evaluate expression strings safely
+from simpleeval import SimpleEval
+
 from fin_statement_model.core.errors import (
     CalculationError,
 )
@@ -43,9 +42,7 @@ class CalculationNode(Node):
         30.0
     """
 
-    def __init__(
-        self, name: str, inputs: list[Node], calculation: Calculation, **kwargs: Any
-    ):
+    def __init__(self, name: str, inputs: list[Node], calculation: Any, **kwargs: Any):
         """Initialize the CalculationNode.
 
         Args:
@@ -114,7 +111,7 @@ class CalculationNode(Node):
                 },
             ) from e
 
-    def set_calculation(self, calculation: Calculation) -> None:
+    def set_calculation(self, calculation: Any) -> None:
         """Change the calculation object for the node.
 
         Args:
@@ -331,11 +328,37 @@ class FormulaCalculationNode(CalculationNode):
         input_variable_names = list(inputs.keys())
         input_nodes = list(inputs.values())
 
-        # Create FormulaCalculation strategy
-        formula_calculation = FormulaCalculation(formula, input_variable_names)
+        # Internal adapter delegating to SimpleEval (keeps parent CalculationNode API intact)
+        class _SimpleEvalCalc:
+            """Lightweight adapter exposing a ``calculate`` method compatible with CalculationNode."""
 
-        # Initialize parent CalculationNode with the strategy
-        super().__init__(name, input_nodes, formula_calculation)
+            def __init__(self, expr: str, var_names: list[str]):
+                self._expr = expr
+                self._var_names = var_names
+
+                # Pre-configure a sandboxed SimpleEval instance
+                self._se = SimpleEval()
+                # Whitelist common numeric helpers – identical to Graph v2 engine
+                self._se.functions = {
+                    "abs": abs,
+                    "max": max,
+                    "min": min,
+                    "round": round,
+                }
+
+            def calculate(self, nodes: list[Node], period: str) -> float:
+                # Map variable names → value for the current period
+                self._se.names = {
+                    var: node.calculate(period)
+                    for var, node in zip(self._var_names, nodes, strict=False)
+                }
+                return float(self._se.eval(self._expr))
+
+        # Build adapter instance -----------------------------------------
+        simpleeval_strategy = _SimpleEvalCalc(formula, input_variable_names)
+
+        # Initialize parent CalculationNode with the adapter strategy
+        super().__init__(name, input_nodes, simpleeval_strategy)
 
         # Store the inputs dict for compatibility (separate from parent's inputs list)
         self.inputs_dict = inputs

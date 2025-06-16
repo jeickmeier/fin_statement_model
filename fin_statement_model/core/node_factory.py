@@ -7,11 +7,8 @@ for all node types (financial statement items, calculations, forecasts, stats).
 import logging
 from typing import Any, Callable, ClassVar, Optional, Union, cast
 
-# Force import of calculations package to ensure registration happens
-from fin_statement_model.core.calculations import Calculation, Registry
 from fin_statement_model.core.errors import ConfigurationError
 
-# Force import of strategies package to ensure registration happens
 from .nodes import (
     CalculationNode,
     CustomCalculationNode,
@@ -34,6 +31,12 @@ from .nodes.stats_nodes import (
     YoYGrowthNode,
 )
 
+# ---------------------------------------------------------------------------
+# Legacy calculation registry fully removed – client code should migrate to
+# formula-based nodes via ``NodeFactory.create_calculation_node``.
+# ---------------------------------------------------------------------------
+
+
 # Configure logging
 logger = logging.getLogger(__name__)
 
@@ -46,14 +49,23 @@ class NodeFactory:
     (e.g., via YAML configs or simple Python calls) without importing every
     concrete node class.
 
-    Attributes:
-        _calculation_methods: Mapping of calculation type keys (e.g., ``"addition"``)
-            to calculation class names registered in :class:`fin_statement_model.core.calculations.Registry`.
+    Notes:
+        • In **v2** the separate calculation registry has been removed.
+          ``NodeFactory.create_calculation_node`` now produces a
+          `FormulaCalculationNode` directly, constructing a Python expression
+          from the provided inputs (or using an explicit *formula* keyword).
+
+    Internal lookup tables:
+        _calculation_methods: Legacy mapping from *calculation_type* keys to
+            class names kept solely for backward-compat serialisation. They no
+            longer need to exist in the runtime codebase.
         _node_type_registry: Mapping of node-type strings to concrete :class:`Node`
-            subclasses used when deserializing from dictionaries.
+            subclasses used when deserialising from dictionaries.
     """
 
-    # Mapping of calculation type strings to Calculation class names (keys in the Registry)
+    # Legacy mapping preserved for <-> YAML round-trips; the concrete classes
+    # no longer exist after removal of the old calculation registry but the string keys
+    # are still used in `CalculationNode.to_dict()` to label the operation.
     _calculation_methods: ClassVar[dict[str, str]] = {
         "addition": "AdditionCalculation",
         "subtraction": "SubtractionCalculation",
@@ -165,79 +177,76 @@ class NodeFactory:
             ...     calculation_type="subtraction"
             ... )
         """
-        # Validate inputs
+        # Refactored: build a FormulaCalculationNode directly – the legacy Calculation
+        # registry was removed.  Supported *calculation_type*s now map to simple Python
+        # expressions or to an explicit ``formula`` string supplied via **calculation_kwargs.
+
+        # ------------------------------------------------------------------
+        # Basic validation --------------------------------------------------
+        # ------------------------------------------------------------------
         if not name or not isinstance(name, str):
             raise ValueError("Node name must be a non-empty string")
-
         if not inputs:
             raise ValueError("Calculation node must have at least one input")
+        if not all(isinstance(n, Node) for n in inputs):
+            raise TypeError("All items in *inputs* must be Node instances")
 
-        # Check if the calculation type maps to a known calculation name
-        if calculation_type not in cls._calculation_methods:
-            valid_types = list(cls._calculation_methods.keys())
-            raise ValueError(
-                f"Invalid calculation type: '{calculation_type}'. Valid types are: {valid_types}"
-            )
+        calc_type = calculation_type.lower()
 
-        # Get the calculation name
-        calculation_name = cls._calculation_methods[calculation_type]
+        # Helper: build formula string from *inputs* -----------------------------------
+        def _expr_from_inputs(op: str) -> str:
+            return f" {op} ".join(node.name for node in inputs)
 
-        # For other types, resolve the Calculation class from the registry
-        try:
-            calculation_cls: type[Calculation] = Registry.get(calculation_name)
-        except KeyError:
-            # This should ideally not happen if _calculation_methods is synced with registry
-            raise ValueError(
-                f"Calculation class '{calculation_name}' (for type '{calculation_type}') not found in Registry."
-            ) from None  # Prevent chaining the KeyError
-
-        # Instantiate the calculation, passing any extra kwargs
-        try:
-            # Extract any metadata that should be stored on the node, not passed to calculation
-            node_kwargs = {}
-            if "metric_name" in calculation_kwargs:
-                node_kwargs["metric_name"] = calculation_kwargs.pop("metric_name")
-            if "metric_description" in calculation_kwargs:
-                node_kwargs["metric_description"] = calculation_kwargs.pop(
-                    "metric_description"
+        if calc_type in {"addition", "add"}:
+            formula_expr = _expr_from_inputs("+")
+        elif calc_type in {"subtraction", "subtract", "minus"}:
+            if len(inputs) != 2:
+                raise ValueError("subtraction requires exactly two inputs")
+            formula_expr = f"{inputs[0].name} - {inputs[1].name}"
+        elif calc_type in {"multiplication", "multiply"}:
+            formula_expr = _expr_from_inputs("*")
+        elif calc_type in {"division", "divide"}:
+            if len(inputs) != 2:
+                raise ValueError("division requires exactly two inputs")
+            formula_expr = f"{inputs[0].name} / {inputs[1].name}"
+        elif calc_type in {"formula", "custom_formula"}:
+            # Expect explicit formula text in kwargs
+            formula_expr = calculation_kwargs.pop("formula", None)
+            if formula_expr is None:
+                raise ValueError(
+                    "'formula' keyword argument required when calculation_type is 'formula'"
                 )
-
-            # Special handling for FormulaCalculation which needs input_variable_names
-            if calculation_type == "formula":
-                if formula_variable_names and len(formula_variable_names) == len(
-                    inputs
+            # Replace placeholders if variable names provided -----------------
+            if formula_variable_names:
+                for placeholder, node in zip(
+                    formula_variable_names, inputs, strict=False
                 ):
-                    calculation_kwargs["input_variable_names"] = formula_variable_names
-                elif not formula_variable_names:
-                    # Generate default names like var_0, var_1, ...
-                    calculation_kwargs["input_variable_names"] = [
-                        f"var_{i}" for i in range(len(inputs))
-                    ]
-                    logger.warning(
-                        f"No formula_variable_names provided for formula node '{name}'. Using defaults: {calculation_kwargs['input_variable_names']}"
-                    )
-                else:
-                    # Mismatch between provided names and number of inputs
-                    raise ConfigurationError(
-                        f"Mismatch between formula_variable_names ({len(formula_variable_names)}) and number of inputs ({len(inputs)}) for node '{name}'"
-                    )
-
-            calculation_instance = calculation_cls(**calculation_kwargs)
-        except TypeError as e:
-            logger.exception(
-                f"Failed to instantiate calculation '{calculation_name}' with kwargs {calculation_kwargs}"
+                    formula_expr = formula_expr.replace(placeholder, node.name)
+        else:
+            raise ValueError(
+                f"Unsupported calculation_type '{calculation_type}'. "
+                "Supported types: addition, subtraction, multiplication, division, formula."
             )
-            raise TypeError(
-                f"Could not instantiate calculation '{calculation_name}' for node '{name}'. "
-                f"Check required arguments for {calculation_cls.__name__}. Provided kwargs: {calculation_kwargs}"
-            ) from e
 
-        # Create and return a CalculationNode with the instantiated calculation
-        logger.debug(
-            f"Creating calculation node '{name}' with '{calculation_name}' calculation."
+        # ------------------------------------------------------------------
+        # Build mapping variable → Node instance ---------------------------
+        # ------------------------------------------------------------------
+        inputs_dict = {node.name: node for node in inputs}
+
+        # Extract optional metric metadata (pop to avoid passing to FCN) -----
+        metric_name = calculation_kwargs.pop("metric_name", None)
+        metric_description = calculation_kwargs.pop("metric_description", None)
+
+        # ------------------------------------------------------------------
+        # Return FormulaCalculationNode (subclass of CalculationNode) -------
+        # ------------------------------------------------------------------
+        return FormulaCalculationNode(
+            name,
+            inputs=inputs_dict,
+            formula=formula_expr,
+            metric_name=metric_name,
+            metric_description=metric_description,
         )
-
-        return CalculationNode(name, inputs, calculation_instance, **node_kwargs)
 
     @classmethod
     def create_forecast_node(

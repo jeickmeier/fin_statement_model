@@ -98,7 +98,6 @@ def _add_doctest_namespace(doctest_namespace):  # pylint: disable=unused-argumen
 # ---------------------------------------------------------------------------
 _HEAVY_PATTERNS: tuple[str, ...] = (
     "fin_statement_model/core/metrics/",
-    "fin_statement_model/core/calculations/",
     "fin_statement_model/preprocessing/",
     "fin_statement_model/forecasting/",
     "fin_statement_model/statements/",

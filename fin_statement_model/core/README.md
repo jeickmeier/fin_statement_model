@@ -13,7 +13,6 @@ registry, helpers, and utilities on which all other packages depend.  Nothing in
 |--------------------|----------------|
 | `graph/` | Directed-graph engine; building, traversing, validating, and mutating financial statement graphs. Exposes `Graph`, `GraphManipulator`, and `GraphTraverser`. |
 | `nodes/` | All node implementations.  Includes raw data nodes, calculation nodes, statistical nodes, forecast nodes, and helpers such as `is_calculation_node`. |
-| `calculations/` | Strategy objects that perform mathematical operations (addition, subtraction, formula evaluation, etc.) plus a global `Registry` for discovery. |
 | `metrics/` | YAML-driven metric system: definitions, registry, calculation helpers, and interpretation utilities. |
 | `adjustments/` | API for discretionary adjustments (adds, multipliers, replacements) used in scenario analysis; includes models, manager, analytics, and helpers. |
 | `node_factory.py` | Central factory for creating node instances programmatically or from dictionaries. |
@@ -62,8 +61,9 @@ This short script shows how the *core* APIs mesh together:
 
 1.   **Graph** orchestrates everything and caches results.
 2.   **FinancialStatementItemNode** instances store the raw data.
-3.   **CalculationNode** (created via `add_calculation`) delegates math to a
-     strategy class registered in `core.calculations`.
+3.   **CalculationNode** (created via `add_calculation`) is usually a
+     `FormulaCalculationNode` generated on-the-fly – no external registry is
+     required anymore.
 4.   **Metric nodes** build on the same mechanism but pull formulas from the
      YAML-based metric registry.
 5.   The graph can be extended further with forecasts, statistical nodes, and
