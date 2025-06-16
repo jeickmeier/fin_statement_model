@@ -24,9 +24,10 @@ from types import ModuleType
 from typing import TYPE_CHECKING, Any, Mapping
 
 if TYPE_CHECKING:  # pragma: no cover – static-type-checking only
+    from fin_statement_model.core.time.period import Period, PeriodIndex
+
     from .adjustment import Adjustment
     from .node import Node, NodeKind, parse_inputs
-    from .period import Period, PeriodIndex
 else:
 
     def __getattr__(name: str) -> Any:
@@ -34,9 +35,17 @@ else:
             module_name = (
                 "node"
                 if name in {"Node", "NodeKind", "parse_inputs"}
-                else "period" if name in {"Period", "PeriodIndex"} else "adjustment"
+                else (
+                    "fin_statement_model.core.time.period"
+                    if name in {"Period", "PeriodIndex"}
+                    else "adjustment"
+                )
             )
-            module: ModuleType = import_module(f"{__name__}.{module_name}")
+            # For Period helpers we import from the canonical core.time.period module.
+            if module_name.startswith("fin_statement_model"):
+                module: ModuleType = import_module(module_name)
+            else:
+                module: ModuleType = import_module(f"{__name__}.{module_name}")
             return getattr(module, name)
         raise AttributeError(name)
 

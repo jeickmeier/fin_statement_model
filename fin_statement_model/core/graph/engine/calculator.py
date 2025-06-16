@@ -12,8 +12,9 @@ import ast
 from time import perf_counter_ns
 from typing import Dict, Iterable, Mapping, Tuple
 
-from fin_statement_model.core.graph.domain import NodeKind, Period
+from fin_statement_model.core.graph.domain import NodeKind
 from fin_statement_model.core.graph.engine.state import GraphState
+from fin_statement_model.core.time.period import Period
 
 __all__: list[str] = ["CalculationEngine"]
 

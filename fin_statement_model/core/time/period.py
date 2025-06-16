@@ -3,11 +3,11 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from functools import total_ordering
-from typing import Optional
+from typing import Any, Iterable, Iterator, Optional, Sequence, overload
 
 from fin_statement_model.core.errors import PeriodError
 
-__all__: list[str] = ["Period"]
+__all__: list[str] = ["Period", "PeriodIndex"]
 
 
 @total_ordering
@@ -99,9 +99,6 @@ class Period:  # pylint: disable=too-many-instance-attributes
             return NotImplemented
         return self._order_key < other._order_key
 
-    def __hash__(self) -> int:
-        return hash((self.year, self.quarter, self.month))
-
     # ------------------------------------------------------------------
     # Convenience properties -------------------------------------------
     # ------------------------------------------------------------------
@@ -140,3 +137,92 @@ class Period:  # pylint: disable=too-many-instance-attributes
         else:
             month_idx = 13  # year-level – place after Q4/Dec of the same year
         return (self.year, month_idx)
+
+
+# ---------------------------------------------------------------------------
+# PeriodIndex (mutable during build – frozen snapshot after .freeze())
+# ---------------------------------------------------------------------------
+
+
+class PeriodIndex(Sequence["Period"]):
+    """An *ordered*, *unique* collection of :class:`Period` objects.
+
+    The container is **mutable** until :pyfunc:`freeze` is called, after which
+    any further mutation attempts raise :class:`RuntimeError`.  The design is a
+    very light-weight substitute for pandas' ``PeriodIndex`` without the heavy
+    dependency.
+    """
+
+    __slots__ = ("_items", "_frozen")
+
+    def __init__(self, items: Iterable["Period"] | None = None) -> None:
+        self._items: list[Period] = []
+        self._frozen: bool = False
+        if items is not None:
+            self.extend(items)
+
+    # ------------------------------------------------------------------
+    # Mutation helpers (guarded by *frozen* flag)
+    # ------------------------------------------------------------------
+    def add(self, period: "Period") -> None:
+        """Add *period* preserving chronological order and uniqueness."""
+        self._ensure_not_frozen()
+        if period not in self._items:
+            self._items.append(period)
+            self._items.sort()
+
+    def extend(self, periods: Iterable["Period"]) -> None:
+        """Add multiple periods in one go (duplicates ignored)."""
+        for p in periods:
+            self.add(p)
+
+    def clone(self) -> "PeriodIndex":
+        """Return a *mutable copy* of this index (preserves frozen flag)."""
+        copy = PeriodIndex(self._items)
+        copy._frozen = self._frozen
+        return copy
+
+    # Finalise ----------------------------------------------------------
+    def freeze(self) -> "PeriodIndex":
+        """Return an *immutable* snapshot of the current index."""
+        frozen_copy = PeriodIndex(self._items)
+        frozen_copy._frozen = True
+        return frozen_copy
+
+    # ------------------------------------------------------------------
+    # Sequence Protocol – delegate to underlying list (read-only)
+    # ------------------------------------------------------------------
+    def __len__(self) -> int:
+        return len(self._items)
+
+    def __iter__(self) -> Iterator["Period"]:
+        return iter(self._items)
+
+    # Overloads for type safety ------------------------------------------------
+    @overload
+    def __getitem__(self, idx: int) -> "Period": ...
+
+    @overload
+    def __getitem__(self, idx: slice) -> Sequence["Period"]: ...
+
+    def __getitem__(self, idx: Any) -> Any:
+        """Return a single :class:`Period` or a slice of them."""
+
+        return self._items[idx]
+
+    def __contains__(self, item: object) -> bool:
+        return item in self._items
+
+    def __repr__(self) -> str:
+        return (
+            f"PeriodIndex({[str(p) for p in self._items]}){'*' if self._frozen else ''}"
+        )
+
+    # ------------------------------------------------------------------
+    # Internal helpers --------------------------------------------------
+    # ------------------------------------------------------------------
+    def _ensure_not_frozen(self) -> None:
+        if self._frozen:
+            raise RuntimeError(
+                "Cannot mutate frozen PeriodIndex – create a clone() first."
+            )

@@ -9,7 +9,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Mapping, Tuple
 
-from fin_statement_model.core.graph.domain import Node, PeriodIndex
+from fin_statement_model.core.graph.domain import Node
+from fin_statement_model.core.time.period import PeriodIndex
 
 __all__: list[str] = ["GraphState"]
 

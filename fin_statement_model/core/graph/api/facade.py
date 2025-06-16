@@ -10,7 +10,6 @@ from __future__ import annotations
 
 from typing import Any, Iterable
 
-from fin_statement_model.core.graph.domain import Period
 from fin_statement_model.core.graph.engine.inspect import (
     breadth_first,
 )
@@ -27,6 +26,7 @@ from fin_statement_model.core.graph.engine.inspect import (
     successors as _succ,
 )
 from fin_statement_model.core.graph.impl.graph import Graph as _GraphImpl
+from fin_statement_model.core.time.period import Period
 
 __all__: list[str] = ["GraphFacade"]
 

@@ -11,11 +11,10 @@ from typing import TYPE_CHECKING, Dict, Iterable, Mapping
 from fin_statement_model.core.graph.domain import (
     Node,
     NodeKind,
-    Period,
-    PeriodIndex,
     parse_inputs,
 )
 from fin_statement_model.core.graph.engine.topology import toposort
+from fin_statement_model.core.time.period import Period, PeriodIndex
 
 if TYPE_CHECKING:  # pragma: no cover
     from .state import GraphState

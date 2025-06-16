@@ -14,7 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Mapping, Optional, cast
 
-from fin_statement_model.core.graph.domain import Adjustment, Period
+from fin_statement_model.core.graph.domain import Adjustment
 from fin_statement_model.core.graph.engine import (
     CalculationEngine,
     GraphBuilder,
@@ -23,6 +23,7 @@ from fin_statement_model.core.graph.engine import (
 from fin_statement_model.core.graph.services.adjustments import AdjustmentService
 from fin_statement_model.core.graph.services.metrics import MetricService
 from fin_statement_model.core.graph.services.periods import PeriodService
+from fin_statement_model.core.time.period import Period
 
 __all__: list[str] = ["Graph"]
 

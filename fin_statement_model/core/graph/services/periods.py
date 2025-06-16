@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Iterable, List
 
-from fin_statement_model.core.graph.domain import Period, PeriodIndex
+from fin_statement_model.core.time.period import Period, PeriodIndex
 
 __all__: list[str] = ["PeriodService"]
 
