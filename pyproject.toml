@@ -107,6 +107,7 @@ ignore = [
     "ERA001", # Allow commented out code
     "TRY300", # Allow try-except without message
     "T201",   # Print statement - sometimes necessary
+    "D401",   # Allow interpretive mood
 ]
 
 # Configuration for pydocstyle (D rules)
