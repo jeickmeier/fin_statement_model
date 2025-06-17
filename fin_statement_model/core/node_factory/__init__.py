@@ -14,11 +14,20 @@ import logging
 from fin_statement_model.core.node_factory import builders as _builders
 from fin_statement_model.core.node_factory import deserialisers as _deser
 from fin_statement_model.core.node_factory import custom_helpers as _custom
-from fin_statement_model.core.node_factory.registries import CalculationAliasRegistry
+from fin_statement_model.core.node_factory.registries import (
+    CalculationAliasRegistry,
+    NodeTypeRegistry,
+    ForecastTypeRegistry,
+)
 
 logger = logging.getLogger(__name__)
 
-__all__: list[str] = ["NodeFactory"]
+__all__: list[str] = [
+    "NodeFactory",
+    "CalculationAliasRegistry",
+    "NodeTypeRegistry",
+    "ForecastTypeRegistry",
+]
 
 
 class NodeFactory:  # pylint: disable=too-few-public-methods
