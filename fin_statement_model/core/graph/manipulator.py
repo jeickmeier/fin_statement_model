@@ -205,7 +205,7 @@ class GraphManipulator:
         Examples:
             >>> manipulator.set_value("Revenue", "2023", 1100.0)
         """
-        if period not in self.graph._periods:
+        if period not in self.graph.periods:
             raise ValueError(f"Period '{period}' not in graph periods")
         nd = self.get_node(node_id)
         if not nd:
@@ -215,6 +215,7 @@ class GraphManipulator:
                 f"Node '{node_id}' of type {type(nd).__name__} does not support set_value."
             )
         nd.set_value(period, value)
+        # Clear all caches (node-level and central) after mutation.
         self.graph.clear_all_caches()
 
     def clear_all_caches(self) -> None:

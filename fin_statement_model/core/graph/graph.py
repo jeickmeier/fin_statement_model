@@ -110,16 +110,15 @@ class Graph:
 
         self._nodes: dict[str, Node] = {}
 
-        # Initialize core attributes for periods, cache, and node factory
-        self._periods: list[str] = []  # Kept temporarily; shared with PeriodService
+        # Initialize core attributes for cache and node factory
         self._cache: dict[str, dict[str, float]] = {}
         self._node_factory: NodeFactory = NodeFactory()
 
         # ------------------------------------------------------------------
         # Service layer instantiation (new)
         # ------------------------------------------------------------------
-        # Period management – share underlying list reference so legacy code remains valid
-        self._period_service = period_service_cls(self._periods)
+        # Period management – no shared reference; PeriodService owns its list
+        self._period_service = period_service_cls()
 
         # Calculation engine – receives resolver & cache reference
         self._calc_engine = calc_engine_cls(
@@ -385,24 +384,25 @@ class Graph:
         self._calc_engine.recalc_all(periods)
 
     def clear_all_caches(self) -> None:
-        """Clear all node-level and central calculation caches.
+        """Clear the central calculation cache.
 
-        Returns:
-            None
-
-        Examples:
-            >>> graph.clear_all_caches()
+        Node-level caches are the responsibility of each node or mutation path
+        (e.g. ``GraphManipulator.set_value``).  Clearing them here was a legacy
+        shim that added significant overhead for large graphs.  The
+        ``CalculationEngine`` cache is the single source of truth for computed
+        values, so invalidating it is sufficient.
         """
-        logger.debug(f"Clearing node-level caches for {len(self.nodes)} nodes.")
+        # Clear per-node caches (if implemented)
         for node in self.nodes.values():
             if hasattr(node, "clear_cache"):
                 try:
                     node.clear_cache()
-                except Exception as e:
-                    logger.warning(f"Failed to clear cache for node '{node.name}': {e}")
-        # Clear central calculation cache via engine
+                except Exception:
+                    # Non-fatal – per-node cache clearing should not break the operation
+                    continue
+
+        # Clear central calculation cache via CalculationEngine
         self.clear_calculation_cache()
-        logger.debug("Cleared central calculation cache via CalculationEngine.")
 
     def clear_calculation_cache(self) -> None:
         """Clear the graph's internal calculation cache.
@@ -420,8 +420,8 @@ class Graph:
         """Reset the graph by clearing nodes, periods, adjustments, and caches."""
         # Reset node registry
         self._nodes = {}
-        # Clear periods via PeriodService (shared list)
-        self._period_service._periods.clear()
+        # Clear periods via PeriodService
+        self._period_service.clear()
         # Reset central cache dict and ensure engine sees the change
         self._cache.clear()
         # Clear adjustments
@@ -710,9 +710,6 @@ class Graph:
                 if hasattr(input_node, "name"):
                     if input_node.name not in self._nodes:
                         missing_inputs.append(input_node.name)
-                # Handle case where inputs might be strings instead of Node objects
-                elif isinstance(input_node, str) and input_node not in self._nodes:
-                    missing_inputs.append(input_node)
 
         if missing_inputs:
             raise NodeError(

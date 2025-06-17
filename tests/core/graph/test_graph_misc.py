@@ -17,15 +17,16 @@ from fin_statement_model.core.errors import NodeError
 # ---------------------------------------------------------------------------
 
 
-def test_period_service_reference_mutation() -> None:
-    periods = ["a", "c"]
-    ps = PeriodService(periods)
-    # Add missing period 'b', in-place mutation
-    ps.add_periods(["b"])
-    assert periods == ["a", "b", "c"]
-    # Adding duplicate or unsorted periods
-    ps.add_periods(["c", "d"])
-    assert periods == ["a", "b", "c", "d"]
+def test_period_service_basic_add_and_clear() -> None:
+    ps = PeriodService()
+    # Add unsorted & duplicate periods – service should deduplicate + sort
+    ps.add_periods(["c", "a", "b", "a"])
+    assert ps.periods == ["a", "b", "c"]
+    # contains helper
+    assert ps.contains("b") and not ps.contains("z")
+    # Clear resets periods list
+    ps.clear()
+    assert ps.periods == []
 
 
 # ---------------------------------------------------------------------------

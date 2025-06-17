@@ -14,12 +14,16 @@ __all__: list[str] = ["PeriodService"]
 
 
 class PeriodService:  # pylint: disable=too-few-public-methods
-    """Encapsulate period management helpers."""
+    """Encapsulate period management helpers.
 
-    def __init__(self, periods: list[str] | None = None) -> None:  # noqa: D401
-        # If an existing list is provided we keep a direct reference so that
-        # legacy code paths (still touching ``Graph._periods``) stay in sync.
-        self._periods: list[str] = periods if periods is not None else []
+    The service now owns its internal list of period identifiers.  Call-sites
+    should interact exclusively via the public API – direct mutation of the
+    underlying list is no longer supported (removed legacy shim).
+    """
+
+    def __init__(self) -> None:  # noqa: D401
+        # Internal, sorted list of unique period identifiers.
+        self._periods: list[str] = []
 
     # ------------------------------------------------------------------
     # Public API --------------------------------------------------------
@@ -39,3 +43,14 @@ class PeriodService:  # pylint: disable=too-few-public-methods
         # Mutate in place to keep external references alive
         self._periods.clear()
         self._periods.extend(sorted_periods)
+
+    # ------------------------------------------------------------------
+    # Convenience helpers ------------------------------------------------
+    # ------------------------------------------------------------------
+    def contains(self, period: str) -> bool:  # noqa: D401
+        """Return ``True`` if *period* is already registered."""
+        return period in self._periods
+
+    def clear(self) -> None:  # noqa: D401
+        """Remove all registered periods."""
+        self._periods.clear()
