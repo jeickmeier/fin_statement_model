@@ -1,7 +1,15 @@
 """Custom helper utilities for the modular NodeFactory.
 
-Currently houses ``_create_custom_node_from_callable`` which wraps a Python
-callable in a :class:`~fin_statement_model.core.nodes.CustomCalculationNode`.
+This module provides helpers for wrapping Python callables as custom calculation nodes.
+
+Example:
+    >>> from fin_statement_model.core.node_factory.custom_helpers import _create_custom_node_from_callable
+    >>> def my_formula(a, b):
+    ...     return a + b
+    >>> # Assume n1, n2 are Node instances
+    >>> node = _create_custom_node_from_callable(name='CustomSum', inputs=[n1, n2], formula=my_formula)
+    >>> node.name
+    'CustomSum'
 """
 
 from __future__ import annotations
@@ -22,11 +30,29 @@ def _create_custom_node_from_callable(
     formula: Callable[..., float],
     description: str | None = None,
 ) -> CustomCalculationNode:
-    """Wrap a *formula* callable in a :class:`CustomCalculationNode`.
+    """Wrap a formula callable in a CustomCalculationNode.
 
-    This helper merely validates inputs and delegates to the node constructor –
-    it exists so that higher-level code (e.g., :class:`CalculationEngine`) can
-    stay agnostic of the concrete node class.
+    Args:
+        name: Name of the custom calculation node.
+        inputs: List of input Node instances.
+        formula: Callable that implements the calculation logic.
+        description: Optional description for the node.
+
+    Returns:
+        CustomCalculationNode: The resulting node wrapping the formula.
+
+    Raises:
+        TypeError: If formula is not callable or inputs are not Node instances.
+        CalculationError: If node creation fails.
+
+    Example:
+        >>> from fin_statement_model.core.node_factory.custom_helpers import _create_custom_node_from_callable
+        >>> def my_formula(a, b):
+        ...     return a + b
+        >>> # Assume n1, n2 are Node instances
+        >>> node = _create_custom_node_from_callable(name='CustomSum', inputs=[n1, n2], formula=my_formula)
+        >>> node.name
+        'CustomSum'
     """
 
     # Basic validation ----------------------------------------------------

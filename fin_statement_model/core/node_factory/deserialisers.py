@@ -1,10 +1,14 @@
-"""Deserialisation helper for modular :pymod:`core.node_factory`.
+"""Deserialisation helpers for modular fin_statement_model.core.node_factory.
 
-`create_from_dict` rebuilds a :class:`~fin_statement_model.core.nodes.base.Node`
-instance from its serialised representation (typically produced by
-``node.to_dict()``).  The logic is registry-driven and open for extension – no
-hard-coded `if/elif` chains are required for core node types that register
-themselves via the decorators in :pymod:`fin_statement_model.core.node_factory.registries`.
+This module provides create_from_dict, which reconstructs Node instances from their serialized dictionary
+representation. The logic is registry-driven and extensible.
+
+Example:
+    >>> from fin_statement_model.core.node_factory.deserialisers import create_from_dict
+    >>> # Assume dct is a valid node dict and ctx is a context dict
+    >>> node = create_from_dict(dct, ctx)
+    >>> node.name
+    dct['name']
 """
 
 from __future__ import annotations
@@ -56,18 +60,26 @@ def create_from_dict(
     *,
     context: Dict[str, Node] | None = None,
 ) -> Node:
-    """Rebuild a Node from its serialised *data*.
+    """Rebuild a Node from its serialised data.
 
     Args:
-        data: Mapping produced by ``Node.to_dict()``.
+        data: Mapping produced by Node.to_dict().
         ctx: Existing nodes (name ➜ Node) used to resolve dependencies.
         context: Alternative keyword for backward-compatibility.
 
     Returns:
-        A live :class:`~fin_statement_model.core.nodes.base.Node` instance.
+        Node: A live Node instance reconstructed from the dictionary.
 
     Raises:
+        TypeError: If data is not a dict.
         ConfigurationError: If the payload is invalid or type look-up fails.
+
+    Example:
+        >>> from fin_statement_model.core.node_factory.deserialisers import create_from_dict
+        >>> # Assume dct is a valid node dict and ctx is a context dict
+        >>> node = create_from_dict(dct, ctx)
+        >>> node.name
+        dct['name']
     """
 
     # Support alternative keyword ``context`` for backward-compat

@@ -1,10 +1,15 @@
-"""Builder helpers for the modular :pymod:`core.node_factory`.
+"""
+Builder helpers for the modular fin_statement_model.core.node_factory.
 
-These functions are thin wrappers that look up the concrete classes via the
-registries defined in :pymod:`fin_statement_model.core.node_factory.registries`
-and instantiate them.  They intentionally avoid eager imports so that importing
-``fin_statement_model.core`` remains lightweight – heavy modules are only
-loaded when the builders are *actually called*.
+These functions provide registry-driven instantiation of node types, calculation nodes, and forecast nodes.
+They avoid eager imports to keep the core module lightweight. All builders validate input and raise
+ConfigurationError on failure.
+
+Examples:
+    >>> from fin_statement_model.core.node_factory.builders import create_financial_statement_item
+    >>> node = create_financial_statement_item('Revenue', {'2022': 100.0, '2023': 120.0})
+    >>> node.name
+    'Revenue'
 """
 
 from __future__ import annotations
@@ -62,10 +67,20 @@ def _ensure_node_instance(node_obj: Any) -> None:  # noqa: D401
 
 
 def create_financial_statement_item(name: str, values: Dict[str, float]) -> "Node":
-    """Instantiate a :class:`FinancialStatementItemNode` via the registry.
+    """Instantiate a FinancialStatementItemNode via the registry.
 
-    Provided for symmetry; callers *could* import the class directly but using
-    this helper makes future customisation (e.g., subclassing) transparent.
+    Args:
+        name: The name of the financial statement item (e.g., 'Revenue').
+        values: A dictionary mapping period strings to float values.
+
+    Returns:
+        Node: An instance of FinancialStatementItemNode.
+
+    Example:
+        >>> from fin_statement_model.core.node_factory.builders import create_financial_statement_item
+        >>> node = create_financial_statement_item('Revenue', {'2022': 100.0})
+        >>> node.name
+        'Revenue'
     """
 
     try:
@@ -84,15 +99,32 @@ def create_financial_statement_item(name: str, values: Dict[str, float]) -> "Nod
 def create_calculation_node(
     *,
     name: str,
-    inputs: List["Node"],  # forward ref
+    inputs: List["Node"],
     calculation_type: str,
     formula_variable_names: List[str] | None = None,
     **calculation_kwargs: Any,
 ) -> "Node":
     """Create a generic calculation node using alias lookup.
 
-    ``calculation_type`` corresponds to the *alias* used in Graph APIs
-    ("addition", "subtraction", "formula", …).
+    Args:
+        name: The name of the calculation node.
+        inputs: List of input Node instances.
+        calculation_type: Alias for the calculation type (e.g., 'addition', 'formula').
+        formula_variable_names: Optional list of variable names for formula calculations.
+        **calculation_kwargs: Additional keyword arguments for calculation or node attributes.
+
+    Returns:
+        Node: An instance of CalculationNode with the specified calculation logic.
+
+    Raises:
+        ConfigurationError: If the calculation_type is unknown or inputs are invalid.
+
+    Example:
+        >>> from fin_statement_model.core.node_factory.builders import create_calculation_node
+        >>> # Assume n1, n2 are Node instances
+        >>> node = create_calculation_node(name='GrossProfit', inputs=[n1, n2], calculation_type='addition')
+        >>> node.name
+        'GrossProfit'
     """
 
     # Lazy import to avoid heavy dependency when this builder is unused
@@ -131,22 +163,41 @@ def create_calculation_node(
 
 def create_forecast_node(
     *,
-    # New modular signature ------------------------------------------------
     forecast_type: str | None = None,
     input_node: "Node" | None = None,
     base_period: str | None = None,
     forecast_periods: List[str] | None = None,
     growth_params: Any = None,
-    # Legacy/alternative keywords -----------------------------------------
-    name: str | None = None,  # ignored but accepted for API stability
-    base_node: "Node" | None = None,  # alias for input_node
-    forecast_config: Any | None = None,  # not yet supported, will raise
+    name: str | None = None,
+    base_node: "Node" | None = None,
+    forecast_config: Any | None = None,
     **_extra: Any,
 ) -> "Node":
-    """Instantiate a forecast node using *forecast_type* registry lookup.
+    """Instantiate a forecast node using forecast_type registry lookup.
 
-    Accepts both the new modular signature and the legacy signature used by
-    ``forecasting.Forecaster`` for backward compatibility.
+    Args:
+        forecast_type: The type of forecast node to create (e.g., 'simple', 'curve').
+        input_node: The input Node to forecast (or use base_node for legacy).
+        base_period: The base period string (e.g., '2022').
+        forecast_periods: List of periods to forecast.
+        growth_params: Parameters for the forecast method.
+        name: (Legacy) Name of the node (ignored).
+        base_node: (Legacy) Alias for input_node.
+        forecast_config: (Not supported yet).
+        **_extra: Additional keyword arguments (ignored).
+
+    Returns:
+        Node: An instance of the appropriate ForecastNode subclass.
+
+    Raises:
+        ConfigurationError: If required parameters are missing or instantiation fails.
+
+    Example:
+        >>> from fin_statement_model.core.node_factory.builders import create_forecast_node
+        >>> # Assume n1 is a Node instance
+        >>> node = create_forecast_node(forecast_type='simple', input_node=n1, base_period='2022', forecast_periods=['2023', '2024'])
+        >>> node.name
+        n1.name  # Typically inherits from input_node
     """
 
     # Map legacy parameters -------------------------------------------------

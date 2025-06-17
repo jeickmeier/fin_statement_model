@@ -1,10 +1,16 @@
 """
-Modular NodeFactory façade – public entry-point used by *core*.
+NodeFactory façade for fin_statement_model.core.
 
-This file re-exports :class:`NodeFactory` that composes thin builder/
-serialiser helpers from the internal sub-modules.  Down-stream code imports
-``NodeFactory`` from ``fin_statement_model.core`` or
-``fin_statement_model.core.node_factory`` and remains unaffected.
+This module provides the public entry-point for node creation, deserialization, and custom node helpers.
+It re-exports the NodeFactory class, which statically aggregates builder, deserializer, and helper functions
+from internal submodules. Downstream code should import NodeFactory from this module or from
+fin_statement_model.core directly.
+
+Example:
+    >>> from fin_statement_model.core.node_factory import NodeFactory
+    >>> node = NodeFactory.create_financial_statement_item('Revenue', {'2022': 100.0, '2023': 120.0})
+    >>> node
+    <FinancialStatementItemNode name='Revenue'>
 """
 
 from __future__ import annotations
@@ -31,13 +37,20 @@ __all__: list[str] = [
 
 
 class NodeFactory:  # pylint: disable=too-few-public-methods
-    """Public aggregation of builder + helper functions.
+    """Static aggregation of builder, deserializer, and helper functions for node creation.
 
-    The class is intentionally *static* – all methods are simple pass-throughs
-    to the underlying functional helpers.  Using `staticmethod` avoids the need
-    to instantiate the factory, preserving backward-compatibility with legacy
-    code that treated it as a *service object* (i.e., via ``self._node_factory``)
-    but also allows direct functional use.
+    This class exposes static methods for creating financial statement items, calculation nodes, forecast nodes,
+    and for deserializing nodes from dictionaries. It also provides access to custom node creation helpers and
+    legacy calculation method mappings.
+
+    All methods are static and simply delegate to the underlying functional helpers. This allows both service-object
+    and functional usage patterns.
+
+    Example:
+        >>> from fin_statement_model.core.node_factory import NodeFactory
+        >>> node = NodeFactory.create_financial_statement_item('COGS', {'2022': 50.0})
+        >>> node
+        <FinancialStatementItemNode name='COGS'>
     """
 
     # ------------------------------------------------------------------

@@ -1,43 +1,30 @@
-"""Foundation of *fin_statement_model* — graph engine, nodes, calculations & more.
+"""Foundation of *fin_statement_model* — graph engine, nodes, calculations, and more.
 
-The **core** package is intentionally self-contained (nothing here imports from
-`statements/`, `io/`, or `extensions/`).  It provides the primitives that
-higher-level layers build upon.
+The **core** package is the foundational layer of the fin_statement_model library. It is intentionally self-contained (nothing here imports from `statements/`, `io/`, or `extensions/`). It provides the primitives that higher-level layers build upon, including the graph engine, node hierarchy, calculation strategies, metric registry, and core utilities.
 
-Sub-packages / key modules:
-
-* `graph/` – directed-graph data structure (`Graph`, `GraphManipulator`, `GraphTraverser`).
-* `nodes/` – raw data, calculation, statistical and forecast nodes plus helpers.
-* `calculations/` – strategy objects implementing arithmetic and formula logic, with a global `Registry`.
-* `metrics/` – YAML-driven metric definitions, registry and interpretation helpers.
-* `adjustments/` – models and manager for discretionary adjustments & scenario analysis.
-* `node_factory.py` – convenience factory for programmatic or YAML-based node creation.
-* `errors.py` – unified exception hierarchy rooted at `FinancialModelError`.
+Main Features:
+    - Directed graph data structure for financial modeling (`Graph`, `GraphManipulator`, `GraphTraverser`).
+    - Node system for representing raw data, calculations, statistics, and forecasts.
+    - Calculation strategies and a global registry for arithmetic and formula logic.
+    - YAML-driven metric definitions and interpretation helpers.
+    - Models and managers for discretionary adjustments and scenario analysis.
+    - Factory utilities for programmatic or YAML-based node creation.
+    - Unified exception hierarchy rooted at `FinancialModelError`.
 
 Example:
+    >>> from fin_statement_model.core import Graph
+    >>> g = Graph(periods=["2023", "2024"])
+    >>> _ = g.add_financial_statement_item("Revenue", {"2023": 1000, "2024": 1200})
+    >>> _ = g.add_financial_statement_item("COGS", {"2023": 600, "2024": 720})
+    >>> g.add_calculation(
+    ...     name="GrossProfit",
+    ...     input_names=["Revenue", "COGS"],
+    ...     operation_type="subtraction",
+    ... )
+    >>> g.calculate("GrossProfit", "2024")
+    480.0
 
-```python
-from fin_statement_model.core import Graph
-
-# Build a simple two-period graph
-g = Graph(periods=["2023", "2024"])
-_ = g.add_financial_statement_item("Revenue", {"2023": 1_000, "2024": 1_200})
-_ = g.add_financial_statement_item("COGS",    {"2023":   600, "2024":   720})
-
-# Add a calculation node: gross profit = revenue − COGS
-g.add_calculation(
-    name="GrossProfit",
-    input_names=["Revenue", "COGS"],
-    operation_type="subtraction",
-)
-
-# Fetch a built-in metric (requires additional inputs to be present)
-# g.add_metric("current_ratio")
-
-print(g.calculate("GrossProfit", "2024"))  # -> 480.0
-```
-
-Refer to `core/README.md` for a deeper dive into each component.
+For a deeper dive into each component, advanced features, and extensibility, see `core/README.md`.
 """
 
 from .node_factory import NodeFactory
