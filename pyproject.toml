@@ -25,6 +25,7 @@ dependencies = [
     "nox>=2025.5.1",
     "simpleeval>=1.0.3",
     "pytest-doctestplus>=1.4.0",
+    "deepmerge>=2.0",
 ]
 
 [dependency-groups]
