@@ -1,4 +1,19 @@
-"""Analytics functions for summarizing and analyzing adjustments."""
+"""Analytics functions for summarizing and analyzing adjustments.
+
+This module provides utilities for generating summaries and filtered lists of adjustments
+from an AdjustmentManager. It is useful for reporting, diagnostics, and exploratory analysis
+of adjustment data in financial models.
+
+Examples:
+    >>> from fin_statement_model.core.adjustments.manager import AdjustmentManager
+    >>> from fin_statement_model.core.adjustments.analytics import summary, list_by_tag
+    >>> mgr = AdjustmentManager()
+    >>> # ... add adjustments to mgr ...
+    >>> df = summary(mgr)
+    >>> print(df.head())
+    >>> adj_list = list_by_tag(mgr, "Scenario/Upside")
+    >>> print(len(adj_list))
+"""
 
 import logging
 from typing import Optional, Union
@@ -23,12 +38,7 @@ def _filter_adjustments_static(
         Union[AdjustmentFilter, set[AdjustmentTag], Callable[[Adjustment], bool]]
     ],
 ) -> list[Adjustment]:
-    """Apply filtering to adjustments based on filter_input, excluding period context.
-
-    This helper function centralizes the common filtering logic used by both
-    summary() and list_by_tag() methods. It applies filters based on the static
-    properties of adjustments (tags, scenario, type, etc.) but ignores any
-    period-based filtering since that requires runtime context.
+    """Filter adjustments based on static (non-period) criteria.
 
     Args:
         all_adjustments: List of all adjustments to filter.
@@ -36,6 +46,12 @@ def _filter_adjustments_static(
 
     Returns:
         Filtered list of adjustments matching the filter criteria.
+
+    Examples:
+        >>> from fin_statement_model.core.adjustments.models import Adjustment, AdjustmentType
+        >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r')
+        >>> _filter_adjustments_static([adj], None)
+        [adj]
     """
     if filter_input is None:
         # No filter means include all adjustments
@@ -86,19 +102,23 @@ def summary(
     Args:
         manager: The AdjustmentManager instance containing the adjustments.
         filter_input: Optional filter criteria (AdjustmentFilter, set of tags, callable, or None)
-                      to apply before summarizing.
+            to apply before summarizing.
         group_by: List of Adjustment attributes to group the summary by.
-                  Defaults to ["period", "node_name"]. Valid fields include
-                  'period', 'node_name', 'scenario', 'type', 'user'.
+            Defaults to ["period", "node_name"]. Valid fields include
+            'period', 'node_name', 'scenario', 'type', 'user'.
 
     Returns:
         A pandas DataFrame with the summary statistics (count, sum, mean_abs_value)
         indexed by the specified group_by columns.
 
     Examples:
-        >>> manager = AdjustmentManager()
-        >>> df = summary(manager)
-        >>> df.index.names == ["period", "node_name"]
+        >>> from fin_statement_model.core.adjustments.manager import AdjustmentManager
+        >>> from fin_statement_model.core.adjustments.models import Adjustment
+        >>> mgr = AdjustmentManager()
+        >>> adj = Adjustment(node_name='A', period='2023', value=2.0, reason='r')
+        >>> mgr.add_adjustment(adj)
+        >>> df = summary(mgr)
+        >>> df.loc[('2023', 'A'), 'sum_value'] == 2.0
         True
     """
     logger.debug(f"Generating adjustment summary, grouping by: {group_by}")
@@ -159,16 +179,20 @@ def list_by_tag(
         manager: The AdjustmentManager instance containing the adjustments.
         tag_prefix: The tag prefix string to match (e.g., "NonRecurring").
         filter_input: Optional additional filter criteria (AdjustmentFilter, set of tags,
-                      callable, or None).
+            callable, or None).
 
     Returns:
         A list of Adjustment objects that have at least one tag starting with
         the tag_prefix and also match the optional filter_input.
 
     Examples:
-        >>> manager = AdjustmentManager()
-        >>> adjustments = list_by_tag(manager, "NonRecurring")
-        >>> all("NonRecurring" in tag for adj in adjustments for tag in adj.tags)
+        >>> from fin_statement_model.core.adjustments.manager import AdjustmentManager
+        >>> from fin_statement_model.core.adjustments.models import Adjustment
+        >>> mgr = AdjustmentManager()
+        >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r', tags={'X'})
+        >>> mgr.add_adjustment(adj)
+        >>> result = list_by_tag(mgr, 'X')
+        >>> result[0].node_name == 'A'
         True
     """
     logger.debug(f"Listing adjustments by tag prefix: '{tag_prefix}'")

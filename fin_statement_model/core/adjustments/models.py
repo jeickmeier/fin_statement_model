@@ -1,7 +1,14 @@
 """Define core adjustment data models and related types.
 
 This module provides the Adjustment and AdjustmentFilter Pydantic models,
-as well as related constants and enums.
+as well as related constants and enums for representing and filtering
+adjustments in financial statement models.
+
+Examples:
+    >>> from fin_statement_model.core.adjustments.models import Adjustment, AdjustmentType
+    >>> adj = Adjustment(node_name='Revenue', period='2023-01', value=100.0, reason='Manual update')
+    >>> adj.type == AdjustmentType.ADDITIVE
+    True
 """
 
 from __future__ import annotations
@@ -25,11 +32,20 @@ logger = logging.getLogger(__name__)
 
 
 class AdjustmentType(Enum):
-    """Defines how an adjustment modifies a base value."""
+    """Defines how an adjustment modifies a base value.
 
-    ADDITIVE = "additive"  # base + (value * scale)
-    MULTIPLICATIVE = "multiplicative"  # base * (value ** scale)
-    REPLACEMENT = "replacement"  # use value (scale ignored)
+    ADDITIVE: base + (value * scale)
+    MULTIPLICATIVE: base * (value ** scale)
+    REPLACEMENT: use value (scale ignored)
+
+    Examples:
+        >>> AdjustmentType.ADDITIVE.value
+        'additive'
+    """
+
+    ADDITIVE = "additive"
+    MULTIPLICATIVE = "multiplicative"
+    REPLACEMENT = "replacement"
 
 
 AdjustmentTag = str  # Slash (/) separates hierarchy levels in tags
@@ -62,12 +78,8 @@ class Adjustment(BaseModel):
         timestamp: UTC timestamp when the adjustment was created.
 
     Examples:
-        >>> adj = Adjustment(
-        ...     node_name='Revenue',
-        ...     period='2023-01',
-        ...     value=100.0,
-        ...     reason='Manual update'
-        ... )
+        >>> from fin_statement_model.core.adjustments.models import Adjustment, AdjustmentType
+        >>> adj = Adjustment(node_name='Revenue', period='2023-01', value=100.0, reason='Manual update')
         >>> adj.type == AdjustmentType.ADDITIVE
         True
     """
@@ -99,7 +111,21 @@ class Adjustment(BaseModel):
     @field_validator("scale")
     @classmethod
     def _scale_bounds(cls, v: float) -> float:
-        """Validate that the scale factor is between 0.0 and 1.0."""
+        """Validate that the scale factor is between 0.0 and 1.0.
+
+        Args:
+            v: The scale value to validate.
+
+        Returns:
+            The validated scale value.
+
+        Raises:
+            ValueError: If the scale is not between 0.0 and 1.0.
+
+        Examples:
+            >>> Adjustment(node_name='A', period='2023', value=1.0, reason='r', scale=0.5).scale
+            0.5
+        """
         if not 0.0 <= v <= 1.0:
             raise ValueError("Scale must be between 0.0 and 1.0 (inclusive)")
         return v
@@ -124,8 +150,9 @@ class AdjustmentFilter(BaseModel):
         period: Optional period for effective window checks.
 
     Examples:
-        >>> filt = AdjustmentFilter(include_tags={'NonRecurring'}, period='2023-01')
-        >>> filt.matches(adj)
+        >>> from fin_statement_model.core.adjustments.models import AdjustmentFilter, AdjustmentType
+        >>> filt = AdjustmentFilter(include_types={AdjustmentType.ADDITIVE})
+        >>> isinstance(filt, AdjustmentFilter)
         True
     """
 
@@ -158,6 +185,8 @@ class AdjustmentFilter(BaseModel):
             True if the adjustment matches all criteria, False otherwise.
 
         Examples:
+            >>> from fin_statement_model.core.adjustments.models import Adjustment, AdjustmentFilter, AdjustmentType
+            >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r', type=AdjustmentType.ADDITIVE)
             >>> filt = AdjustmentFilter(include_types={AdjustmentType.ADDITIVE})
             >>> filt.matches(adj)
             True

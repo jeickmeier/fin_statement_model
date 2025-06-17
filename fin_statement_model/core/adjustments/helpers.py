@@ -1,4 +1,14 @@
-"""Helper functions for the adjustments module."""
+"""Helper functions for the adjustments module.
+
+This module provides utility functions for tag-based filtering and matching
+used throughout the adjustments system.
+
+Examples:
+    >>> tag_matches({'A/B/C', 'X'}, {'A/B'})
+    True
+    >>> tag_matches({'A/B/C'}, {'D'})
+    False
+"""
 
 
 def tag_matches(target_tags: set[str], prefixes: set[str]) -> bool:

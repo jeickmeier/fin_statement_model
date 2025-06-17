@@ -1,4 +1,22 @@
-"""Manages the storage, retrieval, and application of adjustments."""
+"""Manages the storage, retrieval, and application of adjustments.
+
+This module provides the AdjustmentManager class, which is responsible for
+storing, filtering, and applying adjustments to node values in financial models.
+It supports advanced filtering, scenario management, and sequential application
+of multiple adjustments.
+
+Examples:
+    >>> from fin_statement_model.core.adjustments.models import Adjustment
+    >>> from fin_statement_model.core.adjustments.manager import AdjustmentManager
+    >>> mgr = AdjustmentManager()
+    >>> adj = Adjustment(node_name='A', period='2023', value=10.0, reason='Manual')
+    >>> mgr.add_adjustment(adj)
+    >>> mgr.get_adjustments('A', '2023')[0].value == 10.0
+    True
+    >>> base = 100.0
+    >>> new_value, applied = mgr.apply_adjustments(base, mgr.get_adjustments('A', '2023'))
+    >>> new_value == 110.0
+"""
 
 from __future__ import annotations
 
@@ -24,23 +42,29 @@ class AdjustmentManager:
     """Handle storage, retrieval, and application of adjustments.
 
     This class provides methods to add, remove, filter, and apply adjustments
-    to base values.
+    to base values. It supports advanced filtering by scenario, tags, types,
+    and period, and can apply multiple adjustments in a deterministic order.
 
-    Methods:
-        add_adjustment: Add an adjustment, replacing any existing one with the same ID.
-        remove_adjustment: Remove an adjustment by ID.
-        apply_adjustments: Apply a series of adjustments to a base value.
-        get_adjustments: Retrieve adjustments for a node and period.
-        get_filtered_adjustments: Retrieve adjustments matching filter criteria.
-        get_all_adjustments: List all adjustments.
-        clear_all: Remove all adjustments.
-        load_adjustments: Load a new list of adjustments.
+    Examples:
+        >>> from fin_statement_model.core.adjustments.models import Adjustment
+        >>> mgr = AdjustmentManager()
+        >>> adj = Adjustment(node_name='A', period='2023', value=5.0, reason='r')
+        >>> mgr.add_adjustment(adj)
+        >>> len(mgr.get_all_adjustments())
+        1
+        >>> mgr.remove_adjustment(adj.id)
+        True
     """
 
     def __init__(self) -> None:
         """Initialize the adjustment manager with empty storage.
 
         This sets up internal indices for storing and retrieving adjustments.
+
+        Examples:
+            >>> mgr = AdjustmentManager()
+            >>> len(mgr.get_all_adjustments())
+            0
         """
         # Primary index: (scenario, node_name, period) -> list[Adjustment]
         self._by_location: dict[tuple[str, str, str], list[Adjustment]] = defaultdict(
@@ -59,6 +83,14 @@ class AdjustmentManager:
 
         Returns:
             None
+
+        Examples:
+            >>> from fin_statement_model.core.adjustments.models import Adjustment
+            >>> mgr = AdjustmentManager()
+            >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r')
+            >>> mgr.add_adjustment(adj)
+            >>> mgr.get_adjustments('A', '2023')[0].value == 1.0
+            True
         """
         # If an adjustment with the same ID already exists, remove it first
         if adj.id in self._by_id:
@@ -78,6 +110,14 @@ class AdjustmentManager:
 
         Returns:
             True if the adjustment was found and removed, False otherwise.
+
+        Examples:
+            >>> from fin_statement_model.core.adjustments.models import Adjustment
+            >>> mgr = AdjustmentManager()
+            >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r')
+            >>> mgr.add_adjustment(adj)
+            >>> mgr.remove_adjustment(adj.id)
+            True
         """
         if adj_id not in self._by_id:
             return False
@@ -104,6 +144,13 @@ class AdjustmentManager:
 
         Returns:
             The adjusted value as a float.
+
+        Examples:
+            >>> from fin_statement_model.core.adjustments.models import Adjustment, AdjustmentType
+            >>> mgr = AdjustmentManager()
+            >>> adj = Adjustment(node_name='A', period='2023', value=2.0, type=AdjustmentType.MULTIPLICATIVE, reason='r')
+            >>> mgr._apply_one(10.0, adj)
+            20.0
         """
         if adj.type == AdjustmentType.ADDITIVE:
             # Ensuring result is float
@@ -141,6 +188,13 @@ class AdjustmentManager:
 
         Returns:
             A tuple of (final adjusted value, boolean indicating if any adjustment was applied).
+
+        Examples:
+            >>> from fin_statement_model.core.adjustments.models import Adjustment
+            >>> mgr = AdjustmentManager()
+            >>> adj = Adjustment(node_name='A', period='2023', value=5.0, reason='r')
+            >>> mgr.apply_adjustments(100.0, [adj])
+            (105.0, True)
         """
         if not adjustments:
             return base_value, False
@@ -173,6 +227,14 @@ class AdjustmentManager:
 
         Returns:
             A list of Adjustment objects for the specified node, period, and scenario.
+
+        Examples:
+            >>> from fin_statement_model.core.adjustments.models import Adjustment
+            >>> mgr = AdjustmentManager()
+            >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r')
+            >>> mgr.add_adjustment(adj)
+            >>> len(mgr.get_adjustments('A', '2023'))
+            1
         """
         key = (scenario, node_name, period)
         # Return a copy to prevent external modification of the internal list
@@ -194,6 +256,13 @@ class AdjustmentManager:
 
         Returns:
             A baseline AdjustmentFilter object for scenario and period checks.
+
+        Examples:
+            >>> from fin_statement_model.core.adjustments.models import AdjustmentFilter
+            >>> mgr = AdjustmentManager()
+            >>> f = mgr._normalize_filter(AdjustmentFilter(include_tags={'X'}), '2023')
+            >>> isinstance(f, AdjustmentFilter)
+            True
         """
         if filter_input is None:
             # Default filter includes only the default scenario and sets the period context
@@ -240,6 +309,15 @@ class AdjustmentManager:
 
         Returns:
             A list of matching Adjustment objects sorted by priority and timestamp.
+
+        Examples:
+            >>> from fin_statement_model.core.adjustments.models import Adjustment
+            >>> mgr = AdjustmentManager()
+            >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r', tags={'X'})
+            >>> mgr.add_adjustment(adj)
+            >>> result = mgr.get_filtered_adjustments('A', '2023', {'X'})
+            >>> result[0].node_name == 'A'
+            True
         """
         normalized_filter = self._normalize_filter(filter_input, period)
 
@@ -323,6 +401,11 @@ class AdjustmentManager:
 
         Returns:
             A list of all Adjustment objects currently stored.
+
+        Examples:
+            >>> mgr = AdjustmentManager()
+            >>> len(mgr.get_all_adjustments())
+            0
         """
         # Return a copy to prevent external modification
         return list(self._by_id.values())
@@ -334,6 +417,12 @@ class AdjustmentManager:
 
         Returns:
             None
+
+        Examples:
+            >>> mgr = AdjustmentManager()
+            >>> mgr.clear_all()
+            >>> len(mgr.get_all_adjustments())
+            0
         """
         self._by_location.clear()
         self._by_id.clear()
@@ -346,6 +435,14 @@ class AdjustmentManager:
 
         Returns:
             None
+
+        Examples:
+            >>> from fin_statement_model.core.adjustments.models import Adjustment
+            >>> mgr = AdjustmentManager()
+            >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r')
+            >>> mgr.load_adjustments([adj])
+            >>> len(mgr.get_all_adjustments())
+            1
         """
         self.clear_all()
         for adj in adjustments:
