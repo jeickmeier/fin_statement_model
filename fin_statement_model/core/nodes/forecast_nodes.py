@@ -39,16 +39,31 @@ logger = logging.getLogger(__name__)
 
 
 class ForecastNode(Node):
-    """ForecastNode defines base behavior for projecting future values.
+    """Base class for projecting future values from historical data.
 
     ForecastNode uses a source node's historical data to generate projected values
     for specified future periods, caching results to avoid redundant computations.
+
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary.
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> ForecastNode`:
+            Classmethod to deserialize a node from a dictionary. Subclasses must override this method.
 
     Attributes:
         input_node (Node): Node providing historical data.
         base_period (str): Last historical period used as forecast base.
         forecast_periods (list[str]): Future periods to project.
         values (dict[str, float]): Historical and forecasted values.
+
+    Example:
+        >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+        >>> from fin_statement_model.core.nodes.forecast_nodes import FixedGrowthForecastNode
+        >>> revenue = FinancialStatementItemNode("revenue", {"2022": 100, "2023": 110})
+        >>> forecast = FixedGrowthForecastNode(revenue, "2023", ["2024", "2025"], 0.05)
+        >>> d = forecast.to_dict()
+        >>> forecast2 = FixedGrowthForecastNode.from_dict(d, {"revenue": revenue})
+        >>> round(forecast2.calculate("2025"), 2)
+        121.28
     """
 
     _cache: dict[str, float]
@@ -170,9 +185,11 @@ class ForecastNode(Node):
             "forecast_type": "base",  # Override in subclasses
         }
 
-    @staticmethod
-    def from_dict_with_context(
-        data: dict[str, Any], context: dict[str, Node]
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, Node] | None = None,
     ) -> "ForecastNode":
         """Recreate a ForecastNode from serialized data.
 
@@ -187,21 +204,28 @@ class ForecastNode(Node):
             ValueError: If the data is invalid or missing required fields.
             NotImplementedError: This base method should be overridden by subclasses.
         """
-        raise NotImplementedError("Subclasses must implement from_dict_with_context")
+        raise NotImplementedError("Subclasses must implement from_dict")
 
 
 @forecast_type("simple")
 class FixedGrowthForecastNode(ForecastNode):
     """Forecast node that applies a single growth rate to every future period.
 
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary.
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> FixedGrowthForecastNode`:
+            Classmethod to deserialize a node from a dictionary. `context` is required to resolve the base node.
+
     Attributes:
         growth_rate (float): Constant growth factor expressed as a decimal (``0.05`` → 5 %).
 
-    Examples:
-        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode
-        >>> revenue = FinancialStatementItemNode("revenue", {"FY2022": 100})
-        >>> forecast = FixedGrowthForecastNode(revenue, "FY2022", ["FY2023", "FY2024"], 0.05)
-        >>> round(forecast.calculate("FY2024"), 2)
+    Example:
+        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode, FixedGrowthForecastNode
+        >>> revenue = FinancialStatementItemNode("revenue", {"2022": 100})
+        >>> forecast = FixedGrowthForecastNode(revenue, "2022", ["2023", "2024"], 0.05)
+        >>> d = forecast.to_dict()
+        >>> forecast2 = FixedGrowthForecastNode.from_dict(d, {"revenue": revenue})
+        >>> round(forecast2.calculate("2024"), 2)
         110.25
     """
 
@@ -257,9 +281,11 @@ class FixedGrowthForecastNode(ForecastNode):
         )
         return base_dict
 
-    @staticmethod
-    def from_dict_with_context(
-        data: dict[str, Any], context: dict[str, Node]
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, Node] | None = None,
     ) -> "FixedGrowthForecastNode":
         """Create a FixedGrowthForecastNode from a dictionary with node context.
 
@@ -273,6 +299,11 @@ class FixedGrowthForecastNode(ForecastNode):
         Raises:
             ValueError: If the data is invalid or missing required fields.
         """
+        if context is None:
+            raise ValueError(
+                "'context' must be provided to deserialize FixedGrowthForecastNode"
+            )
+
         name = data.get("name")
         if not name:
             raise ValueError("Missing 'name' field in FixedGrowthForecastNode data")
@@ -296,7 +327,7 @@ class FixedGrowthForecastNode(ForecastNode):
                 "Missing 'base_period' field in FixedGrowthForecastNode data"
             )
 
-        node = FixedGrowthForecastNode(
+        node = cls(
             input_node=base_node,
             base_period=base_period,
             forecast_periods=forecast_periods,
@@ -312,16 +343,23 @@ class FixedGrowthForecastNode(ForecastNode):
 class CurveGrowthForecastNode(ForecastNode):
     """Forecast node with period-specific growth rates.
 
-    Apply a unique growth rate to each forecast period, allowing tapered or step-wise growth assumptions.
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary.
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> CurveGrowthForecastNode`:
+            Classmethod to deserialize a node from a dictionary. `context` is required to resolve the base node.
 
     Attributes:
         growth_rates (list[float]): Growth rate for each corresponding forecast period.
 
-    Examples:
-        >>> rates = [0.10, 0.08, 0.05]  # 10 %, 8 %, 5 %
-        >>> forecast = CurveGrowthForecastNode(revenue, "FY2022", ["FY2023", "FY2024", "FY2025"], rates)
-        >>> round(forecast.calculate("FY2025"), 2)
-        123.48
+    Example:
+        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode, CurveGrowthForecastNode
+        >>> revenue = FinancialStatementItemNode("revenue", {"2022": 100})
+        >>> rates = [0.10, 0.08]
+        >>> forecast = CurveGrowthForecastNode(revenue, "2022", ["2023", "2024"], rates)
+        >>> d = forecast.to_dict()
+        >>> forecast2 = CurveGrowthForecastNode.from_dict(d, {"revenue": revenue})
+        >>> round(forecast2.calculate("2024"), 2)
+        118.8
     """
 
     def __init__(
@@ -380,9 +418,11 @@ class CurveGrowthForecastNode(ForecastNode):
         )
         return base_dict
 
-    @staticmethod
-    def from_dict_with_context(
-        data: dict[str, Any], context: dict[str, Node]
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, Node] | None = None,
     ) -> "CurveGrowthForecastNode":
         """Create a CurveGrowthForecastNode from a dictionary with node context.
 
@@ -396,6 +436,11 @@ class CurveGrowthForecastNode(ForecastNode):
         Raises:
             ValueError: If the data is invalid or missing required fields.
         """
+        if context is None:
+            raise ValueError(
+                "'context' must be provided to deserialize CurveGrowthForecastNode"
+            )
+
         name = data.get("name")
         if not name:
             raise ValueError("Missing 'name' field in CurveGrowthForecastNode data")
@@ -424,7 +469,7 @@ class CurveGrowthForecastNode(ForecastNode):
                 "'growth_params' must be a list for CurveGrowthForecastNode"
             )
 
-        node = CurveGrowthForecastNode(
+        node = cls(
             input_node=base_node,
             base_period=base_period,
             forecast_periods=forecast_periods,
@@ -440,10 +485,25 @@ class CurveGrowthForecastNode(ForecastNode):
 class StatisticalGrowthForecastNode(ForecastNode):
     """Forecast node whose growth rates are drawn from a random distribution.
 
-    Use a zero-argument callable that samples from a statistical distribution to introduce stochasticity.
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary (includes a warning).
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> StatisticalGrowthForecastNode`:
+            Not supported; always raises NotImplementedError because the callable cannot be serialized.
 
     Attributes:
         distribution_callable (Callable[[], float]): Function returning a pseudo-random growth rate.
+
+    Example:
+        >>> # Not supported:
+        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode, StatisticalGrowthForecastNode
+        >>> import random
+        >>> revenue = FinancialStatementItemNode("revenue", {"2022": 100})
+        >>> node = StatisticalGrowthForecastNode(revenue, "2022", ["2023"], lambda: random.gauss(0.05, 0.01))
+        >>> d = node.to_dict()
+        >>> StatisticalGrowthForecastNode.from_dict(d, {"revenue": revenue})  # doctest: +SKIP
+        Traceback (most recent call last):
+        ...
+        NotImplementedError: StatisticalGrowthForecastNode cannot be fully deserialized because the distribution_callable cannot be serialized. Manual reconstruction required.
     """
 
     def __init__(
@@ -490,9 +550,11 @@ class StatisticalGrowthForecastNode(ForecastNode):
         )
         return base_dict
 
-    @staticmethod
-    def from_dict_with_context(
-        data: dict[str, Any], context: dict[str, Node]
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, Node] | None = None,
     ) -> "StatisticalGrowthForecastNode":
         """Create a StatisticalGrowthForecastNode from a dictionary with node context.
 
@@ -518,8 +580,24 @@ class StatisticalGrowthForecastNode(ForecastNode):
 class CustomGrowthForecastNode(ForecastNode):
     """Forecast node that computes growth via a user-supplied function.
 
-    The supplied ``growth_function`` receives ``period``, ``prev_period``, and ``prev_value`` and
-    returns a growth factor for the period.
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary (includes a warning).
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> CustomGrowthForecastNode`:
+            Not supported; always raises NotImplementedError because the function cannot be serialized.
+
+    Attributes:
+        growth_function (Callable[[str, str, float], float]): Function returning growth factor.
+
+    Example:
+        >>> # Not supported:
+        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode, CustomGrowthForecastNode
+        >>> revenue = FinancialStatementItemNode("revenue", {"2022": 100})
+        >>> node = CustomGrowthForecastNode(revenue, "2022", ["2023"], lambda p, pp, v: 0.05)
+        >>> d = node.to_dict()
+        >>> CustomGrowthForecastNode.from_dict(d, {"revenue": revenue})  # doctest: +SKIP
+        Traceback (most recent call last):
+        ...
+        NotImplementedError: CustomGrowthForecastNode cannot be fully deserialized because the growth_function cannot be serialized. Manual reconstruction required.
     """
 
     def __init__(
@@ -566,9 +644,11 @@ class CustomGrowthForecastNode(ForecastNode):
         )
         return base_dict
 
-    @staticmethod
-    def from_dict_with_context(
-        data: dict[str, Any], context: dict[str, Node]
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, Node] | None = None,
     ) -> "CustomGrowthForecastNode":
         """Create a CustomGrowthForecastNode from a dictionary with node context.
 
@@ -594,8 +674,19 @@ class CustomGrowthForecastNode(ForecastNode):
 class AverageValueForecastNode(ForecastNode):
     """Forecast node that projects the historical average forward.
 
-    The average of all historical periods up to *base_period* is used as the forecasted value
-    for every future period.
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary.
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> AverageValueForecastNode`:
+            Classmethod to deserialize a node from a dictionary. `context` is required to resolve the base node.
+
+    Example:
+        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode, AverageValueForecastNode
+        >>> revenue = FinancialStatementItemNode("revenue", {"2022": 100, "2023": 110})
+        >>> forecast = AverageValueForecastNode(revenue, "2023", ["2024", "2025"])
+        >>> d = forecast.to_dict()
+        >>> forecast2 = AverageValueForecastNode.from_dict(d, {"revenue": revenue})
+        >>> forecast2.calculate("2024")
+        105.0
     """
 
     def __init__(
@@ -670,9 +761,11 @@ class AverageValueForecastNode(ForecastNode):
         )
         return base_dict
 
-    @staticmethod
-    def from_dict_with_context(
-        data: dict[str, Any], context: dict[str, Node]
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, Node] | None = None,
     ) -> "AverageValueForecastNode":
         """Create an AverageValueForecastNode from a dictionary with node context.
 
@@ -686,6 +779,11 @@ class AverageValueForecastNode(ForecastNode):
         Raises:
             ValueError: If the data is invalid or missing required fields.
         """
+        if context is None:
+            raise ValueError(
+                "'context' must be provided to deserialize AverageValueForecastNode"
+            )
+
         name = data.get("name")
         if not name:
             raise ValueError("Missing 'name' field in AverageValueForecastNode data")
@@ -708,7 +806,7 @@ class AverageValueForecastNode(ForecastNode):
                 "Missing 'base_period' field in AverageValueForecastNode data"
             )
 
-        node = AverageValueForecastNode(
+        node = cls(
             input_node=base_node,
             base_period=base_period,
             forecast_periods=forecast_periods,
@@ -721,7 +819,22 @@ class AverageValueForecastNode(ForecastNode):
 
 @forecast_type("average_growth")
 class AverageHistoricalGrowthForecastNode(ForecastNode):
-    """Forecast node that applies the average historical growth rate to all future periods."""
+    """Forecast node that applies the average historical growth rate to all future periods.
+
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary.
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> AverageHistoricalGrowthForecastNode`:
+            Classmethod to deserialize a node from a dictionary. `context` is required to resolve the base node.
+
+    Example:
+        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode, AverageHistoricalGrowthForecastNode
+        >>> revenue = FinancialStatementItemNode("revenue", {"2022": 100, "2023": 110})
+        >>> forecast = AverageHistoricalGrowthForecastNode(revenue, "2023", ["2024", "2025"])
+        >>> d = forecast.to_dict()
+        >>> forecast2 = AverageHistoricalGrowthForecastNode.from_dict(d, {"revenue": revenue})
+        >>> round(forecast2.calculate("2025"), 2)
+        121.0
+    """
 
     def __init__(
         self,
@@ -798,9 +911,11 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
         )
         return base_dict
 
-    @staticmethod
-    def from_dict_with_context(
-        data: dict[str, Any], context: dict[str, Node]
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, Node] | None = None,
     ) -> "AverageHistoricalGrowthForecastNode":
         """Create an AverageHistoricalGrowthForecastNode from a dictionary with node context.
 
@@ -814,6 +929,11 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
         Raises:
             ValueError: If the data is invalid or missing required fields.
         """
+        if context is None:
+            raise ValueError(
+                "'context' must be provided to deserialize AverageHistoricalGrowthForecastNode"
+            )
+
         name = data.get("name")
         if not name:
             raise ValueError(
@@ -838,7 +958,7 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
                 "Missing 'base_period' field in AverageHistoricalGrowthForecastNode data"
             )
 
-        node = AverageHistoricalGrowthForecastNode(
+        node = cls(
             input_node=base_node,
             base_period=base_period,
             forecast_periods=forecast_periods,

@@ -54,6 +54,11 @@ class CalculationNode(Node):
 
     Use a calculation object to encapsulate the algorithm for computing node values.
 
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary.
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> CalculationNode`:
+            Classmethod to deserialize a node from a dictionary. `context` is required to resolve input nodes.
+
     Attributes:
         name (str): Identifier for this node.
         inputs (List[Node]): A list of input nodes required by the calculation.
@@ -68,7 +73,9 @@ class CalculationNode(Node):
         >>> node_a = FinancialStatementItemNode("a", {"2023": 10})
         >>> node_b = FinancialStatementItemNode("b", {"2023": 20})
         >>> sum_node = CalculationNode("sum_ab", inputs=[node_a, node_b], calculation=SumCalculation())
-        >>> sum_node.calculate("2023")
+        >>> d = sum_node.to_dict()
+        >>> sum_node2 = CalculationNode.from_dict(d, {"a": node_a, "b": node_b})
+        >>> sum_node2.calculate("2023")
         30.0
     """
 
@@ -295,9 +302,11 @@ class CalculationNode(Node):
 
         return node_dict
 
-    @staticmethod
-    def from_dict_with_context(
-        data: dict[str, Any], context: dict[str, Node]
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, Node] | None = None,
     ) -> "CalculationNode":
         """Create a CalculationNode from a dictionary with node context.
 
@@ -323,6 +332,11 @@ class CalculationNode(Node):
         name = data.get("name")
         if not name:
             raise ValueError("Missing 'name' field in CalculationNode data")
+
+        if context is None:
+            raise ValueError(
+                "'context' must be provided to deserialize CalculationNode"
+            )
 
         input_names = data.get("inputs", [])
         if not isinstance(input_names, list):
@@ -373,6 +387,11 @@ class FormulaCalculationNode(CalculationNode):
 
     Use a formula expression and mapped input nodes to evaluate a calculation.
 
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary.
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> FormulaCalculationNode`:
+            Classmethod to deserialize a node from a dictionary. `context` is required to resolve input nodes.
+
     Attributes:
         inputs_dict (dict[str, Node]): Mapping of variable names to input nodes.
         formula (str): Mathematical expression to evaluate.
@@ -386,7 +405,9 @@ class FormulaCalculationNode(CalculationNode):
         >>> formula_node = FormulaCalculationNode(
         ...     "gross_profit", inputs={"rev": revenue, "cost": cogs}, formula="rev - cost"
         ... )
-        >>> formula_node.calculate("2023")
+        >>> d = formula_node.to_dict()
+        >>> formula_node2 = FormulaCalculationNode.from_dict(d, {"revenue": revenue, "cogs": cogs})
+        >>> formula_node2.calculate("2023")
         40.0
     """
 
@@ -484,9 +505,11 @@ class FormulaCalculationNode(CalculationNode):
             "metric_description": self.metric_description,
         }
 
-    @staticmethod
-    def from_dict_with_context(
-        data: dict[str, Any], context: dict[str, Node]
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, Node] | None = None,
     ) -> "FormulaCalculationNode":
         """Create a FormulaCalculationNode from a dictionary with node context.
 
@@ -512,6 +535,11 @@ class FormulaCalculationNode(CalculationNode):
         if not name:
             raise ValueError("Missing 'name' field in FormulaCalculationNode data")
 
+        if context is None:
+            raise ValueError(
+                "'context' must be provided to deserialize FormulaCalculationNode"
+            )
+
         formula = data.get("formula")
         if not formula:
             raise ValueError("Missing 'formula' field in FormulaCalculationNode data")
@@ -535,7 +563,7 @@ class FormulaCalculationNode(CalculationNode):
         metric_name = data.get("metric_name")
         metric_description = data.get("metric_description")
 
-        return FormulaCalculationNode(
+        return cls(
             name=name,
             inputs=inputs_dict,
             formula=formula,
@@ -552,6 +580,11 @@ class CustomCalculationNode(Node):
     """Calculate values using a custom Python function.
 
     Use a provided callable to compute node values from input nodes.
+
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary (includes a warning).
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> CustomCalculationNode`:
+            Not supported; always raises NotImplementedError because the function cannot be serialized.
 
     Attributes:
         inputs (list[Node]): Nodes supplying inputs to the function.
@@ -717,4 +750,33 @@ class CustomCalculationNode(Node):
             ),
         }
 
-    # from_dict static method removed – CustomCalculationNode cannot be deserialized without source code; use NodeFactory or manual creation.
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, Node] | None = None,
+    ) -> "CustomCalculationNode":
+        """CustomCalculationNode deserialization is not supported.
+
+        This method is present only to satisfy the Node interface. Attempting to call it will always raise NotImplementedError,
+        because the Python function used for calculation cannot be serialized or reconstructed automatically.
+
+        Raises:
+            NotImplementedError: Always.
+
+        Example:
+            >>> # Not supported:
+            >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+            >>> def add(a, b): return a + b
+            >>> a = FinancialStatementItemNode("A", {"2023": 10})
+            >>> b = FinancialStatementItemNode("B", {"2023": 5})
+            >>> node = CustomCalculationNode("add_node", inputs=[a, b], formula_func=add)
+            >>> d = node.to_dict()
+            >>> CustomCalculationNode.from_dict(d, {"A": a, "B": b})  # doctest: +SKIP
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: CustomCalculationNode cannot be deserialized automatically because it relies on a Python callable.
+        """
+        raise NotImplementedError(
+            "CustomCalculationNode cannot be deserialized automatically because it relies on a Python callable."
+        )

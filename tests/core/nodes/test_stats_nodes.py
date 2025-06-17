@@ -86,7 +86,7 @@ def test_yoy_to_dict_and_from_dict():
     assert d["prior_period"] == "2020"
     assert d["current_period"] == "2021"
     context = {"rev": base}
-    new_yoy = YoYGrowthNode.from_dict_with_context(d, context)
+    new_yoy = YoYGrowthNode.from_dict(d, context)
     assert new_yoy.calculate() == pytest.approx((150.0 - 100.0) / 100.0)
 
 
@@ -106,7 +106,7 @@ def test_multi_period_stat_to_dict_and_from_dict():
     assert d["periods"] == ["A", "B", "C"]
     assert d["stat_func_name"] == "mean"
     context = {"n": node}
-    new_stat = MultiPeriodStatNode.from_dict_with_context(d, context)
+    new_stat = MultiPeriodStatNode.from_dict(d, context)
     assert new_stat.calculate() == pytest.approx(stat.calculate())
 
 
@@ -122,7 +122,7 @@ def test_two_period_average_to_dict_and_from_dict():
     assert d["period1"] == "X"
     assert d["period2"] == "Y"
     context = {"n": node}
-    new_avg = TwoPeriodAverageNode.from_dict_with_context(d, context)
+    new_avg = TwoPeriodAverageNode.from_dict(d, context)
     assert new_avg.calculate() == pytest.approx(5.0)
 
 

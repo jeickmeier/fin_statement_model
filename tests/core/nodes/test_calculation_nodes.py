@@ -64,7 +64,7 @@ def test_formula_calculation_node_and_roundtrip():
     assert d.get("formula_variable_names") == ["x", "y"]
     # recreate via from_dict
     context = {"a": a, "b": b}
-    new_fnode = FormulaCalculationNode.from_dict_with_context(d, context)
+    new_fnode = FormulaCalculationNode.from_dict(d, context)
     assert isinstance(new_fnode, FormulaCalculationNode)
     assert new_fnode.calculate("2023") == pytest.approx(16.0)
 
@@ -94,7 +94,8 @@ def test_custom_calculation_node_and_errors():
     assert d["type"] == "custom_calculation"
     assert "serialization_warning" in d
     # roundtrip creation not supported: from_dict absent
-    assert not hasattr(CustomCalculationNode, "from_dict_with_context")
+    with pytest.raises(NotImplementedError):
+        CustomCalculationNode.from_dict({}, {})
 
 
 def test_is_calculation_node_helper():
@@ -132,7 +133,7 @@ def test_is_calculation_node_helper():
     from fin_statement_model.core.nodes.calculation_nodes import CalculationNode
 
     context = {"a": a, "b": b}
-    sum2 = CalculationNode.from_dict_with_context(fdict, context)
+    sum2 = CalculationNode.from_dict(fdict, context)
     assert isinstance(sum2, CalculationNode)
     assert sum2.calculate("p") == pytest.approx(a.calculate("p") + b.calculate("p"))
 

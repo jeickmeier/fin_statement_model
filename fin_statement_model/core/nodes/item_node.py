@@ -6,7 +6,7 @@ for specific periods. It is typically used as a leaf node in the financial state
 Features:
     - Stores period-to-value mappings for reported financial data (e.g., revenue, COGS).
     - Supports value retrieval and mutation for specific periods.
-    - Implements serialization to and from dictionary representations.
+    - Implements serialization to and from dictionary representations via `to_dict` and `from_dict`.
 
 Example:
     >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
@@ -20,6 +20,10 @@ Example:
     >>> d = node.to_dict()
     >>> d['type']
     'financial_statement_item'
+    >>> # Round-trip serialization
+    >>> node2 = FinancialStatementItemNode.from_dict(d)
+    >>> node2.calculate("2023")
+    1200.0
 """
 
 import logging
@@ -39,6 +43,11 @@ class FinancialStatementItemNode(Node):
     Represents a leaf node containing actual reported financial data
     (e.g., revenue, COGS) across time periods.
 
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary.
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> FinancialStatementItemNode`:
+            Classmethod to deserialize a node from a dictionary. `context` is ignored for data nodes.
+
     Attributes:
         name (str): Unique identifier for the financial item.
         values (dict[str, float]): Mapping from period identifiers to their values.
@@ -47,11 +56,10 @@ class FinancialStatementItemNode(Node):
         >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
         >>> data = {"2022": 1000.0, "2023": 1200.0}
         >>> node = FinancialStatementItemNode("revenue", data)
-        >>> node.calculate("2023")
+        >>> d = node.to_dict()
+        >>> node2 = FinancialStatementItemNode.from_dict(d)
+        >>> node2.calculate("2023")
         1200.0
-        >>> node.set_value("2024", 1500.0)
-        >>> node.calculate("2024")
-        1500.0
     """
 
     values: dict[str, float]
@@ -124,12 +132,17 @@ class FinancialStatementItemNode(Node):
             "values": self.values.copy(),
         }
 
-    @staticmethod
-    def from_dict(data: dict[str, Any]) -> "FinancialStatementItemNode":
-        """Create a FinancialStatementItemNode from serialized data.
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, "Node"] | None = None,
+    ) -> "FinancialStatementItemNode":
+        """Deserialize a FinancialStatementItemNode from a dictionary.
 
         Args:
             data (dict[str, Any]): Serialized node data; must contain keys 'type', 'name', and 'values'.
+            context (dict[str, Node] | None): Optional context for deserialization (ignored).
 
         Returns:
             FinancialStatementItemNode: Reconstructed node.
@@ -159,4 +172,4 @@ class FinancialStatementItemNode(Node):
         if not isinstance(values, dict):
             raise TypeError("'values' field must be a dict[str, float]")
 
-        return FinancialStatementItemNode(name, values)
+        return cls(name, values)

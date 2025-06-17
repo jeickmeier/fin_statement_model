@@ -1,12 +1,14 @@
 """Define the abstract base class for all nodes in the graph.
 
 This module provides the Node base class with interfaces for calculation,
-attribute access, and optional caching behavior.
+attribute access, and optional caching behavior. All node types must implement
+Google-style serialization and deserialization via `to_dict` and `from_dict`.
 
 Features:
     - Abstract base class for all node types in the financial statement model graph.
     - Enforces implementation of calculation and serialization methods.
     - Provides attribute access, dependency inspection, and optional cache clearing.
+    - Serialization contract: all nodes must implement `to_dict` and `from_dict`.
 
 Example:
     >>> from fin_statement_model.core.nodes.base import Node
@@ -16,8 +18,11 @@ Example:
     >>> node = DummyNode('test')
     >>> node.calculate('2023')
     42.0
-    >>> node.to_dict()['type']
+    >>> d = node.to_dict()
+    >>> d['type']
     'dummy'
+    >>> # Round-trip serialization (subclasses must implement from_dict)
+    >>> DummyNode.from_dict({'type': 'dummy', 'name': 'test'})  # doctest: +SKIP
 """
 
 from abc import ABC, abstractmethod
@@ -28,10 +33,18 @@ if TYPE_CHECKING:
 
 
 class Node(ABC):
-    """Implement the abstract base class for all nodes in the financial statement model.
+    """Abstract base class for all nodes in the financial statement model.
 
     This class defines the required interface for all node types, including calculation,
-    serialization, and dependency inspection. Subclasses must implement `calculate` and `to_dict`.
+    serialization, and dependency inspection. Subclasses must implement `calculate`, `to_dict`,
+    and (for deserializable nodes) `from_dict` as a classmethod.
+
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary.
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> Node`:
+            Classmethod to deserialize a node from a dictionary. Nodes with dependencies
+            (e.g., calculation, forecast, stat nodes) must use the `context` argument to resolve them.
+            Data nodes may ignore `context`.
 
     Attributes:
         name (str): Unique identifier for the node instance.
@@ -41,11 +54,12 @@ class Node(ABC):
         >>> class DummyNode(Node):
         ...     def calculate(self, period): return 1.0
         ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
+        ...     @classmethod
+        ...     def from_dict(cls, data, context=None): return cls(data['name'])
         >>> node = DummyNode('Revenue')
-        >>> node.name
+        >>> d = node.to_dict()
+        >>> DummyNode.from_dict(d).name
         'Revenue'
-        >>> node.calculate('2023')
-        1.0
     """
 
     name: str
@@ -231,3 +245,40 @@ class Node(ABC):
             ['dep1', 'dep2']
         """
         return []
+
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, "Node"] | None = None,
+    ) -> "Node":
+        """Deserialize a node from its dictionary representation.
+
+        Subclasses that support deserialization must override this method.
+        Nodes with dependencies (e.g., calculation, forecast, stat nodes) must use the
+        `context` argument to resolve them. Data nodes may ignore `context`.
+
+        Args:
+            data: The serialized node dictionary (usually produced by :py:meth:`to_dict`).
+            context: Optional mapping of node names to node objects that have already been deserialized.
+
+        Returns:
+            Node: A fully instantiated node object.
+
+        Raises:
+            NotImplementedError: If not overridden in a subclass.
+
+        Example:
+            >>> class DummyNode(Node):
+            ...     def calculate(self, period): return 1.0
+            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
+            ...     @classmethod
+            ...     def from_dict(cls, data, context=None): return cls(data['name'])
+            >>> node = DummyNode('Revenue')
+            >>> d = node.to_dict()
+            >>> DummyNode.from_dict(d).name
+            'Revenue'
+        """
+        raise NotImplementedError(
+            f"{cls.__name__}.from_dict() is not implemented. Subclasses requiring deserialization must override this method."
+        )

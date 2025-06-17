@@ -50,13 +50,13 @@ print(is_calculation_node(gp))       # True
 ```
 
 ## Advanced Features
-- **Custom Calculation Nodes**: Use Python callables for bespoke logic.
+- **Custom Calculation Nodes**: Use Python callables for bespoke logic (not serializable).
 - **Multi-Period Statistics**: Compute mean, stdev, or custom stats over periods.
 - **Forecasting**: Project values using fixed, curve, statistical, or custom growth.
-- **Node Serialization**: All nodes support `to_dict()` for serialization; most support `from_dict_with_context` for deserialization.
+- **Node Serialization**: All nodes support `to_dict()` for serialization and a unified `from_dict(cls, data, context=None)` classmethod for deserialization. Nodes with dependencies (e.g., calculation, forecast, stat nodes) require a `context` mapping of node names to node objects. Data nodes ignore `context`. Nodes using custom Python callables (e.g., `CustomCalculationNode`, `CustomGrowthForecastNode`, `StatisticalGrowthForecastNode`) cannot be deserialized automatically and will raise `NotImplementedError`.
 - **Standard Node Registry**: Use `standard_node_registry` to validate, resolve, and list canonical node names and categories.
 
-### Example: Multi-Period Stat Node
+### Example: Multi-Period Stat Node (with round-trip serialization)
 ```python
 from fin_statement_model.core.nodes import FinancialStatementItemNode, MultiPeriodStatNode
 import statistics
@@ -64,7 +64,11 @@ import statistics
 data = {'Q1': 10, 'Q2': 12, 'Q3': 11, 'Q4': 13}
 sales = FinancialStatementItemNode('sales', data)
 avg = MultiPeriodStatNode('avg_sales', input_node=sales, periods=['Q1','Q2','Q3','Q4'], stat_func=statistics.mean)
-print(avg.calculate())  # 11.5
+d = avg.to_dict()
+# Round-trip serialization (works for built-in stat functions)
+avg2 = MultiPeriodStatNode.from_dict(d, {'sales': sales})
+print(avg2.calculate())  # 11.5
+# For custom stat functions, manual reconstruction is required.
 ```
 
 ### Example: Using the Standard Node Registry
@@ -81,6 +85,48 @@ print(standard_node_registry.get_standard_name('sales'))  # 'revenue'
 # List all balance sheet asset nodes
 print(standard_node_registry.list_standard_names('balance_sheet_assets'))
 ```
+
+## Serialization/Deserialization Contract
+
+All node types implement:
+- `to_dict(self) -> dict`: Serialize the node to a dictionary.
+- `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> Node`: Classmethod to deserialize a node from a dictionary. For nodes with dependencies, `context` must map node names to node objects. Data nodes ignore `context`.
+
+### Round-trip Example (Data Node)
+```python
+from fin_statement_model.core.nodes import FinancialStatementItemNode
+node = FinancialStatementItemNode('revenue', {'2022': 1000.0, '2023': 1200.0})
+d = node.to_dict()
+node2 = FinancialStatementItemNode.from_dict(d)
+assert node2.calculate('2023') == 1200.0
+```
+
+### Round-trip Example (Calculation Node)
+```python
+from fin_statement_model.core.nodes import FinancialStatementItemNode, CalculationNode
+class SumCalculation:
+    def calculate(self, inputs, period):
+        return sum(node.calculate(period) for node in inputs)
+node_a = FinancialStatementItemNode('a', {'2023': 10})
+node_b = FinancialStatementItemNode('b', {'2023': 20})
+sum_node = CalculationNode('sum_ab', inputs=[node_a, node_b], calculation=SumCalculation())
+d = sum_node.to_dict()
+sum_node2 = CalculationNode.from_dict(d, {'a': node_a, 'b': node_b})
+assert sum_node2.calculate('2023') == 30.0
+```
+
+### Round-trip Example (Forecast Node)
+```python
+from fin_statement_model.core.nodes import FinancialStatementItemNode, FixedGrowthForecastNode
+revenue = FinancialStatementItemNode('revenue', {'2022': 100, '2023': 110})
+forecast = FixedGrowthForecastNode(revenue, '2023', ['2024', '2025'], 0.05)
+d = forecast.to_dict()
+forecast2 = FixedGrowthForecastNode.from_dict(d, {'revenue': revenue})
+assert round(forecast2.calculate('2025'), 2) == 121.28
+```
+
+### Caveats for Custom/Callable Nodes
+- Nodes using custom Python callables (e.g., `CustomCalculationNode`, `CustomGrowthForecastNode`, `StatisticalGrowthForecastNode`) **cannot be deserialized automatically** and will raise `NotImplementedError` if `from_dict` is called. Manual reconstruction is required for these node types.
 
 ## Best Practices
 - Always use standard node names where possible for compatibility.

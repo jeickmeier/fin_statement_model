@@ -106,15 +106,12 @@ def create_from_dict(
                 f"Unknown node 'type' '{node_type_key}'. Registered: {NodeTypeRegistry.list()}"
             ) from exc
 
-    # Choose appropriate constructor helper
-    if hasattr(node_cls, "from_dict_with_context"):
-        logger.debug("Deserialising %s via from_dict_with_context", node_cls)
-        return cast(Node, node_cls.from_dict_with_context(data, ctx))
-    elif hasattr(node_cls, "from_dict"):
+    # Use unified from_dict API
+    if hasattr(node_cls, "from_dict"):
         logger.debug("Deserialising %s via from_dict", node_cls)
-        return cast(Node, node_cls.from_dict(data))
+        return node_cls.from_dict(data, ctx)
 
     # If we get here the node class does not support deserialisation via factory
     raise ConfigurationError(
-        f"Node class {node_cls.__name__} does not expose from_dict[_with_context] methods."
+        f"Node class {node_cls.__name__} does not expose from_dict method."
     )

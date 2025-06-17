@@ -60,17 +60,24 @@ class YoYGrowthNode(Node):
     Compare values of an input node for two periods and compute
     (current_value - prior_value) / prior_value.
 
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary.
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> YoYGrowthNode`:
+            Classmethod to deserialize a node from a dictionary. `context` is required to resolve input nodes.
+
     Attributes:
         input_node (Node): Node providing source values.
         prior_period (str): Identifier for the earlier period.
         current_period (str): Identifier for the later period.
 
-    Examples:
+    Example:
         >>> from fin_statement_model.core.nodes import FinancialStatementItemNode, YoYGrowthNode
         >>> data = {"2022": 100.0, "2023": 120.0}
         >>> base = FinancialStatementItemNode("revenue", data)
         >>> yoy = YoYGrowthNode("rev_yoy", input_node=base, prior_period="2022", current_period="2023")
-        >>> round(yoy.calculate(), 2)
+        >>> d = yoy.to_dict()
+        >>> yoy2 = YoYGrowthNode.from_dict(d, {"revenue": base})
+        >>> round(yoy2.calculate(), 2)
         0.2
     """
 
@@ -171,15 +178,17 @@ class YoYGrowthNode(Node):
             "current_period": self.current_period,
         }
 
-    @staticmethod
-    def from_dict_with_context(
-        data: dict[str, Any], context: dict[str, Node]
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, Node] | None = None,
     ) -> "YoYGrowthNode":
         """Recreate a YoYGrowthNode from serialized data.
 
         Args:
             data (dict[str, Any]): Serialized node data.
-            context (dict[str, Node]): Existing nodes for dependencies.
+            context (dict[str, Node] | None): Existing nodes for dependencies.
 
         Returns:
             YoYGrowthNode: Reconstructed node.
@@ -198,10 +207,10 @@ class YoYGrowthNode(Node):
         if not input_node_name:
             raise ValueError("Missing 'input_node_name' field in YoYGrowthNode data")
 
-        if input_node_name not in context:
-            raise ValueError(f"Input node '{input_node_name}' not found in context")
-
+        if context is None:
+            raise ValueError("'context' must be provided to deserialize YoYGrowthNode")
         input_node = context[input_node_name]
+
         prior_period = data.get("prior_period")
         current_period = data.get("current_period")
 
@@ -210,7 +219,7 @@ class YoYGrowthNode(Node):
         if not current_period:
             raise ValueError("Missing 'current_period' field in YoYGrowthNode data")
 
-        return YoYGrowthNode(
+        return cls(
             name=name,
             input_node=input_node,
             prior_period=prior_period,
@@ -224,17 +233,25 @@ class MultiPeriodStatNode(Node):
 
     Apply a statistical function (e.g., mean, stdev) to values from an input node across specified periods.
 
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary (includes a warning if stat_func is custom).
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> MultiPeriodStatNode`:
+            Classmethod to deserialize a node from a dictionary. `context` is required to resolve input nodes. Custom stat functions may require manual reconstruction.
+
     Attributes:
         input_node (Node): Node providing source values.
         periods (list[str]): Period identifiers to include.
         stat_func (StatFunc): Function to apply to collected values.
 
-    Examples:
+    Example:
         >>> from fin_statement_model.core.nodes import FinancialStatementItemNode, MultiPeriodStatNode
         >>> data = {"Q1": 10, "Q2": 12, "Q3": 11, "Q4": 13}
         >>> sales = FinancialStatementItemNode("sales", data)
+        >>> import statistics
         >>> avg = MultiPeriodStatNode("avg_sales", input_node=sales, periods=["Q1","Q2","Q3","Q4"], stat_func=statistics.mean)
-        >>> avg.calculate()
+        >>> d = avg.to_dict()
+        >>> avg2 = MultiPeriodStatNode.from_dict(d, {"sales": sales})
+        >>> avg2.calculate()
         11.5
     """
 
@@ -366,15 +383,17 @@ class MultiPeriodStatNode(Node):
             ),
         }
 
-    @staticmethod
-    def from_dict_with_context(
-        data: dict[str, Any], context: dict[str, Node]
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, Node] | None = None,
     ) -> "MultiPeriodStatNode":
         """Recreate a MultiPeriodStatNode from serialized data.
 
         Args:
             data (dict[str, Any]): Serialized node data.
-            context (dict[str, Node]): Existing nodes for dependencies.
+            context (dict[str, Node] | None): Existing nodes for dependencies.
 
         Returns:
             MultiPeriodStatNode: Reconstructed node.
@@ -397,6 +416,10 @@ class MultiPeriodStatNode(Node):
                 "Missing 'input_node_name' field in MultiPeriodStatNode data"
             )
 
+        if context is None:
+            raise ValueError(
+                "'context' must be provided to deserialize MultiPeriodStatNode"
+            )
         if input_node_name not in context:
             raise ValueError(f"Input node '{input_node_name}' not found in context")
 
@@ -426,7 +449,7 @@ class MultiPeriodStatNode(Node):
                 f"Using default statistics.stdev."
             )
 
-        return MultiPeriodStatNode(
+        return cls(
             name=name,
             input_node=input_node,
             periods=periods,
@@ -438,17 +461,24 @@ class MultiPeriodStatNode(Node):
 class TwoPeriodAverageNode(Node):
     """Compute the average of an input node's values over two periods.
 
+    Serialization contract:
+        - `to_dict(self) -> dict`: Serialize the node to a dictionary.
+        - `from_dict(cls, data: dict, context: dict[str, Node] | None = None) -> TwoPeriodAverageNode`:
+            Classmethod to deserialize a node from a dictionary. `context` is required to resolve input nodes.
+
     Attributes:
         input_node (Node): Node supplying values.
         period1 (str): Identifier for the first period.
         period2 (str): Identifier for the second period.
 
-    Examples:
+    Example:
         >>> from fin_statement_model.core.nodes import FinancialStatementItemNode, TwoPeriodAverageNode
         >>> data = {"Jan": 10.0, "Feb": 11.0}
         >>> price = FinancialStatementItemNode("price", data)
         >>> avg = TwoPeriodAverageNode("avg_price", input_node=price, period1="Jan", period2="Feb")
-        >>> avg.calculate()
+        >>> d = avg.to_dict()
+        >>> avg2 = TwoPeriodAverageNode.from_dict(d, {"price": price})
+        >>> avg2.calculate()
         10.5
     """
 
@@ -539,15 +569,17 @@ class TwoPeriodAverageNode(Node):
             "period2": self.period2,
         }
 
-    @staticmethod
-    def from_dict_with_context(
-        data: dict[str, Any], context: dict[str, Node]
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        context: dict[str, Node] | None = None,
     ) -> "TwoPeriodAverageNode":
         """Recreate a TwoPeriodAverageNode from serialized data.
 
         Args:
             data (dict[str, Any]): Serialized node data.
-            context (dict[str, Node]): Existing nodes for dependencies.
+            context (dict[str, Node] | None): Existing nodes for dependencies.
 
         Returns:
             TwoPeriodAverageNode: Reconstructed node.
@@ -570,6 +602,10 @@ class TwoPeriodAverageNode(Node):
                 "Missing 'input_node_name' field in TwoPeriodAverageNode data"
             )
 
+        if context is None:
+            raise ValueError(
+                "'context' must be provided to deserialize TwoPeriodAverageNode"
+            )
         if input_node_name not in context:
             raise ValueError(f"Input node '{input_node_name}' not found in context")
 
@@ -582,7 +618,7 @@ class TwoPeriodAverageNode(Node):
         if not period2:
             raise ValueError("Missing 'period2' field in TwoPeriodAverageNode data")
 
-        return TwoPeriodAverageNode(
+        return cls(
             name=name,
             input_node=input_node,
             period1=period1,

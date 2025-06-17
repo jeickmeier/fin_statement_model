@@ -24,7 +24,7 @@ def test_fixed_growth_forecast_node_and_roundtrip():
     d = fc.to_dict()
     assert d["forecast_type"] == "simple"
     context = {"x": base}
-    new_fc = FixedGrowthForecastNode.from_dict_with_context(d, context)
+    new_fc = FixedGrowthForecastNode.from_dict(d, context)
     assert new_fc.calculate("2022") == pytest.approx(121.0)
 
 
@@ -37,7 +37,7 @@ def test_curve_growth_forecast_node_and_roundtrip():
     assert cc.calculate("2022") == pytest.approx(66.0)
     d = cc.to_dict()
     assert d["forecast_type"] == "curve"
-    new_cc = CurveGrowthForecastNode.from_dict_with_context(d, {"y": base})
+    new_cc = CurveGrowthForecastNode.from_dict(d, {"y": base})
     assert new_cc.calculate("2022") == pytest.approx(66.0)
 
 
@@ -49,7 +49,7 @@ def test_average_value_forecast_node_and_roundtrip():
     assert avg.calculate("2021") == pytest.approx(100.0)
     d = avg.to_dict()
     assert d["forecast_type"] == "average"
-    new_avg = AverageValueForecastNode.from_dict_with_context(d, {"z": base})
+    new_avg = AverageValueForecastNode.from_dict(d, {"z": base})
     assert new_avg.calculate("2021") == pytest.approx(100.0)
 
 
@@ -68,9 +68,7 @@ def test_average_historical_growth_forecast_node_and_roundtrip():
     assert val2 == pytest.approx(val1 * (1 + expected_rate))
     d = hist.to_dict()
     assert d["forecast_type"] == "historical_growth"
-    new_hist = AverageHistoricalGrowthForecastNode.from_dict_with_context(
-        d, {"w": base}
-    )
+    new_hist = AverageHistoricalGrowthForecastNode.from_dict(d, {"w": base})
     assert new_hist.calculate("2022") == pytest.approx(val2)
 
 
@@ -83,7 +81,7 @@ def test_statistical_and_custom_growth_forecast_errors_and_calculate():
     # calculate should use growth factor 0.05
     assert stat.calculate("2001") == pytest.approx(100.0 * 1.05)
     with pytest.raises(NotImplementedError):
-        StatisticalGrowthForecastNode.from_dict_with_context({}, {})
+        StatisticalGrowthForecastNode.from_dict({}, {})
 
     # custom forecast
     custom = CustomGrowthForecastNode(
@@ -94,4 +92,4 @@ def test_statistical_and_custom_growth_forecast_errors_and_calculate():
     )
     assert custom.calculate("2001") == pytest.approx(100.0 * 1.1)
     with pytest.raises(NotImplementedError):
-        CustomGrowthForecastNode.from_dict_with_context({}, {})
+        CustomGrowthForecastNode.from_dict({}, {})
