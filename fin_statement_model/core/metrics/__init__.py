@@ -1,23 +1,34 @@
-"""Provide a comprehensive system for defining, calculating, and interpreting financial metrics.
+"""Comprehensive system for defining, calculating, and interpreting financial metrics.
 
-This module defines:
-- MetricDefinition: Pydantic model for metric definitions
-- MetricRegistry: Registry for loading and managing metrics
-- MetricInterpreter: System for interpreting metric values with ratings
-- calculate_metric: Helper to calculate a metric by name
-- interpret_metric: Convenience function to interpret a metric value
-- Built-in metrics: 75+ professional financial metrics organized by category
+This module provides:
+    - MetricDefinition: Pydantic model for metric definitions.
+    - MetricRegistry: Registry for loading and managing metrics.
+    - MetricInterpreter: System for interpreting metric values with ratings.
+    - calculate_metric: Helper to calculate a metric by name.
+    - interpret_metric: Convenience function to interpret a metric value.
+    - Built-in metrics: 75+ professional financial metrics organized by category.
 
-The metrics are organized into logical categories:
-- Liquidity: Current ratio, quick ratio, working capital analysis
-- Leverage: Debt ratios, coverage ratios, capital structure
-- Profitability: Margins, returns on assets/equity/capital
-- Efficiency: Asset turnover, working capital efficiency
-- Valuation: Price multiples, enterprise value ratios
-- Cash Flow: Cash generation, cash returns, quality metrics
-- Growth: Revenue, earnings, asset growth rates
-- Credit Risk: Altman Z-scores, warning flags
-- Advanced: DuPont analysis, specialized ratios
+Metrics are organized into logical categories:
+    - Liquidity: Current ratio, quick ratio, working capital analysis
+    - Leverage: Debt ratios, coverage ratios, capital structure
+    - Profitability: Margins, returns on assets/equity/capital
+    - Efficiency: Asset turnover, working capital efficiency
+    - Valuation: Price multiples, enterprise value ratios
+    - Cash Flow: Cash generation, cash returns, quality metrics
+    - Growth: Revenue, earnings, asset growth rates
+    - Credit Risk: Altman Z-scores, warning flags
+    - Advanced: DuPont analysis, specialized ratios
+
+Example:
+    >>> from fin_statement_model.core.metrics import metric_registry, calculate_metric, interpret_metric
+    >>> count = metric_registry.load_metrics_from_directory('fin_statement_model/core/metrics/metric_defn')
+    >>> print(f"Loaded {count} metrics")
+    >>> print(metric_registry.list_metrics()[:5])
+    >>> # Prepare data_nodes = { 'revenue': RevenueNode(...), ... }
+    >>> value = calculate_metric('current_ratio', data_nodes, period='2023')
+    >>> metric_def = metric_registry.get('current_ratio')
+    >>> analysis = interpret_metric(metric_def, value)
+    >>> print(analysis['rating'])
 """
 
 import logging
@@ -61,30 +72,33 @@ def calculate_metric(
     """Calculate a metric value using the metric registry and data nodes.
 
     This helper function simplifies the common pattern of:
-    1. Getting a metric definition from the registry
-    2. Creating a FormulaCalculationNode with the appropriate inputs
-    3. Calculating the result for a specific period
+      1. Getting a metric definition from the registry
+      2. Creating a FormulaCalculationNode with the appropriate inputs
+      3. Calculating the result for a specific period
 
     Args:
-        metric_name: Name of the metric in the registry (e.g., "debt_yield")
-        data_nodes: Dictionary mapping node names to Node instances
-        period: Time period for calculation (e.g., "2023")
-        node_name: Optional name for the calculation node (defaults to metric_name)
+        metric_name: Name of the metric in the registry (e.g., "debt_yield").
+        data_nodes: Dictionary mapping node names to Node instances.
+        period: Time period for calculation (e.g., "2023").
+        node_name: Optional name for the calculation node (defaults to metric_name).
 
     Returns:
-        The calculated metric value as a float
+        The calculated metric value as a float.
 
     Raises:
-        KeyError: If the metric is not found in the registry
-        ValueError: If required input nodes are missing from data_nodes
-        CalculationError: If the calculation fails
+        KeyError: If the metric is not found in the registry.
+        ValueError: If required input nodes are missing from data_nodes.
+        CalculationError: If the calculation fails.
 
-    Examples:
+    Example:
+        >>> from fin_statement_model.core.metrics import calculate_metric, metric_registry
+        >>> # Assume metric_registry is already loaded and data_nodes is prepared
         >>> data_nodes = {
-        ...     "net_operating_income": FinancialStatementItemNode("noi", {"2023": 1000000}),
-        ...     "total_debt": FinancialStatementItemNode("debt", {"2023": 10000000})
+        ...     'net_operating_income': DummyNode({'2023': 1000000}),
+        ...     'total_debt': DummyNode({'2023': 10000000})
         ... }
-        >>> debt_yield = calculate_metric("debt_yield", data_nodes, "2023")
+        >>> # Suppose 'debt_yield' is defined as net_operating_income / total_debt * 100
+        >>> debt_yield = calculate_metric('debt_yield', data_nodes, '2023')
         >>> print(f"Debt Yield: {debt_yield:.1f}%")
         Debt Yield: 10.0%
     """

@@ -1,4 +1,17 @@
-"""Provide utilities for interpreting metric values based on defined guidelines."""
+"""Provide utilities for interpreting metric values based on defined guidelines.
+
+This module provides:
+    - MetricRating: Enum for rating levels.
+    - MetricInterpreter: Class for interpreting metric values using guidelines.
+    - interpret_metric: Convenience function for detailed analysis.
+
+Example:
+    >>> from fin_statement_model.core.metrics import metric_registry, interpret_metric
+    >>> metric_def = metric_registry.get('current_ratio')
+    >>> result = interpret_metric(metric_def, 1.8)
+    >>> result['rating']
+    'good'
+"""
 
 from enum import Enum
 from typing import Any
@@ -8,7 +21,20 @@ from fin_statement_model.core.metrics.models import (
 
 
 class MetricRating(Enum):
-    """Rating levels for metric values."""
+    """Rating levels for metric values.
+
+    Members:
+        EXCELLENT: Value is excellent.
+        GOOD: Value is good.
+        ADEQUATE: Value is adequate.
+        WARNING: Value is in a warning zone.
+        POOR: Value is poor.
+        UNKNOWN: No guidelines available.
+
+    Example:
+        >>> MetricRating.GOOD.value
+        'good'
+    """
 
     EXCELLENT = "excellent"
     GOOD = "good"
@@ -21,12 +47,16 @@ class MetricRating(Enum):
 class MetricInterpreter:
     """Interpret metric values based on defined guidelines.
 
+    This class uses the interpretation section of a MetricDefinition to rate and explain values.
+
     Example:
         >>> from fin_statement_model.core.metrics import metric_registry, MetricInterpreter
         >>> metric_def = metric_registry.get("current_ratio")
         >>> interpreter = MetricInterpreter(metric_def)
         >>> interpreter.rate_value(1.8)
         <MetricRating.GOOD: 'good'>
+        >>> interpreter.get_interpretation_message(1.8)
+        'Good performance: 1.80'
     """
 
     def __init__(self, metric_definition: MetricDefinition):
@@ -45,9 +75,10 @@ class MetricInterpreter:
             value: The metric value to rate.
 
         Returns:
-            MetricRating indicating the quality of the value.
+            MetricRating: The quality of the value.
 
         Example:
+            >>> interpreter = MetricInterpreter(metric_registry.get('current_ratio'))
             >>> interpreter.rate_value(1.8)
             <MetricRating.GOOD: 'good'>
         """
@@ -104,9 +135,10 @@ class MetricInterpreter:
             value: The metric value to interpret.
 
         Returns:
-            A descriptive message about the metric value.
+            str: A descriptive message about the metric value.
 
         Example:
+            >>> interpreter = MetricInterpreter(metric_registry.get('current_ratio'))
             >>> interpreter.get_interpretation_message(1.8)
             'Good performance: 1.80'
         """
@@ -131,9 +163,10 @@ class MetricInterpreter:
             value: The metric value to analyze.
 
         Returns:
-            Dictionary containing detailed analysis information.
+            dict[str, Any]: Dictionary containing detailed analysis information.
 
         Example:
+            >>> interpreter = MetricInterpreter(metric_registry.get('current_ratio'))
             >>> analysis = interpreter.get_detailed_analysis(1.8)
             >>> analysis['rating']
             'good'
@@ -179,7 +212,7 @@ def interpret_metric(
         value: The value to interpret.
 
     Returns:
-        Detailed interpretation analysis.
+        dict[str, Any]: Detailed interpretation analysis.
 
     Example:
         >>> from fin_statement_model.core.metrics import metric_registry, interpret_metric

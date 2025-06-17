@@ -3,6 +3,18 @@
 This package contains financial metrics organized by analytical category for easier
 maintenance and understanding. All metrics are automatically loaded into the
 metric_registry when this package is imported.
+
+The main entry point is load_organized_metrics(), which loads all metrics from the
+subdirectories and registers them with the global metric_registry.
+
+Example:
+    >>> from fin_statement_model.core.metrics.metric_defn import load_organized_metrics
+    >>> count = load_organized_metrics()
+    >>> print(f"Loaded {count} metrics from organized structure")
+
+Auto-loading:
+    When this package is imported, load_organized_metrics() is called automatically.
+    Any errors during loading are logged as warnings.
 """
 
 import logging
@@ -15,13 +27,24 @@ logger = logging.getLogger(__name__)
 
 
 def load_organized_metrics(base_path: Optional[Path] = None) -> int:
-    """Load all metrics from the organized structure.
+    """Load all metrics from the organized structure of YAML files.
+
+    This function loads metrics from a set of predefined YAML files organized by category.
+    It registers all found metrics with the global metric_registry.
 
     Args:
-        base_path: Base path to the metric_defn directory. If None, uses default.
+        base_path: Optional[Path]. Base path to the metric_defn directory. If None, uses default.
 
     Returns:
-        Total number of metrics loaded.
+        int: Total number of metrics loaded.
+
+    Raises:
+        Exception: If loading a directory fails, logs the error and continues.
+
+    Example:
+        >>> from fin_statement_model.core.metrics.metric_defn import load_organized_metrics
+        >>> count = load_organized_metrics()
+        >>> print(f"Loaded {count} metrics from organized structure")
     """
     if base_path is None:
         base_path = Path(__file__).parent
