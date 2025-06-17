@@ -570,7 +570,7 @@ class StatementForecaster:
 
         # Create forecast node
         try:
-            forecast_node = NodeFactory.create_forecast_node(  # type: ignore[call-arg]
+            forecast_node = NodeFactory.create_forecast_node(
                 name=forecast_name,
                 base_node=base_node,
                 forecast_config=config,

@@ -27,10 +27,12 @@ from typing import Any
 
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node
+from fin_statement_model.core.node_factory.registries import node_type
 
 logger = logging.getLogger(__name__)
 
 
+@node_type("financial_statement_item")
 class FinancialStatementItemNode(Node):
     """Store raw financial statement values for specific periods.
 

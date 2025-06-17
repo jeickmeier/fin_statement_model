@@ -40,6 +40,7 @@ from .calculation import (
     FormulaCalculation,
 )
 from .registry import Registry
+from fin_statement_model.core.node_factory.registries import calc_alias
 
 # Register calculations
 Registry.register(AdditionCalculation)
@@ -49,6 +50,15 @@ Registry.register(DivisionCalculation)
 Registry.register(WeightedAverageCalculation)
 Registry.register(CustomFormulaCalculation)
 Registry.register(FormulaCalculation)
+
+# Alias mapping used by Graph APIs → Calculation classes
+calc_alias("addition")(AdditionCalculation)
+calc_alias("subtraction")(SubtractionCalculation)
+calc_alias("multiplication")(MultiplicationCalculation)
+calc_alias("division")(DivisionCalculation)
+calc_alias("weighted_average")(WeightedAverageCalculation)
+calc_alias("custom_formula")(CustomFormulaCalculation)
+calc_alias("formula")(FormulaCalculation)
 
 __all__ = [
     "AdditionCalculation",

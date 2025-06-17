@@ -42,6 +42,7 @@ from typing import Callable
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node
 from fin_statement_model.core.errors import CalculationError
+from fin_statement_model.core.node_factory.registries import node_type
 
 # Added logger instance
 logger = logging.getLogger(__name__)
@@ -52,6 +53,7 @@ StatFunc = Callable[
 ]  # Widen callable type to accept any callable returning Numeric
 
 
+@node_type("yoy_growth")
 class YoYGrowthNode(Node):
     """Compute year-over-year percentage growth.
 
@@ -216,6 +218,7 @@ class YoYGrowthNode(Node):
         )
 
 
+@node_type("multi_period_stat")
 class MultiPeriodStatNode(Node):
     """Compute a statistical measure over multiple periods.
 
@@ -431,6 +434,7 @@ class MultiPeriodStatNode(Node):
         )
 
 
+@node_type("two_period_average")
 class TwoPeriodAverageNode(Node):
     """Compute the average of an input node's values over two periods.
 

@@ -32,7 +32,7 @@ Example:
     30.0
 """
 
-from typing import Optional, Any, Callable
+from typing import Optional, Any, Callable, cast
 
 from fin_statement_model.core.calculations.calculation import (
     Calculation,
@@ -42,11 +42,13 @@ from fin_statement_model.core.errors import (
     CalculationError,
 )
 from fin_statement_model.core.nodes.base import Node
+from fin_statement_model.core.node_factory.registries import node_type
 
 
 # === CalculationNode ===
 
 
+@node_type("calculation")
 class CalculationNode(Node):
     """Delegate calculation logic to a calculation object.
 
@@ -348,20 +350,24 @@ class CalculationNode(Node):
         metric_description = data.get("metric_description")
 
         # Create the node using NodeFactory
-        return NodeFactory.create_calculation_node(
-            name=name,
-            inputs=input_nodes,
-            calculation_type=calculation_type,
-            formula_variable_names=formula_variable_names,
-            metric_name=metric_name,
-            metric_description=metric_description,
-            **calculation_args,
+        return cast(
+            "CalculationNode",
+            NodeFactory.create_calculation_node(
+                name=name,
+                inputs=input_nodes,
+                calculation_type=calculation_type,
+                formula_variable_names=formula_variable_names,
+                metric_name=metric_name,
+                metric_description=metric_description,
+                **calculation_args,
+            ),
         )
 
 
 # === FormulaCalculationNode ===
 
 
+@node_type("formula_calculation")
 class FormulaCalculationNode(CalculationNode):
     """Calculate values based on a formula string.
 
@@ -541,6 +547,7 @@ class FormulaCalculationNode(CalculationNode):
 # === CustomCalculationNode ===
 
 
+@node_type("custom_calculation")
 class CustomCalculationNode(Node):
     """Calculate values using a custom Python function.
 

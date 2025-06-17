@@ -33,6 +33,7 @@ from typing import Optional, Any
 
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node
+from fin_statement_model.core.node_factory.registries import forecast_type
 
 logger = logging.getLogger(__name__)
 
@@ -189,6 +190,7 @@ class ForecastNode(Node):
         raise NotImplementedError("Subclasses must implement from_dict_with_context")
 
 
+@forecast_type("simple")
 class FixedGrowthForecastNode(ForecastNode):
     """Forecast node that applies a single growth rate to every future period.
 
@@ -306,6 +308,7 @@ class FixedGrowthForecastNode(ForecastNode):
         return node
 
 
+@forecast_type("curve")
 class CurveGrowthForecastNode(ForecastNode):
     """Forecast node with period-specific growth rates.
 
@@ -433,6 +436,7 @@ class CurveGrowthForecastNode(ForecastNode):
         return node
 
 
+@forecast_type("statistical")
 class StatisticalGrowthForecastNode(ForecastNode):
     """Forecast node whose growth rates are drawn from a random distribution.
 
@@ -510,6 +514,7 @@ class StatisticalGrowthForecastNode(ForecastNode):
         )
 
 
+@forecast_type("custom")
 class CustomGrowthForecastNode(ForecastNode):
     """Forecast node that computes growth via a user-supplied function.
 
@@ -585,6 +590,7 @@ class CustomGrowthForecastNode(ForecastNode):
         )
 
 
+@forecast_type("average")
 class AverageValueForecastNode(ForecastNode):
     """Forecast node that projects the historical average forward.
 
@@ -713,6 +719,7 @@ class AverageValueForecastNode(ForecastNode):
         return node
 
 
+@forecast_type("average_growth")
 class AverageHistoricalGrowthForecastNode(ForecastNode):
     """Forecast node that applies the average historical growth rate to all future periods."""
 
