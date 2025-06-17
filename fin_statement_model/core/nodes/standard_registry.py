@@ -1,7 +1,28 @@
-"""Registry for standard node names.
+"""Registry for standard node names and metadata.
 
 This module provides a registry system for standardized node names,
 ensuring consistency across financial models and enabling metrics to work properly.
+
+Features:
+    - StandardNodeDefinition: Pydantic model for node metadata (category, subcategory, description, alternate names, sign convention).
+    - StandardNodeRegistry: Manages loading, validation, and lookup of standard node definitions.
+    - Supports loading from organized YAML files and direct YAML file loading.
+    - Provides methods to resolve alternate names, validate names, list categories, and retrieve sign conventions.
+    - Used by the financial statement model to ensure canonical naming and robust metric calculation.
+
+Example:
+    >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+    >>> standard_node_registry.is_standard_name('revenue')
+    True
+    >>> standard_node_registry.get_standard_name('sales')
+    'revenue'
+    >>> defn = standard_node_registry.get_definition('revenue')
+    >>> defn.category
+    'income_statement'
+    >>> standard_node_registry.list_standard_names('balance_sheet_assets')[:3]
+    ['accounts_receivable', 'cash_and_equivalents', 'current_assets']
+    >>> standard_node_registry.get_sign_convention('treasury_stock')
+    'negative'
 """
 
 import logging
@@ -22,6 +43,20 @@ class StandardNodeDefinition(BaseModel):
         description (str): Human-readable description of the node.
         alternate_names (list[str]): Alternate names mapping to this standard.
         sign_convention (str): Sign convention ('positive' or 'negative').
+
+    Example:
+        >>> from fin_statement_model.core.nodes.standard_registry import StandardNodeDefinition
+        >>> defn = StandardNodeDefinition(
+        ...     category='income_statement',
+        ...     subcategory='top_line',
+        ...     description='Total revenue/sales',
+        ...     alternate_names=['sales', 'total_revenue'],
+        ...     sign_convention='positive',
+        ... )
+        >>> defn.category
+        'income_statement'
+        >>> defn.alternate_names
+        ['sales', 'total_revenue']
     """
 
     model_config = ConfigDict(str_strip_whitespace=True)
@@ -44,6 +79,16 @@ class StandardNodeRegistry:
         _categories (set[str]): Registered categories.
         _initialized (bool): Whether default nodes have been initialized.
         _loaded_from (Optional[str]): Source path of loaded definitions.
+
+    Example:
+        >>> from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
+        >>> reg = StandardNodeRegistry()
+        >>> reg._load_nodes_from_data({'revenue': {'category': 'income_statement', 'subcategory': 'top_line', 'description': 'Total revenue', 'alternate_names': ['sales'], 'sign_convention': 'positive'}}, 'test')
+        1
+        >>> reg.is_standard_name('revenue')
+        True
+        >>> reg.get_standard_name('sales')
+        'revenue'
     """
 
     def __init__(self) -> None:
@@ -143,10 +188,15 @@ class StandardNodeRegistry:
         If it's not recognized, returns the original name.
 
         Args:
-            name: The node name to standardize.
+            name (str): The node name to standardize.
 
         Returns:
-            The standardized node name.
+            str: The standardized node name.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            >>> standard_node_registry.get_standard_name('sales')
+            'revenue'
         """
         # Check if it's already a standard name
         if name in self._standard_nodes:
@@ -163,10 +213,15 @@ class StandardNodeRegistry:
         """Check if a name is a recognized standard node name.
 
         Args:
-            name: The node name to check.
+            name (str): The node name to check.
 
         Returns:
-            True if the name is a standard node name, False otherwise.
+            bool: True if the name is a standard node name, False otherwise.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            >>> standard_node_registry.is_standard_name('revenue')
+            True
         """
         return name in self._standard_nodes
 
@@ -174,10 +229,15 @@ class StandardNodeRegistry:
         """Check if a name is a recognized alternate name.
 
         Args:
-            name: The node name to check.
+            name (str): The node name to check.
 
         Returns:
-            True if the name is an alternate name, False otherwise.
+            bool: True if the name is an alternate name, False otherwise.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            >>> standard_node_registry.is_alternate_name('sales')
+            True
         """
         return name in self._alternate_to_standard
 
@@ -185,10 +245,19 @@ class StandardNodeRegistry:
         """Check if a name is either standard or alternate.
 
         Args:
-            name: The node name to check.
+            name (str): The node name to check.
 
         Returns:
-            True if the name is recognized, False otherwise.
+            bool: True if the name is recognized, False otherwise.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            >>> standard_node_registry.is_recognized_name('revenue')
+            True
+            >>> standard_node_registry.is_recognized_name('sales')
+            True
+            >>> standard_node_registry.is_recognized_name('not_a_node')
+            False
         """
         return self.is_standard_name(name) or self.is_alternate_name(name)
 
@@ -198,10 +267,16 @@ class StandardNodeRegistry:
         Works with both standard and alternate names.
 
         Args:
-            name: The node name to look up.
+            name (str): The node name to look up.
 
         Returns:
-            The node definition if found, None otherwise.
+            Optional[StandardNodeDefinition]: The node definition if found, None otherwise.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            >>> defn = standard_node_registry.get_definition('revenue')
+            >>> defn.category
+            'income_statement'
         """
         standard_name = self.get_standard_name(name)
         return self._standard_nodes.get(standard_name)
@@ -210,10 +285,15 @@ class StandardNodeRegistry:
         """List all standard node names, optionally filtered by category.
 
         Args:
-            category: Optional category to filter by.
+            category (Optional[str]): Optional category to filter by.
 
         Returns:
-            Sorted list of standard node names.
+            list[str]: Sorted list of standard node names.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            >>> standard_node_registry.list_standard_names('balance_sheet_assets')[:3]
+            ['accounts_receivable', 'cash_and_equivalents', 'current_assets']
         """
         if category:
             names = [
@@ -230,7 +310,12 @@ class StandardNodeRegistry:
         """List all available categories.
 
         Returns:
-            Sorted list of categories.
+            list[str]: Sorted list of categories.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            >>> 'income_statement' in standard_node_registry.list_categories()
+            True
         """
         return sorted(self._categories)
 
@@ -238,12 +323,20 @@ class StandardNodeRegistry:
         """Validate a node name against standards.
 
         Args:
-            name: The node name to validate.
-            strict: If True, only standard names are valid.
-                   If False, alternate names are also valid.
+            name (str): The node name to validate.
+            strict (bool): If True, only standard names are valid. If False, alternate names are also valid.
 
         Returns:
-            Tuple of (is_valid, message).
+            tuple[bool, str]: Tuple of (is_valid, message).
+
+        Example:
+            >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            >>> standard_node_registry.validate_node_name('revenue')
+            (True, "'revenue' is a standard node name")
+            >>> standard_node_registry.validate_node_name('sales')
+            (True, "'sales' is valid (alternate for 'revenue')")
+            >>> standard_node_registry.validate_node_name('not_a_node')
+            (False, "'not_a_node' is not a recognized node name")
         """
         if strict:
             if self.is_standard_name(name):
@@ -269,10 +362,15 @@ class StandardNodeRegistry:
         """Get the sign convention for a node.
 
         Args:
-            name: The node name (standard or alternate).
+            name (str): The node name (standard or alternate).
 
         Returns:
-            The sign convention ('positive' or 'negative') if found, None otherwise.
+            Optional[str]: The sign convention ('positive' or 'negative') if found, None otherwise.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            >>> standard_node_registry.get_sign_convention('treasury_stock')
+            'negative'
         """
         definition = self.get_definition(name)
         return definition.sign_convention if definition else None
@@ -285,11 +383,17 @@ class StandardNodeRegistry:
         """Load default standard nodes from organized directory.
 
         Args:
-            organized_path (Path | None): Base path to `standard_nodes_defn`. Defaults to package directory.
+            organized_path (Optional[Path]): Base path to `standard_nodes_defn`. Defaults to package directory.
             force_reload (bool): If True, reload even if already initialized.
 
         Returns:
             int: Count of nodes loaded.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            >>> count = standard_node_registry.initialize_default_nodes()
+            >>> count > 0
+            True
         """
         if self._initialized and not force_reload:
             logger.debug(
@@ -383,9 +487,11 @@ class StandardNodeRegistry:
         Returns:
             int: Number of nodes loaded from the file.
 
-        Raises:
-            FileNotFoundError: If `yaml_path` does not exist.
-            ValueError: If YAML is invalid or structure is incorrect.
+        Example:
+            >>> from pathlib import Path
+            >>> from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
+            >>> reg = StandardNodeRegistry()
+            >>> # reg.load_from_yaml_file(Path('path/to/file.yaml'))  # doctest: +SKIP
         """
         if not yaml_path.exists():
             raise FileNotFoundError(f"Standard nodes file not found: {yaml_path}")

@@ -2,42 +2,23 @@
 
 This package provides the building blocks for the financial statement model graph. Nodes represent data points, calculations, statistics, and forecasts on financial statement items.
 
-## Overview of Node Types
+## Features
+- Abstract base class for all node types (`Node`)
+- Data nodes for storing raw financial data
+- Calculation nodes for formulas, custom logic, and delegated calculations
+- Statistical nodes for time-series analysis (growth, averages, statistics)
+- Forecast nodes for projecting future values
+- Standard node registry for canonical names and metadata
+- Helper utilities for node introspection and validation
 
-### Base Node
-- **Node** (abstract): Defines the interface for all nodes:
-  - `calculate(period: str) -> float`
-  - `to_dict() -> dict`
-  - Optional: `clear_cache()`, `get_dependencies()`
+## Google-Style Docstrings
+All public classes and methods use Google-style docstrings, including:
+- 1-line imperative summary
+- Args/Returns sections with blank lines before each
+- Working doctest examples
+- Clear description of parameters, return values, and exceptions
 
-### Data Nodes
-- **FinancialStatementItemNode**: Leaf node storing raw financial data for named periods.
-
-### Calculation Nodes
-- **CalculationNode**: Delegates computation to a `Calculation` object.
-- **FormulaCalculationNode**: Evaluates string formulas (e.g., `"rev - cost"`).
-- **CustomCalculationNode**: Invokes a Python callable on input node values.
-
-### Statistical Nodes
-- **YoYGrowthNode**: Computes year-over-year growth: `(current - prior)/prior`.
-- **MultiPeriodStatNode**: Applies a statistical function (mean, stdev, etc.) over multiple periods.
-- **TwoPeriodAverageNode**: Averages values from two specified periods.
-
-### Forecast Nodes
-- **ForecastNode** (abstract): Base class for projecting future values from historical data.
-- **FixedGrowthForecastNode**: Applies a constant growth rate each period.
-- **CurveGrowthForecastNode**: Uses a list of growth rates, one per forecast period.
-- **StatisticalGrowthForecastNode**: Samples growth rates from a distribution (e.g., Monte Carlo).
-- **CustomGrowthForecastNode**: Calls a user-supplied function to compute growth factors.
-- **AverageValueForecastNode**: Projects the historical average forward.
-- **AverageHistoricalGrowthForecastNode**: Projects using the average historical growth rate.
-
-### Registry & Helpers
-- **standard_node_registry**: Global registry of canonical node names and their metadata.
-- **is_calculation_node(node)**: Helper to detect nodes that compute (vs. store) values.
-
-## Getting Started: Basic Usage
-
+## Basic Usage
 ```python
 from fin_statement_model.core.nodes import (
     FinancialStatementItemNode,
@@ -68,8 +49,46 @@ print(is_calculation_node(revenue))  # False
 print(is_calculation_node(gp))       # True
 ```
 
-## Adding a New Node Type
+## Advanced Features
+- **Custom Calculation Nodes**: Use Python callables for bespoke logic.
+- **Multi-Period Statistics**: Compute mean, stdev, or custom stats over periods.
+- **Forecasting**: Project values using fixed, curve, statistical, or custom growth.
+- **Node Serialization**: All nodes support `to_dict()` for serialization; most support `from_dict_with_context` for deserialization.
+- **Standard Node Registry**: Use `standard_node_registry` to validate, resolve, and list canonical node names and categories.
 
+### Example: Multi-Period Stat Node
+```python
+from fin_statement_model.core.nodes import FinancialStatementItemNode, MultiPeriodStatNode
+import statistics
+
+data = {'Q1': 10, 'Q2': 12, 'Q3': 11, 'Q4': 13}
+sales = FinancialStatementItemNode('sales', data)
+avg = MultiPeriodStatNode('avg_sales', input_node=sales, periods=['Q1','Q2','Q3','Q4'], stat_func=statistics.mean)
+print(avg.calculate())  # 11.5
+```
+
+### Example: Using the Standard Node Registry
+```python
+from fin_statement_model.core.nodes import standard_node_registry
+
+# Validate a node name
+is_valid, msg = standard_node_registry.validate_node_name('revenue')
+print(is_valid, msg)  # True, 'revenue' is a standard node name
+
+# Resolve alternate name to standard
+print(standard_node_registry.get_standard_name('sales'))  # 'revenue'
+
+# List all balance sheet asset nodes
+print(standard_node_registry.list_standard_names('balance_sheet_assets'))
+```
+
+## Best Practices
+- Always use standard node names where possible for compatibility.
+- Use Google-style docstrings for all new node types and methods.
+- Write tests for all new node types (see `tests/core/nodes/`).
+- Use `clear_cache()` on calculation/forecast nodes if input data changes.
+
+## Adding a New Node Type
 1. **Create the Node Class**
    - Add a new file under `core/nodes/`, e.g. `my_custom_node.py`.
    - Define a class inheriting `Node`.
@@ -79,22 +98,20 @@ print(is_calculation_node(gp))       # True
      - `@staticmethod from_dict_with_context(data, context) -> YourNode`
    - Override `get_dependencies()` if your node depends on other nodes.
    - Override `clear_cache()` if your node caches results.
-
 2. **Integrate into the Package**
    - Import your node in `core/nodes/__init__.py`.
    - Add the class name to the `__all__` list.
-
 3. **Register as a Calculation Node (optional)**
    - If your node should be recognized as a calculation node, update `is_calculation_node` doc or logic as needed.
-
 4. **Write Tests**
    - Create a test file under `tests/core/nodes/`, e.g. `test_my_custom_node.py`.
    - Ensure ≥80% coverage, include edge cases, and validate serialization.
-
 5. **Lint, Format, Type-Check, and Test**
    ```bash
    black . && ruff . && mypy .
    pytest --cov=fin_statement_model
    ```
 
-Following these steps ensures consistency, discoverability, and maintainability of new node types in the financial statement model library. 
+## See Also
+- [Standard Node Registry](./standard_nodes_defn/README.md)
+- [Node API Reference](../html/fin_statement_model/core/nodes/index.html) 

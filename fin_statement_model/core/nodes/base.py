@@ -2,6 +2,22 @@
 
 This module provides the Node base class with interfaces for calculation,
 attribute access, and optional caching behavior.
+
+Features:
+    - Abstract base class for all node types in the financial statement model graph.
+    - Enforces implementation of calculation and serialization methods.
+    - Provides attribute access, dependency inspection, and optional cache clearing.
+
+Example:
+    >>> from fin_statement_model.core.nodes.base import Node
+    >>> class DummyNode(Node):
+    ...     def calculate(self, period): return 42.0
+    ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
+    >>> node = DummyNode('test')
+    >>> node.calculate('2023')
+    42.0
+    >>> node.to_dict()['type']
+    'dummy'
 """
 
 from abc import ABC, abstractmethod
@@ -12,13 +28,24 @@ if TYPE_CHECKING:
 
 
 class Node(ABC):
-    """Abstract base class for nodes in the financial statement model.
+    """Implement the abstract base class for all nodes in the financial statement model.
 
-    Provides the interface for calculating values, caching, serialization,
-    and dependency inspection.
+    This class defines the required interface for all node types, including calculation,
+    serialization, and dependency inspection. Subclasses must implement `calculate` and `to_dict`.
 
     Attributes:
         name (str): Unique identifier for the node instance.
+        values (dict[str, Any]): Optional mapping of period to value (for data nodes).
+
+    Example:
+        >>> class DummyNode(Node):
+        ...     def calculate(self, period): return 1.0
+        ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
+        >>> node = DummyNode('Revenue')
+        >>> node.name
+        'Revenue'
+        >>> node.calculate('2023')
+        1.0
     """
 
     name: str
@@ -28,17 +55,16 @@ class Node(ABC):
         """Initialize the Node instance with a unique name.
 
         Args:
-            name: Unique identifier for the node. Must be a non-empty string.
+            name (str): Unique identifier for the node. Must be a non-empty string.
 
         Raises:
-            ValueError: If `name` is empty or not a string.
+            ValueError: If `name` is empty, not a string, or contains invalid characters.
 
-        Examples:
-            >>> class Dummy(Node):
-            ...     def calculate(self, period): return 0.0
-            >>> dn = Dummy("Revenue")
-            >>> dn.name
-            'Revenue'
+        Example:
+            >>> Node('Revenue')  # doctest: +ELLIPSIS
+            Traceback (most recent call last):
+            ...
+            TypeError: Can't instantiate abstract class Node...
         """
         # Check if name is a non-empty string
         if not isinstance(name, str) or not name:
@@ -66,6 +92,13 @@ class Node(ABC):
 
         Returns:
             float: Calculated value for the period.
+
+        Example:
+            >>> class Dummy(Node):
+            ...     def calculate(self, period): return 2.0
+            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
+            >>> Dummy('Test').calculate('2023')
+            2.0
         """
 
     def clear_cache(self) -> None:
@@ -76,8 +109,14 @@ class Node(ABC):
         Returns:
             None
 
-        Examples:
+        Example:
+            >>> class Dummy(Node):
+            ...     def calculate(self, period): return 1.0
+            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
+            ...     def clear_cache(self): print('Cache cleared!')
+            >>> node = Dummy('Test')
             >>> node.clear_cache()
+            Cache cleared!
         """
         # Default: no cache to clear
 
@@ -85,13 +124,17 @@ class Node(ABC):
         """Check if the node has a specific attribute.
 
         Args:
-            attr_name: The name of the attribute to check.
+            attr_name (str): The name of the attribute to check.
 
         Returns:
-            True if the attribute exists, otherwise False.
+            bool: True if the attribute exists, otherwise False.
 
-        Examples:
-            >>> node.has_attribute("name")
+        Example:
+            >>> class Dummy(Node):
+            ...     def calculate(self, period): return 1.0
+            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
+            >>> node = Dummy('Test')
+            >>> node.has_attribute('name')
             True
         """
         return hasattr(self, attr_name)
@@ -100,17 +143,21 @@ class Node(ABC):
         """Get a named attribute from the node.
 
         Args:
-            attribute_name: The name of the attribute to retrieve.
+            attribute_name (str): The name of the attribute to retrieve.
 
         Returns:
-            The value of the specified attribute.
+            object: The value of the specified attribute.
 
         Raises:
             AttributeError: If the attribute does not exist.
 
-        Examples:
-            >>> node.get_attribute("name")
-            'Revenue'
+        Example:
+            >>> class Dummy(Node):
+            ...     def calculate(self, period): return 1.0
+            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
+            >>> node = Dummy('Test')
+            >>> node.get_attribute('name')
+            'Test'
         """
         try:
             return getattr(self, attribute_name)
@@ -130,6 +177,15 @@ class Node(ABC):
 
         Raises:
             NotImplementedError: Always in base class.
+
+        Example:
+            >>> class Dummy(Node):
+            ...     def calculate(self, period): return 1.0
+            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
+            ...     def set_value(self, period, value): print(f"Set {period} to {value}")
+            >>> node = Dummy('Test')
+            >>> node.set_value('2023', 100)
+            Set 2023 to 100
         """
         raise NotImplementedError(f"Node '{self.name}' does not support set_value")
 
@@ -146,12 +202,15 @@ class Node(ABC):
         - input references (for calculation nodes)
 
         Returns:
-            Dictionary representation of the node.
+            dict[str, Any]: Dictionary representation of the node.
 
-        Examples:
-            >>> node_dict = node.to_dict()
-            >>> node_dict['type']
-            'financial_statement_item'
+        Example:
+            >>> class Dummy(Node):
+            ...     def calculate(self, period): return 1.0
+            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
+            >>> node = Dummy('Test')
+            >>> node.to_dict()['type']
+            'dummy'
         """
 
     def get_dependencies(self) -> list[str]:
@@ -160,6 +219,15 @@ class Node(ABC):
         Default implementation returns empty list. Override in nodes that have dependencies.
 
         Returns:
-            List of node names this node depends on.
+            list[str]: List of node names this node depends on.
+
+        Example:
+            >>> class Dummy(Node):
+            ...     def calculate(self, period): return 1.0
+            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
+            ...     def get_dependencies(self): return ['dep1', 'dep2']
+            >>> node = Dummy('Test')
+            >>> node.get_dependencies()
+            ['dep1', 'dep2']
         """
         return []

@@ -3,6 +3,28 @@
 This module defines the base `ForecastNode` class and its subclasses,
 implementing various forecasting strategies (fixed, curve, statistical,
 custom, average, and historical growth).
+
+Features:
+    - ForecastNode provides a base for projecting future values from historical data.
+    - FixedGrowthForecastNode applies a constant growth rate to all forecast periods.
+    - CurveGrowthForecastNode allows period-specific growth rates.
+    - StatisticalGrowthForecastNode samples growth from a distribution.
+    - CustomGrowthForecastNode uses a user-supplied function for growth.
+    - AverageValueForecastNode projects the historical average forward.
+    - AverageHistoricalGrowthForecastNode applies the average historical growth rate.
+    - All nodes support serialization to and from dictionary representations (where possible).
+    - All nodes provide dependency inspection and cache clearing.
+
+Example:
+    >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+    >>> from fin_statement_model.core.nodes.forecast_nodes import FixedGrowthForecastNode, AverageValueForecastNode
+    >>> revenue = FinancialStatementItemNode("revenue", {"2022": 100, "2023": 110})
+    >>> forecast = FixedGrowthForecastNode(revenue, "2023", ["2024", "2025"], 0.05)
+    >>> round(forecast.calculate("2025"), 2)
+    121.28
+    >>> avg_forecast = AverageValueForecastNode(revenue, "2023", ["2024", "2025"])
+    >>> avg_forecast.calculate("2024")
+    105.0
 """
 
 import logging

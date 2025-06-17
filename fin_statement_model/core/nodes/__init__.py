@@ -26,6 +26,18 @@ Forecast Nodes:
     - AverageHistoricalGrowthForecastNode: Apply average historical growth rate.
 
 Also provides `standard_node_registry` and `is_calculation_node` helper.
+
+Example:
+    >>> from fin_statement_model.core.nodes import FinancialStatementItemNode, FormulaCalculationNode, is_calculation_node
+    >>> revenue = FinancialStatementItemNode('revenue', {'2022': 1000, '2023': 1200})
+    >>> cogs = FinancialStatementItemNode('cogs', {'2022': 400, '2023': 500})
+    >>> gp = FormulaCalculationNode('gross_profit', inputs={'rev': revenue, 'cost': cogs}, formula='rev - cost')
+    >>> gp.calculate('2023')
+    700
+    >>> is_calculation_node(gp)
+    True
+    >>> is_calculation_node(revenue)
+    False
 """
 
 import logging
@@ -89,12 +101,14 @@ def is_calculation_node(node: Node) -> bool:
     Returns:
         bool: True if `node` performs a calculation; False otherwise.
 
-    Examples:
+    Example:
         >>> from fin_statement_model.core.nodes import is_calculation_node, FinancialStatementItemNode, CalculationNode
         >>> data_node = FinancialStatementItemNode('rev', {'2023': 100})
         >>> is_calculation_node(data_node)
         False
-        >>> calc_node = CalculationNode('sum', inputs=[data_node], calculation=...)
+        >>> class DummyCalc:
+        ...     def calculate(self, inputs, period): return 1.0
+        >>> calc_node = CalculationNode('sum', inputs=[data_node], calculation=DummyCalc())
         >>> is_calculation_node(calc_node)
         True
     """

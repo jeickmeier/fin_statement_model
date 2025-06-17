@@ -4,6 +4,31 @@ This module defines nodes that perform statistical operations on node values acr
 - YoYGrowthNode: Compute year-over-year percentage growth.
 - MultiPeriodStatNode: Compute statistics (mean, stddev) over multiple periods.
 - TwoPeriodAverageNode: Compute simple average over two periods.
+
+Features:
+    - YoYGrowthNode computes (current - prior) / prior for two periods.
+    - MultiPeriodStatNode applies a statistical function (mean, stdev, etc.) to values across periods.
+    - TwoPeriodAverageNode computes the average of two periods' values.
+    - All nodes support serialization to and from dictionary representations.
+    - All nodes provide dependency inspection and error handling.
+
+Example:
+    >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+    >>> from fin_statement_model.core.nodes.stats_nodes import YoYGrowthNode, MultiPeriodStatNode, TwoPeriodAverageNode
+    >>> data = {"2022": 100.0, "2023": 120.0}
+    >>> base = FinancialStatementItemNode("revenue", data)
+    >>> yoy = YoYGrowthNode("rev_yoy", input_node=base, prior_period="2022", current_period="2023")
+    >>> round(yoy.calculate(), 2)
+    0.2
+    >>> data2 = {"Q1": 10, "Q2": 12, "Q3": 11, "Q4": 13}
+    >>> sales = FinancialStatementItemNode("sales", data2)
+    >>> import statistics
+    >>> avg = MultiPeriodStatNode("avg_sales", input_node=sales, periods=["Q1","Q2","Q3","Q4"], stat_func=statistics.mean)
+    >>> avg.calculate()
+    11.5
+    >>> avg2 = TwoPeriodAverageNode("avg2", input_node=sales, period1="Q1", period2="Q2")
+    >>> avg2.calculate()
+    11.0
 """
 
 import logging

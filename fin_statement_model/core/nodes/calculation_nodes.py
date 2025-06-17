@@ -4,6 +4,32 @@ This module defines the different types of calculation nodes available in the sy
 - FormulaCalculationNode: Evaluates a formula expression string (e.g., "a + b / 2")
 - CalculationNode: Uses a calculation object for calculation logic
 - CustomCalculationNode: Calculates using a Python callable/function
+
+Features:
+    - CalculationNode delegates logic to a Calculation object (strategy pattern).
+    - FormulaCalculationNode evaluates mathematical expressions with named inputs.
+    - CustomCalculationNode allows arbitrary Python callables for custom logic.
+    - All nodes support serialization to and from dictionary representations.
+    - All nodes provide dependency inspection and cache clearing where appropriate.
+
+Example:
+    >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+    >>> from fin_statement_model.core.nodes.calculation_nodes import CalculationNode, FormulaCalculationNode, CustomCalculationNode
+    >>> class SumCalculation:
+    ...     def calculate(self, inputs, period):
+    ...         return sum(node.calculate(period) for node in inputs)
+    >>> node_a = FinancialStatementItemNode("a", {"2023": 10})
+    >>> node_b = FinancialStatementItemNode("b", {"2023": 20})
+    >>> sum_node = CalculationNode("sum_ab", inputs=[node_a, node_b], calculation=SumCalculation())
+    >>> sum_node.calculate("2023")
+    30.0
+    >>> formula_node = FormulaCalculationNode("gp", inputs={"rev": node_a, "cost": node_b}, formula="rev - cost")
+    >>> formula_node.calculate("2023")
+    -10.0
+    >>> def add(a, b): return a + b
+    >>> custom_node = CustomCalculationNode("add_node", inputs=[node_a, node_b], formula_func=add)
+    >>> custom_node.calculate("2023")
+    30.0
 """
 
 from typing import Optional, Any, Callable
@@ -32,8 +58,8 @@ class CalculationNode(Node):
         calculation (Any): An object possessing a `calculate(inputs: List[Node], period: str) -> float` method.
         _values (Dict[str, float]): Internal cache for calculated results.
 
-    Examples:
-        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode
+    Example:
+        >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
         >>> class SumCalculation:
         ...     def calculate(self, inputs, period):
         ...         return sum(node.calculate(period) for node in inputs)
@@ -59,6 +85,17 @@ class CalculationNode(Node):
         Raises:
             TypeError: If `inputs` is not a list of Nodes, or if `calculation`
                 does not have a callable `calculate` method.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+            >>> class SumCalculation:
+            ...     def calculate(self, inputs, period):
+            ...         return sum(node.calculate(period) for node in inputs)
+            >>> node_a = FinancialStatementItemNode("a", {"2023": 10})
+            >>> node_b = FinancialStatementItemNode("b", {"2023": 20})
+            >>> sum_node = CalculationNode("sum_ab", inputs=[node_a, node_b], calculation=SumCalculation())
+            >>> sum_node.calculate("2023")
+            30.0
         """
         super().__init__(name)
         if not isinstance(inputs, list) or not all(isinstance(n, Node) for n in inputs):
@@ -91,6 +128,17 @@ class CalculationNode(Node):
 
         Raises:
             CalculationError: If calculation fails or returns a non-numeric value.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+            >>> class SumCalculation:
+            ...     def calculate(self, inputs, period):
+            ...         return sum(node.calculate(period) for node in inputs)
+            >>> node_a = FinancialStatementItemNode("a", {"2023": 10})
+            >>> node_b = FinancialStatementItemNode("b", {"2023": 20})
+            >>> sum_node = CalculationNode("sum_ab", inputs=[node_a, node_b], calculation=SumCalculation())
+            >>> sum_node.calculate("2023")
+            30.0
         """
         if period in self._values:
             return self._values[period]
@@ -126,6 +174,16 @@ class CalculationNode(Node):
 
         Raises:
             TypeError: If the new calculation is invalid.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+            >>> class SumCalculation:
+            ...     def calculate(self, inputs, period):
+            ...         return sum(node.calculate(period) for node in inputs)
+            >>> node_a = FinancialStatementItemNode("a", {"2023": 10})
+            >>> node_b = FinancialStatementItemNode("b", {"2023": 20})
+            >>> sum_node = CalculationNode("sum_ab", inputs=[node_a, node_b], calculation=SumCalculation())
+            >>> sum_node.set_calculation(SumCalculation())
         """
         if not hasattr(calculation, "calculate") or not callable(
             getattr(calculation, "calculate")
@@ -141,6 +199,16 @@ class CalculationNode(Node):
 
         Returns:
             None
+
+        Example:
+            >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+            >>> class SumCalculation:
+            ...     def calculate(self, inputs, period):
+            ...         return sum(node.calculate(period) for node in inputs)
+            >>> node_a = FinancialStatementItemNode("a", {"2023": 10})
+            >>> node_b = FinancialStatementItemNode("b", {"2023": 20})
+            >>> sum_node = CalculationNode("sum_ab", inputs=[node_a, node_b], calculation=SumCalculation())
+            >>> sum_node.clear_cache()
         """
         self._values.clear()
 
@@ -149,6 +217,17 @@ class CalculationNode(Node):
 
         Returns:
             A list of input node names.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+            >>> class SumCalculation:
+            ...     def calculate(self, inputs, period):
+            ...         return sum(node.calculate(period) for node in inputs)
+            >>> node_a = FinancialStatementItemNode("a", {"2023": 10})
+            >>> node_b = FinancialStatementItemNode("b", {"2023": 20})
+            >>> sum_node = CalculationNode("sum_ab", inputs=[node_a, node_b], calculation=SumCalculation())
+            >>> sum_node.get_dependencies()
+            ['a', 'b']
         """
         return [node.name for node in self.inputs]
 
@@ -162,6 +241,9 @@ class CalculationNode(Node):
             This method requires access to NodeFactory's calculation registry
             to properly serialize the calculation type. Some calculation types
             with non-serializable parameters may include warnings.
+
+        Example:
+            >>> # See CalculationNode usage in main module docstring
         """
         # Import here to avoid circular imports
         from fin_statement_model.core.node_factory import NodeFactory
@@ -226,6 +308,9 @@ class CalculationNode(Node):
 
         Raises:
             ValueError: If the data is invalid or missing required fields.
+
+        Example:
+            >>> # See CalculationNode usage in main module docstring
         """
         # Import here to avoid circular imports
         from fin_statement_model.core.node_factory import NodeFactory
@@ -288,8 +373,8 @@ class FormulaCalculationNode(CalculationNode):
         metric_name (Optional[str]): Metric identifier from the registry, if any.
         metric_description (Optional[str]): Description from the metric definition, if any.
 
-    Examples:
-        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode
+    Example:
+        >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
         >>> revenue = FinancialStatementItemNode("revenue", {"2023": 100})
         >>> cogs = FinancialStatementItemNode("cogs", {"2023": 60})
         >>> formula_node = FormulaCalculationNode(
@@ -319,6 +404,16 @@ class FormulaCalculationNode(CalculationNode):
         Raises:
             ValueError: If `formula` syntax is invalid.
             TypeError: If any entry in `inputs` is not a Node.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+            >>> revenue = FinancialStatementItemNode("revenue", {"2023": 100})
+            >>> cogs = FinancialStatementItemNode("cogs", {"2023": 60})
+            >>> formula_node = FormulaCalculationNode(
+            ...     "gross_profit", inputs={"rev": revenue, "cost": cogs}, formula="rev - cost"
+            ... )
+            >>> formula_node.calculate("2023")
+            40.0
         """
         if not isinstance(inputs, dict) or not all(
             isinstance(n, Node) for n in inputs.values()
@@ -350,6 +445,16 @@ class FormulaCalculationNode(CalculationNode):
 
         Returns:
             list[str]: Names of input nodes.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+            >>> revenue = FinancialStatementItemNode("revenue", {"2023": 100})
+            >>> cogs = FinancialStatementItemNode("cogs", {"2023": 60})
+            >>> formula_node = FormulaCalculationNode(
+            ...     "gross_profit", inputs={"rev": revenue, "cost": cogs}, formula="rev - cost"
+            ... )
+            >>> formula_node.get_dependencies()
+            ['revenue', 'cogs']
         """
         return [node.name for node in self.inputs_dict.values()]
 
@@ -358,6 +463,9 @@ class FormulaCalculationNode(CalculationNode):
 
         Returns:
             dict[str, Any]: Serialized node data.
+
+        Example:
+            >>> # See FormulaCalculationNode usage in main module docstring
         """
         return {
             "type": "formula_calculation",
@@ -385,6 +493,9 @@ class FormulaCalculationNode(CalculationNode):
 
         Raises:
             ValueError: If the data is invalid or missing required fields.
+
+        Example:
+            >>> # See FormulaCalculationNode usage in main module docstring
         """
         if data.get("type") != "formula_calculation":
             raise ValueError(
@@ -441,8 +552,8 @@ class CustomCalculationNode(Node):
         description (Optional[str]): Description of the calculation.
         _values (dict[str, float]): Cache of computed results.
 
-    Examples:
-        >>> from fin_statement_model.core.nodes import FinancialStatementItemNode
+    Example:
+        >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
         >>> def add(a, b): return a + b
         >>> a = FinancialStatementItemNode("A", {"2023": 10})
         >>> b = FinancialStatementItemNode("B", {"2023": 5})
@@ -468,6 +579,15 @@ class CustomCalculationNode(Node):
 
         Raises:
             TypeError: If `inputs` is not a list of Node or `formula_func` is not callable.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+            >>> def add(a, b): return a + b
+            >>> a = FinancialStatementItemNode("A", {"2023": 10})
+            >>> b = FinancialStatementItemNode("B", {"2023": 5})
+            >>> node = CustomCalculationNode("add_node", inputs=[a, b], formula_func=add)
+            >>> node.calculate("2023")
+            15.0
         """
         super().__init__(name)
         if not isinstance(inputs, list) or not all(isinstance(n, Node) for n in inputs):
@@ -497,6 +617,15 @@ class CustomCalculationNode(Node):
 
         Raises:
             CalculationError: On errors retrieving inputs or computing the function.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+            >>> def add(a, b): return a + b
+            >>> a = FinancialStatementItemNode("A", {"2023": 10})
+            >>> b = FinancialStatementItemNode("B", {"2023": 5})
+            >>> node = CustomCalculationNode("add_node", inputs=[a, b], formula_func=add)
+            >>> node.calculate("2023")
+            15.0
         """
         if period in self._values:
             return self._values[period]
@@ -532,7 +661,16 @@ class CustomCalculationNode(Node):
             ) from e
 
     def clear_cache(self) -> None:
-        """Clear cached calculation results for this node."""
+        """Clear cached calculation results for this node.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+            >>> def add(a, b): return a + b
+            >>> a = FinancialStatementItemNode("A", {"2023": 10})
+            >>> b = FinancialStatementItemNode("B", {"2023": 5})
+            >>> node = CustomCalculationNode("add_node", inputs=[a, b], formula_func=add)
+            >>> node.clear_cache()
+        """
         self._values.clear()
 
     def get_dependencies(self) -> list[str]:
@@ -540,6 +678,15 @@ class CustomCalculationNode(Node):
 
         Returns:
             list[str]: Names of input nodes.
+
+        Example:
+            >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
+            >>> def add(a, b): return a + b
+            >>> a = FinancialStatementItemNode("A", {"2023": 10})
+            >>> b = FinancialStatementItemNode("B", {"2023": 5})
+            >>> node = CustomCalculationNode("add_node", inputs=[a, b], formula_func=add)
+            >>> node.get_dependencies()
+            ['A', 'B']
         """
         return [node.name for node in self.inputs]
 
@@ -548,6 +695,9 @@ class CustomCalculationNode(Node):
 
         Returns:
             dict[str, Any]: Serialized node data with non-serializable function warning.
+
+        Example:
+            >>> # See CustomCalculationNode usage in main module docstring
         """
         return {
             "type": "custom_calculation",
