@@ -21,7 +21,7 @@ class PeriodService:  # pylint: disable=too-few-public-methods
     underlying list is no longer supported (removed legacy shim).
     """
 
-    def __init__(self) -> None:  # noqa: D401
+    def __init__(self) -> None:
         # Internal, sorted list of unique period identifiers.
         self._periods: list[str] = []
 
@@ -29,12 +29,12 @@ class PeriodService:  # pylint: disable=too-few-public-methods
     # Public API --------------------------------------------------------
     # ------------------------------------------------------------------
     @property
-    def periods(self) -> List[str]:  # noqa: D401
+    def periods(self) -> List[str]:
         """Return an immutable **sorted** list of period identifiers."""
         # Return a shallow copy to prevent accidental mutation
         return list(self._periods)
 
-    def add_periods(self, periods: list[str]) -> None:  # noqa: D401
+    def add_periods(self, periods: list[str]) -> None:
         """Add *periods* ensuring uniqueness & sorted order."""
         if not isinstance(periods, list):  # defensive – mirroring existing Graph.guards
             raise TypeError("Periods must be provided as a list of strings.")
@@ -47,10 +47,10 @@ class PeriodService:  # pylint: disable=too-few-public-methods
     # ------------------------------------------------------------------
     # Convenience helpers ------------------------------------------------
     # ------------------------------------------------------------------
-    def contains(self, period: str) -> bool:  # noqa: D401
+    def contains(self, period: str) -> bool:
         """Return ``True`` if *period* is already registered."""
         return period in self._periods
 
-    def clear(self) -> None:  # noqa: D401
+    def clear(self) -> None:
         """Remove all registered periods."""
         self._periods.clear()

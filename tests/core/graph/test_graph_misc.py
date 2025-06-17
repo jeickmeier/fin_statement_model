@@ -2,15 +2,16 @@
 
 from __future__ import annotations
 
+from uuid import UUID
+
 import pytest
 
-from uuid import UUID
-from fin_statement_model.core.graph import Graph
-from fin_statement_model.core.graph.services.period_service import PeriodService
-from fin_statement_model.core.graph.services.adjustment_service import AdjustmentService
 from fin_statement_model.core.adjustments.models import AdjustmentType
-from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.core.errors import NodeError
+from fin_statement_model.core.graph import Graph
+from fin_statement_model.core.graph.services.adjustment_service import AdjustmentService
+from fin_statement_model.core.graph.services.period_service import PeriodService
+from fin_statement_model.core.nodes import FinancialStatementItemNode
 
 # ---------------------------------------------------------------------------
 # PeriodService tests

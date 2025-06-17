@@ -8,11 +8,11 @@ preserving the public behaviour of :class:`fin_statement_model.core.graph.graph.
 
 from __future__ import annotations
 
-from ._base import GraphBaseMixin
-from ._node_ops import NodeOpsMixin
-from ._calc_ops import CalcOpsMixin
 from ._adjustment_ops import AdjustmentMixin
+from ._base import GraphBaseMixin
+from ._calc_ops import CalcOpsMixin
 from ._merge_repr import MergeReprMixin
+from ._node_ops import NodeOpsMixin
 from ._traversal_ops import TraversalMixin
 
 __all__: list[str] = [
