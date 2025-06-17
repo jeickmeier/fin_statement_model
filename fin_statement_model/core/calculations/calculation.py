@@ -2,6 +2,24 @@
 
 This module provides the Calculation Pattern implementation for calculations,
 allowing different calculation types to be encapsulated in calculation classes.
+
+Features:
+    - Abstract base class for all calculation strategies.
+    - Built-in strategies: Addition, Subtraction, Multiplication, Division, Weighted Average,
+      Custom Python function, and Formula string evaluation.
+    - All calculations operate on lists of Node objects and a period string.
+    - Designed for extensibility: users can add custom calculation types.
+    - All exceptions are raised as CalculationError or StrategyError for consistency.
+
+Example:
+    >>> from fin_statement_model.core.calculations import AdditionCalculation
+    >>> class MockNode:
+    ...     def __init__(self, value): self._value = value
+    ...     def calculate(self, period): return self._value
+    >>> nodes = [MockNode(10), MockNode(20)]
+    >>> calc = AdditionCalculation()
+    >>> calc.calculate(nodes, '2023Q4')
+    30.0
 """
 
 from abc import ABC, abstractmethod
