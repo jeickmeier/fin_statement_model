@@ -28,7 +28,7 @@ Example:
 """
 
 # Main forecaster class
-from .forecaster import StatementForecaster
+from .forecaster.controller import StatementForecaster
 
 # Forecast methods
 from .methods import (

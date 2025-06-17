@@ -1,10 +1,24 @@
-"""Provide utilities for inferring and managing periods in forecasting.
+"""Period inference and management utilities for forecasting.
 
-This module handles:
-- Inferring historical periods from graph state
-- Determining base periods for forecasting
-- Validating period sequences
-- Ensuring forecast periods exist in the graph
+This module provides tools for inferring historical and forecast periods, determining base periods,
+validating period sequences, and ensuring that required periods exist in the financial statement graph.
+
+Features:
+    - Infer historical periods from graph state and forecast periods
+    - Determine the base period for forecasting (supports multiple strategies)
+    - Validate period sequences for duplicates and emptiness
+    - Ensure forecast periods exist in the graph, optionally adding them
+
+Example:
+    >>> from fin_statement_model.forecasting.period_manager import PeriodManager
+    >>> class DummyGraph:
+    ...     periods = ["2022", "2023", "2024"]
+    ...     def add_periods(self, periods): self.periods.extend(periods)
+    >>> graph = DummyGraph()
+    >>> PeriodManager.infer_historical_periods(graph, ["2024"])
+    ['2022', '2023']
+    >>> PeriodManager.ensure_periods_exist(graph, ["2025"], add_missing=True)
+    ['2025']
 """
 
 import logging
@@ -24,7 +38,7 @@ class PeriodManager:
     """
 
     @staticmethod
-    def infer_historical_periods(  # type: ignore
+    def infer_historical_periods(
         graph: Any,
         forecast_periods: list[str],
         provided_periods: Optional[list[str]] = None,
@@ -41,6 +55,12 @@ class PeriodManager:
 
         Raises:
             ValueError: If historical periods cannot be determined.
+
+        Example:
+            >>> class DummyGraph:
+            ...     periods = ["2022", "2023", "2024"]
+            >>> PeriodManager.infer_historical_periods(DummyGraph, ["2024"])
+            ['2022', '2023']
         """
         # If explicitly provided, use them
         if provided_periods is not None:
@@ -104,6 +124,13 @@ class PeriodManager:
 
         Raises:
             ValueError: If no valid base period can be determined.
+
+        Example:
+            >>> class DummyNode:
+            ...     name = "revenue"
+            ...     values = {"2022": 100, "2023": 110}
+            >>> PeriodManager.determine_base_period(DummyNode, ["2022", "2023"])
+            '2023'
         """
         if not historical_periods:
             raise ValueError("No historical periods provided")
@@ -161,6 +188,13 @@ class PeriodManager:
 
         Raises:
             ValueError: If the period sequence is invalid.
+
+        Example:
+            >>> PeriodManager.validate_period_sequence(["2022", "2023", "2024"])
+            >>> PeriodManager.validate_period_sequence(["2022", "2022"])
+            Traceback (most recent call last):
+                ...
+            ValueError: Period sequence contains duplicates: {'2022'}
         """
         if not periods:
             raise ValueError("Period sequence cannot be empty")
@@ -182,6 +216,10 @@ class PeriodManager:
 
         Raises:
             ValueError: If period not found in list.
+
+        Example:
+            >>> PeriodManager.get_period_index("2023", ["2022", "2023", "2024"])
+            1
         """
         try:
             return periods.index(period)
@@ -204,6 +242,14 @@ class PeriodManager:
 
         Raises:
             ValueError: If add_missing is False and periods are missing.
+
+        Example:
+            >>> class DummyGraph:
+            ...     periods = ["2022", "2023"]
+            ...     def add_periods(self, periods): self.periods.extend(periods)
+            >>> graph = DummyGraph()
+            >>> PeriodManager.ensure_periods_exist(graph, ["2024"], add_missing=True)
+            ['2024']
         """
         if not hasattr(graph, "periods"):
             raise ValueError("Graph does not have a periods attribute")

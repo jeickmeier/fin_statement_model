@@ -1,16 +1,21 @@
-"""Forecast future values based on average historical growth patterns.
+"""Historical growth forecast method using average historical growth rate.
 
-This method calculates future values by determining the average historical
-growth rate and applying it to the base value for forecast periods.
+This module implements the HistoricalGrowthForecastMethod, which forecasts future values based on
+the average historical growth rate calculated from available data. This is useful when past growth
+patterns are expected to continue.
 
 Configuration:
     - Not required (pass None or 0)
-    - Automatically calculates growth from historical data based on minimum periods configured
+    - Growth is automatically calculated from historical data
 
 Example:
+    >>> from fin_statement_model.forecasting.methods.historical_growth import HistoricalGrowthForecastMethod
     >>> method = HistoricalGrowthForecastMethod()
     >>> params = method.get_forecast_params(None, ["2024", "2025"])
-    >>> # Returns: {"forecast_type": "historical_growth", "growth_params": None}
+    >>> params["forecast_type"]
+    'historical_growth'
+    >>> params["growth_params"] is None
+    True
 """
 
 import logging
@@ -33,23 +38,34 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
 
     Configuration:
         - Not required (pass None or 0)
-        - Automatically calculates growth from historical data requiring at least
-          cfg("forecasting.min_historical_periods") data points
+        - Growth is automatically calculated from historical data
 
     Example:
+        >>> from fin_statement_model.forecasting.methods.historical_growth import HistoricalGrowthForecastMethod
         >>> method = HistoricalGrowthForecastMethod()
         >>> params = method.get_forecast_params(None, ["2024", "2025"])
-        >>> # Returns: {"forecast_type": "historical_growth", "growth_params": None}
+        >>> params["forecast_type"]
+        'historical_growth'
+        >>> params["growth_params"] is None
+        True
     """
 
     @property
     def name(self) -> str:
-        """Return the method name."""
+        """Return the method name.
+
+        Returns:
+            The unique name of the forecast method ('historical_growth').
+        """
         return "historical_growth"
 
     @property
     def internal_type(self) -> str:
-        """Return the internal forecast type for NodeFactory."""
+        """Return the internal forecast type for NodeFactory.
+
+        Returns:
+            The internal type string used by the node factory ('historical_growth').
+        """
         return "historical_growth"
 
     def validate_config(self, config: Any) -> None:
@@ -77,6 +93,12 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
         Returns:
             Dict with 'forecast_type' and 'growth_params' keys.
             For historical growth method, growth_params is None.
+
+        Example:
+            >>> from fin_statement_model.forecasting.methods.historical_growth import HistoricalGrowthForecastMethod
+            >>> method = HistoricalGrowthForecastMethod()
+            >>> method.normalize_params(None, ["2024", "2025"])
+            {'forecast_type': 'historical_growth', 'growth_params': None}
         """
         return {
             "forecast_type": self.internal_type,
@@ -97,6 +119,9 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
 
         Raises:
             ValueError: If insufficient historical data is available.
+
+        Example:
+            >>> # This method is called internally by the forecasting engine.
         """
         if not hasattr(node, "calculate") or not callable(node.calculate):
             raise ValueError(
@@ -148,6 +173,9 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
         Note:
             This is a helper method that can be used by the forecast node
             implementation to calculate the growth rate.
+
+        Example:
+            >>> # This method is called internally by the forecasting engine.
         """
         # Calculate period-over-period growth rates
         if len(historical_values) < 2:

@@ -1,16 +1,20 @@
-"""Forecast future values using variable growth rates per period.
+"""Curve forecast method with variable growth rates per period.
 
-This method applies different growth rates for each forecast period,
-allowing non-linear growth patterns across periods.
+This module implements the CurveForecastMethod, which forecasts future values using a list of
+growth rates (one per forecast period) or a single value expanded to all periods.
 
 Configuration:
     - Single numeric value: Will be expanded to match forecast periods
     - List of numeric values: One growth rate per forecast period
 
 Example:
+    >>> from fin_statement_model.forecasting.methods.curve import CurveForecastMethod
     >>> method = CurveForecastMethod()
     >>> params = method.get_forecast_params([0.05, 0.04, 0.03], ["2024", "2025", "2026"])
-    >>> # Returns: {"forecast_type": "curve", "growth_params": [0.05, 0.04, 0.03]}
+    >>> params["forecast_type"]
+    'curve'
+    >>> params["growth_params"]
+    [0.05, 0.04, 0.03]
 """
 
 from typing import Any
@@ -29,19 +33,31 @@ class CurveForecastMethod(BaseForecastMethod):
         - List of numeric values: One growth rate per forecast period
 
     Example:
+        >>> from fin_statement_model.forecasting.methods.curve import CurveForecastMethod
         >>> method = CurveForecastMethod()
         >>> params = method.get_forecast_params([0.05, 0.04, 0.03], ["2024", "2025", "2026"])
-        >>> # Returns: {"forecast_type": "curve", "growth_params": [0.05, 0.04, 0.03]}
+        >>> params["forecast_type"]
+        'curve'
+        >>> params["growth_params"]
+        [0.05, 0.04, 0.03]
     """
 
     @property
     def name(self) -> str:
-        """Return the method name."""
+        """Return the method name.
+
+        Returns:
+            The unique name of the forecast method ('curve').
+        """
         return "curve"
 
     @property
     def internal_type(self) -> str:
-        """Return the internal forecast type for NodeFactory."""
+        """Return the internal forecast type for NodeFactory.
+
+        Returns:
+            The internal type string used by the node factory ('curve').
+        """
         return "curve"
 
     def validate_config(self, config: Any) -> None:
@@ -81,6 +97,12 @@ class CurveForecastMethod(BaseForecastMethod):
 
         Raises:
             ValueError: If list length doesn't match forecast periods.
+
+        Example:
+            >>> from fin_statement_model.forecasting.methods.curve import CurveForecastMethod
+            >>> method = CurveForecastMethod()
+            >>> method.normalize_params([0.05, 0.04, 0.03], ["2024", "2025", "2026"])
+            {'forecast_type': 'curve', 'growth_params': [0.05, 0.04, 0.03]}
         """
         if not isinstance(config, list):
             # Single value - expand to match forecast periods

@@ -1,7 +1,28 @@
-"""Provide a registry and selection strategies for forecast methods.
+"""Forecast method registry and selection strategies.
 
 This module manages the ForecastMethodRegistry for registering and retrieving
-forecast methods, and exposes convenience functions for global access.
+forecast methods, and exposes convenience functions for global access. It enables
+dynamic extensibility for custom forecasting methods and provides helpers for
+querying and listing available methods.
+
+Features:
+    - Register, unregister, and retrieve forecast methods by name
+    - List available methods and query method metadata
+    - Global registry instance for convenience
+    - Extensible: add custom methods at runtime
+
+Example:
+    >>> from fin_statement_model.forecasting.strategies import forecast_registry, get_forecast_method, register_forecast_method
+    >>> from fin_statement_model.forecasting.methods.simple import SimpleForecastMethod
+    >>> method = get_forecast_method("simple")
+    >>> method.name
+    'simple'
+    >>> class MyMethod(SimpleForecastMethod):
+    ...     @property
+    ...     def name(self): return "my_custom"
+    >>> register_forecast_method(MyMethod())
+    >>> forecast_registry.has_method("my_custom")
+    True
 """
 
 import logging
@@ -59,6 +80,11 @@ class ForecastMethodRegistry:
 
         Raises:
             ValueError: If a method with the same name is already registered.
+
+        Example:
+            >>> from fin_statement_model.forecasting.methods.simple import SimpleForecastMethod
+            >>> registry = ForecastMethodRegistry()
+            >>> registry.register(SimpleForecastMethod())
         """
         if method.name in self._methods:
             raise ValueError(f"Forecast method '{method.name}' is already registered")
@@ -74,6 +100,10 @@ class ForecastMethodRegistry:
 
         Raises:
             KeyError: If the method is not registered.
+
+        Example:
+            >>> registry = ForecastMethodRegistry()
+            >>> registry.unregister("simple")
         """
         if name not in self._methods:
             raise KeyError(f"Forecast method '{name}' is not registered")
@@ -92,6 +122,12 @@ class ForecastMethodRegistry:
 
         Raises:
             ValueError: If the method is not registered.
+
+        Example:
+            >>> registry = ForecastMethodRegistry()
+            >>> method = registry.get_method("simple")
+            >>> method.name
+            'simple'
         """
         if name not in self._methods:
             available = ", ".join(sorted(self._methods.keys()))
@@ -106,6 +142,11 @@ class ForecastMethodRegistry:
 
         Returns:
             Sorted list of registered method names.
+
+        Example:
+            >>> registry = ForecastMethodRegistry()
+            >>> registry.list_methods()
+            ['average', 'curve', 'historical_growth', 'simple', 'statistical']
         """
         return sorted(self._methods.keys())
 
@@ -117,6 +158,11 @@ class ForecastMethodRegistry:
 
         Returns:
             True if the method is registered, False otherwise.
+
+        Example:
+            >>> registry = ForecastMethodRegistry()
+            >>> registry.has_method("simple")
+            True
         """
         return name in self._methods
 
@@ -131,6 +177,12 @@ class ForecastMethodRegistry:
 
         Raises:
             ValueError: If the method is not registered.
+
+        Example:
+            >>> registry = ForecastMethodRegistry()
+            >>> info = registry.get_method_info("simple")
+            >>> "name" in info and "description" in info
+            True
         """
         method = self.get_method(name)
         return {
@@ -156,6 +208,12 @@ def get_forecast_method(name: str) -> ForecastMethod:
 
     Raises:
         ValueError: If the method is not registered.
+
+    Example:
+        >>> from fin_statement_model.forecasting.strategies import get_forecast_method
+        >>> method = get_forecast_method("simple")
+        >>> method.name
+        'simple'
     """
     return forecast_registry.get_method(name)
 
@@ -168,5 +226,10 @@ def register_forecast_method(method: ForecastMethod) -> None:
 
     Raises:
         ValueError: If a method with the same name is already registered.
+
+    Example:
+        >>> from fin_statement_model.forecasting.methods.simple import SimpleForecastMethod
+        >>> from fin_statement_model.forecasting.strategies import register_forecast_method
+        >>> register_forecast_method(SimpleForecastMethod())
     """
     forecast_registry.register(method)

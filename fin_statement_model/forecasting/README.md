@@ -1,125 +1,120 @@
-# Forecasting Module
+# Forecasting Submodule — `fin_statement_model.forecasting`
 
-The Forecasting module provides tools for generating future values for financial statement graphs. It supports mutating and non-mutating operations, multiple forecasting methods, period management, and extensibility.
+The `forecasting` submodule provides robust, extensible tools for forecasting financial statement items using a variety of methods. It supports both simple and advanced forecasting workflows, batch operations, and custom method integration.
 
-## Overview
-
-- **Mutating forecasts** (`create_forecast`): Add forecast periods to the graph and update node values in-place.
-- **Non-mutating forecasts** (`forecast_value`, `forecast_multiple`, `forecast_all`): Compute and return forecast values without modifying the graph.
-- **Forecast methods**:
-  - `simple` – constant growth rate
-  - `curve` – variable growth rates per period
-  - `statistical` – random sampling from distributions
-  - `average` – historical average
-  - `historical_growth` – average historical growth rate
-- **Period management**: Infer and validate historical and forecast periods.
-- **Registry**: Dynamically register and retrieve methods via `ForecastMethodRegistry` and convenience functions.
-- **Validation**: Ensure inputs and results are valid via `ForecastValidator`.
-- **Types & Errors**: Use Pydantic models (`ForecastConfig`, `ForecastResult`, `StatisticalConfig`) and custom exceptions for robust handling.
+---
 
 ## Basic Usage
 
-### Initialize Forecaster
-
 ```python
-from fin_statement_model.forecasting import StatementForecaster
+from fin_statement_model.forecasting.controller import StatementForecaster
+from fin_statement_model.forecasting.types import ForecastConfig
 
-# Assume `graph` is your FinancialStatementGraph instance
-forecaster = StatementForecaster(graph)
+# Assume you have a FinancialStatementGraph instance (fsg) with nodes and data
+forecaster = StatementForecaster(fsg)
+
+# Forecast 'revenue' for 2024 and 2025 using a simple 5% growth
+config = ForecastConfig(method="simple", config=0.05)
+forecast = forecaster.forecast_value(
+    node_name="revenue",
+    forecast_periods=["2024", "2025"],
+    forecast_config=config.model_dump(),
+)
+print(forecast)  # {'2024': 1050.0, '2025': 1102.5}
 ```
 
-### Mutating Forecast
+---
+
+## Advanced Features
+
+### 1. Custom Forecast Methods and Configurations
+
+- Use built-in methods: `simple`, `curve`, `statistical`, `average`, `historical_growth`
+- Pass method-specific configs (e.g., statistical parameters)
 
 ```python
-forecaster.create_forecast(
-    forecast_periods=["2024", "2025"],
-    node_configs={
-        "revenue": {"method": "simple", "config": 0.05},
-        "costs": {"method": "curve", "config": [0.03, 0.04]},
-    },
+from fin_statement_model.forecasting.types import ForecastConfig
+
+# Statistical method example
+stat_cfg = ForecastConfig(
+    method="statistical",
+    config={"distribution": "normal", "params": {"mean": 0.05, "std": 0.02}}
 )
 ```
 
-### Non-Mutating Forecast
-
-```python
-values = forecaster.forecast_value(
-    "revenue",
-    forecast_periods=["2024", "2025"],
-    forecast_config={"method": "simple", "config": 0.05},
-)
-print(values)  # {'2024': 1050.0, '2025': 1102.5}
-```
-
-### Forecast Multiple Nodes
+### 2. Batch/Multi-Node Forecasting
 
 ```python
 results = forecaster.forecast_multiple(
-    ["revenue", "costs"],
-    ["2024", "2025"],
-    forecast_configs={"revenue": {"method": "simple", "config": 0.05}},
+    node_names=["revenue", "costs"],
+    forecast_periods=["2024", "2025"],
+    forecast_configs={
+        "revenue": {"method": "simple", "config": 0.05},
+        "costs": {"method": "curve", "config": {"points": [100, 110, 120]}}
+    }
 )
 print(results["revenue"].get_value("2024"))
 ```
 
-## Adding a New Forecasting Method
+### 3. Validation and Error Handling
 
-1. **Create a new module** in `fin_statement_model/forecasting/methods`, e.g. `my_method.py`.
-2. **Define your method** by subclassing `BaseForecastMethod`:
+- All inputs and configs are validated using `ForecastValidator`.
+- Errors are raised as subclasses of `ForecastingError` (see `errors.py`).
+- Example:
 
-    ```python
-    from typing import Any, Dict
-    from fin_statement_model.core.nodes import Node
-    from .base import BaseForecastMethod
+```python
+from fin_statement_model.forecasting.validators import ForecastValidator
+from fin_statement_model.forecasting.errors import ForecastConfigurationError
 
-    class MyForecastMethod(BaseForecastMethod):
-        """Forecast using a custom strategy."""
+try:
+    ForecastValidator.validate_forecast_config({"method": "bad_method", "config": {}})
+except ForecastConfigurationError as e:
+    print("Config error:", e)
+```
 
-        @property
-        def name(self) -> str:
-            return "my_method"
+### 4. Extensibility
 
-        @property
-        def internal_type(self) -> str:
-            return "my_method"
+- Add new forecast methods by subclassing `BaseForecastMethod` and registering them.
+- All method logic is modular and discoverable.
 
-        def validate_config(self, config: Any) -> None:
-            # Validate your config here
-            ...
+---
 
-        def normalize_params(
-            self, config: Any, forecast_periods: list[str]
-        ) -> Dict[str, Any]:
-            # Convert config to growth_params for the node factory
-            return {"forecast_type": self.internal_type, "growth_params": ...}
+## API Overview
 
-        def prepare_historical_data(
-            self, node: Node, historical_periods: list[str]
-        ) -> list[float]:
-            # Optional: implement if your method relies on historical data
-            ...
-    ```
+- **`StatementForecaster`**: Main entry point for forecasting operations (mutating and non-mutating)
+- **`ForecastConfig`**: Pydantic model for method/config specification
+- **`ForecastResult`**: Pydantic model for structured forecast results
+- **`ForecastValidator`**: Static validation utilities for inputs, configs, and results
+- **`ForecastingError`** and subclasses: Robust error handling for all forecast operations
 
-3. **Register the method** at runtime:
+All public classes and methods are documented with Google-style docstrings and include doctest examples. See the code for details.
 
-    ```python
-    from fin_statement_model.forecasting.strategies import register_forecast_method
-    from fin_statement_model.forecasting.methods.my_method import MyForecastMethod
+---
 
-    register_forecast_method(MyForecastMethod())
-    ```
+## Type Safety & Error Classes
 
-4. **Use your method**:
+- All configs and results use Pydantic models for type safety and validation.
+- Errors are raised as subclasses of `ForecastingError` (e.g., `ForecastNodeError`, `ForecastMethodError`).
+- See `types.py` and `errors.py` for details.
 
-    ```python
-    forecaster.create_forecast(
-        forecast_periods=["2024", "2025"],
-        node_configs={"custom": {"method": "my_method", "config": {/* your params */}}},
-    )
-    ```
+---
 
-## Further Reference
+## Configuration & Architecture Notes
 
-- Explore the `fin_statement_model/forecasting/methods` folder for built-in implementations.
-- Review `ForecastValidator` for input and result validation.
-- Consult `ForecastMethodRegistry` and related helpers for advanced usage. 
+- The forecasting layer is modular and extensible.
+- Batch and single-node operations are both supported.
+- All validation is centralized in `validators.py`.
+- The codebase enforces Google-style docstrings and type annotations.
+- The old monolithic `forecaster.py` has been replaced by a subpackage structure:
+  - `controller.py` (main API)
+  - `node_forecast.py` (per-node logic)
+  - `batch.py` (batch/multi-node logic)
+  - `methods/` (all built-in forecasting methods)
+  - `types.py`, `validators.py`, `errors.py` (supporting types, validation, and error handling)
+
+---
+
+## Further Reading
+
+- See the codebase and docstrings for detailed usage and examples.
+- For more advanced scenarios, see the `examples/` directory and the API documentation. 

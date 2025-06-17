@@ -1,7 +1,8 @@
-"""Forecast future values by sampling from statistical distributions.
+"""Statistical forecast method using random sampling from distributions.
 
-This method generates forecast values by sampling from specified statistical
-distributions, useful for Monte Carlo simulations and uncertainty analysis.
+This module implements the StatisticalForecastMethod, which forecasts future values by sampling
+from specified statistical distributions (e.g., normal, uniform). This is useful for Monte Carlo
+simulations and uncertainty analysis.
 
 Configuration:
     - 'distribution': 'normal' or 'uniform'
@@ -10,13 +11,14 @@ Configuration:
         - For 'uniform': {'low': float, 'high': float}
 
 Example:
+    >>> from fin_statement_model.forecasting.methods.statistical import StatisticalForecastMethod
     >>> method = StatisticalForecastMethod()
-    >>> config = {
-    ...     "distribution": "normal",
-    ...     "params": {"mean": 0.05, "std": 0.02}
-    ... }
+    >>> config = {"distribution": "normal", "params": {"mean": 0.05, "std": 0.02}}
     >>> params = method.get_forecast_params(config, ["2024", "2025"])
-    >>> # Returns: {"forecast_type": "statistical", "growth_params": <callable>}
+    >>> params["forecast_type"]
+    'statistical'
+    >>> callable(params["growth_params"])
+    True
 """
 
 from typing import Any
@@ -41,23 +43,32 @@ class StatisticalForecastMethod(BaseForecastMethod):
             - For 'uniform': {'low': float, 'high': float}
 
     Example:
+        >>> from fin_statement_model.forecasting.methods.statistical import StatisticalForecastMethod
         >>> method = StatisticalForecastMethod()
-        >>> config = {
-        ...     "distribution": "normal",
-        ...     "params": {"mean": 0.05, "std": 0.02}
-        ... }
+        >>> config = {"distribution": "normal", "params": {"mean": 0.05, "std": 0.02}}
         >>> params = method.get_forecast_params(config, ["2024", "2025"])
-        >>> # Returns: {"forecast_type": "statistical", "growth_params": <callable>}
+        >>> params["forecast_type"]
+        'statistical'
+        >>> callable(params["growth_params"])
+        True
     """
 
     @property
     def name(self) -> str:
-        """Return the method name."""
+        """Return the method name.
+
+        Returns:
+            The unique name of the forecast method ('statistical').
+        """
         return "statistical"
 
     @property
     def internal_type(self) -> str:
-        """Return the internal forecast type for NodeFactory."""
+        """Return the internal forecast type for NodeFactory.
+
+        Returns:
+            The internal type string used by the node factory ('statistical').
+        """
         return "statistical"
 
     def validate_config(self, config: Any) -> None:
@@ -68,6 +79,7 @@ class StatisticalForecastMethod(BaseForecastMethod):
 
         Raises:
             TypeError: If config is invalid.
+            ValueError: If required keys or values are missing or invalid.
         """
         if not isinstance(config, dict):
             raise TypeError(
@@ -100,6 +112,16 @@ class StatisticalForecastMethod(BaseForecastMethod):
         Returns:
             Dict with 'forecast_type' and 'growth_params' keys.
             The 'growth_params' value is a callable that generates random values.
+
+        Example:
+            >>> from fin_statement_model.forecasting.methods.statistical import StatisticalForecastMethod
+            >>> method = StatisticalForecastMethod()
+            >>> config = {"distribution": "normal", "params": {"mean": 0.05, "std": 0.02}}
+            >>> out = method.normalize_params(config, ["2024", "2025"])
+            >>> out["forecast_type"]
+            'statistical'
+            >>> callable(out["growth_params"])
+            True
         """
         # Create validated config
         stat_config = StatisticalConfig(

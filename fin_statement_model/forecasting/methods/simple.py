@@ -1,16 +1,20 @@
-"""Forecast future values using a constant growth rate.
+"""Simple constant growth rate forecast method.
 
-This method applies a constant growth rate to the base value for all forecast
-periods.
+This module implements the SimpleForecastMethod, which forecasts future values using a constant
+growth rate applied to the base value for all forecast periods.
 
 Configuration:
     - Single numeric value: The growth rate (e.g., 0.05 for 5% growth)
     - List with single value: Will use the first value
 
 Example:
+    >>> from fin_statement_model.forecasting.methods.simple import SimpleForecastMethod
     >>> method = SimpleForecastMethod()
     >>> params = method.get_forecast_params(0.05, ["2024", "2025"])
-    >>> # Returns: {"forecast_type": "simple", "growth_params": 0.05}
+    >>> params["forecast_type"]
+    'simple'
+    >>> params["growth_params"]
+    0.05
 """
 
 from typing import Any
@@ -29,19 +33,31 @@ class SimpleForecastMethod(BaseForecastMethod):
         - List with single value: Will use the first value
 
     Example:
+        >>> from fin_statement_model.forecasting.methods.simple import SimpleForecastMethod
         >>> method = SimpleForecastMethod()
         >>> params = method.get_forecast_params(0.05, ["2024", "2025"])
-        >>> # Returns: {"forecast_type": "simple", "growth_params": 0.05}
+        >>> params["forecast_type"]
+        'simple'
+        >>> params["growth_params"]
+        0.05
     """
 
     @property
     def name(self) -> str:
-        """Return the method name."""
+        """Return the method name.
+
+        Returns:
+            The unique name of the forecast method ('simple').
+        """
         return "simple"
 
     @property
     def internal_type(self) -> str:
-        """Return the internal forecast type for NodeFactory."""
+        """Return the internal forecast type for NodeFactory.
+
+        Returns:
+            The internal type string used by the node factory ('simple').
+        """
         return "simple"
 
     def validate_config(self, config: Any) -> None:
@@ -77,6 +93,12 @@ class SimpleForecastMethod(BaseForecastMethod):
 
         Returns:
             Dict with 'forecast_type' and 'growth_params' keys.
+
+        Example:
+            >>> from fin_statement_model.forecasting.methods.simple import SimpleForecastMethod
+            >>> method = SimpleForecastMethod()
+            >>> method.normalize_params(0.05, ["2024", "2025"])
+            {'forecast_type': 'simple', 'growth_params': 0.05}
         """
         # Handle list input - take first value
         growth_rate = float(config[0]) if isinstance(config, list) else float(config)

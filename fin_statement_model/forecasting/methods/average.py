@@ -1,15 +1,19 @@
-"""Forecast future values as the historical average of available data.
+"""Average forecast method using historical mean.
 
-This method calculates forecast values as the historical average of available
-data points. Useful for stable metrics or when expecting mean reversion.
+This module implements the AverageForecastMethod, which forecasts future values as the historical
+average of available data points. This is useful for stable metrics or when expecting mean reversion.
 
 Configuration:
     - Not required (pass None or 0)
 
 Example:
+    >>> from fin_statement_model.forecasting.methods.average import AverageForecastMethod
     >>> method = AverageForecastMethod()
     >>> params = method.get_forecast_params(None, ["2024", "2025"])
-    >>> # Returns: {"forecast_type": "average", "growth_params": None}
+    >>> params["forecast_type"]
+    'average'
+    >>> params["growth_params"] is None
+    True
 """
 
 import logging
@@ -32,19 +36,31 @@ class AverageForecastMethod(BaseForecastMethod):
         - Not required (pass None or 0)
 
     Example:
+        >>> from fin_statement_model.forecasting.methods.average import AverageForecastMethod
         >>> method = AverageForecastMethod()
         >>> params = method.get_forecast_params(None, ["2024", "2025"])
-        >>> # Returns: {"forecast_type": "average", "growth_params": None}
+        >>> params["forecast_type"]
+        'average'
+        >>> params["growth_params"] is None
+        True
     """
 
     @property
     def name(self) -> str:
-        """Return the method name."""
+        """Return the method name.
+
+        Returns:
+            The unique name of the forecast method ('average').
+        """
         return "average"
 
     @property
     def internal_type(self) -> str:
-        """Return the internal forecast type for NodeFactory."""
+        """Return the internal forecast type for NodeFactory.
+
+        Returns:
+            The internal type string used by the node factory ('average').
+        """
         return "average"
 
     def validate_config(self, config: Any) -> None:
@@ -72,6 +88,12 @@ class AverageForecastMethod(BaseForecastMethod):
         Returns:
             Dict with 'forecast_type' and 'growth_params' keys.
             For average method, growth_params is None.
+
+        Example:
+            >>> from fin_statement_model.forecasting.methods.average import AverageForecastMethod
+            >>> method = AverageForecastMethod()
+            >>> method.normalize_params(None, ["2024", "2025"])
+            {'forecast_type': 'average', 'growth_params': None}
         """
         return {
             "forecast_type": self.internal_type,
@@ -92,6 +114,9 @@ class AverageForecastMethod(BaseForecastMethod):
 
         Raises:
             ValueError: If no valid historical data is available.
+
+        Example:
+            >>> # This method is called internally by the forecasting engine.
         """
         if not hasattr(node, "calculate") or not callable(node.calculate):
             raise ValueError(

@@ -1,7 +1,15 @@
-"""Define custom exceptions for forecasting operations.
+"""Custom exceptions for forecasting operations.
 
-This module provides exception classes for forecasting methods, configuration,
-node handling, and result validation within the forecasting sub-module.
+This module defines the exception hierarchy for the forecasting sub-module. All forecasting-related
+errors inherit from ForecastingError, which itself extends FinancialModelError. These exceptions
+cover invalid methods, configuration errors, node errors, and result validation issues.
+
+Example:
+    >>> from fin_statement_model.forecasting.errors import ForecastMethodError
+    >>> raise ForecastMethodError("Unknown method", method="foo", supported_methods=["simple"])
+    Traceback (most recent call last):
+        ...
+    fin_statement_model.forecasting.errors.ForecastMethodError: Unknown method: 'foo'. Supported methods: simple
 """
 
 from typing import Optional, Any
@@ -17,7 +25,10 @@ __all__ = [
 
 
 class ForecastingError(FinancialModelError):
-    """Base exception for all forecasting-related errors."""
+    """Base exception for all forecasting-related errors.
+
+    All custom forecasting exceptions inherit from this class.
+    """
 
 
 class ForecastMethodError(ForecastingError):
@@ -25,6 +36,13 @@ class ForecastMethodError(ForecastingError):
 
     This includes unknown method names, invalid method parameters,
     or methods incompatible with the data type.
+
+    Example:
+        >>> from fin_statement_model.forecasting.errors import ForecastMethodError
+        >>> raise ForecastMethodError("Unknown method", method="foo", supported_methods=["simple"])
+        Traceback (most recent call last):
+            ...
+        fin_statement_model.forecasting.errors.ForecastMethodError: Unknown method: 'foo'. Supported methods: simple
     """
 
     def __init__(
@@ -64,6 +82,13 @@ class ForecastConfigurationError(ForecastingError):
 
     This includes missing required parameters, invalid parameter values,
     or incompatible configuration combinations.
+
+    Example:
+        >>> from fin_statement_model.forecasting.errors import ForecastConfigurationError
+        >>> raise ForecastConfigurationError("Missing config", missing_params=["growth_rate"])
+        Traceback (most recent call last):
+            ...
+        fin_statement_model.forecasting.errors.ForecastConfigurationError: Missing config - Missing parameters: growth_rate
     """
 
     def __init__(
@@ -104,6 +129,13 @@ class ForecastNodeError(ForecastingError):
 
     This includes nodes not found in the graph, nodes without historical data,
     or nodes that cannot be forecasted.
+
+    Example:
+        >>> from fin_statement_model.forecasting.errors import ForecastNodeError
+        >>> raise ForecastNodeError("Node not found", node_id="revenue", available_nodes=["revenue", "costs"])
+        Traceback (most recent call last):
+            ...
+        fin_statement_model.forecasting.errors.ForecastNodeError: Node not found for node 'revenue'. Available nodes: revenue, costs
     """
 
     def __init__(
@@ -141,6 +173,13 @@ class ForecastResultError(ForecastingError):
 
     This includes accessing results for non-existent periods, invalid result
     formats, or result validation failures.
+
+    Example:
+        >>> from fin_statement_model.forecasting.errors import ForecastResultError
+        >>> raise ForecastResultError("Period not found", period="2024", available_periods=["2023", "2024"])
+        Traceback (most recent call last):
+            ...
+        fin_statement_model.forecasting.errors.ForecastResultError: Period not found for period '2024'. Available periods: 2023, 2024
     """
 
     def __init__(

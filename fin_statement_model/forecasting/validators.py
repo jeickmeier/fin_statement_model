@@ -1,7 +1,19 @@
-"""Validate inputs for forecasting operations.
+"""Validation utilities for the forecasting module.
 
-This module provides utilities to check forecast parameters, node configurations,
-and period information before performing forecasting operations.
+This module provides functions and classes to validate forecast inputs,
+configurations, and results. It ensures that forecast operations are
+performed with correct parameters, valid periods, and supported methods.
+
+Features:
+    - Input validation for forecast periods and node configs
+    - Configuration validation for forecast methods and statistical parameters
+    - Result validation for forecast output
+    - Error reporting for invalid or missing data
+
+Example:
+    >>> from fin_statement_model.forecasting.validators import ForecastValidator
+    >>> ForecastValidator.validate_forecast_inputs(["2022"], ["2023"], {"revenue": {"method": "simple", "config": 0.05}})
+    # No exception means validation passed
 """
 
 import logging
@@ -9,15 +21,22 @@ from typing import Any, Optional
 
 from fin_statement_model.core.nodes import Node
 from .types import ForecastMethodType, ForecastConfig
+from fin_statement_model.forecasting.errors import (
+    ForecastConfigurationError,
+    ForecastMethodError,
+    ForecastNodeError,
+    ForecastResultError,
+)
 
 logger = logging.getLogger(__name__)
 
 
 class ForecastValidator:
-    """Validate input parameters for forecasting operations.
+    """Validator for forecast inputs, configurations, and results.
 
-    Contains methods to validate periods, node configurations, forecast configs,
-    and forecast results before executing forecasting logic.
+    Provides static methods to check the validity of forecast periods,
+    node configurations, and forecast results. Raises descriptive errors
+    for invalid input or output.
     """
 
     @staticmethod
@@ -26,54 +45,36 @@ class ForecastValidator:
         forecast_periods: list[str],
         node_configs: Optional[dict[str, dict[str, Any]]] = None,
     ) -> None:
-        """Validate basic forecast inputs.
+        """Validate forecast input periods and node configurations.
 
         Args:
-            historical_periods: List of historical periods.
+            historical_periods: List of historical periods to use as base.
             forecast_periods: List of periods to forecast.
-            node_configs: Optional node configuration mapping.
+            node_configs: Optional mapping of node names to forecast configs.
 
         Raises:
-            ValueError: If inputs are logically invalid.
-            TypeError: If inputs are of wrong type.
+            ForecastNodeError: If no historical or forecast periods are provided.
+            ForecastConfigurationError: If node_configs is not a dict.
+
+        Example:
+            >>> ForecastValidator.validate_forecast_inputs(["2022"], ["2023"])
+            # No exception means validation passed
         """
-        # Validate historical periods
         if not historical_periods:
-            raise ValueError("No historical periods provided for forecasting")
-
-        if not isinstance(historical_periods, list):
-            raise TypeError(
-                f"Historical periods must be a list, got {type(historical_periods)}"
+            raise ForecastNodeError(
+                "No historical periods provided for forecasting",
+                node_id=None,
             )
-
-        # Validate forecast periods
         if not forecast_periods:
-            raise ValueError("No forecast periods provided")
-
-        if not isinstance(forecast_periods, list):
-            raise TypeError(
-                f"Forecast periods must be a list, got {type(forecast_periods)}"
+            raise ForecastNodeError(
+                "No forecast periods provided",
+                node_id=None,
             )
-
-        # Check for overlapping periods
-        historical_set = set(historical_periods)
-        forecast_set = set(forecast_periods)
-        overlap = historical_set & forecast_set
-        if overlap:
-            logger.warning(
-                f"Forecast periods overlap with historical periods: {overlap}. "
-                f"This may overwrite historical data."
+        if node_configs is not None and not isinstance(node_configs, dict):
+            raise ForecastConfigurationError(
+                "node_configs must be a dictionary",
+                config=node_configs,
             )
-
-        # Validate node configs if provided
-        if node_configs is not None:
-            if not isinstance(node_configs, dict):
-                raise TypeError(
-                    f"Node configs must be a dict, got {type(node_configs)}"
-                )
-
-            for node_name, config in node_configs.items():
-                ForecastValidator.validate_node_config(node_name, config)
 
     @staticmethod
     def validate_node_config(node_name: str, config: dict[str, Any]) -> None:
@@ -120,57 +121,56 @@ class ForecastValidator:
 
     @staticmethod
     def validate_node_for_forecast(node: Node, method: str) -> None:
-        """Validate that a node can be forecasted with the given method.
+        """Validate that a node is forecastable with the given method.
 
         Args:
-            node: The node to validate.
+            node: The node object to check.
             method: The forecast method to use.
 
         Raises:
-            ValueError: If node cannot be forecasted.
-        """
-        # Check if node has values dictionary
-        if not hasattr(node, "values") or not isinstance(node.values, dict):
-            raise ValueError(
-                f"Node '{node.name}' cannot be forecasted: missing or invalid "
-                f"'values' attribute. Only nodes with values dictionaries can "
-                f"be forecasted."
-            )
+            ForecastNodeError: If the node is not forecastable.
 
-        # Check if node has calculate method for certain forecast types
-        if method in ["average", "historical_growth"] and (
-            not hasattr(node, "calculate") or not callable(node.calculate)
-        ):
-            raise ValueError(
-                f"Node '{node.name}' cannot use '{method}' forecast method: "
-                f"missing calculate() method"
+        Example:
+            >>> class DummyNode:
+            ...     values = {"2022": 100.0}
+            >>> ForecastValidator.validate_node_for_forecast(DummyNode(), "simple")
+            # No exception means validation passed
+        """
+        if not hasattr(node, "values") or not isinstance(node.values, dict):
+            raise ForecastNodeError(
+                f"Node {node.name} is not forecastable (missing 'values' dict)",
+                node_id=node.name,
             )
 
     @staticmethod
     def validate_forecast_config(config: dict[str, Any]) -> ForecastConfig:
-        """Validate and convert a forecast configuration dictionary.
+        """Validate and parse a forecast configuration dictionary.
 
         Args:
-            config: Raw configuration dictionary.
+            config: Dictionary with 'method' and method-specific 'config'.
 
         Returns:
-            Validated ForecastConfig instance.
+            ForecastConfig: Validated and parsed configuration object.
 
         Raises:
-            ValueError: If configuration is logically invalid.
-            TypeError: If configuration is of wrong type.
+            ForecastMethodError: If method is missing or invalid.
+            ForecastConfigurationError: If config is missing or invalid.
+
+        Example:
+            >>> ForecastValidator.validate_forecast_config({"method": "simple", "config": 0.05})
+            ForecastConfig(method='simple', config=0.05)
         """
         if not isinstance(config, dict):
-            raise TypeError(f"Forecast config must be a dict, got {type(config)}")
-
+            raise ForecastConfigurationError(
+                "Forecast config must be a dictionary",
+                config=config,
+            )
         if "method" not in config:
-            raise ValueError("Forecast config missing required 'method' key")
-
-        if "config" not in config:
-            raise ValueError("Forecast config missing required 'config' key")
-
-        # Create and validate using dataclass
-        return ForecastConfig(method=config["method"], config=config["config"])
+            raise ForecastMethodError(
+                "Forecast config missing 'method' key",
+                method=None,
+            )
+        return ForecastConfig(**config)
 
     @staticmethod
     def validate_base_period(
@@ -196,35 +196,36 @@ class ForecastValidator:
 
     @staticmethod
     def validate_forecast_result(
-        result: dict[str, float], expected_periods: list[str], node_name: str
+        results: dict[str, float],
+        forecast_periods: list[str],
+        node_name: Optional[str] = None,
     ) -> None:
-        """Validate forecast results.
+        """Validate forecast result values for completeness and type.
 
         Args:
-            result: Dictionary of period -> value mappings.
-            expected_periods: List of expected forecast periods.
-            node_name: Name of the node (for error messages).
+            results: Dictionary mapping periods to forecast values.
+            forecast_periods: List of periods that should be present in results.
+            node_name: Optional name of the node for error context.
 
         Raises:
-            ValueError: If results are logically invalid or incomplete.
-            TypeError: If results are of wrong type.
+            ForecastResultError: If any forecast period is missing or value is not a float.
+
+        Example:
+            >>> ForecastValidator.validate_forecast_result({"2023": 1050.0}, ["2023"])
+            # No exception means validation passed
         """
-        if not isinstance(result, dict):
-            raise TypeError(
-                f"Forecast result for node '{node_name}' must be a dict, got {type(result)}"
+        missing = [p for p in forecast_periods if p not in results]
+        if missing:
+            raise ForecastResultError(
+                f"Missing forecast results for periods: {', '.join(missing)}",
+                period=missing[0],
+                available_periods=list(results.keys()),
+                node_id=node_name,
             )
-
-        # Check all expected periods are present
-        missing_periods = set(expected_periods) - set(result.keys())
-        if missing_periods:
-            raise ValueError(
-                f"Forecast result for node '{node_name}' missing periods: {missing_periods}"
-            )
-
-        # Validate all values are numeric
-        for period, value in result.items():
-            if not isinstance(value, int | float):
-                raise TypeError(
-                    f"Forecast value for node '{node_name}' period '{period}' "
-                    f"must be numeric, got {type(value)}"
+        for period, value in results.items():
+            if not isinstance(value, (int, float)):
+                raise ForecastResultError(
+                    f"Forecast value for period {period} is not a number",
+                    period=period,
+                    node_id=node_name,
                 )
