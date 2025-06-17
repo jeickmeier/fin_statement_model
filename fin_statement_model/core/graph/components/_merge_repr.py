@@ -1,4 +1,22 @@
-"""Graph merging logic and developer‐friendly `__repr__`."""
+"""Graph merging logic and developer‐friendly `__repr__`.
+
+MergeReprMixin provides utilities for merging another graph's nodes and periods into the current graph,
+and for generating a developer-friendly string representation of the graph's structure and contents.
+
+Key responsibilities:
+    - Merge nodes and periods from another graph, updating values as needed
+    - Provide a detailed __repr__ for debugging and inspection
+
+Examples:
+    >>> from fin_statement_model.core.graph import Graph
+    >>> g1 = Graph(periods=["2023"])
+    >>> _ = g1.add_financial_statement_item("Revenue", {"2023": 100.0})
+    >>> g2 = Graph(periods=["2024"])
+    >>> _ = g2.add_financial_statement_item("Revenue", {"2024": 120.0})
+    >>> g1.merge_from(g2)
+    >>> repr(g1)
+    '<Graph(...Periods: [\'2023\', \'2024\'])>'
+"""
 
 from __future__ import annotations
 

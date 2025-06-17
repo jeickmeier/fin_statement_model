@@ -1,4 +1,32 @@
-"""Read-only traversal, validation, and dependency-inspection helpers."""
+"""Read-only traversal, validation, and dependency-inspection helpers.
+
+TraversalMixin exposes methods from the GraphTraverser for inspecting the structure of the graph
+without mutating it. This includes dependency analysis, topological sorting, cycle detection, and
+validation.
+
+Key responsibilities:
+    - Inspect dependencies, successors, and predecessors
+    - Perform topological sorts and detect cycles
+    - Validate graph structure
+    - Perform breadth-first searches
+
+Examples:
+    >>> from fin_statement_model.core.graph import Graph
+    >>> g = Graph(periods=["2023"])
+    >>> _ = g.add_financial_statement_item("Revenue", {"2023": 100.0})
+    >>> _ = g.add_financial_statement_item("COGS", {"2023": 60.0})
+    >>> _ = g.add_calculation(
+    ...     name="GrossProfit",
+    ...     input_names=["Revenue", "COGS"],
+    ...     operation_type="formula",
+    ...     formula="input_0 - input_1",
+    ...     formula_variable_names=["input_0", "input_1"]
+    ... )
+    >>> g.get_dependencies("GrossProfit")
+    ['Revenue', 'COGS']
+    >>> g.topological_sort()
+    ['Revenue', 'COGS', 'GrossProfit']
+"""
 
 from __future__ import annotations
 

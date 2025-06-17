@@ -1,34 +1,39 @@
 """Read-only traversal helpers for :class:`~fin_statement_model.core.graph.graph.Graph`.
 
-`GraphTraverser` complements :class:`~fin_statement_model.core.graph.manipulator.GraphManipulator` by
-offering a *read-only* view on a graph's structure.  It collects utility
-methods required by higher-level APIs such as:
+The GraphTraverser class provides a *read-only* view on a graph's structure. It offers utility
+methods for:
+    - Dependency inspection (predecessors/successors)
+    - Topological sorting
+    - Cycle detection and validation
+    - Breadth-first searches for visualization or debugging
+    - General graph structure validation
 
-* dependency inspection (predecessors/successors)
-* topological sorting
-* cycle detection and validation
-* breadth-first searches for visualisation or debugging
+Unlike the manipulator, the traverser **never mutates** the graph; this makes it safe to call from
+anywhere, including within calculation routines.
 
-Unlike the manipulator, the traverser **never mutates** the graph; this makes it
-safe to call from anywhere, including within calculation routines.
+Examples:
+    >>> from fin_statement_model.core.graph import Graph
+    >>> g = Graph(periods=["2023", "2024"])
+    >>> _ = g.add_financial_statement_item("Revenue", {"2023": 100, "2024": 110})
+    >>> _ = g.add_financial_statement_item("COGS", {"2023": 60, "2024": 70})
+    >>> _ = g.add_calculation(
+    ...     name="GrossProfit",
+    ...     input_names=["Revenue", "COGS"],
+    ...     operation_type="formula",
+    ...     formula="input_0 - input_1",
+    ...     formula_variable_names=["input_0", "input_1"]
+    ... )
+    >>> g.traverser.get_dependencies("GrossProfit")
+    ['Revenue', 'COGS']
+    >>> g.traverser.topological_sort()
+    ['Revenue', 'COGS', 'GrossProfit']
+    >>> g.traverser.detect_cycles()
+    []
+    >>> g.traverser.validate()
+    []
 
-Examples
-~~~~~~~~
->>> from fin_statement_model.core.graph import Graph
->>> g = Graph(periods=["2023", "2024"])
->>> _ = g.add_financial_statement_item("Revenue", {"2023": 100, "2024": 110})
->>> _ = g.add_financial_statement_item("COGS", {"2023": 60, "2024": 70})
->>> _ = g.add_calculation("GrossProfit", ["Revenue", "COGS"], "addition", formula="input_0 - input_1", formula_variable_names=["input_0", "input_1"])
->>> g.traverser.get_dependencies("GrossProfit")
-['Revenue', 'COGS']
-
-You can also validate the full graph:
-
->>> g.traverser.validate()
-[]
-
-As with the manipulator, end-users reach the traverser via
-``graph.traverser`` rather than instantiating it directly.
+As with the manipulator, end-users reach the traverser via `graph.traverser` rather than
+instantiating it directly.
 """
 
 import logging
@@ -47,8 +52,32 @@ logger = logging.getLogger(__name__)
 class GraphTraverser:
     """Encapsulate traversal and validation helpers for Graph.
 
+    The GraphTraverser provides read-only methods for inspecting the structure of a Graph instance,
+    including dependency analysis, cycle detection, topological sorting, and validation.
+
     Attributes:
         graph: The Graph instance this traverser operates on.
+
+    Examples:
+        >>> from fin_statement_model.core.graph import Graph
+        >>> g = Graph(periods=["2023", "2024"])
+        >>> _ = g.add_financial_statement_item("Revenue", {"2023": 100, "2024": 110})
+        >>> _ = g.add_financial_statement_item("COGS", {"2023": 60, "2024": 70})
+        >>> _ = g.add_calculation(
+        ...     name="GrossProfit",
+        ...     input_names=["Revenue", "COGS"],
+        ...     operation_type="formula",
+        ...     formula="input_0 - input_1",
+        ...     formula_variable_names=["input_0", "input_1"]
+        ... )
+        >>> g.traverser.get_dependencies("GrossProfit")
+        ['Revenue', 'COGS']
+        >>> g.traverser.topological_sort()
+        ['Revenue', 'COGS', 'GrossProfit']
+        >>> g.traverser.detect_cycles()
+        []
+        >>> g.traverser.validate()
+        []
     """
 
     def __init__(self, graph: Any) -> None:

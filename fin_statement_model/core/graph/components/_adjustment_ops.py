@@ -1,4 +1,23 @@
-"""Adjustment-related graph operations."""
+"""Adjustment-related graph operations.
+
+AdjustmentMixin delegates all discretionary adjustment API calls to the underlying adjustment service.
+This allows the graph to support scenario analysis and what-if modeling by applying, removing, and listing
+adjustments to node values for specific periods and scenarios.
+
+Key responsibilities:
+    - Add, remove, and list adjustments for nodes and periods
+    - Retrieve adjusted values and check if a value was adjusted
+    - List all adjustments and filter by scenario or tags
+
+Examples:
+    >>> from fin_statement_model.core.graph import Graph
+    >>> g = Graph(periods=["2023"])
+    >>> _ = g.add_financial_statement_item("Revenue", {"2023": 100.0})
+    >>> g.add_adjustment("Revenue", "2023", 10.0, reason="Scenario boost")
+    ... #doctest: +SKIP
+    >>> g.get_adjusted_value("Revenue", "2023")
+    ... #doctest: +SKIP
+"""
 
 from __future__ import annotations
 

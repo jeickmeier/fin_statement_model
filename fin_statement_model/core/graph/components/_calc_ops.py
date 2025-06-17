@@ -1,4 +1,29 @@
-"""Calculation‐related public helpers (metrics, custom calculations, etc.)."""
+"""Calculation‐related public helpers (metrics, custom calculations, etc.).
+
+CalcOpsMixin provides methods for adding calculation nodes, registering metrics, executing calculations,
+and inspecting available metrics. It delegates to the CalculationEngine service for all calculation logic.
+
+Key responsibilities:
+    - Add calculation nodes (formula-based, custom, or metric-based)
+    - Change calculation methods for nodes
+    - Execute calculations and manage calculation cache
+    - Inspect available metrics and their info
+
+Examples:
+    >>> from fin_statement_model.core.graph import Graph
+    >>> g = Graph(periods=["2023"])
+    >>> _ = g.add_financial_statement_item("Revenue", {"2023": 100.0})
+    >>> _ = g.add_financial_statement_item("COGS", {"2023": 60.0})
+    >>> _ = g.add_calculation(
+    ...     name="GrossProfit",
+    ...     input_names=["Revenue", "COGS"],
+    ...     operation_type="formula",
+    ...     formula="input_0 - input_1",
+    ...     formula_variable_names=["input_0", "input_1"]
+    ... )
+    >>> g.calculate("GrossProfit", "2023")
+    40.0
+"""
 
 from __future__ import annotations
 

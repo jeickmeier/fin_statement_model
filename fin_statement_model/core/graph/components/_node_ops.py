@@ -1,4 +1,23 @@
-"""Node-level creation, update, replacement and value-setting operations."""
+"""Node-level creation, update, replacement and value-setting operations.
+
+NodeOpsMixin provides all operations that mutate the graph structure or stored values at the node level.
+This includes adding, updating, replacing, and removing nodes, as well as setting values for specific periods.
+
+Key responsibilities:
+    - Add new financial statement item nodes
+    - Update values for existing nodes
+    - Proxy generic manipulator operations (add, remove, replace, set value)
+    - Retrieve all financial statement item nodes
+
+Examples:
+    >>> from fin_statement_model.core.graph import Graph
+    >>> g = Graph(periods=["2023"])
+    >>> _ = g.add_financial_statement_item("Revenue", {"2023": 100.0})
+    >>> g.update_financial_statement_item("Revenue", {"2023": 120.0})
+    FinancialStatementItemNode(name='Revenue', ...)
+    >>> [n.name for n in g.get_financial_statement_items()]
+    ['Revenue']
+"""
 
 from __future__ import annotations
 

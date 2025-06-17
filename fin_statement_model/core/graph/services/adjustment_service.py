@@ -1,4 +1,23 @@
-"""AdjustmentService stub – wraps ``AdjustmentManager`` for Graph refactor."""
+"""AdjustmentService stub – wraps ``AdjustmentManager`` for Graph refactor.
+
+AdjustmentService encapsulates adjustment storage and application logic for the graph. It provides methods
+for adding, removing, and listing adjustments, as well as applying adjustments to node values for scenario
+analysis and what-if modeling. All adjustment logic is delegated here from the Graph and its mix-ins.
+
+Key responsibilities:
+    - Add, remove, and list adjustments for nodes and periods
+    - Apply adjustments to node values
+    - Retrieve and filter adjustments by scenario or tags
+    - Clear all adjustments
+    - Check if a value was adjusted
+
+Examples:
+    >>> from fin_statement_model.core.graph.services.adjustment_service import AdjustmentService
+    >>> service = AdjustmentService()
+    >>> adj_id = service.add_adjustment("Revenue", "2023", 10.0, reason="Scenario boost")
+    >>> service.list_all_adjustments()  # doctest: +SKIP
+    ...
+"""
 
 from __future__ import annotations
 

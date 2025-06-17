@@ -1,9 +1,28 @@
 """Foundational mix-in for the public :class:`~fin_statement_model.core.graph.graph.Graph`.
 
-`GraphBaseMixin` owns the constructor and the core helpers that other mix-ins
-(building on node operations, calculation, traversal, etc.) rely on.  All state
+GraphBaseMixin owns the constructor and the core helpers that other mix-ins
+(building on node operations, calculation, traversal, etc.) rely on. All state
 attributes are created here so the specialised mix-ins can assume their
 existence.
+
+Key responsibilities:
+    - Initialize all core state for the Graph (nodes, periods, services, caches)
+    - Provide access to node and period registries
+    - Delegate to service layers for calculations, adjustments, and periods
+    - Expose helpers for cache management and full graph reset
+
+Examples:
+    >>> from fin_statement_model.core.graph import Graph
+    >>> g = Graph(periods=["2023", "2024"])
+    >>> sorted(g.nodes.keys())
+    []
+    >>> g.periods
+    ['2023', '2024']
+    >>> g.clear()
+    >>> g.nodes
+    {}
+    >>> g.periods
+    []
 """
 
 from __future__ import annotations

@@ -1,5 +1,34 @@
 """Calculation engine stub extracted from Graph.
 
+CalculationEngine is an isolated service that orchestrates calculations and cache management for the Graph.
+It is responsible for evaluating node values, managing the calculation cache, and supporting the addition
+of calculation nodes and metrics. All calculation logic is delegated here from the Graph and its mix-ins.
+
+Key responsibilities:
+    - Calculate node values for specific periods
+    - Manage a central calculation cache
+    - Add calculation nodes and metrics
+    - Support custom calculation functions
+    - Change calculation methods for nodes
+    - Provide metric inspection helpers
+
+Examples:
+    >>> from fin_statement_model.core.graph import Graph
+    >>> g = Graph(periods=["2023"])
+    >>> _ = g.add_financial_statement_item("Revenue", {"2023": 100.0})
+    >>> _ = g.add_financial_statement_item("COGS", {"2023": 60.0})
+    >>> _ = g.add_calculation(
+    ...     name="GrossProfit",
+    ...     input_names=["Revenue", "COGS"],
+    ...     operation_type="formula",
+    ...     formula="input_0 - input_1",
+    ...     formula_variable_names=["input_0", "input_1"]
+    ... )
+    >>> g.calculate("GrossProfit", "2023")
+    40.0
+    >>> g.get_available_metrics()
+    []
+
 # pragma: no cover
 
 This module defines ``CalculationEngine`` – an isolated service that will
