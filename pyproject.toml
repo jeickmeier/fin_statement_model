@@ -26,6 +26,8 @@ dependencies = [
     "simpleeval>=1.0.3",
     "pytest-doctestplus>=1.4.0",
     "deepmerge>=2.0",
+    "typer>=0.16.0",
+    "rich>=14.0.0",
 ]
 
 [dependency-groups]

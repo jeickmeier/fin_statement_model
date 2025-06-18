@@ -7,12 +7,12 @@ strings into native Python types.
 """
 
 from __future__ import annotations
-from typing import Any, Optional, TypeVar, overload
+from typing import Any, TypeVar, overload
 from collections.abc import Sequence
-from fin_statement_model.core.errors import FinancialModelError
+from fin_statement_model.core.errors import FinStatementModelError
 
 
-class ConfigurationAccessError(FinancialModelError):
+class ConfigurationAccessError(FinStatementModelError):
     """Raised when there's an error accessing configuration values."""
 
 
@@ -20,22 +20,27 @@ T = TypeVar("T")
 
 
 @overload
-def cfg(path: str) -> Any: ...
+def cfg(path: str, *, strict: bool = False) -> Any: ...
 
 
 @overload
-def cfg(path: str, default: T) -> T: ...
+def cfg(path: str, default: T, *, strict: bool = False) -> T: ...
 
 
 @overload
-def cfg(path: Sequence[str]) -> Any: ...
+def cfg(path: Sequence[str], *, strict: bool = False) -> Any: ...
 
 
 @overload
-def cfg(path: Sequence[str], default: T) -> T: ...
+def cfg(path: Sequence[str], default: T, *, strict: bool = False) -> T: ...
 
 
-def cfg(path: str | Sequence[str], default: Any = None) -> Any:
+def cfg(
+    path: str | Sequence[str],
+    default: Any = None,
+    *,
+    strict: bool = False,
+) -> Any:
     """Get a configuration value by dotted path.
 
     Retrieves a configuration value from the global config object using a
@@ -44,13 +49,14 @@ def cfg(path: str | Sequence[str], default: Any = None) -> Any:
     Args:
         path: Dotted path string or sequence of keys to traverse the config.
         default: Default value to return if the key is not found.
+        strict: If True, raise an error if the key is not found and no default is provided.
 
     Returns:
         The configuration value or the default if provided.
 
     Raises:
         ConfigurationAccessError: If the path is empty or a key does not exist
-            and no default is provided.
+            and no default is provided (unless strict is True).
 
     Examples:
         >>> cfg("database.host")
@@ -76,49 +82,13 @@ def cfg(path: str | Sequence[str], default: Any = None) -> Any:
     for i, part in enumerate(parts):
         full_path = ".".join(parts[: i + 1])
         if not hasattr(obj, part):
-            if default is not None:
+            if default is not None and not strict:
                 return default
             raise ConfigurationAccessError(
                 f"Configuration key '{full_path}' does not exist"
             )
         obj = getattr(obj, part)
     return obj if obj is not None else default
-
-
-def get_typed_config(
-    path: str | Sequence[str], expected_type: type[T], default: Optional[T] = None
-) -> T:
-    """Get a configuration value with type checking.
-
-    Retrieves a configuration value and verifies it is of the expected type.
-
-    Args:
-        path: Dotted path string or sequence of keys to traverse the config.
-        expected_type: Type that the returned value must match.
-        default: Default value to use if the key is not present.
-
-    Returns:
-        The configuration value of type `expected_type`.
-
-    Raises:
-        ConfigurationAccessError: If the key is None and no default is provided.
-        TypeError: If the value is not an instance of `expected_type`.
-
-    Examples:
-        >>> get_typed_config("features.enable_feature_x", bool, default=False)
-        True
-    """
-    value = cfg(path, default)
-    if value is None and default is None:
-        raise ConfigurationAccessError(
-            f"Configuration key '{path}' is None and no default provided"
-        )
-    if not isinstance(value, expected_type):
-        raise TypeError(
-            f"Configuration key '{path}' has type {type(value).__name__}, "
-            f"expected {expected_type.__name__}"
-        )
-    return value
 
 
 def cfg_or_param(config_path: str, param_value: Any) -> Any:
@@ -141,7 +111,7 @@ def cfg_or_param(config_path: str, param_value: Any) -> Any:
     return param_value if param_value is not None else cfg(config_path)
 
 
-def parse_env_value(value: str) -> bool | int | float | str:
+def parse_env_value(value: str) -> Any:
     """Parse an environment variable string into bool, int, float, or str.
 
     Attempts to convert the input string to a boolean if it matches
@@ -186,5 +156,12 @@ def parse_env_value(value: str) -> bool | int | float | str:
             return float_val
     except ValueError:
         pass
-    # Fallback to string
-    return val
+    # JSON fallback (lists/dicts/strings with quotes)
+    try:
+        import json
+
+        parsed_json = json.loads(val)
+        return parsed_json
+    except Exception:  # noqa: BLE001
+        # Fallback to original string
+        return val

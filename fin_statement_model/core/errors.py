@@ -470,3 +470,7 @@ class MetricError(FinancialModelError):
         )
 
         super().__init__(full_message)
+
+
+# Alias for naming consistency with project rules
+FinStatementModelError = FinancialModelError

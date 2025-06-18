@@ -24,7 +24,7 @@ Examples:
     'historical_growth'
 """
 
-from .helpers import cfg, cfg_or_param, get_typed_config
+from .helpers import cfg, cfg_or_param, ConfigurationAccessError
 
 # Importing helpers first ensures that "cfg" is available early, avoiding
 # circular import issues when other modules import fin_statement_model.config
@@ -32,12 +32,14 @@ from .helpers import cfg, cfg_or_param, get_typed_config
 
 from .models import Config
 from .manager import get_config, update_config
+from .cli import run as cli_main
 
 __all__ = [
     "Config",
     "cfg",
     "cfg_or_param",
+    "ConfigurationAccessError",
     "get_config",
-    "get_typed_config",
     "update_config",
+    "cli_main",
 ]

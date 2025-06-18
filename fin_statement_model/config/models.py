@@ -236,6 +236,56 @@ class PreprocessingConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+# -----------------------------------------------------------------------------
+# Display sub-config models
+
+
+class DisplayFlags(BaseModel):
+    """Boolean feature flags for statement display.
+
+    These granular switches control optional features during statement formatting.
+    Grouping them in a dedicated model keeps `DisplayConfig` manageable while
+    still exposing properties for ergonomic access (e.g., `cfg.display.include_empty_items`).
+    """
+
+    apply_sign_conventions: bool = Field(
+        True, description="Whether to apply sign conventions by default"
+    )
+    include_empty_items: bool = Field(
+        False, description="Whether to include items with no data by default"
+    )
+    include_metadata_cols: bool = Field(
+        False, description="Whether to include metadata columns by default"
+    )
+    add_is_adjusted_column: bool = Field(
+        False, description="Whether to add an 'is_adjusted' column by default"
+    )
+    include_units_column: bool = Field(
+        False, description="Whether to include units column by default"
+    )
+    include_css_classes: bool = Field(
+        False, description="Whether to include CSS class column by default"
+    )
+    include_notes_column: bool = Field(
+        False, description="Whether to include notes column by default"
+    )
+    apply_item_scaling: bool = Field(
+        True, description="Whether to apply item-specific scaling by default"
+    )
+    apply_item_formatting: bool = Field(
+        True, description="Whether to apply item-specific formatting by default"
+    )
+    apply_contra_formatting: bool = Field(
+        True, description="Whether to apply contra-specific formatting by default"
+    )
+    add_contra_indicator_column: bool = Field(
+        False, description="Whether to add a contra indicator column by default"
+    )
+
+    model_config = ConfigDict(extra="forbid")
+
+
+# pylint: disable=too-many-public-methods
 class DisplayConfig(BaseModel):
     """Settings for formatting and displaying statement outputs.
 
@@ -314,39 +364,11 @@ class DisplayConfig(BaseModel):
         True,
         description="Whether to prefix negative numbers with a minus sign when not using parentheses",
     )
-    # Statement formatting defaults
-    apply_sign_conventions: bool = Field(
-        True, description="Whether to apply sign conventions by default"
-    )
-    include_empty_items: bool = Field(
-        False, description="Whether to include items with no data by default"
-    )
-    include_metadata_cols: bool = Field(
-        False, description="Whether to include metadata columns by default"
-    )
-    add_is_adjusted_column: bool = Field(
-        False, description="Whether to add an 'is_adjusted' column by default"
-    )
-    include_units_column: bool = Field(
-        False, description="Whether to include units column by default"
-    )
-    include_css_classes: bool = Field(
-        False, description="Whether to include CSS class column by default"
-    )
-    include_notes_column: bool = Field(
-        False, description="Whether to include notes column by default"
-    )
-    apply_item_scaling: bool = Field(
-        True, description="Whether to apply item-specific scaling by default"
-    )
-    apply_item_formatting: bool = Field(
-        True, description="Whether to apply item-specific formatting by default"
-    )
-    apply_contra_formatting: bool = Field(
-        True, description="Whether to apply contra-specific formatting by default"
-    )
-    add_contra_indicator_column: bool = Field(
-        False, description="Whether to add a contra indicator column by default"
+
+    # Grouped boolean feature flags
+    flags: DisplayFlags = Field(
+        default_factory=DisplayFlags,
+        description="Grouped boolean feature flags controlling optional display behaviour",
     )
 
     @field_validator("scale_factor")
@@ -357,6 +379,20 @@ class DisplayConfig(BaseModel):
         return v
 
     model_config = ConfigDict(extra="forbid")
+
+    # ---------------------------------------------------------------------
+    # Convenience property accessors for flags (read-only)
+
+    def __getattr__(self, item: str) -> Any:  # noqa: D401  (simple attr fallback)
+        """Delegate unknown attribute access to `flags` for convenience.
+
+        This maintains compatibility with existing code that referenced
+        attributes such as `config.display.include_empty_items` before the
+        flags were nested.
+        """
+        if item in self.flags.__fields__:
+            return getattr(self.flags, item)
+        raise AttributeError(item)
 
 
 class APIConfig(BaseModel):

@@ -21,7 +21,7 @@ import logging
 from threading import Lock
 
 from .models import Config
-from fin_statement_model.core.errors import FinancialModelError
+from fin_statement_model.core.errors import FinStatementModelError
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 # ----------------------------------------------------------------------
 
 
-class ConfigurationError(FinancialModelError):
+class ConfigurationError(FinStatementModelError):
     """Exception raised for configuration-related errors."""
 
 
@@ -114,6 +114,17 @@ class ConfigManager:
             self._runtime_overrides = self._deep_merge(self._runtime_overrides, updates)
             self._config = None  # Force reload on next get()
 
+            # Persist changes if auto_save_config is enabled and we know target path
+            cfg_after = self.get()
+            if cfg_after.auto_save_config and cfg_after.config_file_path:
+                try:
+                    self.save(cfg_after.config_file_path)
+                except Exception as exc:  # noqa: BLE001
+                    logger.warning("Failed to auto-save configuration: %s", exc)
+
+            # Re-apply logging immediately after update
+            self.reconfigure_logging()
+
     def _load_config(self) -> None:
         """Load and merge configuration from all supported sources.
 
@@ -146,6 +157,12 @@ class ConfigManager:
         if user_config:
             logger.debug(f"Loading user config from {user_config}")
             config_dict = self._deep_merge(config_dict, self._load_file(user_config))
+
+        # Layer 3: Environment variables
+        env_overrides = self._extract_env_overrides()
+        if env_overrides:
+            logger.debug("Applying environment variable overrides")
+            config_dict = self._deep_merge(config_dict, env_overrides)
 
         # Layer 4: Runtime overrides
         if self._runtime_overrides:
@@ -262,6 +279,16 @@ class ConfigManager:
                 and isinstance(value, dict)
             ):
                 result[key] = self._deep_merge(result[key], value)
+            # If both are lists, append unique items preserving order
+            elif (
+                key in result
+                and isinstance(result[key], list)
+                and isinstance(value, list)
+            ):
+                combined = result[key] + [
+                    item for item in value if item not in result[key]
+                ]
+                result[key] = combined
             else:
                 result[key] = value
 
@@ -275,7 +302,7 @@ class ConfigManager:
 
         Searches upward from current directory to filesystem root, loading
         `key=value` pairs, skipping comments and blanks. Existing env vars
-        are not overwritten. Also maps `FMP_API_KEY` to `FSM_API_FMP_API_KEY`
+        are not overwritten. Also maps `FMP_API_KEY` to `FSM_API__FMP_API_KEY`
         for backward compatibility.
         """
         try:
@@ -303,18 +330,16 @@ class ConfigManager:
                         logger.debug("Loaded environment variables from %s", candidate)
 
                         # Special fallback: if a generic FMP_API_KEY is defined, expose it
-                        # via the namespaced FSM_API_FMP_API_KEY expected by the Config
-                        # model. This provides compatibility with existing environment
-                        # setups without forcing users to duplicate variables.
+                        # via the namespaced FSM_API__FMP_API_KEY expected by the Config
                         if (
                             "FMP_API_KEY" in os.environ
-                            and "FSM_API_FMP_API_KEY" not in os.environ
+                            and "FSM_API__FMP_API_KEY" not in os.environ
                         ):
-                            os.environ["FSM_API_FMP_API_KEY"] = os.environ[
+                            os.environ["FSM_API__FMP_API_KEY"] = os.environ[
                                 "FMP_API_KEY"
                             ]
                             logger.debug(
-                                "Mapped FMP_API_KEY → FSM_API_FMP_API_KEY for config integration"
+                                "Mapped FMP_API_KEY → FSM_API__FMP_API_KEY for config integration"
                             )
                         break  # Stop searching after the first .env file
                     except Exception as err:  # noqa: BLE001  (broad but safe here)
@@ -329,6 +354,89 @@ class ConfigManager:
         except Exception as err:  # noqa: BLE001
             # Never fail config loading due to .env issues
             logger.debug("_load_dotenv encountered an error: %s", err, exc_info=False)
+
+    # ------------------------------------------------------------------
+    # Environment variable helpers
+
+    def _extract_env_overrides(self) -> dict[str, Any]:
+        """Convert FSM_* environment variables to config overrides.
+
+        Rules:
+        - Keys start with ENV_PREFIX ("FSM_")
+        - Remainder converted to lowercase path with dots: FSM_LOGGING__LEVEL → logging.level
+        - Double underscore (__) denotes nested separation; single underscore also allowed but
+          double underscore takes precedence to avoid issues with values containing underscores.
+        - Values parsed via helpers.parse_env_value.
+        """
+        import os
+        from fin_statement_model.config.helpers import parse_env_value
+
+        overrides: dict[str, Any] = {}
+
+        prefix_len = len(self.ENV_PREFIX)
+        for key, raw_value in os.environ.items():
+            if not key.startswith(self.ENV_PREFIX):
+                continue
+
+            path_str = key[prefix_len:]
+
+            # Normalise path: prefer double underscores as separator, fallback to single
+            parts = [p.lower() for p in path_str.split("__")]
+            if len(parts) == 1:
+                parts = [p.lower() for p in path_str.split("_")]
+
+            value = parse_env_value(raw_value)
+
+            # Build nested dictionary
+            current = overrides
+            for segment in parts[:-1]:
+                current = current.setdefault(segment, {})
+            current[parts[-1]] = value
+
+        return overrides
+
+    # ------------------------------------------------------------------
+    # Persistence helpers
+
+    def save(self, to: Optional[Path] = None) -> None:
+        """Persist the current configuration to disk atomically.
+
+        Args:
+            to: Target path. If None, uses the originally located user config file.
+        """
+        with self._lock:
+            cfg = self.get()
+
+            # Determine path
+            target_path = to or cfg.config_file_path
+            if target_path is None:
+                raise ConfigurationError(
+                    "No target path specified for saving configuration"
+                )
+
+            try:
+                import tempfile
+                import os
+
+                tmp_fd, tmp_path_str = tempfile.mkstemp(
+                    dir=str(Path(target_path).parent)
+                )
+                tmp_path = Path(tmp_path_str)
+                with Path(tmp_path).open("w", encoding="utf-8") as f:
+                    f.write(cfg.to_yaml())
+                os.close(tmp_fd)
+                os.replace(tmp_path, target_path)
+                logger.debug("Configuration saved to %s", target_path)
+            except Exception as exc:  # noqa: BLE001
+                logger.error("Failed to save configuration to %s: %s", target_path, exc)
+                raise
+
+    def reconfigure_logging(self) -> None:
+        """Reapply logging configuration based on current config."""
+        with self._lock:
+            if self._config is None:
+                return
+            self._apply_logging_config()
 
 
 # Global configuration instance
