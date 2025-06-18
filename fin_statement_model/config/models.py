@@ -119,7 +119,7 @@ class ForecastingConfig(BaseModel):
     """
 
     default_method: Literal[
-        "simple", "historical_growth", "curve", "statistical", "ml"
+        "simple", "average_growth", "curve", "statistical", "ml"
     ] = Field("simple", description="Default forecasting method")
     default_periods: int = Field(5, description="Default number of periods to forecast")
     default_growth_rate: float = Field(

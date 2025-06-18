@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import logging
 from typing import Any, Dict, List, TYPE_CHECKING, Type, cast
+import inspect  # Local import to avoid cost when builder unused
 
 from fin_statement_model.core.node_factory.registries import (
     CalculationAliasRegistry,
@@ -226,27 +227,39 @@ def create_forecast_node(
             f"Unknown forecast_type '{forecast_type}'. Registered: {ForecastTypeRegistry.list()}"
         ) from exc
 
-    # Simple branching depending on constructor signature. For now we treat the
-    # most common classes; if constructor signature mismatch occurs it will
-    # raise TypeError which is propagated as ConfigurationError.
+    # ---------------------------------------------------------------------
+    # Dynamic constructor handling via reflection
+    # ---------------------------------------------------------------------
+    # We inspect the __init__ signature of the forecast class to determine
+    # whether it expects a fourth positional/keyword parameter (commonly
+    # `growth_params`). This avoids hard-coding special cases for each
+    # forecast_type and automatically works for any new classes added later.
+
     try:
-        if forecast_type == "simple":
-            return cast(
-                "Node",
-                forecast_cls(input_node, base_period, forecast_periods, growth_params),
-            )
-        elif forecast_type == "curve":
-            return cast(
-                "Node",
-                forecast_cls(input_node, base_period, forecast_periods, growth_params),
-            )
+        sig = inspect.signature(forecast_cls.__init__)
+        # Drop the implicit 'self'
+        ctor_params = [p for p in sig.parameters.values() if p.name != "self"]
+
+        # Base signature is (input_node, base_period, forecast_periods)
+        args: list[Any] = [input_node, base_period, forecast_periods]
+
+        # If the constructor defines a 4th parameter OR has a parameter named
+        # 'growth_params', we append growth_params as the 4th argument.
+        needs_growth = False
+        if len(ctor_params) > 3:
+            needs_growth = True
         else:
-            # For other types assume (input_node, base_period, forecast_periods, *extra)
-            return cast(
-                "Node",
-                forecast_cls(input_node, base_period, forecast_periods, growth_params),
-            )
+            needs_growth = any(p.name == "growth_params" for p in ctor_params)
+
+        if needs_growth:
+            args.append(growth_params)
+
+        return cast("Node", forecast_cls(*args))
+
     except TypeError as exc:
+        # Provide helpful context with expected signature
+        expected = [p.name for p in ctor_params]
         raise ConfigurationError(
-            f"Failed to instantiate forecast node for type '{forecast_type}': {exc}"
+            f"Failed to instantiate forecast node for type '{forecast_type}': {exc}\n"
+            f"Constructor parameters: {expected}"
         ) from exc

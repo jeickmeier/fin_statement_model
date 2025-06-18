@@ -61,12 +61,15 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
 
     @property
     def internal_type(self) -> str:
-        """Return the internal forecast type for NodeFactory.
+        """Return the internal forecast type used by ``NodeFactory``.
 
-        Returns:
-            The internal type string used by the node factory ('historical_growth').
+        The historical–growth calculation re-uses the *Average-Growth* forecast
+        node implementation, so we have to return ``"average_growth"`` – that is
+        the key registered in ``ForecastTypeRegistry``.  Mapping the public
+        method name (``historical_growth``) to this internal type allows the
+        validator/registry look-up to succeed.
         """
-        return "historical_growth"
+        return "average_growth"
 
     def validate_config(self, config: Any) -> None:
         """Validate the configuration for historical growth method.
