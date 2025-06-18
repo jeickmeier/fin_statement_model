@@ -15,6 +15,7 @@ from fin_statement_model.preprocessing.config import (
     PeriodConversionConfig,
 )
 from fin_statement_model.core.errors import DataValidationError
+from fin_statement_model.preprocessing.periods import Period, resample_to_period
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -278,29 +279,33 @@ class PeriodConversionTransformer(DataTransformer):
                 )
 
         if self.conversion_type == ConversionType.QUARTERLY_TO_ANNUAL.value:
-            # Group by year and aggregate
-            return df_copy.groupby(df_copy.index.year).agg(self.aggregation)
-
-        elif self.conversion_type == ConversionType.MONTHLY_TO_QUARTERLY.value:
-            # Group by year and quarter
-            return df_copy.groupby([df_copy.index.year, df_copy.index.quarter]).agg(
-                self.aggregation
+            # Quarter → Year: simply resample to calendar year-end.
+            return resample_to_period(
+                df_copy, Period.YEAR, aggregation=self.aggregation
             )
 
+        elif self.conversion_type == ConversionType.MONTHLY_TO_QUARTERLY.value:
+            # Month → Quarter
+            resampled = resample_to_period(
+                df_copy, Period.QUARTER, aggregation=self.aggregation
+            )
+            # Replace DatetimeIndex (quarter-end) with MultiIndex (year, quarter) to
+            # preserve original API contract if callers relied on it.
+            resampled.index = [(ts.year, ts.quarter) for ts in resampled.index]
+            return resampled
+
         elif self.conversion_type == ConversionType.MONTHLY_TO_ANNUAL.value:
-            # Group by year
-            return df_copy.groupby(df_copy.index.year).agg(self.aggregation)
+            return resample_to_period(
+                df_copy, Period.YEAR, aggregation=self.aggregation
+            )
 
         elif self.conversion_type == ConversionType.QUARTERLY_TO_TTM.value:
-            # Implement TTM as rolling sum with window=4 for quarterly data
-            if self.aggregation == "sum":
-                return df_copy.rolling(window=4, min_periods=4).sum()
-            else:
-                # For other aggregation methods, we need custom logic
+            # Rolling 4-quarter window.
+            if self.aggregation != "sum":
                 raise ValueError(
-                    "QUARTERLY_TO_TTM conversion currently only supports 'sum' aggregation for TTM. "
-                    "TTM typically represents the sum of the last 4 quarters for flow items like revenue."
+                    "QUARTERLY_TO_TTM currently supports only 'sum' aggregation."
                 )
+            return df_copy.rolling(window=4, min_periods=4).sum()
         else:
             raise NotImplementedError(
                 f"Conversion type '{self.conversion_type}' is defined in ConversionType enum but not implemented in PeriodConversionTransformer."

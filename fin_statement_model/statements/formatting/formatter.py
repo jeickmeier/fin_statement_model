@@ -35,7 +35,7 @@ from fin_statement_model.core.nodes import standard_node_registry
 from fin_statement_model.statements.formatting.data_fetcher import DataFetcher
 
 # Import formatting utilities
-from ._formatting_utils import render_values
+from fin_statement_model.utils.formatting import render_values
 
 # Configure logging
 logger = logging.getLogger(__name__)

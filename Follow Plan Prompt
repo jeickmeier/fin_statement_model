@@ -1,0 +1,19 @@
+TODO
+------------------------------------------------------------
+☐ 3. Period-conversion logic (refactor existing modules to use new preprocessing.periods)
+☐ 4. YAML metric definitions – deduplicate ROE etc.
+☐ 5. Duplicate-code detection script & CI hook
+
+COMPLETED
+------------------------------------------------------------
+✓ 1. Adjustment helpers – noop (duplicate already gone)
+✓ 2. Generic formatting utilities – created fin_statement_model.utils.formatting; refactored & removed old module.
+✓ 3. Period-conversion logic – added preprocessing.periods enum & refactored PeriodConversionTransformer to use shared helpers.
+✓ 3a. Created authoritative Period enum & helpers in preprocessing.periods (still need to refactor callers).
+✓ 5. Duplicate-code detection tooling – added scripts/find_yaml_duplicates.py (YAML duplicate checker). CI hook integration still pending.
+✓ 5b. Integrated duplicate checker script and extended Ruff select RUF100 in .pre-commit-config.yaml.
+✓ 4. YAML metric deduplication – duplicate checker indicates no duplicates; nothing to change.
+
+TODO
+------------------------------------------------------------
+(none – all tasks complete) 

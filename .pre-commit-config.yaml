@@ -36,3 +36,13 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
+
+  # 5. Metric YAML duplicate checker
+  - repo: local
+    hooks:
+      - id: metric-duplicate-checker
+        name: metric duplicate checker
+        entry: .venv/bin/python scripts/find_yaml_duplicates.py
+        language: system
+        types: [yaml]
+        pass_filenames: false
