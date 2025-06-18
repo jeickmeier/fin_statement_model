@@ -1,0 +1,13 @@
+Binary file fin_statement_model/core/nodes/__pycache__/calculation_nodes.cpython-312.pyc matches
+fin_statement_model/core/nodes/calculation_nodes.py:761:        This method is present only to satisfy the Node interface. Attempting to call it will always raise NotImplementedError,
+fin_statement_model/core/nodes/calculation_nodes.py:780:        raise NotImplementedError(
+fin_statement_model/core/nodes/forecast_nodes.py:168:        raise NotImplementedError("Implement in subclass.")
+fin_statement_model/core/nodes/forecast_nodes.py:207:        raise NotImplementedError("Subclasses must implement from_dict")
+fin_statement_model/core/nodes/forecast_nodes.py:573:        raise NotImplementedError(
+fin_statement_model/core/nodes/forecast_nodes.py:667:        raise NotImplementedError(
+fin_statement_model/core/nodes/base.py:204:        raise NotImplementedError(f"Node '{self.name}' does not support set_value")
+fin_statement_model/core/nodes/base.py:282:        raise NotImplementedError(
+fin_statement_model/io/core/base.py:33:        raise NotImplementedError
+fin_statement_model/io/core/base.py:56:        raise NotImplementedError
+fin_statement_model/preprocessing/transformers/period_conversion.py:305:            raise NotImplementedError(
+fin_statement_model/preprocessing/transformers/time_series.py:318:            raise NotImplementedError(

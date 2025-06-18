@@ -9,6 +9,11 @@ class DummyNode(Node):
     def to_dict(self) -> dict:
         return {"type": "dummy", "name": self.name}
 
+    @classmethod
+    def from_dict(cls, data: dict, context=None):  # type: ignore[override]
+        """Minimal deserialization for DummyNode used in tests."""
+        return cls(data["name"])
+
 
 def test_node_name_validation():
     # valid name

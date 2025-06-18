@@ -750,33 +750,22 @@ class CustomCalculationNode(Node):
             ),
         }
 
+    # ------------------------------------------------------------------
+    # Serialization helpers (unsupported)
+    # ------------------------------------------------------------------
+
     @classmethod
     def from_dict(
         cls,
         data: dict[str, Any],
         context: dict[str, Node] | None = None,
-    ) -> "CustomCalculationNode":
-        """CustomCalculationNode deserialization is not supported.
+    ) -> "CustomCalculationNode":  # pragma: no cover
+        """Deserialization is not supported for CustomCalculationNode.
 
-        This method is present only to satisfy the Node interface. Attempting to call it will always raise NotImplementedError,
-        because the Python function used for calculation cannot be serialized or reconstructed automatically.
-
-        Raises:
-            NotImplementedError: Always.
-
-        Example:
-            >>> # Not supported:
-            >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
-            >>> def add(a, b): return a + b
-            >>> a = FinancialStatementItemNode("A", {"2023": 10})
-            >>> b = FinancialStatementItemNode("B", {"2023": 5})
-            >>> node = CustomCalculationNode("add_node", inputs=[a, b], formula_func=add)
-            >>> d = node.to_dict()
-            >>> CustomCalculationNode.from_dict(d, {"A": a, "B": b})  # doctest: +SKIP
-            Traceback (most recent call last):
-            ...
-            NotImplementedError: CustomCalculationNode cannot be deserialized automatically because it relies on a Python callable.
+        The underlying Python callable cannot be serialized/restored automatically.
+        Callers must supply their own factory logic instead.
         """
         raise NotImplementedError(
-            "CustomCalculationNode cannot be deserialized automatically because it relies on a Python callable."
+            "CustomCalculationNode deserialization is not supported. "
+            "The underlying Python callable cannot be reconstructed automatically."
         )

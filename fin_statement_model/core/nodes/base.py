@@ -247,6 +247,7 @@ class Node(ABC):
         return []
 
     @classmethod
+    @abstractmethod
     def from_dict(
         cls,
         data: dict[str, Any],

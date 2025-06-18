@@ -60,6 +60,21 @@ class GraphDefinitionReader(DataReader):
             # Serialization is irrelevant for the temp node – return minimal payload.
             return {}
 
+        @classmethod
+        def from_dict(
+            cls, data: dict[str, Any], context: dict[str, Node] | None = None
+        ) -> "GraphDefinitionReader._TempNode":
+            """Construct a _TempNode from a dictionary payload.
+
+            This is only to satisfy the Node ABC for mypy/static type checkers; the
+            deserialiser never actually needs to recreate temporary nodes from a
+            serialized form, so the method raises *NotImplementedError* at
+            runtime.
+            """
+            raise NotImplementedError(
+                "_TempNode is an internal stub; it cannot be deserialized."
+            )
+
     def _get_node_dependencies(self, node_def: dict[str, Any]) -> list[str]:
         """Extract dependency names from a node definition.
 

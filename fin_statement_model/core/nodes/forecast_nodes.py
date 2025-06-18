@@ -30,6 +30,7 @@ Example:
 import logging
 from collections.abc import Callable
 from typing import Optional, Any
+from abc import abstractmethod
 
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node
@@ -162,10 +163,17 @@ class ForecastNode(Node):
         idx = all_periods.index(current_period)
         return all_periods[idx - 1]
 
+    @abstractmethod
     def _get_growth_factor_for_period(
         self, period: str, prev_period: str, prev_value: float
     ) -> float:
-        raise NotImplementedError("Implement in subclass.")
+        """Return the growth factor for *period*.
+
+        Subclasses must implement this to provide their specific growth logic.
+        """
+        raise NotImplementedError(
+            "Subclasses must implement _get_growth_factor_for_period."
+        )
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize this node to a dictionary.
@@ -186,6 +194,7 @@ class ForecastNode(Node):
         }
 
     @classmethod
+    @abstractmethod
     def from_dict(
         cls,
         data: dict[str, Any],
@@ -204,7 +213,7 @@ class ForecastNode(Node):
             ValueError: If the data is invalid or missing required fields.
             NotImplementedError: This base method should be overridden by subclasses.
         """
-        raise NotImplementedError("Subclasses must implement from_dict")
+        raise NotImplementedError("Subclasses must implement from_dict.")
 
 
 @forecast_type("simple")
@@ -550,29 +559,18 @@ class StatisticalGrowthForecastNode(ForecastNode):
         )
         return base_dict
 
+    # Deserialization intentionally unsupported – distribution_callable is not serializable.
+
     @classmethod
     def from_dict(
         cls,
         data: dict[str, Any],
         context: dict[str, Node] | None = None,
-    ) -> "StatisticalGrowthForecastNode":
-        """Create a StatisticalGrowthForecastNode from a dictionary with node context.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-            context: Dictionary of existing nodes to resolve dependencies.
-
-        Returns:
-            A new StatisticalGrowthForecastNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: StatisticalGrowthForecastNode cannot be fully deserialized
-                because the distribution_callable cannot be serialized.
-        """
+    ) -> "StatisticalGrowthForecastNode":  # pragma: no cover
+        """Deserialization is not supported for StatisticalGrowthForecastNode."""
         raise NotImplementedError(
-            "StatisticalGrowthForecastNode cannot be fully deserialized because the "
-            "distribution_callable cannot be serialized. Manual reconstruction required."
+            "StatisticalGrowthForecastNode cannot be deserialized; "
+            "distribution_callable is not serializable."
         )
 
 
@@ -644,29 +642,18 @@ class CustomGrowthForecastNode(ForecastNode):
         )
         return base_dict
 
+    # Deserialization intentionally unsupported – growth_function is not serializable.
+
     @classmethod
     def from_dict(
         cls,
         data: dict[str, Any],
         context: dict[str, Node] | None = None,
-    ) -> "CustomGrowthForecastNode":
-        """Create a CustomGrowthForecastNode from a dictionary with node context.
-
-        Args:
-            data: Dictionary containing the node's serialized data.
-            context: Dictionary of existing nodes to resolve dependencies.
-
-        Returns:
-            A new CustomGrowthForecastNode instance.
-
-        Raises:
-            ValueError: If the data is invalid or missing required fields.
-            NotImplementedError: CustomGrowthForecastNode cannot be fully deserialized
-                because the growth_function cannot be serialized.
-        """
+    ) -> "CustomGrowthForecastNode":  # pragma: no cover
+        """Deserialization is not supported for CustomGrowthForecastNode."""
         raise NotImplementedError(
-            "CustomGrowthForecastNode cannot be fully deserialized because the "
-            "growth_function cannot be serialized. Manual reconstruction required."
+            "CustomGrowthForecastNode cannot be deserialized; "
+            "growth_function is not serializable."
         )
 
 
