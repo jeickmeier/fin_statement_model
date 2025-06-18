@@ -8,11 +8,14 @@ This module provides utilities to load and merge application configuration from:
     5. Runtime overrides
 
 Example:
-    >>> from fin_statement_model.config.manager import ConfigManager
+    >>> from fin_statement_model.config.manager import ConfigManager, get_config, update_config
     >>> cm = ConfigManager()
     >>> cfg = cm.get()
     >>> cfg.logging.level
     'WARNING'
+    >>> update_config({'logging': {'level': 'DEBUG'}})
+    >>> get_config().logging.level
+    'DEBUG'
 """
 
 from pathlib import Path
@@ -30,7 +33,14 @@ logger = logging.getLogger(__name__)
 
 
 class ConfigurationError(FinStatementModelError):
-    """Exception raised for configuration-related errors."""
+    """Exception raised for configuration-related errors.
+
+    Examples:
+        >>> raise ConfigurationError('Invalid config')
+        Traceback (most recent call last):
+            ...
+        fin_statement_model.core.errors.FinStatementModelError: Invalid config
+    """
 
 
 class ConfigManager:
@@ -182,6 +192,12 @@ class ConfigManager:
 
         Returns:
             Path to the project config file if found, otherwise None.
+
+        Examples:
+            >>> from fin_statement_model.config.manager import ConfigManager
+            >>> cm = ConfigManager()
+            >>> isinstance(cm._find_project_config(), (type(None), Path))
+            True
         """
         # Look for .fsm_config.yaml in parent directories
         current = Path.cwd()
@@ -200,6 +216,12 @@ class ConfigManager:
 
         Returns:
             Path to the user config file if found, otherwise None.
+
+        Examples:
+            >>> from fin_statement_model.config.manager import ConfigManager
+            >>> cm = ConfigManager()
+            >>> isinstance(cm._find_user_config(), (type(None), Path))
+            True
         """
         if self._config_file and self._config_file.exists():
             return self._config_file
@@ -227,6 +249,12 @@ class ConfigManager:
 
         Raises:
             ConfigurationError: If the file format is unsupported or loading fails.
+
+        Examples:
+            >>> from pathlib import Path
+            >>> from fin_statement_model.config.manager import ConfigManager
+            >>> cm = ConfigManager()
+            >>> # cm._load_file(Path('somefile.yaml'))  # doctest: +SKIP
         """
         try:
             if path.suffix in [".yaml", ".yml"]:
@@ -269,7 +297,21 @@ class ConfigManager:
     def _deep_merge(
         self, base: dict[str, Any], update: dict[str, Any]
     ) -> dict[str, Any]:
-        """Recursively merge two dictionaries with `update` taking precedence."""
+        """Recursively merge two dictionaries with `update` taking precedence.
+
+        Args:
+            base: The base dictionary.
+            update: The dictionary with override values.
+
+        Returns:
+            A new dictionary with merged values.
+
+        Examples:
+            >>> from fin_statement_model.config.manager import ConfigManager
+            >>> cm = ConfigManager()
+            >>> cm._deep_merge({'a': 1, 'b': {'c': 2}}, {'b': {'c': 3}, 'd': 4})
+            {'a': 1, 'b': {'c': 3}, 'd': 4}
+        """
         result = base.copy()
 
         for key, value in update.items():
@@ -367,6 +409,18 @@ class ConfigManager:
         - Double underscore (__) denotes nested separation; single underscore also allowed but
           double underscore takes precedence to avoid issues with values containing underscores.
         - Values parsed via helpers.parse_env_value.
+
+        Returns:
+            Nested dictionary of config overrides from environment variables.
+
+        Examples:
+            >>> import os
+            >>> os.environ['FSM_LOGGING__LEVEL'] = 'DEBUG'
+            >>> from fin_statement_model.config.manager import ConfigManager
+            >>> cm = ConfigManager()
+            >>> overrides = cm._extract_env_overrides()
+            >>> overrides['logging']['level']
+            'DEBUG'
         """
         import os
         from fin_statement_model.config.helpers import parse_env_value
@@ -403,6 +457,12 @@ class ConfigManager:
 
         Args:
             to: Target path. If None, uses the originally located user config file.
+
+        Examples:
+            >>> from pathlib import Path
+            >>> from fin_statement_model.config.manager import ConfigManager
+            >>> cm = ConfigManager()
+            >>> # cm.save(Path('myconfig.yaml'))  # doctest: +SKIP
         """
         with self._lock:
             cfg = self.get()
@@ -432,7 +492,13 @@ class ConfigManager:
                 raise
 
     def reconfigure_logging(self) -> None:
-        """Reapply logging configuration based on current config."""
+        """Reapply logging configuration based on current config.
+
+        Examples:
+            >>> from fin_statement_model.config.manager import ConfigManager
+            >>> cm = ConfigManager()
+            >>> cm.reconfigure_logging()  # No error if config is not loaded
+        """
         with self._lock:
             if self._config is None:
                 return
@@ -463,6 +529,12 @@ def update_config(updates: dict[str, Any]) -> None:
 
     Args:
         updates: Nested dict of configuration keys and values to override.
+
+    Examples:
+        >>> from fin_statement_model.config.manager import update_config, get_config
+        >>> update_config({'logging': {'level': 'DEBUG'}})
+        >>> get_config().logging.level
+        'DEBUG'
     """
     _config_manager.update(updates)
 

@@ -6,22 +6,16 @@ helpers so that callers can interact with the configuration layer without
 needing to know the underlying module structure.
 
 Examples:
-    >>> from fin_statement_model.config import get_config, update_config
-
-    # Retrieve the current configuration
-    >>> cfg = get_config()
-    >>> cfg.logging.level
+    >>> from fin_statement_model.config import get_config, update_config, cfg
+    >>> cfg_obj = get_config()
+    >>> cfg_obj.logging.level
     'WARNING'
-
-    # Apply an in-memory override (takes effect immediately)
-    >>> update_config({
-    ...     'forecasting': {
-    ...         'default_method': 'historical_growth',
-    ...         'default_periods': 5,
-    ...     }
-    ... })
-    >>> get_config().forecasting.default_method
-    'historical_growth'
+    >>> update_config({'logging': {'level': 'DEBUG'}})
+    >>> get_config().logging.level
+    'DEBUG'
+    >>> from fin_statement_model.config import cfg
+    >>> cfg('logging.level')
+    'DEBUG'
 """
 
 from .helpers import cfg, cfg_or_param, ConfigurationAccessError
@@ -43,3 +37,6 @@ __all__ = [
     "update_config",
     "cli_main",
 ]
+
+# ---
+# Docstrings for re-exported symbols

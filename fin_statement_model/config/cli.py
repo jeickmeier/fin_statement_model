@@ -1,15 +1,18 @@
 """Command-line interface for fin_statement_model configuration.
 
 This lightweight CLI lets users inspect and mutate runtime configuration
-without writing Python code.
+without writing Python code. It is available as the `fsm-config` entry-point or
+can be invoked via `python -m fin_statement_model.config.cli`.
 
-Usage (once installed as `fsm-config` entry-point):
-
+Examples:
     $ fsm-config show logging.level
     WARNING
-
     $ fsm-config set logging.level DEBUG
     Updated logging.level → DEBUG
+    $ fsm-config save
+    Configuration saved ✅
+    $ fsm-config reload
+    Configuration reloaded
 """
 
 from __future__ import annotations
@@ -29,12 +32,21 @@ app = typer.Typer(help="Configuration management commands for fin_statement_mode
 @app.command()
 def show(
     path: Optional[str] = typer.Argument(None, help="Config dotted path to show")
-) -> None:  # noqa: D401
+) -> None:
     """Display configuration values.
 
     If *path* is omitted, the full configuration is printed in YAML format.
-    """
+    Otherwise, prints the value at the given dotted path as JSON.
 
+    Args:
+        path: Dotted path to the config value (optional).
+
+    Examples:
+        $ fsm-config show
+        ... # prints YAML
+        $ fsm-config show logging.level
+        "WARNING"
+    """
     if path is None:
         typer.echo(get_config().to_yaml())
     else:
@@ -50,11 +62,21 @@ def show(
 def set(
     path: str = typer.Argument(..., help="Config dotted path to set"),
     value: str = typer.Argument(..., help="New value (JSON encoded if complex)"),
-) -> None:  # noqa: D401
+) -> None:
     """Set a configuration value at *path*.
 
     The *value* is interpreted as JSON. For simple scalars you may pass raw
     strings without quotes, e.g. `DEBUG`.
+
+    Args:
+        path: Dotted path to the config value to set.
+        value: New value (JSON encoded if complex).
+
+    Examples:
+        $ fsm-config set logging.level DEBUG
+        Updated logging.level → DEBUG
+        $ fsm-config set forecasting.default_periods 10
+        Updated forecasting.default_periods → 10
     """
     try:
         parsed: Any
@@ -81,8 +103,18 @@ def set(
 @app.command()
 def save(
     path: Optional[Path] = typer.Option(None, help="Path to save configuration")
-) -> None:  # noqa: D401
-    """Persist current configuration to *path* (or default user config)."""
+) -> None:
+    """Persist current configuration to *path* (or default user config).
+
+    Args:
+        path: Optional path to save the configuration file.
+
+    Examples:
+        $ fsm-config save
+        Configuration saved ✅
+        $ fsm-config save --path myconfig.yaml
+        Configuration saved ✅
+    """
     try:
         _config_manager.save(path)
         typer.echo("Configuration saved ✅")
@@ -92,8 +124,15 @@ def save(
 
 
 @app.command()
-def reload() -> None:  # noqa: D401
-    """Reload configuration from all sources (discard runtime overrides)."""
+def reload() -> None:
+    """Reload configuration from all sources (discard runtime overrides).
+
+    This clears cached config and runtime overrides, forcing a reload from disk and environment.
+
+    Examples:
+        $ fsm-config reload
+        Configuration reloaded
+    """
     # Clear cached config and overrides
     _config_manager._runtime_overrides.clear()
     _config_manager._config = None
@@ -101,7 +140,14 @@ def reload() -> None:  # noqa: D401
 
 
 def run() -> None:
-    """Entry-point for `python -m fin_statement_model.config.cli`."""
+    """Entry-point for `python -m fin_statement_model.config.cli`.
+
+    Launches the Typer CLI for configuration management.
+
+    Examples:
+        >>> from fin_statement_model.config.cli import run
+        >>> # run()  # Launches CLI (doctest: +SKIP)
+    """
     app()
 
 

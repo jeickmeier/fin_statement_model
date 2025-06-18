@@ -4,6 +4,21 @@ This module provides functions to retrieve application configuration
 settings from the central config object, with optional type checking and
 default values. It also includes utilities for parsing environment variable
 strings into native Python types.
+
+Examples:
+    >>> from fin_statement_model.config.helpers import cfg, cfg_or_param, parse_env_value
+    >>> cfg('logging.level')
+    'WARNING'
+    >>> cfg_or_param('logging.level', None)
+    'WARNING'
+    >>> parse_env_value('true')
+    True
+    >>> parse_env_value('42')
+    42
+    >>> parse_env_value('-3.14')
+    -3.14
+    >>> parse_env_value('foo')
+    'foo'
 """
 
 from __future__ import annotations
@@ -13,14 +28,36 @@ from fin_statement_model.core.errors import FinStatementModelError
 
 
 class ConfigurationAccessError(FinStatementModelError):
-    """Raised when there's an error accessing configuration values."""
+    """Raised when there's an error accessing configuration values.
+
+    Examples:
+        >>> raise ConfigurationAccessError('Missing config')
+        Traceback (most recent call last):
+            ...
+        fin_statement_model.core.errors.FinStatementModelError: Missing config
+    """
 
 
 T = TypeVar("T")
 
 
 @overload
-def cfg(path: str, *, strict: bool = False) -> Any: ...
+def cfg(path: str, *, strict: bool = False) -> Any:
+    """Get a configuration value by dotted path.
+
+    Args:
+        path: Dotted path string to traverse the config.
+        strict: If True, raise an error if the key is not found.
+
+    Returns:
+        The configuration value.
+
+    Examples:
+        >>> from fin_statement_model.config.helpers import cfg
+        >>> cfg('logging.level')
+        'WARNING'
+    """
+    ...
 
 
 @overload
@@ -41,7 +78,7 @@ def cfg(
     *,
     strict: bool = False,
 ) -> Any:
-    """Get a configuration value by dotted path.
+    """Get a configuration value by dotted path or sequence.
 
     Retrieves a configuration value from the global config object using a
     dotted path or sequence of path segments.
@@ -59,11 +96,13 @@ def cfg(
             and no default is provided (unless strict is True).
 
     Examples:
-        >>> cfg("database.host")
-        "localhost"
-
-        >>> cfg(["database", "port"], default=5432)
-        5432
+        >>> from fin_statement_model.config.helpers import cfg
+        >>> cfg('logging.level')
+        'WARNING'
+        >>> cfg(['io', 'default_csv_delimiter'], default=';')
+        ','
+        >>> cfg('nonexistent.key', default=123)
+        123
     """
     from .manager import get_config
 
@@ -102,11 +141,11 @@ def cfg_or_param(config_path: str, param_value: Any) -> Any:
         The `param_value` if it is not None, otherwise the configuration value.
 
     Examples:
-        >>> cfg_or_param("logging.level", "DEBUG")
-        "DEBUG"
-
-        >>> cfg_or_param("logging.level", None)
-        "INFO"
+        >>> from fin_statement_model.config.helpers import cfg_or_param
+        >>> cfg_or_param('logging.level', 'DEBUG')
+        'DEBUG'
+        >>> cfg_or_param('logging.level', None)
+        'WARNING'
     """
     return param_value if param_value is not None else cfg(config_path)
 
@@ -117,26 +156,26 @@ def parse_env_value(value: str) -> Any:
     Attempts to convert the input string to a boolean if it matches
     "true"/"false", then to an integer if it represents a whole number,
     then to a float if it appears numeric with decimal or exponent. Otherwise,
-    returns the original string.
+    returns the original string or parses as JSON if possible.
 
     Args:
         value: The environment variable value as a string.
 
     Returns:
-        The parsed native Python type: bool, int, float, or str.
+        The parsed native Python type: bool, int, float, list, dict, or str.
 
     Examples:
-        >>> parse_env_value("true")
+        >>> from fin_statement_model.config.helpers import parse_env_value
+        >>> parse_env_value('true')
         True
-
-        >>> parse_env_value("42")
+        >>> parse_env_value('42')
         42
-
-        >>> parse_env_value("-3.14")
+        >>> parse_env_value('-3.14')
         -3.14
-
-        >>> parse_env_value("foo")
-        "foo"
+        >>> parse_env_value('[1, 2, 3]')
+        [1, 2, 3]
+        >>> parse_env_value('foo')
+        'foo'
     """
     val = value.strip()
     low = val.lower()

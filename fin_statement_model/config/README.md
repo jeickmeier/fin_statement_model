@@ -1,21 +1,21 @@
 # Configuration Subpackage
 
-The `fin_statement_model.config` subpackage provides centralized configuration management for the library.
-It includes:
+The `fin_statement_model.config` subpackage provides centralized, extensible configuration management for the entire library. It supports hierarchical loading, runtime overrides, environment variable integration, and a command-line interface for inspection and mutation.
 
-- **Models** (`models.py`): Pydantic models defining all configuration options and defaults.
-- **Manager** (`manager.py`): `ConfigManager` class to load and merge settings from defaults, project/user files, environment variables, and runtime overrides.
-- **Helpers** (`helpers.py`): Utility functions (`cfg`, `get_typed_config`, `cfg_or_param`) for easy access to configuration values.
+## Basic Usage
 
-## Usage
-
-### Retrieving Configuration
+### Accessing Configuration
 
 ```python
-from fin_statement_model.config import get_config
+from fin_statement_model.config import get_config, cfg
 
+# Get the full config object (Pydantic model)
 config = get_config()
 print(config.logging.level)  # e.g. 'WARNING'
+
+# Get a single value by dotted path
+level = cfg('logging.level')
+print(level)  # 'WARNING'
 ```
 
 ### Updating Configuration at Runtime
@@ -25,94 +25,55 @@ from fin_statement_model.config import update_config, get_config
 
 # Override forecasting defaults
 update_config({
-  'forecasting': {
-    'default_method': 'historical_growth',
-    'default_periods': 5,
-  }
+    'forecasting': {
+        'default_method': 'historical_growth',
+        'default_periods': 5,
+    }
 })
-print(get_config().forecasting.default_method)
-# 'historical_growth'
+print(get_config().forecasting.default_method)  # 'historical_growth'
 ```
 
-### Accessing Individual Values
+### Type-Checked Access and Fallbacks
 
 ```python
 from fin_statement_model.config import cfg, get_typed_config
 
-# Get with default fallback
-db_host = cfg('database.host', default='localhost')
-# Type-checked access
-timeout = get_typed_config('api.api_timeout', int, default=30)
+timeout = cfg('api.api_timeout', default=30)  # fallback if not set
 ```
 
-## Configuration Loading Order
+## Advanced Features
 
-1. **Defaults** defined in Pydantic models
-2. **Project config file** (`.fsm_config.yaml`) in cwd or parent directories
-3. **User config file** (`fsm_config.yaml`) in cwd or home directory
-4. **Environment variables** prefixed with `FSM_` (e.g. `FSM_LOGGING_LEVEL`)
-5. **Runtime overrides** via `update_config()`
+### Configuration Loading Order
 
-Supported config file formats: YAML (`.yaml`, `.yml`) and JSON (`.json`).
+1. **Defaults** (from Pydantic models)
+2. **Project config file** (`.fsm_config.yaml` in cwd or parent dirs)
+3. **User config file** (`fsm_config.yaml` in cwd or home dir)
+4. **Environment variables** (prefixed with `FSM_`, e.g. `FSM_LOGGING_LEVEL`)
+5. **Runtime overrides** (via `update_config()`)
 
-Environment variables are no longer auto-consumed; use `update_config()` for overrides.
+Supported formats: YAML (`.yaml`, `.yml`) and JSON (`.json`).
 
-## Adding New Configuration Options
+### Environment Variable Parsing
 
-To introduce a new feature or default:
+- Environment variables are parsed to native types (bool, int, float, list, dict) when possible.
+- Use double underscores (`__`) to denote nested config keys: `FSM_LOGGING__LEVEL=DEBUG` → `logging.level`.
+- Legacy single underscore is also supported.
 
-1. **Define the field**
-   In `fin_statement_model/config/models.py`, locate the relevant model (e.g., `LoggingConfig`, `IOConfig`, or root `Config`) and add a new attribute:
-   ```python
-   class LoggingConfig(BaseModel):
-       # New feature toggle
-       enable_new_feature: bool = Field(
-           True, description="Enable the new experimental feature"
-       )
-   ```
+### Display Flags
 
-2. **Provide validation** (optional)
-   If custom validation is needed, add a `@field_validator`:
-   ```python
-   @field_validator('enable_new_feature')
-   def _validate_new_feature(cls, v: bool) -> bool:
-       if not isinstance(v, bool):
-           raise ValueError('enable_new_feature must be boolean')
-       return v
-   ```
-
-3. **Update documentation**
-   - Add descriptions/examples to the model docstring in `models.py`.
-   - Update this README if necessary.
-
-4. **Access the new option**
-   ```python
-   from fin_statement_model.config import cfg
-   is_enabled = cfg('logging.enable_new_feature', default=False)
-   ```
-
-5. **Override via environment**
-   Use `FSM_LOGGING_ENABLE_NEW_FEATURE=true` to override.
-
-6. **Testing**
-   Add or update tests under `tests/config` (if present) to verify behavior.
-
-## Display Flags (0.2+)
-
-Boolean display toggles are now grouped under `config.display.flags` instead of living directly on `display`.
-Legacy attribute access is still supported via a thin shim, but **new code should prefer the nested path**:
+Boolean display toggles are grouped under `config.display.flags`:
 
 ```python
 from fin_statement_model.config import cfg
 
-# Old (still works)
-include_notes = cfg('display.include_notes_column')
-
-# New preferred form
+# Preferred (new)
 include_notes = cfg('display.flags.include_notes_column')
+
+# Legacy (still works)
+include_notes = cfg('display.include_notes_column')
 ```
 
-Flags available:
+Available flags:
 
 | Flag | Purpose | Default |
 |------|---------|---------|
@@ -128,11 +89,29 @@ Flags available:
 | `apply_contra_formatting` | Format contra items with parentheses/brackets | `True` |
 | `add_contra_indicator_column` | Add `is_contra` indicator column | `False` |
 
-## Command-Line Interface
+## Customization & Extending Configuration
 
-A tiny Typer-based CLI is included for inspecting and mutating configuration at the terminal.
-After installing the package you can invoke it via the module path or, if you enabled the
-entry-point, the `fsm-config` shortcut.
+### Adding New Configuration Options
+
+1. **Define the field** in `fin_statement_model/config/models.py` (add to the relevant model).
+2. **(Optional) Add validation** using `@field_validator`.
+3. **Update documentation** (model docstring and this README).
+4. **Access the new option** via `cfg('section.option')`.
+5. **Override via environment**: `FSM_SECTION__OPTION=value`.
+6. **Test**: Add/update tests under `tests/config`.
+
+### Example: Adding a Feature Toggle
+
+```python
+class LoggingConfig(BaseModel):
+    enable_new_feature: bool = Field(
+        True, description="Enable the new experimental feature"
+    )
+```
+
+## Command-Line Interface (CLI)
+
+A Typer-based CLI is included for inspecting and mutating configuration from the terminal.
 
 ```bash
 # Show full config (YAML)
@@ -146,4 +125,24 @@ fsm-config set forecasting.default_periods 10
 
 # Persist current config to disk (defaults to ~/.fsm_config.yaml)
 fsm-config save
-``` 
+```
+
+## Troubleshooting & FAQ
+
+**Q: Why isn't my environment variable being picked up?**
+- Ensure it is prefixed with `FSM_` and uses double underscores for nesting.
+- Example: `FSM_API__FMP_API_KEY=yourkey` sets `api.fmp_api_key`.
+
+**Q: How do I reset runtime overrides?**
+- Use the CLI `reload` command or restart your Python process.
+
+**Q: How do I add a new config option?**
+- See the "Customization & Extending Configuration" section above.
+
+**Q: Can I use JSON for config files?**
+- Yes, `.json` files are supported alongside YAML.
+
+**Q: How do I access deeply nested config values?**
+- Use `cfg('section.subsection.option')` or `cfg(['section', 'subsection', 'option'])`.
+
+For more, see the docstrings in each module or the API documentation. 

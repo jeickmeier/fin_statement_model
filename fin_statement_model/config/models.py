@@ -4,11 +4,25 @@ This module provides Pydantic models to validate and type-check the
 application's configuration settings, including logging, I/O, forecasting,
 preprocessing, display, API, metrics, validation, and statement options.
 
+Each sub-config is a Pydantic model with field-level validation and
+descriptions. The root `Config` model aggregates all sub-configurations and
+provides serialization helpers.
+
 Examples:
     >>> from fin_statement_model.config.models import Config
     >>> config = Config()
     >>> config.logging.level
     'WARNING'
+    >>> config.display.flags.include_notes_column
+    False
+    >>> config.to_dict()['logging']['level']
+    'WARNING'
+    >>> yaml_str = config.to_yaml()
+    >>> isinstance(yaml_str, str)
+    True
+    >>> loaded = Config.from_yaml(yaml_str)
+    >>> loaded.logging.level == config.logging.level
+    True
 """
 
 from typing import Optional, Literal, Any, Union
@@ -68,6 +82,10 @@ class IOConfig(BaseModel):
         auto_standardize_columns (bool): Standardize column names on read.
         skip_invalid_rows (bool): Skip rows with invalid data.
         strict_validation (bool): Enforce strict data validation on read.
+
+    Example:
+        >>> IOConfig(default_csv_delimiter=';').default_csv_delimiter
+        ';'
     """
 
     default_excel_sheet: str = Field(
@@ -198,6 +216,10 @@ class PreprocessingConfig(BaseModel):
         default_time_series_window_size (int): Window size for transformations.
         default_conversion_aggregation (str): Aggregation method for period conversion.
         statement_formatting (StatementFormattingConfig): Formatting settings.
+
+    Example:
+        >>> PreprocessingConfig(auto_clean_data=False).auto_clean_data
+        False
     """
 
     auto_clean_data: bool = Field(
@@ -246,6 +268,10 @@ class DisplayFlags(BaseModel):
     These granular switches control optional features during statement formatting.
     Grouping them in a dedicated model keeps `DisplayConfig` manageable while
     still exposing properties for ergonomic access (e.g., `cfg.display.include_empty_items`).
+
+    Example:
+        >>> DisplayFlags(include_notes_column=True).include_notes_column
+        True
     """
 
     apply_sign_conventions: bool = Field(
@@ -305,17 +331,7 @@ class DisplayConfig(BaseModel):
         header_style (str): Style keyword for headers.
         contra_css_class (str): CSS class for contra items.
         show_negative_sign (bool): Show minus sign instead of parentheses.
-        apply_sign_conventions (bool): Apply default sign conventions.
-        include_empty_items (bool): Include items with no data.
-        include_metadata_cols (bool): Include metadata columns.
-        add_is_adjusted_column (bool): Add 'is_adjusted' column.
-        include_units_column (bool): Add units column.
-        include_css_classes (bool): Add CSS class column.
-        include_notes_column (bool): Add notes column.
-        apply_item_scaling (bool): Apply item-specific scaling.
-        apply_item_formatting (bool): Apply item-specific formatting.
-        apply_contra_formatting (bool): Apply contra-specific formatting.
-        add_contra_indicator_column (bool): Add contra indicator column.
+        flags (DisplayFlags): Grouped boolean feature flags.
 
     Example:
         >>> DisplayConfig(default_number_format='.1%').default_number_format
@@ -343,8 +359,6 @@ class DisplayConfig(BaseModel):
     scale_factor: float = Field(
         1.0, description="Default scale factor for display (e.g., 0.001 for thousands)"
     )
-
-    # --- New advanced formatting options ---
     indent_character: str = Field(
         "  ", description="Indentation characters used for nested line items"
     )
@@ -364,8 +378,6 @@ class DisplayConfig(BaseModel):
         True,
         description="Whether to prefix negative numbers with a minus sign when not using parentheses",
     )
-
-    # Grouped boolean feature flags
     flags: DisplayFlags = Field(
         default_factory=DisplayFlags,
         description="Grouped boolean feature flags controlling optional display behaviour",
@@ -373,22 +385,41 @@ class DisplayConfig(BaseModel):
 
     @field_validator("scale_factor")
     def validate_scale_factor(cls, v: float) -> float:
-        """Ensure scale factor is positive."""
+        """Ensure scale factor is positive.
+
+        Args:
+            v: The scale factor.
+        Returns:
+            The validated scale factor.
+        Raises:
+            ValueError: If scale factor is not positive.
+        Example:
+            >>> DisplayConfig.validate_scale_factor(1.0)
+            1.0
+        """
         if v <= 0:
             raise ValueError("scale_factor must be positive")
         return v
 
     model_config = ConfigDict(extra="forbid")
 
-    # ---------------------------------------------------------------------
-    # Convenience property accessors for flags (read-only)
-
-    def __getattr__(self, item: str) -> Any:  # noqa: D401  (simple attr fallback)
+    def __getattr__(self, item: str) -> Any:
         """Delegate unknown attribute access to `flags` for convenience.
 
         This maintains compatibility with existing code that referenced
         attributes such as `config.display.include_empty_items` before the
         flags were nested.
+
+        Args:
+            item: The attribute name.
+        Returns:
+            The value from flags if present.
+        Raises:
+            AttributeError: If the attribute is not found.
+        Example:
+            >>> dc = DisplayConfig()
+            >>> dc.include_empty_items == dc.flags.include_empty_items
+            True
         """
         if item in self.flags.__fields__:
             return getattr(self.flags, item)
@@ -428,7 +459,18 @@ class APIConfig(BaseModel):
 
     @field_validator("api_timeout", "api_retry_count", "cache_ttl_hours")
     def validate_positive(cls, v: int) -> int:
-        """Ensure values are positive."""
+        """Ensure values are positive.
+
+        Args:
+            v: The value to check.
+        Returns:
+            The validated value.
+        Raises:
+            ValueError: If value is not positive.
+        Example:
+            >>> APIConfig.validate_positive(10)
+            10
+        """
         if v <= 0:
             raise ValueError("Value must be positive")
         return v
@@ -443,6 +485,10 @@ class MetricsConfig(BaseModel):
         custom_metrics_dir (Optional[Path]): Directory for custom metric definitions.
         validate_metric_inputs (bool): Check that metric input nodes exist.
         auto_register_metrics (bool): Auto-register metrics from definition files.
+
+    Example:
+        >>> MetricsConfig(validate_metric_inputs=False).validate_metric_inputs
+        False
     """
 
     custom_metrics_dir: Optional[Path] = Field(
@@ -469,6 +515,10 @@ class ValidationConfig(BaseModel):
         balance_tolerance (float): Tolerance for balance sheet validation.
         warn_on_negative_assets (bool): Warn on negative asset values.
         validate_sign_conventions (bool): Enforce expected sign conventions.
+
+    Example:
+        >>> ValidationConfig(strict_mode=True).strict_mode
+        True
     """
 
     strict_mode: bool = Field(False, description="Enable strict validation mode")
@@ -493,7 +543,18 @@ class ValidationConfig(BaseModel):
 
     @field_validator("balance_tolerance")
     def validate_tolerance(cls, v: float) -> float:
-        """Ensure tolerance is non-negative."""
+        """Ensure tolerance is non-negative.
+
+        Args:
+            v: The tolerance value.
+        Returns:
+            The validated tolerance.
+        Raises:
+            ValueError: If tolerance is negative.
+        Example:
+            >>> ValidationConfig.validate_tolerance(1.0)
+            1.0
+        """
         if v < 0:
             raise ValueError("balance_tolerance must be non-negative")
         return v
@@ -508,6 +569,10 @@ class StatementsConfig(BaseModel):
         default_adjustment_filter (Optional[Union[AdjustmentFilterSpec,list[str]]]): Default filter spec or tag list.
         enable_node_validation (bool): Enable node ID validation during building.
         node_validation_strict (bool): Treat validation failures as errors.
+
+    Example:
+        >>> StatementsConfig(enable_node_validation=True).enable_node_validation
+        True
     """
 
     default_adjustment_filter: Optional[Union[AdjustmentFilterSpec, list[str]]] = Field(
