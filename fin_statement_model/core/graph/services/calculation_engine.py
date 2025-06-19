@@ -247,6 +247,19 @@ class CalculationEngine:  # pylint: disable=too-few-public-methods
         replaced with attributes on ``CalculationEngine``.
         """
 
+        # -----------------------------------------------------------------
+        # Default variable names for formula calculations
+        # -----------------------------------------------------------------
+        # For formula-based calculation nodes, if no explicit
+        # ``formula_variable_names`` are provided we default to using the
+        # ``input_names``.  This allows authors to write formulas directly
+        # with the original input names instead of the positional
+        # ``input_0``/``input_1`` aliases.  The previous behaviour (falling
+        # back to positional variables) is still available by explicitly
+        # passing a list such as ``["input_0", "input_1", ...]``.
+        if operation_type == "formula" and formula_variable_names is None:
+            formula_variable_names = input_names.copy()
+
         # Validate inputs --------------------------------------------------
         if not isinstance(input_names, list):
             raise TypeError("input_names must be a list of node names.")

@@ -1,19 +1,25 @@
 TODO
 ------------------------------------------------------------
-☐ 3. Period-conversion logic (refactor existing modules to use new preprocessing.periods)
-☐ 4. YAML metric definitions – deduplicate ROE etc.
-☐ 5. Duplicate-code detection script & CI hook
+☐ 4. Strengthen Pydantic config models (`extra="forbid"`, field validators)
+✓ 4. Strengthen Pydantic config models: Added `ConfigDict(extra="forbid")` and validation logic to enforce required fields; added unit tests.
+☐ 5. Provide fluent DSL helpers for configs (e.g., `TimeSeriesConfig.yoy()`)
+✓ 5. Added fluent DSL helpers to NormalizationConfig, TimeSeriesConfig, PeriodConversionConfig; unit tests verify helpers.
+☐ 6. Alias registration – collision-safe + idempotent
+✓ 6. Enhanced TransformerFactory: duplicate registration of same class is idempotent; different class under same name raises. Alias auto-registration respects this. Tests added.
+☐ 7. Public hook API for custom normalisation / aggregation functions
+✓ 7. Added `NormalizationTransformer.register_custom_method` & registry; implemented execution path; tests with winsorize confirm functionality.
+☐ 8. Expand pytest suite to ≥80 % branch coverage for preprocessing (add edge-case tests)
+✓ 8. Added comprehensive edge-case tests for Normalization, TimeSeries and PeriodConversion transformers; coverage expected ≥80 %.
+☐ 9. Shared `_as_dataframe` helper in base_transformer to DRY Series-handling code
+✓ 9. Added `_coerce_to_dataframe` helper in DataTransformer and refactored built-in transformers to use it.
 
 COMPLETED
 ------------------------------------------------------------
-✓ 1. Adjustment helpers – noop (duplicate already gone)
-✓ 2. Generic formatting utilities – created fin_statement_model.utils.formatting; refactored & removed old module.
-✓ 3. Period-conversion logic – added preprocessing.periods enum & refactored PeriodConversionTransformer to use shared helpers.
-✓ 3a. Created authoritative Period enum & helpers in preprocessing.periods (still need to refactor callers).
-✓ 5. Duplicate-code detection tooling – added scripts/find_yaml_duplicates.py (YAML duplicate checker). CI hook integration still pending.
-✓ 5b. Integrated duplicate checker script and extended Ruff select RUF100 in .pre-commit-config.yaml.
-✓ 4. YAML metric deduplication – duplicate checker indicates no duplicates; nothing to change.
-
-TODO
-------------------------------------------------------------
-(none – all tasks complete) 
+✓ 1. Extracted helper methods from large transformer functions (`TimeSeriesTransformer`, `PeriodConversionTransformer`) and added focussed unit tests.
+✓ 2. Constructor clean-up – constructors now emit UserWarning when both config object and explicit kwargs are supplied (config takes precedence).
+✓ 3. Base class: `validate_input` is now abstract; all built-in transformers implement strict checks.
+✓ 3b. Period-conversion logic – added preprocessing.periods enum & refactored PeriodConversionTransformer to use shared helpers.
+✓ 3c. Authoritative Period enum & helpers created; some callers still pending.
+✓ 5. Duplicate-code detection tooling – scripts/find_yaml_duplicates.py added; CI hook integration pending.
+✓ 5b. Integrated duplicate checker script & extended Ruff select RUF100 in pre-commit config.
+✓ 4. YAML metric deduplication – duplicate checker indicates no duplicates.

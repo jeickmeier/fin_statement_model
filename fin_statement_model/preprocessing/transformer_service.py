@@ -47,10 +47,20 @@ class TransformerFactory:
             TransformerRegistrationError: If a transformer with the given name is already registered or if the transformer_class is not a subclass of DataTransformer.
         """
         if name in cls._transformers:
+            existing = cls._transformers[name]
+            # Idempotent re-registration of *the same* class is allowed as a no-op.
+            if existing is transformer_class:
+                logger.debug(
+                    "Transformer '%s' already registered with identical class – skipping duplicate registration.",
+                    name,
+                )
+                return
+
+            # Attempt to register *different* class under an existing name – raise error.
             raise TransformerRegistrationError(
                 f"Transformer name '{name}' is already registered",
                 transformer_name=name,
-                existing_class=cls._transformers[name],
+                existing_class=existing,
             )
         if not issubclass(transformer_class, DataTransformer):
             raise TransformerRegistrationError(
@@ -58,7 +68,7 @@ class TransformerFactory:
                 transformer_name=name,
             )
         cls._transformers[name] = transformer_class
-        logger.info(f"Registered transformer '{name}'")
+        logger.info("Registered transformer '%s'", name)
 
     @classmethod
     def create_transformer(cls, name: str, **kwargs: Any) -> DataTransformer:
@@ -139,7 +149,11 @@ class TransformerFactory:
                         snake = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", obj_name)
                         snake = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", snake).lower()
                         alias = snake.replace("_transformer", "")
-                        if alias not in cls._transformers:
+                        # Safe registration: if alias exists but maps to same class, ignore; otherwise pass to register_transformer which will handle collision.
+                        if (
+                            alias not in cls._transformers
+                            or cls._transformers[alias] is obj
+                        ):
                             cls.register_transformer(alias, obj)
             logger.info(f"Discovered transformers from package '{package_name}'")
         except ImportError:

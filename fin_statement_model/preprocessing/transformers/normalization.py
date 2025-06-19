@@ -4,8 +4,9 @@ This module defines the transformer to normalize data using percent_of, minmax,
 standard, or scale_by methods within the preprocessing layer.
 """
 
-from typing import Optional, Union, ClassVar
+from typing import Optional, Union, ClassVar, Callable
 import logging
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -19,6 +20,14 @@ from fin_statement_model.preprocessing.errors import NormalizationError
 from fin_statement_model.core.errors import DataValidationError
 
 logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# NormalizationTransformer
+# ---------------------------------------------------------------------------
+
+
+CustomNormFn = Callable[[pd.DataFrame, "NormalizationTransformer"], pd.DataFrame]
 
 
 class NormalizationTransformer(DataTransformer):
@@ -79,6 +88,41 @@ class NormalizationTransformer(DataTransformer):
 
     NORMALIZATION_TYPES: ClassVar[list[str]] = [t.value for t in NormalizationType]
 
+    # Runtime registry for user-supplied normalisation functions.
+    _CUSTOM_METHODS: ClassVar[dict[str, CustomNormFn]] = {}
+
+    # ------------------------------------------------------------------
+    # Public API for custom method registration
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def register_custom_method(
+        cls, name: str, func: CustomNormFn, *, overwrite: bool = False
+    ) -> None:
+        """Register a custom normalisation *func* under *name*.
+
+        The callable **must** accept two arguments: the DataFrame to be
+        normalised and the *transformer instance* (so it can access config
+        such as ``reference`` / ``scale_factor``). It must return the
+        normalised DataFrame.
+
+        Args:
+            name: Identifier to use in ``NormalizationTransformer(..., normalization_type=name)``.
+            func: Callable implementing the normalisation.
+            overwrite: Allow replacing an existing registration. Defaults to *False*.
+        """
+        if name in cls._CUSTOM_METHODS and not overwrite:
+            raise ValueError(
+                f"Custom normalization method '{name}' already registered."
+            )
+        cls._CUSTOM_METHODS[name] = func
+        logger.info("Registered custom normalization method '%s'", name)
+
+    @classmethod
+    def list_custom_methods(cls) -> list[str]:
+        """Return names of all registered custom normalisation methods."""
+        return list(cls._CUSTOM_METHODS.keys())
+
     def __init__(
         self,
         normalization_type: Union[
@@ -86,6 +130,7 @@ class NormalizationTransformer(DataTransformer):
         ] = NormalizationType.PERCENT_OF,
         reference: Optional[str] = None,
         scale_factor: Optional[float] = None,
+        *,
         config: Optional[NormalizationConfig] = None,
     ):
         """Initialize the normalizer with specified parameters.
@@ -109,13 +154,41 @@ class NormalizationTransformer(DataTransformer):
             NormalizationError: If normalization_type is invalid, or if required
                 parameters are missing for the selected normalization type.
         """
+        # ------------------------------------------------------------------
+        # Configuration precedence: *either* supply a Pydantic config object
+        # *or* individual keyword-arguments. If both are provided we keep the
+        # config (first-class source-of-truth) and issue a gentle warning so
+        # that users can clean up their call-sites.
+        # ------------------------------------------------------------------
+
+        if config is not None and any(
+            param is not None for param in (reference, scale_factor)
+        ):
+            warnings.warn(
+                "Both 'config' and individual kwargs supplied to NormalizationTransformer; the Pydantic config takes precedence.",
+                UserWarning,
+                stacklevel=2,
+            )
+
+        # Extract values from config if present (takes precedence)
+        if config is not None:
+            normalization_type = config.normalization_type or normalization_type
+            reference = config.reference or reference
+            scale_factor = (
+                config.scale_factor if config.scale_factor is not None else scale_factor
+            )
+
+        # Save incoming config dict for logging/debug via base class
         super().__init__(config.model_dump() if config else None)
         # Normalize enum to string
         if isinstance(normalization_type, NormalizationType):
             norm_type = normalization_type.value
         else:
             norm_type = normalization_type
-        if norm_type not in self.NORMALIZATION_TYPES:
+        if (
+            norm_type not in self.NORMALIZATION_TYPES
+            and norm_type not in self._CUSTOM_METHODS
+        ):
             raise NormalizationError(
                 f"Invalid normalization type: {norm_type}. "
                 f"Must be one of {self.NORMALIZATION_TYPES}",
@@ -177,7 +250,10 @@ class NormalizationTransformer(DataTransformer):
         """
         super().validate_config()
 
-        if self.normalization_type not in self.NORMALIZATION_TYPES:
+        if (
+            self.normalization_type not in self.NORMALIZATION_TYPES
+            and self.normalization_type not in self._CUSTOM_METHODS
+        ):
             raise NormalizationError(
                 f"Unknown normalization method: {self.normalization_type}. "
                 f"Supported methods are: {self.NORMALIZATION_TYPES}",
@@ -207,15 +283,34 @@ class NormalizationTransformer(DataTransformer):
     ) -> Union[pd.DataFrame, pd.Series]:
         """Apply the normalization transformation.
 
+        This is the core implementation method that handles both DataFrame
+        and Series inputs by converting Series to single-column DataFrames,
+        applying the normalization, and converting back if needed.
+
         Args:
-            data: The data to transform.
+            data: The data to transform. Can be either:
+                - pandas.DataFrame: For multi-column normalization
+                - pandas.Series: For single-column normalization
 
         Returns:
-            The normalized data.
+            The normalized data in the same format as the input
+            (DataFrame → DataFrame, Series → Series).
 
         Raises:
-            DataValidationError: If the data type is not supported.
-            NormalizationError: If there are issues during normalization.
+            DataValidationError: If the data type is not supported
+                (neither DataFrame nor Series).
+            NormalizationError: If there are issues during normalization,
+                such as missing reference columns or invalid values.
+
+        Examples:
+            >>> transformer = NormalizationTransformer(
+            ...     normalization_type='scale_by',
+            ...     scale_factor=0.001
+            ... )
+            >>> df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+            >>> result = transformer._transform_impl(df)
+            >>> series = pd.Series([1, 2, 3], name='values')
+            >>> result_series = transformer._transform_impl(series)
         """
         if not isinstance(data, pd.DataFrame | pd.Series):
             raise DataValidationError(
@@ -223,25 +318,66 @@ class NormalizationTransformer(DataTransformer):
                 validation_errors=[f"Got type: {type(data).__name__}"],
             )
 
-        # Handle Series by converting to DataFrame temporarily
-        if isinstance(data, pd.Series):
-            temp_df = data.to_frame()
-            result_df = self._normalize_dataframe(temp_df)
-            return result_df.iloc[:, 0]  # Return as Series
-        else:
-            return self._normalize_dataframe(data)
+        df, was_series = self._coerce_to_dataframe(data)
+        result_df = self._normalize_dataframe(df)
+        if was_series:
+            return result_df.iloc[:, 0]
+        return result_df
 
     def _normalize_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
         """Apply normalization to a DataFrame.
 
+        This method implements the core normalization logic for each supported
+        method type. It handles special cases like:
+        - Division by zero in percent_of calculations
+        - Constant columns in minmax/standard normalization
+        - Custom normalization methods
+
         Args:
-            df: DataFrame to normalize.
+            df: DataFrame to normalize. For each normalization type:
+                - percent_of: Must contain the reference column
+                - minmax: Any numeric columns
+                - standard: Any numeric columns
+                - scale_by: Any numeric columns
+                - custom: Depends on the custom method
 
         Returns:
-            Normalized DataFrame.
+            Normalized DataFrame with the same column names and index.
+            The values are transformed according to the normalization type:
+            - percent_of: Values as percentages of reference (0-100 scale)
+            - minmax: Values scaled to [0,1] range
+            - standard: Values with mean=0, std=1
+            - scale_by: Values multiplied by scale_factor
+            - custom: Depends on the custom method
 
         Raises:
-            NormalizationError: If reference column is not found or other normalization issues.
+            NormalizationError: If:
+                - Reference column is not found (for percent_of)
+                - All reference values are 0 or NaN (for percent_of)
+                - Custom method fails
+
+        Examples:
+            >>> df = pd.DataFrame({
+            ...     'revenue': [1000, 1100, 1200],
+            ...     'costs': [600, 650, 700]
+            ... })
+            >>> transformer = NormalizationTransformer(
+            ...     normalization_type='percent_of',
+            ...     reference='revenue'
+            ... )
+            >>> result = transformer._normalize_dataframe(df)
+            >>> print(result)
+            #    revenue    costs
+            # 0   100.0     60.0
+            # 1   100.0     59.1
+            # 2   100.0     58.3
+
+        Notes:
+            - For percent_of: Reference column remains at 100%
+            - For minmax: Constant columns map to 0
+            - For standard: Constant columns map to 0
+            - For scale_by: Simple multiplication
+            - Custom methods: Must handle their own edge cases
         """
         result = df.copy()
 
@@ -299,4 +435,41 @@ class NormalizationTransformer(DataTransformer):
             for col in df.columns:
                 result[col] = df[col] * self.scale_factor
 
+        else:
+            # Custom method
+            custom_func = self._CUSTOM_METHODS[self.normalization_type]
+            return custom_func(df, self)
+
         return result
+
+    # ------------------------------------------------------------------
+    # Data validation
+    # ------------------------------------------------------------------
+
+    def validate_input(self, data: object) -> bool:  # noqa: D401 – imperative mood
+        """Return *True* when *data* is a DataFrame or Series.
+
+        This method implements the DataTransformer contract by specifying
+        exactly which input types are supported by the normalization
+        transformer.
+
+        Args:
+            data: The input data to validate. Can be any Python object,
+                 but only pandas DataFrame and Series are accepted.
+
+        Returns:
+            bool: True if data is either:
+                - pandas.DataFrame
+                - pandas.Series
+                False for all other types.
+
+        Examples:
+            >>> transformer = NormalizationTransformer()
+            >>> transformer.validate_input(pd.DataFrame())
+            True
+            >>> transformer.validate_input(pd.Series())
+            True
+            >>> transformer.validate_input([1, 2, 3])
+            False
+        """
+        return isinstance(data, (pd.DataFrame, pd.Series))

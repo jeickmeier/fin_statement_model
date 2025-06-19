@@ -11,7 +11,7 @@ from .formatting import (
     apply_sign_convention,
     format_numbers,
     render_values,
-)  # noqa: F401
+)
 
 __all__ = [
     "apply_sign_convention",
