@@ -5,7 +5,7 @@ This module provides declarative schemas for validating configuration passed to 
 
 from __future__ import annotations
 
-from typing import Optional, Literal, Any, Union
+from typing import Optional, Literal, Any
 from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
 
 from fin_statement_model.config.helpers import cfg
@@ -13,9 +13,8 @@ from fin_statement_model.core.adjustments.models import (
     AdjustmentFilterInput,
 )
 
-
-# Define MappingConfig locally to avoid circular import
-MappingConfig = Union[dict[str, str], dict[Optional[str], dict[str, str]]]
+# Import central MappingConfig alias
+from fin_statement_model.io.core.types import MappingConfig
 
 
 class BaseReaderConfig(BaseModel):

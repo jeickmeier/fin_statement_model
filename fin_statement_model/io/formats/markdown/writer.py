@@ -9,9 +9,12 @@ from fin_statement_model.io.config.models import MarkdownWriterConfig
 from fin_statement_model.io.exceptions import WriteError
 from fin_statement_model.io.core.registry import register_writer
 from fin_statement_model.statements.structure import StatementStructure
-from fin_statement_model.io.formats.markdown.renderer import MarkdownStatementRenderer
-from fin_statement_model.io.formats.markdown.formatter import MarkdownTableFormatter
-from fin_statement_model.io.formats.markdown.notes import MarkdownNotesBuilder
+from fin_statement_model.statements.formatting.markdown import (
+    MarkdownStatementRenderer,
+    MarkdownTableFormatter,
+    MarkdownNotesBuilder,
+)
+from fin_statement_model.io.core.mixins import handle_write_errors
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +41,7 @@ class MarkdownWriter(DataWriter):
             return f"{value:,.2f}" if isinstance(value, float) else str(value)
         return str(value)
 
+    @handle_write_errors()
     def write(self, graph: Graph, target: Any = None, **kwargs: Any) -> str:
         """Write financial statement to markdown.
 

@@ -4,6 +4,7 @@ import logging
 import requests
 from typing import Optional, Any, cast
 import numpy as np
+from functools import lru_cache
 
 
 from fin_statement_model.config import cfg
@@ -64,8 +65,22 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
 
         self.cfg = cfg
 
+    @classmethod
+    @lru_cache(maxsize=8)
+    def _cached_validate_key(cls, api_key: str) -> None:  # noqa: D401
+        """Cached helper that actually calls the FMP API once per key."""
+        if not api_key:
+            raise ValueError("Missing API key")
+        from fin_statement_model.config import cfg
+
+        test_url = f"{cls.BASE_URL}/profile/AAPL?apikey={api_key}"
+        response = requests.get(test_url, timeout=cfg("api.api_timeout"))
+        response.raise_for_status()
+        if not response.json():
+            raise ValueError("Validation endpoint returned empty JSON")
+
     def _validate_api_key(self, api_key: str) -> None:
-        """Perform a simple check if the provided API key is valid."""
+        """Wrapper that converts cached validation errors to ReadError."""
         if not api_key:
             raise ReadError(
                 "FMP API key is required for reading.",
@@ -73,25 +88,15 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
                 reader_type="FmpReader",
             )
         try:
-            # Use a cheap endpoint for validation
-            test_url = f"{self.BASE_URL}/profile/AAPL?apikey={api_key}"  # Example
-            response = requests.get(test_url, timeout=cfg("api.api_timeout"))
-            response.raise_for_status()
-            if not response.json():
-                raise ReadError(
-                    "API key validation returned empty response.",
-                    source="FMP API",
-                    reader_type="FmpReader",
-                )
-            logger.debug("FMP API key validated successfully.")
-        except requests.exceptions.RequestException as e:
-            logger.error(f"FMP API key validation failed: {e}", exc_info=True)
+            self._cached_validate_key(api_key)
+        except Exception as e:  # noqa: BLE001
+            logger.error("FMP API key validation failed: %s", e, exc_info=True)
             raise ReadError(
                 f"FMP API key validation failed: {e}",
                 source="FMP API",
                 reader_type="FmpReader",
                 original_error=e,
-            )
+            ) from e
 
     def read(self, source: str, **kwargs: Any) -> Graph:
         """Fetch data from FMP API and return a Graph.

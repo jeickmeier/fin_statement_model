@@ -6,7 +6,7 @@ abstracting away the complexity of the registry system.
 
 import logging
 import os
-from typing import Union, Any
+from typing import Any
 
 from fin_statement_model.core.graph import Graph
 from .registry import get_reader, get_writer
@@ -21,7 +21,11 @@ logger = logging.getLogger(__name__)
 
 
 def read_data(
-    format_type: str, source: Any, **kwargs: dict[str, Union[str, int, float, bool]]
+    format_type: str,
+    source: Any,
+    *,
+    config: dict[str, Any] | Any | None = None,
+    **read_kwargs: Any,
 ) -> Graph:
     """Reads data from a source using the specified format.
 
@@ -59,10 +63,23 @@ def read_data(
         f"Attempting to read data using format '{format_type}' from source type '{type(source).__name__}'"
     )
 
-    # Prepare kwargs for registry validation (includes source and format_type)
-    config_kwargs = {**kwargs, "source": source, "format_type": format_type}
-    # Keep separate kwargs for the read method itself (e.g., 'periods')
-    # This assumes Pydantic configs *don't* capture read-time args.
+    # ------------------------------------------------------------
+    # Back-compat: if caller passed schema keys at top level, we keep
+    # previous behaviour and treat everything as config.  If `config`
+    # param provided we use that for constructor validation while the
+    # remaining kwargs are forwarded to .read().
+    # ------------------------------------------------------------
+    if config is not None:
+        if not isinstance(config, dict):
+            # allow Pydantic model or other objects
+            cfg_payload: Any = config
+        else:
+            cfg_payload = config.copy()
+        cfg_payload.update({"source": source, "format_type": format_type})
+        config_kwargs = cfg_payload
+    else:
+        # legacy path – treat *all* kwargs as part of config
+        config_kwargs = {**read_kwargs, "source": source, "format_type": format_type}
 
     try:
         # Pass the config kwargs directly to get_reader
@@ -75,7 +92,7 @@ def read_data(
 
         # Pass the determined source and the original kwargs (excluding config keys potentially)
         # to the read method. Specific readers handle relevant kwargs.
-        return reader.read(actual_source, **kwargs)
+        return reader.read(actual_source, **read_kwargs)
     except (IOError, FormatNotSupportedError):
         logger.exception("IO Error reading data")
         raise  # Re-raise specific IO errors
@@ -94,7 +111,9 @@ def write_data(
     format_type: str,
     graph: Graph,
     target: Any,
-    **kwargs: dict[str, Union[str, int, float, bool]],
+    *,
+    config: dict[str, Any] | Any | None = None,
+    **write_kwargs: Any,
 ) -> object:
     """Writes graph data to a target using the specified format.
 
@@ -131,15 +150,21 @@ def write_data(
         f"Attempting to write graph data using format '{format_type}' to target type '{type(target).__name__}'"
     )
 
-    # Prepare kwargs for registry validation (includes target and format_type)
-    config_kwargs = {**kwargs, "target": target, "format_type": format_type}
+    # Separate constructor config vs runtime write kwargs --------
+    if config is not None:
+        cfg_payload = config if not isinstance(config, dict) else config.copy()
+        if isinstance(cfg_payload, dict):
+            cfg_payload.update({"target": target, "format_type": format_type})
+        config_kwargs = cfg_payload
+    else:
+        # legacy: treat all kwargs as config
+        config_kwargs = {**write_kwargs, "target": target, "format_type": format_type}
 
-    # Pass the config kwargs directly to get_writer
-    writer = get_writer(**config_kwargs)
-    # Now call write with all writer-specific kwargs
     try:
-        # Pass original graph, target, and non-config kwargs to write()
-        result = writer.write(graph, target, **kwargs)
+        # Pass the config kwargs directly to get_writer
+        writer = get_writer(**config_kwargs)
+        # Now call write with all writer-specific kwargs
+        result = writer.write(graph, target, **write_kwargs)
 
         # If the writer returns a string and target is a path, write it to the file.
         if isinstance(result, str) and isinstance(target, str):

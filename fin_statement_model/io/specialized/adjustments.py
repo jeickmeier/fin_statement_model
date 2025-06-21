@@ -282,8 +282,8 @@ def export_adjustments_to_excel(graph: Graph, path: str | Path) -> None:
     write_excel(all_adjustments, path)
 
 
-# Add convenience methods to Graph class directly?
-# This uses module patching which can sometimes be debated, but keeps the Graph API clean.
-# Alternatively, users would call fin_statement_model.io.adjustments_excel.load_adjustments_from_excel(graph, path)
-setattr(Graph, "load_adjustments_from_excel", load_adjustments_from_excel)
-setattr(Graph, "export_adjustments_to_excel", export_adjustments_to_excel)
+# Note: These helpers were previously monkey-patched onto Graph for convenience.  The
+# project now avoids such runtime patching; call the functions explicitly, e.g.::
+#
+#     from fin_statement_model.io.specialized.adjustments import load_adjustments_from_excel
+#     load_adjustments_from_excel(graph, "adjustments.xlsx", replace=True)

@@ -2,26 +2,22 @@
 
 import logging
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.base import DataWriter
-from fin_statement_model.io.core.mixins import (
-    ConfigurationMixin,
-    handle_write_errors,
-)
+from fin_statement_model.io.core.mixins import ConfigurationMixin, handle_write_errors
+from fin_statement_model.io.core.base_table_writer import BaseTableWriter
 from fin_statement_model.io.core.registry import register_writer
-from fin_statement_model.io.formats.dataframe.writer import DataFrameWriter
 from fin_statement_model.io.config.models import (
     ExcelWriterConfig,
-    DataFrameWriterConfig,
 )
 
 logger = logging.getLogger(__name__)
 
 
 @register_writer("excel", schema=ExcelWriterConfig)
-class ExcelWriter(DataWriter, ConfigurationMixin):
+class ExcelWriter(DataWriter, BaseTableWriter, ConfigurationMixin):
     """Writes graph data to an Excel file.
 
     Converts the graph data to a pandas DataFrame first (using `DataFrameWriter`),
@@ -41,7 +37,7 @@ class ExcelWriter(DataWriter, ConfigurationMixin):
         self.cfg = cfg
 
     @handle_write_errors()
-    def write(self, graph: Graph, target: str, **kwargs: Any) -> None:
+    def write(self, graph: Graph, target: Any = None, **kwargs: Any) -> None:
         """Write graph data to an Excel file, converting via DataFrame first.
 
         Args:
@@ -56,7 +52,7 @@ class ExcelWriter(DataWriter, ConfigurationMixin):
         Raises:
             WriteError: If an error occurs during the writing process.
         """
-        file_path = target
+        file_path = str(target)
 
         # Runtime overrides: kwargs override configured defaults
         sheet_name = kwargs.get("sheet_name", self.cfg.sheet_name)
@@ -69,36 +65,12 @@ class ExcelWriter(DataWriter, ConfigurationMixin):
         logger.info(f"Exporting graph to Excel file: {file_path}, sheet: {sheet_name}")
 
         # Convert graph to DataFrame
-        df = self._create_dataframe(graph, recalculate, include_nodes)
+        df = self.to_dataframe(graph, include_nodes=include_nodes, recalc=recalculate)
 
         # Write DataFrame to Excel
         self._write_to_excel(df, file_path, sheet_name, excel_writer_options)
 
         logger.info(f"Successfully exported graph to {file_path}, sheet '{sheet_name}'")
-
-    def _create_dataframe(
-        self, graph: Graph, recalculate: bool, include_nodes: Optional[list[str]]
-    ) -> Any:
-        """Convert graph to DataFrame using DataFrameWriter.
-
-        Args:
-            graph: The graph to convert.
-            recalculate: Whether to recalculate before export.
-            include_nodes: Optional list of nodes to include.
-
-        Returns:
-            pandas DataFrame with the graph data.
-        """
-        # Create a config for DataFrameWriter
-        df_config = DataFrameWriterConfig(
-            target=None,
-            format_type="dataframe",
-            recalculate=recalculate,
-            include_nodes=include_nodes,
-        )
-
-        df_writer = DataFrameWriter(df_config)
-        return df_writer.write(graph=graph, target=None)
 
     def _write_to_excel(
         self,
