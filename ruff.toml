@@ -1,1 +1,4 @@
-exclude = ["concatenate_script.py"] 
+exclude = [
+    "concatenate_script.py",
+    "examples/notebooks/**",
+] 

@@ -6,4 +6,5 @@ docs/**
 .coverage
 dist/**
 .venv/**
-concatenate_script.py 
+concatenate_script.py
+examples/notebooks/** 

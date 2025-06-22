@@ -22,7 +22,6 @@ from fin_statement_model import logging_config
 warnings.filterwarnings("ignore")
 logging_config.setup_logging(level="WARNING")
 
-from fin_statement_model.core.errors import TransformationError  # noqa: E402
 from fin_statement_model.preprocessing import (  # noqa: E402
     DataTransformer,
     TransformationService,
@@ -199,38 +198,6 @@ def main():
         ].dropna()
     )
     print()
-
-    # 6. Error Handling
-    print("6. ERROR HANDLING EXAMPLES")
-    print("-" * 50)
-
-    # Example: Handle missing reference column
-    try:
-        service.normalize_data(
-            quarterly_data,
-            normalization_type="percent_of",
-            reference="non_existent_column",
-        )
-    except ValueError as e:
-        print(f"Caught ValueError: {e}")
-        if hasattr(e, "__cause__"):
-            print(f"Original error: {type(e.__cause__).__name__}")
-
-    # Need to import locally to avoid E402
-    from fin_statement_model.preprocessing.transformers import (
-        NormalizationTransformer,
-    )
-
-    # Example: Direct transformer usage for specific errors
-    try:
-        normalizer = NormalizationTransformer(
-            normalization_type="percent_of", reference="non_existent_column"
-        )
-        normalizer.transform(quarterly_data)
-    except TransformationError as e:
-        print(f"\nCaught TransformationError: {e}")
-        if hasattr(e, "__cause__"):
-            print(f"Root cause: {type(e.__cause__).__name__}")
 
     print("\n=== Demo Complete ===")
 
