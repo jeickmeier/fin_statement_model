@@ -98,9 +98,29 @@ def enforce_type_ignore_budget(root: pathlib.Path, budget: int = 20) -> None:
 def lint(session: nox.Session) -> None:
     """Run static-analysis checks (Ruff, MyPy) and enforce ignore budget."""
 
-    # Install runtime & dev dependencies for linting.
+    # Core runtime deps required by the test-suite (+ dev tooling)
     session.install(
-        "ruff", "mypy", "pydantic>=2", "types-PyYAML", "pytest-asyncio", "pytest-cov"
+        # Dev / QA tools
+        "ruff",
+        "mypy",
+        "pydantic>=2",
+        "types-PyYAML",
+        "pytest-asyncio",
+        "pytest-cov",
+        # Runtime deps that tests rely on
+        "numpy",
+        "pandas",
+        "PyYAML",
+        "requests",
+        "openpyxl",
+        "asteval",
+    )
+
+    # Ensure the package itself is importable when running tests.
+    # The project doesn't ship a `setup.py`/`pyproject.toml` yet, so we rely on
+    # `PYTHONPATH` instead of `pip install -e .`.
+    session.env["PYTHONPATH"] = f"{session.env.get('PYTHONPATH', '')}:" + str(
+        pathlib.Path(".").resolve()
     )
 
     # ---------------------------------------------------------------------
@@ -118,10 +138,11 @@ def lint(session: nox.Session) -> None:
     session.run("mypy", "fin_statement_model", external=True)
 
     # ---------------------------------------------------------------------
-    # Pytest - Unit tests
+    # Pytest – Unit tests (tests live under the top-level ``tests`` package)
     # ---------------------------------------------------------------------
     session.log("Running Pytest...")
-    session.run("pytest", "fin_statement_model", external=True)
+    # The default invocation respects options from `pytest.ini` (including coverage)
+    session.run("pytest", external=True)
 
     # ---------------------------------------------------------------------
     # Custom guard – Limit the number of `# type: ignore` usages.

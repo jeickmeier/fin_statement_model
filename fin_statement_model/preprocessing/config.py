@@ -163,7 +163,7 @@ class NormalizationConfig(BaseModel):
     reference: Optional[str] = None
     scale_factor: Optional[float] = None
 
-    # Pydantic v2 config
+    # Disallow extra attributes via model_config (equivalent to extra="forbid")
     model_config = ConfigDict(extra="forbid")
 
     # ------------------------------------------------------------------

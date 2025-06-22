@@ -612,7 +612,7 @@ class FormulaCalculation(Calculation):
         }
 
         # Create a fresh interpreter each call to avoid symbol leakage between periods
-        from asteval import Interpreter  # noqa: WPS433 – intentional local import
+        from asteval import Interpreter
 
         ae = Interpreter(symtable={}, minimal=True, no_print=True, use_numpy=False)
         ae.symtable.update(local_vars)
