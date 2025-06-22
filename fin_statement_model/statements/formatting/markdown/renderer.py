@@ -19,7 +19,7 @@ from fin_statement_model.statements.structure import (
     SubtotalLineItem,
     MetricLineItem,
 )
-from fin_statement_model.io.formats.markdown.models import MarkdownStatementItem
+from .models import MarkdownStatementItem
 from fin_statement_model.core.nodes import standard_node_registry
 
 logger = logging.getLogger(__name__)

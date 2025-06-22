@@ -3,7 +3,9 @@
 from unittest.mock import Mock
 from datetime import datetime
 
-from fin_statement_model.io.formats.markdown.notes import MarkdownNotesBuilder
+from fin_statement_model.statements.formatting.markdown.notes import (
+    MarkdownNotesBuilder,
+)
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.adjustments.models import (
     Adjustment,

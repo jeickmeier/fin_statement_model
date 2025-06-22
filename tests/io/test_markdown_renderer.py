@@ -3,7 +3,9 @@
 from unittest.mock import Mock
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.io.formats.markdown.renderer import MarkdownStatementRenderer
+from fin_statement_model.statements.formatting.markdown.renderer import (
+    MarkdownStatementRenderer,
+)
 from fin_statement_model.statements.structure import (
     Section,
     StatementStructure,

@@ -1,7 +1,11 @@
 """Tests for the MarkdownTableFormatter class."""
 
-from fin_statement_model.io.formats.markdown.formatter import MarkdownTableFormatter
-from fin_statement_model.io.formats.markdown.models import MarkdownStatementItem
+from fin_statement_model.statements.formatting.markdown.formatter import (
+    MarkdownTableFormatter,
+)
+from fin_statement_model.statements.formatting.markdown.models import (
+    MarkdownStatementItem,
+)
 
 
 class TestMarkdownTableFormatter:

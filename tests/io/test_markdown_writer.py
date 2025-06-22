@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import Mock, patch
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.io.formats.markdown.writer import MarkdownWriter
+from fin_statement_model.io.formats.markdown_writer import MarkdownWriter
 from fin_statement_model.io.config.models import MarkdownWriterConfig
 from fin_statement_model.io.exceptions import WriteError
 from fin_statement_model.statements.structure import StatementStructure
@@ -66,9 +66,9 @@ class TestMarkdownWriter:
 
         assert "Must provide 'statement_structure' argument" in str(exc_info.value)
 
-    @patch("fin_statement_model.io.formats.markdown.writer.MarkdownStatementRenderer")
-    @patch("fin_statement_model.io.formats.markdown.writer.MarkdownTableFormatter")
-    @patch("fin_statement_model.io.formats.markdown.writer.MarkdownNotesBuilder")
+    @patch("fin_statement_model.io.formats.markdown_writer.MarkdownStatementRenderer")
+    @patch("fin_statement_model.io.formats.markdown_writer.MarkdownTableFormatter")
+    @patch("fin_statement_model.io.formats.markdown_writer.MarkdownNotesBuilder")
     def test_write_with_statement_structure(
         self, mock_notes_builder, mock_formatter, mock_renderer
     ):
@@ -114,7 +114,7 @@ class TestMarkdownWriter:
         mock_formatter_instance.format_table.assert_called_once()
         mock_notes_instance.build_notes.assert_called_once()
 
-    @patch("fin_statement_model.io.formats.markdown.writer.MarkdownStatementRenderer")
+    @patch("fin_statement_model.io.formats.markdown_writer.MarkdownStatementRenderer")
     def test_write_with_empty_items(self, mock_renderer):
         """Test write with empty items returns empty string."""
         # Setup mocks
@@ -134,9 +134,9 @@ class TestMarkdownWriter:
         # Verify
         assert result == ""
 
-    @patch("fin_statement_model.io.formats.markdown.writer.MarkdownStatementRenderer")
-    @patch("fin_statement_model.io.formats.markdown.writer.MarkdownTableFormatter")
-    @patch("fin_statement_model.io.formats.markdown.writer.MarkdownNotesBuilder")
+    @patch("fin_statement_model.io.formats.markdown_writer.MarkdownStatementRenderer")
+    @patch("fin_statement_model.io.formats.markdown_writer.MarkdownTableFormatter")
+    @patch("fin_statement_model.io.formats.markdown_writer.MarkdownNotesBuilder")
     def test_write_with_periods_and_configs(
         self, mock_notes_builder, mock_formatter, mock_renderer
     ):
@@ -207,7 +207,7 @@ class TestMarkdownWriter:
 
         # Mock renderer to raise an exception
         with patch(
-            "fin_statement_model.io.formats.markdown.writer.MarkdownStatementRenderer"
+            "fin_statement_model.io.formats.markdown_writer.MarkdownStatementRenderer"
         ) as mock_renderer:
             mock_renderer.side_effect = Exception("Test error")
 
@@ -225,7 +225,7 @@ class TestMarkdownWriter:
 
         # Mock renderer to raise NotImplementedError
         with patch(
-            "fin_statement_model.io.formats.markdown.writer.MarkdownStatementRenderer"
+            "fin_statement_model.io.formats.markdown_writer.MarkdownStatementRenderer"
         ) as mock_renderer:
             mock_renderer.side_effect = NotImplementedError(
                 "Graph traversal not implemented"
@@ -245,7 +245,7 @@ class TestMarkdownWriter:
         mock_structure = Mock(spec=StatementStructure)
 
         with patch(
-            "fin_statement_model.io.formats.markdown.writer.MarkdownStatementRenderer"
+            "fin_statement_model.io.formats.markdown_writer.MarkdownStatementRenderer"
         ) as mock_renderer:
             mock_renderer_instance = Mock()
             mock_renderer.return_value = mock_renderer_instance

@@ -5,7 +5,7 @@ import pandas as pd
 from typing import Optional, Any
 
 from fin_statement_model.io.core.registry import register_reader
-from fin_statement_model.io.core.wide_table_reader import WideTableReader
+from fin_statement_model.io.core.dataframe_reader_base import DataFrameReaderBase
 from fin_statement_model.io.config.models import DataFrameReaderConfig
 from fin_statement_model.io.exceptions import ReadError
 
@@ -13,8 +13,10 @@ logger = logging.getLogger(__name__)
 
 
 @register_reader("dataframe", schema=DataFrameReaderConfig)
-class DataFrameReader(WideTableReader):
-    """Reads wide-format pandas DataFrames into a Graph using WideTableReader."""
+class DataFrameReader(DataFrameReaderBase):
+    """Reads *wide-format* pandas DataFrames into a Graph using DataFrameReaderBase."""
+
+    layout = "wide"
 
     def __init__(
         self, cfg: Optional[DataFrameReaderConfig] = None

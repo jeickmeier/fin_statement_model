@@ -1,6 +1,8 @@
 """Tests for the markdown models."""
 
-from fin_statement_model.io.formats.markdown.models import MarkdownStatementItem
+from fin_statement_model.statements.formatting.markdown.models import (
+    MarkdownStatementItem,
+)
 
 
 class TestMarkdownStatementItem:

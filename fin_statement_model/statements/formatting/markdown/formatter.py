@@ -8,9 +8,7 @@ from __future__ import annotations
 import logging
 from typing import Optional, Union, Any
 
-from fin_statement_model.io.formats.markdown.models import (
-    MarkdownStatementItem,
-)  # keep using same models location
+from .models import MarkdownStatementItem  # updated path
 
 logger = logging.getLogger(__name__)
 

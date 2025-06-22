@@ -6,14 +6,14 @@ from typing import Any, Optional
 import pandas as pd
 
 from fin_statement_model.io.core.registry import register_reader
-from fin_statement_model.io.core.wide_table_reader import WideTableReader
+from fin_statement_model.io.core.dataframe_reader_base import DataFrameReaderBase
 from fin_statement_model.io.config.models import ExcelReaderConfig
 
 logger = logging.getLogger(__name__)
 
 
 @register_reader("excel", schema=ExcelReaderConfig)
-class ExcelReader(WideTableReader):
+class ExcelReader(DataFrameReaderBase):
     """Reads financial statement data from an Excel file into a Graph.
 
     Expects data in a tabular format where rows typically represent items
@@ -25,6 +25,8 @@ class ExcelReader(WideTableReader):
     Method-specific options (`statement_type`, `header_row`, `nrows`, `skiprows`)
     are passed as keyword arguments to the `read()` method.
     """
+
+    layout = "wide"
 
     def __init__(self, cfg: ExcelReaderConfig) -> None:
         """Store validated configuration object."""

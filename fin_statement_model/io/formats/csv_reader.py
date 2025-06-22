@@ -7,14 +7,17 @@ import pandas as pd
 
 from fin_statement_model.io.core.registry import register_reader
 from fin_statement_model.io.config.models import CsvReaderConfig
-from fin_statement_model.io.core.tabular_reader import TabularReader
+from fin_statement_model.io.core.dataframe_reader_base import DataFrameReaderBase
 
 logger = logging.getLogger(__name__)
 
 
 @register_reader("csv", schema=CsvReaderConfig)
-class CsvReader(TabularReader):
-    """Reads *long-format* CSV into a Graph using the common TabularReader."""
+class CsvReader(DataFrameReaderBase):
+    """Reads *long-format* CSV into a Graph using DataFrameReaderBase."""
+
+    # Specify long layout (rows = observations)
+    layout = "long"
 
     def __init__(self, cfg: CsvReaderConfig) -> None:  # noqa: D401
         self.cfg = cfg
