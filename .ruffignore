@@ -7,4 +7,4 @@ docs/**
 dist/**
 .venv/**
 concatenate_script.py
-examples/notebooks/** 
+examples/notebooks/** .ipynb

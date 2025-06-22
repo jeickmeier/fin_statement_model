@@ -44,8 +44,8 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
         # instead of using overrides directly.
         # ------------------------------------------------------------------
 
-        self._config_context: dict[str, Any] = {}  # noqa: RUF012 – intentional
-        self._config_overrides: dict[str, Any] = {}  # noqa: RUF012 – intentional
+        self._config_context: dict[str, Any] = {}
+        self._config_overrides: dict[str, Any] = {}
 
     # ------------------------------------------------------------------
     # Context helpers
@@ -82,6 +82,19 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
         validator: Optional[Callable[[Any], bool]] = None,
     ) -> Any:
         """Get a configuration value, with optional validation."""
+        # ------------------------------------------------------------------
+        # Defensive guard – ensure internal attributes exist even if the
+        # concrete reader/writer forgot to call ``ConfigurationMixin.__init__``
+        # in its own ``__init__`` implementation.  This avoids cryptic
+        # AttributeError crashes (see issue #csv_reader_init) and degrades
+        # gracefully by falling back to an empty override/context mapping.
+        # ------------------------------------------------------------------
+        if not hasattr(self, "_config_overrides"):
+            # Late-initialise missing attributes to keep behaviour predictable.
+            self._config_overrides = {}
+        if not hasattr(self, "_config_context"):
+            self._config_context = {}
+
         # Override precedence
         if key in self._config_overrides:
             value = self._config_overrides[key]

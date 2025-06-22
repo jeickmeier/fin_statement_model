@@ -25,9 +25,18 @@ from fin_statement_model.core.adjustments.models import (
 # Import central MappingConfig alias
 from fin_statement_model.io.core.types import MappingConfig
 
-# Provide runtime-optional pandas typing to satisfy static checkers
-if TYPE_CHECKING:  # pragma: no cover – import for type checkers only
-    import pandas as pd
+# Ensure pandas alias 'pd' is available at runtime for Pydantic forward refs.
+import importlib
+
+if TYPE_CHECKING:  # pragma: no cover – import solely for type checking
+    import pandas as pd  # noqa: F401  # pylint: disable=import-error
+
+try:
+    pd = importlib.import_module("pandas")
+except (
+    ModuleNotFoundError
+):  # pragma: no cover – pandas is a core dependency but guard anyway
+    pd = Any  # Fallback placeholder to keep type checkers happy
 
 
 class BaseReaderConfig(BaseModel):
@@ -200,6 +209,9 @@ class DataFrameReaderConfig(BaseReaderConfig):
     to preserve a consistent registry-initialisation contract.
     """
 
+    # Pydantic must allow arbitrary "pd.DataFrame" type
+    model_config = ConfigDict(extra="forbid", frozen=True, arbitrary_types_allowed=True)
+
     # Use forward reference to avoid hard dependency at import time
     source: "pd.DataFrame" = Field(..., description="In-memory pandas DataFrame source")
     format_type: Literal["dataframe"] = "dataframe"
@@ -279,6 +291,8 @@ class ExcelWriterConfig(BaseWriterConfig):
 
 class DataFrameWriterConfig(BaseWriterConfig):
     """DataFrame writer options."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True, arbitrary_types_allowed=True)
 
     target: Optional["pd.DataFrame"] = Field(
         None, description="Optional DataFrame target override (rare)."

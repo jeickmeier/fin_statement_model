@@ -182,11 +182,12 @@ class ValidationMixin:  # pylint: disable=too-many-public-methods
         allow_conversion: bool = True,
     ) -> tuple[bool, Optional[float]]:
         import pandas as pd
+        import numpy as np
 
         if pd.isna(value) or value is None:
             return True, None
         if isinstance(value, (int, float)):
-            if not pd.isfinite(value):
+            if not np.isfinite(value):
                 msg = f"Non-finite numeric value '{value}' for period '{period}'"
                 if collector is not None:
                     collector.add_result(item_name, False, msg)
@@ -195,7 +196,7 @@ class ValidationMixin:  # pylint: disable=too-many-public-methods
         if allow_conversion:
             try:
                 converted = float(value)
-                if not pd.isfinite(converted):
+                if not np.isfinite(converted):
                     msg = f"Converted to non-finite value '{converted}' for period '{period}'"
                     if collector is not None:
                         collector.add_result(item_name, False, msg)
