@@ -15,7 +15,7 @@ from fin_statement_model.core.adjustments.models import (
 from fin_statement_model.core.graph import Graph  # Needed for Graph convenience methods
 from fin_statement_model.io.exceptions import ReadError, WriteError
 from fin_statement_model.io.core import FileBasedReader, handle_read_errors
-from fin_statement_model.io.specialized.row_models import AdjustmentRowModel
+from fin_statement_model.io.adjustments.row_models import AdjustmentRowModel
 
 logger = logging.getLogger(__name__)
 
@@ -285,5 +285,5 @@ def export_adjustments_to_excel(graph: Graph, path: str | Path) -> None:
 # Note: These helpers were previously monkey-patched onto Graph for convenience.  The
 # project now avoids such runtime patching; call the functions explicitly, e.g.::
 #
-#     from fin_statement_model.io.specialized.adjustments import load_adjustments_from_excel
+#     from fin_statement_model.io.adjustments.excel_io import load_adjustments_from_excel
 #     load_adjustments_from_excel(graph, "adjustments.xlsx", replace=True)

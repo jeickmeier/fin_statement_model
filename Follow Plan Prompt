@@ -24,11 +24,11 @@ Track progress while migrating the IO package to the new, cleaner layout.
 - [x] Rewrite new `formats/__init__.py` with minimal import side-effects
 
 ### 3. Extract specialized helpers
-- [ ] Move adjustments helpers → `io/adjustments/excel_io.py`
-- [ ] Move graph definition helpers → `io/graph/definition_io.py`
-- [ ] Move cells importer → `io/graph/cells_io.py`
-- [ ] Move statement utils → `io/statements/utils.py`
-- [ ] Delete `io/specialized/` package after moves
+- [x] Move adjustments helpers → `io/adjustments/excel_io.py`
+- [x] Move graph definition helpers → `io/graph/definition_io.py`
+- [x] Move cells importer → `io/graph/cells_io.py`
+- [x] Move statement utils → `io/statements/utils.py`
+- [x] Delete `io/specialized/` package after moves
 
 ### 4. Public surface cleanup
 - [ ] Slim-down `io/__init__.py` to façade + registry + key helpers

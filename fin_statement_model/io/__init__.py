@@ -18,13 +18,14 @@ from .core import (
 )
 from .exceptions import IOError, ReadError, WriteError, FormatNotSupportedError
 from . import formats  # noqa: F401
-from . import specialized  # noqa: F401
 
-# Import specialized functions for convenience
-from .specialized import (
-    import_from_cells,
+# Import convenient helpers from new sub-packages (adjustments, graph, statements)
+from .graph import import_from_cells  # noqa: F401
+from .adjustments import (
     load_adjustments_from_excel,
     export_adjustments_to_excel,
+)
+from .statements import (
     list_available_builtin_configs,
     write_statement_to_excel,
     write_statement_to_json,
