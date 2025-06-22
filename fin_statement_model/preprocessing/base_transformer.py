@@ -33,6 +33,9 @@ import logging
 
 from fin_statement_model.core.errors import TransformationError
 
+# Delegate Series/DataFrame coercion to shared utility
+from fin_statement_model.preprocessing.utils import ensure_dataframe
+
 logger = logging.getLogger(__name__)
 
 
@@ -303,7 +306,7 @@ class DataTransformer(ABC):
                 f"Successfully transformed data with {self.__class__.__name__}"
             )
         except Exception as e:
-            logger.exception(f"Error transforming data with {self.__class__.__name__}")
+            # Don't log here - transform() already logs exceptions
             raise ValueError("Error transforming data") from e
         else:
             return result
@@ -345,35 +348,12 @@ class DataTransformer(ABC):
     ) -> Tuple[pd.DataFrame, bool]:
         """Return ``(df, was_series)`` ensuring *data* is a DataFrame.
 
-        This helper method standardizes the handling of Series vs DataFrame
-        inputs, allowing transformer implementations to work with DataFrames
-        consistently while preserving the original input type.
-
-        Args:
-            data: Input data, either DataFrame or Series
-
-        Returns:
-            Tuple containing:
-            - DataFrame: The input data as a DataFrame
-            - bool: True if the input was a Series
-
-        Raises:
-            TypeError: If data is neither DataFrame nor Series
-
-        Examples:
-            >>> df, was_series = DataTransformer._coerce_to_dataframe(
-            ...     pd.Series([1, 2, 3], name='values')
-            ... )
-            >>> print(was_series)
-            True
-            >>> print(df.shape)
-            (3, 1)
+        This method is **deprecated** and will be removed in a future release.
+        It now simply delegates to :func:`fin_statement_model.preprocessing.utils.ensure_dataframe`.
         """
-        if isinstance(data, pd.Series):
-            return data.to_frame(), True
-        if isinstance(data, pd.DataFrame):
-            return data, False
-        raise TypeError("Data must be a pandas DataFrame or Series")
+
+        # Delegation keeps backward-compatibility without duplicating logic.
+        return ensure_dataframe(data)
 
 
 class CompositeTransformer(DataTransformer):
