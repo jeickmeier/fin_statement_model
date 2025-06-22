@@ -382,24 +382,18 @@ class ConfigManager:
         """
         import os
         from fin_statement_model.config.helpers import parse_env_value
+        from fin_statement_model.config.utils import parse_env_var
 
         overrides: dict[str, Any] = {}
 
-        prefix_len = len(self.ENV_PREFIX)
         for key, raw_value in os.environ.items():
             if not key.startswith(self.ENV_PREFIX):
                 continue
 
-            path_str = key[prefix_len:]
-
-            # Normalise path: prefer double underscores as separator, fallback to single
-            parts = [p.lower() for p in path_str.split("__")]
-            if len(parts) == 1:
-                parts = [p.lower() for p in path_str.split("_")]
+            parts = parse_env_var(key, prefix=self.ENV_PREFIX)
 
             value = parse_env_value(raw_value)
 
-            # Build nested dictionary
             current = overrides
             for segment in parts[:-1]:
                 current = current.setdefault(segment, {})

@@ -154,14 +154,20 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
     ) -> Any:
         """Get a configuration value, falling back to an environment variable."""
         import os
+        from fin_statement_model.config.utils import parse_env_value
 
         value = self.get_config_value(key)
+
+        # Fallback to environment variable if config value is missing
         if value is None:
-            env_val = os.getenv(env_var)
-            if env_val is not None:
-                value = env_val
+            env_raw = os.getenv(env_var)
+            if env_raw is not None:
+                value = parse_env_value(env_raw)
+
+        # Apply default as last resort
         if value is None:
             value = default
+
         if (
             value is not None
             and value_type is not None

@@ -41,6 +41,10 @@ from fin_statement_model.core.graph import Graph  # Needed for Graph convenience
 from fin_statement_model.io.exceptions import ReadError, WriteError
 from fin_statement_model.io.core.mixins.error_handlers import handle_read_errors
 from fin_statement_model.io.adjustments.row_models import AdjustmentRowModel
+from fin_statement_model.io.core.file_utils import (
+    validate_file_exists as _validate_file_exists,
+    validate_file_extension as _validate_file_extension,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -110,22 +114,8 @@ class _FileValidationMixin:
     file_extensions: tuple[str, ...] | None = None
 
     def validate_file_exists(self, path: str) -> None:
-        """Check if a file exists at the given path.
-
-        Args:
-            path: The path to the file.
-
-        Raises:
-            ReadError: If the file is not found at the specified path.
-        """
-        import os
-
-        if not os.path.exists(path):
-            raise ReadError(
-                f"File not found: {path}",
-                source=path,
-                reader_type=self.__class__.__name__,
-            )
+        """Delegate existence check to shared helper."""
+        _validate_file_exists(path, reader_type=self.__class__.__name__)
 
     def validate_file_extension(
         self, path: str, valid_extensions: tuple[str, ...] | None = None
@@ -146,16 +136,11 @@ class _FileValidationMixin:
             ReadError: If the file has an invalid extension.
         """
         exts = valid_extensions or self.file_extensions
-        if not exts:
-            return
-        if not path.lower().endswith(exts):
-            import os as _os
-
-            raise ReadError(
-                f"Invalid file extension. Expected one of {exts}, got '{_os.path.splitext(path)[1]}'",
-                source=path,
-                reader_type=self.__class__.__name__,
-            )
+        _validate_file_extension(
+            path,
+            exts,
+            reader_type=self.__class__.__name__,
+        )
 
 
 # DataReader class for reading adjustments with standardized validation

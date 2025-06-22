@@ -7,13 +7,15 @@ concrete file readers (CSV, Excel, etc.) implement.
 
 from __future__ import annotations
 
-import os
 from abc import ABC, abstractmethod
 from typing import Any
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.io.exceptions import ReadError
 from fin_statement_model.io.core.base import DataReader
+from fin_statement_model.io.core.file_utils import (
+    validate_file_exists as _validate_file_exists,
+    validate_file_extension as _validate_file_extension,
+)
 
 
 class FileBasedReader(DataReader, ABC):
@@ -37,13 +39,8 @@ class FileBasedReader(DataReader, ABC):
     # Validation helpers
     # ------------------------------------------------------------------
     def validate_file_exists(self, path: str) -> None:
-        """Check if a file exists at the given path."""
-        if not os.path.exists(path):
-            raise ReadError(
-                f"File not found: {path}",
-                source=path,
-                reader_type=self.__class__.__name__,
-            )
+        """Check if a file exists at *path* using shared helper."""
+        _validate_file_exists(path, reader_type=self.__class__.__name__)
 
     def validate_file_extension(
         self, path: str, valid_extensions: tuple[str, ...] | None = None
@@ -63,15 +60,11 @@ class FileBasedReader(DataReader, ABC):
         exts = (
             valid_extensions if valid_extensions is not None else self.file_extensions
         )
-        if not exts:
-            # Nothing to validate against
-            return
-        if not path.lower().endswith(exts):
-            raise ReadError(
-                f"Invalid file extension. Expected one of {exts}, got '{os.path.splitext(path)[1]}'",
-                source=path,
-                reader_type=self.__class__.__name__,
-            )
+        _validate_file_extension(
+            path,
+            exts,
+            reader_type=self.__class__.__name__,
+        )
 
     # ------------------------------------------------------------------
     # Abstract API
