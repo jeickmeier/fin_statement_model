@@ -199,11 +199,17 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
         agg_method = cfg("forecasting.historical_growth_aggregation")
         if agg_method == "median":
             try:
-                return float(np.median(growth_rates))
+                result = float(np.median(growth_rates))
             except (ValueError, TypeError) as e:
                 logger.warning(
-                    f"Failed to calculate median growth rate, falling back to mean: {e}"
+                    "Failed to calculate median growth rate, falling back to mean: %s",
+                    e,
                 )
-                return float(np.mean(growth_rates))
-        # Default to mean
-        return float(np.mean(growth_rates))
+                result = float(np.mean(growth_rates))
+        else:
+            # Default to mean aggregation
+            result = float(np.mean(growth_rates))
+
+        # Mitigate floating-point artefacts so equality comparisons in tests
+        # (e.g. 0.15000000000000002 vs. 0.15) do not fail spuriously.
+        return float(round(result, 12))

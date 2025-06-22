@@ -1,0 +1,5 @@
+[run]
+branch = False
+omit =
+    fin_statement_model/examples/* 
+    */__init__.py

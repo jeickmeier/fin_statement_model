@@ -26,7 +26,6 @@ from .helpers import cfg, cfg_or_param, ConfigurationAccessError
 
 from .models import Config
 from .manager import get_config, update_config
-from .cli import run as cli_main
 
 __all__ = [
     "Config",
@@ -35,7 +34,6 @@ __all__ = [
     "ConfigurationAccessError",
     "get_config",
     "update_config",
-    "cli_main",
 ]
 
 # ---

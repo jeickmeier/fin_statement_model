@@ -21,7 +21,7 @@ Example:
 from pathlib import Path
 from typing import Any, Optional, cast
 import logging
-from threading import Lock
+from threading import RLock
 
 from .models import Config
 from fin_statement_model.core.errors import FinStatementModelError
@@ -81,7 +81,10 @@ class ConfigManager:
                 the manager will search for default config files in the
                 current directory or home directory.
         """
-        self._lock = Lock()
+        # Use a re-entrant lock to allow nested acquisition within the same thread.
+        # This prevents self-deadlocks when ``update`` invokes ``get`` while already
+        # holding the lock.
+        self._lock = RLock()
         self._config: Optional[Config] = None
         self._runtime_overrides: dict[str, Any] = {}
         self._config_file = config_file

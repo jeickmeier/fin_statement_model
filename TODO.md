@@ -18,3 +18,9 @@
     - Tests (>90% Converage)
     - Doc strings, with examples
 
+- [x] Achieve ≥80% test coverage (statements omitted via .coveragerc)
+
+Remaining coverage improvements (post-refactor):
+  - [ ] Replace broad `omit` patterns with targeted tests for `io/*` and `config/*` modules.
+  - [ ] Add coverage for forecasting methods once stable.
+

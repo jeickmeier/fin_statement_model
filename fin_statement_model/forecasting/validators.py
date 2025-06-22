@@ -27,6 +27,7 @@ from fin_statement_model.forecasting.errors import (
     ForecastNodeError,
     ForecastResultError,
 )
+from pydantic import ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -170,7 +171,35 @@ class ForecastValidator:
                 "Forecast config missing 'method' key",
                 method=None,
             )
-        return ForecastConfig(**config)
+
+        # Short-circuit: ensure the method itself is recognised so we raise the
+        # domain-specific *ForecastMethodError* instead of a generic
+        # ValidationError coming from pydantic.
+        supported_methods: list[str] = [
+            "simple",
+            "curve",
+            "statistical",
+            "average",
+            "historical_growth",
+        ]
+
+        method_name: str = config["method"]
+        if method_name not in supported_methods:
+            raise ForecastMethodError(
+                "Invalid forecast method",
+                method=method_name,
+                supported_methods=supported_methods,
+            )
+
+        # Create and validate using dataclass – ValidationError is converted to
+        # a ForecastConfigurationError for consistency with the public API.
+        try:
+            return ForecastConfig(method=method_name, config=config["config"])
+        except ValidationError as exc:  # noqa: F841
+            raise ForecastConfigurationError(
+                "Invalid forecast configuration",
+                config=config,
+            ) from exc
 
     @staticmethod
     def validate_base_period(

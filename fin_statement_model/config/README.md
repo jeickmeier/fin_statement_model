@@ -109,24 +109,6 @@ class LoggingConfig(BaseModel):
     )
 ```
 
-## Command-Line Interface (CLI)
-
-A Typer-based CLI is included for inspecting and mutating configuration from the terminal.
-
-```bash
-# Show full config (YAML)
-python -m fin_statement_model.config.cli show
-
-# Show a single value
-fsm-config show logging.level
-
-# Update a value (JSON parsing is automatic)
-fsm-config set forecasting.default_periods 10
-
-# Persist current config to disk (defaults to ~/.fsm_config.yaml)
-fsm-config save
-```
-
 ## Troubleshooting & FAQ
 
 **Q: Why isn't my environment variable being picked up?**
