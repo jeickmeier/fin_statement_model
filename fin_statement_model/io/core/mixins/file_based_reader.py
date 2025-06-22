@@ -17,7 +17,21 @@ from fin_statement_model.io.core.base import DataReader
 
 
 class FileBasedReader(DataReader, ABC):
-    """Base class for readers that ingest data from the filesystem."""
+    """Base class for readers that ingest data from the filesystem.
+
+    Concrete subclasses **should** declare a class attribute
+    ``file_extensions`` with the tuple of valid extensions, e.g.::
+
+        class CsvReader(FileBasedReader):
+            file_extensions = (".csv", ".txt")
+
+    The :pymeth:`validate_file_extension` helper will automatically use this
+    attribute when *valid_extensions* is omitted, removing the need for each
+    reader to repeat the tuple in every call site.
+    """
+
+    # Default to *no* restriction – subclasses override
+    file_extensions: tuple[str, ...] | None = None
 
     # ------------------------------------------------------------------
     # Validation helpers
@@ -31,11 +45,25 @@ class FileBasedReader(DataReader, ABC):
             )
 
     def validate_file_extension(
-        self, path: str, valid_extensions: tuple[str, ...]
+        self, path: str, valid_extensions: tuple[str, ...] | None = None
     ) -> None:  # noqa: D401
-        if not path.lower().endswith(valid_extensions):
+        """Validate *path* ends with an allowed extension.
+
+        Args:
+            path: The file path to validate.
+            valid_extensions: Optional tuple of allowed extensions.  If *None*,
+                the class-level :pyattr:`file_extensions` is used.  If that is
+                also *None*, the check is skipped.
+        """
+        exts = (
+            valid_extensions if valid_extensions is not None else self.file_extensions
+        )
+        if not exts:
+            # Nothing to validate against
+            return
+        if not path.lower().endswith(exts):
             raise ReadError(
-                f"Invalid file extension. Expected one of {valid_extensions}, got '{os.path.splitext(path)[1]}'",
+                f"Invalid file extension. Expected one of {exts}, got '{os.path.splitext(path)[1]}'",
                 source=path,
                 reader_type=self.__class__.__name__,
             )

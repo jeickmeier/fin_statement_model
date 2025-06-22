@@ -12,7 +12,7 @@ from fin_statement_model.io.config.models import DictWriterConfig
 logger = logging.getLogger(__name__)
 
 
-@register_writer("dict", schema=DictWriterConfig)  # type: ignore[arg-type]
+@register_writer("dict", schema=DictWriterConfig)
 class DictWriter(BaseTableWriter, ConfigurationMixin):
     """Writes graph data to a Python dictionary.
 

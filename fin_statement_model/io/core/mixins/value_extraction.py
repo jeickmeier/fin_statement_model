@@ -9,6 +9,7 @@ from typing import Any, Optional
 import numpy as np
 
 from fin_statement_model.core.graph import Graph
+from fin_statement_model.io.core.base import DataWriter
 
 logger = logging.getLogger(__name__)
 
@@ -20,12 +21,14 @@ class ValueExtractionMixin:
         self, node: Any, period: str, *, calculate: bool = True
     ) -> Optional[float]:  # noqa: D401
         try:
-            if calculate and hasattr(node, "calculate") and callable(node.calculate):
-                val = node.calculate(period)
-                if isinstance(val, (int, float)):
-                    return float(val)
             if hasattr(node, "values") and isinstance(node.values, dict):
                 val = node.values.get(period)
+                if isinstance(val, (int, float)):
+                    return float(val)
+
+            # Fall back to expensive calculation only if requested
+            if calculate and hasattr(node, "calculate") and callable(node.calculate):
+                val = node.calculate(period)
                 if isinstance(val, (int, float)):
                     return float(val)
             return None
@@ -39,7 +42,7 @@ class ValueExtractionMixin:
             return None
 
 
-class DataFrameBasedWriter(ValueExtractionMixin, ABC):
+class DataFrameBasedWriter(ValueExtractionMixin, DataWriter, ABC):
     """Base writer that turns graph data into a pandas.DataFrame."""
 
     def extract_graph_data(

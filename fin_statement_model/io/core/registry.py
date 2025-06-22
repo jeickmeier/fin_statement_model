@@ -282,36 +282,31 @@ def _get_handler(
         error_context["target"] = kwargs.get("target")
         error_context["writer_type"] = format_type
 
-    if schema:
-        # Validate configuration using Pydantic schema
-        try:
-            cfg = schema.model_validate({**kwargs, "format_type": format_type})
-        except ValidationError as ve:
-            raise error_class(
-                message=f"Invalid {handler_type}er configuration",
-                original_error=ve,
-                **error_context,
-            ) from ve
+    if "format_type" not in kwargs:
+        kwargs = {**kwargs, "format_type": format_type}
+    try:
+        cfg = schema.model_validate(kwargs)
+    except ValidationError as ve:
+        raise error_class(
+            message=f"Invalid {handler_type}er configuration",
+            original_error=ve,
+            **error_context,
+        ) from ve
 
-        # Instantiate handler with validated config
-        try:
-            return cast(Union[DataReader, DataWriter], handler_class(cfg))
-        except Exception as e:
-            logger.error(
-                f"Failed to instantiate {handler_type}er for format '{format_type}' "
-                f"({handler_class.__name__}): {e}",
-                exc_info=True,
-            )
-            raise error_class(
-                message=f"Failed to initialize {handler_type}er",
-                original_error=e,
-                **error_context,
-            ) from e
-
-    # Explicitly handle unreachable code paths
-    raise RuntimeError(
-        f"Unhandled handler instantiation for {handler_type} '{format_type}'"
-    )
+    # Instantiate handler with validated config
+    try:
+        return cast(Union[DataReader, DataWriter], handler_class(cfg))
+    except Exception as e:
+        logger.error(
+            f"Failed to instantiate {handler_type}er for format '{format_type}' "
+            f"({handler_class.__name__}): {e}",
+            exc_info=True,
+        )
+        raise error_class(
+            message=f"Failed to initialize {handler_type}er",
+            original_error=e,
+            **error_context,
+        ) from e
 
 
 # ===== Registry Access Functions =====

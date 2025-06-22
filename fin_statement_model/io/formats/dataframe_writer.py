@@ -7,18 +7,18 @@ import pandas as pd
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.mixins import (
-    DataFrameBasedWriter,
     ConfigurationMixin,
     handle_write_errors,
 )
+from fin_statement_model.io.core.base_table_writer import BaseTableWriter
 from fin_statement_model.io.core.registry import register_writer
 from fin_statement_model.io.config.models import DataFrameWriterConfig
 
 logger = logging.getLogger(__name__)
 
 
-@register_writer("dataframe", schema=DataFrameWriterConfig)  # type: ignore[arg-type]
-class DataFrameWriter(DataFrameBasedWriter, ConfigurationMixin):
+@register_writer("dataframe", schema=DataFrameWriterConfig)
+class DataFrameWriter(BaseTableWriter, ConfigurationMixin):
     """Writes graph data to a pandas DataFrame.
 
     Converts the graph to a DataFrame with node names as index and periods as columns.
@@ -38,61 +38,21 @@ class DataFrameWriter(DataFrameBasedWriter, ConfigurationMixin):
 
     @handle_write_errors()
     def write(self, graph: Graph, target: Any = None, **kwargs: Any) -> pd.DataFrame:
-        """Convert the graph data to a pandas DataFrame based on instance configuration.
+        """Return a pandas DataFrame representing *graph*.
 
-        Args:
-            graph (Graph): The Graph instance to export.
-            target (Any): Ignored by this writer; the DataFrame is returned directly.
-            **kwargs: Optional runtime overrides of configured defaults:
-                recalculate (bool): Whether to recalculate graph before export.
-                include_nodes (list[str]): List of node names to include in export.
-
-        Returns:
-            pd.DataFrame: DataFrame with node names as index and periods as columns.
-
-        Raises:
-            WriteError: If an error occurs during conversion.
+        The heavy lifting is performed by :py:meth:`BaseTableWriter.to_dataframe`.
+        This wrapper only resolves runtime overrides and logs summary statistics.
         """
-        # Runtime overrides: kwargs override configured defaults
         recalculate = kwargs.get("recalculate", self.cfg.recalculate)
         include_nodes = kwargs.get("include_nodes", self.cfg.include_nodes)
 
         logger.info("Exporting graph to DataFrame format.")
 
-        # Handle recalculation if requested
-        if recalculate:
-            self._recalculate_graph(graph)
-
-        # Extract data using base class method
-        data = self.extract_graph_data(
-            graph, include_nodes=include_nodes, calculate=True
+        df = self.to_dataframe(
+            graph,
+            include_nodes=include_nodes,
+            recalc=recalculate,
         )
 
-        # Convert to DataFrame
-        periods = sorted(graph.periods) if graph.periods else []
-        df = pd.DataFrame.from_dict(data, orient="index", columns=periods)
-        df.index.name = "node_name"
-
-        logger.info(f"Successfully exported {len(df)} nodes to DataFrame.")
+        logger.info("Successfully exported %s nodes to DataFrame.", len(df))
         return df
-
-    def _recalculate_graph(self, graph: Graph) -> None:
-        """Recalculate the graph if it has periods defined.
-
-        Args:
-            graph: The graph to recalculate.
-        """
-        try:
-            if graph.periods:
-                graph.recalculate_all(periods=graph.periods)
-                logger.info("Recalculated graph before exporting to DataFrame.")
-            else:
-                logger.warning("Graph has no periods defined, skipping recalculation.")
-        except Exception as e:
-            logger.error(
-                f"Error during recalculation for DataFrame export: {e}",
-                exc_info=True,
-            )
-            logger.warning(
-                "Proceeding to export DataFrame without successful recalculation."
-            )

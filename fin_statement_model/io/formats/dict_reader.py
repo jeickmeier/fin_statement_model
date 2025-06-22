@@ -9,6 +9,7 @@ from fin_statement_model.io.core.base import DataReader
 from fin_statement_model.io.core.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
 from fin_statement_model.io.config.models import DictReaderConfig
+from fin_statement_model.core.errors import DataValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -83,16 +84,9 @@ class DictReader(DataReader):
                     all_periods.add(str(period))
 
             if validation_errors:
-                # Use core DataValidationError if it exists and is suitable
-                # Otherwise, stick to ReadError or a specific IOValidationError
-                # raise DataValidationError(
-                #     message="Input dictionary failed validation",
-                #     validation_errors=validation_errors
-                # )
-                raise ReadError(
-                    f"Input dictionary failed validation: {'; '.join(validation_errors)}",
-                    source="dict_input",
-                    reader_type="DictReader",
+                raise DataValidationError(
+                    "Input dictionary failed validation",
+                    validation_errors=validation_errors,
                 )
 
         except Exception as e:

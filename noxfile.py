@@ -118,6 +118,12 @@ def lint(session: nox.Session) -> None:
     session.run("mypy", "fin_statement_model", external=True)
 
     # ---------------------------------------------------------------------
+    # Pytest - Unit tests
+    # ---------------------------------------------------------------------
+    session.log("Running Pytest...")
+    session.run("pytest", "fin_statement_model", external=True)
+
+    # ---------------------------------------------------------------------
     # Custom guard – Limit the number of `# type: ignore` usages.
     # ---------------------------------------------------------------------
     session.log("Checking `# type: ignore` budget (<= 20)...")

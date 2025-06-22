@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Any
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.io.core.base import DataWriter
 from fin_statement_model.io.core.mixins import ConfigurationMixin, handle_write_errors
 from fin_statement_model.io.core.base_table_writer import BaseTableWriter
 from fin_statement_model.io.core.registry import register_writer
@@ -17,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 @register_writer("excel", schema=ExcelWriterConfig)
-class ExcelWriter(DataWriter, BaseTableWriter, ConfigurationMixin):
+class ExcelWriter(BaseTableWriter, ConfigurationMixin):
     """Writes graph data to an Excel file.
 
     Converts the graph data to a pandas DataFrame first (using `DataFrameWriter`),

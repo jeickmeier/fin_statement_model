@@ -129,6 +129,8 @@ def _read_excel_impl(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
 class AdjustmentsExcelReader(FileBasedReader):
     """DataReader for reading adjustments from an Excel file with consistent validation and error handling."""
 
+    file_extensions = (".xls", ".xlsx")
+
     @handle_read_errors()
     def read(  # type: ignore[override]
         self, source: str | Path, **kwargs: Any
@@ -136,7 +138,7 @@ class AdjustmentsExcelReader(FileBasedReader):
         """Read adjustments using FileBasedReader validation."""
         path_str = str(source)
         self.validate_file_exists(path_str)
-        self.validate_file_extension(path_str, (".xls", ".xlsx"))
+        self.validate_file_extension(path_str)
         return _read_excel_impl(path_str)
 
 
@@ -148,7 +150,9 @@ def read_excel(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
         path: Path to the Excel file.
 
     Returns:
-        Tuple of valid Adjustment list and error report DataFrame.
+        tuple[list[Adjustment], pd.DataFrame]:
+            1. List of successfully parsed adjustments (added to the graph).
+            2. Error report DataFrame (empty if no row-level errors).
     """
     return AdjustmentsExcelReader().read(path)
 
@@ -225,7 +229,7 @@ def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:
 
 def load_adjustments_from_excel(
     graph: Graph, path: str | Path, replace: bool = False
-) -> pd.DataFrame:
+) -> tuple[list[Adjustment], pd.DataFrame]:
     """Reads adjustments from Excel and adds them to the graph.
 
     Args:
@@ -234,7 +238,7 @@ def load_adjustments_from_excel(
         replace: If True, clear existing adjustments in the manager before adding new ones.
 
     Returns:
-        pd.DataFrame: The error report DataFrame from `read_excel`.
+        tuple[list[Adjustment], pd.DataFrame]: The error report DataFrame from `read_excel`.
                    Empty if no errors occurred.
     """
     logger.info(
@@ -267,7 +271,7 @@ def load_adjustments_from_excel(
             f"Encountered {len(error_report_df)} errors during Excel read process."
         )
 
-    return error_report_df
+    return valid_adjustments, error_report_df
 
 
 def export_adjustments_to_excel(graph: Graph, path: str | Path) -> None:

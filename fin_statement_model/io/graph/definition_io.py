@@ -285,13 +285,13 @@ class GraphDefinitionWriter(DataWriter):
             serialized_nodes: dict[str, SerializedNode] = {}
             for node_name, node in graph.nodes.items():
                 node_dict = self._serialize_node(node)
-                if node_dict:
-                    serialized_nodes[node_name] = node_dict
-                else:
-                    logger.warning(
-                        f"Node '{node_name}' was not serialized due to errors."
+                if node_dict is None:
+                    raise WriteError(
+                        message=f"Failed to serialize node '{node_name}'. Aborting export.",
+                        target="graph_definition_dict",
+                        writer_type="GraphDefinitionWriter",
                     )
-            graph_definition["nodes"] = serialized_nodes
+                serialized_nodes[node_name] = node_dict
 
             # 3. Serialize Adjustments
             adjustments = graph.list_all_adjustments()

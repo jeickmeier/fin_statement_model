@@ -51,6 +51,9 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
     #: expected subclass override – either ``"long"`` or ``"wide"``
     layout: str = "long"
 
+    # Whether to coerce non-numeric strings to floats during value validation
+    allow_conversion: bool = True
+
     # ------------------------------------------------------------------
     # Sub-class contract
     # ------------------------------------------------------------------
@@ -103,6 +106,29 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
     def _resolve_mapping(self, kwargs: dict[str, Any]) -> dict[str, str]:
         ctx = kwargs.get("statement_type", self.get_config_value("statement_type"))
         return self._get_mapping(ctx)
+
+    # ------------------------------------------------------------------
+    # Lifecycle
+    # ------------------------------------------------------------------
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D401
+        # Forward to mixin initialisers (super() resolves MRO)
+        super().__init__(*args, **kwargs)
+        # Allow individual readers to override via subclass attribute or ctor kwarg
+        if "allow_conversion" in kwargs:
+            self.allow_conversion = bool(kwargs["allow_conversion"])
+
+    # ------------------------------------------------------------------
+    # Parameter helper to DRY cfg/kwargs merging
+    # ------------------------------------------------------------------
+    def _param(
+        self, name: str, overrides: dict[str, Any], *, default: Any = None
+    ) -> Any:  # noqa: D401
+        """Return effective value for *name* with precedence: overrides → cfg → default."""
+        if name in overrides:
+            return overrides[name]
+        if hasattr(self, "cfg") and self.cfg is not None and hasattr(self.cfg, name):
+            return getattr(self.cfg, name)
+        return default
 
     # ------------------------------------------------------------------
     # Main entry point
@@ -166,7 +192,11 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
                 per = row[period_col]
                 val_raw = row[value_col]
                 ok_val, num = self.validate_numeric_value(
-                    val_raw, item_name, per, validator, allow_conversion=True
+                    val_raw,
+                    item_name,
+                    per,
+                    validator,
+                    allow_conversion=self.allow_conversion,
                 )
                 if ok_val and num is not None:
                     period_values[str(per)] = float(num)
@@ -225,7 +255,11 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
                     continue
                 val_raw = row[period]
                 ok_val, num = self.validate_numeric_value(
-                    val_raw, item_name, str(period), validator, allow_conversion=True
+                    val_raw,
+                    item_name,
+                    str(period),
+                    validator,
+                    allow_conversion=self.allow_conversion,
                 )
                 if ok_val and num is not None:
                     period_values[str(period)] = float(num)

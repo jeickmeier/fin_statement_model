@@ -5,6 +5,7 @@ import requests
 from typing import Optional, Any, cast
 import numpy as np
 from functools import lru_cache
+import re
 
 
 from fin_statement_model.config import cfg
@@ -233,6 +234,11 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
 
                 for api_field, value in period_data.items():
                     node_name = self._apply_mapping(api_field, mapping)
+
+                    # Fallback: convert camelCase / mixedCase to snake_case when no mapping entry exists
+                    if node_name == api_field:  # not mapped
+                        snake = re.sub(r"(?<!^)(?=[A-Z])", "_", api_field).lower()
+                        node_name = snake
 
                     # Initialize node data dict if first time seeing this node
                     if node_name not in all_item_data:

@@ -49,11 +49,10 @@ class DataFrameReader(DataFrameReaderBase):
                 )
             df = df[periods_subset]
 
-        # Reset index to a column so WideTableReader treats it as items_col=1
+        # Reset index and rename the first column to 'item' consistently
         df_reset = df.reset_index()
-        # Ensure first column is items names
-        items_col_name = df_reset.columns[0]
-        if items_col_name is None or items_col_name == "index":
-            df_reset.rename(columns={items_col_name: "item"}, inplace=True)
+        first_col = df_reset.columns[0]
+        if first_col != "item":
+            df_reset.rename(columns={first_col: "item"}, inplace=True)
 
         return df_reset

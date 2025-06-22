@@ -19,6 +19,9 @@ class CsvReader(DataFrameReaderBase):
     # Specify long layout (rows = observations)
     layout = "long"
 
+    # Valid file extensions handled by this reader
+    file_extensions = (".csv", ".txt")
+
     def __init__(self, cfg: CsvReaderConfig) -> None:  # noqa: D401
         self.cfg = cfg
 
@@ -28,7 +31,7 @@ class CsvReader(DataFrameReaderBase):
     def _load_dataframe(self, source: Any, **kwargs: Any) -> pd.DataFrame:
         """Read the CSV file and return a DataFrame."""
         self.validate_file_exists(source)
-        self.validate_file_extension(source, (".csv", ".txt"))
+        self.validate_file_extension(source)
 
         delimiter = self.get_config_value("delimiter", default=",", value_type=str)
         header_row = self.get_config_value("header_row", default=1, value_type=int)

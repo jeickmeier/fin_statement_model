@@ -43,7 +43,7 @@ def list_available_builtin_configs() -> list[str]:
         ]
         return sorted(names)
     except (ModuleNotFoundError, FileNotFoundError):
-        logger.warning(f"Built-in statement config path not found: {package_path}")
+        logger.error(f"Built-in statement config path not found: {package_path}")
         return []
 
 

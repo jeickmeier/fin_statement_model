@@ -28,6 +28,8 @@ class ExcelReader(DataFrameReaderBase):
 
     layout = "wide"
 
+    file_extensions = (".xls", ".xlsx", ".xlsm")
+
     def __init__(self, cfg: ExcelReaderConfig) -> None:
         """Store validated configuration object."""
         self.cfg = cfg
@@ -42,39 +44,31 @@ class ExcelReader(DataFrameReaderBase):
         nrows: Optional[int],
         skiprows: Optional[int],
     ) -> tuple[pd.DataFrame, list[str]]:
-        """Read Excel file and extract data and period headers."""
-        # Convert to 0-based indices for pandas
-        periods_row_0idx = periods_row - 1
-        items_col_0idx = items_col - 1
-        header_row_0idx = header_row - 1
-
-        # Read the main data
-        df = pd.read_excel(
+        """Read Excel file once and extract data + period headers efficiently."""
+        # Read sheet without assigning header so we can slice any row later
+        raw_df = pd.read_excel(
             file_path,
             sheet_name=sheet_name,
-            header=header_row_0idx,
+            header=None,
             skiprows=skiprows,
             nrows=nrows,
         )
 
-        # Get period headers
-        if header_row_0idx != periods_row_0idx:
-            # Read periods row separately if different from header
-            periods_df = pd.read_excel(
-                file_path,
-                sheet_name=sheet_name,
-                header=None,
-                skiprows=periods_row_0idx,
-                nrows=1,
-            )
-            period_headers = periods_df.iloc[0].astype(str).tolist()
-        else:
-            # Periods are in the main header row
-            period_headers = df.columns.astype(str).tolist()
+        periods_row_idx = periods_row - 1
+        header_row_idx = header_row - 1
 
-        # Validate items column index using ValidationMixin
+        # Extract period headers from requested row
+        period_headers = raw_df.iloc[periods_row_idx].astype(str).tolist()
+
+        # Rebuild DataFrame starting from header_row
+        df = raw_df.drop(index=list(range(0, header_row_idx + 1))).reset_index(
+            drop=True
+        )
+        df.columns = raw_df.iloc[header_row_idx]
+
+        # Validate items column index
         self.validate_column_bounds(
-            df, items_col_0idx, file_path, f"items_col ({items_col})"
+            df, items_col - 1, file_path, f"items_col ({items_col})"
         )
 
         return df, period_headers
@@ -87,15 +81,15 @@ class ExcelReader(DataFrameReaderBase):
         file_path = source
         # Basic file validation
         self.validate_file_exists(file_path)
-        self.validate_file_extension(file_path, (".xls", ".xlsx", ".xlsm"))
+        self.validate_file_extension(file_path)
 
-        # Resolve configuration values (config → kwargs override)
-        sheet_name = kwargs.get("sheet_name", self.cfg.sheet_name)
-        periods_row = kwargs.get("periods_row", self.cfg.periods_row)
-        items_col = kwargs.get("items_col", self.cfg.items_col)
-        header_row = kwargs.get("header_row", self.cfg.header_row or periods_row)
-        nrows = kwargs.get("nrows", self.cfg.nrows)
-        skiprows = kwargs.get("skiprows", self.cfg.skiprows)
+        # Resolve configuration values using DataFrameReaderBase helper
+        sheet_name = self._param("sheet_name", kwargs, default="Sheet1")
+        periods_row = self._param("periods_row", kwargs, default=1)
+        items_col = self._param("items_col", kwargs, default=1)
+        header_row = self._param("header_row", kwargs, default=periods_row)
+        nrows = self._param("nrows", kwargs)
+        skiprows = self._param("skiprows", kwargs)
 
         # Read underlying sheet to DataFrame (may include header row)
         df_raw, period_headers = self._read_excel_data(
