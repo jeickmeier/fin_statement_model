@@ -1,4 +1,12 @@
-"""Data reader for Python dictionaries."""
+"""Dictionary → Graph reader.
+
+This refactor removes the bespoke validation loop and instead leverages the
+shared :class:`ValidationMixin` helpers used by other tabular readers.  The
+behaviour (error reporting via :class:`ReadError`) remains identical but with
+less duplicated code.
+"""
+
+from __future__ import annotations
 
 import logging
 from typing import Optional, Any
@@ -9,13 +17,18 @@ from fin_statement_model.io.core.base import DataReader
 from fin_statement_model.io.core.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
 from fin_statement_model.io.config.models import DictReaderConfig
-from fin_statement_model.core.errors import DataValidationError
+from fin_statement_model.io.core.mixins import (
+    ValidationMixin,
+    ValidationResultCollector,
+    ConfigurationMixin,
+    handle_read_errors,
+)
 
 logger = logging.getLogger(__name__)
 
 
 @register_reader("dict", schema=DictReaderConfig)
-class DictReader(DataReader):
+class DictReader(DataReader, ValidationMixin, ConfigurationMixin):
     """Reads data from a Python dictionary to create a new Graph.
 
     Expects a dictionary format: {node_name: {period: value, ...}, ...}
@@ -36,112 +49,88 @@ class DictReader(DataReader):
         """
         self.cfg = cfg
 
+    @handle_read_errors()
     def read(self, source: dict[str, dict[str, float]], **kwargs: Any) -> Graph:
-        """Create a new Graph from a dictionary.
+        """Convert *source* mapping into a :class:`Graph`.
 
-        Args:
-            source: Dictionary mapping node names to period-value dictionaries.
-                    Format: {node_name: {period: value, ...}, ...}
-            **kwargs: Optional runtime argument overriding config defaults:
-                periods (list[str], optional): List of periods to include. Overrides `cfg.periods`.
-
-        Returns:
-            A new Graph instance populated with FinancialStatementItemNodes.
-
-        Raises:
-            ReadError: If the source data format is invalid or processing fails.
-            # DataValidationError: If data values are not numeric.
+        The function relies on :class:`ValidationMixin` to perform
+        type/structure checks and raises :class:`ReadError` with a condensed
+        validation summary if any problem is detected.
         """
-        logger.info("Starting import from dictionary to create a new graph.")
 
+        # 1. Basic structure validation ------------------------------------------------
         if not isinstance(source, dict):
             raise ReadError(
-                message="Invalid source type for DictReader. Expected dict.",
+                message="DictReader expects `source` to be a dict[str, dict[str, float]]",
                 source="dict_input",
                 reader_type="DictReader",
             )
 
-        # Validate data structure and collect all periods
-        all_periods = set()
-        validation_errors: list[str] = []
-        try:
-            for node_name, period_values in source.items():
-                if not isinstance(period_values, dict):
-                    validation_errors.append(
-                        f"Node '{node_name}': Invalid format - expected dict, got {type(period_values).__name__}"
-                    )
-                    continue  # Skip further checks for this node
-                for period, value in period_values.items():
-                    # Basic type checks - can be expanded
-                    if not isinstance(period, str):
-                        validation_errors.append(
-                            f"Node '{node_name}': Invalid period format '{period}' - expected string."
-                        )
-                    if not isinstance(value, int | float):
-                        validation_errors.append(
-                            f"Node '{node_name}' period '{period}': Invalid value type {type(value).__name__} - expected number."
-                        )
-                    all_periods.add(str(period))
+        collector = ValidationResultCollector()
+        all_periods: set[str] = set()
 
-            if validation_errors:
-                raise DataValidationError(
-                    "Input dictionary failed validation",
-                    validation_errors=validation_errors,
+        # 2. Per-node validation --------------------------------------------------------
+        for raw_name, period_values in source.items():
+            ok_name, node_name = self.validate_node_name(raw_name)
+            if not ok_name or node_name is None:
+                collector.add_result(str(raw_name), False, "Invalid or empty node name")
+                continue
+
+            if not isinstance(period_values, dict):
+                collector.add_result(
+                    node_name,
+                    False,
+                    f"Expected dict for period values, got {type(period_values).__name__}",
                 )
+                continue
 
-        except Exception as e:
-            # Catch unexpected validation errors
+            for period_raw, value_raw in period_values.items():
+                # period must be str
+                if not isinstance(period_raw, str):
+                    collector.add_result(
+                        node_name,
+                        False,
+                        f"Invalid period key '{period_raw}' – expected str.",
+                    )
+                    continue
+
+                ok_val, _ = self.validate_numeric_value(
+                    value_raw, node_name, period_raw, collector, allow_conversion=False
+                )
+                if ok_val:
+                    all_periods.add(period_raw)
+
+        if collector.has_errors():
             raise ReadError(
-                message=f"Error validating input dictionary: {e}",
+                self.create_validation_summary(collector, "dict_input"),
                 source="dict_input",
                 reader_type="DictReader",
-                original_error=e,
-            ) from e
-
-        # Determine graph periods: runtime kwargs override config defaults
-        graph_periods = kwargs.get("periods", self.cfg.periods if self.cfg else None)
-        if graph_periods is None:
-            graph_periods = sorted(list(all_periods))
-            logger.debug(f"Inferred graph periods from data: {graph_periods}")
-        # Optional: Validate if all data periods are within the provided list
-        elif not all_periods.issubset(set(graph_periods)):
-            missing = all_periods - set(graph_periods)
-            logger.warning(
-                f"Data contains periods not in specified graph periods: {missing}"
             )
-            # Decide whether to error or just ignore extra data
 
-        # Create graph and add nodes
-        try:
-            graph = Graph(periods=graph_periods)
-            for node_name, period_values in source.items():
-                # Filter values to only include those matching graph_periods
-                filtered_values = {
-                    p: v for p, v in period_values.items() if p in graph_periods
-                }
-                if filtered_values:
-                    # Create FinancialStatementItemNode directly
-                    # Assumes FinancialStatementItemNode takes name and values dict
-                    new_node = FinancialStatementItemNode(
+        # 3. Graph creation ------------------------------------------------------------
+        graph_periods = kwargs.get(
+            "periods", self.cfg.periods if self.cfg else None
+        ) or sorted(all_periods)
+
+        graph = Graph(periods=graph_periods)
+
+        for node_name, period_values in source.items():
+            # Skip nodes that failed validation earlier
+            if (
+                collector.get_items_with_errors()
+                and node_name in collector.get_items_with_errors()
+            ):
+                continue
+
+            filtered_values = {
+                p: v for p, v in period_values.items() if p in graph_periods
+            }
+            if filtered_values:
+                graph.add_node(
+                    FinancialStatementItemNode(
                         name=node_name, values=filtered_values.copy()
                     )
-                    graph.add_node(new_node)
-                else:
-                    logger.debug(
-                        f"Node '{node_name}' has no data for specified graph periods. Skipping."
-                    )
+                )
 
-            logger.info(
-                f"Successfully created graph with {len(graph.nodes)} nodes from dictionary."
-            )
-            return graph
-
-        except Exception as e:
-            # Catch errors during graph/node creation
-            logger.error(f"Failed to create graph from dictionary: {e}", exc_info=True)
-            raise ReadError(
-                message="Failed to build graph from dictionary data",
-                source="dict_input",
-                reader_type="DictReader",
-                original_error=e,
-            ) from e
+        logger.info("Created graph with %s nodes from dictionary.", len(graph.nodes))
+        return graph

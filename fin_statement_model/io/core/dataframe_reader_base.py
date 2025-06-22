@@ -1,15 +1,16 @@
 """Generic helper for readers that ingest pandas.DataFrame-like sources.
 
-This merges the behaviour previously split between
-`TabularReader` (*long* layout) and `WideTableReader` (*wide* layout).
+This module unifies the two historical reader bases (*long*-layout and
+*wide*-layout) into a single implementation.  Concrete subclasses only need
 
-Concrete subclasses only need to
+1. to declare a class-level ``layout`` attribute – either ``"long"`` or
+   ``"wide"``; and
+2. implement ``_load_dataframe(self, source, **kwargs)`` which returns the raw
+   :class:`pandas.DataFrame` loaded from *source* (file path, in-memory frame,
+   etc.).
 
-1. declare a class-level ``layout`` attribute – either ``"long"`` or ``"wide"``;
-2. implement ``_load_dataframe(self, source, **kwargs)`` that returns the raw
-   DataFrame loaded from *source* (file path, in-memory frame, etc.).
-
-All mapping, validation and Graph construction logic is provided here.
+Everything else – mapping, validation and Graph construction – is handled by
+this base class.
 """
 
 from __future__ import annotations
@@ -41,8 +42,8 @@ logger = logging.getLogger(__name__)
 
 class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
     FileBasedReader,
+    MappingAwareMixin,  # must precede ConfigurationMixin for mypy clarity
     ConfigurationMixin,
-    MappingAwareMixin,
     ValidationMixin,
     ABC,
 ):

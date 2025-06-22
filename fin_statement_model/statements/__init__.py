@@ -112,7 +112,7 @@ from .errors import StatementError, ConfigurationError
 from typing import Any, Optional
 
 # Import UnifiedNodeValidator for convenience
-from fin_statement_model.io.validation import UnifiedNodeValidator
+from fin_statement_model.statements.validation import UnifiedNodeValidator
 from fin_statement_model.core.nodes import standard_node_registry
 from .utilities.cli_formatters import pretty_print_errors
 

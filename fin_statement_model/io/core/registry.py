@@ -7,6 +7,7 @@ for readers and writers, along with registration decorators and access functions
 import logging
 from typing import TypeVar, Generic, Optional, Any, Union, cast, Type
 from collections.abc import Callable
+from enum import Enum
 
 from pydantic import ValidationError
 from pydantic import BaseModel
@@ -382,4 +383,32 @@ __all__ = [
     "list_writers",
     "register_reader",
     "register_writer",
+    "IOFormat",
 ]
+
+# -----------------------------------------------------------------------------
+# Enum of registered IO format keys (for static typing / IDE completion)
+# -----------------------------------------------------------------------------
+
+
+def _build_io_format_enum() -> "Enum":  # noqa: D401
+    """Return an Enum mapping of currently registered reader/writer keys."""
+
+    # Union of all known reader/writer keys (grabbed at import time after
+    # all format modules executed their registration side-effects).
+    keys = sorted(
+        set(_reader_registry.list_formats().keys()).union(
+            _writer_registry.list_formats().keys()
+        )
+    )
+
+    # Enum member names must be valid identifiers – use upper-snake.
+    def _safe(name: str) -> str:
+        return name.replace("-", "_").replace(" ", "_").upper()
+
+    members = {_safe(k): k for k in keys}
+    return Enum("IOFormat", members, type=str)
+
+
+# Instantiate once so downstream imports can use.
+IOFormat = _build_io_format_enum()

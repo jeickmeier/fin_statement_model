@@ -23,7 +23,7 @@ from fin_statement_model.statements.configs.models import (
 from pydantic import ValidationError  # Import directly
 
 # Import UnifiedNodeValidator for node ID validation
-from fin_statement_model.io.validation import UnifiedNodeValidator
+from fin_statement_model.statements.validation import UnifiedNodeValidator
 from fin_statement_model.core.nodes import standard_node_registry
 
 # Import Result types for enhanced error handling

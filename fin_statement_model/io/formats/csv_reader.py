@@ -26,7 +26,7 @@ class CsvReader(DataFrameReaderBase):
         self.cfg = cfg
 
     # ------------------------------------------------------------------
-    # TabularReader hook implementation
+    # DataFrameReaderBase hook implementation
     # ------------------------------------------------------------------
     def _load_dataframe(self, source: Any, **kwargs: Any) -> pd.DataFrame:
         """Read the CSV file and return a DataFrame."""

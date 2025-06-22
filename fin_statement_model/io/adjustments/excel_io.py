@@ -14,7 +14,7 @@ from fin_statement_model.core.adjustments.models import (
 )
 from fin_statement_model.core.graph import Graph  # Needed for Graph convenience methods
 from fin_statement_model.io.exceptions import ReadError, WriteError
-from fin_statement_model.io.core import FileBasedReader, handle_read_errors
+from fin_statement_model.io.core.mixins.error_handlers import handle_read_errors
 from fin_statement_model.io.adjustments.row_models import AdjustmentRowModel
 
 logger = logging.getLogger(__name__)
@@ -73,73 +73,120 @@ def _build_error_row(
     return row
 
 
-def _read_excel_impl(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
-    """Read adjustments from an Excel file.
+# -----------------------------------------------------------------------------
+# Minimal file-validation helper (keeps AdjustmentsExcelReader independent from
+# Graph-oriented FileBasedReader/DataReader hierarchy).
+# -----------------------------------------------------------------------------
 
-    Expects the first sheet to contain adjustment data.
-    Validates required columns and parses each row via AdjustmentRowModel.
-    Rows that fail validation are collected into an error report.
-    """
-    file_path = Path(path)
-    logger.info(f"Reading adjustments from Excel file: {file_path}")
 
-    try:
-        df = pd.read_excel(file_path, sheet_name=0)
-    except FileNotFoundError:
-        raise ReadError(
-            f"Adjustment Excel file not found: {file_path}", source=str(file_path)
-        )
-    except Exception as e:
-        raise ReadError(
-            f"Failed to read Excel file {file_path}: {e}",
-            source=str(file_path),
-            original_error=e,
-        )
+class _FileValidationMixin:
+    """Provide filesystem helpers without imposing Graph-return contract."""
 
-    # Normalize and validate columns
-    df.columns = [str(col).lower().strip() for col in df.columns]
-    _validate_required_columns(df.columns)
+    file_extensions: tuple[str, ...] | None = None
 
-    records = df.to_dict(orient="records")
-    valid_adjustments: list[Adjustment] = []
-    error_rows: list[dict[str, Any]] = []
+    def validate_file_exists(self, path: str) -> None:  # noqa: D401
+        import os
 
-    for idx, raw in enumerate(records, start=2):
-        try:
-            row_model = AdjustmentRowModel(**raw)
-            valid_adjustments.append(row_model.to_adjustment())
-        except ValidationError as ve:
-            error_rows.append(_build_error_row(raw, ve, idx))
+        if not os.path.exists(path):
+            raise ReadError(
+                f"File not found: {path}",
+                source=path,
+                reader_type=self.__class__.__name__,
+            )
 
-    error_report_df = pd.DataFrame(error_rows)
-    if not error_report_df.empty:
-        logger.warning(
-            f"Completed reading adjustments from {file_path}. "
-            f"Found {len(valid_adjustments)} valid adjustments and {len(error_rows)} errors."
-        )
-    else:
-        logger.info(
-            f"Successfully read {len(valid_adjustments)} adjustments from {file_path} with no errors."
-        )
+    def validate_file_extension(
+        self, path: str, valid_extensions: tuple[str, ...] | None = None
+    ) -> None:  # noqa: D401
+        exts = valid_extensions or self.file_extensions
+        if not exts:
+            return
+        if not path.lower().endswith(exts):
+            import os as _os
 
-    return valid_adjustments, error_report_df
+            raise ReadError(
+                f"Invalid file extension. Expected one of {exts}, got '{_os.path.splitext(path)[1]}'",
+                source=path,
+                reader_type=self.__class__.__name__,
+            )
 
 
 # DataReader class for reading adjustments with standardized validation
-class AdjustmentsExcelReader(FileBasedReader):
-    """DataReader for reading adjustments from an Excel file with consistent validation and error handling."""
+class AdjustmentsExcelReader(_FileValidationMixin):
+    """DataReader for reading adjustments from an Excel file.
+
+    Combines basic *file existence/extension* checks provided by
+    :class:`FileBasedReader` with the row-level validation logic previously
+    implemented in the private ``_read_excel_impl`` helper.  Removing an extra
+    indirection both simplifies stack traces and reduces cognitive load for
+    maintainers.
+    """
 
     file_extensions = (".xls", ".xlsx")
 
     @handle_read_errors()
-    def read(  # type: ignore[override]
-        self, source: str | Path, **kwargs: Any
+    def read(
+        self, source: str | Path, **_kw: Any
     ) -> tuple[list[Adjustment], pd.DataFrame]:
-        """Read adjustments using FileBasedReader validation."""
+        """Return list of valid adjustments + error-report DataFrame."""
+
         path_str = str(source)
+
+        # Basic file checks ---------------------------------------------------
         self.validate_file_exists(path_str)
         self.validate_file_extension(path_str)
-        return _read_excel_impl(path_str)
+
+        file_path = Path(path_str)
+        logger.info("Reading adjustments from Excel file: %s", file_path)
+
+        # ------------------------------------------------------------------
+        # Load sheet into DataFrame
+        # ------------------------------------------------------------------
+        try:
+            df = pd.read_excel(file_path, sheet_name=0)
+        except FileNotFoundError:
+            raise ReadError(
+                f"Adjustment Excel file not found: {file_path}", source=str(file_path)
+            )
+        except Exception as e:  # noqa: BLE001
+            raise ReadError(
+                f"Failed to read Excel file {file_path}: {e}",
+                source=str(file_path),
+                original_error=e,
+            ) from e
+
+        # ------------------------------------------------------------------
+        # Normalise + validate columns
+        # ------------------------------------------------------------------
+        df.columns = [str(col).lower().strip() for col in df.columns]
+        _validate_required_columns(df.columns)
+
+        records = df.to_dict(orient="records")
+        valid_adjustments: list[Adjustment] = []
+        error_rows: list[dict[str, Any]] = []
+
+        for idx, raw in enumerate(records, start=2):  # Account for header row
+            try:
+                row_model = AdjustmentRowModel(**raw)
+                valid_adjustments.append(row_model.to_adjustment())
+            except ValidationError as ve:
+                error_rows.append(_build_error_row(raw, ve, idx))
+
+        error_report_df = pd.DataFrame(error_rows)
+        if not error_report_df.empty:
+            logger.warning(
+                "Completed reading adjustments from %s. Found %s valid adjustments and %s errors.",
+                file_path,
+                len(valid_adjustments),
+                len(error_rows),
+            )
+        else:
+            logger.info(
+                "Successfully read %s adjustments from %s with no errors.",
+                len(valid_adjustments),
+                file_path,
+            )
+
+        return valid_adjustments, error_report_df
 
 
 # Public API: delegate to standardized reader

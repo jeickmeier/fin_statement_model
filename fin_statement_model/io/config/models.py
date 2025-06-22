@@ -5,7 +5,7 @@ This module provides declarative schemas for validating configuration passed to 
 
 from __future__ import annotations
 
-from typing import Optional, Literal, Any
+from typing import Optional, Literal, Any, TYPE_CHECKING
 from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
 
 from fin_statement_model.config.helpers import cfg
@@ -16,16 +16,25 @@ from fin_statement_model.core.adjustments.models import (
 # Import central MappingConfig alias
 from fin_statement_model.io.core.types import MappingConfig
 
+# Provide runtime-optional pandas typing to satisfy static checkers
+if TYPE_CHECKING:  # pragma: no cover – import for type checkers only
+    import pandas as pd
+
 
 class BaseReaderConfig(BaseModel):
     """Base configuration for IO readers."""
 
     source: Any = Field(
-        ..., description="URI or path to data source (file path, ticker, etc.)"
+        ..., description="URI, path, or in-memory object representing the data source."
     )
-    format_type: Literal["csv", "excel", "dataframe", "dict", "fmp"] = Field(
-        ..., description="Type of reader (csv, excel, dataframe, dict, fmp)."
-    )
+    format_type: Literal[
+        "csv",
+        "excel",
+        "dataframe",
+        "dict",
+        "fmp",
+        "graph_definition_dict",
+    ] = Field(..., description="Reader format identifier.")
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -69,6 +78,9 @@ class CsvReaderConfig(BaseReaderConfig):
         description="Additional kwargs for pandas.read_csv, overriding config defaults.",
     )
 
+    # Override with specific source type – file path
+    source: str = Field(..., description="Path to the CSV file")
+
     @model_validator(mode="after")  # type: ignore[arg-type]
     def check_header_row(cls, cfg: CsvReaderConfig) -> CsvReaderConfig:
         """Ensure header_row is at least 1."""
@@ -107,16 +119,32 @@ class ExcelReaderConfig(BaseReaderConfig):
         None, description="Number of rows to skip at the beginning."
     )
 
+    # Explicit file-path source
+    source: str = Field(..., description="Path to the Excel file")
+
     @model_validator(mode="after")  # type: ignore[arg-type]
     def check_indices(cls, cfg: ExcelReaderConfig) -> ExcelReaderConfig:
-        """Ensure items_col and periods_row are at least 1."""
+        """Ensure indices are valid and header/period rows are exclusive."""
         if cfg.items_col < 1 or cfg.periods_row < 1:
             raise ValueError("items_col and periods_row must be >= 1")
+
+        # Enforce XOR semantics between header_row and periods_row when both are *explicitly* supplied.
+        # The default behaviour allows **one** of them (or none) but never both at the same time.
+        if cfg.header_row is not None and cfg.periods_row is not None:
+            # Detect user explicitly provided both values (even if identical)
+            raise ValueError(
+                "Provide either header_row **or** periods_row, not both. "
+                "Set header_row=None to use periods_row as header, or vice-versa."
+            )
+
         return cfg
 
 
 class FmpReaderConfig(BaseReaderConfig):
     """Financial Modeling Prep API reader options."""
+
+    # Source ticker symbol
+    source: str = Field(..., description="Ticker symbol e.g., 'AAPL'")
 
     statement_type: Literal["income_statement", "balance_sheet", "cash_flow"] = Field(
         ..., description="Type of financial statement to fetch."
@@ -163,7 +191,8 @@ class DataFrameReaderConfig(BaseReaderConfig):
     to preserve a consistent registry-initialisation contract.
     """
 
-    source: Any = Field(..., description="In-memory pandas DataFrame source")
+    # Use forward reference to avoid hard dependency at import time
+    source: "pd.DataFrame" = Field(..., description="In-memory pandas DataFrame source")
     format_type: Literal["dataframe"] = "dataframe"
 
     # Runtime override for read-time periods selection
@@ -195,13 +224,17 @@ class DictReaderConfig(BaseReaderConfig):
 class BaseWriterConfig(BaseModel):
     """Base configuration for IO writers."""
 
-    target: Optional[str] = Field(
+    target: Any | None = Field(
         None,
-        description="URI or path to data target (file path, in-memory target, etc.)",
+        description="Destination for write operation (path, buffer, in-memory object).",
     )
-    format_type: Literal["excel", "dataframe", "dict", "markdown"] = Field(
-        ..., description="Type of writer (excel, dataframe, dict, markdown)."
-    )
+    format_type: Literal[
+        "excel",
+        "dataframe",
+        "dict",
+        "markdown",
+        "graph_definition_dict",
+    ] = Field(..., description="Writer format identifier.")
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -209,11 +242,14 @@ class BaseWriterConfig(BaseModel):
 class ExcelWriterConfig(BaseWriterConfig):
     """Excel writer options."""
 
-    # Default comes from cfg("io.default_excel_sheet")
+    # Worksheet name defaults to cfg value if not provided via config or call
     sheet_name: str = Field(
         default_factory=lambda: cfg("io.default_excel_sheet"),
-        description="Name of the sheet to write to.",
+        description="Worksheet name to use when exporting.",
     )
+
+    format_type: Literal["excel"] = "excel"
+
     recalculate: bool = Field(
         True, description="Whether to recalculate graph before export."
     )
@@ -225,12 +261,18 @@ class ExcelWriterConfig(BaseWriterConfig):
         description="Additional kwargs for pandas.DataFrame.to_excel.",
     )
 
+    # Output file path (optional when provided at write-time)
+    target: Optional[str] = Field(
+        None,
+        description="Path to the output Excel file. If None, must be supplied when calling write().",
+    )
+
 
 class DataFrameWriterConfig(BaseWriterConfig):
     """DataFrame writer options."""
 
-    target: Optional[str] = Field(
-        None, description="Optional target path (ignored by DataFrameWriter)."
+    target: Optional["pd.DataFrame"] = Field(
+        None, description="Optional DataFrame target override (rare)."
     )
     recalculate: bool = Field(
         True, description="Whether to recalculate graph before export."
@@ -243,8 +285,8 @@ class DataFrameWriterConfig(BaseWriterConfig):
 class DictWriterConfig(BaseWriterConfig):
     """Dict writer has no additional options."""
 
-    target: Optional[str] = Field(
-        None, description="Optional target (ignored by DictWriter)."
+    target: Optional[dict[str, dict[str, float]]] = Field(
+        None, description="Optional dict target (ignored by DictWriter)."
     )
 
 
@@ -284,3 +326,44 @@ class MarkdownWriterConfig(BaseWriterConfig):
 
     # Allow extra write() kwargs like 'statement_structure' to pass through without error
     model_config = ConfigDict(extra="ignore", frozen=True)
+
+
+# -----------------------------------------------------------------------------
+# Graph Definition (dict) Reader/Writer Configs – minimal requirements
+# -----------------------------------------------------------------------------
+
+
+class GraphDefinitionReaderConfig(BaseReaderConfig):
+    """Configuration for GraphDefinitionReader.
+
+    The *source* is expected to be an in-memory dictionary containing the keys
+    ``periods`` and ``nodes`` (and optionally ``adjustments``).  No additional
+    reader-specific options are supported.
+    """
+
+    source: Any = Field(..., description="Graph definition dictionary to import.")
+    format_type: Literal["graph_definition_dict"] = "graph_definition_dict"
+
+
+class GraphDefinitionWriterConfig(BaseWriterConfig):
+    """Configuration for GraphDefinitionWriter.
+
+    The writer returns the graph definition dictionary directly; *target* is
+    therefore optional and typically ignored.
+    """
+
+    target: Any | None = Field(
+        None,
+        description=(
+            "Unused placeholder – GraphDefinitionWriter returns the definition "
+            "dict instead of writing to an external target."
+        ),
+    )
+    strict: bool = Field(
+        True,
+        description=(
+            "If True (default) the writer aborts on the first node that fails "
+            "to serialise; if False it skips problematic nodes and continues."
+        ),
+    )
+    format_type: Literal["graph_definition_dict"] = "graph_definition_dict"

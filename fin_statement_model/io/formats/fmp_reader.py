@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 @register_reader("fmp", schema=FmpReaderConfig)
+# pylint: disable=too-many-statements,too-many-branches
 class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
     """Reads financial statement data from the FMP API into a Graph.
 
@@ -45,7 +46,15 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
         validations and improve performance.
     """
 
-    BASE_URL = "https://financialmodelingprep.com/api/v3"
+    # Base URL components – keeping version separate for easier future upgrade.
+    _API_HOST = "https://financialmodelingprep.com/api"
+    _API_VERSION = "v3"
+    BASE_URL = f"{_API_HOST}/{_API_VERSION}"
+
+    # Pre-compiled regex used for camelCase→snake_case fallback when no explicit
+    # mapping entry exists.  Compiling once avoids repeated re-parsing in the
+    # innermost loop of the API-response processing.
+    _CAMEL_TO_SNAKE_RE = re.compile(r"(?<!^)(?=[A-Z])")
 
     @classmethod
     def _get_default_mapping_path(cls) -> Optional[str]:
@@ -237,8 +246,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
 
                     # Fallback: convert camelCase / mixedCase to snake_case when no mapping entry exists
                     if node_name == api_field:  # not mapped
-                        snake = re.sub(r"(?<!^)(?=[A-Z])", "_", api_field).lower()
-                        node_name = snake
+                        node_name = self._camel_to_snake(api_field)
 
                     # Initialize node data dict if first time seeing this node
                     if node_name not in all_item_data:
@@ -279,3 +287,12 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
                 reader_type="FmpReader",
                 original_error=e,
             ) from e
+
+    # ------------------------------------------------------------------
+    # Static helpers
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def _camel_to_snake(cls, name: str) -> str:  # noqa: D401
+        """Convert *CamelCase* or *camelCase* to *snake_case* quickly."""
+        return cls._CAMEL_TO_SNAKE_RE.sub("_", name).lower()

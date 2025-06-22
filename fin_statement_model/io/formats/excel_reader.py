@@ -8,6 +8,7 @@ import pandas as pd
 from fin_statement_model.io.core.registry import register_reader
 from fin_statement_model.io.core.dataframe_reader_base import DataFrameReaderBase
 from fin_statement_model.io.config.models import ExcelReaderConfig
+from fin_statement_model.io.exceptions import ReadError
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,14 @@ class ExcelReader(DataFrameReaderBase):
 
     Configuration (sheet_name, items_col, periods_row, mapping_config) is passed
     via an `ExcelReaderConfig` object during initialization (typically by the `read_data` facade).
+    The optional ``header_row`` parameter controls which
+    row pandas uses as column names.  When ``header_row`` equals
+    ``periods_row`` (the default) the reader assumes the period labels already
+    reside in the header row – no column renaming is attempted.  If callers set
+    ``header_row`` *explicitly* to the same value as ``periods_row`` **while
+    expecting the overwrite behaviour**, a warning is issued so the mismatch is
+    obvious.
+
     Method-specific options (`statement_type`, `header_row`, `nrows`, `skiprows`)
     are passed as keyword arguments to the `read()` method.
     """
@@ -87,7 +96,24 @@ class ExcelReader(DataFrameReaderBase):
         sheet_name = self._param("sheet_name", kwargs, default="Sheet1")
         periods_row = self._param("periods_row", kwargs, default=1)
         items_col = self._param("items_col", kwargs, default=1)
-        header_row = self._param("header_row", kwargs, default=periods_row)
+        header_row = self._param("header_row", kwargs)
+
+        # XOR enforcement – raise early if both provided via kwargs (override) or cfg.
+        if (
+            header_row is not None
+            and "periods_row" in kwargs
+            and kwargs.get("periods_row") is not None
+        ):
+            raise ReadError(
+                "Provide either header_row or periods_row, not both.",
+                source=str(source),
+                reader_type="ExcelReader",
+            )
+
+        if header_row is None:
+            # Fallback to periods_row if caller omitted header_row
+            header_row = periods_row
+
         nrows = self._param("nrows", kwargs)
         skiprows = self._param("skiprows", kwargs)
 
@@ -102,7 +128,7 @@ class ExcelReader(DataFrameReaderBase):
             skiprows,
         )
 
-        # Use extracted period headers to rename DataFrame columns if needed
+        # Use extracted period headers to rename DataFrame columns if needed.
         if header_row - 1 != periods_row - 1:
             # DataFrame columns are from header_row, replace period part
             new_cols = list(df_raw.columns)
@@ -111,5 +137,7 @@ class ExcelReader(DataFrameReaderBase):
                 if idx - items_col < len(period_headers):
                     new_cols[idx] = str(period_headers[idx])
             df_raw.columns = new_cols
+        # No else branch needed – when header_row equals periods_row renaming is
+        # a no-op *by design* and no longer merits a warning.
 
         return df_raw

@@ -54,11 +54,11 @@ class ExcelWriter(BaseTableWriter, ConfigurationMixin):
         file_path = str(target)
 
         # Runtime overrides: kwargs override configured defaults
-        sheet_name = kwargs.get("sheet_name", self.cfg.sheet_name)
-        recalculate = kwargs.get("recalculate", self.cfg.recalculate)
-        include_nodes = kwargs.get("include_nodes", self.cfg.include_nodes)
-        excel_writer_options = kwargs.get(
-            "excel_writer_kwargs", self.cfg.excel_writer_kwargs
+        sheet_name = self._param("sheet_name", kwargs, self.cfg, default="Sheet1")
+        recalculate = self._param("recalculate", kwargs, self.cfg, default=True)
+        include_nodes = self._param("include_nodes", kwargs, self.cfg)
+        excel_writer_options = self._param(
+            "excel_writer_kwargs", kwargs, self.cfg, default={}
         )
 
         logger.info(f"Exporting graph to Excel file: {file_path}, sheet: {sheet_name}")

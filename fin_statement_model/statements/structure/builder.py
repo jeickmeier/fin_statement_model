@@ -33,7 +33,7 @@ from fin_statement_model.statements.structure import (
 from fin_statement_model.statements.errors import ConfigurationError
 
 # Import UnifiedNodeValidator for optional node validation during build
-from fin_statement_model.io.validation import UnifiedNodeValidator
+from fin_statement_model.statements.validation import UnifiedNodeValidator
 from fin_statement_model.config.helpers import cfg
 from fin_statement_model.core.nodes import standard_node_registry
 

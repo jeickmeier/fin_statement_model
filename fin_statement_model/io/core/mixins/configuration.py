@@ -23,8 +23,29 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D401
         super().__init__(*args, **kwargs)
-        self._config_context: dict[str, Any] = {}
-        self._config_overrides: dict[str, Any] = {}
+
+        # ------------------------------------------------------------------
+        # Internal state
+        # ------------------------------------------------------------------
+        # _config_context – free-form metadata that *callers* can attach to the
+        # mixin to improve log messages and error reporting (e.g. ticker="AAPL",
+        # operation="api_read").  It **does not** influence behaviour besides
+        # being emitted via :pymeth:`ValidationResultCollector` summaries.
+        #
+        # _config_overrides – runtime key→value map injected via
+        # :pymeth:`set_config_override`.  When present, it *silently* overrides
+        # the value returned by :pymeth:`get_config_value`.  This mechanism is
+        # only required when the same reader/writer instance is reused with
+        # different per-call overrides (see planned batched-API support).
+        #
+        # Both attributes are **advanced** features.  They are kept private and
+        # undocumented in the public API.  If you are maintaining code outside
+        # this package, prefer passing per-call kwargs to `.read()` / `.write()`
+        # instead of using overrides directly.
+        # ------------------------------------------------------------------
+
+        self._config_context: dict[str, Any] = {}  # noqa: RUF012 – intentional
+        self._config_overrides: dict[str, Any] = {}  # noqa: RUF012 – intentional
 
     # ------------------------------------------------------------------
     # Context helpers

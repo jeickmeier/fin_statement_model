@@ -43,8 +43,8 @@ class DataFrameWriter(BaseTableWriter, ConfigurationMixin):
         The heavy lifting is performed by :py:meth:`BaseTableWriter.to_dataframe`.
         This wrapper only resolves runtime overrides and logs summary statistics.
         """
-        recalculate = kwargs.get("recalculate", self.cfg.recalculate)
-        include_nodes = kwargs.get("include_nodes", self.cfg.include_nodes)
+        recalculate = self._param("recalculate", kwargs, self.cfg, default=True)
+        include_nodes = self._param("include_nodes", kwargs, self.cfg)
 
         logger.info("Exporting graph to DataFrame format.")
 

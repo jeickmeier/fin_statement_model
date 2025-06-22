@@ -5,53 +5,20 @@ abstracting away the complexity of the registry system.
 """
 
 import logging
-from typing import Any, Callable, TypeVar, Type
+from typing import Any
 
 from fin_statement_model.core.graph import Graph
 from .registry import get_reader, get_writer
-from fin_statement_model.io.exceptions import (
-    IOError,
+
+# Keep import solely for re-export in docstrings – alias with underscore to
+# silence linter about unused names.
+from fin_statement_model.io.exceptions import (  # noqa: F401
     ReadError,
     WriteError,
     FormatNotSupportedError,
 )
 
 logger = logging.getLogger(__name__)
-
-
-# ---------------------------------------------------------------------------
-# Internal helper to DRY error-handling boilerplate
-# ---------------------------------------------------------------------------
-
-T = TypeVar("T")
-
-
-def _execute_with_io_wrap(
-    *,
-    operation: str,
-    func: Callable[[], T],
-    error_cls: Type[IOError] | Type[ReadError] | Type[WriteError],
-    context: dict[str, Any],
-) -> T:
-    """Execute *func* and wrap unexpected exceptions in IO-error classes.
-
-    Args:
-        operation: Human-readable operation ("read" / "write").
-        func: Zero-argument callable performing the core work.
-        error_cls: Either :class:`ReadError` or :class:`WriteError`.
-        context: Additional kwargs to pass to the error constructor.
-    """
-    try:
-        return func()
-    except (IOError, FormatNotSupportedError):
-        # Already domain-specific exception – keep as-is for callers to pattern-match.
-        logger.exception("IO Error during %s", operation)
-        raise
-    except Exception as exc:  # noqa: BLE001
-        logger.exception("Unexpected error during %s", operation)
-        raise error_cls(
-            f"Unexpected error during {operation}", original_error=exc, **context
-        ) from exc
 
 
 def read_data(
@@ -111,17 +78,8 @@ def read_data(
             config_kwargs = dict(config.__dict__)
         config_kwargs.update({"source": source, "format_type": format_type})
 
-    return _execute_with_io_wrap(
-        operation="read",
-        func=lambda: get_reader(**config_kwargs).read(
-            config_kwargs["source"], **read_kwargs
-        ),
-        error_cls=ReadError,
-        context={
-            "source": str(source),
-            "reader_type": format_type,
-        },
-    )
+    reader = get_reader(**config_kwargs)
+    return reader.read(config_kwargs["source"], **read_kwargs)
 
 
 def write_data(
@@ -180,15 +138,8 @@ def write_data(
             config_kwargs = dict(config.__dict__)
         config_kwargs.update({"target": target, "format_type": format_type})
 
-    return _execute_with_io_wrap(
-        operation="write",
-        func=lambda: get_writer(**config_kwargs).write(graph, target, **write_kwargs),
-        error_cls=WriteError,
-        context={
-            "target": str(target),
-            "writer_type": format_type,
-        },
-    )
+    writer = get_writer(**config_kwargs)
+    return writer.write(graph, target, **write_kwargs)
 
 
 __all__ = ["read_data", "write_data"]

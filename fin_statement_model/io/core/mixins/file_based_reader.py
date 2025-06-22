@@ -51,9 +51,13 @@ class FileBasedReader(DataReader, ABC):
 
         Args:
             path: The file path to validate.
-            valid_extensions: Optional tuple of allowed extensions.  If *None*,
-                the class-level :pyattr:`file_extensions` is used.  If that is
-                also *None*, the check is skipped.
+            valid_extensions: **Rarely needed.**  By default the method falls
+                back to the calling subclass' :pyattr:`file_extensions` class
+                attribute.  Passing a tuple here is only required for edge
+                cases (e.g. runtime-determined extensions) and should **not**
+                be used from normal reader implementations – this keeps the
+                extension contract declarative and discoverable at the class
+                definition site.
         """
         exts = (
             valid_extensions if valid_extensions is not None else self.file_extensions

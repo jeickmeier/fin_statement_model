@@ -20,7 +20,10 @@ from fin_statement_model.io.core import (
     register_writer,
 )
 from fin_statement_model.io.exceptions import ReadError, WriteError
-from fin_statement_model.io.config.models import BaseReaderConfig, BaseWriterConfig
+from fin_statement_model.io.config.models import (
+    GraphDefinitionReaderConfig,
+    GraphDefinitionWriterConfig,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +34,7 @@ SerializedNode = dict[str, Any]
 # ===== Reader Implementation =====
 
 
-@register_reader("graph_definition_dict", schema=BaseReaderConfig)
+@register_reader("graph_definition_dict", schema=GraphDefinitionReaderConfig)
 class GraphDefinitionReader(DataReader):
     """Reads a graph definition dictionary to reconstruct a Graph object.
 
@@ -39,7 +42,7 @@ class GraphDefinitionReader(DataReader):
     and loads adjustments.
     """
 
-    def __init__(self, cfg: Optional[Any] = None) -> None:
+    def __init__(self, cfg: Optional[GraphDefinitionReaderConfig] = None) -> None:
         """Initialize the GraphDefinitionReader. Config currently unused."""
         self.cfg = cfg
 
@@ -225,7 +228,7 @@ class GraphDefinitionReader(DataReader):
 # ===== Writer Implementation =====
 
 
-@register_writer("graph_definition_dict", schema=BaseWriterConfig)
+@register_writer("graph_definition_dict", schema=GraphDefinitionWriterConfig)
 class GraphDefinitionWriter(DataWriter):
     """Writes the full graph definition (nodes, periods, adjustments) to a dictionary.
 
@@ -233,7 +236,7 @@ class GraphDefinitionWriter(DataWriter):
     for saving and reloading the entire model state.
     """
 
-    def __init__(self, cfg: Optional[BaseWriterConfig] = None) -> None:
+    def __init__(self, cfg: Optional[GraphDefinitionWriterConfig] = None) -> None:
         """Initialize the GraphDefinitionWriter."""
         self.cfg = cfg
 
@@ -277,6 +280,12 @@ class GraphDefinitionWriter(DataWriter):
             "adjustments": [],
         }
 
+        # Determine strictness: runtime kwarg overrides config default
+        strict_cfg = True
+        if isinstance(self.cfg, GraphDefinitionWriterConfig):
+            strict_cfg = self.cfg.strict
+        strict = kwargs.get("strict", strict_cfg)
+
         try:
             # 1. Serialize Periods
             graph_definition["periods"] = list(graph.periods)
@@ -286,12 +295,22 @@ class GraphDefinitionWriter(DataWriter):
             for node_name, node in graph.nodes.items():
                 node_dict = self._serialize_node(node)
                 if node_dict is None:
-                    raise WriteError(
-                        message=f"Failed to serialize node '{node_name}'. Aborting export.",
-                        target="graph_definition_dict",
-                        writer_type="GraphDefinitionWriter",
+                    if strict:
+                        raise WriteError(
+                            message=f"Failed to serialize node '{node_name}'. Aborting export (strict mode).",
+                            target="graph_definition_dict",
+                            writer_type="GraphDefinitionWriter",
+                        )
+                    logger.warning(
+                        "Skipping node '%s' due to serialization error (strict=%s).",
+                        node_name,
+                        strict,
                     )
-                serialized_nodes[node_name] = node_dict
+                else:
+                    serialized_nodes[node_name] = node_dict
+
+            # Persist nodes into graph_definition
+            graph_definition["nodes"] = serialized_nodes
 
             # 3. Serialize Adjustments
             adjustments = graph.list_all_adjustments()

@@ -7,10 +7,10 @@ implementations (ExcelWriter, DictWriter, etc.).
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, Any
 import pandas as pd
 
-from fin_statement_model.io.core.mixins import DataFrameBasedWriter, handle_write_errors
+from fin_statement_model.io.core.mixins import DataFrameBasedWriter
 from fin_statement_model.core.graph import Graph
 
 
@@ -20,7 +20,6 @@ class BaseTableWriter(DataFrameBasedWriter):
     # ------------------------------------------------------------------
     # Reusable helpers used by concrete writers
     # ------------------------------------------------------------------
-    @handle_write_errors()
     def to_dataframe(
         self,
         graph: Graph,
@@ -37,7 +36,6 @@ class BaseTableWriter(DataFrameBasedWriter):
         periods_sorted = sorted(graph.periods) if graph.periods else []
         return pd.DataFrame.from_dict(data, orient="index", columns=periods_sorted)
 
-    @handle_write_errors()
     def to_dict(
         self,
         graph: Graph,
@@ -51,6 +49,24 @@ class BaseTableWriter(DataFrameBasedWriter):
         return self.extract_graph_data(
             graph, include_nodes=include_nodes, calculate=True
         )
+
+    # ------------------------------------------------------------------
+    # Param-resolution helper shared by all writers
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _param(
+        name: str,
+        overrides: dict[str, Any],
+        cfg: Any | None,
+        *,
+        default: Any = None,
+    ) -> Any:  # noqa: D401
+        """Return effective value for *name* with precedence: overrides → cfg → default."""
+        if name in overrides:
+            return overrides[name]
+        if cfg is not None and hasattr(cfg, name):
+            return getattr(cfg, name)
+        return default
 
 
 __all__ = ["BaseTableWriter"]

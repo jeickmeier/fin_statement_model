@@ -33,29 +33,32 @@ def handle_read_errors(source_attr: str = "source") -> Callable[[F], F]:
             except ReadError:
                 raise  # Re-raise as-is so callers can pattern-match
             except FileNotFoundError as e:
-                raise ReadError(
+                err = ReadError(
                     f"File not found: {source}",
                     source=str(source),
                     reader_type=self.__class__.__name__,
                     original_error=e,
-                ) from e
+                )
+                raise err.with_traceback(e.__traceback__) from e
             except ValueError as e:
-                raise ReadError(
+                err = ReadError(
                     f"Invalid value encountered: {e}",
                     source=str(source),
                     reader_type=self.__class__.__name__,
                     original_error=e,
-                ) from e
+                )
+                raise err.with_traceback(e.__traceback__) from e
             except (
                 Exception
             ) as e:  # noqa: BLE001 – We really want to catch *everything* here.
                 logger.error("Failed to read from %s: %s", source, e, exc_info=True)
-                raise ReadError(
+                err = ReadError(
                     f"Failed to process source: {e}",
                     source=str(source),
                     reader_type=self.__class__.__name__,
                     original_error=e,
-                ) from e
+                )
+                raise err.with_traceback(e.__traceback__) from e
 
         return wrapper  # type: ignore[return-value]
 
@@ -76,12 +79,13 @@ def handle_write_errors(target_attr: str = "target") -> Callable[[F], F]:
                 raise
             except Exception as e:  # noqa: BLE001
                 logger.error("Failed to write to %s: %s", target, e, exc_info=True)
-                raise WriteError(
+                err = WriteError(
                     f"Failed to write data: {e}",
                     target=str(target) if target else "unknown",
                     writer_type=self.__class__.__name__,
                     original_error=e,
-                ) from e
+                )
+                raise err.with_traceback(e.__traceback__) from e
 
         return wrapper  # type: ignore[return-value]
 
