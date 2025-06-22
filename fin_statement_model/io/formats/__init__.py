@@ -17,6 +17,8 @@ from .fmp_reader import FmpReader  # noqa: F401
 from .markdown_writer import MarkdownWriter  # noqa: F401
 
 __all__ = [
+    # API
+    "FmpReader",
     # CSV
     "CsvReader",
     # DataFrame
@@ -28,8 +30,6 @@ __all__ = [
     # Excel
     "ExcelReader",
     "ExcelWriter",
-    # API
-    "FmpReader",
     # Markdown
     "MarkdownWriter",
 ]

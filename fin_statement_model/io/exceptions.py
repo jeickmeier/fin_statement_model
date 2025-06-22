@@ -1,4 +1,14 @@
-"""IO specific exceptions."""
+"""Custom exceptions for the I/O subpackage.
+
+This module defines a hierarchy of custom exception classes for handling errors
+that occur within the `fin_statement_model.io` package. All exceptions inherit
+from a common `IOError` base class, which in turn inherits from the library's
+top-level `FinancialModelError`.
+
+This allows for granular error handling, where callers can catch specific
+exceptions like `ReadError` or `FormatNotSupportedError`, or catch all I/O-related
+errors by trapping `IOError`.
+"""
 
 from typing import Optional
 

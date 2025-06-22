@@ -1,4 +1,16 @@
-"""Base classes for data readers and writers."""
+"""Abstract base classes for data readers and writers.
+
+This module defines the fundamental contracts for all I/O operations in the
+financial statement model library. It provides two abstract base classes:
+
+- `DataReader`: Defines the interface for all classes that read data from
+  various sources (e.g., files, APIs) and populate a `Graph` object.
+- `DataWriter`: Defines the interface for all classes that write data from a
+  `Graph` object to various destinations.
+
+These classes ensure that all I/O handlers adhere to a consistent, predictable
+API, centered around the `read()` and `write()` methods.
+"""
 
 from abc import ABC, abstractmethod
 from typing import Any
@@ -10,8 +22,11 @@ from fin_statement_model.core.graph import Graph
 class DataReader(ABC):
     """Abstract base class for all data readers.
 
-    Defines the interface for classes that read data from various sources
-    and typically populate or return a Graph object.
+    This ABC defines the contract for all reader classes in the I/O subpackage.
+    Any class that reads data from an external source (like a file or API) and
+    transforms it into a `Graph` object should inherit from `DataReader`.
+
+    Subclasses must implement the `read` method.
     """
 
     @abstractmethod
@@ -36,7 +51,11 @@ class DataReader(ABC):
 class DataWriter(ABC):
     """Abstract base class for all data writers.
 
-    Defines the interface for classes that write graph data to various targets.
+    This ABC defines the contract for all writer classes in the I/O subpackage.
+    Any class that serializes a `Graph` object into an external format (like a
+    file or a dictionary) should inherit from `DataWriter`.
+
+    Subclasses must implement the `write` method.
     """
 
     @abstractmethod

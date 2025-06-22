@@ -214,7 +214,8 @@ class ValidationMixin:  # pylint: disable=too-many-public-methods
     # Node-name helper ---------------------------------------------------
     def validate_node_name(
         self, node_name: Any, *, allow_empty: bool = False
-    ) -> tuple[bool, Optional[str]]:  # noqa: D401
+    ) -> tuple[bool, Optional[str]]:
+        """Validate a node name, ensuring it is not empty."""
         import pandas as pd
 
         if pd.isna(node_name) or node_name is None:
@@ -230,7 +231,8 @@ class ValidationMixin:  # pylint: disable=too-many-public-methods
         source_identifier: str,
         *,
         operation: str = "processing",
-    ) -> str:  # noqa: D401
+    ) -> str:
+        """Create a concise summary message from a validation collector."""
         if not collector.has_errors():
             return f"Successfully completed {operation} {source_identifier}"
         errors = "; ".join(collector.errors[:5])

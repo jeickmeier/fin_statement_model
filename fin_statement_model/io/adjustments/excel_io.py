@@ -1,4 +1,29 @@
-"""Functions for bulk import and export of adjustments via Excel files."""
+"""Functions for bulk import and export of adjustments via Excel files.
+
+This module provides high-level functions and a dedicated reader class for handling
+the import and export of financial adjustments from and to Microsoft Excel files.
+The expected Excel format consists of specific columns that map to the fields of
+an `Adjustment` object.
+
+The required columns are:
+- `node_name`: The name of the node to which the adjustment applies.
+- `period`: The period (e.g., '2023-12-31') for the adjustment.
+- `value`: The numeric value of the adjustment.
+- `reason`: A string explaining the reason for the adjustment.
+
+A range of optional columns are also supported, including `type`, `tags`, `scenario`,
+`start_period`, `end_period`, `priority`, and `user`.
+
+The primary functions are:
+- `load_adjustments_from_excel`: Reads adjustments from an Excel file and applies them
+  to a `Graph` instance.
+- `export_adjustments_to_excel`: Exports all adjustments from a `Graph` instance
+  to an Excel file, grouping them by scenario into separate sheets.
+- `read_excel`: A lower-level function to parse an Excel file into a list of
+  `Adjustment` objects and an error report, without modifying a graph.
+- `write_excel`: A lower-level function to write a list of `Adjustment` objects
+  to an Excel file.
+"""
 
 import logging
 from typing import Any, cast, Iterable
@@ -84,7 +109,15 @@ class _FileValidationMixin:
 
     file_extensions: tuple[str, ...] | None = None
 
-    def validate_file_exists(self, path: str) -> None:  # noqa: D401
+    def validate_file_exists(self, path: str) -> None:
+        """Check if a file exists at the given path.
+
+        Args:
+            path: The path to the file.
+
+        Raises:
+            ReadError: If the file is not found at the specified path.
+        """
         import os
 
         if not os.path.exists(path):
@@ -96,7 +129,22 @@ class _FileValidationMixin:
 
     def validate_file_extension(
         self, path: str, valid_extensions: tuple[str, ...] | None = None
-    ) -> None:  # noqa: D401
+    ) -> None:
+        """Check if a file's extension is in a list of valid extensions.
+
+        This method checks if the file at `path` has an extension that is present
+        in the `valid_extensions` tuple. The comparison is case-insensitive. If
+        `valid_extensions` is not provided, it falls back to the `file_extensions`
+        class attribute.
+
+        Args:
+            path: The path to the file.
+            valid_extensions: An optional tuple of allowed extensions (e.g., ('.xls', '.xlsx')).
+                If not provided, the class's `file_extensions` attribute is used.
+
+        Raises:
+            ReadError: If the file has an invalid extension.
+        """
         exts = valid_extensions or self.file_extensions
         if not exts:
             return
@@ -127,7 +175,29 @@ class AdjustmentsExcelReader(_FileValidationMixin):
     def read(
         self, source: str | Path, **_kw: Any
     ) -> tuple[list[Adjustment], pd.DataFrame]:
-        """Return list of valid adjustments + error-report DataFrame."""
+        """Read and parse adjustments from an Excel file.
+
+        This method validates the file's existence and extension, then reads the
+        first sheet into a pandas DataFrame. It normalizes column names, validates
+        that all required columns are present, and then processes each row.
+
+        Each row is parsed and validated against the `AdjustmentRowModel`. Valid
+        rows are converted to `Adjustment` objects, while invalid rows are
+        collected into an error report.
+
+        Args:
+            source (str | Path): The path to the Excel file.
+            **_kw (Any): Unused keyword arguments, present for interface compatibility.
+
+        Returns:
+            tuple[list[Adjustment], pd.DataFrame]: A tuple containing:
+                - A list of valid `Adjustment` objects.
+                - A pandas DataFrame containing rows that failed validation,
+                  along with an 'error' column detailing the issues.
+
+        Raises:
+            ReadError: If the file cannot be found, read, or is missing required columns.
+        """
 
         path_str = str(source)
 
@@ -193,13 +263,19 @@ class AdjustmentsExcelReader(_FileValidationMixin):
 def read_excel(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
     """Read adjustments from an Excel file.
 
+    This function serves as a convenient wrapper around `AdjustmentsExcelReader`.
+    It reads adjustment data from the specified Excel file and separates the
+    data into valid `Adjustment` objects and a report of rows that failed
+    validation.
+
     Args:
         path: Path to the Excel file.
 
     Returns:
-        tuple[list[Adjustment], pd.DataFrame]:
-            1. List of successfully parsed adjustments (added to the graph).
-            2. Error report DataFrame (empty if no row-level errors).
+        A tuple containing:
+            - A list of successfully parsed `Adjustment` objects.
+            - A pandas DataFrame containing rows that failed validation. This
+              DataFrame will be empty if all rows were valid.
     """
     return AdjustmentsExcelReader().read(path)
 
@@ -207,15 +283,17 @@ def read_excel(path: str | Path) -> tuple[list[Adjustment], pd.DataFrame]:
 def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:
     """Write a list of adjustments to an Excel file.
 
-    Writes adjustments to separate sheets based on their scenario.
-    The columns will match the optional fields defined for reading.
+    This function takes a list of `Adjustment` objects, groups them by their
+    `scenario` attribute, and writes each group to a separate sheet in an
 
     Args:
         adjustments: A list of Adjustment objects to write.
-        path: Path for the output Excel file.
+        path: The path to the output Excel file. The directory will be created
+              if it does not exist.
 
     Raises:
-        WriteError: If writing to the file fails.
+        WriteError: If writing to the file fails for any reason, such as
+            permission errors or issues with the underlying Excel engine.
     """
     file_path = Path(path)
     logger.info(f"Writing {len(adjustments)} adjustments to Excel file: {file_path}")
@@ -277,16 +355,25 @@ def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:
 def load_adjustments_from_excel(
     graph: Graph, path: str | Path, replace: bool = False
 ) -> tuple[list[Adjustment], pd.DataFrame]:
-    """Reads adjustments from Excel and adds them to the graph.
+    """Read adjustments from Excel and add them to the graph.
+
+    This is a convenience function that orchestrates reading adjustments from an
+    Excel file and loading them into a `Graph`'s `AdjustmentManager`.
 
     Args:
         graph: The Graph instance to add adjustments to.
         path: Path to the Excel file.
-        replace: If True, clear existing adjustments in the manager before adding new ones.
+        replace: If True, all existing adjustments in the graph's
+            `AdjustmentManager` will be cleared before adding the new ones.
+            Defaults to False.
 
     Returns:
-        tuple[list[Adjustment], pd.DataFrame]: The error report DataFrame from `read_excel`.
-                   Empty if no errors occurred.
+        A tuple containing:
+            - A list of valid `Adjustment` objects that were successfully
+              read from the file (some of which may have failed to be added
+              to the graph).
+            - A pandas DataFrame containing rows from the Excel file that
+              failed initial validation.
     """
     logger.info(
         f"Loading adjustments from Excel ({path}) into graph. Replace={replace}"
@@ -322,10 +409,13 @@ def load_adjustments_from_excel(
 
 
 def export_adjustments_to_excel(graph: Graph, path: str | Path) -> None:
-    """Exports all adjustments from the graph to an Excel file.
+    """Export all adjustments from the graph to an Excel file.
+
+    This is a convenience function that retrieves all adjustments from a `Graph`
+    instance and writes them to a specified Excel file using `write_excel`.
 
     Args:
-        graph: The Graph instance containing adjustments.
+        graph: The `Graph` instance containing the adjustments to export.
         path: Path for the output Excel file.
     """
     logger.info(f"Exporting all adjustments from graph to Excel ({path}).")

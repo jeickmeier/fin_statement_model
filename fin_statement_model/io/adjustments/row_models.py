@@ -1,3 +1,12 @@
+"""Pydantic model for validating and parsing a single row from an adjustments Excel file.
+
+This module defines the `AdjustmentRowModel`, which is used by the Excel IO
+functionality to validate the structure and data types of each row read from
+an adjustments file. It uses Pydantic validators to handle type coercion and
+enforce constraints, converting raw input into a validated object that can then
+be transformed into the core `Adjustment` model.
+"""
+
 from __future__ import annotations
 
 from uuid import UUID
@@ -14,7 +23,28 @@ from fin_statement_model.core.adjustments.models import (
 
 
 class AdjustmentRowModel(BaseModel):
-    """Model for validating a single adjustment row from Excel."""
+    """A Pydantic model for validating a single row from an adjustments spreadsheet.
+
+    This class defines the expected structure of a row when importing adjustments.
+    It includes fields for all required and optional `Adjustment` attributes,
+    and uses validators to parse and clean the raw input data (e.g., converting
+    a comma-separated string of tags into a set).
+
+    Attributes:
+        node_name: The name of the target node for the adjustment.
+        period: The target period for the adjustment.
+        value: The numeric value of the adjustment.
+        reason: A textual description of the reason for the adjustment.
+        type: The type of adjustment (e.g., 'additive', 'multiplicative').
+        tags: A set of tags for categorizing the adjustment.
+        scale: A scaling factor for the adjustment (0.0 to 1.0).
+        scenario: The scenario this adjustment belongs to.
+        start_period: The first period the adjustment is active.
+        end_period: The last period the adjustment is active.
+        priority: The priority level of the adjustment.
+        user: The user who created the adjustment.
+        id: A unique identifier for the adjustment.
+    """
 
     model_config = ConfigDict(populate_by_name=True, extra="ignore")
 
@@ -76,8 +106,16 @@ class AdjustmentRowModel(BaseModel):
             raise ValueError(f"Invalid UUID for id: {v}")
 
     def to_adjustment(self) -> Adjustment:
-        """
-        Convert this row model into the core Adjustment model.
+        """Convert this row model into the core `Adjustment` model.
+
+        This method transforms the validated row data into an `Adjustment` object,
+        which is the canonical representation used throughout the financial model.
+        It handles the conversion by dumping the model's data and instantiating
+        an `Adjustment` with it. Fields with `None` values are excluded to allow
+        the `Adjustment` model's default values to be applied.
+
+        Returns:
+            An `Adjustment` instance corresponding to the data in this row model.
         """
         data = self.model_dump()
         # Remove None values to allow core model defaults

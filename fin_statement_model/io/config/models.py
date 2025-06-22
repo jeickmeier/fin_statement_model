@@ -1,6 +1,15 @@
-"""Pydantic models for IO reader and writer configuration.
+"""Pydantic models for I/O reader and writer configuration.
 
-This module provides declarative schemas for validating configuration passed to IO readers.
+This module defines a suite of Pydantic models that serve as declarative schemas
+for configuring the various data readers and writers within the `fin_statement_model.io`
+package. These models ensure that all configuration passed to I/O components is
+well-formed, validated, and type-safe.
+
+Each reader and writer (e.g., for CSV, Excel, FMP API) has a corresponding
+configuration model (e.g., `CsvReaderConfig`, `ExcelWriterConfig`). These models
+define format-specific options, handle default values, and can perform complex
+validation logic, providing a robust and predictable interface for data import
+and export operations.
 """
 
 from __future__ import annotations
@@ -83,7 +92,7 @@ class CsvReaderConfig(BaseReaderConfig):
 
     @model_validator(mode="after")  # type: ignore[arg-type]
     def check_header_row(cls, cfg: CsvReaderConfig) -> CsvReaderConfig:
-        """Ensure header_row is at least 1."""
+        """Ensure `header_row` is a positive integer."""
         if cfg.header_row < 1:
             raise ValueError("header_row must be >= 1")
         return cfg
@@ -124,7 +133,7 @@ class ExcelReaderConfig(BaseReaderConfig):
 
     @model_validator(mode="after")  # type: ignore[arg-type]
     def check_indices(cls, cfg: ExcelReaderConfig) -> ExcelReaderConfig:
-        """Ensure indices are valid and header/period rows are exclusive."""
+        """Ensure indices are valid and that `header_row` and `periods_row` are exclusive."""
         if cfg.items_col < 1 or cfg.periods_row < 1:
             raise ValueError("items_col and periods_row must be >= 1")
 
@@ -164,7 +173,7 @@ class FmpReaderConfig(BaseReaderConfig):
 
     @field_validator("api_key", mode="before")
     def load_api_key_env(cls, value: Optional[str]) -> Optional[str]:
-        """Cascade lookup: explicit param → env → global config."""
+        """Load API key by cascading through explicit param, env var, and global config."""
         if value:
             return value
         import os
@@ -173,7 +182,7 @@ class FmpReaderConfig(BaseReaderConfig):
 
     @model_validator(mode="after")  # type: ignore[arg-type]
     def check_api_key(cls, cfg: FmpReaderConfig) -> FmpReaderConfig:
-        """Ensure an API key is provided."""
+        """Ensure an API key is provided after attempting to load from all sources."""
         if not cfg.api_key:
             raise ValueError("api_key is required (env var FMP_API_KEY or param)")
         return cfg

@@ -1,4 +1,14 @@
-"""Data reader for the Financial Modeling Prep (FMP) API."""
+"""Data reader for the Financial Modeling Prep (FMP) API.
+
+This module provides the `FmpReader`, a `DataReader` for fetching financial
+statement data directly from the Financial Modeling Prep API. It can retrieve
+income statements, balance sheets, and cash flow statements for a given stock
+ticker.
+
+The reader handles API key validation, endpoint construction, and the transformation
+of the JSON response into a `Graph` object. It also supports mapping of API field
+names to the library's canonical node names.
+"""
 
 import logging
 import requests
@@ -29,21 +39,34 @@ logger = logging.getLogger(__name__)
 class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
     """Reads financial statement data from the FMP API into a Graph.
 
-    Fetches data for a specific ticker and statement type.
-    Requires an API key, either passed directly or via the FMP_API_KEY env var.
+    Fetches data for a specific ticker and statement type (income statement,
+    balance sheet, or cash flow). Requires a valid FMP API key, which can be
+    provided via configuration, an environment variable (`FMP_API_KEY`), or
+    at runtime.
 
-    Supports a `mapping_config` constructor parameter for mapping API field names to canonical node names,
-    accepting either a flat mapping or a statement-type keyed mapping.
+    This reader supports mapping of FMP's API field names to the library's
+    canonical node names. A default mapping is provided, but it can be
+    customized via the `mapping_config` parameter in the `FmpReaderConfig`.
+    It also provides a fallback mechanism to convert unmapped `camelCase` API
+    fields to `snake_case`.
 
-    Configuration (api_key, statement_type, period_type, limit, mapping_config)
-    is passed via an `FmpReaderConfig` object during initialization (typically by
-    the `read_data` facade). The `.read()` method currently takes no specific
-    keyword arguments beyond the `source` (ticker).
+    Configuration is provided via an `FmpReaderConfig` object.
 
-    Stateful Use:
-        For advanced use cases involving repeated API calls, consider instantiating
-        and reusing a single `FmpReader` instance to avoid redundant API key
-        validations and improve performance.
+    For advanced use cases involving repeated API calls, a single `FmpReader`
+    instance can be reused to leverage caching of API key validation.
+
+    Example:
+        ```python
+        # from fin_statement_model.io import read_data
+        # # Fetch Apple's annual income statement
+        # config = {
+        #     "statement_type": "income_statement",
+        #     "period_type": "FY",
+        #     "limit": 5,
+        #     "api_key": "YOUR_FMP_API_KEY",
+        # }
+        # graph = read_data(format_type="fmp", source="AAPL", config=config)
+        ```
     """
 
     # Base URL components – keeping version separate for easier future upgrade.

@@ -50,19 +50,23 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
     # ------------------------------------------------------------------
     # Context helpers
     # ------------------------------------------------------------------
-    def set_config_context(self, **context: Any) -> None:  # noqa: D401
+    def set_config_context(self, **context: Any) -> None:
+        """Set key-value pairs in the configuration context."""
         self._config_context.update(context)
 
-    def get_config_context(self) -> dict[str, Any]:  # noqa: D401
+    def get_config_context(self) -> dict[str, Any]:
+        """Get a copy of the configuration context."""
         return self._config_context.copy()
 
     # ------------------------------------------------------------------
     # Override helpers
     # ------------------------------------------------------------------
-    def set_config_override(self, key: str, value: Any) -> None:  # noqa: D401
+    def set_config_override(self, key: str, value: Any) -> None:
+        """Set a runtime configuration override."""
         self._config_overrides[key] = value
 
-    def clear_config_overrides(self) -> None:  # noqa: D401
+    def clear_config_overrides(self) -> None:
+        """Clear all runtime configuration overrides."""
         self._config_overrides.clear()
 
     # ------------------------------------------------------------------
@@ -76,7 +80,8 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
         required: bool = False,
         value_type: Optional[type] = None,
         validator: Optional[Callable[[Any], bool]] = None,
-    ) -> Any:  # noqa: D401,PLR0913
+    ) -> Any:
+        """Get a configuration value, with optional validation."""
         # Override precedence
         if key in self._config_overrides:
             value = self._config_overrides[key]
@@ -130,7 +135,8 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
         *,
         value_type: Optional[type] = None,
         validator: Optional[Callable[[Any], bool]] = None,
-    ) -> Any:  # noqa: D401
+    ) -> Any:
+        """Get a required configuration value."""
         return self.get_config_value(
             key, required=True, value_type=value_type, validator=validator
         )
@@ -145,7 +151,8 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
         *,
         default: Any = None,
         value_type: Optional[type] = None,
-    ) -> Any:  # noqa: D401
+    ) -> Any:
+        """Get a configuration value, falling back to an environment variable."""
         import os
 
         value = self.get_config_value(key)
@@ -174,7 +181,8 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
     # ------------------------------------------------------------------
     # Introspection helpers
     # ------------------------------------------------------------------
-    def validate_configuration(self) -> "ValidationResultCollector":  # noqa: D401
+    def validate_configuration(self) -> "ValidationResultCollector":
+        """Validate the handler's configuration object."""
         collector = ValidationResultCollector(context=self._config_context)
         if not hasattr(self, "cfg") or self.cfg is None:
             collector.add_result(
@@ -202,7 +210,8 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
             )
         return collector
 
-    def get_effective_configuration(self) -> dict[str, Any]:  # noqa: D401
+    def get_effective_configuration(self) -> dict[str, Any]:
+        """Get the effective configuration, including overrides."""
         cfg_dict: dict[str, Any] = {}
         if hasattr(self, "cfg") and self.cfg is not None:
             if hasattr(self.cfg, "model_dump"):
@@ -212,7 +221,8 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
         cfg_dict.update(self._config_overrides)
         return cfg_dict
 
-    def merge_configurations(self, *configs: Any) -> dict[str, Any]:  # noqa: D401
+    def merge_configurations(self, *configs: Any) -> dict[str, Any]:
+        """Merge multiple configuration sources into a single dictionary."""
         merged: dict[str, Any] = {}
         for cfg in configs:
             if cfg is None:

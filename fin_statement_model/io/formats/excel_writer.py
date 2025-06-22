@@ -1,4 +1,10 @@
-"""Data writer for Excel files."""
+"""Data writer for exporting graph data to Microsoft Excel files.
+
+This module provides the `ExcelWriter`, a `DataWriter` implementation that
+serializes a `Graph` object into a Microsoft Excel file (`.xlsx`). It first
+converts the graph data to a pandas DataFrame and then uses pandas' Excel
+writing capabilities.
+"""
 
 import logging
 from pathlib import Path
@@ -19,11 +25,13 @@ logger = logging.getLogger(__name__)
 class ExcelWriter(BaseTableWriter, ConfigurationMixin):
     """Writes graph data to an Excel file.
 
-    Converts the graph data to a pandas DataFrame first (using `DataFrameWriter`),
-    then writes that DataFrame to an Excel file using `pandas.to_excel()`.
+    This writer serializes a `Graph` object to a Microsoft Excel file. The process
+    involves an intermediate step of converting the graph data into a pandas
+    DataFrame, with node names as the index and periods as columns.
 
-    Configuration (sheet_name, recalculate, include_nodes, excel_writer_kwargs) is
-    provided via an `ExcelWriterConfig` object during initialization.
+    The behavior of the writer, such as the output sheet name and whether to
+    recalculate the graph, is controlled by an `ExcelWriterConfig` object.
+    Additional pandas-specific options can also be passed.
     """
 
     def __init__(self, cfg: ExcelWriterConfig) -> None:
@@ -41,7 +49,7 @@ class ExcelWriter(BaseTableWriter, ConfigurationMixin):
 
         Args:
             graph (Graph): The Graph object containing the data to write.
-            target (str): Path to the target Excel file.
+            target (Any): Path to the target Excel file.
             **kwargs: Optional runtime overrides of configured defaults:
                 sheet_name (str): Excel sheet name.
                 recalculate (bool): Whether to recalculate graph before export.

@@ -19,7 +19,8 @@ class ValueExtractionMixin:
 
     def extract_node_value(
         self, node: Any, period: str, *, calculate: bool = True
-    ) -> Optional[float]:  # noqa: D401
+    ) -> Optional[float]:
+        """Extract a numeric value from a graph node for a specific period."""
         try:
             if hasattr(node, "values") and isinstance(node.values, dict):
                 val = node.values.get(period)
@@ -51,7 +52,8 @@ class DataFrameBasedWriter(ValueExtractionMixin, DataWriter, ABC):
         *,
         include_nodes: Optional[list[str]] = None,
         calculate: bool = True,
-    ) -> dict[str, dict[str, float]]:  # noqa: D401
+    ) -> dict[str, dict[str, float]]:
+        """Extract all node data from a graph into a nested dictionary."""
         periods = sorted(graph.periods) if graph.periods else []
         data: dict[str, dict[str, float]] = {}
         nodes = include_nodes if include_nodes else list(graph.nodes.keys())
@@ -73,7 +75,19 @@ class DataFrameBasedWriter(ValueExtractionMixin, DataWriter, ABC):
 
     # concrete writers override --------------------------------------------------
     @abstractmethod
-    def write(
-        self, graph: Graph, target: Any = None, **kwargs: Any
-    ) -> Any:  # noqa: D401
-        """Write graph data to *target* – must be implemented by subclasses."""
+    def write(self, graph: Graph, target: Any = None, **kwargs: Any) -> Any:
+        """Write graph data to a target.
+
+        Subclasses must implement the logic to write the graph data to the
+        specified target, which could be a file path or an in-memory object.
+
+        Args:
+            graph: The `Graph` object to write.
+            target: The destination for the write operation.
+            **kwargs: Additional format-specific options.
+
+        Returns:
+            The result of the write operation, which could be None for file-based
+            writers or an object (e.g., a DataFrame) for in-memory writers.
+        """
+        raise NotImplementedError

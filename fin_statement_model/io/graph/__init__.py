@@ -11,7 +11,7 @@ from .cells_io import import_from_cells
 __all__ = [
     "GraphDefinitionReader",
     "GraphDefinitionWriter",
+    "import_from_cells",
     "load_graph_definition",
     "save_graph_definition",
-    "import_from_cells",
 ]

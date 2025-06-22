@@ -1,7 +1,17 @@
-"""Registry system for managing IO format handlers.
+"""Registry system for managing I/O format handlers.
 
-This module provides a generic registry implementation and specific registries
-for readers and writers, along with registration decorators and access functions.
+This module provides a generic `HandlerRegistry` class and specific, pre-configured
+instances for managing `DataReader` and `DataWriter` classes. It allows for a
+decoupled, extensible I/O system where new formats can be added without
+modifying the core logic.
+
+The key features are:
+- `register_reader` and `register_writer` decorators for associating a handler
+  class with a format identifier (e.g., 'csv').
+- A mandatory Pydantic schema for each handler, ensuring that all configurations
+  are validated before a handler is instantiated.
+- `get_reader` and `get_writer` functions that look up a handler, validate the
+  provided configuration against its schema, and return an initialized instance.
 """
 
 import logging

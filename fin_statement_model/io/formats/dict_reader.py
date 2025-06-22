@@ -1,4 +1,4 @@
-"""Dictionary → Graph reader.
+"""Data reader for Python dictionaries.
 
 This refactor removes the bespoke validation loop and instead leverages the
 shared :class:`ValidationMixin` helpers used by other tabular readers.  The
@@ -51,11 +51,30 @@ class DictReader(DataReader, ValidationMixin, ConfigurationMixin):
 
     @handle_read_errors()
     def read(self, source: dict[str, dict[str, float]], **kwargs: Any) -> Graph:
-        """Convert *source* mapping into a :class:`Graph`.
+        """Read data from a dictionary and create a new Graph.
 
-        The function relies on :class:`ValidationMixin` to perform
-        type/structure checks and raises :class:`ReadError` with a condensed
-        validation summary if any problem is detected.
+        This method expects the source dictionary to have a specific structure:
+        `{node_name: {period: value, ...}, ...}`.
+
+        It validates the structure of the input dictionary and the types of its
+        keys and values. If any validation errors are found, it raises a `ReadError`
+        with a detailed summary.
+
+        If the data is valid, it constructs a new `Graph` object, populates it with
+        `FinancialStatementItemNode` instances created from the dictionary data,
+        and returns it.
+
+        Args:
+            source: A dictionary containing the graph data.
+            **kwargs: Optional runtime arguments, such as `periods` to specify
+                which periods to include in the resulting graph.
+
+        Returns:
+            A new `Graph` object populated with the data from the source dictionary.
+
+        Raises:
+            ReadError: If the source dictionary has an invalid format or contains
+                non-numeric values.
         """
 
         # 1. Basic structure validation ------------------------------------------------

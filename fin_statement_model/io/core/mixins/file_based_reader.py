@@ -36,7 +36,8 @@ class FileBasedReader(DataReader, ABC):
     # ------------------------------------------------------------------
     # Validation helpers
     # ------------------------------------------------------------------
-    def validate_file_exists(self, path: str) -> None:  # noqa: D401
+    def validate_file_exists(self, path: str) -> None:
+        """Check if a file exists at the given path."""
         if not os.path.exists(path):
             raise ReadError(
                 f"File not found: {path}",
@@ -46,7 +47,7 @@ class FileBasedReader(DataReader, ABC):
 
     def validate_file_extension(
         self, path: str, valid_extensions: tuple[str, ...] | None = None
-    ) -> None:  # noqa: D401
+    ) -> None:
         """Validate *path* ends with an allowed extension.
 
         Args:
@@ -76,5 +77,17 @@ class FileBasedReader(DataReader, ABC):
     # Abstract API
     # ------------------------------------------------------------------
     @abstractmethod
-    def read(self, source: str, **kwargs: Any) -> Graph:  # noqa: D401
-        """Subclasses must implement file reading logic and return a Graph."""
+    def read(self, source: str, **kwargs: Any) -> Graph:
+        """Read data from a file and return a Graph.
+
+        Subclasses must implement the file reading logic and return a `Graph`
+        object populated with the data from the source file.
+
+        Args:
+            source: The path to the source file.
+            **kwargs: Additional format-specific options for reading.
+
+        Returns:
+            A `Graph` object.
+        """
+        raise NotImplementedError

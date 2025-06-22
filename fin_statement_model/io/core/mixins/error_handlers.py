@@ -18,11 +18,32 @@ logger = logging.getLogger(__name__)
 F = TypeVar("F", bound=Callable[..., Any])
 
 
-def handle_read_errors(source_attr: str = "source") -> Callable[[F], F]:
-    """Decorator that wraps *reader* methods and converts generic exceptions.
+def handle_read_errors() -> Callable[[F], F]:
+    """Create a decorator to wrap reader methods and convert generic exceptions.
 
-    On failure it raises :class:`ReadError` enriched with context; otherwise
-    it returns the wrapped function's result unmodified.
+    This decorator is designed to be applied to the `read` method of any `DataReader`
+    subclass. It catches common exceptions that may occur during a read operation—such
+    as `FileNotFoundError` or `ValueError`—and re-raises them as a `ReadError`,
+    enriching them with contextual information like the source and reader type.
+
+    This standardization allows callers to handle all read-related failures by
+    catching a single, specific exception type.
+
+    Returns:
+        A decorator that can be applied to a reader's `read` method.
+
+    Example:
+        ```python
+        # class MyReader(DataReader):
+        #     @handle_read_errors()
+        #     def read(self, source: str, **kwargs) -> Graph:
+        #         # ... implementation that might raise FileNotFoundError, etc.
+        #         if not os.path.exists(source):
+        #             raise FileNotFoundError(f"Can't find {source}")
+        #         return Graph()
+        #
+        # # Calling MyReader().read("bad_path.txt") will raise a ReadError.
+        ```
     """
 
     def decorator(func: F) -> F:
@@ -65,8 +86,32 @@ def handle_read_errors(source_attr: str = "source") -> Callable[[F], F]:
     return decorator
 
 
-def handle_write_errors(target_attr: str = "target") -> Callable[[F], F]:
-    """Decorator that wraps *writer* methods and converts generic exceptions."""
+def handle_write_errors() -> Callable[[F], F]:
+    """Create a decorator to wrap writer methods and convert generic exceptions.
+
+    This decorator is designed to be applied to the `write` method of any `DataWriter`
+    subclass. It catches generic `Exception` instances that may occur during a write
+    operation and re-raises them as a `WriteError`, enriching them with context
+    such as the target and writer type.
+
+    This standardization allows callers to handle all write-related failures by
+    catching a single, specific exception type.
+
+    Returns:
+        A decorator that can be applied to a writer's `write` method.
+
+    Example:
+        ```python
+        # class MyWriter(DataWriter):
+        #     @handle_write_errors()
+        #     def write(self, graph: Graph, target: str, **kwargs):
+        #         # ... implementation that might raise IOError, etc.
+        #         with open(target, 'w') as f: # This could fail
+        #             f.write("data")
+        #
+        # # Calling MyWriter().write(g, "/no_permission/file.txt") will raise WriteError.
+        ```
+    """
 
     def decorator(func: F) -> F:
         @functools.wraps(func)

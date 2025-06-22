@@ -48,6 +48,7 @@ from .value_extraction import (
 from ..base_table_writer import BaseTableWriter  # noqa: F401 re-export
 
 __all__: list[str] = [
+    "BaseTableWriter",
     # Core building blocks re-exported from legacy mixins
     # (sorted roughly alphabetically for readability)
     "ConfigurationMixin",

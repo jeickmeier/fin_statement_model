@@ -1,4 +1,12 @@
-"""Data reader for pandas DataFrames."""
+"""Data reader for in-memory pandas DataFrames.
+
+This module provides the `DataFrameReader`, a `DataReader` implementation for
+reading financial data directly from a `pandas.DataFrame` object. It expects
+the data to be in a "wide" format, where rows represent items and columns
+represent periods.
+
+The reader is built on top of `DataFrameReaderBase`.
+"""
 
 import logging
 import pandas as pd
@@ -14,20 +22,53 @@ logger = logging.getLogger(__name__)
 
 @register_reader("dataframe", schema=DataFrameReaderConfig)
 class DataFrameReader(DataFrameReaderBase):
-    """Reads *wide-format* pandas DataFrames into a Graph using DataFrameReaderBase."""
+    """Reads financial data from a wide-format pandas DataFrame into a Graph.
+
+    This reader is designed to ingest data from a DataFrame where the index
+    contains the financial item names and the columns represent different periods.
+    It can also handle a specified subset of period columns.
+
+    Configuration is provided via a `DataFrameReaderConfig` object.
+
+    Attributes:
+        layout (str): Specifies the expected data layout, hardcoded to "wide".
+    """
 
     layout = "wide"
 
-    def __init__(
-        self, cfg: Optional[DataFrameReaderConfig] = None
-    ) -> None:  # noqa: D401
+    def __init__(self, cfg: Optional[DataFrameReaderConfig] = None) -> None:
+        """Initialize the DataFrameReader.
+
+        Args:
+            cfg: An optional, validated `DataFrameReaderConfig` instance.
+        """
         self.cfg = cfg
 
     # ------------------------------------------------------------------
     # WideTableReader hook implementation
     # ------------------------------------------------------------------
     def _load_dataframe(self, source: Any, **kwargs: Any) -> pd.DataFrame:
-        """Return DataFrame after optional period filtering and index reset."""
+        """Prepare the source DataFrame for parsing.
+
+        This method implements the `_load_dataframe` hook from `DataFrameReaderBase`.
+        It validates that the source is a pandas DataFrame, creates a copy, and
+        optionally filters it to include only a specified subset of period columns.
+
+        It also resets the DataFrame's index to ensure the item names are in a
+        column named 'item', which is the format expected by the base parser.
+
+        Args:
+            source (Any): The input pandas DataFrame.
+            **kwargs (Any): Additional keyword arguments, including 'periods' to
+                specify a subset of columns to read.
+
+        Returns:
+            A pandas DataFrame ready for parsing by `DataFrameReaderBase`.
+
+        Raises:
+            ReadError: If the source is not a DataFrame or if specified periods
+                are not found in the columns.
+        """
         if not isinstance(source, pd.DataFrame):
             raise ReadError(
                 "Source is not a pandas DataFrame.",

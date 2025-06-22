@@ -73,6 +73,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
 
     # private util ------------------------------------------------------
     def _resolve_long_columns(self, kwargs: dict[str, Any]) -> tuple[str, str, str]:
+        """Resolve the names of the item, period, and value columns."""
         item_col = cast(
             str,
             kwargs.get("item_col") or self.get_config_value("item_col", required=True),
@@ -90,6 +91,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
         return item_col, period_col, value_col
 
     def _resolve_wide_items_col(self, kwargs: dict[str, Any]) -> int:
+        """Resolve the 0-indexed column number for item names in wide format."""
         items_col_idx_1 = cast(
             int,
             kwargs.get(self.WIDE_REQUIRED_ATTR)
@@ -105,6 +107,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
         return items_col_idx_1 - 1  # return 0-indexed
 
     def _resolve_mapping(self, kwargs: dict[str, Any]) -> dict[str, str]:
+        """Resolve the appropriate name mapping for the current read operation."""
         ctx = kwargs.get("statement_type", self.get_config_value("statement_type"))
         return self._get_mapping(ctx)
 
@@ -170,6 +173,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
         mapping: dict[str, str],
         **kwargs: Any,
     ) -> Graph:
+        """Parse a long-format DataFrame and populate a Graph."""
         item_col, period_col, value_col = self._resolve_long_columns(kwargs)
 
         self.validate_required_columns(
@@ -223,6 +227,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
     # Wide-format parser (rows = items, columns = periods)
     # ------------------------------------------------------------------
     def _extract_periods(self, df: pd.DataFrame, items_col_idx0: int) -> list[str]:
+        """Extract period names from the columns of a wide-format DataFrame."""
         periods = [c for i, c in enumerate(df.columns) if i > items_col_idx0 and str(c)]
         return list(map(str, periods))
 
@@ -233,6 +238,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
         mapping: dict[str, str],
         **kwargs: Any,
     ) -> Graph:
+        """Parse a wide-format DataFrame and populate a Graph."""
         items_col_idx0 = self._resolve_wide_items_col(kwargs)
         self.validate_column_bounds(
             df, items_col_idx0, str(source_identifier), "items_col"

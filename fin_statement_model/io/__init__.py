@@ -2,6 +2,14 @@
 
 This package provides a unified interface for reading and writing financial model
 data from/to various formats using a registry-based approach.
+
+The subpackages are organized as follows:
+- `core`: Contains the foundational components, including base classes, the
+  handler registry, and shared mixins.
+- `formats`: Provides concrete reader and writer implementations for specific
+  data formats (e.g., CSV, Excel, API).
+- `adjustments`, `graph`, `statements`: Offer specialized, high-level I/O
+  functions for specific use cases.
 """
 
 import logging
@@ -47,17 +55,17 @@ __all__ = [
     "WriteError",
     # Specialized functions
     "export_adjustments_to_excel",
+    "import_from_cells",
+    "list_available_builtin_configs",
+    "load_adjustments_from_excel",
+    "write_statement_to_excel",
+    "write_statement_to_json",
     # Registry functions
     "get_reader",
     "get_writer",
-    "import_from_cells",
-    "list_available_builtin_configs",
     "list_readers",
     "list_writers",
-    "load_adjustments_from_excel",
     # Facade functions
     "read_data",
     "write_data",
-    "write_statement_to_excel",
-    "write_statement_to_json",
 ]

@@ -1,7 +1,8 @@
 """Graph definition serialization and deserialization.
 
 This module provides functionality to save and load complete graph definitions,
-including all nodes, periods, and adjustments.
+including all nodes, periods, and adjustments. The serialized format is a
+JSON-compatible dictionary, making it easy to store and transfer model states.
 """
 
 import logging

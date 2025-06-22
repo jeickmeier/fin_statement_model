@@ -1,7 +1,13 @@
-"""Facade functions for simplified IO operations.
+"""High-level facade functions for simplified I/O operations.
 
-This module provides the main public API for reading and writing data,
-abstracting away the complexity of the registry system.
+This module provides the main public entry points for all data reading and writing
+tasks. The `read_data` and `write_data` functions act as a simplified facade
+over the underlying registry and handler system, providing a convenient and
+consistent way to perform I/O without needing to interact directly with specific
+reader or writer classes.
+
+These functions are the recommended way for end-users to interact with the I/O
+subsystem.
 """
 
 import logging
@@ -47,10 +53,11 @@ def read_data(
             - `str`: file path (for 'excel', 'csv'), ticker symbol (for 'fmp').
             - `pd.DataFrame`: for 'dataframe'.
             - `dict`: for 'dict'.
-        **kwargs: Additional keyword arguments used for reader configuration (e.g.,
-            `api_key`, `delimiter`, `sheet_name`, `mapping_config`) and potentially
-            passed to the reader's `.read()` method (e.g., `periods`). Consult the
-            specific reader's Pydantic config model and `.read()` docstring.
+        config: Optional dictionary or Pydantic model instance for reader
+            configuration (e.g., `api_key`, `delimiter`, `sheet_name`).
+        **read_kwargs: Additional keyword arguments passed directly to the
+            reader's `.read()` method (e.g., `periods`). Consult the specific
+            reader's documentation for available options.
 
     Returns:
         Graph: A new Graph object populated with the read data.
@@ -59,6 +66,31 @@ def read_data(
         ReadError: If reading fails.
         FormatNotSupportedError: If the format_type is not registered.
         Exception: Other errors during reader initialization or reading.
+
+    Examples:
+        Reading a CSV file with a custom delimiter:
+        ```python
+        # from fin_statement_model.io import read_data
+        # # Assume 'my_data.csv' exists and is pipe-delimited
+        # graph = read_data(
+        #     format_type="csv",
+        #     source="my_data.csv",
+        #     config={"delimiter": "|"}
+        # )
+        ```
+
+        Reading from the FMP API:
+        ```python
+        # from fin_statement_model.io import read_data
+        # graph = read_data(
+        #     format_type="fmp",
+        #     source="AAPL",
+        #     config={
+        #         "statement_type": "income_statement",
+        #         "api_key": "YOUR_API_KEY",
+        #     }
+        # )
+        ```
     """
     logger.info(
         f"Attempting to read data using format '{format_type}' from source type '{type(source).__name__}'"
@@ -107,10 +139,11 @@ def write_data(
         target (Any): The destination target. Its type depends on `format_type`:
             - `str`: file path (usually required for file-based writers like 'excel').
             - Ignored: for writers that return objects (like 'dataframe', 'dict').
-        **kwargs: Additional keyword arguments used for writer configuration (e.g.,
-            `sheet_name`, `recalculate`) and potentially passed to the writer's
-            `.write()` method. Consult the specific writer's Pydantic config model
-            and `.write()` docstring.
+        config: Optional dictionary or Pydantic model for writer
+            configuration (e.g., `sheet_name`, `recalculate`).
+        **write_kwargs: Additional keyword arguments passed directly to the
+            writer's `.write()` method. Consult the specific writer's
+            documentation for available options.
 
     Returns:
         object: The result of the write operation. For writers like DataFrameWriter
@@ -120,6 +153,34 @@ def write_data(
         WriteError: If writing fails.
         FormatNotSupportedError: If the format_type is not registered.
         Exception: Other errors during writer initialization or writing.
+
+    Examples:
+        Writing graph data to an Excel file:
+        ```python
+        # from fin_statement_model.io import write_data
+        # from fin_statement_model.core import Graph
+        # g = Graph(periods=["2023"])
+        # # ... populate graph with nodes ...
+        # write_data(
+        #     format_type="excel",
+        #     graph=g,
+        #     target="output.xlsx",
+        #     config={"sheet_name": "MyData"}
+        # )
+        ```
+
+        Getting data as a dictionary:
+        ```python
+        # from fin_statement_model.io import write_data
+        # from fin_statement_model.core import Graph
+        # g = Graph(periods=["2023"])
+        # # ... populate graph with nodes ...
+        # data_dict = write_data(
+        #     format_type="dict",
+        #     graph=g,
+        #     target=None  # Target is ignored for dict writer
+        # )
+        ```
     """
     logger.info(
         f"Attempting to write graph data using format '{format_type}' to target type '{type(target).__name__}'"

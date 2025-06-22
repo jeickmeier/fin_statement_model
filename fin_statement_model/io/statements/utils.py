@@ -1,9 +1,10 @@
-"""Statement-related IO utilities.
+"""Statement-related I/O utilities.
 
-This module now only provides helpers for listing built-in statement configuration
-filenames *and* writing formatted statement data to Excel or JSON. All former
-file-loading utilities have been removed to enforce an in-memory configuration
-workflow.
+This module provides helper functions related to financial statement I/O.
+Its primary responsibilities are:
+- Discovering built-in statement configuration files.
+- Providing convenient wrappers to write formatted statement DataFrames to
+  common file formats like Excel and JSON.
 """
 
 import logging

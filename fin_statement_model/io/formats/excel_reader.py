@@ -1,4 +1,12 @@
-"""Data reader for Excel files."""
+"""Data reader for Microsoft Excel files.
+
+This module provides the `ExcelReader`, a `DataReader` implementation for reading
+financial data from Excel worksheets. It expects the data to be in a "wide"
+format, where rows represent financial items and columns represent periods.
+
+The reader is built on top of the `DataFrameReaderBase` and uses pandas to
+load the data from the specified sheet.
+"""
 
 import logging
 from typing import Any, Optional
@@ -17,22 +25,17 @@ logger = logging.getLogger(__name__)
 class ExcelReader(DataFrameReaderBase):
     """Reads financial statement data from an Excel file into a Graph.
 
-    Expects data in a tabular format where rows typically represent items
-    and columns represent periods, or vice-versa.
-    Requires specifying sheet name, period identification, and item identification.
+    This reader is designed to handle "wide" format data from an Excel sheet,
+    where rows typically represent financial items and columns represent periods.
+    It is highly configurable, allowing the user to specify the sheet name,
+    the location of item names, and the location of period headers.
 
-    Configuration (sheet_name, items_col, periods_row, mapping_config) is passed
-    via an `ExcelReaderConfig` object during initialization (typically by the `read_data` facade).
-    The optional ``header_row`` parameter controls which
-    row pandas uses as column names.  When ``header_row`` equals
-    ``periods_row`` (the default) the reader assumes the period labels already
-    reside in the header row – no column renaming is attempted.  If callers set
-    ``header_row`` *explicitly* to the same value as ``periods_row`` **while
-    expecting the overwrite behaviour**, a warning is issued so the mismatch is
-    obvious.
+    Configuration is provided via an `ExcelReaderConfig` object. Runtime overrides
+    for certain options can be passed as keyword arguments to the `read` method.
 
-    Method-specific options (`statement_type`, `header_row`, `nrows`, `skiprows`)
-    are passed as keyword arguments to the `read()` method.
+    Attributes:
+        layout (str): Specifies the expected data layout, hardcoded to "wide".
+        file_extensions (tuple[str, ...]): A tuple of valid file extensions.
     """
 
     layout = "wide"
@@ -40,7 +43,11 @@ class ExcelReader(DataFrameReaderBase):
     file_extensions = (".xls", ".xlsx", ".xlsm")
 
     def __init__(self, cfg: ExcelReaderConfig) -> None:
-        """Store validated configuration object."""
+        """Initialize the ExcelReader.
+
+        Args:
+            cfg: A validated `ExcelReaderConfig` instance.
+        """
         self.cfg = cfg
 
     def _read_excel_data(
@@ -53,7 +60,27 @@ class ExcelReader(DataFrameReaderBase):
         nrows: Optional[int],
         skiprows: Optional[int],
     ) -> tuple[pd.DataFrame, list[str]]:
-        """Read Excel file once and extract data + period headers efficiently."""
+        """Read core data and period headers from an Excel sheet.
+
+        This helper method reads a specified sheet from an Excel file into a raw
+        pandas DataFrame without a header. It then extracts the period labels from
+        the `periods_row` and reconstructs the main DataFrame using the `header_row`.
+        This approach provides flexibility in handling various Excel layouts.
+
+        Args:
+            file_path: The path to the Excel file.
+            sheet_name: The name or index of the sheet to read.
+            periods_row: The 1-indexed row number containing the period labels.
+            items_col: The 1-indexed column number containing the item names.
+            header_row: The 1-indexed row number to use for the DataFrame header.
+            nrows: The optional number of rows to read.
+            skiprows: The optional number of rows to skip at the beginning.
+
+        Returns:
+            A tuple containing:
+                - The main pandas DataFrame with the correct header.
+                - A list of period header strings.
+        """
         # Read sheet without assigning header so we can slice any row later
         raw_df = pd.read_excel(
             file_path,
@@ -86,7 +113,21 @@ class ExcelReader(DataFrameReaderBase):
     # WideTableReader hook implementation
     # ------------------------------------------------------------------
     def _load_dataframe(self, source: Any, **kwargs: Any) -> pd.DataFrame:
-        """Read Excel sheet and return DataFrame suitable for WideTableReader."""
+        """Load data from an Excel file into a pandas DataFrame.
+
+        This method implements the `_load_dataframe` hook from `DataFrameReaderBase`.
+        It validates the file, resolves configuration options for the sheet name,
+        row/column locations, and other parameters. It then calls `_read_excel_data`
+        to perform the read operation and prepares the resulting DataFrame by ensuring
+        its column names are set correctly based on the extracted period headers.
+
+        Args:
+            source (Any): The file path to the Excel file.
+            **kwargs (Any): Optional runtime overrides for configuration.
+
+        Returns:
+            A pandas DataFrame ready for parsing by `DataFrameReaderBase`.
+        """
         file_path = source
         # Basic file validation
         self.validate_file_exists(file_path)

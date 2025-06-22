@@ -1,4 +1,9 @@
-"""Data writer for pandas DataFrames."""
+"""Data writer for exporting graph data to a pandas DataFrame.
+
+This module provides the `DataFrameWriter`, a `DataWriter` implementation that
+serializes a `Graph` object into an in-memory `pandas.DataFrame`. The resulting
+DataFrame has node names as its index and periods as its columns.
+"""
 
 import logging
 from typing import Any
@@ -21,27 +26,41 @@ logger = logging.getLogger(__name__)
 class DataFrameWriter(BaseTableWriter, ConfigurationMixin):
     """Writes graph data to a pandas DataFrame.
 
-    Converts the graph to a DataFrame with node names as index and periods as columns.
+    This writer converts a `Graph` object into a `pandas.DataFrame`, which is a
+    common format for data analysis in Python. The resulting DataFrame has node
+    names as its index and periods as its columns.
 
-    Configuration options `recalculate` and `include_nodes` are controlled by
-    the `DataFrameWriterConfig` object passed during initialization.
+    The writer's behavior, such as whether to recalculate the graph before export,
+    can be controlled via a `DataFrameWriterConfig` object.
     """
 
     def __init__(self, cfg: DataFrameWriterConfig) -> None:
         """Initialize the DataFrameWriter.
 
         Args:
-            cfg: Optional validated `DataFrameWriterConfig` instance.
+            cfg: A validated `DataFrameWriterConfig` instance.
         """
         super().__init__()
         self.cfg = cfg
 
     @handle_write_errors()
     def write(self, graph: Graph, target: Any = None, **kwargs: Any) -> pd.DataFrame:
-        """Return a pandas DataFrame representing *graph*.
+        """Convert a `Graph` object into a pandas DataFrame.
 
-        The heavy lifting is performed by :py:meth:`BaseTableWriter.to_dataframe`.
-        This wrapper only resolves runtime overrides and logs summary statistics.
+        This method orchestrates the conversion of the graph data into a DataFrame.
+        It relies on the `to_dataframe` method inherited from `BaseTableWriter` to
+        perform the actual data extraction and DataFrame creation.
+
+        Runtime options like `recalculate` and `include_nodes` can be passed as
+        keyword arguments to override the writer's initial configuration.
+
+        Args:
+            graph: The `Graph` object to be written.
+            target: This argument is ignored by the `DataFrameWriter`.
+            **kwargs: Optional runtime overrides for configuration settings.
+
+        Returns:
+            A pandas DataFrame representing the graph's data.
         """
         recalculate = self._param("recalculate", kwargs, self.cfg, default=True)
         include_nodes = self._param("include_nodes", kwargs, self.cfg)

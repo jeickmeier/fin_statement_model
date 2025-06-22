@@ -15,7 +15,15 @@ from fin_statement_model.core.graph import Graph
 
 
 class BaseTableWriter(DataFrameBasedWriter):
-    """Utility mixin supplying Graph→DataFrame / dict conversions."""
+    """A utility base class for writers that output tabular data.
+
+    This class builds on `DataFrameBasedWriter` and provides reusable methods
+    for converting a `Graph` object into common tabular formats like a pandas
+    DataFrame or a nested dictionary.
+
+    Writers that produce table-like output (e.g., `ExcelWriter`, `DictWriter`)
+    should inherit from this class to avoid duplicating conversion logic.
+    """
 
     # ------------------------------------------------------------------
     # Reusable helpers used by concrete writers

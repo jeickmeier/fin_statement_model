@@ -1,4 +1,9 @@
-"""Writes a financial statement graph to a Markdown table."""
+"""Data writer for exporting financial statements to Markdown format.
+
+This module provides the `MarkdownWriter`, a `DataWriter` implementation that
+renders a `StatementStructure` into a formatted Markdown table. It is designed
+to produce human-readable reports of financial statements.
+"""
 
 import logging
 from typing import Any, Optional, Union
@@ -21,7 +26,15 @@ logger = logging.getLogger(__name__)
 
 @register_writer("markdown", schema=MarkdownWriterConfig)
 class MarkdownWriter(DataWriter):
-    """Writes a financial statement structure to a Markdown table."""
+    """Writes a financial statement structure to a Markdown table.
+
+    This writer uses a `StatementStructure` to render a `Graph`'s data into a
+    Markdown table. It leverages a `MarkdownStatementRenderer` for processing the
+    structure and a `MarkdownTableFormatter` for creating the final table string.
+
+    It can also include supplemental notes in the output, such as details about
+    forecasts and adjustments.
+    """
 
     def __init__(self, config: Optional[MarkdownWriterConfig] = None):
         """Initializes the MarkdownWriter."""
@@ -33,7 +46,7 @@ class MarkdownWriter(DataWriter):
         logger.debug(f"Initialized MarkdownWriter with config: {self.config}")
 
     def _format_value(self, value: Union[float, int, str, None]) -> str:
-        """Formats the value for display in the table."""
+        """Format a numeric value for display in the Markdown table."""
         if value is None:
             return ""
         if isinstance(value, float | int):
