@@ -1,4 +1,5 @@
 exclude = [
+    "tests/**",
     "concatenate_script.py",
     "examples/notebooks/**",
 ] 
