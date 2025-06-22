@@ -23,10 +23,8 @@ Example:
 """
 
 from abc import ABC, abstractmethod
-import ast
 import logging
-import operator
-from typing import Optional, ClassVar, Any, Type
+from typing import Optional
 from collections.abc import Callable
 
 from fin_statement_model.core.nodes.base import Node  # Absolute
@@ -533,67 +531,72 @@ class CustomFormulaCalculation(Calculation):
 
 
 class FormulaCalculation(Calculation):
-    """Evaluates a mathematical formula string as a calculation strategy.
+    """Evaluates a mathematical formula string using *asteval* for safety.
 
-    This calculation parses and evaluates simple mathematical expressions
-    involving input nodes. Supports basic arithmetic operators (+, -, *, /)
-    and unary negation.
+    The class evaluates arithmetic expressions that reference input nodes by the
+    variable names supplied in *input_variable_names*. Evaluation is delegated
+    to the ``asteval`` interpreter which executes a restricted subset of
+    Python's syntax with no access to built-ins or the filesystem, providing a
+    safer and more maintainable alternative to a hand-rolled AST walker.
 
     Attributes:
-        formula: The mathematical expression string to evaluate.
-        input_variable_names: List of variable names used in the formula,
-            corresponding to the order of input nodes.
-        _ast: The parsed Abstract Syntax Tree of the formula.
+        formula: The expression string (e.g. ``"a + b / 2"``).
+        input_variable_names: Ordered list of variable names corresponding to
+            the order of *inputs* passed to :py:meth:`calculate`.
     """
 
-    # Supported AST operators mapping to Python operator functions
-    OPERATORS: ClassVar[dict[Type[Any], Callable[..., float]]] = {
-        ast.Add: operator.add,
-        ast.Sub: operator.sub,
-        ast.Mult: operator.mul,
-        ast.Div: operator.truediv,
-        ast.USub: operator.neg,
-    }
-
-    def __init__(self, formula: str, input_variable_names: list[str]):
-        """Initialize the FormulaCalculation.
+    def __init__(self, formula: str, input_variable_names: list[str]):  # noqa: D401
+        """Initialise the :class:`FormulaCalculation`.
 
         Args:
-            formula: The mathematical formula string (e.g., "a + b / 2").
-            input_variable_names: List of variable names used in the formula,
-                in the same order as the input nodes that will be provided
-                to the calculate method.
+            formula: Mathematical expression to evaluate.
+            input_variable_names: Names that will map to the provided input
+                nodes in the same order.
 
         Raises:
-            ValueError: If the formula string has invalid syntax.
+            StrategyError: If *asteval* is not installed.
         """
+        try:
+            from asteval import (
+                Interpreter,
+            )  # local import to avoid hard dep at import time
+        except ImportError as exc:  # pragma: no cover – caught by tests if missing
+            raise StrategyError(
+                "Package 'asteval' is required for FormulaCalculation. Install it via 'pip "
+                "install asteval'.",
+                strategy_type="FormulaCalculation",
+            ) from exc
+
         self.formula = formula
         self.input_variable_names = input_variable_names
-        try:
-            # Parse the formula string into an AST expression
-            self._ast = ast.parse(formula, mode="eval").body
-        except SyntaxError as e:
-            raise StrategyError(
-                f"Invalid formula syntax: {formula}",
-                strategy_type="FormulaCalculation",
-            ) from e
+        # Prepare a locked-down interpreter: minimal built-ins, no numpy, no print
+        self._interpreter_cls = (
+            Interpreter  # store class; instance created per calculation
+        )
         logger.info(
-            f"Initialized FormulaCalculation with formula: {formula} and variables: {input_variable_names}"
+            "Initialised FormulaCalculation using asteval with formula '%s' and variables %s",
+            formula,
+            input_variable_names,
         )
 
-    def calculate(self, inputs: list[Node], period: str) -> float:
-        """Calculate the value by evaluating the formula with input node values.
+    # ---------------------------------------------------------------------
+    # Public API
+    # ---------------------------------------------------------------------
+    def calculate(self, inputs: list[Node], period: str) -> float:  # noqa: D401
+        """Evaluate *formula* for *period* using values from *inputs*.
 
         Args:
-            inputs: A list of Node objects, in the same order as input_variable_names.
-            period: The time period string for the calculation.
+            inputs: Nodes supplying variable values.
+            period: The current period label (e.g. ``"2024Q1"``).
 
         Returns:
-            The result of the formula evaluation.
+            Evaluated numeric result.
 
         Raises:
-            StrategyError: If the number of inputs doesn't match number of variable names.
-            CalculationError: If an error occurs during evaluation of the formula.
+            StrategyError: If the number of *inputs* does not match
+                *input_variable_names*.
+            CalculationError: If evaluation fails or returns a non-numeric
+                result.
         """
         if len(inputs) != len(self.input_variable_names):
             raise StrategyError(
@@ -602,105 +605,49 @@ class FormulaCalculation(Calculation):
                 strategy_type="FormulaCalculation",
             )
 
-        # Create mapping of variable names to nodes
-        variable_map = dict(zip(self.input_variable_names, inputs))
+        # Map variable names -> calculated values for the given period
+        local_vars: dict[str, float] = {
+            name: node.calculate(period)
+            for name, node in zip(self.input_variable_names, inputs)
+        }
 
-        logger.debug(f"Applying formula calculation for period {period}")
+        # Create a fresh interpreter each call to avoid symbol leakage between periods
+        from asteval import Interpreter  # noqa: WPS433 – intentional local import
+
+        ae = Interpreter(symtable={}, minimal=True, no_print=True, use_numpy=False)
+        ae.symtable.update(local_vars)
+
+        logger.debug(
+            "Evaluating formula '%s' for period %s with variables %s",
+            self.formula,
+            period,
+            local_vars,
+        )
         try:
-            return self._evaluate(self._ast, period, variable_map)
-        except (ValueError, TypeError, KeyError, ZeroDivisionError) as e:
+            result = ae(self.formula)
+        except Exception as exc:  # pragma: no cover – generic catch to wrap
+            logger.error(
+                "Error evaluating formula '%s': %s", self.formula, exc, exc_info=True
+            )
             raise CalculationError(
-                f"Error evaluating formula: {self.formula}. Error: {e!s}",
+                f"Error evaluating formula: {self.formula}. Error: {exc}",
                 period=period,
-                details={"formula": self.formula, "original_error": str(e)},
-            ) from e
+                details={"formula": self.formula, "original_error": str(exc)},
+            ) from exc
 
-    def _evaluate(
-        self, node: ast.AST, period: str, variable_map: dict[str, Node]
-    ) -> float:
-        """Recursively evaluate the parsed AST node for the formula.
-
-        Args:
-            node: The current AST node to evaluate.
-            period: The time period context for the evaluation.
-            variable_map: Mapping of variable names to Node objects.
-
-        Returns:
-            The result of evaluating the AST node.
-
-        Raises:
-            TypeError: If a non-numeric constant or input node value is encountered.
-            ValueError: If an unknown variable or unsupported operator/syntax is found.
-            ZeroDivisionError: If division by zero occurs.
-        """
-        # Numeric literal (Constant in Python 3.8+)
-        if isinstance(node, ast.Constant):
-            if isinstance(node.value, int | float):
-                return float(node.value)
-            else:
-                raise CalculationError(
-                    f"Unsupported constant type '{type(node.value).__name__}' in formula",
-                    period=period,
-                    details={"constant_type": type(node.value).__name__},
-                )
-
-        # Variable reference
-        elif isinstance(node, ast.Name):
-            var_name = node.id
-            if var_name not in variable_map:
-                raise CalculationError(
-                    f"Unknown variable '{var_name}' in formula. Available: {list(variable_map.keys())}",
-                    period=period,
-                    details={
-                        "unknown_var": var_name,
-                        "available_vars": list(variable_map.keys()),
-                    },
-                )
-            input_node = variable_map[var_name]
-            # Recursively calculate the value of the input node
-            value = input_node.calculate(period)
-            if not isinstance(value, int | float):
-                raise CalculationError(
-                    f"Input node '{input_node.name}' (variable '{var_name}') did not return a numeric value for period '{period}'",
-                    node_id=input_node.name,
-                    period=period,
-                    details={"value_type": type(value).__name__},
-                )
-            return float(value)
-
-        # Binary operation (e.g., a + b)
-        elif isinstance(node, ast.BinOp):
-            left_val = self._evaluate(node.left, period, variable_map)
-            right_val = self._evaluate(node.right, period, variable_map)
-            op_type = type(node.op)  # type: Type[Any]
-            if op_type not in self.OPERATORS:
-                raise StrategyError(
-                    f"Unsupported binary operator '{op_type.__name__}' in formula",
-                    strategy_type="FormulaCalculation",
-                )
-            # Perform the operation
-            return float(self.OPERATORS[op_type](left_val, right_val))
-
-        # Unary operation (e.g., -a)
-        elif isinstance(node, ast.UnaryOp):
-            operand_val = self._evaluate(node.operand, period, variable_map)
-            unary_op_type = type(node.op)
-            if unary_op_type not in self.OPERATORS:
-                raise StrategyError(
-                    f"Unsupported unary operator '{unary_op_type.__name__}' in formula",
-                    strategy_type="FormulaCalculation",
-                )
-            # Perform the operation
-            return float(self.OPERATORS[unary_op_type](operand_val))
-
-        # If the node type is unsupported
-        else:
-            raise StrategyError(
-                f"Unsupported syntax node type '{type(node).__name__}' in formula: {ast.dump(node)}",
-                strategy_type="FormulaCalculation",
+        if not isinstance(result, (int, float)):
+            raise CalculationError(
+                "Formula result is not numeric.",
+                period=period,
+                details={"formula": self.formula, "result_type": type(result).__name__},
             )
 
+        return float(result)
+
+    # ------------------------------------------------------------------
+    # Misc
+    # ------------------------------------------------------------------
     @property
-    def description(self) -> str:
-        """Returns a description of the formula calculation."""
-        return f"Formula: {self.formula}"
+    def description(self) -> str:  # noqa: D401
+        """Return a human-readable description of the calculation."""
+        return f"Formula (evaluated via asteval): {self.formula}"

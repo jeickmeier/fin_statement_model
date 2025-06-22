@@ -28,6 +28,7 @@ dependencies = [
     "deepmerge>=2.0",
     "typer>=0.16.0",
     "rich>=14.0.0",
+    "asteval>=1.0.6",
 ]
 
 [dependency-groups]

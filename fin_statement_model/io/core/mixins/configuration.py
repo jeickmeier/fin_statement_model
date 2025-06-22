@@ -222,19 +222,51 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
         return cfg_dict
 
     def merge_configurations(self, *configs: Any) -> dict[str, Any]:
-        """Merge multiple configuration sources into a single dictionary."""
+        """Recursively merge multiple configuration sources.
+
+        This helper converts all supported *config* objects into plain
+        dictionaries and then applies :func:`fin_statement_model.utils.merge.deep_merge`
+        to ensure a consistent, **deep** merge semantics across the code-base.
+
+        Args:
+            *configs: Arbitrary configuration objects. Supported types are
+                ``dict``-like, Pydantic models (``.model_dump``) and objects with
+                a ``__dict__`` attribute.
+
+        Returns:
+            A new dictionary representing the recursively merged configuration.
+        """
+
+        from fin_statement_model.utils.merge import (
+            deep_merge,
+        )  # Local import to avoid circular deps
+
         merged: dict[str, Any] = {}
+
         for cfg in configs:
             if cfg is None:
                 continue
+
+            # ------------------------------------------------------------------
+            # Normalise input → plain dict
+            # ------------------------------------------------------------------
             if hasattr(cfg, "model_dump"):
-                merged.update(cfg.model_dump())
-            elif hasattr(cfg, "__dict__"):
-                merged.update(vars(cfg))
+                cfg_dict = cfg.model_dump()
             elif isinstance(cfg, dict):
-                merged.update(cfg)
+                cfg_dict = cfg
+            elif hasattr(cfg, "__dict__"):
+                cfg_dict = vars(cfg)
             else:
-                logger.warning("Unsupported configuration type: %s", type(cfg))
+                logger.warning(
+                    "Unsupported configuration type for merge: %s", type(cfg)
+                )
+                continue
+
+            # ------------------------------------------------------------------
+            # Deep-merge into the accumulator
+            # ------------------------------------------------------------------
+            merged = deep_merge(merged, cfg_dict)
+
         return merged
 
 
