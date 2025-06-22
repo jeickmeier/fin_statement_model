@@ -132,51 +132,44 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
             ) from e
 
     def read(self, source: str, **kwargs: Any) -> Graph:
-        """Fetch data from FMP API and return a Graph.
+        """Fetch data from the FMP API and return a populated Graph.
 
-        Args:
-            source (str): The stock ticker symbol (e.g., "AAPL").
-            **kwargs: Optional runtime arguments overriding config defaults:
-                statement_type (str): Type of statement to fetch ('income_statement', 'balance_sheet', 'cash_flow').
-                period_type (str): Period type ('FY' or 'QTR').
-                limit (int): Number of periods to fetch.
-                api_key (str): API key for FMP, overrides env or config value.
+        This high-level method now orchestrates four dedicated helpers to keep
+        each concern isolated:
 
-        Returns:
-            A new Graph instance populated with FinancialStatementItemNodes.
+        1. _build_api_url            → Constructs the REST endpoint & query params
+        2. _fetch_data               → Performs the HTTP request and returns JSON
+        3. _parse_fmp_response       → Transforms raw JSON into tabular dict form
+        4. _populate_graph           → Builds and returns the final Graph object
 
-        Raises:
-            ReadError: If API key is missing/invalid, API request fails, or data format is unexpected.
+        The public behaviour (signature, raised exceptions, logging side-effects)
+        remains unchanged.
         """
-        ticker = source
 
-        # Set configuration context for better error reporting
+        ticker = source
         self.set_config_context(ticker=ticker, operation="api_read")
 
-        # Runtime overrides: kwargs override configuration defaults
+        # ------------------------------------------------------------------
+        # Resolve runtime overrides vs. config defaults
+        # ------------------------------------------------------------------
         statement_type = kwargs.get("statement_type", self.cfg.statement_type)
         period_type_arg = kwargs.get("period_type", self.cfg.period_type)
         limit = kwargs.get("limit", self.cfg.limit)
-        # Handle API key override or fallback to validated config
-        api_key = (
-            kwargs.get("api_key")
-            if kwargs.get("api_key") is not None
-            else self.cfg.api_key
-        )
+        api_key = kwargs.get("api_key", self.cfg.api_key)
 
-        # --- Validate Inputs ---
+        # ------------------------------------------------------------------
+        # Validate inputs & API key
+        # ------------------------------------------------------------------
         if not ticker or not isinstance(ticker, str):
             raise ReadError(
                 "Invalid source (ticker) provided. Expected a non-empty string.",
-                source=ticker,
+                source=str(ticker),
                 reader_type="FmpReader",
             )
-        # statement_type and period_type are validated by FmpReaderConfig
 
-        # Validate API key (using any override)
         self._validate_api_key(cast(str, api_key))
 
-        # Determine mapping for this operation, allowing override via kwargs
+        # Prepare field-name mapping for this request
         try:
             mapping = self._get_mapping(statement_type)
         except TypeError as te:
@@ -186,130 +179,156 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
                 reader_type="FmpReader",
                 original_error=te,
             )
-        logger.debug(f"Using mapping for {ticker} {statement_type}: {mapping}")
 
-        # --- Fetch API Data ---
-        # Correct endpoint construction based on FMP v3 docs
-        # e.g., /income-statement/AAPL, not /income_statement-statement/AAPL
+        # ------------------------------------------------------------------
+        # 1. Build URL & params  -------------------------------------------------
+        endpoint, params = self._build_api_request(
+            ticker=ticker,
+            statement_type=statement_type,
+            period_type=period_type_arg,
+            limit=limit,
+            api_key=cast(str, api_key),
+        )
+
+        # ------------------------------------------------------------------
+        # 2. Fetch JSON payload -------------------------------------------------
+        api_data = self._fetch_data(endpoint, params, ticker, statement_type)
+
+        # Shortcut: empty payload → empty graph
+        if not api_data:
+            logger.warning(
+                "FMP API returned empty list for %s %s.", ticker, statement_type
+            )
+            return Graph(periods=[])
+
+        # ------------------------------------------------------------------
+        # 3. Parse response → structured dict ----------------------------------
+        periods, item_matrix = self._parse_fmp_response(api_data, mapping)
+
+        # ------------------------------------------------------------------
+        # 4. Transform to Graph -------------------------------------------------
+        graph = self._populate_graph(periods, item_matrix)
+
+        logger.info(
+            "Successfully created graph with %s nodes from FMP API for %s %s.",
+            len(graph.nodes),
+            ticker,
+            statement_type,
+        )
+        return graph
+
+    # ------------------------------------------------------------------
+    # Private helpers – extracted from the monolithic read() implementation
+    # ------------------------------------------------------------------
+
+    def _build_api_request(
+        self,
+        *,
+        ticker: str,
+        statement_type: str,
+        period_type: str,
+        limit: int,
+        api_key: str,
+    ) -> tuple[str, dict[str, Any]]:
+        """Return endpoint URL and query-parameter dict for an FMP request."""
         endpoint_path = statement_type.replace("_", "-")
-        endpoint = f"{self.BASE_URL}/{endpoint_path}/{ticker}"
-        params = {"apikey": api_key, "limit": limit}
-        if period_type_arg == "QTR":
+        url = f"{self.BASE_URL}/{endpoint_path}/{ticker}"
+        params: dict[str, Any] = {"apikey": api_key, "limit": limit}
+        if period_type == "QTR":
             params["period"] = "quarter"
+        return url, params
 
+    def _fetch_data(
+        self,
+        url: str,
+        params: dict[str, Any],
+        ticker: str,
+        statement_type: str,
+    ) -> list[dict[str, Any]]:
+        """Perform the HTTP request and return the decoded JSON list."""
         try:
             logger.info(
-                f"Fetching {period_type_arg} {statement_type} for {ticker} from FMP API (limit={limit})."
+                "Fetching %s for %s from FMP API (%s periods)…",
+                statement_type,
+                ticker,
+                params.get("limit"),
             )
-            response = requests.get(
-                endpoint, params=params, timeout=cfg("api.api_timeout")
-            )
-            response.raise_for_status()  # Check for HTTP errors
-            api_data = response.json()
-
-            if not isinstance(api_data, list):
+            response = requests.get(url, params=params, timeout=cfg("api.api_timeout"))
+            response.raise_for_status()
+            payload = response.json()
+            if not isinstance(payload, list):
                 raise ReadError(
-                    f"Unexpected API response format. Expected list, got {type(api_data)}. Response: {str(api_data)[:100]}...",
+                    f"Unexpected API response format. Expected list, got {type(payload).__name__}.",
                     source=f"FMP API ({ticker})",
                     reader_type="FmpReader",
                 )
-            if not api_data:
-                logger.warning(
-                    f"FMP API returned empty list for {ticker} {statement_type}."
+            return payload
+        except requests.exceptions.RequestException as rex:
+            raise ReadError(
+                f"FMP API request failed: {rex}",
+                source=f"FMP API ({ticker})",
+                reader_type="FmpReader",
+                original_error=rex,
+            ) from rex
+
+    def _parse_fmp_response(
+        self,
+        api_data: list[dict[str, Any]],
+        mapping: dict[str, str],
+    ) -> tuple[list[str], dict[str, dict[str, float]]]:
+        """Convert raw FMP JSON payload to a period-indexed value matrix."""
+        # FMP returns newest-first; reverse to chronological order
+        api_data.reverse()
+
+        # Extract period strings safely, ensuring correct type for static checker
+        periods: list[str] = []
+        for record in api_data:
+            date_val = record.get("date")
+            if isinstance(date_val, str) and date_val:
+                periods.append(date_val)
+
+        if not periods:
+            raise ReadError(
+                "Could not extract periods ('date' field) from FMP API response.",
+                source="FMP API",
+                reader_type="FmpReader",
+            )
+
+        # Pre-initialise matrix with NaN placeholders
+        item_matrix: dict[str, dict[str, float]] = {}
+        for record in api_data:
+            period = record.get("date")
+            if not period:
+                continue
+            for api_field, value in record.items():
+                node_name = self._apply_mapping(api_field, mapping)
+                if node_name == api_field:  # unmapped → try camel→snake fallback
+                    node_name = self._camel_to_snake(api_field)
+
+                if node_name not in item_matrix:
+                    item_matrix[node_name] = {p: np.nan for p in periods}
+
+                if isinstance(value, (int, float)):
+                    item_matrix[node_name][period] = float(value)
+
+        return periods, item_matrix
+
+    def _populate_graph(
+        self,
+        periods: list[str],
+        item_matrix: dict[str, dict[str, float]],
+    ) -> Graph:
+        """Create a Graph instance from the period/value matrix."""
+        graph = Graph(periods=periods)
+        import numpy as np
+
+        for node_name, period_values in item_matrix.items():
+            valid_values = {p: v for p, v in period_values.items() if not np.isnan(v)}
+            if valid_values:
+                graph.add_node(
+                    FinancialStatementItemNode(name=node_name, values=valid_values)
                 )
-                # Return empty graph or raise? Returning empty for now.
-                return Graph(periods=[])
-
-        except requests.exceptions.RequestException as e:
-            logger.error(
-                f"FMP API request failed for {ticker} {statement_type}: {e}",
-                exc_info=True,
-            )
-            raise ReadError(
-                f"FMP API request failed: {e}",
-                source=f"FMP API ({ticker})",
-                reader_type="FmpReader",
-                original_error=e,
-            )
-        except Exception as e:
-            logger.error(f"Failed to process FMP API response: {e}", exc_info=True)
-            raise ReadError(
-                f"Failed to process FMP API response: {e}",
-                source=f"FMP API ({ticker})",
-                reader_type="FmpReader",
-                original_error=e,
-            )
-
-        # --- Process Data and Populate Graph ---
-        try:
-            # FMP data is usually newest first, reverse to process chronologically
-            api_data.reverse()
-
-            # Extract periods (e.g., 'date' or 'fillingDate')
-            # Using 'date' as it usually represents the period end date
-            periods = [item.get("date") for item in api_data if item.get("date")]
-            if not periods:
-                raise ReadError(
-                    "Could not extract periods ('date' field) from FMP API response.",
-                    source=f"FMP API ({ticker})",
-                    reader_type="FmpReader",
-                )
-
-            graph = Graph(periods=periods)
-            all_item_data: dict[str, dict[str, float]] = {}
-
-            # Collect data for all items across all periods
-            for period_data in api_data:
-                period = period_data.get("date")
-                if not period:
-                    continue  # Skip records without a date
-
-                for api_field, value in period_data.items():
-                    node_name = self._apply_mapping(api_field, mapping)
-
-                    # Fallback: convert camelCase / mixedCase to snake_case when no mapping entry exists
-                    if node_name == api_field:  # not mapped
-                        node_name = self._camel_to_snake(api_field)
-
-                    # Initialize node data dict if first time seeing this node
-                    if node_name not in all_item_data:
-                        all_item_data[node_name] = {
-                            p: np.nan for p in periods
-                        }  # Pre-fill with NaN
-
-                    # Store value for this period
-                    if isinstance(value, int | float):
-                        all_item_data[node_name][period] = float(value)
-
-            # Create nodes from collected data
-            nodes_added = 0
-            for node_name, period_values in all_item_data.items():
-                # Filter out periods that only have NaN
-                valid_period_values = {
-                    p: v for p, v in period_values.items() if not np.isnan(v)
-                }
-                if valid_period_values:
-                    new_node = FinancialStatementItemNode(
-                        name=node_name, values=valid_period_values
-                    )
-                    graph.add_node(new_node)
-                    nodes_added += 1
-
-            logger.info(
-                f"Successfully created graph with {nodes_added} nodes from FMP API for {ticker} {statement_type}."
-            )
-            return graph
-
-        except Exception as e:
-            logger.error(
-                f"Failed to parse FMP data and build graph: {e}", exc_info=True
-            )
-            raise ReadError(
-                message=f"Failed to parse FMP data: {e}",
-                source=f"FMP API ({ticker})",
-                reader_type="FmpReader",
-                original_error=e,
-            ) from e
+        return graph
 
     # ------------------------------------------------------------------
     # Static helpers
