@@ -24,7 +24,7 @@ import numpy as np
 
 from fin_statement_model.core.nodes import Node
 from .base import BaseForecastMethod
-from fin_statement_model.config.helpers import cfg
+from fin_statement_model.config.access import cfg
 
 logger = logging.getLogger(__name__)
 

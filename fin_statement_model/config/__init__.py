@@ -18,14 +18,14 @@ Examples:
     'DEBUG'
 """
 
-from .helpers import cfg, cfg_or_param, ConfigurationAccessError
+from .access import cfg, cfg_or_param, ConfigurationAccessError
 
 # Importing helpers first ensures that "cfg" is available early, avoiding
 # circular import issues when other modules import fin_statement_model.config
 # during the initialization of sub-packages (e.g., io.formats.api.fmp).
 
 from .models import Config
-from .manager import get_config, update_config
+from .store import get_config, update_config
 
 __all__ = [
     "Config",

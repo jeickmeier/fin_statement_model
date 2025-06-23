@@ -20,7 +20,7 @@ from fin_statement_model.preprocessing.errors import (
     TransformerRegistrationError,
     TransformerConfigurationError,
 )
-from fin_statement_model.config.helpers import cfg
+from fin_statement_model.config.access import cfg
 
 logger = logging.getLogger(__name__)
 

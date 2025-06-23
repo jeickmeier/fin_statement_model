@@ -11,8 +11,8 @@ from pathlib import Path
 import yaml
 import pytest
 
-from fin_statement_model.config.manager import (
-    ConfigManager,
+from fin_statement_model.config.store import (
+    ConfigStore as ConfigManager,  # alias for test compatibility
     ConfigurationError,
 )
 

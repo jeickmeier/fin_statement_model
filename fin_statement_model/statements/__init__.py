@@ -109,12 +109,42 @@ from .orchestration.exporter import (
 
 # Errors specific to statements
 from .errors import StatementError, ConfigurationError
-from typing import Any, Optional
+from typing import Any, Optional, List
 
 # Import UnifiedNodeValidator for convenience
 from fin_statement_model.statements.validation import UnifiedNodeValidator
 from fin_statement_model.core.nodes import standard_node_registry
 from .utilities.cli_formatters import pretty_print_errors
+
+# -----------------------------------------------------------------------------
+# Convenience helpers – discovery of built-in statement configs
+# -----------------------------------------------------------------------------
+
+from pathlib import Path
+
+
+def list_available_builtin_configs() -> List[str]:  # noqa: D401
+    """Return the IDs of YAML configs bundled with ``fin_statement_model``.
+
+    The library ships a small set of reference statement configurations in
+    ``fin_statement_model/statements/configs``.  Each config is stored as a
+    YAML file whose *stem* (filename without extension) serves as the public
+    *statement_id* when loading the config.
+
+    Returns:
+        A list of available built-in statement IDs sorted alphabetically.
+    """
+
+    cfg_dir = Path(__file__).parent / "configs"
+    if not cfg_dir.exists():
+        return []
+
+    return sorted(p.stem for p in cfg_dir.glob("*.yaml"))
+
+
+# -----------------------------------------------------------------------------
+# Expand public API
+# -----------------------------------------------------------------------------
 
 
 # Node validation convenience functions
@@ -352,6 +382,8 @@ __all__ = [
     "retry_with_exponential_backoff",
     "validate_statement_config_with_nodes",
     "pretty_print_errors",
+    # Convenience helpers
+    "list_available_builtin_configs",
 ]
 
 # Note: FinancialStatementGraph removed as part of refactor, assuming its

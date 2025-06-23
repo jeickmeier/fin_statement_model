@@ -25,7 +25,7 @@ import logging
 from typing import Any, Optional
 
 from fin_statement_model.core.nodes import Node
-from fin_statement_model.config.helpers import cfg
+from fin_statement_model.config.access import cfg
 
 logger = logging.getLogger(__name__)
 

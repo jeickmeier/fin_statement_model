@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 
 from fin_statement_model.utils.formatting import format_numbers, render_values
-from fin_statement_model.config import helpers as cfg_helpers
+import fin_statement_model.config.access as cfg_helpers
 
 
 def test_format_numbers_fallback_and_thousands_separator_off():

@@ -1,24 +1,50 @@
 # Configuration Subpackage
 
-The `fin_statement_model.config` subpackage provides centralized, extensible configuration management for the entire library. It supports hierarchical loading, runtime overrides, environment variable integration, and a command-line interface for inspection and mutation.
+The `fin_statement_model.config` subpackage provides centralized, extensible configuration management for the entire library. It supports hierarchical loading from files and environment variables, runtime overrides, and a simple, safe API for accessing values.
+
+## File Structure
+
+The package is organized into five focused modules:
+
+- **`models.py`**: Contains all Pydantic schemas for validation and type-checking. This is the single source of truth for all available configuration options.
+- **`access.py`**: Provides the primary user-facing helpers for *reading* configuration (`cfg`, `cfg_or_param`) and parsing environment variables. These helpers can be imported early without causing circular dependencies.
+- **`loader.py`**: Implements the pure, stateless logic for discovering and merging configuration from all sources (defaults, files, environment).
+- **`store.py`**: Manages the thread-safe, in-memory singleton that holds the live configuration. It provides the `get_config()` and `update_config()` helpers for mutation.
+- **`logging_hook.py`**: A small utility to re-apply logging settings whenever the configuration is changed.
 
 ## Basic Usage
 
+The public API is exposed directly from `fin_statement_model.config`.
+
 ### Accessing Configuration
 
-```python
-from fin_statement_model.config import get_config, cfg
+The recommended way to read configuration is with the `cfg` helper.
 
-# Get the full config object (Pydantic model)
+```python
+from fin_statement_model.config import cfg
+
+# Get a single value by dotted path, with a fallback default
+timeout = cfg('api.api_timeout', default=30)
+print(timeout)  # 30
+
+# Access a nested model
+flags = cfg('display.flags')
+print(flags.include_notes_column) # False
+```
+
+For cases where you need the full, typed configuration object:
+
+```python
+from fin_statement_model.config import get_config
+
+# Get the full config object (a Pydantic model)
 config = get_config()
 print(config.logging.level)  # e.g. 'WARNING'
-
-# Get a single value by dotted path
-level = cfg('logging.level')
-print(level)  # 'WARNING'
 ```
 
 ### Updating Configuration at Runtime
+
+Use `update_config()` to merge in new values. This invalidates the old configuration and causes it to be reloaded on the next access, applying all override rules correctly.
 
 ```python
 from fin_statement_model.config import update_config, get_config
@@ -30,101 +56,72 @@ update_config({
         'default_periods': 5,
     }
 })
+
 print(get_config().forecasting.default_method)  # 'historical_growth'
-```
-
-### Type-Checked Access and Fallbacks
-
-```python
-from fin_statement_model.config import cfg, get_typed_config
-
-timeout = cfg('api.api_timeout', default=30)  # fallback if not set
 ```
 
 ## Advanced Features
 
 ### Configuration Loading Order
 
-1. **Defaults** (from Pydantic models)
-2. **Project config file** (`.fsm_config.yaml` in cwd or parent dirs)
-3. **User config file** (`fsm_config.yaml` in cwd or home dir)
-4. **Environment variables** (prefixed with `FSM_`, e.g. `FSM_LOGGING_LEVEL`)
-5. **Runtime overrides** (via `update_config()`)
+Configuration is loaded in a layered hierarchy, where each subsequent layer can override the previous ones. The order of precedence is:
 
-Supported formats: YAML (`.yaml`, `.yml`) and JSON (`.json`).
+1.  **Defaults**: Hardcoded defaults defined in the Pydantic models in `models.py`.
+2.  **Project Config File**: From `.fsm_config.yaml` found in the current working directory or any parent directory.
+3.  **User Config File**: From `fsm_config.yaml` found in the current working directory or `~/.fsm_config.yaml`.
+4.  **.env File**: Environment variables loaded from the first `.env` file found in the current directory or parents.
+5.  **Environment Variables**: Live environment variables prefixed with `FSM_`.
+6.  **Runtime Overrides**: Values passed programmatically to `update_config()`.
+
+Supported file formats are YAML (`.yaml`, `.yml`) and JSON (`.json`).
 
 ### Environment Variable Parsing
 
-- Environment variables are parsed to native types (bool, int, float, list, dict) when possible.
-- Use double underscores (`__`) to denote nested config keys: `FSM_LOGGING__LEVEL=DEBUG` → `logging.level`.
-- Legacy single underscore is also supported.
+-   Environment variables are automatically parsed to native Python types (bool, int, float, lists, dicts) where possible.
+-   Use double underscores (`__`) to denote nested config keys: `FSM_LOGGING__LEVEL=DEBUG` sets `logging.level`.
+-   The legacy single underscore separator is also supported as a fallback.
 
 ### Display Flags
 
-Boolean display toggles are grouped under `config.display.flags`:
+Boolean toggles for display and formatting are grouped under `config.display.flags` for clarity.
 
 ```python
 from fin_statement_model.config import cfg
 
-# Preferred (new)
+# Access a flag via its full path
 include_notes = cfg('display.flags.include_notes_column')
 
-# Legacy (still works)
-include_notes = cfg('display.include_notes_column')
+# The legacy path still works for convenience
+include_notes_legacy = cfg('display.include_notes_column')
+
+assert include_notes == include_notes_legacy
 ```
 
-Available flags:
-
-| Flag | Purpose | Default |
-|------|---------|---------|
-| `apply_sign_conventions` | Show revenues positive, expenses negative, etc. | `True` |
-| `include_empty_items` | Include items that have no data | `False` |
-| `include_metadata_cols` | Add internal metadata columns to exported DataFrames | `False` |
-| `add_is_adjusted_column` | Add `<period>_is_adjusted` boolean columns | `False` |
-| `include_units_column` | Add `units` column with currency / units | `False` |
-| `include_css_classes` | Append `css_class` column for HTML export | `False` |
-| `include_notes_column` | Append `notes` column with note references | `False` |
-| `apply_item_scaling` | Apply per-item scaling factors | `True` |
-| `apply_item_formatting` | Use per-item number formats | `True` |
-| `apply_contra_formatting` | Format contra items with parentheses/brackets | `True` |
-| `add_contra_indicator_column` | Add `is_contra` indicator column | `False` |
+A full list of flags can be found in the `DisplayFlags` model in `fin_statement_model/config/models.py`.
 
 ## Customization & Extending Configuration
 
-### Adding New Configuration Options
+### Adding a New Config Option
 
-1. **Define the field** in `fin_statement_model/config/models.py` (add to the relevant model).
-2. **(Optional) Add validation** using `@field_validator`.
-3. **Update documentation** (model docstring and this README).
-4. **Access the new option** via `cfg('section.option')`.
-5. **Override via environment**: `FSM_SECTION__OPTION=value`.
-6. **Test**: Add/update tests under `tests/config`.
-
-### Example: Adding a Feature Toggle
-
-```python
-class LoggingConfig(BaseModel):
-    enable_new_feature: bool = Field(
-        True, description="Enable the new experimental feature"
-    )
-```
+1.  **Define the field**: Open `fin_statement_model/config/models.py` and add the new field to the relevant Pydantic model (e.g., `APIConfig`). Provide a type, a `Field` with a default value, and a description.
+2.  **(Optional) Add validation**: Use Pydantic's `@field_validator` decorator within the model to add custom validation logic.
+3.  **Update documentation**: Add a row to the relevant table in this README and update the model's docstring.
+4.  **Access the new option**: Use `cfg('section.new_option_name')`.
+5.  **Override via environment**: Set an environment variable like `FSM_SECTION__NEW_OPTION_NAME=value`.
+6.  **Test**: Add or update tests under `tests/config` to cover the new option.
 
 ## Troubleshooting & FAQ
 
 **Q: Why isn't my environment variable being picked up?**
-- Ensure it is prefixed with `FSM_` and uses double underscores for nesting.
-- Example: `FSM_API__FMP_API_KEY=yourkey` sets `api.fmp_api_key`.
+A: Ensure it's prefixed with `FSM_` and uses double underscores for nesting (e.g., `FSM_API__FMP_API_KEY=yourkey`). Also, check that a value for the same key isn't being set in a runtime override via `update_config()`, which has higher precedence.
 
 **Q: How do I reset runtime overrides?**
-- Use the CLI `reload` command or restart your Python process.
-
-**Q: How do I add a new config option?**
-- See the "Customization & Extending Configuration" section above.
+A: Restart the Python process. The configuration is held in-memory for the life of the process.
 
 **Q: Can I use JSON for config files?**
-- Yes, `.json` files are supported alongside YAML.
+A: Yes, `.json` files are supported alongside `.yaml` and `.yml`.
 
 **Q: How do I access deeply nested config values?**
-- Use `cfg('section.subsection.option')` or `cfg(['section', 'subsection', 'option'])`.
+A: Use dotted-path strings: `cfg('section.subsection.option')`.
 
-For more, see the docstrings in each module or the API documentation. 
+For more details, see the docstrings in the respective modules (`models.py`, `access.py`, etc.). 

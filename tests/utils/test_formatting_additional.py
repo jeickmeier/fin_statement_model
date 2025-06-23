@@ -3,7 +3,7 @@ from __future__ import annotations
 import pandas as pd
 
 from fin_statement_model.utils import formatting as fmt
-from fin_statement_model.config.helpers import parse_env_value
+from fin_statement_model.config.access import parse_env_value
 
 
 def test_apply_sign_convention_basic() -> None:

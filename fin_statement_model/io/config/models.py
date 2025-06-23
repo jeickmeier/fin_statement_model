@@ -17,7 +17,7 @@ from __future__ import annotations
 from typing import Optional, Literal, Any, TYPE_CHECKING
 from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
 
-from fin_statement_model.config.helpers import cfg
+from fin_statement_model.config.access import cfg
 from fin_statement_model.core.adjustments.models import (
     AdjustmentFilterInput,
 )

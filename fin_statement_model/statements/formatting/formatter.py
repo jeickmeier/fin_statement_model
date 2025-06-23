@@ -178,7 +178,7 @@ class StatementFormatter:
 
         # Check config if path provided
         if config_path:
-            from fin_statement_model.config.helpers import cfg
+            from fin_statement_model.config.access import cfg
 
             return cfg(config_path, default_value)
 
@@ -372,7 +372,7 @@ class StatementFormatter:
 
         # For contra items, we typically want to show the absolute value with special formatting
         # regardless of the underlying sign, since sign_convention handles calculation logic
-        from fin_statement_model.config.helpers import cfg
+        from fin_statement_model.config.access import cfg
 
         style = display_style or self.default_formats.get(
             "contra_display_style", cfg("display.contra_display_style", "parentheses")

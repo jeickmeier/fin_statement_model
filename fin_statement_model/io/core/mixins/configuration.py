@@ -11,6 +11,7 @@ import logging
 from typing import Any, Callable, Optional, TYPE_CHECKING
 
 from fin_statement_model.io.exceptions import ReadError
+from fin_statement_model.config.access import parse_env_value
 
 logger = logging.getLogger(__name__)
 
@@ -167,7 +168,6 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
     ) -> Any:
         """Get a configuration value, falling back to an environment variable."""
         import os
-        from fin_statement_model.config.utils import parse_env_value
 
         value = self.get_config_value(key)
 

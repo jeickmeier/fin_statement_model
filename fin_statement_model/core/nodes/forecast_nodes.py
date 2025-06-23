@@ -258,7 +258,7 @@ class FixedGrowthForecastNode(ForecastNode):
 
         # Use config default if not provided (import inside to avoid circular import)
         if growth_rate is None:
-            from fin_statement_model.config.helpers import cfg
+            from fin_statement_model.config.access import cfg
 
             growth_rate = cfg("forecasting.default_growth_rate")
 

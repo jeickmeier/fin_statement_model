@@ -1,0 +1,12 @@
+- [x] Create new module fin_statement_model/config/access.py (merge helpers.py + utils.py)
+- [x] Move fin_statement_model/config/loader.py to new location (same path; update imports to access)
+- [x] Update fin_statement_model/config/loader.py imports to access functions
+- [x] Move fin_statement_model/config/store.py (update imports and add logging_hook import)
+- [x] Update fin_statement_model/config/store.py with logging_hook, global helpers
+- [x] Delete fin_statement_model/config/helpers.py, utils.py, manager.py
+- [x] Update fin_statement_model/config/__init__.py to new public re-exports
+- [x] Update internal imports in loader.py, store.py
+- [x] Update external imports across codebase from .helpers/.utils/.manager to .access or parent
+- [x] Run ruff format & lint, mypy, pytest and fix issues
+- [x] Update README and docstrings referencing old paths
+- [ ] Commit changes and open PR 

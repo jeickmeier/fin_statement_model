@@ -3,9 +3,9 @@ import pytest
 # Import config sub-modules explicitly so that their module-level code is executed
 # and included in coverage metrics.  Simply importing the package triggers class
 # definitions and validators which account for a large portion of lines.
-import fin_statement_model.config.utils as utils
-import fin_statement_model.config.helpers as helpers
-from fin_statement_model.config.manager import ConfigManager
+import fin_statement_model.config.access as utils
+import fin_statement_model.config.access as helpers
+from fin_statement_model.config.store import ConfigStore
 from fin_statement_model.config.models import Config
 
 
@@ -69,7 +69,7 @@ class TestManager:
         monkeypatch.setenv("FSM_LOGGING__LEVEL", "INFO")
         monkeypatch.setenv("FSM_IO__DEFAULT_CSV_DELIMITER", ";")
 
-        manager = ConfigManager()
+        manager = ConfigStore()
         overrides = manager._extract_env_overrides()
 
         assert overrides["logging"]["level"] == "INFO"

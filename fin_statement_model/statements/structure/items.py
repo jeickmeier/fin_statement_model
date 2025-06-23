@@ -6,6 +6,7 @@ from typing import Any, Optional, cast
 
 from fin_statement_model.core.errors import StatementError
 from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
+from fin_statement_model.config.access import cfg_or_param
 
 __all__ = [
     "CalculatedLineItem",
@@ -184,8 +185,6 @@ class LineItem(StatementItem):
             )
 
         # Use config default if not provided (import only when needed)
-        from fin_statement_model.config.helpers import cfg_or_param
-
         display_scale_factor = cfg_or_param(
             "display.scale_factor", display_scale_factor
         )

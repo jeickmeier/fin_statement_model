@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from fin_statement_model.config.helpers import (
+from fin_statement_model.config.access import (
     cfg,
     ConfigurationAccessError,
     parse_env_value,

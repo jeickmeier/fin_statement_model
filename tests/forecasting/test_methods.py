@@ -25,7 +25,7 @@ import math
 import numpy as np
 import pytest
 
-from fin_statement_model.config.manager import update_config
+from fin_statement_model.config.store import update_config
 from fin_statement_model.forecasting.methods import (
     AverageForecastMethod,
     CurveForecastMethod,

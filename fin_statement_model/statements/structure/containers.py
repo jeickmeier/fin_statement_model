@@ -67,7 +67,7 @@ class Section:
             raise StatementError(f"Invalid section name: {name} for ID: {id}")
 
         # Use config default if not provided (import only when needed)
-        from fin_statement_model.config.helpers import cfg_or_param
+        from fin_statement_model.config.access import cfg_or_param
 
         display_scale_factor = cfg_or_param(
             "display.scale_factor", display_scale_factor
@@ -232,7 +232,7 @@ class StatementStructure:
             raise StatementError(f"Invalid statement name: {name} for ID: {id}")
 
         # Use config default if not provided (import only when needed)
-        from fin_statement_model.config.helpers import cfg_or_param
+        from fin_statement_model.config.access import cfg_or_param
 
         display_scale_factor = cfg_or_param(
             "display.scale_factor", display_scale_factor

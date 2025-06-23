@@ -20,6 +20,7 @@ from fin_statement_model.statements.utilities.result_types import (
     ErrorDetail,
     ErrorCollector,
 )
+from fin_statement_model.config.access import cfg_or_param
 
 logger = logging.getLogger(__name__)
 
@@ -73,8 +74,6 @@ class RetryConfig:
         """Validate configuration and set defaults."""
         # Use config default if not provided
         if self.max_attempts is None:
-            from fin_statement_model.config.helpers import cfg_or_param
-
             self.max_attempts = cfg_or_param("api.api_retry_count", None)
 
         if self.max_attempts < 1:
@@ -372,8 +371,6 @@ def retry_with_exponential_backoff(
         RetryResult with the final outcome
     """
     # Use config default if not provided
-    from fin_statement_model.config.helpers import cfg_or_param
-
     max_attempts = cfg_or_param("api.api_retry_count", max_attempts)
 
     config = RetryConfig(
@@ -403,8 +400,6 @@ def retry_on_specific_errors(
         RetryResult with the final outcome
     """
     # Use config default if not provided
-    from fin_statement_model.config.helpers import cfg_or_param
-
     max_attempts = cfg_or_param("api.api_retry_count", max_attempts)
 
     config = RetryConfig(

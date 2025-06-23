@@ -21,7 +21,7 @@ from typing import Any
 
 import pytest
 
-from fin_statement_model.config.manager import update_config
+from fin_statement_model.config.store import update_config
 from fin_statement_model.core.nodes.base import Node
 from fin_statement_model.forecasting.period_manager import PeriodManager
 from fin_statement_model.forecasting.validators import (
