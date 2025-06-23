@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.io.core.mixins.validation API documentation</title>
+<meta name="description" content="Validation utilities previously hosted in the monolithic *mixins.py* file …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.io.core.mixins.validation</code></h1>
+</header>
+<section id="section-intro">
+<p>Validation utilities previously hosted in the monolithic <em>mixins.py</em> file.</p>
+<p>This split keeps the API and runtime behaviour identical while making the
+codebase easier to navigate and keeping individual modules under the 300-LOC
+budget mandated by the workspace rules.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationMixin"><code class="flex name class">
+<span>class <span class="ident">ValidationMixin</span></span>
+<span>(</span><span>*args: Any, **kwargs: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ValidationMixin:  # pylint: disable=too-many-public-methods
+    &#34;&#34;&#34;Provides reusable dataframe/series validation helpers for readers.&#34;&#34;&#34;
+
+    def __init__(self, *args: Any, **kwargs: Any) -&gt; None:
+        &#34;&#34;&#34;Initialise ValidationMixin state and propagate to next MRO element.&#34;&#34;&#34;
+        super().__init__(*args, **kwargs)
+        self._validation_context: dict[str, Any] = {}
+
+    # Context helpers ----------------------------------------------------
+    def set_validation_context(self, **context: Any) -&gt; None:
+        &#34;&#34;&#34;Store arbitrary context (e.g., file path) for inclusion in reports.&#34;&#34;&#34;
+        self._validation_context.update(context)
+
+    def get_validation_context(self) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Return a shallow copy of the current validation context mapping.&#34;&#34;&#34;
+        return self._validation_context.copy()
+
+    # Column &amp; period validation ----------------------------------------
+    def validate_required_columns(self, df: Any, required: list[str], source_identifier: str = &#34;data source&#34;) -&gt; None:
+        &#34;&#34;&#34;Ensure *df* contains all *required* columns.
+
+        Raises:
+            ReadError: When one or more columns are missing.
+        &#34;&#34;&#34;
+        if not hasattr(df, &#34;columns&#34;):
+            raise ReadError(
+                &#34;Invalid data structure: expected DataFrame with columns attribute&#34;,
+                source=source_identifier,
+            )
+        missing = set(required) - set(df.columns)
+        if missing:
+            raise ReadError(
+                f&#34;Missing required columns in {source_identifier}: {missing}&#34;,
+                source=source_identifier,
+            )
+
+    def validate_column_bounds(
+        self,
+        df: Any,
+        column_index: int,
+        source_identifier: str = &#34;data source&#34;,
+        context: str = &#34;column&#34;,
+    ) -&gt; None:
+        &#34;&#34;&#34;Validate that *column_index* is within the bounds of *df.columns*.&#34;&#34;&#34;
+        if not hasattr(df, &#34;columns&#34;):
+            raise ReadError(
+                &#34;Invalid data structure: expected DataFrame with columns attribute&#34;,
+                source=source_identifier,
+            )
+        if column_index &gt;= len(df.columns) or column_index &lt; 0:
+            raise ReadError(
+                f&#34;{context} index ({column_index + 1}) is out of bounds. Found {len(df.columns)} columns.&#34;,
+                source=source_identifier,
+            )
+
+    def validate_periods_exist(
+        self,
+        periods: list[str],
+        source_identifier: str = &#34;data source&#34;,
+        min_periods: int = 1,
+    ) -&gt; None:
+        &#34;&#34;&#34;Validate that at least *min_periods* periods are present.&#34;&#34;&#34;
+        if not periods:
+            raise ReadError(f&#34;No periods found in {source_identifier}&#34;, source=source_identifier)
+        if len(periods) &lt; min_periods:
+            raise ReadError(
+                f&#34;Insufficient periods in {source_identifier}. Found {len(periods)}, minimum required: {min_periods}&#34;,
+                source=source_identifier,
+            )
+
+    # Numeric validation -------------------------------------------------
+    def validate_numeric_value(
+        self,
+        value: Any,
+        item_name: str,
+        period: str,
+        collector: ValidationResultCollector | None = None,
+        allow_conversion: bool = True,
+    ) -&gt; tuple[bool, float | None]:
+        &#34;&#34;&#34;Validate and optionally convert *value* to ``float``.
+
+        This refactored implementation keeps branching readable while
+        reducing the total number of ``return`` statements to comply with
+        lint rule *PLR0911* (≤ 6 distinct returns).
+        &#34;&#34;&#34;
+        import numpy as np
+        import pandas as pd
+
+        def _record_failure(msg: str) -&gt; None:
+            if collector is not None:
+                collector.add_result(item_name, False, msg)
+
+        # Case 1 - value is explicitly missing / NaN ---------------------------------
+        if pd.isna(value) or value is None:
+            return True, None
+
+        is_valid: bool = True
+        numeric_value: float | None = None
+
+        # Case 2 - numeric input ------------------------------------------------------
+        if isinstance(value, (int, float)):  # noqa: UP038
+            numeric_value = float(value)
+            if not np.isfinite(numeric_value):
+                is_valid = False
+                _record_failure(f&#34;Non-finite numeric value &#39;{value}&#39; for period &#39;{period}&#39;&#34;)
+
+        # Case 3 - attempt conversion -------------------------------------------------
+        elif allow_conversion:
+            try:
+                numeric_value = float(value)
+                if not np.isfinite(numeric_value):
+                    is_valid = False
+                    _record_failure(f&#34;Converted to non-finite value &#39;{numeric_value}&#39; for period &#39;{period}&#39;&#34;)
+            except (ValueError, TypeError):
+                is_valid = False
+                _record_failure(f&#34;Non-numeric value &#39;{value}&#39; for period &#39;{period}&#39;&#34;)
+
+        # Case 4 - conversion not allowed --------------------------------------------
+        else:
+            is_valid = False
+            _record_failure(f&#34;Non-numeric value &#39;{value}&#39; for period &#39;{period}&#39;&#34;)
+
+        return is_valid, numeric_value if is_valid else None
+
+    # Node-name helper ---------------------------------------------------
+    def validate_node_name(self, node_name: Any, *, allow_empty: bool = False) -&gt; tuple[bool, str | None]:
+        &#34;&#34;&#34;Validate a node name, ensuring it is not empty.&#34;&#34;&#34;
+        import pandas as pd
+
+        if pd.isna(node_name) or node_name is None:
+            return allow_empty, None
+        if not node_name or (isinstance(node_name, str) and not node_name.strip()):
+            return allow_empty, None
+        return True, str(node_name).strip()
+
+    # Summary ------------------------------------------------------------
+    def create_validation_summary(
+        self,
+        collector: ValidationResultCollector,
+        source_identifier: str,
+        *,
+        operation: str = &#34;processing&#34;,
+    ) -&gt; str:
+        &#34;&#34;&#34;Create a concise summary message from a validation collector.&#34;&#34;&#34;
+        if not collector.has_errors():
+            return f&#34;Successfully completed {operation} {source_identifier}&#34;
+        errors = &#34;; &#34;.join(collector.errors[:MAX_ERROR_PREVIEW])
+        if len(collector.errors) &gt; MAX_ERROR_PREVIEW:
+            errors += f&#34; (and {len(collector.errors) - MAX_ERROR_PREVIEW} more errors)&#34;
+        return f&#34;Validation errors occurred during {operation} {source_identifier}: {errors}&#34;</code></pre>
+</details>
+<div class="desc"><p>Provides reusable dataframe/series validation helpers for readers.</p>
+<p>Initialise ValidationMixin state and propagate to next MRO element.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase" href="../dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase">DataFrameReaderBase</a></li>
+<li><a title="fin_statement_model.io.formats.dict_reader.DictReader" href="../../formats/dict_reader.html#fin_statement_model.io.formats.dict_reader.DictReader">DictReader</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationMixin.create_validation_summary"><code class="name flex">
+<span>def <span class="ident">create_validation_summary</span></span>(<span>self,<br>collector: <a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector" href="#fin_statement_model.io.core.mixins.validation.ValidationResultCollector">ValidationResultCollector</a>,<br>source_identifier: str,<br>*,<br>operation: str = 'processing') ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_validation_summary(
+    self,
+    collector: ValidationResultCollector,
+    source_identifier: str,
+    *,
+    operation: str = &#34;processing&#34;,
+) -&gt; str:
+    &#34;&#34;&#34;Create a concise summary message from a validation collector.&#34;&#34;&#34;
+    if not collector.has_errors():
+        return f&#34;Successfully completed {operation} {source_identifier}&#34;
+    errors = &#34;; &#34;.join(collector.errors[:MAX_ERROR_PREVIEW])
+    if len(collector.errors) &gt; MAX_ERROR_PREVIEW:
+        errors += f&#34; (and {len(collector.errors) - MAX_ERROR_PREVIEW} more errors)&#34;
+    return f&#34;Validation errors occurred during {operation} {source_identifier}: {errors}&#34;</code></pre>
+</details>
+<div class="desc"><p>Create a concise summary message from a validation collector.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationMixin.get_validation_context"><code class="name flex">
+<span>def <span class="ident">get_validation_context</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_validation_context(self) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Return a shallow copy of the current validation context mapping.&#34;&#34;&#34;
+    return self._validation_context.copy()</code></pre>
+</details>
+<div class="desc"><p>Return a shallow copy of the current validation context mapping.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationMixin.set_validation_context"><code class="name flex">
+<span>def <span class="ident">set_validation_context</span></span>(<span>self, **context: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_validation_context(self, **context: Any) -&gt; None:
+    &#34;&#34;&#34;Store arbitrary context (e.g., file path) for inclusion in reports.&#34;&#34;&#34;
+    self._validation_context.update(context)</code></pre>
+</details>
+<div class="desc"><p>Store arbitrary context (e.g., file path) for inclusion in reports.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_column_bounds"><code class="name flex">
+<span>def <span class="ident">validate_column_bounds</span></span>(<span>self,<br>df: Any,<br>column_index: int,<br>source_identifier: str = 'data source',<br>context: str = 'column') ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_column_bounds(
+    self,
+    df: Any,
+    column_index: int,
+    source_identifier: str = &#34;data source&#34;,
+    context: str = &#34;column&#34;,
+) -&gt; None:
+    &#34;&#34;&#34;Validate that *column_index* is within the bounds of *df.columns*.&#34;&#34;&#34;
+    if not hasattr(df, &#34;columns&#34;):
+        raise ReadError(
+            &#34;Invalid data structure: expected DataFrame with columns attribute&#34;,
+            source=source_identifier,
+        )
+    if column_index &gt;= len(df.columns) or column_index &lt; 0:
+        raise ReadError(
+            f&#34;{context} index ({column_index + 1}) is out of bounds. Found {len(df.columns)} columns.&#34;,
+            source=source_identifier,
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate that <em>column_index</em> is within the bounds of <em>df.columns</em>.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_node_name"><code class="name flex">
+<span>def <span class="ident">validate_node_name</span></span>(<span>self, node_name: Any, *, allow_empty: bool = False) ‑> tuple[bool, str | None]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_node_name(self, node_name: Any, *, allow_empty: bool = False) -&gt; tuple[bool, str | None]:
+    &#34;&#34;&#34;Validate a node name, ensuring it is not empty.&#34;&#34;&#34;
+    import pandas as pd
+
+    if pd.isna(node_name) or node_name is None:
+        return allow_empty, None
+    if not node_name or (isinstance(node_name, str) and not node_name.strip()):
+        return allow_empty, None
+    return True, str(node_name).strip()</code></pre>
+</details>
+<div class="desc"><p>Validate a node name, ensuring it is not empty.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_numeric_value"><code class="name flex">
+<span>def <span class="ident">validate_numeric_value</span></span>(<span>self,<br>value: Any,<br>item_name: str,<br>period: str,<br>collector: <a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector" href="#fin_statement_model.io.core.mixins.validation.ValidationResultCollector">ValidationResultCollector</a> | None = None,<br>allow_conversion: bool = True) ‑> tuple[bool, float | None]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_numeric_value(
+    self,
+    value: Any,
+    item_name: str,
+    period: str,
+    collector: ValidationResultCollector | None = None,
+    allow_conversion: bool = True,
+) -&gt; tuple[bool, float | None]:
+    &#34;&#34;&#34;Validate and optionally convert *value* to ``float``.
+
+    This refactored implementation keeps branching readable while
+    reducing the total number of ``return`` statements to comply with
+    lint rule *PLR0911* (≤ 6 distinct returns).
+    &#34;&#34;&#34;
+    import numpy as np
+    import pandas as pd
+
+    def _record_failure(msg: str) -&gt; None:
+        if collector is not None:
+            collector.add_result(item_name, False, msg)
+
+    # Case 1 - value is explicitly missing / NaN ---------------------------------
+    if pd.isna(value) or value is None:
+        return True, None
+
+    is_valid: bool = True
+    numeric_value: float | None = None
+
+    # Case 2 - numeric input ------------------------------------------------------
+    if isinstance(value, (int, float)):  # noqa: UP038
+        numeric_value = float(value)
+        if not np.isfinite(numeric_value):
+            is_valid = False
+            _record_failure(f&#34;Non-finite numeric value &#39;{value}&#39; for period &#39;{period}&#39;&#34;)
+
+    # Case 3 - attempt conversion -------------------------------------------------
+    elif allow_conversion:
+        try:
+            numeric_value = float(value)
+            if not np.isfinite(numeric_value):
+                is_valid = False
+                _record_failure(f&#34;Converted to non-finite value &#39;{numeric_value}&#39; for period &#39;{period}&#39;&#34;)
+        except (ValueError, TypeError):
+            is_valid = False
+            _record_failure(f&#34;Non-numeric value &#39;{value}&#39; for period &#39;{period}&#39;&#34;)
+
+    # Case 4 - conversion not allowed --------------------------------------------
+    else:
+        is_valid = False
+        _record_failure(f&#34;Non-numeric value &#39;{value}&#39; for period &#39;{period}&#39;&#34;)
+
+    return is_valid, numeric_value if is_valid else None</code></pre>
+</details>
+<div class="desc"><p>Validate and optionally convert <em>value</em> to <code>float</code>.</p>
+<p>This refactored implementation keeps branching readable while
+reducing the total number of <code>return</code> statements to comply with
+lint rule <em>PLR0911</em> (≤ 6 distinct returns).</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_periods_exist"><code class="name flex">
+<span>def <span class="ident">validate_periods_exist</span></span>(<span>self,<br>periods: list[str],<br>source_identifier: str = 'data source',<br>min_periods: int = 1) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_periods_exist(
+    self,
+    periods: list[str],
+    source_identifier: str = &#34;data source&#34;,
+    min_periods: int = 1,
+) -&gt; None:
+    &#34;&#34;&#34;Validate that at least *min_periods* periods are present.&#34;&#34;&#34;
+    if not periods:
+        raise ReadError(f&#34;No periods found in {source_identifier}&#34;, source=source_identifier)
+    if len(periods) &lt; min_periods:
+        raise ReadError(
+            f&#34;Insufficient periods in {source_identifier}. Found {len(periods)}, minimum required: {min_periods}&#34;,
+            source=source_identifier,
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate that at least <em>min_periods</em> periods are present.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_required_columns"><code class="name flex">
+<span>def <span class="ident">validate_required_columns</span></span>(<span>self, df: Any, required: list[str], source_identifier: str = 'data source') ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_required_columns(self, df: Any, required: list[str], source_identifier: str = &#34;data source&#34;) -&gt; None:
+    &#34;&#34;&#34;Ensure *df* contains all *required* columns.
+
+    Raises:
+        ReadError: When one or more columns are missing.
+    &#34;&#34;&#34;
+    if not hasattr(df, &#34;columns&#34;):
+        raise ReadError(
+            &#34;Invalid data structure: expected DataFrame with columns attribute&#34;,
+            source=source_identifier,
+        )
+    missing = set(required) - set(df.columns)
+    if missing:
+        raise ReadError(
+            f&#34;Missing required columns in {source_identifier}: {missing}&#34;,
+            source=source_identifier,
+        )</code></pre>
+</details>
+<div class="desc"><p>Ensure <em>df</em> contains all <em>required</em> columns.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>When one or more columns are missing.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationResultCollector"><code class="flex name class">
+<span>class <span class="ident">ValidationResultCollector</span></span>
+<span>(</span><span>context: dict[str, Any] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ValidationResultCollector:
+    &#34;&#34;&#34;Collects validation results (errors &amp; warnings) during reader processing.&#34;&#34;&#34;
+
+    def __init__(self, context: dict[str, Any] | None = None) -&gt; None:
+        &#34;&#34;&#34;Create a new collector.
+
+        Args:
+            context: Optional context information (e.g., file path) that will
+                be included in summary reports.
+        &#34;&#34;&#34;
+        self.results: list[tuple[str, bool, str, str]] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
+        self.context = context or {}
+        self._categories: dict[str, int] = {}
+
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+    def add_result(self, item_name: str, is_valid: bool, message: str, category: str = &#34;general&#34;) -&gt; None:
+        &#34;&#34;&#34;Record a validation *result* (error or success).
+
+        Args:
+            item_name: Human-readable identifier of the item being validated.
+            is_valid: Whether the validation succeeded.
+            message: Associated message (error/warning/ok information).
+            category: Logical category used for aggregated statistics.
+        &#34;&#34;&#34;
+        self.results.append((item_name, is_valid, message, category))
+        if not is_valid:
+            self.errors.append(f&#34;{item_name}: {message}&#34;)
+            self._categories[category] = self._categories.get(category, 0) + 1
+        elif &#34;warning&#34; in message.lower():
+            self.warnings.append(f&#34;{item_name}: {message}&#34;)
+
+    def add_warning(self, item_name: str, message: str, category: str = &#34;warning&#34;) -&gt; None:
+        &#34;&#34;&#34;Convenience wrapper to add a *warning* result.&#34;&#34;&#34;
+        self.warnings.append(f&#34;{item_name}: {message}&#34;)
+        self.results.append((item_name, True, f&#34;WARNING: {message}&#34;, category))
+
+    # Simple accessors ---------------------------------------------------
+    def has_errors(self) -&gt; bool:
+        &#34;&#34;&#34;Return ``True`` when any validation errors have been recorded.&#34;&#34;&#34;
+        return bool(self.errors)
+
+    def has_warnings(self) -&gt; bool:
+        &#34;&#34;&#34;Return ``True`` if one or more warnings were recorded.&#34;&#34;&#34;
+        return bool(self.warnings)
+
+    def get_error_count_by_category(self) -&gt; dict[str, int]:
+        &#34;&#34;&#34;Return aggregated error counts keyed by *category*.&#34;&#34;&#34;
+        return self._categories.copy()
+
+    def get_items_with_errors(self) -&gt; list[str]:
+        &#34;&#34;&#34;Return the set of item names that failed validation.&#34;&#34;&#34;
+        return [item for item, valid, _, _ in self.results if not valid]
+
+    def get_summary(self) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Return a machine-readable summary of collected validation results.&#34;&#34;&#34;
+        total = len(self.results)
+        valid = sum(1 for _, is_valid, _, _ in self.results if is_valid)
+        return {
+            &#34;total&#34;: total,
+            &#34;valid&#34;: valid,
+            &#34;invalid&#34;: total - valid,
+            &#34;errors&#34;: self.errors.copy(),
+            &#34;warnings&#34;: self.warnings.copy(),
+            &#34;error_rate&#34;: (total - valid) / total if total else 0.0,
+            &#34;warning_count&#34;: len(self.warnings),
+            &#34;categories&#34;: self._categories.copy(),
+            &#34;context&#34;: self.context.copy(),
+            &#34;items_with_errors&#34;: self.get_items_with_errors(),
+        }
+
+    # Mutating helpers ---------------------------------------------------
+    def clear(self) -&gt; None:
+        &#34;&#34;&#34;Reset the collector, discarding **all** stored results.&#34;&#34;&#34;
+        self.results.clear()
+        self.errors.clear()
+        self.warnings.clear()
+        self._categories.clear()
+
+    def merge(self, other: ValidationResultCollector) -&gt; None:
+        &#34;&#34;&#34;Merge *other* collector contents into *self*.&#34;&#34;&#34;
+        for item, valid, message, category in other.results:
+            self.add_result(item, valid, message, category)
+
+    # Pretty print -------------------------------------------------------
+    def get_detailed_report(self) -&gt; str:
+        &#34;&#34;&#34;Return a human-readable multi-line validation report.&#34;&#34;&#34;
+        summary = self.get_summary()
+        lines: list[str] = [
+            &#34;=== Validation Report ===&#34;,
+            f&#34;Total items processed: {summary[&#39;total&#39;]}&#34;,
+            f&#34;Valid items: {summary[&#39;valid&#39;]}&#34;,
+            f&#34;Invalid items: {summary[&#39;invalid&#39;]}&#34;,
+            f&#34;Warnings: {summary[&#39;warning_count&#39;]}&#34;,
+            f&#34;Overall success rate: {(1 - summary[&#39;error_rate&#39;]) * 100:.1f}%&#34;,
+        ]
+        if self.errors:
+            lines.append(&#34;\n--- First 10 Errors ---&#34;)
+            lines.extend(f&#34;  * {e}&#34; for e in self.errors[:MAX_ERROR_PREVIEW])
+            if len(self.errors) &gt; MAX_ERROR_PREVIEW:
+                lines.append(f&#34;  ... and {len(self.errors) - MAX_ERROR_PREVIEW} more errors&#34;)
+        if self.warnings:
+            lines.append(&#34;\n--- First 5 Warnings ---&#34;)
+            lines.extend(f&#34;  * {w}&#34; for w in self.warnings[:MAX_WARNING_PREVIEW])
+            if len(self.warnings) &gt; MAX_WARNING_PREVIEW:
+                lines.append(f&#34;  ... and {len(self.warnings) - MAX_WARNING_PREVIEW} more warnings&#34;)
+        return &#34;\n&#34;.join(lines)</code></pre>
+</details>
+<div class="desc"><p>Collects validation results (errors &amp; warnings) during reader processing.</p>
+<p>Create a new collector.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>context</code></strong></dt>
+<dd>Optional context information (e.g., file path) that will
+be included in summary reports.</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.add_result"><code class="name flex">
+<span>def <span class="ident">add_result</span></span>(<span>self, item_name: str, is_valid: bool, message: str, category: str = 'general') ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_result(self, item_name: str, is_valid: bool, message: str, category: str = &#34;general&#34;) -&gt; None:
+    &#34;&#34;&#34;Record a validation *result* (error or success).
+
+    Args:
+        item_name: Human-readable identifier of the item being validated.
+        is_valid: Whether the validation succeeded.
+        message: Associated message (error/warning/ok information).
+        category: Logical category used for aggregated statistics.
+    &#34;&#34;&#34;
+    self.results.append((item_name, is_valid, message, category))
+    if not is_valid:
+        self.errors.append(f&#34;{item_name}: {message}&#34;)
+        self._categories[category] = self._categories.get(category, 0) + 1
+    elif &#34;warning&#34; in message.lower():
+        self.warnings.append(f&#34;{item_name}: {message}&#34;)</code></pre>
+</details>
+<div class="desc"><p>Record a validation <em>result</em> (error or success).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>item_name</code></strong></dt>
+<dd>Human-readable identifier of the item being validated.</dd>
+<dt><strong><code>is_valid</code></strong></dt>
+<dd>Whether the validation succeeded.</dd>
+<dt><strong><code>message</code></strong></dt>
+<dd>Associated message (error/warning/ok information).</dd>
+<dt><strong><code>category</code></strong></dt>
+<dd>Logical category used for aggregated statistics.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.add_warning"><code class="name flex">
+<span>def <span class="ident">add_warning</span></span>(<span>self, item_name: str, message: str, category: str = 'warning') ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_warning(self, item_name: str, message: str, category: str = &#34;warning&#34;) -&gt; None:
+    &#34;&#34;&#34;Convenience wrapper to add a *warning* result.&#34;&#34;&#34;
+    self.warnings.append(f&#34;{item_name}: {message}&#34;)
+    self.results.append((item_name, True, f&#34;WARNING: {message}&#34;, category))</code></pre>
+</details>
+<div class="desc"><p>Convenience wrapper to add a <em>warning</em> result.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.clear"><code class="name flex">
+<span>def <span class="ident">clear</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear(self) -&gt; None:
+    &#34;&#34;&#34;Reset the collector, discarding **all** stored results.&#34;&#34;&#34;
+    self.results.clear()
+    self.errors.clear()
+    self.warnings.clear()
+    self._categories.clear()</code></pre>
+</details>
+<div class="desc"><p>Reset the collector, discarding <strong>all</strong> stored results.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.get_detailed_report"><code class="name flex">
+<span>def <span class="ident">get_detailed_report</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_detailed_report(self) -&gt; str:
+    &#34;&#34;&#34;Return a human-readable multi-line validation report.&#34;&#34;&#34;
+    summary = self.get_summary()
+    lines: list[str] = [
+        &#34;=== Validation Report ===&#34;,
+        f&#34;Total items processed: {summary[&#39;total&#39;]}&#34;,
+        f&#34;Valid items: {summary[&#39;valid&#39;]}&#34;,
+        f&#34;Invalid items: {summary[&#39;invalid&#39;]}&#34;,
+        f&#34;Warnings: {summary[&#39;warning_count&#39;]}&#34;,
+        f&#34;Overall success rate: {(1 - summary[&#39;error_rate&#39;]) * 100:.1f}%&#34;,
+    ]
+    if self.errors:
+        lines.append(&#34;\n--- First 10 Errors ---&#34;)
+        lines.extend(f&#34;  * {e}&#34; for e in self.errors[:MAX_ERROR_PREVIEW])
+        if len(self.errors) &gt; MAX_ERROR_PREVIEW:
+            lines.append(f&#34;  ... and {len(self.errors) - MAX_ERROR_PREVIEW} more errors&#34;)
+    if self.warnings:
+        lines.append(&#34;\n--- First 5 Warnings ---&#34;)
+        lines.extend(f&#34;  * {w}&#34; for w in self.warnings[:MAX_WARNING_PREVIEW])
+        if len(self.warnings) &gt; MAX_WARNING_PREVIEW:
+            lines.append(f&#34;  ... and {len(self.warnings) - MAX_WARNING_PREVIEW} more warnings&#34;)
+    return &#34;\n&#34;.join(lines)</code></pre>
+</details>
+<div class="desc"><p>Return a human-readable multi-line validation report.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.get_error_count_by_category"><code class="name flex">
+<span>def <span class="ident">get_error_count_by_category</span></span>(<span>self) ‑> dict[str, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_error_count_by_category(self) -&gt; dict[str, int]:
+    &#34;&#34;&#34;Return aggregated error counts keyed by *category*.&#34;&#34;&#34;
+    return self._categories.copy()</code></pre>
+</details>
+<div class="desc"><p>Return aggregated error counts keyed by <em>category</em>.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.get_items_with_errors"><code class="name flex">
+<span>def <span class="ident">get_items_with_errors</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_items_with_errors(self) -&gt; list[str]:
+    &#34;&#34;&#34;Return the set of item names that failed validation.&#34;&#34;&#34;
+    return [item for item, valid, _, _ in self.results if not valid]</code></pre>
+</details>
+<div class="desc"><p>Return the set of item names that failed validation.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.get_summary"><code class="name flex">
+<span>def <span class="ident">get_summary</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_summary(self) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Return a machine-readable summary of collected validation results.&#34;&#34;&#34;
+    total = len(self.results)
+    valid = sum(1 for _, is_valid, _, _ in self.results if is_valid)
+    return {
+        &#34;total&#34;: total,
+        &#34;valid&#34;: valid,
+        &#34;invalid&#34;: total - valid,
+        &#34;errors&#34;: self.errors.copy(),
+        &#34;warnings&#34;: self.warnings.copy(),
+        &#34;error_rate&#34;: (total - valid) / total if total else 0.0,
+        &#34;warning_count&#34;: len(self.warnings),
+        &#34;categories&#34;: self._categories.copy(),
+        &#34;context&#34;: self.context.copy(),
+        &#34;items_with_errors&#34;: self.get_items_with_errors(),
+    }</code></pre>
+</details>
+<div class="desc"><p>Return a machine-readable summary of collected validation results.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.has_errors"><code class="name flex">
+<span>def <span class="ident">has_errors</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_errors(self) -&gt; bool:
+    &#34;&#34;&#34;Return ``True`` when any validation errors have been recorded.&#34;&#34;&#34;
+    return bool(self.errors)</code></pre>
+</details>
+<div class="desc"><p>Return <code>True</code> when any validation errors have been recorded.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.has_warnings"><code class="name flex">
+<span>def <span class="ident">has_warnings</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_warnings(self) -&gt; bool:
+    &#34;&#34;&#34;Return ``True`` if one or more warnings were recorded.&#34;&#34;&#34;
+    return bool(self.warnings)</code></pre>
+</details>
+<div class="desc"><p>Return <code>True</code> if one or more warnings were recorded.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.merge"><code class="name flex">
+<span>def <span class="ident">merge</span></span>(<span>self,<br>other: <a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector" href="#fin_statement_model.io.core.mixins.validation.ValidationResultCollector">ValidationResultCollector</a>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def merge(self, other: ValidationResultCollector) -&gt; None:
+    &#34;&#34;&#34;Merge *other* collector contents into *self*.&#34;&#34;&#34;
+    for item, valid, message, category in other.results:
+        self.add_result(item, valid, message, category)</code></pre>
+</details>
+<div class="desc"><p>Merge <em>other</em> collector contents into <em>self</em>.</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.io.core.mixins" href="index.html">fin_statement_model.io.core.mixins</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin" href="#fin_statement_model.io.core.mixins.validation.ValidationMixin">ValidationMixin</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.create_validation_summary" href="#fin_statement_model.io.core.mixins.validation.ValidationMixin.create_validation_summary">create_validation_summary</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.get_validation_context" href="#fin_statement_model.io.core.mixins.validation.ValidationMixin.get_validation_context">get_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.set_validation_context" href="#fin_statement_model.io.core.mixins.validation.ValidationMixin.set_validation_context">set_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_column_bounds" href="#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_column_bounds">validate_column_bounds</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_node_name" href="#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_node_name">validate_node_name</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_numeric_value" href="#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_numeric_value">validate_numeric_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_periods_exist" href="#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_periods_exist">validate_periods_exist</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_required_columns" href="#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_required_columns">validate_required_columns</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector" href="#fin_statement_model.io.core.mixins.validation.ValidationResultCollector">ValidationResultCollector</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.add_result" href="#fin_statement_model.io.core.mixins.validation.ValidationResultCollector.add_result">add_result</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.add_warning" href="#fin_statement_model.io.core.mixins.validation.ValidationResultCollector.add_warning">add_warning</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.clear" href="#fin_statement_model.io.core.mixins.validation.ValidationResultCollector.clear">clear</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.get_detailed_report" href="#fin_statement_model.io.core.mixins.validation.ValidationResultCollector.get_detailed_report">get_detailed_report</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.get_error_count_by_category" href="#fin_statement_model.io.core.mixins.validation.ValidationResultCollector.get_error_count_by_category">get_error_count_by_category</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.get_items_with_errors" href="#fin_statement_model.io.core.mixins.validation.ValidationResultCollector.get_items_with_errors">get_items_with_errors</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.get_summary" href="#fin_statement_model.io.core.mixins.validation.ValidationResultCollector.get_summary">get_summary</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.has_errors" href="#fin_statement_model.io.core.mixins.validation.ValidationResultCollector.has_errors">has_errors</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.has_warnings" href="#fin_statement_model.io.core.mixins.validation.ValidationResultCollector.has_warnings">has_warnings</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector.merge" href="#fin_statement_model.io.core.mixins.validation.ValidationResultCollector.merge">merge</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

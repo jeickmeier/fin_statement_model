@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.config.store API documentation</title>
+<meta name="description" content="Thread-safe runtime configuration store for the financial statement model …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.config.store</code></h1>
+</header>
+<section id="section-intro">
+<p>Thread-safe runtime configuration store for the financial statement model.</p>
+<p>This module provides the <code><a title="fin_statement_model.config.store.ConfigStore" href="#fin_statement_model.config.store.ConfigStore">ConfigStore</a></code> class, a thread-safe container that manages
+the application's configuration state. It builds upon the stateless <code>ConfigLoader</code>
+by adding a mutable in-memory layer for runtime overrides.</p>
+<p>The primary public API is exposed through the singleton instance <code>_runtime_store</code>
+and its helper functions:
+- <code><a title="fin_statement_model.config.store.get_config" href="#fin_statement_model.config.store.get_config">get_config()</a></code>: Returns the currently active <code>Config</code> object.
+- <code><a title="fin_statement_model.config.store.update_config" href="#fin_statement_model.config.store.update_config">update_config()</a></code>: Merges a dictionary of updates into the runtime configuration.</p>
+<p>This module is the designated place for managing stateful configuration. It is
+designed to be imported by other parts of the library that need to access or
+modify the global configuration.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.config import get_config, update_config
+&gt;&gt;&gt; original_level = get_config().logging.level
+&gt;&gt;&gt; update_config({&quot;logging&quot;: {&quot;level&quot;: &quot;DEBUG&quot;}})
+&gt;&gt;&gt; get_config().logging.level
+'DEBUG'
+&gt;&gt;&gt; # Restore original config for subsequent tests
+&gt;&gt;&gt; update_config({&quot;logging&quot;: {&quot;level&quot;: original_level}})
+</code></pre>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.config.store.get_config"><code class="name flex">
+<span>def <span class="ident">get_config</span></span>(<span>) ‑> Config</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_config() -&gt; Config:
+    &#34;&#34;&#34;Return the effective global configuration singleton.
+
+    This is the primary helper for accessing configuration throughout the library.
+    It delegates to the `get()` method of the internal `_runtime_store` singleton.
+
+    Returns:
+        The active, validated `Config` instance.
+    &#34;&#34;&#34;
+    return _runtime_store.get()</code></pre>
+</details>
+<div class="desc"><p>Return the effective global configuration singleton.</p>
+<p>This is the primary helper for accessing configuration throughout the library.
+It delegates to the <code>get()</code> method of the internal <code>_runtime_store</code> singleton.</p>
+<h2 id="returns">Returns</h2>
+<p>The active, validated <code>Config</code> instance.</p></div>
+</dd>
+<dt id="fin_statement_model.config.store.update_config"><code class="name flex">
+<span>def <span class="ident">update_config</span></span>(<span>updates: dict[str, Any]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_config(updates: dict[str, Any]) -&gt; None:
+    &#34;&#34;&#34;Apply `updates` to the global configuration singleton.
+
+    This is the primary helper for modifying configuration at runtime. It performs
+    a deep merge of the provided dictionary into the current runtime overrides.
+
+    Args:
+        updates: A dictionary of configuration values to merge.
+    &#34;&#34;&#34;
+    _runtime_store.update(updates)</code></pre>
+</details>
+<div class="desc"><p>Apply <code>updates</code> to the global configuration singleton.</p>
+<p>This is the primary helper for modifying configuration at runtime. It performs
+a deep merge of the provided dictionary into the current runtime overrides.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>updates</code></strong></dt>
+<dd>A dictionary of configuration values to merge.</dd>
+</dl></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.config.store.ConfigStore"><code class="flex name class">
+<span>class <span class="ident">ConfigStore</span></span>
+<span>(</span><span>*, config_file: Path | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ConfigStore:
+    &#34;&#34;&#34;Manage the *current* configuration plus runtime overrides.
+
+    The store is intentionally lightweight - it defers all loading and merging
+    logic to :class:`~fin_statement_model.config.loader.ConfigLoader`, adding
+    only thread-safety and a cache layer.
+
+    Instances of this class are not typically created directly. Instead, the
+    module-level singleton `_runtime_store` is used via the `get_config` and
+    `update_config` helpers.
+    &#34;&#34;&#34;
+
+    def __init__(self, *, config_file: Path | None = None):
+        &#34;&#34;&#34;Create a new ConfigStore instance.
+
+        Args:
+            config_file: Optional path to an explicit configuration file that
+                should be used as the primary source.  When *None*, the loader
+                follows its default lookup strategy (cwd, env var, etc.).
+        &#34;&#34;&#34;
+        self._lock: RLock = RLock()
+        self._loader = ConfigLoader(config_file=config_file)
+        self._runtime_overrides: dict[str, Any] = {}
+        self._config: Config | None = None
+
+    # ------------------------------------------------------------------
+    # Public helpers
+    # ------------------------------------------------------------------
+
+    def get(self) -&gt; Config:
+        &#34;&#34;&#34;Return the effective configuration, loading on-demand.
+
+        If the configuration has not yet been loaded, this method will trigger
+        the `ConfigLoader` to build it from all sources (defaults, files, env).
+        The result is cached. If `update()` has been called, the cache is
+        invalidated and the configuration is reloaded on the next call to `get()`.
+
+        Returns:
+            The currently active, validated `Config` instance.
+        &#34;&#34;&#34;
+        with self._lock:
+            if self._config is None:
+                self._config = self._loader.load(runtime_overrides=self._runtime_overrides)
+                # Apply logging setup whenever we (re)load configuration
+                apply_logging_config(self._config)
+            return self._config
+
+    def update(self, updates: dict[str, Any]) -&gt; None:
+        &#34;&#34;&#34;Merge `updates` into runtime overrides and invalidate the cache.
+
+        This method performs a deep merge of the provided dictionary into the
+        existing runtime overrides. After the merge, it clears the internal
+
+        configuration cache, ensuring that the next call to `get()` will
+        re-evaluate the configuration with the new overrides applied.
+
+        It also triggers the logging hook to immediately apply any changes
+        to the logging configuration.
+
+        Args:
+            updates: A dictionary of configuration values to merge.
+        &#34;&#34;&#34;
+        with self._lock:
+            self._runtime_overrides = deep_merge(self._runtime_overrides, updates)
+            # Reset cached config → will be lazily re-loaded on next *get*.
+            self._config = None
+
+            # Apply logging immediately after updating overrides
+            cfg_after = self.get()
+            apply_logging_config(cfg_after)
+
+    # ------------------------------------------------------------------
+    # Persistence helpers (identical semantics to original manager)
+    # ------------------------------------------------------------------
+
+    def save(self, to: Path | None = None) -&gt; None:
+        &#34;&#34;&#34;Persist the *current* configuration to a YAML file atomically.
+
+        This method writes the state of the *currently active* configuration
+        (including all overrides) to a YAML file. The operation is atomic,
+        meaning it first writes to a temporary file and then replaces the
+        target, preventing corruption if the process is interrupted.
+
+        Args:
+            to: The file path to save to. If `None`, it uses the
+                `config_file_path` from the loaded configuration, if available.
+
+        Raises:
+            ConfigurationError: If no target path can be determined.
+        &#34;&#34;&#34;
+        cfg = self.get()
+        target_path = to or cfg.config_file_path
+        if target_path is None:
+            raise ConfigurationError(&#34;No target path specified for saving configuration&#34;)
+
+        try:
+            tmp_fd, tmp_path_str = tempfile.mkstemp(dir=str(Path(target_path).parent))
+            tmp_path = Path(tmp_path_str)
+            with tmp_path.open(&#34;w&#34;, encoding=&#34;utf-8&#34;) as f:
+                f.write(cfg.to_yaml())
+            # Close and replace atomically
+            import os
+
+            os.close(tmp_fd)
+            tmp_path.replace(target_path)
+            logger.debug(&#34;Configuration saved to %s&#34;, target_path)
+        except Exception:
+            # logger.exception already logs the stack trace; include path context only
+            logger.exception(&#34;Failed to save configuration to %s&#34;, target_path)
+            raise
+
+    # ------------------------------------------------------------------
+    # Backwards-compat private helpers (used by test suite)
+    # ------------------------------------------------------------------
+
+    def _extract_env_overrides(self) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Expose the loader&#39;s private env parsing helper for tests.&#34;&#34;&#34;
+        return self._loader._extract_env_overrides()
+
+    def _load_file(self, path: Path) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Forward to ConfigLoader._load_file for tests convenience.&#34;&#34;&#34;
+        return self._loader._load_file(path)</code></pre>
+</details>
+<div class="desc"><p>Manage the <em>current</em> configuration plus runtime overrides.</p>
+<p>The store is intentionally lightweight - it defers all loading and merging
+logic to :class:<code>~fin_statement_model.config.loader.ConfigLoader</code>, adding
+only thread-safety and a cache layer.</p>
+<p>Instances of this class are not typically created directly. Instead, the
+module-level singleton <code>_runtime_store</code> is used via the <code><a title="fin_statement_model.config.store.get_config" href="#fin_statement_model.config.store.get_config">get_config()</a></code> and
+<code><a title="fin_statement_model.config.store.update_config" href="#fin_statement_model.config.store.update_config">update_config()</a></code> helpers.</p>
+<p>Create a new ConfigStore instance.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config_file</code></strong></dt>
+<dd>Optional path to an explicit configuration file that
+should be used as the primary source.
+When <em>None</em>, the loader
+follows its default lookup strategy (cwd, env var, etc.).</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.config.store.ConfigStore.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>self) ‑> Config</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get(self) -&gt; Config:
+    &#34;&#34;&#34;Return the effective configuration, loading on-demand.
+
+    If the configuration has not yet been loaded, this method will trigger
+    the `ConfigLoader` to build it from all sources (defaults, files, env).
+    The result is cached. If `update()` has been called, the cache is
+    invalidated and the configuration is reloaded on the next call to `get()`.
+
+    Returns:
+        The currently active, validated `Config` instance.
+    &#34;&#34;&#34;
+    with self._lock:
+        if self._config is None:
+            self._config = self._loader.load(runtime_overrides=self._runtime_overrides)
+            # Apply logging setup whenever we (re)load configuration
+            apply_logging_config(self._config)
+        return self._config</code></pre>
+</details>
+<div class="desc"><p>Return the effective configuration, loading on-demand.</p>
+<p>If the configuration has not yet been loaded, this method will trigger
+the <code>ConfigLoader</code> to build it from all sources (defaults, files, env).
+The result is cached. If <code>update()</code> has been called, the cache is
+invalidated and the configuration is reloaded on the next call to <code>get()</code>.</p>
+<h2 id="returns">Returns</h2>
+<p>The currently active, validated <code>Config</code> instance.</p></div>
+</dd>
+<dt id="fin_statement_model.config.store.ConfigStore.save"><code class="name flex">
+<span>def <span class="ident">save</span></span>(<span>self, to: Path | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save(self, to: Path | None = None) -&gt; None:
+    &#34;&#34;&#34;Persist the *current* configuration to a YAML file atomically.
+
+    This method writes the state of the *currently active* configuration
+    (including all overrides) to a YAML file. The operation is atomic,
+    meaning it first writes to a temporary file and then replaces the
+    target, preventing corruption if the process is interrupted.
+
+    Args:
+        to: The file path to save to. If `None`, it uses the
+            `config_file_path` from the loaded configuration, if available.
+
+    Raises:
+        ConfigurationError: If no target path can be determined.
+    &#34;&#34;&#34;
+    cfg = self.get()
+    target_path = to or cfg.config_file_path
+    if target_path is None:
+        raise ConfigurationError(&#34;No target path specified for saving configuration&#34;)
+
+    try:
+        tmp_fd, tmp_path_str = tempfile.mkstemp(dir=str(Path(target_path).parent))
+        tmp_path = Path(tmp_path_str)
+        with tmp_path.open(&#34;w&#34;, encoding=&#34;utf-8&#34;) as f:
+            f.write(cfg.to_yaml())
+        # Close and replace atomically
+        import os
+
+        os.close(tmp_fd)
+        tmp_path.replace(target_path)
+        logger.debug(&#34;Configuration saved to %s&#34;, target_path)
+    except Exception:
+        # logger.exception already logs the stack trace; include path context only
+        logger.exception(&#34;Failed to save configuration to %s&#34;, target_path)
+        raise</code></pre>
+</details>
+<div class="desc"><p>Persist the <em>current</em> configuration to a YAML file atomically.</p>
+<p>This method writes the state of the <em>currently active</em> configuration
+(including all overrides) to a YAML file. The operation is atomic,
+meaning it first writes to a temporary file and then replaces the
+target, preventing corruption if the process is interrupted.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>to</code></strong></dt>
+<dd>The file path to save to. If <code>None</code>, it uses the
+<code>config_file_path</code> from the loaded configuration, if available.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.config.store.ConfigurationError" href="#fin_statement_model.config.store.ConfigurationError">ConfigurationError</a></code></dt>
+<dd>If no target path can be determined.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.config.store.ConfigStore.update"><code class="name flex">
+<span>def <span class="ident">update</span></span>(<span>self, updates: dict[str, Any]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update(self, updates: dict[str, Any]) -&gt; None:
+    &#34;&#34;&#34;Merge `updates` into runtime overrides and invalidate the cache.
+
+    This method performs a deep merge of the provided dictionary into the
+    existing runtime overrides. After the merge, it clears the internal
+
+    configuration cache, ensuring that the next call to `get()` will
+    re-evaluate the configuration with the new overrides applied.
+
+    It also triggers the logging hook to immediately apply any changes
+    to the logging configuration.
+
+    Args:
+        updates: A dictionary of configuration values to merge.
+    &#34;&#34;&#34;
+    with self._lock:
+        self._runtime_overrides = deep_merge(self._runtime_overrides, updates)
+        # Reset cached config → will be lazily re-loaded on next *get*.
+        self._config = None
+
+        # Apply logging immediately after updating overrides
+        cfg_after = self.get()
+        apply_logging_config(cfg_after)</code></pre>
+</details>
+<div class="desc"><p>Merge <code>updates</code> into runtime overrides and invalidate the cache.</p>
+<p>This method performs a deep merge of the provided dictionary into the
+existing runtime overrides. After the merge, it clears the internal</p>
+<p>configuration cache, ensuring that the next call to <code>get()</code> will
+re-evaluate the configuration with the new overrides applied.</p>
+<p>It also triggers the logging hook to immediately apply any changes
+to the logging configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>updates</code></strong></dt>
+<dd>A dictionary of configuration values to merge.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.config.store.ConfigurationError"><code class="flex name class">
+<span>class <span class="ident">ConfigurationError</span></span>
+<span>(</span><span>message: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ConfigurationError(FinStatementModelError):
+    &#34;&#34;&#34;Exception raised for configuration-related errors.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Exception raised for configuration-related errors.</p>
+<p>Initialize the FinancialModelError.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong></dt>
+<dd>A human-readable description of the error.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.errors.FinancialModelError" href="../core/errors.html#fin_statement_model.core.errors.FinancialModelError">FinancialModelError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.config" href="index.html">fin_statement_model.config</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.config.store.get_config" href="#fin_statement_model.config.store.get_config">get_config</a></code></li>
+<li><code><a title="fin_statement_model.config.store.update_config" href="#fin_statement_model.config.store.update_config">update_config</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.config.store.ConfigStore" href="#fin_statement_model.config.store.ConfigStore">ConfigStore</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.config.store.ConfigStore.get" href="#fin_statement_model.config.store.ConfigStore.get">get</a></code></li>
+<li><code><a title="fin_statement_model.config.store.ConfigStore.save" href="#fin_statement_model.config.store.ConfigStore.save">save</a></code></li>
+<li><code><a title="fin_statement_model.config.store.ConfigStore.update" href="#fin_statement_model.config.store.ConfigStore.update">update</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.config.store.ConfigurationError" href="#fin_statement_model.config.store.ConfigurationError">ConfigurationError</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

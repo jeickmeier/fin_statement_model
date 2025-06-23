@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.forecasting.forecaster.node_forecast API documentation</title>
+<meta name="description" content="Helpers for single-node forecasting operations …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.forecasting.forecaster.node_forecast</code></h1>
+</header>
+<section id="section-intro">
+<p>Helpers for single-node forecasting operations.</p>
+<p>This module provides functions for forecasting the values of a single node in a financial statement graph.
+It includes both mutating (in-place) and non-mutating (pure) forecast operations, as well as internal
+utilities for value clamping and error handling.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.forecasting.forecaster.node_forecast import forecast_node_non_mutating
+&gt;&gt;&gt; values = forecast_node_non_mutating(fsg, node_name=&quot;revenue&quot;, forecast_periods=[&quot;2024&quot;, &quot;2025&quot;])
+&gt;&gt;&gt; assert isinstance(values, dict)
+</code></pre>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.forecasting.forecaster.node_forecast._forecast_node_mutating"><code class="name flex">
+<span>def <span class="ident">_forecast_node_mutating</span></span>(<span>*,<br>node: Node,<br>historical_periods: list[str],<br>forecast_periods: list[str],<br>forecast_config: ForecastConfig,<br>**kwargs: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def _forecast_node_mutating(
+    *,
+    node: Node,
+    historical_periods: list[str],
+    forecast_periods: list[str],
+    forecast_config: ForecastConfig,
+    **kwargs: Any,
+) -&gt; None:
+    &#34;&#34;&#34;Compute forecast values and write them into ``node.values`` in-place.
+
+    This function mutates the node by updating its values for the forecast periods.
+    It is used by StatementForecaster.create_forecast.
+
+    Args:
+        node: The node to forecast (must have a &#39;values&#39; dict).
+        historical_periods: List of historical periods for base values.
+        forecast_periods: List of periods to forecast.
+        forecast_config: Validated forecast configuration.
+        **kwargs: Additional arguments (e.g., bad_forecast_value, allow_negative_forecasts).
+
+    Returns:
+        None. The node is modified in-place.
+
+    Raises:
+        ForecastNodeError: If the node is missing required attributes.
+
+    Example:
+        &gt;&gt;&gt; _forecast_node_mutating(node, [&#34;2022&#34;], [&#34;2023&#34;], forecast_config, bad_forecast_value=0.0)
+    &#34;&#34;&#34;
+    base_period = PeriodManager.determine_base_period(node, historical_periods)
+
+    method = get_forecast_method(forecast_config.method)
+    base_method = cast(&#34;BaseForecastMethod&#34;, method)
+    params = base_method.get_forecast_params(forecast_config.config, forecast_periods)
+
+    tmp_node = NodeFactory.create_forecast_node(
+        name=f&#34;{node.name}_forecast_temp&#34;,
+        base_node=node,
+        base_period=base_period,
+        forecast_periods=forecast_periods,
+        forecast_type=params[&#34;forecast_type&#34;],
+        growth_params=params[&#34;growth_params&#34;],
+    )
+
+    if not hasattr(node, &#34;values&#34;) or not isinstance(node.values, dict):
+        logger.error(&#34;Node %s lacks a &#39;values&#39; dict - cannot store forecast&#34;, node.name)
+        raise ForecastNodeError(f&#34;Node {node.name} lacks a &#39;values&#39; dictionary.&#34;, node_id=node.name)
+
+    bad_value = _calc_bad_value(**kwargs)
+    allow_neg = kwargs.get(&#34;allow_negative_forecasts&#34;, cfg(&#34;forecasting.allow_negative_forecasts&#34;))
+
+    for period in forecast_periods:
+        try:
+            raw_val = tmp_node.calculate(period)
+            val = _clamp(raw_val, allow_neg, bad_value)
+        except (ForecastNodeError, ValueError, ArithmeticError):
+            logger.exception(&#34;Error forecasting %s@%s&#34;, node.name, period)
+            val = bad_value
+        node.values[period] = float(val)
+
+    if hasattr(node, &#34;clear_cache&#34;) and callable(node.clear_cache):
+        node.clear_cache()</code></pre>
+</details>
+<div class="desc"><p>Compute forecast values and write them into <code>node.values</code> in-place.</p>
+<p>This function mutates the node by updating its values for the forecast periods.
+It is used by StatementForecaster.create_forecast.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd>The node to forecast (must have a 'values' dict).</dd>
+<dt><strong><code>historical_periods</code></strong></dt>
+<dd>List of historical periods for base values.</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of periods to forecast.</dd>
+<dt><strong><code>forecast_config</code></strong></dt>
+<dd>Validated forecast configuration.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional arguments (e.g., bad_forecast_value, allow_negative_forecasts).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None. The node is modified in-place.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ForecastNodeError</code></dt>
+<dd>If the node is missing required attributes.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; _forecast_node_mutating(node, [&quot;2022&quot;], [&quot;2023&quot;], forecast_config, bad_forecast_value=0.0)
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.forecasting.forecaster.node_forecast.forecast_node_non_mutating"><code class="name flex">
+<span>def <span class="ident">forecast_node_non_mutating</span></span>(<span>fsg: Any,<br>*,<br>node_name: str,<br>forecast_periods: list[str],<br>base_period: str | None = None,<br>forecast_config: dict[str, Any] | None = None,<br>**kwargs: Any) ‑> dict[str, float]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def forecast_node_non_mutating(
+    fsg: Any,  # FinancialStatementGraph - kept generic to avoid circular import
+    *,
+    node_name: str,
+    forecast_periods: list[str],
+    base_period: str | None = None,
+    forecast_config: dict[str, Any] | None = None,
+    **kwargs: Any,
+) -&gt; dict[str, float]:
+    &#34;&#34;&#34;Return forecast values for a single node without mutating the graph.
+
+    This function is pure and does not modify the graph or node state. It is suitable for
+    what-if analysis, scenario comparison, or retrieving forecast values for reporting.
+
+    Args:
+        fsg: The FinancialStatementGraph instance.
+        node_name: Name of the node to forecast.
+        forecast_periods: List of periods to forecast.
+        base_period: Optional base period to use for forecasting.
+        forecast_config: Optional forecast configuration dict.
+        **kwargs: Additional arguments (e.g., bad_forecast_value, allow_negative_forecasts).
+
+    Returns:
+        Dictionary mapping forecast periods to their calculated values.
+
+    Raises:
+        ForecastNodeError: If the node is not found or configuration is invalid.
+
+    Example:
+        &gt;&gt;&gt; values = forecast_node_non_mutating(fsg, node_name=&#34;revenue&#34;, forecast_periods=[&#34;2024&#34;])
+        &gt;&gt;&gt; assert isinstance(values, dict)
+    &#34;&#34;&#34;
+    node = fsg.get_node(node_name)
+    if node is None:
+        raise ForecastNodeError(
+            f&#34;Node {node_name} not found in graph&#34;,
+            node_id=node_name,
+            available_nodes=list(fsg.nodes.keys()),
+        )
+
+    # Determine historical periods ------------------------------------------------
+    historical_periods = [base_period] if base_period else PeriodManager.infer_historical_periods(fsg, forecast_periods)
+
+    ForecastValidator.validate_forecast_inputs(historical_periods, forecast_periods)
+
+    if forecast_config is None:
+        default_method = cfg(&#34;forecasting.default_method&#34;)
+        forecast_config = {
+            &#34;method&#34;: default_method,
+            &#34;config&#34;: (cfg(&#34;forecasting.default_growth_rate&#34;) if default_method == &#34;simple&#34; else {}),
+        }
+
+    validated_config = ForecastValidator.validate_forecast_config(forecast_config)
+    ForecastValidator.validate_node_for_forecast(node, validated_config.method)
+
+    calc_base_period = PeriodManager.determine_base_period(node, historical_periods, base_period)
+
+    method = get_forecast_method(validated_config.method)
+    base_method = cast(&#34;BaseForecastMethod&#34;, method)
+    params = base_method.get_forecast_params(validated_config.config, forecast_periods)
+
+    try:
+        temp_node = NodeFactory.create_forecast_node(
+            name=f&#34;{node_name}_temp_forecast&#34;,
+            base_node=node,
+            base_period=calc_base_period,
+            forecast_periods=forecast_periods,
+            forecast_type=params[&#34;forecast_type&#34;],
+            growth_params=params[&#34;growth_params&#34;],
+        )
+    except Exception as exc:
+        logger.exception(&#34;Failed to create temp forecast node for %s&#34;, node_name)
+        raise ForecastNodeError(
+            &#34;Could not create temporary forecast node&#34;,
+            node_id=node_name,
+            reason=str(exc),
+        ) from exc
+
+    bad_value = _calc_bad_value(**kwargs)
+    allow_neg = kwargs.get(&#34;allow_negative_forecasts&#34;, cfg(&#34;forecasting.allow_negative_forecasts&#34;))
+
+    results: dict[str, float] = {}
+    for period in forecast_periods:
+        try:
+            val = temp_node.calculate(period)
+            val = _clamp(val, allow_neg, bad_value)
+        except (ForecastNodeError, ValueError, ArithmeticError) as exc:
+            logger.warning(&#34;Error calculating forecast for %s@%s: %s&#34;, node_name, period, exc)
+            val = bad_value
+        results[period] = float(val)
+
+    ForecastValidator.validate_forecast_result(results, forecast_periods, node_name)
+    return results</code></pre>
+</details>
+<div class="desc"><p>Return forecast values for a single node without mutating the graph.</p>
+<p>This function is pure and does not modify the graph or node state. It is suitable for
+what-if analysis, scenario comparison, or retrieving forecast values for reporting.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>fsg</code></strong></dt>
+<dd>The FinancialStatementGraph instance.</dd>
+<dt><strong><code>node_name</code></strong></dt>
+<dd>Name of the node to forecast.</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of periods to forecast.</dd>
+<dt><strong><code>base_period</code></strong></dt>
+<dd>Optional base period to use for forecasting.</dd>
+<dt><strong><code>forecast_config</code></strong></dt>
+<dd>Optional forecast configuration dict.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional arguments (e.g., bad_forecast_value, allow_negative_forecasts).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dictionary mapping forecast periods to their calculated values.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ForecastNodeError</code></dt>
+<dd>If the node is not found or configuration is invalid.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; values = forecast_node_non_mutating(fsg, node_name=&quot;revenue&quot;, forecast_periods=[&quot;2024&quot;])
+&gt;&gt;&gt; assert isinstance(values, dict)
+</code></pre></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod"><code class="flex name class">
+<span>class <span class="ident">BaseForecastMethod</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BaseForecastMethod(ABC):
+    &#34;&#34;&#34;Abstract base class for forecast methods.
+
+    Enforces the forecast method interface and provides common functionality,
+    including the get_forecast_params convenience method.
+
+    Example:
+        &gt;&gt;&gt; class Dummy(BaseForecastMethod):
+        ...     @property
+        ...     def name(self):
+        ...         return &#34;dummy&#34;
+        ...
+        ...     @property
+        ...     def internal_type(self):
+        ...         return &#34;dummy_type&#34;
+        ...
+        ...     def validate_config(self, config):
+        ...         pass
+        ...
+        ...     def normalize_params(self, config, forecast_periods):
+        ...         return {&#34;forecast_type&#34;: self.internal_type, &#34;growth_params&#34;: config}
+        &gt;&gt;&gt; d = Dummy()
+        &gt;&gt;&gt; d.get_forecast_params(0.1, [&#34;2024&#34;])
+        {&#39;forecast_type&#39;: &#39;dummy_type&#39;, &#39;growth_params&#39;: 0.1}
+    &#34;&#34;&#34;
+
+    @property
+    @abstractmethod
+    def name(self) -&gt; str:
+        &#34;&#34;&#34;Return the method name.
+
+        Returns:
+            The unique name of the forecast method (e.g., &#39;simple&#39;, &#39;curve&#39;).
+        &#34;&#34;&#34;
+
+    @property
+    @abstractmethod
+    def internal_type(self) -&gt; str:
+        &#34;&#34;&#34;Return the internal forecast type for NodeFactory.
+
+        Returns:
+            The internal type string used by the node factory.
+        &#34;&#34;&#34;
+
+    @abstractmethod
+    def validate_config(self, config: Any) -&gt; None:
+        &#34;&#34;&#34;Validate the configuration for this method.
+
+        Args:
+            config: The method-specific configuration to validate.
+
+        Raises:
+            ValueError: If configuration is invalid.
+        &#34;&#34;&#34;
+
+    @abstractmethod
+    def normalize_params(self, config: Any, forecast_periods: list[str]) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Normalize parameters for the NodeFactory.
+
+        Args:
+            config: The method-specific configuration.
+            forecast_periods: List of periods to forecast.
+
+        Returns:
+            Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+        &#34;&#34;&#34;
+
+    def prepare_historical_data(self, node: Node, historical_periods: list[str]) -&gt; list[float] | None:
+        &#34;&#34;&#34;Prepare historical data for methods that need it.
+
+        Default implementation returns ``None`` (not needed). Override this
+        method in subclasses that require historical data.
+
+        Args:
+            node: The node to extract historical data from.
+            historical_periods: List of historical periods.
+
+        Returns:
+            List of historical values or ``None`` if no historical data is
+            required.
+        &#34;&#34;&#34;
+        _ = (node, historical_periods)  # Parameters intentionally unused in the base implementation
+        return None
+
+    def get_forecast_params(self, config: Any, forecast_periods: list[str]) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Get complete forecast parameters.
+
+        This is a convenience method that validates and normalizes in one call.
+
+        Args:
+            config: The method-specific configuration.
+            forecast_periods: List of periods to forecast.
+
+        Returns:
+            Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+
+        Raises:
+            ValueError: If configuration is invalid.
+
+        Example:
+            &gt;&gt;&gt; class Dummy(BaseForecastMethod):
+            ...     @property
+            ...     def name(self):
+            ...         return &#34;dummy&#34;
+            ...
+            ...     @property
+            ...     def internal_type(self):
+            ...         return &#34;dummy_type&#34;
+            ...
+            ...     def validate_config(self, config):
+            ...         pass
+            ...
+            ...     def normalize_params(self, config, forecast_periods):
+            ...         return {&#34;forecast_type&#34;: self.internal_type, &#34;growth_params&#34;: config}
+            &gt;&gt;&gt; d = Dummy()
+            &gt;&gt;&gt; d.get_forecast_params(0.1, [&#34;2024&#34;])
+            {&#39;forecast_type&#39;: &#39;dummy_type&#39;, &#39;growth_params&#39;: 0.1}
+        &#34;&#34;&#34;
+        self.validate_config(config)
+        return self.normalize_params(config, forecast_periods)</code></pre>
+</details>
+<div class="desc"><p>Abstract base class for forecast methods.</p>
+<p>Enforces the forecast method interface and provides common functionality,
+including the get_forecast_params convenience method.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class Dummy(BaseForecastMethod):
+...     @property
+...     def name(self):
+...         return &quot;dummy&quot;
+...
+...     @property
+...     def internal_type(self):
+...         return &quot;dummy_type&quot;
+...
+...     def validate_config(self, config):
+...         pass
+...
+...     def normalize_params(self, config, forecast_periods):
+...         return {&quot;forecast_type&quot;: self.internal_type, &quot;growth_params&quot;: config}
+&gt;&gt;&gt; d = Dummy()
+&gt;&gt;&gt; d.get_forecast_params(0.1, [&quot;2024&quot;])
+{'forecast_type': 'dummy_type', 'growth_params': 0.1}
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.forecasting.methods.average.AverageForecastMethod" href="../methods/average.html#fin_statement_model.forecasting.methods.average.AverageForecastMethod">AverageForecastMethod</a></li>
+<li><a title="fin_statement_model.forecasting.methods.curve.CurveForecastMethod" href="../methods/curve.html#fin_statement_model.forecasting.methods.curve.CurveForecastMethod">CurveForecastMethod</a></li>
+<li><a title="fin_statement_model.forecasting.methods.historical_growth.HistoricalGrowthForecastMethod" href="../methods/historical_growth.html#fin_statement_model.forecasting.methods.historical_growth.HistoricalGrowthForecastMethod">HistoricalGrowthForecastMethod</a></li>
+<li><a title="fin_statement_model.forecasting.methods.simple.SimpleForecastMethod" href="../methods/simple.html#fin_statement_model.forecasting.methods.simple.SimpleForecastMethod">SimpleForecastMethod</a></li>
+<li><a title="fin_statement_model.forecasting.methods.statistical.StatisticalForecastMethod" href="../methods/statistical.html#fin_statement_model.forecasting.methods.statistical.StatisticalForecastMethod">StatisticalForecastMethod</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.internal_type"><code class="name">prop <span class="ident">internal_type</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+@abstractmethod
+def internal_type(self) -&gt; str:
+    &#34;&#34;&#34;Return the internal forecast type for NodeFactory.
+
+    Returns:
+        The internal type string used by the node factory.
+    &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Return the internal forecast type for NodeFactory.</p>
+<h2 id="returns">Returns</h2>
+<p>The internal type string used by the node factory.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.name"><code class="name">prop <span class="ident">name</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+@abstractmethod
+def name(self) -&gt; str:
+    &#34;&#34;&#34;Return the method name.
+
+    Returns:
+        The unique name of the forecast method (e.g., &#39;simple&#39;, &#39;curve&#39;).
+    &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Return the method name.</p>
+<h2 id="returns">Returns</h2>
+<p>The unique name of the forecast method (e.g., 'simple', 'curve').</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.get_forecast_params"><code class="name flex">
+<span>def <span class="ident">get_forecast_params</span></span>(<span>self, config: Any, forecast_periods: list[str]) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_forecast_params(self, config: Any, forecast_periods: list[str]) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Get complete forecast parameters.
+
+    This is a convenience method that validates and normalizes in one call.
+
+    Args:
+        config: The method-specific configuration.
+        forecast_periods: List of periods to forecast.
+
+    Returns:
+        Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+
+    Raises:
+        ValueError: If configuration is invalid.
+
+    Example:
+        &gt;&gt;&gt; class Dummy(BaseForecastMethod):
+        ...     @property
+        ...     def name(self):
+        ...         return &#34;dummy&#34;
+        ...
+        ...     @property
+        ...     def internal_type(self):
+        ...         return &#34;dummy_type&#34;
+        ...
+        ...     def validate_config(self, config):
+        ...         pass
+        ...
+        ...     def normalize_params(self, config, forecast_periods):
+        ...         return {&#34;forecast_type&#34;: self.internal_type, &#34;growth_params&#34;: config}
+        &gt;&gt;&gt; d = Dummy()
+        &gt;&gt;&gt; d.get_forecast_params(0.1, [&#34;2024&#34;])
+        {&#39;forecast_type&#39;: &#39;dummy_type&#39;, &#39;growth_params&#39;: 0.1}
+    &#34;&#34;&#34;
+    self.validate_config(config)
+    return self.normalize_params(config, forecast_periods)</code></pre>
+</details>
+<div class="desc"><p>Get complete forecast parameters.</p>
+<p>This is a convenience method that validates and normalizes in one call.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>The method-specific configuration.</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of periods to forecast.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dict with 'forecast_type' and 'growth_params' keys.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If configuration is invalid.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class Dummy(BaseForecastMethod):
+...     @property
+...     def name(self):
+...         return &quot;dummy&quot;
+...
+...     @property
+...     def internal_type(self):
+...         return &quot;dummy_type&quot;
+...
+...     def validate_config(self, config):
+...         pass
+...
+...     def normalize_params(self, config, forecast_periods):
+...         return {&quot;forecast_type&quot;: self.internal_type, &quot;growth_params&quot;: config}
+&gt;&gt;&gt; d = Dummy()
+&gt;&gt;&gt; d.get_forecast_params(0.1, [&quot;2024&quot;])
+{'forecast_type': 'dummy_type', 'growth_params': 0.1}
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.normalize_params"><code class="name flex">
+<span>def <span class="ident">normalize_params</span></span>(<span>self, config: Any, forecast_periods: list[str]) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def normalize_params(self, config: Any, forecast_periods: list[str]) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Normalize parameters for the NodeFactory.
+
+    Args:
+        config: The method-specific configuration.
+        forecast_periods: List of periods to forecast.
+
+    Returns:
+        Dict with &#39;forecast_type&#39; and &#39;growth_params&#39; keys.
+    &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Normalize parameters for the NodeFactory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>The method-specific configuration.</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of periods to forecast.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dict with 'forecast_type' and 'growth_params' keys.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.prepare_historical_data"><code class="name flex">
+<span>def <span class="ident">prepare_historical_data</span></span>(<span>self,<br>node: <a title="fin_statement_model.core.nodes.base.Node" href="../../core/nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>,<br>historical_periods: list[str]) ‑> list[float] | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def prepare_historical_data(self, node: Node, historical_periods: list[str]) -&gt; list[float] | None:
+    &#34;&#34;&#34;Prepare historical data for methods that need it.
+
+    Default implementation returns ``None`` (not needed). Override this
+    method in subclasses that require historical data.
+
+    Args:
+        node: The node to extract historical data from.
+        historical_periods: List of historical periods.
+
+    Returns:
+        List of historical values or ``None`` if no historical data is
+        required.
+    &#34;&#34;&#34;
+    _ = (node, historical_periods)  # Parameters intentionally unused in the base implementation
+    return None</code></pre>
+</details>
+<div class="desc"><p>Prepare historical data for methods that need it.</p>
+<p>Default implementation returns <code>None</code> (not needed). Override this
+method in subclasses that require historical data.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node</code></strong></dt>
+<dd>The node to extract historical data from.</dd>
+<dt><strong><code>historical_periods</code></strong></dt>
+<dd>List of historical periods.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of historical values or <code>None</code> if no historical data is
+required.</p></div>
+</dd>
+<dt id="fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.validate_config"><code class="name flex">
+<span>def <span class="ident">validate_config</span></span>(<span>self, config: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def validate_config(self, config: Any) -&gt; None:
+    &#34;&#34;&#34;Validate the configuration for this method.
+
+    Args:
+        config: The method-specific configuration to validate.
+
+    Raises:
+        ValueError: If configuration is invalid.
+    &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Validate the configuration for this method.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>The method-specific configuration to validate.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If configuration is invalid.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.forecasting.forecaster" href="index.html">fin_statement_model.forecasting.forecaster</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.forecasting.forecaster.node_forecast._forecast_node_mutating" href="#fin_statement_model.forecasting.forecaster.node_forecast._forecast_node_mutating">_forecast_node_mutating</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.forecaster.node_forecast.forecast_node_non_mutating" href="#fin_statement_model.forecasting.forecaster.node_forecast.forecast_node_non_mutating">forecast_node_non_mutating</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod" href="#fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod">BaseForecastMethod</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.get_forecast_params" href="#fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.get_forecast_params">get_forecast_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.internal_type" href="#fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.internal_type">internal_type</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.name" href="#fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.name">name</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.normalize_params" href="#fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.normalize_params">normalize_params</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.prepare_historical_data" href="#fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.prepare_historical_data">prepare_historical_data</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.validate_config" href="#fin_statement_model.forecasting.forecaster.node_forecast.BaseForecastMethod.validate_config">validate_config</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

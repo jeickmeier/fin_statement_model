@@ -1,0 +1,1858 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.core.graph.services API documentation</title>
+<meta name="description" content="Service layer package for `fin_statement_model.core.graph` …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.core.graph.services</code></h1>
+</header>
+<section id="section-intro">
+<p>Service layer package for <code><a title="fin_statement_model.core.graph" href="../index.html">fin_statement_model.core.graph</a></code>.</p>
+<p>This package contains isolated helper classes extracted from the monolithic <code>Graph</code> class. Each service
+is designed to be independent of the Graph and reusable in other contexts (e.g., alternative graph implementations).</p>
+<table>
+<thead>
+<tr>
+<th>Service Class</th>
+<th>Responsibility / Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CalculationEngine</td>
+<td>Orchestrates node calculations and manages calculation cache</td>
+</tr>
+<tr>
+<td>PeriodService</td>
+<td>Manages unique, sorted periods and period validation</td>
+</tr>
+<tr>
+<td>AdjustmentService</td>
+<td>Encapsulates adjustment storage and application logic</td>
+</tr>
+</tbody>
+</table>
+<p>These services are composed into the Graph to provide modular, testable, and extensible support for
+calculation, period, and adjustment management.</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.core.graph.services.adjustment_service" href="adjustment_service.html">fin_statement_model.core.graph.services.adjustment_service</a></code></dt>
+<dd>
+<div class="desc"><p>AdjustmentService stub - wraps <code>AdjustmentManager</code> for Graph refactor …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.graph.services.calculation_engine" href="calculation_engine.html">fin_statement_model.core.graph.services.calculation_engine</a></code></dt>
+<dd>
+<div class="desc"><p>Calculation engine stub extracted from Graph …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.graph.services.period_service" href="period_service.html">fin_statement_model.core.graph.services.period_service</a></code></dt>
+<dd>
+<div class="desc"><p>Simple PeriodService stub - manages the list of unique, sorted periods …</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.core.graph.services.AdjustmentService"><code class="flex name class">
+<span>class <span class="ident">AdjustmentService</span></span>
+<span>(</span><span>manager: AdjustmentManager | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AdjustmentService:  # pylint: disable=too-few-public-methods
+    &#34;&#34;&#34;Encapsulate adjustment storage and application logic.
+
+    During step 1.2 this is a thin wrapper exposing the same API surface used
+    by ``Graph`` so that later migrations are trivial.
+    &#34;&#34;&#34;
+
+    def __init__(self, manager: AdjustmentManager | None = None) -&gt; None:
+        &#34;&#34;&#34;Create a new AdjustmentService.
+
+        Args:
+            manager: Optional pre-configured :class:`AdjustmentManager` to use.
+                When *None*, a fresh instance is created.
+        &#34;&#34;&#34;
+        self._manager: AdjustmentManager = manager or AdjustmentManager()
+
+    # ------------------------------------------------------------------
+    # Delegate helpers (minimal implementations) -----------------------
+    # ------------------------------------------------------------------
+    # Public API mirrors Graph methods exactly - signatures copied.
+
+    def add_adjustment(
+        self,
+        node_name: str,
+        period: str,
+        value: float,
+        reason: str,
+        adj_type: AdjustmentType = AdjustmentType.ADDITIVE,
+        scale: float = 1.0,
+        priority: int = 0,
+        tags: set[AdjustmentTag] | None = None,
+        scenario: str | None = None,
+        user: str | None = None,
+        *,
+        adj_id: UUID | None = None,
+    ) -&gt; UUID:
+        &#34;&#34;&#34;Create ``Adjustment`` and add to manager (stub).&#34;&#34;&#34;
+        scenario = scenario or DEFAULT_SCENARIO
+        adj = Adjustment(
+            id=adj_id or uuid4(),
+            node_name=node_name,
+            period=period,
+            value=value,
+            reason=reason,
+            type=adj_type,
+            scale=scale,
+            priority=priority,
+            tags=tags or set(),
+            scenario=scenario,
+            user=user,
+        )
+        self._manager.add_adjustment(adj)
+        return adj.id
+
+    # Basic delegations -------------------------------------------------
+    def remove_adjustment(self, adj_id: UUID) -&gt; bool:
+        &#34;&#34;&#34;Remove an adjustment from the manager.
+
+        Args:
+            adj_id: Unique identifier of the adjustment to remove.
+
+        Returns:
+            True if an adjustment with *adj_id* was found and removed, False otherwise.
+        &#34;&#34;&#34;
+        return self._manager.remove_adjustment(adj_id)
+
+    def get_adjustments(self, node_name: str, period: str, *, scenario: str | None = None) -&gt; list[Adjustment]:
+        &#34;&#34;&#34;Return all adjustments for *node_name*/*period*.
+
+        Args:
+            node_name: Canonical node identifier (e.g. &#34;revenue&#34;).
+            period: Period label (e.g. &#34;2024&#34;).
+            scenario: Scenario name - defaults to ``&#34;default&#34;`` when *None*.
+
+        Returns:
+            A list of matching :class:`fin_statement_model.core.adjustments.models.Adjustment` instances.
+        &#34;&#34;&#34;
+        return self._manager.get_adjustments(node_name, period, scenario=scenario or DEFAULT_SCENARIO)
+
+    def get_filtered_adjustments(
+        self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None
+    ) -&gt; list[Adjustment]:
+        &#34;&#34;&#34;Return adjustments matching an *AdjustmentFilterInput*.
+
+        Args:
+            node_name: Target node name.
+            period: Period identifier.
+            filter_input: Additional filter specifying scenarios/tags.
+
+        Returns:
+            List of adjustments that satisfy all filter criteria.
+        &#34;&#34;&#34;
+        return self._manager.get_filtered_adjustments(node_name, period, filter_input)
+
+    def apply_adjustments(self, base_value: float, adjustments: list[Adjustment]) -&gt; tuple[float, bool]:
+        &#34;&#34;&#34;Apply *adjustments* to *base_value*.
+
+        Args:
+            base_value: Original numeric value before adjustments.
+            adjustments: Sequence of adjustments to apply.
+
+        Returns:
+            Tuple of ``(adjusted_value, was_adjusted)`` where *was_adjusted* is
+            True if at least one adjustment modified the value.
+        &#34;&#34;&#34;
+        return self._manager.apply_adjustments(base_value, adjustments)
+
+    def list_all_adjustments(self) -&gt; list[Adjustment]:
+        &#34;&#34;&#34;Return **all** adjustments currently stored in the manager.&#34;&#34;&#34;
+        return self._manager.get_all_adjustments()
+
+    def clear_all(self) -&gt; None:
+        &#34;&#34;&#34;Remove **every** adjustment from the underlying manager.&#34;&#34;&#34;
+        self._manager.clear_all()
+
+    def was_adjusted(self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None) -&gt; bool:
+        &#34;&#34;&#34;Return True if any adjustments match the criteria (cheap helper).&#34;&#34;&#34;
+        return bool(self._manager.get_filtered_adjustments(node_name, period, filter_input))</code></pre>
+</details>
+<div class="desc"><p>Encapsulate adjustment storage and application logic.</p>
+<p>During step 1.2 this is a thin wrapper exposing the same API surface used
+by <code>Graph</code> so that later migrations are trivial.</p>
+<p>Create a new AdjustmentService.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>manager</code></strong></dt>
+<dd>Optional pre-configured :class:<code>AdjustmentManager</code> to use.
+When <em>None</em>, a fresh instance is created.</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.services.AdjustmentService.add_adjustment"><code class="name flex">
+<span>def <span class="ident">add_adjustment</span></span>(<span>self,<br>node_name: str,<br>period: str,<br>value: float,<br>reason: str,<br>adj_type: AdjustmentType = AdjustmentType.ADDITIVE,<br>scale: float = 1.0,<br>priority: int = 0,<br>tags: set[AdjustmentTag] | None = None,<br>scenario: str | None = None,<br>user: str | None = None,<br>*,<br>adj_id: UUID | None = None) ‑> uuid.UUID</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_adjustment(
+    self,
+    node_name: str,
+    period: str,
+    value: float,
+    reason: str,
+    adj_type: AdjustmentType = AdjustmentType.ADDITIVE,
+    scale: float = 1.0,
+    priority: int = 0,
+    tags: set[AdjustmentTag] | None = None,
+    scenario: str | None = None,
+    user: str | None = None,
+    *,
+    adj_id: UUID | None = None,
+) -&gt; UUID:
+    &#34;&#34;&#34;Create ``Adjustment`` and add to manager (stub).&#34;&#34;&#34;
+    scenario = scenario or DEFAULT_SCENARIO
+    adj = Adjustment(
+        id=adj_id or uuid4(),
+        node_name=node_name,
+        period=period,
+        value=value,
+        reason=reason,
+        type=adj_type,
+        scale=scale,
+        priority=priority,
+        tags=tags or set(),
+        scenario=scenario,
+        user=user,
+    )
+    self._manager.add_adjustment(adj)
+    return adj.id</code></pre>
+</details>
+<div class="desc"><p>Create <code>Adjustment</code> and add to manager (stub).</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.AdjustmentService.apply_adjustments"><code class="name flex">
+<span>def <span class="ident">apply_adjustments</span></span>(<span>self, base_value: float, adjustments: list[Adjustment]) ‑> tuple[float, bool]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def apply_adjustments(self, base_value: float, adjustments: list[Adjustment]) -&gt; tuple[float, bool]:
+    &#34;&#34;&#34;Apply *adjustments* to *base_value*.
+
+    Args:
+        base_value: Original numeric value before adjustments.
+        adjustments: Sequence of adjustments to apply.
+
+    Returns:
+        Tuple of ``(adjusted_value, was_adjusted)`` where *was_adjusted* is
+        True if at least one adjustment modified the value.
+    &#34;&#34;&#34;
+    return self._manager.apply_adjustments(base_value, adjustments)</code></pre>
+</details>
+<div class="desc"><p>Apply <em>adjustments</em> to <em>base_value</em>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>base_value</code></strong></dt>
+<dd>Original numeric value before adjustments.</dd>
+<dt><strong><code>adjustments</code></strong></dt>
+<dd>Sequence of adjustments to apply.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Tuple of <code>(adjusted_value, was_adjusted)</code> where <em>was_adjusted</em> is
+True if at least one adjustment modified the value.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.AdjustmentService.clear_all"><code class="name flex">
+<span>def <span class="ident">clear_all</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear_all(self) -&gt; None:
+    &#34;&#34;&#34;Remove **every** adjustment from the underlying manager.&#34;&#34;&#34;
+    self._manager.clear_all()</code></pre>
+</details>
+<div class="desc"><p>Remove <strong>every</strong> adjustment from the underlying manager.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.AdjustmentService.get_adjustments"><code class="name flex">
+<span>def <span class="ident">get_adjustments</span></span>(<span>self, node_name: str, period: str, *, scenario: str | None = None) ‑> list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="../../adjustments/models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_adjustments(self, node_name: str, period: str, *, scenario: str | None = None) -&gt; list[Adjustment]:
+    &#34;&#34;&#34;Return all adjustments for *node_name*/*period*.
+
+    Args:
+        node_name: Canonical node identifier (e.g. &#34;revenue&#34;).
+        period: Period label (e.g. &#34;2024&#34;).
+        scenario: Scenario name - defaults to ``&#34;default&#34;`` when *None*.
+
+    Returns:
+        A list of matching :class:`fin_statement_model.core.adjustments.models.Adjustment` instances.
+    &#34;&#34;&#34;
+    return self._manager.get_adjustments(node_name, period, scenario=scenario or DEFAULT_SCENARIO)</code></pre>
+</details>
+<div class="desc"><p>Return all adjustments for <em>node_name</em>/<em>period</em>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_name</code></strong></dt>
+<dd>Canonical node identifier (e.g. "revenue").</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>Period label (e.g. "2024").</dd>
+<dt><strong><code>scenario</code></strong></dt>
+<dd>Scenario name - defaults to <code>"default"</code> when <em>None</em>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A list of matching :class:<code><a title="fin_statement_model.core.adjustments.models.Adjustment" href="../../adjustments/models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a></code> instances.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.AdjustmentService.get_filtered_adjustments"><code class="name flex">
+<span>def <span class="ident">get_filtered_adjustments</span></span>(<span>self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None) ‑> list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="../../adjustments/models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_filtered_adjustments(
+    self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None
+) -&gt; list[Adjustment]:
+    &#34;&#34;&#34;Return adjustments matching an *AdjustmentFilterInput*.
+
+    Args:
+        node_name: Target node name.
+        period: Period identifier.
+        filter_input: Additional filter specifying scenarios/tags.
+
+    Returns:
+        List of adjustments that satisfy all filter criteria.
+    &#34;&#34;&#34;
+    return self._manager.get_filtered_adjustments(node_name, period, filter_input)</code></pre>
+</details>
+<div class="desc"><p>Return adjustments matching an <em>AdjustmentFilterInput</em>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_name</code></strong></dt>
+<dd>Target node name.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>Period identifier.</dd>
+<dt><strong><code>filter_input</code></strong></dt>
+<dd>Additional filter specifying scenarios/tags.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of adjustments that satisfy all filter criteria.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.AdjustmentService.list_all_adjustments"><code class="name flex">
+<span>def <span class="ident">list_all_adjustments</span></span>(<span>self) ‑> list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="../../adjustments/models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_all_adjustments(self) -&gt; list[Adjustment]:
+    &#34;&#34;&#34;Return **all** adjustments currently stored in the manager.&#34;&#34;&#34;
+    return self._manager.get_all_adjustments()</code></pre>
+</details>
+<div class="desc"><p>Return <strong>all</strong> adjustments currently stored in the manager.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.AdjustmentService.remove_adjustment"><code class="name flex">
+<span>def <span class="ident">remove_adjustment</span></span>(<span>self, adj_id: UUID) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_adjustment(self, adj_id: UUID) -&gt; bool:
+    &#34;&#34;&#34;Remove an adjustment from the manager.
+
+    Args:
+        adj_id: Unique identifier of the adjustment to remove.
+
+    Returns:
+        True if an adjustment with *adj_id* was found and removed, False otherwise.
+    &#34;&#34;&#34;
+    return self._manager.remove_adjustment(adj_id)</code></pre>
+</details>
+<div class="desc"><p>Remove an adjustment from the manager.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>adj_id</code></strong></dt>
+<dd>Unique identifier of the adjustment to remove.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if an adjustment with <em>adj_id</em> was found and removed, False otherwise.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.AdjustmentService.was_adjusted"><code class="name flex">
+<span>def <span class="ident">was_adjusted</span></span>(<span>self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def was_adjusted(self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None) -&gt; bool:
+    &#34;&#34;&#34;Return True if any adjustments match the criteria (cheap helper).&#34;&#34;&#34;
+    return bool(self._manager.get_filtered_adjustments(node_name, period, filter_input))</code></pre>
+</details>
+<div class="desc"><p>Return True if any adjustments match the criteria (cheap helper).</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.graph.services.CalculationEngine"><code class="flex name class">
+<span>class <span class="ident">CalculationEngine</span></span>
+<span>(</span><span>*,<br>node_resolver: Callable[[str], Node],<br>period_provider: Callable[[], list[str]],<br>node_names_provider: Callable[[], list[str]],<br>node_factory: NodeFactory,<br>nodes_dict: dict[str, Node],<br>add_node_with_validation: Callable[[Node], Node],<br>resolve_input_nodes: Callable[[list[str]], list[Node]],<br>add_periods: Callable[[list[str]], None],<br>cache: dict[str, dict[str, float]] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CalculationEngine:  # pylint: disable=too-few-public-methods
+    &#34;&#34;&#34;Isolated calculation orchestration service.
+
+    Args:
+        node_resolver: Callable that, given a node name, returns a ``Node`` instance.
+        period_provider: Zero-arg callable returning the list of available periods.
+        node_names_provider: Zero-arg callable returning the list of all node names.
+        # Builder-helper collaborators
+        node_factory: &#34;NodeFactory&#34;
+        nodes_dict: Dict[str, &#34;Node&#34;]
+        add_node_with_validation: Callable[[&#34;Node&#34;], &#34;Node&#34;]
+        resolve_input_nodes: Callable[[List[str]], List[&#34;Node&#34;]]
+        add_periods: Callable[[List[str]], None]
+        cache: Optional pre-populated two-level cache mapping ``node_name → period → value``.
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        *,
+        node_resolver: Callable[[str], Node],
+        period_provider: Callable[[], list[str]],
+        node_names_provider: Callable[[], list[str]],
+        # Builder-helper collaborators
+        node_factory: NodeFactory,
+        nodes_dict: dict[str, Node],
+        add_node_with_validation: Callable[[Node], Node],
+        resolve_input_nodes: Callable[[list[str]], list[Node]],
+        add_periods: Callable[[list[str]], None],
+        cache: dict[str, dict[str, float]] | None = None,
+    ) -&gt; None:
+        &#34;&#34;&#34;Instantiate a CalculationEngine detached from the public Graph API.
+
+        The constructor relies on *dependency injection* - it receives a set of
+        callables and shared data structures from the owning ``Graph`` instance
+        instead of importing it directly.  This decouples the engine and avoids
+        circular dependencies during the ongoing refactor.
+
+        Args:
+            node_resolver: Callable resolving a node name to the concrete
+                :class:`fin_statement_model.core.nodes.base.Node` instance.
+            period_provider: Callable returning the list of currently known
+                period identifiers.
+            node_names_provider: Callable yielding all node names present in
+                the graph (used by *recalc_all*).
+            node_factory: Shared ``NodeFactory`` instance used for
+                programmatic node creation.
+            nodes_dict: Reference to the graph&#39;s internal ``_nodes`` mapping so
+                the engine can access already-instantiated nodes.
+            add_node_with_validation: Helper that adds a node to the graph and
+                performs validation (cycle detection, name clashes, …).
+            resolve_input_nodes: Helper translating input *names* to concrete
+                node objects, leveraging the owning graph&#39;s capabilities.
+            add_periods: Callable allowing the engine to add new periods to the
+                graph when calculation helpers need to expand the timeline.
+            cache: Optional pre-populated calculation cache.  When *None*, a
+                fresh empty cache is created.
+        &#34;&#34;&#34;
+        # Internal state - no external Graph refs
+        self._node_resolver = node_resolver
+        self._period_provider = period_provider
+        self._node_names_provider = node_names_provider
+        self._cache: dict[str, dict[str, float]] = cache or {}
+
+        # Store builder collaborators
+        self._node_factory = node_factory
+        self._nodes = nodes_dict  # direct reference to Graph._nodes
+        self._add_node_with_validation = add_node_with_validation
+        self._resolve_input_nodes = resolve_input_nodes
+        self._add_periods = add_periods
+
+    # ---------------------------------------------------------------------
+    # Public API (stubs)
+    # ---------------------------------------------------------------------
+    def calculate(self, node_name: str, period: str) -&gt; float:
+        &#34;&#34;&#34;Calculate and return the value of *node_name* for *period*.
+
+        This is mostly a verbatim copy of the original ``Graph.calculate`` method,
+        refactored to work in isolation:
+
+        * Uses ``_node_resolver`` instead of ``Graph.manipulator.get_node``.
+        * Writes/reads central cache owned by the engine.
+        * Raises the same domain-specific errors so callers&#39; behaviour is
+          unchanged.
+        &#34;&#34;&#34;
+        import logging  # local to avoid circular deps at import time
+
+        # Import only for type consistency / side-effects. NodeError is unused but
+        # kept here to mirror original Graph behaviour without altering public
+        # re-export expectations.
+        from fin_statement_model.core.errors import (
+            CalculationError,
+            ConfigurationError,
+            NodeError,
+        )
+
+        logger = logging.getLogger(__name__)
+
+        # Fast-path cache hit ------------------------------------------------
+        if node_name in self._cache and period in self._cache[node_name]:
+            logger.debug(&#34;Cache hit for node &#39;%s&#39;, period &#39;%s&#39;&#34;, node_name, period)
+            return self._cache[node_name][period]
+
+        # Resolve node ------------------------------------------------------
+        node = self._node_resolver(node_name)
+        if node is None:  # pragma: no cover - resolver must mirror Graph semantics
+            raise NodeError(f&#34;Node &#39;{node_name}&#39; not found&#34;, node_id=node_name)
+
+        # Validate calculate method ----------------------------------------
+        if not hasattr(node, &#34;calculate&#34;) or not callable(node.calculate):
+            raise TypeError(f&#34;Node &#39;{node_name}&#39; has no callable calculate method.&#34;)
+
+        # Perform calculation ---------------------------------------------
+        try:
+            value = node.calculate(period)
+        except (
+            NodeError,
+            ConfigurationError,
+            CalculationError,
+            ValueError,
+            KeyError,
+            ZeroDivisionError,
+        ) as exc:
+            logger.exception(
+                &#34;Error calculating node &#39;%s&#39; for period &#39;%s&#39;&#34;,
+                node_name,
+                period,
+            )
+            raise CalculationError(
+                message=f&#34;Failed to calculate node &#39;{node_name}&#39;&#34;,
+                node_id=node_name,
+                period=period,
+                details={&#34;original_error&#34;: str(exc)},
+            ) from exc
+
+        # Cache &amp; return ----------------------------------------------------
+        self._cache.setdefault(node_name, {})[period] = value
+        logger.debug(&#34;Cached value for node &#39;%s&#39;, period &#39;%s&#39;: %s&#34;, node_name, period, value)
+        return value
+
+    def recalc_all(self, periods: list[str] | None = None) -&gt; None:
+        &#34;&#34;&#34;Recalculate every node for *periods*.
+
+        Implementation mimics original ``Graph.recalculate_all`` but requires the
+        caller to iterate over all node names.  Because *CalculationEngine* does
+        not (and should not) know the graph&#39;s registry, we expose a simple
+        fallback behaviour: raise *NotImplementedError* until the graph passes
+        an explicit list of node names via ``periods`` parameter being *not*
+        `None` **and** provides a helper attribute ``_all_node_names``.
+        The Graph façade will shim this in step 1.3.
+        &#34;&#34;&#34;
+        import logging
+
+        from fin_statement_model.core.errors import FinStatementModelError
+
+        # Import only for type consistency / side-effects. NodeError is unused but
+        # kept here to mirror original Graph behaviour without altering public
+        # re-export expectations.
+
+        logger = logging.getLogger(__name__)
+
+        # Determine periods list - mirror Graph logic ----------------------
+        if periods is None:
+            periods_to_use = self._period_provider()
+        elif isinstance(periods, str):
+            periods_to_use = [periods]
+        elif isinstance(periods, list):
+            periods_to_use = periods
+        else:
+            raise TypeError(&#34;Periods must be a list of strings, a single string, or None.&#34;)
+
+        # Clear central cache to force recalculation -----------------------
+        self.clear_all()
+
+        if not periods_to_use:
+            return
+
+        for node_name in list(self._node_names_provider()):
+            for period in periods_to_use:
+                try:
+                    self.calculate(node_name, period)
+                except FinStatementModelError as exc:
+                    # Match Graph behaviour: log &amp; continue
+                    logger.warning(
+                        &#34;Error recalculating node &#39;%s&#39; for period &#39;%s&#39;: %s&#34;,
+                        node_name,
+                        period,
+                        exc,
+                    )
+
+    # Cache-management helpers ------------------------------------------------
+    def clear_all(self) -&gt; None:
+        &#34;&#34;&#34;Clear the internal calculation cache (stub).&#34;&#34;&#34;
+        self._cache.clear()
+
+    # Convenience: expose cache for future injection/tests -------------------
+    @property
+    def cache(self) -&gt; dict[str, dict[str, float]]:
+        &#34;&#34;&#34;Return the underlying two-level cache mapping.&#34;&#34;&#34;
+        return self._cache
+
+    # ------------------------------------------------------------------
+    #  Builder helpers moved from Graph
+    # ------------------------------------------------------------------
+
+    def add_calculation(
+        self,
+        name: str,
+        input_names: list[str],
+        operation_type: str,
+        formula_variable_names: list[str] | None = None,
+        **calculation_kwargs: Any,
+    ) -&gt; Node:
+        &#34;&#34;&#34;Add a calculation node to the graph.
+
+        Ported verbatim from ``Graph.add_calculation`` - only collaborators
+        replaced with attributes on ``CalculationEngine``.
+        &#34;&#34;&#34;
+        # -----------------------------------------------------------------
+        # Default variable names for formula calculations
+        # -----------------------------------------------------------------
+        # For formula-based calculation nodes, if no explicit
+        # ``formula_variable_names`` are provided we default to using the
+        # ``input_names``.  This allows authors to write formulas directly
+        # with the original input names instead of the positional
+        # ``input_0``/``input_1`` aliases.  The previous behaviour (falling
+        # back to positional variables) is still available by explicitly
+        # passing a list such as ``[&#34;input_0&#34;, &#34;input_1&#34;, ...]``.
+        if operation_type == &#34;formula&#34; and formula_variable_names is None:
+            formula_variable_names = input_names.copy()
+
+        # Validate inputs --------------------------------------------------
+        if not isinstance(input_names, list):
+            raise TypeError(&#34;input_names must be a list of node names.&#34;)
+
+        # Resolve input node names to Node objects -------------------------
+        resolved_inputs = self._resolve_input_nodes(input_names)
+
+        # Create the node via factory -------------------------------------
+        try:
+            node = self._node_factory.create_calculation_node(
+                name=name,
+                inputs=resolved_inputs,
+                calculation_type=operation_type,
+                formula_variable_names=formula_variable_names,
+                **calculation_kwargs,
+            )
+        except (ValueError, TypeError):
+            import logging
+
+            logger = logging.getLogger(__name__)
+            logger.exception(
+                &#34;Failed to create calculation node &#39;%s&#39; with type &#39;%s&#39;&#34;,
+                name,
+                operation_type,
+            )
+            raise
+
+        # Add with validation (includes cycle detection) ------------------
+        added_node = self._add_node_with_validation(node)
+
+        import logging
+
+        logging.getLogger(__name__).info(
+            &#34;Added calculation node &#39;%s&#39; of type &#39;%s&#39; with inputs %s&#34;,
+            name,
+            operation_type,
+            input_names,
+        )
+        return added_node
+
+    def _load_metric_definition(self, metric_name: str) -&gt; MetricDefinition:
+        &#34;&#34;&#34;Return the metric definition for *metric_name* or raise ConfigurationError.&#34;&#34;&#34;
+        from fin_statement_model.core.errors import ConfigurationError
+        from fin_statement_model.core.metrics import metric_registry
+
+        try:
+            return metric_registry.get(metric_name)
+        except KeyError as exc:
+            raise ConfigurationError(f&#34;Unknown metric definition: &#39;{metric_name}&#39;&#34;) from exc
+
+    def _map_metric_inputs(
+        self,
+        required_inputs: list[str],
+        input_node_map: dict[str, str] | None,
+    ) -&gt; tuple[list[str], list[str]]:
+        &#34;&#34;&#34;Resolve and validate input nodes for a metric.
+
+        Args:
+            required_inputs: The inputs defined by the metric.
+            input_node_map: Optional caller-provided mapping from required input
+                names to actual node IDs in the graph.
+
+        Returns:
+            A tuple ``(input_node_names, formula_variable_names)``.
+
+        Raises:
+            NodeError: If any required input nodes are missing.
+        &#34;&#34;&#34;
+        from fin_statement_model.core.errors import NodeError
+
+        missing: list[str] = []
+        input_node_names: list[str] = []
+        formula_variable_names: list[str] = []
+
+        for req_input in required_inputs:
+            target_node = input_node_map.get(req_input) if input_node_map and req_input in input_node_map else req_input
+
+            if target_node not in self._nodes:
+                # Cast to str to satisfy static type checker (target_node can be None if mapping missing)
+                missing.append(str(target_node))
+            else:
+                input_node_names.append(target_node)
+                formula_variable_names.append(req_input)
+
+        if missing:
+            raise NodeError(
+                f&#34;Missing required nodes {missing}&#34;,
+                node_id=&#34;,&#34;.join(missing),
+            )
+
+        return input_node_names, formula_variable_names
+
+    # ------------------------------------------------------------------
+    # Metric helpers
+    # ------------------------------------------------------------------
+
+    def add_metric(
+        self,
+        metric_name: str,
+        node_name: str | None = None,
+        *,
+        input_node_map: dict[str, str] | None = None,
+    ) -&gt; Node:
+        &#34;&#34;&#34;Add a metric calculation node based on a metric definition.&#34;&#34;&#34;
+        from fin_statement_model.core.errors import ConfigurationError, NodeError
+
+        # Derive node_name -------------------------------------------------
+        node_name = node_name or metric_name
+        if not node_name or not isinstance(node_name, str):
+            raise TypeError(&#34;Metric node name must be a non-empty string.&#34;)
+        if node_name in self._nodes:
+            raise ValueError(f&#34;A node with name &#39;{node_name}&#39; already exists in the graph.&#34;)
+
+        # Load metric definition ------------------------------------------
+        metric_def = self._load_metric_definition(metric_name)
+
+        # Map &amp; validate inputs -------------------------------------------
+        try:
+            input_node_names, formula_variable_names = self._map_metric_inputs(metric_def.inputs, input_node_map)
+        except NodeError as exc:
+            # Re-wrap with better context keeping compatibility
+            raise NodeError(f&#34;Cannot create metric &#39;{metric_name}&#39;: {exc}&#34;, node_id=node_name) from exc
+
+        # Create underlying calculation node ------------------------------
+        try:
+            new_node = self.add_calculation(
+                name=node_name,
+                input_names=input_node_names,
+                operation_type=&#34;formula&#34;,
+                formula_variable_names=formula_variable_names,
+                formula=metric_def.formula,
+                metric_name=metric_name,
+                metric_description=metric_def.description,
+            )
+        except Exception as exc:
+            import logging
+
+            logging.getLogger(__name__).exception(
+                &#34;Failed to create calculation node for metric &#39;%s&#39; as node &#39;%s&#39;&#34;,
+                metric_name,
+                node_name,
+            )
+            raise ConfigurationError(f&#34;Error creating node for metric &#39;{metric_name}&#39;: {exc}&#34;) from exc
+
+        import logging
+
+        logging.getLogger(__name__).info(
+            &#34;Added metric &#39;%s&#39; as calculation node &#39;%s&#39; with inputs %s&#34;,
+            metric_name,
+            node_name,
+            input_node_names,
+        )
+        return new_node
+
+    # ------------------------------------------------------------------
+    # Additional helpers ported from Graph
+    # ------------------------------------------------------------------
+
+    def add_custom_calculation(
+        self,
+        name: str,
+        calculation_func: Callable[..., float],
+        inputs: list[str] | None = None,
+        description: str = &#34;&#34;,
+    ) -&gt; Node:
+        &#34;&#34;&#34;Add a custom calculation node using a Python callable.&#34;&#34;&#34;
+        # Validate callable
+        if not callable(calculation_func):
+            raise TypeError(&#34;calculation_func must be callable.&#34;)
+
+        # Resolve inputs if provided
+        resolved_inputs: list[Node] = []
+        if inputs is not None:
+            if not isinstance(inputs, list):
+                raise TypeError(&#34;inputs must be a list of node names.&#34;)
+            resolved_inputs = self._resolve_input_nodes(inputs)
+
+        # Create custom node via factory
+        try:
+            custom_node = self._node_factory._create_custom_node_from_callable(  # pylint: disable=protected-access
+                name=name,
+                inputs=resolved_inputs,
+                formula=calculation_func,
+                description=description,
+            )
+        except (ValueError, TypeError):
+            import logging
+
+            logging.getLogger(__name__).exception(&#34;Failed to create custom calculation node &#39;%s&#39;&#34;, name)
+            raise
+
+        # Add with validation
+        added_node = self._add_node_with_validation(custom_node)
+
+        import logging
+
+        logging.getLogger(__name__).info(&#34;Added custom calculation node &#39;%s&#39; with inputs %s&#34;, name, inputs)
+        return added_node
+
+    def ensure_signed_nodes(self, base_node_ids: list[str], *, suffix: str = &#34;_signed&#34;) -&gt; list[str]:
+        &#34;&#34;&#34;Ensure signed calculation nodes (-1 * input) exist for each base node.&#34;&#34;&#34;
+        created: list[str] = []
+        for base_id in base_node_ids:
+            signed_id = f&#34;{base_id}{suffix}&#34;
+            if signed_id in self._nodes:
+                continue
+            if base_id not in self._nodes:
+                from fin_statement_model.core.errors import NodeError
+
+                raise NodeError(
+                    f&#34;Cannot create signed node for missing base node &#39;{base_id}&#39;&#34;,
+                    node_id=base_id,
+                )
+            self.add_calculation(
+                name=signed_id,
+                input_names=[base_id],
+                operation_type=&#34;formula&#34;,
+                formula=&#34;-input_0&#34;,
+                formula_variable_names=[&#34;input_0&#34;],
+            )
+            created.append(signed_id)
+        return created
+
+    def change_calculation_method(
+        self,
+        node_name: str,
+        new_method_key: str,
+        **kwargs: dict[str, Any],
+    ) -&gt; None:
+        &#34;&#34;&#34;Change the calculation method for an existing calculation-based node.&#34;&#34;&#34;
+        from fin_statement_model.core.calculations import Registry
+        from fin_statement_model.core.errors import NodeError
+        from fin_statement_model.core.nodes import CalculationNode
+
+        node = self._nodes.get(node_name)
+        if node is None:
+            raise NodeError(&#34;Node not found for calculation change&#34;, node_id=node_name)
+        if not isinstance(node, CalculationNode):
+            raise NodeError(f&#34;Node &#39;{node_name}&#39; is not a CalculationNode&#34;, node_id=node_name)
+
+        if new_method_key not in self._node_factory._calculation_methods:  # pylint: disable=protected-access
+            raise ValueError(f&#34;Calculation &#39;{new_method_key}&#39; is not recognized.&#34;)
+
+        calculation_class_name = self._node_factory._calculation_methods[new_method_key]  # pylint: disable=protected-access
+
+        try:
+            calculation_cls = Registry.get(calculation_class_name)
+        except KeyError as exc:
+            raise ValueError(f&#34;Calculation class &#39;{calculation_class_name}&#39; not found in registry.&#34;) from exc
+
+        try:
+            calculation_instance = calculation_cls(**kwargs)
+        except TypeError as exc:
+            raise TypeError(f&#34;Failed to instantiate calculation &#39;{new_method_key}&#39;: {exc}&#34;) from exc
+
+        node.set_calculation(calculation_instance)
+
+        # Clear cached calculations for this node
+        if node_name in self._cache:
+            del self._cache[node_name]
+
+    # ---------------- Metric query helpers -------------------------------
+
+    def get_metric(self, metric_id: str) -&gt; Node | None:
+        &#34;&#34;&#34;Return the *metric* node for *metric_id* if it exists.
+
+        Args:
+            metric_id: The canonical identifier of the metric node to fetch.
+
+        Returns:
+            The corresponding :class:`fin_statement_model.core.nodes.base.Node` if
+            present *and* marked as a metric (``metric_name`` attribute),
+            otherwise ``None``.
+        &#34;&#34;&#34;
+        node = self._nodes.get(metric_id)
+        if node and getattr(node, &#34;metric_name&#34;, None) == metric_id:
+            return node
+        return None
+
+    def get_available_metrics(self) -&gt; list[str]:
+        &#34;&#34;&#34;Return the IDs of all metrics currently available in the graph.&#34;&#34;&#34;
+        return sorted([n.name for n in self._nodes.values() if getattr(n, &#34;metric_name&#34;, None)])
+
+    def get_metric_info(self, metric_id: str) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Return a human-readable information dictionary for *metric_id*.
+
+        The helper consolidates information from the metric definition registry
+        and the concrete metric node to provide callers with a lightweight
+        metadata payload (used by CLI / UI front-ends).
+
+        Args:
+            metric_id: Identifier of the metric node.
+
+        Raises:
+            ValueError: If the requested metric does not exist or is not a
+                metric node.
+
+        Returns:
+            A dictionary containing keys ``id``, ``name``, ``description`` and
+            ``inputs``.
+        &#34;&#34;&#34;
+        from fin_statement_model.core.metrics import metric_registry
+
+        metric_node = self.get_metric(metric_id)
+        if metric_node is None:
+            if metric_id in self._nodes:
+                raise ValueError(f&#34;Node &#39;{metric_id}&#39; exists but is not a metric (missing metric_name attribute).&#34;)
+            raise ValueError(f&#34;Metric node &#39;{metric_id}&#39; not found in graph.&#34;)
+
+        description = getattr(metric_node, &#34;metric_description&#34;, &#34;N/A&#34;)
+        registry_key = getattr(metric_node, &#34;metric_name&#34;, metric_id)
+
+        try:
+            metric_def = metric_registry.get(registry_key)
+            display_name = metric_def.name
+        except KeyError:
+            display_name = metric_id
+
+        inputs = metric_node.get_dependencies() if hasattr(metric_node, &#34;get_dependencies&#34;) else []
+
+        return {
+            &#34;id&#34;: metric_id,
+            &#34;name&#34;: display_name,
+            &#34;description&#34;: description,
+            &#34;inputs&#34;: inputs,
+        }</code></pre>
+</details>
+<div class="desc"><p>Isolated calculation orchestration service.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_resolver</code></strong></dt>
+<dd>Callable that, given a node name, returns a <code>Node</code> instance.</dd>
+<dt><strong><code>period_provider</code></strong></dt>
+<dd>Zero-arg callable returning the list of available periods.</dd>
+<dt><strong><code>node_names_provider</code></strong></dt>
+<dd>Zero-arg callable returning the list of all node names.</dd>
+</dl>
+<h1 id="builder-helper-collaborators">Builder-helper collaborators</h1>
+<dl>
+<dt><strong><code>node_factory</code></strong></dt>
+<dd>"NodeFactory"</dd>
+<dt><strong><code>nodes_dict</code></strong></dt>
+<dd>Dict[str, "Node"]</dd>
+<dt><strong><code>add_node_with_validation</code></strong></dt>
+<dd>Callable[["Node"], "Node"]</dd>
+<dt><strong><code>resolve_input_nodes</code></strong></dt>
+<dd>Callable[[List[str]], List["Node"]]</dd>
+<dt><strong><code>add_periods</code></strong></dt>
+<dd>Callable[[List[str]], None]</dd>
+<dt><strong><code>cache</code></strong></dt>
+<dd>Optional pre-populated two-level cache mapping <code>node_name → period → value</code>.</dd>
+</dl>
+<p>Instantiate a CalculationEngine detached from the public Graph API.</p>
+<p>The constructor relies on <em>dependency injection</em> - it receives a set of
+callables and shared data structures from the owning <code>Graph</code> instance
+instead of importing it directly.
+This decouples the engine and avoids
+circular dependencies during the ongoing refactor.</p>
+<h2 id="args_1">Args</h2>
+<dl>
+<dt><strong><code>node_resolver</code></strong></dt>
+<dd>Callable resolving a node name to the concrete
+:class:<code><a title="fin_statement_model.core.nodes.base.Node" href="../../nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a></code> instance.</dd>
+<dt><strong><code>period_provider</code></strong></dt>
+<dd>Callable returning the list of currently known
+period identifiers.</dd>
+<dt><strong><code>node_names_provider</code></strong></dt>
+<dd>Callable yielding all node names present in
+the graph (used by <em>recalc_all</em>).</dd>
+<dt><strong><code>node_factory</code></strong></dt>
+<dd>Shared <code>NodeFactory</code> instance used for
+programmatic node creation.</dd>
+<dt><strong><code>nodes_dict</code></strong></dt>
+<dd>Reference to the graph's internal <code>_nodes</code> mapping so
+the engine can access already-instantiated nodes.</dd>
+<dt><strong><code>add_node_with_validation</code></strong></dt>
+<dd>Helper that adds a node to the graph and
+performs validation (cycle detection, name clashes, …).</dd>
+<dt><strong><code>resolve_input_nodes</code></strong></dt>
+<dd>Helper translating input <em>names</em> to concrete
+node objects, leveraging the owning graph's capabilities.</dd>
+<dt><strong><code>add_periods</code></strong></dt>
+<dd>Callable allowing the engine to add new periods to the
+graph when calculation helpers need to expand the timeline.</dd>
+<dt><strong><code>cache</code></strong></dt>
+<dd>Optional pre-populated calculation cache.
+When <em>None</em>, a
+fresh empty cache is created.</dd>
+</dl></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.services.CalculationEngine.cache"><code class="name">prop <span class="ident">cache</span> : dict[str, dict[str, float]]</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def cache(self) -&gt; dict[str, dict[str, float]]:
+    &#34;&#34;&#34;Return the underlying two-level cache mapping.&#34;&#34;&#34;
+    return self._cache</code></pre>
+</details>
+<div class="desc"><p>Return the underlying two-level cache mapping.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.services.CalculationEngine.add_calculation"><code class="name flex">
+<span>def <span class="ident">add_calculation</span></span>(<span>self,<br>name: str,<br>input_names: list[str],<br>operation_type: str,<br>formula_variable_names: list[str] | None = None,<br>**calculation_kwargs: Any) ‑> Node</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_calculation(
+    self,
+    name: str,
+    input_names: list[str],
+    operation_type: str,
+    formula_variable_names: list[str] | None = None,
+    **calculation_kwargs: Any,
+) -&gt; Node:
+    &#34;&#34;&#34;Add a calculation node to the graph.
+
+    Ported verbatim from ``Graph.add_calculation`` - only collaborators
+    replaced with attributes on ``CalculationEngine``.
+    &#34;&#34;&#34;
+    # -----------------------------------------------------------------
+    # Default variable names for formula calculations
+    # -----------------------------------------------------------------
+    # For formula-based calculation nodes, if no explicit
+    # ``formula_variable_names`` are provided we default to using the
+    # ``input_names``.  This allows authors to write formulas directly
+    # with the original input names instead of the positional
+    # ``input_0``/``input_1`` aliases.  The previous behaviour (falling
+    # back to positional variables) is still available by explicitly
+    # passing a list such as ``[&#34;input_0&#34;, &#34;input_1&#34;, ...]``.
+    if operation_type == &#34;formula&#34; and formula_variable_names is None:
+        formula_variable_names = input_names.copy()
+
+    # Validate inputs --------------------------------------------------
+    if not isinstance(input_names, list):
+        raise TypeError(&#34;input_names must be a list of node names.&#34;)
+
+    # Resolve input node names to Node objects -------------------------
+    resolved_inputs = self._resolve_input_nodes(input_names)
+
+    # Create the node via factory -------------------------------------
+    try:
+        node = self._node_factory.create_calculation_node(
+            name=name,
+            inputs=resolved_inputs,
+            calculation_type=operation_type,
+            formula_variable_names=formula_variable_names,
+            **calculation_kwargs,
+        )
+    except (ValueError, TypeError):
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.exception(
+            &#34;Failed to create calculation node &#39;%s&#39; with type &#39;%s&#39;&#34;,
+            name,
+            operation_type,
+        )
+        raise
+
+    # Add with validation (includes cycle detection) ------------------
+    added_node = self._add_node_with_validation(node)
+
+    import logging
+
+    logging.getLogger(__name__).info(
+        &#34;Added calculation node &#39;%s&#39; of type &#39;%s&#39; with inputs %s&#34;,
+        name,
+        operation_type,
+        input_names,
+    )
+    return added_node</code></pre>
+</details>
+<div class="desc"><p>Add a calculation node to the graph.</p>
+<p>Ported verbatim from <code>Graph.add_calculation</code> - only collaborators
+replaced with attributes on <code><a title="fin_statement_model.core.graph.services.CalculationEngine" href="#fin_statement_model.core.graph.services.CalculationEngine">CalculationEngine</a></code>.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.CalculationEngine.add_custom_calculation"><code class="name flex">
+<span>def <span class="ident">add_custom_calculation</span></span>(<span>self,<br>name: str,<br>calculation_func: Callable[..., float],<br>inputs: list[str] | None = None,<br>description: str = '') ‑> Node</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_custom_calculation(
+    self,
+    name: str,
+    calculation_func: Callable[..., float],
+    inputs: list[str] | None = None,
+    description: str = &#34;&#34;,
+) -&gt; Node:
+    &#34;&#34;&#34;Add a custom calculation node using a Python callable.&#34;&#34;&#34;
+    # Validate callable
+    if not callable(calculation_func):
+        raise TypeError(&#34;calculation_func must be callable.&#34;)
+
+    # Resolve inputs if provided
+    resolved_inputs: list[Node] = []
+    if inputs is not None:
+        if not isinstance(inputs, list):
+            raise TypeError(&#34;inputs must be a list of node names.&#34;)
+        resolved_inputs = self._resolve_input_nodes(inputs)
+
+    # Create custom node via factory
+    try:
+        custom_node = self._node_factory._create_custom_node_from_callable(  # pylint: disable=protected-access
+            name=name,
+            inputs=resolved_inputs,
+            formula=calculation_func,
+            description=description,
+        )
+    except (ValueError, TypeError):
+        import logging
+
+        logging.getLogger(__name__).exception(&#34;Failed to create custom calculation node &#39;%s&#39;&#34;, name)
+        raise
+
+    # Add with validation
+    added_node = self._add_node_with_validation(custom_node)
+
+    import logging
+
+    logging.getLogger(__name__).info(&#34;Added custom calculation node &#39;%s&#39; with inputs %s&#34;, name, inputs)
+    return added_node</code></pre>
+</details>
+<div class="desc"><p>Add a custom calculation node using a Python callable.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.CalculationEngine.add_metric"><code class="name flex">
+<span>def <span class="ident">add_metric</span></span>(<span>self,<br>metric_name: str,<br>node_name: str | None = None,<br>*,<br>input_node_map: dict[str, str] | None = None) ‑> Node</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_metric(
+    self,
+    metric_name: str,
+    node_name: str | None = None,
+    *,
+    input_node_map: dict[str, str] | None = None,
+) -&gt; Node:
+    &#34;&#34;&#34;Add a metric calculation node based on a metric definition.&#34;&#34;&#34;
+    from fin_statement_model.core.errors import ConfigurationError, NodeError
+
+    # Derive node_name -------------------------------------------------
+    node_name = node_name or metric_name
+    if not node_name or not isinstance(node_name, str):
+        raise TypeError(&#34;Metric node name must be a non-empty string.&#34;)
+    if node_name in self._nodes:
+        raise ValueError(f&#34;A node with name &#39;{node_name}&#39; already exists in the graph.&#34;)
+
+    # Load metric definition ------------------------------------------
+    metric_def = self._load_metric_definition(metric_name)
+
+    # Map &amp; validate inputs -------------------------------------------
+    try:
+        input_node_names, formula_variable_names = self._map_metric_inputs(metric_def.inputs, input_node_map)
+    except NodeError as exc:
+        # Re-wrap with better context keeping compatibility
+        raise NodeError(f&#34;Cannot create metric &#39;{metric_name}&#39;: {exc}&#34;, node_id=node_name) from exc
+
+    # Create underlying calculation node ------------------------------
+    try:
+        new_node = self.add_calculation(
+            name=node_name,
+            input_names=input_node_names,
+            operation_type=&#34;formula&#34;,
+            formula_variable_names=formula_variable_names,
+            formula=metric_def.formula,
+            metric_name=metric_name,
+            metric_description=metric_def.description,
+        )
+    except Exception as exc:
+        import logging
+
+        logging.getLogger(__name__).exception(
+            &#34;Failed to create calculation node for metric &#39;%s&#39; as node &#39;%s&#39;&#34;,
+            metric_name,
+            node_name,
+        )
+        raise ConfigurationError(f&#34;Error creating node for metric &#39;{metric_name}&#39;: {exc}&#34;) from exc
+
+    import logging
+
+    logging.getLogger(__name__).info(
+        &#34;Added metric &#39;%s&#39; as calculation node &#39;%s&#39; with inputs %s&#34;,
+        metric_name,
+        node_name,
+        input_node_names,
+    )
+    return new_node</code></pre>
+</details>
+<div class="desc"><p>Add a metric calculation node based on a metric definition.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.CalculationEngine.calculate"><code class="name flex">
+<span>def <span class="ident">calculate</span></span>(<span>self, node_name: str, period: str) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate(self, node_name: str, period: str) -&gt; float:
+    &#34;&#34;&#34;Calculate and return the value of *node_name* for *period*.
+
+    This is mostly a verbatim copy of the original ``Graph.calculate`` method,
+    refactored to work in isolation:
+
+    * Uses ``_node_resolver`` instead of ``Graph.manipulator.get_node``.
+    * Writes/reads central cache owned by the engine.
+    * Raises the same domain-specific errors so callers&#39; behaviour is
+      unchanged.
+    &#34;&#34;&#34;
+    import logging  # local to avoid circular deps at import time
+
+    # Import only for type consistency / side-effects. NodeError is unused but
+    # kept here to mirror original Graph behaviour without altering public
+    # re-export expectations.
+    from fin_statement_model.core.errors import (
+        CalculationError,
+        ConfigurationError,
+        NodeError,
+    )
+
+    logger = logging.getLogger(__name__)
+
+    # Fast-path cache hit ------------------------------------------------
+    if node_name in self._cache and period in self._cache[node_name]:
+        logger.debug(&#34;Cache hit for node &#39;%s&#39;, period &#39;%s&#39;&#34;, node_name, period)
+        return self._cache[node_name][period]
+
+    # Resolve node ------------------------------------------------------
+    node = self._node_resolver(node_name)
+    if node is None:  # pragma: no cover - resolver must mirror Graph semantics
+        raise NodeError(f&#34;Node &#39;{node_name}&#39; not found&#34;, node_id=node_name)
+
+    # Validate calculate method ----------------------------------------
+    if not hasattr(node, &#34;calculate&#34;) or not callable(node.calculate):
+        raise TypeError(f&#34;Node &#39;{node_name}&#39; has no callable calculate method.&#34;)
+
+    # Perform calculation ---------------------------------------------
+    try:
+        value = node.calculate(period)
+    except (
+        NodeError,
+        ConfigurationError,
+        CalculationError,
+        ValueError,
+        KeyError,
+        ZeroDivisionError,
+    ) as exc:
+        logger.exception(
+            &#34;Error calculating node &#39;%s&#39; for period &#39;%s&#39;&#34;,
+            node_name,
+            period,
+        )
+        raise CalculationError(
+            message=f&#34;Failed to calculate node &#39;{node_name}&#39;&#34;,
+            node_id=node_name,
+            period=period,
+            details={&#34;original_error&#34;: str(exc)},
+        ) from exc
+
+    # Cache &amp; return ----------------------------------------------------
+    self._cache.setdefault(node_name, {})[period] = value
+    logger.debug(&#34;Cached value for node &#39;%s&#39;, period &#39;%s&#39;: %s&#34;, node_name, period, value)
+    return value</code></pre>
+</details>
+<div class="desc"><p>Calculate and return the value of <em>node_name</em> for <em>period</em>.</p>
+<p>This is mostly a verbatim copy of the original <code>Graph.calculate</code> method,
+refactored to work in isolation:</p>
+<ul>
+<li>Uses <code>_node_resolver</code> instead of <code>Graph.manipulator.get_node</code>.</li>
+<li>Writes/reads central cache owned by the engine.</li>
+<li>Raises the same domain-specific errors so callers' behaviour is
+unchanged.</li>
+</ul></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.CalculationEngine.change_calculation_method"><code class="name flex">
+<span>def <span class="ident">change_calculation_method</span></span>(<span>self, node_name: str, new_method_key: str, **kwargs: dict[str, Any]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def change_calculation_method(
+    self,
+    node_name: str,
+    new_method_key: str,
+    **kwargs: dict[str, Any],
+) -&gt; None:
+    &#34;&#34;&#34;Change the calculation method for an existing calculation-based node.&#34;&#34;&#34;
+    from fin_statement_model.core.calculations import Registry
+    from fin_statement_model.core.errors import NodeError
+    from fin_statement_model.core.nodes import CalculationNode
+
+    node = self._nodes.get(node_name)
+    if node is None:
+        raise NodeError(&#34;Node not found for calculation change&#34;, node_id=node_name)
+    if not isinstance(node, CalculationNode):
+        raise NodeError(f&#34;Node &#39;{node_name}&#39; is not a CalculationNode&#34;, node_id=node_name)
+
+    if new_method_key not in self._node_factory._calculation_methods:  # pylint: disable=protected-access
+        raise ValueError(f&#34;Calculation &#39;{new_method_key}&#39; is not recognized.&#34;)
+
+    calculation_class_name = self._node_factory._calculation_methods[new_method_key]  # pylint: disable=protected-access
+
+    try:
+        calculation_cls = Registry.get(calculation_class_name)
+    except KeyError as exc:
+        raise ValueError(f&#34;Calculation class &#39;{calculation_class_name}&#39; not found in registry.&#34;) from exc
+
+    try:
+        calculation_instance = calculation_cls(**kwargs)
+    except TypeError as exc:
+        raise TypeError(f&#34;Failed to instantiate calculation &#39;{new_method_key}&#39;: {exc}&#34;) from exc
+
+    node.set_calculation(calculation_instance)
+
+    # Clear cached calculations for this node
+    if node_name in self._cache:
+        del self._cache[node_name]</code></pre>
+</details>
+<div class="desc"><p>Change the calculation method for an existing calculation-based node.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.CalculationEngine.clear_all"><code class="name flex">
+<span>def <span class="ident">clear_all</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear_all(self) -&gt; None:
+    &#34;&#34;&#34;Clear the internal calculation cache (stub).&#34;&#34;&#34;
+    self._cache.clear()</code></pre>
+</details>
+<div class="desc"><p>Clear the internal calculation cache (stub).</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.CalculationEngine.ensure_signed_nodes"><code class="name flex">
+<span>def <span class="ident">ensure_signed_nodes</span></span>(<span>self, base_node_ids: list[str], *, suffix: str = '_signed') ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ensure_signed_nodes(self, base_node_ids: list[str], *, suffix: str = &#34;_signed&#34;) -&gt; list[str]:
+    &#34;&#34;&#34;Ensure signed calculation nodes (-1 * input) exist for each base node.&#34;&#34;&#34;
+    created: list[str] = []
+    for base_id in base_node_ids:
+        signed_id = f&#34;{base_id}{suffix}&#34;
+        if signed_id in self._nodes:
+            continue
+        if base_id not in self._nodes:
+            from fin_statement_model.core.errors import NodeError
+
+            raise NodeError(
+                f&#34;Cannot create signed node for missing base node &#39;{base_id}&#39;&#34;,
+                node_id=base_id,
+            )
+        self.add_calculation(
+            name=signed_id,
+            input_names=[base_id],
+            operation_type=&#34;formula&#34;,
+            formula=&#34;-input_0&#34;,
+            formula_variable_names=[&#34;input_0&#34;],
+        )
+        created.append(signed_id)
+    return created</code></pre>
+</details>
+<div class="desc"><p>Ensure signed calculation nodes (-1 * input) exist for each base node.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.CalculationEngine.get_available_metrics"><code class="name flex">
+<span>def <span class="ident">get_available_metrics</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_available_metrics(self) -&gt; list[str]:
+    &#34;&#34;&#34;Return the IDs of all metrics currently available in the graph.&#34;&#34;&#34;
+    return sorted([n.name for n in self._nodes.values() if getattr(n, &#34;metric_name&#34;, None)])</code></pre>
+</details>
+<div class="desc"><p>Return the IDs of all metrics currently available in the graph.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.CalculationEngine.get_metric"><code class="name flex">
+<span>def <span class="ident">get_metric</span></span>(<span>self, metric_id: str) ‑> Node | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_metric(self, metric_id: str) -&gt; Node | None:
+    &#34;&#34;&#34;Return the *metric* node for *metric_id* if it exists.
+
+    Args:
+        metric_id: The canonical identifier of the metric node to fetch.
+
+    Returns:
+        The corresponding :class:`fin_statement_model.core.nodes.base.Node` if
+        present *and* marked as a metric (``metric_name`` attribute),
+        otherwise ``None``.
+    &#34;&#34;&#34;
+    node = self._nodes.get(metric_id)
+    if node and getattr(node, &#34;metric_name&#34;, None) == metric_id:
+        return node
+    return None</code></pre>
+</details>
+<div class="desc"><p>Return the <em>metric</em> node for <em>metric_id</em> if it exists.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>metric_id</code></strong></dt>
+<dd>The canonical identifier of the metric node to fetch.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The corresponding :class:<code><a title="fin_statement_model.core.nodes.base.Node" href="../../nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a></code> if
+present <em>and</em> marked as a metric (<code>metric_name</code> attribute),
+otherwise <code>None</code>.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.CalculationEngine.get_metric_info"><code class="name flex">
+<span>def <span class="ident">get_metric_info</span></span>(<span>self, metric_id: str) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_metric_info(self, metric_id: str) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Return a human-readable information dictionary for *metric_id*.
+
+    The helper consolidates information from the metric definition registry
+    and the concrete metric node to provide callers with a lightweight
+    metadata payload (used by CLI / UI front-ends).
+
+    Args:
+        metric_id: Identifier of the metric node.
+
+    Raises:
+        ValueError: If the requested metric does not exist or is not a
+            metric node.
+
+    Returns:
+        A dictionary containing keys ``id``, ``name``, ``description`` and
+        ``inputs``.
+    &#34;&#34;&#34;
+    from fin_statement_model.core.metrics import metric_registry
+
+    metric_node = self.get_metric(metric_id)
+    if metric_node is None:
+        if metric_id in self._nodes:
+            raise ValueError(f&#34;Node &#39;{metric_id}&#39; exists but is not a metric (missing metric_name attribute).&#34;)
+        raise ValueError(f&#34;Metric node &#39;{metric_id}&#39; not found in graph.&#34;)
+
+    description = getattr(metric_node, &#34;metric_description&#34;, &#34;N/A&#34;)
+    registry_key = getattr(metric_node, &#34;metric_name&#34;, metric_id)
+
+    try:
+        metric_def = metric_registry.get(registry_key)
+        display_name = metric_def.name
+    except KeyError:
+        display_name = metric_id
+
+    inputs = metric_node.get_dependencies() if hasattr(metric_node, &#34;get_dependencies&#34;) else []
+
+    return {
+        &#34;id&#34;: metric_id,
+        &#34;name&#34;: display_name,
+        &#34;description&#34;: description,
+        &#34;inputs&#34;: inputs,
+    }</code></pre>
+</details>
+<div class="desc"><p>Return a human-readable information dictionary for <em>metric_id</em>.</p>
+<p>The helper consolidates information from the metric definition registry
+and the concrete metric node to provide callers with a lightweight
+metadata payload (used by CLI / UI front-ends).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>metric_id</code></strong></dt>
+<dd>Identifier of the metric node.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the requested metric does not exist or is not a
+metric node.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A dictionary containing keys <code>id</code>, <code>name</code>, <code>description</code> and
+<code>inputs</code>.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.CalculationEngine.recalc_all"><code class="name flex">
+<span>def <span class="ident">recalc_all</span></span>(<span>self, periods: list[str] | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def recalc_all(self, periods: list[str] | None = None) -&gt; None:
+    &#34;&#34;&#34;Recalculate every node for *periods*.
+
+    Implementation mimics original ``Graph.recalculate_all`` but requires the
+    caller to iterate over all node names.  Because *CalculationEngine* does
+    not (and should not) know the graph&#39;s registry, we expose a simple
+    fallback behaviour: raise *NotImplementedError* until the graph passes
+    an explicit list of node names via ``periods`` parameter being *not*
+    `None` **and** provides a helper attribute ``_all_node_names``.
+    The Graph façade will shim this in step 1.3.
+    &#34;&#34;&#34;
+    import logging
+
+    from fin_statement_model.core.errors import FinStatementModelError
+
+    # Import only for type consistency / side-effects. NodeError is unused but
+    # kept here to mirror original Graph behaviour without altering public
+    # re-export expectations.
+
+    logger = logging.getLogger(__name__)
+
+    # Determine periods list - mirror Graph logic ----------------------
+    if periods is None:
+        periods_to_use = self._period_provider()
+    elif isinstance(periods, str):
+        periods_to_use = [periods]
+    elif isinstance(periods, list):
+        periods_to_use = periods
+    else:
+        raise TypeError(&#34;Periods must be a list of strings, a single string, or None.&#34;)
+
+    # Clear central cache to force recalculation -----------------------
+    self.clear_all()
+
+    if not periods_to_use:
+        return
+
+    for node_name in list(self._node_names_provider()):
+        for period in periods_to_use:
+            try:
+                self.calculate(node_name, period)
+            except FinStatementModelError as exc:
+                # Match Graph behaviour: log &amp; continue
+                logger.warning(
+                    &#34;Error recalculating node &#39;%s&#39; for period &#39;%s&#39;: %s&#34;,
+                    node_name,
+                    period,
+                    exc,
+                )</code></pre>
+</details>
+<div class="desc"><p>Recalculate every node for <em>periods</em>.</p>
+<p>Implementation mimics original <code>Graph.recalculate_all</code> but requires the
+caller to iterate over all node names.
+Because <em>CalculationEngine</em> does
+not (and should not) know the graph's registry, we expose a simple
+fallback behaviour: raise <em>NotImplementedError</em> until the graph passes
+an explicit list of node names via <code>periods</code> parameter being <em>not</em>
+<code>None</code> <strong>and</strong> provides a helper attribute <code>_all_node_names</code>.
+The Graph façade will shim this in step 1.3.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.graph.services.PeriodService"><code class="flex name class">
+<span>class <span class="ident">PeriodService</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PeriodService:  # pylint: disable=too-few-public-methods
+    &#34;&#34;&#34;Encapsulate period management helpers.
+
+    The service now owns its internal list of period identifiers.  Call-sites
+    should interact exclusively via the public API - direct mutation of the
+    underlying list is no longer supported (removed legacy shim).
+    &#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        &#34;&#34;&#34;Create an empty PeriodService with no registered periods.&#34;&#34;&#34;
+        # Internal, sorted list of unique period identifiers.
+        self._periods: list[str] = []
+
+    # ------------------------------------------------------------------
+    # Public API --------------------------------------------------------
+    # ------------------------------------------------------------------
+    @property
+    def periods(self) -&gt; list[str]:
+        &#34;&#34;&#34;Return an immutable **sorted** list of period identifiers.&#34;&#34;&#34;
+        # Return a shallow copy to prevent accidental mutation
+        return list(self._periods)
+
+    def add_periods(self, periods: list[str]) -&gt; None:
+        &#34;&#34;&#34;Add *periods* ensuring uniqueness &amp; sorted order.&#34;&#34;&#34;
+        if not isinstance(periods, list):  # defensive - mirroring existing Graph.guards
+            raise TypeError(&#34;Periods must be provided as a list of strings.&#34;)
+        combined = set(self._periods).union(periods)
+        sorted_periods = sorted(combined)
+        # Mutate in place to keep external references alive
+        self._periods.clear()
+        self._periods.extend(sorted_periods)
+
+    # ------------------------------------------------------------------
+    # Convenience helpers ------------------------------------------------
+    # ------------------------------------------------------------------
+    def contains(self, period: str) -&gt; bool:
+        &#34;&#34;&#34;Return ``True`` if *period* is already registered.&#34;&#34;&#34;
+        return period in self._periods
+
+    def clear(self) -&gt; None:
+        &#34;&#34;&#34;Remove all registered periods.&#34;&#34;&#34;
+        self._periods.clear()</code></pre>
+</details>
+<div class="desc"><p>Encapsulate period management helpers.</p>
+<p>The service now owns its internal list of period identifiers.
+Call-sites
+should interact exclusively via the public API - direct mutation of the
+underlying list is no longer supported (removed legacy shim).</p>
+<p>Create an empty PeriodService with no registered periods.</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.services.PeriodService.periods"><code class="name">prop <span class="ident">periods</span> : list[str]</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def periods(self) -&gt; list[str]:
+    &#34;&#34;&#34;Return an immutable **sorted** list of period identifiers.&#34;&#34;&#34;
+    # Return a shallow copy to prevent accidental mutation
+    return list(self._periods)</code></pre>
+</details>
+<div class="desc"><p>Return an immutable <strong>sorted</strong> list of period identifiers.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.services.PeriodService.add_periods"><code class="name flex">
+<span>def <span class="ident">add_periods</span></span>(<span>self, periods: list[str]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_periods(self, periods: list[str]) -&gt; None:
+    &#34;&#34;&#34;Add *periods* ensuring uniqueness &amp; sorted order.&#34;&#34;&#34;
+    if not isinstance(periods, list):  # defensive - mirroring existing Graph.guards
+        raise TypeError(&#34;Periods must be provided as a list of strings.&#34;)
+    combined = set(self._periods).union(periods)
+    sorted_periods = sorted(combined)
+    # Mutate in place to keep external references alive
+    self._periods.clear()
+    self._periods.extend(sorted_periods)</code></pre>
+</details>
+<div class="desc"><p>Add <em>periods</em> ensuring uniqueness &amp; sorted order.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.PeriodService.clear"><code class="name flex">
+<span>def <span class="ident">clear</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear(self) -&gt; None:
+    &#34;&#34;&#34;Remove all registered periods.&#34;&#34;&#34;
+    self._periods.clear()</code></pre>
+</details>
+<div class="desc"><p>Remove all registered periods.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.PeriodService.contains"><code class="name flex">
+<span>def <span class="ident">contains</span></span>(<span>self, period: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def contains(self, period: str) -&gt; bool:
+    &#34;&#34;&#34;Return ``True`` if *period* is already registered.&#34;&#34;&#34;
+    return period in self._periods</code></pre>
+</details>
+<div class="desc"><p>Return <code>True</code> if <em>period</em> is already registered.</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.core.graph" href="../index.html">fin_statement_model.core.graph</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.core.graph.services.adjustment_service" href="adjustment_service.html">fin_statement_model.core.graph.services.adjustment_service</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.calculation_engine" href="calculation_engine.html">fin_statement_model.core.graph.services.calculation_engine</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.period_service" href="period_service.html">fin_statement_model.core.graph.services.period_service</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.core.graph.services.AdjustmentService" href="#fin_statement_model.core.graph.services.AdjustmentService">AdjustmentService</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.graph.services.AdjustmentService.add_adjustment" href="#fin_statement_model.core.graph.services.AdjustmentService.add_adjustment">add_adjustment</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.AdjustmentService.apply_adjustments" href="#fin_statement_model.core.graph.services.AdjustmentService.apply_adjustments">apply_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.AdjustmentService.clear_all" href="#fin_statement_model.core.graph.services.AdjustmentService.clear_all">clear_all</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.AdjustmentService.get_adjustments" href="#fin_statement_model.core.graph.services.AdjustmentService.get_adjustments">get_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.AdjustmentService.get_filtered_adjustments" href="#fin_statement_model.core.graph.services.AdjustmentService.get_filtered_adjustments">get_filtered_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.AdjustmentService.list_all_adjustments" href="#fin_statement_model.core.graph.services.AdjustmentService.list_all_adjustments">list_all_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.AdjustmentService.remove_adjustment" href="#fin_statement_model.core.graph.services.AdjustmentService.remove_adjustment">remove_adjustment</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.AdjustmentService.was_adjusted" href="#fin_statement_model.core.graph.services.AdjustmentService.was_adjusted">was_adjusted</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.graph.services.CalculationEngine" href="#fin_statement_model.core.graph.services.CalculationEngine">CalculationEngine</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.graph.services.CalculationEngine.add_calculation" href="#fin_statement_model.core.graph.services.CalculationEngine.add_calculation">add_calculation</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.CalculationEngine.add_custom_calculation" href="#fin_statement_model.core.graph.services.CalculationEngine.add_custom_calculation">add_custom_calculation</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.CalculationEngine.add_metric" href="#fin_statement_model.core.graph.services.CalculationEngine.add_metric">add_metric</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.CalculationEngine.cache" href="#fin_statement_model.core.graph.services.CalculationEngine.cache">cache</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.CalculationEngine.calculate" href="#fin_statement_model.core.graph.services.CalculationEngine.calculate">calculate</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.CalculationEngine.change_calculation_method" href="#fin_statement_model.core.graph.services.CalculationEngine.change_calculation_method">change_calculation_method</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.CalculationEngine.clear_all" href="#fin_statement_model.core.graph.services.CalculationEngine.clear_all">clear_all</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.CalculationEngine.ensure_signed_nodes" href="#fin_statement_model.core.graph.services.CalculationEngine.ensure_signed_nodes">ensure_signed_nodes</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.CalculationEngine.get_available_metrics" href="#fin_statement_model.core.graph.services.CalculationEngine.get_available_metrics">get_available_metrics</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.CalculationEngine.get_metric" href="#fin_statement_model.core.graph.services.CalculationEngine.get_metric">get_metric</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.CalculationEngine.get_metric_info" href="#fin_statement_model.core.graph.services.CalculationEngine.get_metric_info">get_metric_info</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.CalculationEngine.recalc_all" href="#fin_statement_model.core.graph.services.CalculationEngine.recalc_all">recalc_all</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.graph.services.PeriodService" href="#fin_statement_model.core.graph.services.PeriodService">PeriodService</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.graph.services.PeriodService.add_periods" href="#fin_statement_model.core.graph.services.PeriodService.add_periods">add_periods</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.PeriodService.clear" href="#fin_statement_model.core.graph.services.PeriodService.clear">clear</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.PeriodService.contains" href="#fin_statement_model.core.graph.services.PeriodService.contains">contains</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.PeriodService.periods" href="#fin_statement_model.core.graph.services.PeriodService.periods">periods</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

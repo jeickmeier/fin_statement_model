@@ -1,0 +1,23 @@
+site_name: "fin_statement_model Docs"
+theme:
+  name: material
+
+use_directory_urls: false
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_signature: true
+            show_source: false
+            # modernize_annotations: true  # uncomment if desired
+
+nav:
+  - Home: index.md
+  - Tutorials: tutorials.md
+  - API Reference: api_reference.md
+
+extra_css:
+  - assets/stylesheet.css

@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.utils.formatting API documentation</title>
+<meta name="description" content="Utility helpers for consistent numeric formatting across the library …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.utils.formatting</code></h1>
+</header>
+<section id="section-intro">
+<p>Utility helpers for consistent numeric formatting across the library.</p>
+<p>The module groups small, reusable functions that handle common string / number
+formatting tasks shared by CLI reporters, statement formatters and higher-level
+analysis helpers.
+Keeping them here avoids duplicating logic (and associated
+edge-cases) in multiple call-sites.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.utils.formatting.apply_sign_convention"><code class="name flex">
+<span>def <span class="ident">apply_sign_convention</span></span>(<span>df: pd.DataFrame, period_columns: list[str]) ‑> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def apply_sign_convention(df: pd.DataFrame, period_columns: list[str]) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;Apply *sign_convention* column values (+1 or -1) to numeric period columns.
+
+    This helper is agnostic of financial-statement specifics - it simply multiplies
+    each numeric cell in *period_columns* by the corresponding row&#39;s
+    ``sign_convention`` (if present).  Missing conventions default to ``1`` (no
+    change).
+
+    Args:
+        df: Source DataFrame.
+        period_columns: Column names that contain numeric statement values.
+
+    Returns:
+        A *copy* of *df* with adjusted sign for contra-style rows.
+    &#34;&#34;&#34;
+    result = df.copy()
+    if &#34;sign_convention&#34; not in result.columns:
+        return result
+
+    for col in period_columns:
+        if col in result.columns and is_numeric_dtype(result[col]):
+            mask = result[col].notna()
+            # Convert sign column to numeric to guard against accidental strings.
+            sign_col = pd.to_numeric(result.loc[mask, &#34;sign_convention&#34;], errors=&#34;coerce&#34;).fillna(1)
+            result.loc[mask, col] = result.loc[mask, col] * sign_col
+    return result</code></pre>
+</details>
+<div class="desc"><p>Apply <em>sign_convention</em> column values (+1 or -1) to numeric period columns.</p>
+<p>This helper is agnostic of financial-statement specifics - it simply multiplies
+each numeric cell in <em>period_columns</em> by the corresponding row's
+<code>sign_convention</code> (if present).
+Missing conventions default to <code>1</code> (no
+change).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>df</code></strong></dt>
+<dd>Source DataFrame.</dd>
+<dt><strong><code>period_columns</code></strong></dt>
+<dd>Column names that contain numeric statement values.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A <em>copy</em> of <em>df</em> with adjusted sign for contra-style rows.</p></div>
+</dd>
+<dt id="fin_statement_model.utils.formatting.format_numbers"><code class="name flex">
+<span>def <span class="ident">format_numbers</span></span>(<span>df: pd.DataFrame,<br>default_formats: dict[str, Any],<br>*,<br>number_format: str | None = None,<br>period_columns: list[str] | None = None) ‑> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_numbers(
+    df: pd.DataFrame,
+    default_formats: dict[str, Any],
+    *,
+    number_format: str | None = None,
+    period_columns: list[str] | None = None,
+) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;Format numeric values as strings according to *number_format* or defaults.
+
+    If *number_format* is omitted, the helper falls back to values contained in
+    *default_formats* (typically provided by config):
+
+    * ``precision`` - number of decimal places (int, default ``2``)
+    * ``use_thousands_separator`` - comma-separate thousands if *True*
+
+    Non-numeric columns are left untouched, as are DataFrame-level metadata
+    columns such as ``sign_convention`` or ``depth``.
+
+    Args:
+        df: DataFrame whose numeric cells will be string-formatted.
+        default_formats: Library-wide default formatting options.
+        number_format: Explicit Python format specifier (e.g. ``&#39;,.1f&#39;``).  Takes
+            precedence over defaults.
+        period_columns: Sub-selection of columns to format.  If *None*, all
+            numeric, non-metadata columns are considered.
+
+    Returns:
+        A *copy* of the DataFrame with formatted **string** values in the chosen
+        columns.  Unaffected columns preserve their original dtype.
+    &#34;&#34;&#34;
+    result = df.copy()
+
+    # Determine columns that should be formatted.
+    if period_columns is not None:
+        numeric_cols = [col for col in period_columns if col in result.columns and is_numeric_dtype(result[col])]
+    else:
+        # Fallback: any numeric column except explicit metadata helpers.
+        numeric_cols = [
+            col
+            for col in result.columns
+            if is_numeric_dtype(result[col])
+            and col not in {&#34;sign_convention&#34;, &#34;depth&#34;, &#34;ID&#34;}
+            and not col.startswith(&#34;meta_&#34;)
+            and col != &#34;Line Item&#34;
+        ]
+
+    if not numeric_cols:
+        return result
+
+    # Resolve precision &amp; thousand-separator defaults if *number_format* omitted.
+    precision = default_formats.get(&#34;precision&#34;, 2)
+    use_thousands = default_formats.get(&#34;use_thousands_separator&#34;, True)
+
+    if number_format is not None:
+        # Apply explicit Python format specifier.
+        for col in numeric_cols:
+            if col in result.columns:
+                result[col] = result[col].apply(lambda x: f&#34;{x:{number_format}}&#34; if pd.notna(x) else &#34;&#34;)
+    else:
+        # Derive basic format string from defaults.
+        fmt = f&#34;,.{precision}f&#34; if use_thousands else f&#34;.{precision}f&#34;
+        for col in numeric_cols:
+            if col in result.columns:
+                result[col] = result[col].apply(lambda x: f&#34;{x:{fmt}}&#34; if pd.notna(x) else &#34;&#34;)
+
+    return result</code></pre>
+</details>
+<div class="desc"><p>Format numeric values as strings according to <em>number_format</em> or defaults.</p>
+<p>If <em>number_format</em> is omitted, the helper falls back to values contained in
+<em>default_formats</em> (typically provided by config):</p>
+<ul>
+<li><code>precision</code> - number of decimal places (int, default <code>2</code>)</li>
+<li><code>use_thousands_separator</code> - comma-separate thousands if <em>True</em></li>
+</ul>
+<p>Non-numeric columns are left untouched, as are DataFrame-level metadata
+columns such as <code>sign_convention</code> or <code>depth</code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>df</code></strong></dt>
+<dd>DataFrame whose numeric cells will be string-formatted.</dd>
+<dt><strong><code>default_formats</code></strong></dt>
+<dd>Library-wide default formatting options.</dd>
+<dt><strong><code>number_format</code></strong></dt>
+<dd>Explicit Python format specifier (e.g. <code>',.1f'</code>).
+Takes
+precedence over defaults.</dd>
+<dt><strong><code>period_columns</code></strong></dt>
+<dd>Sub-selection of columns to format.
+If <em>None</em>, all
+numeric, non-metadata columns are considered.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A <em>copy</em> of the DataFrame with formatted <strong>string</strong> values in the chosen
+columns.
+Unaffected columns preserve their original dtype.</p></div>
+</dd>
+<dt id="fin_statement_model.utils.formatting.render_values"><code class="name flex">
+<span>def <span class="ident">render_values</span></span>(<span>df: pd.DataFrame,<br>period_columns: list[str],<br>default_formats: dict[str, Any],<br>*,<br>number_format: str | None = None,<br>contra_display_style: str | None = 'parentheses') ‑> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def render_values(
+    df: pd.DataFrame,
+    period_columns: list[str],
+    default_formats: dict[str, Any],
+    *,
+    number_format: str | None = None,
+    contra_display_style: str | None = &#34;parentheses&#34;,
+) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;High-level helper that combines *sign*, *number*, and contra formatting.
+
+    The rendering pipeline is:
+
+    1. Apply sign convention (positive / negative) to raw numeric values.
+    2. Convert numbers to strings via :pyfunc:`format_numbers`.
+    3. Apply contra-item styling (parentheses, minus sign, brackets).
+
+    Args:
+        df: Source DataFrame.
+        period_columns: Names of period/value columns to transform.
+        default_formats: Project-level default number formatting options.
+        number_format: Optional explicit Python format specifier.
+        contra_display_style: How contra numbers are displayed.
+
+    Returns:
+        A *new* DataFrame object with formatted string values.
+    &#34;&#34;&#34;
+    # 1) Apply sign conventions.
+    signed_df = apply_sign_convention(df, period_columns)
+
+    # 2) Number → string conversion.
+    formatted_df = format_numbers(
+        signed_df,
+        default_formats,
+        number_format=number_format,
+        period_columns=period_columns,
+    )
+
+    # 3) Contra display tweaks.
+    if &#34;is_contra&#34; in df.columns:
+        contra_mask = df[&#34;is_contra&#34;].fillna(False)
+        for col in period_columns:
+            mask = contra_mask &amp; formatted_df[col].astype(bool)
+            if contra_display_style == &#34;parentheses&#34;:
+                formatted_df.loc[mask, col] = &#34;(&#34; + formatted_df.loc[mask, col] + &#34;)&#34;
+            elif contra_display_style == &#34;negative_sign&#34;:
+                formatted_df.loc[mask, col] = &#34;-&#34; + formatted_df.loc[mask, col]
+            elif contra_display_style == &#34;brackets&#34;:
+                formatted_df.loc[mask, col] = &#34;[&#34; + formatted_df.loc[mask, col] + &#34;]&#34;
+            else:
+                # Default fallback.
+                formatted_df.loc[mask, col] = &#34;(&#34; + formatted_df.loc[mask, col] + &#34;)&#34;
+
+    # 4) Assign back (&amp; cast to object dtype so mixed string/float doesn&#39;t break).
+    result = df.copy()
+    result[period_columns] = formatted_df[period_columns].astype(&#34;object&#34;)
+    return result</code></pre>
+</details>
+<div class="desc"><p>High-level helper that combines <em>sign</em>, <em>number</em>, and contra formatting.</p>
+<p>The rendering pipeline is:</p>
+<ol>
+<li>Apply sign convention (positive / negative) to raw numeric values.</li>
+<li>Convert numbers to strings via :pyfunc:<code><a title="fin_statement_model.utils.formatting.format_numbers" href="#fin_statement_model.utils.formatting.format_numbers">format_numbers()</a></code>.</li>
+<li>Apply contra-item styling (parentheses, minus sign, brackets).</li>
+</ol>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>df</code></strong></dt>
+<dd>Source DataFrame.</dd>
+<dt><strong><code>period_columns</code></strong></dt>
+<dd>Names of period/value columns to transform.</dd>
+<dt><strong><code>default_formats</code></strong></dt>
+<dd>Project-level default number formatting options.</dd>
+<dt><strong><code>number_format</code></strong></dt>
+<dd>Optional explicit Python format specifier.</dd>
+<dt><strong><code>contra_display_style</code></strong></dt>
+<dd>How contra numbers are displayed.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A <em>new</em> DataFrame object with formatted string values.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.utils" href="index.html">fin_statement_model.utils</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.utils.formatting.apply_sign_convention" href="#fin_statement_model.utils.formatting.apply_sign_convention">apply_sign_convention</a></code></li>
+<li><code><a title="fin_statement_model.utils.formatting.format_numbers" href="#fin_statement_model.utils.formatting.format_numbers">format_numbers</a></code></li>
+<li><code><a title="fin_statement_model.utils.formatting.render_values" href="#fin_statement_model.utils.formatting.render_values">render_values</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

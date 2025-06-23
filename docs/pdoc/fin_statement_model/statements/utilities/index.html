@@ -1,0 +1,2056 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.statements.utilities API documentation</title>
+<meta name="description" content="Cross-cutting utilities for the statements package …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.statements.utilities</code></h1>
+</header>
+<section id="section-intro">
+<p>Cross-cutting utilities for the statements package.</p>
+<p>This package provides reusable components:
+- Result types for functional error handling
+- Retry mechanisms for transient failures
+- Common error codes and handling patterns</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.statements.utilities.cli_formatters" href="cli_formatters.html">fin_statement_model.statements.utilities.cli_formatters</a></code></dt>
+<dd>
+<div class="desc"><p>Lightweight CLI helpers for printing validation and processing errors.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.statements.utilities.result_types" href="result_types.html">fin_statement_model.statements.utilities.result_types</a></code></dt>
+<dd>
+<div class="desc"><p>Common result types for standardized error handling in the statements module …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.statements.utilities.retry_handler" href="retry_handler.html">fin_statement_model.statements.utilities.retry_handler</a></code></dt>
+<dd>
+<div class="desc"><p>Retry handler for managing transient failures in statement operations …</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.statements.utilities.combine_results"><code class="name flex">
+<span>def <span class="ident">combine_results</span></span>(<span>*results: <a title="fin_statement_model.statements.utilities.result_types.Result" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a>[~T]) ‑> <a title="fin_statement_model.statements.utilities.result_types.Result" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a>[list[~T]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def combine_results(*results: Result[T]) -&gt; Result[list[T]]:
+    &#34;&#34;&#34;Combine multiple results into a single result.
+
+    If all results are successful, returns Success with list of values.
+    If any result is a failure, returns Failure with all errors combined.
+    &#34;&#34;&#34;
+    collector = ErrorCollector()
+    values = []
+
+    for result in results:
+        if result.is_success():
+            values.append(cast(&#34;T&#34;, result.get_value()))
+        else:
+            for error in result.get_errors():
+                if error.severity == ErrorSeverity.WARNING:
+                    collector.add_warning(error.code, error.message, error.context, error.source)
+                else:
+                    collector.add_error(error.code, error.message, error.context, error.source)
+
+    if collector.has_errors():
+        return Failure(errors=collector.get_all())
+    return Success(value=values)</code></pre>
+</details>
+<div class="desc"><p>Combine multiple results into a single result.</p>
+<p>If all results are successful, returns Success with list of values.
+If any result is a failure, returns Failure with all errors combined.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.retry_on_specific_errors"><code class="name flex">
+<span>def <span class="ident">retry_on_specific_errors</span></span>(<span>operation: Callable[[], <a title="fin_statement_model.statements.utilities.result_types.Result" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a>[~T]],<br>retryable_errors: set[str],<br>max_attempts: int | None = None,<br>operation_name: str | None = None) ‑> <a title="fin_statement_model.statements.utilities.retry_handler.RetryResult" href="retry_handler.html#fin_statement_model.statements.utilities.retry_handler.RetryResult">RetryResult</a>[~T]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def retry_on_specific_errors(
+    operation: Callable[[], Result[T]],
+    retryable_errors: set[str],
+    max_attempts: int | None = None,
+    operation_name: str | None = None,
+) -&gt; RetryResult[T]:
+    &#34;&#34;&#34;Retry an operation only for specific error codes.
+
+    Args:
+        operation: The operation to retry
+        retryable_errors: Set of error codes that trigger retry
+        max_attempts: Maximum number of attempts. If not provided, uses config default from api.api_retry_count
+        operation_name: Optional name for logging
+
+    Returns:
+        RetryResult with the final outcome
+    &#34;&#34;&#34;
+    # Use config default if not provided
+    max_attempts = cfg_or_param(&#34;api.api_retry_count&#34;, max_attempts)
+
+    config = RetryConfig(
+        max_attempts=max_attempts,
+        strategy=RetryStrategy.CONDITIONAL,
+        retryable_errors=retryable_errors,
+        backoff=ExponentialBackoff(),
+    )
+    handler = RetryHandler(config)
+    return handler.retry(operation, operation_name)</code></pre>
+</details>
+<div class="desc"><p>Retry an operation only for specific error codes.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>operation</code></strong></dt>
+<dd>The operation to retry</dd>
+<dt><strong><code>retryable_errors</code></strong></dt>
+<dd>Set of error codes that trigger retry</dd>
+<dt><strong><code>max_attempts</code></strong></dt>
+<dd>Maximum number of attempts. If not provided, uses config default from api.api_retry_count</dd>
+<dt><strong><code>operation_name</code></strong></dt>
+<dd>Optional name for logging</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>RetryResult with the final outcome</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.retry_with_exponential_backoff"><code class="name flex">
+<span>def <span class="ident">retry_with_exponential_backoff</span></span>(<span>operation: Callable[[], <a title="fin_statement_model.statements.utilities.result_types.Result" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a>[~T]],<br>max_attempts: int | None = None,<br>base_delay: float = 1.0,<br>operation_name: str | None = None) ‑> <a title="fin_statement_model.statements.utilities.retry_handler.RetryResult" href="retry_handler.html#fin_statement_model.statements.utilities.retry_handler.RetryResult">RetryResult</a>[~T]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def retry_with_exponential_backoff(
+    operation: Callable[[], Result[T]],
+    max_attempts: int | None = None,
+    base_delay: float = 1.0,
+    operation_name: str | None = None,
+) -&gt; RetryResult[T]:
+    &#34;&#34;&#34;Retry an operation with exponential backoff.
+
+    Args:
+        operation: The operation to retry
+        max_attempts: Maximum number of attempts. If not provided, uses config default from api.api_retry_count
+        base_delay: Initial delay in seconds
+        operation_name: Optional name for logging
+
+    Returns:
+        RetryResult with the final outcome
+    &#34;&#34;&#34;
+    # Use config default if not provided
+    max_attempts = cfg_or_param(&#34;api.api_retry_count&#34;, max_attempts)
+
+    config = RetryConfig(
+        max_attempts=max_attempts,
+        strategy=RetryStrategy.BACKOFF,
+        backoff=ExponentialBackoff(base_delay=base_delay),
+    )
+    handler = RetryHandler(config)
+    return handler.retry(operation, operation_name)</code></pre>
+</details>
+<div class="desc"><p>Retry an operation with exponential backoff.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>operation</code></strong></dt>
+<dd>The operation to retry</dd>
+<dt><strong><code>max_attempts</code></strong></dt>
+<dd>Maximum number of attempts. If not provided, uses config default from api.api_retry_count</dd>
+<dt><strong><code>base_delay</code></strong></dt>
+<dd>Initial delay in seconds</dd>
+<dt><strong><code>operation_name</code></strong></dt>
+<dd>Optional name for logging</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>RetryResult with the final outcome</p></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.statements.utilities.BackoffStrategy"><code class="flex name class">
+<span>class <span class="ident">BackoffStrategy</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BackoffStrategy(ABC):
+    &#34;&#34;&#34;Abstract base class for backoff strategies.&#34;&#34;&#34;
+
+    @abstractmethod
+    def get_delay(self, attempt: int) -&gt; float:
+        &#34;&#34;&#34;Get delay in seconds for the given attempt number.
+
+        Args:
+            attempt: The attempt number (1-based)
+
+        Returns:
+            Delay in seconds before the next retry
+        &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Abstract base class for backoff strategies.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.statements.utilities.retry_handler.ConstantBackoff" href="retry_handler.html#fin_statement_model.statements.utilities.retry_handler.ConstantBackoff">ConstantBackoff</a></li>
+<li><a title="fin_statement_model.statements.utilities.retry_handler.ExponentialBackoff" href="retry_handler.html#fin_statement_model.statements.utilities.retry_handler.ExponentialBackoff">ExponentialBackoff</a></li>
+<li><a title="fin_statement_model.statements.utilities.retry_handler.LinearBackoff" href="retry_handler.html#fin_statement_model.statements.utilities.retry_handler.LinearBackoff">LinearBackoff</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.BackoffStrategy.get_delay"><code class="name flex">
+<span>def <span class="ident">get_delay</span></span>(<span>self, attempt: int) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def get_delay(self, attempt: int) -&gt; float:
+    &#34;&#34;&#34;Get delay in seconds for the given attempt number.
+
+    Args:
+        attempt: The attempt number (1-based)
+
+    Returns:
+        Delay in seconds before the next retry
+    &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Get delay in seconds for the given attempt number.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>attempt</code></strong></dt>
+<dd>The attempt number (1-based)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Delay in seconds before the next retry</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ConstantBackoff"><code class="flex name class">
+<span>class <span class="ident">ConstantBackoff</span></span>
+<span>(</span><span>delay: float = 1.0)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ConstantBackoff(BackoffStrategy):
+    &#34;&#34;&#34;Constant delay backoff strategy.&#34;&#34;&#34;
+
+    def __init__(self, delay: float = 1.0):
+        &#34;&#34;&#34;Initialize constant backoff.
+
+        Args:
+            delay: Constant delay in seconds
+        &#34;&#34;&#34;
+        self.delay = delay
+
+    def get_delay(self, attempt: int) -&gt; float:
+        &#34;&#34;&#34;Return constant delay.&#34;&#34;&#34;
+        _ = attempt  # Parameter intentionally unused in constant backoff
+        return self.delay</code></pre>
+</details>
+<div class="desc"><p>Constant delay backoff strategy.</p>
+<p>Initialize constant backoff.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>delay</code></strong></dt>
+<dd>Constant delay in seconds</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.statements.utilities.retry_handler.BackoffStrategy" href="retry_handler.html#fin_statement_model.statements.utilities.retry_handler.BackoffStrategy">BackoffStrategy</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.ConstantBackoff.get_delay"><code class="name flex">
+<span>def <span class="ident">get_delay</span></span>(<span>self, attempt: int) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_delay(self, attempt: int) -&gt; float:
+    &#34;&#34;&#34;Return constant delay.&#34;&#34;&#34;
+    _ = attempt  # Parameter intentionally unused in constant backoff
+    return self.delay</code></pre>
+</details>
+<div class="desc"><p>Return constant delay.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorCollector"><code class="flex name class">
+<span>class <span class="ident">ErrorCollector</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ErrorCollector:
+    &#34;&#34;&#34;Collects errors during multi-step operations.
+
+    Useful for operations that should continue collecting errors
+    rather than failing fast on the first error.
+    &#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        &#34;&#34;&#34;Initialize an empty error collector.&#34;&#34;&#34;
+        self._errors: list[ErrorDetail] = []
+        self._warnings: list[ErrorDetail] = []
+
+    def add_error(
+        self,
+        code: str,
+        message: str,
+        context: str | None = None,
+        source: str | None = None,
+    ) -&gt; None:
+        &#34;&#34;&#34;Add an error to the collector.&#34;&#34;&#34;
+        self._errors.append(
+            ErrorDetail(
+                code=code,
+                message=message,
+                context=context,
+                severity=ErrorSeverity.ERROR,
+                source=source,
+            )
+        )
+
+    def add_warning(
+        self,
+        code: str,
+        message: str,
+        context: str | None = None,
+        source: str | None = None,
+    ) -&gt; None:
+        &#34;&#34;&#34;Add a warning to the collector.&#34;&#34;&#34;
+        self._warnings.append(
+            ErrorDetail(
+                code=code,
+                message=message,
+                context=context,
+                severity=ErrorSeverity.WARNING,
+                source=source,
+            )
+        )
+
+    def add_from_result(self, result: Result[Any], source: str | None = None) -&gt; None:
+        &#34;&#34;&#34;Add errors from a Result object.&#34;&#34;&#34;
+        if result.is_failure():
+            for error in result.get_errors():
+                # Override source if provided
+                if source:
+                    new_error = ErrorDetail(
+                        code=error.code,
+                        message=error.message,
+                        context=error.context,
+                        severity=error.severity,
+                        source=source,
+                    )
+                    if new_error.severity == ErrorSeverity.WARNING:
+                        self._warnings.append(new_error)
+                    else:
+                        self._errors.append(new_error)
+                elif error.severity == ErrorSeverity.WARNING:
+                    self._warnings.append(error)
+                else:
+                    self._errors.append(error)
+
+    def has_errors(self) -&gt; bool:
+        &#34;&#34;&#34;Check if any errors have been collected.&#34;&#34;&#34;
+        return len(self._errors) &gt; 0
+
+    def has_warnings(self) -&gt; bool:
+        &#34;&#34;&#34;Check if any warnings have been collected.&#34;&#34;&#34;
+        return len(self._warnings) &gt; 0
+
+    def get_errors(self) -&gt; list[ErrorDetail]:
+        &#34;&#34;&#34;Get all collected errors (not warnings).&#34;&#34;&#34;
+        return list(self._errors)
+
+    def get_warnings(self) -&gt; list[ErrorDetail]:
+        &#34;&#34;&#34;Get all collected warnings.&#34;&#34;&#34;
+        return list(self._warnings)
+
+    def get_all(self) -&gt; list[ErrorDetail]:
+        &#34;&#34;&#34;Get all collected errors and warnings.&#34;&#34;&#34;
+        return self._errors + self._warnings
+
+    def to_result(self, value: T | None = None) -&gt; Result[T]:
+        &#34;&#34;&#34;Convert collector state to a Result.
+
+        If there are errors, returns Failure.
+        Otherwise returns Success with the provided value.
+        &#34;&#34;&#34;
+        if self.has_errors():
+            return Failure(errors=self._errors)
+        # Cast value to T for Success
+        return Success(value=cast(&#34;T&#34;, value))
+
+    def log_all(self, prefix: str = &#34;&#34;) -&gt; None:
+        &#34;&#34;&#34;Log all collected errors and warnings.&#34;&#34;&#34;
+        for warning in self._warnings:
+            logger.warning(&#34;%s%s&#34;, prefix, warning)
+        for error in self._errors:
+            logger.error(&#34;%s%s&#34;, prefix, error)</code></pre>
+</details>
+<div class="desc"><p>Collects errors during multi-step operations.</p>
+<p>Useful for operations that should continue collecting errors
+rather than failing fast on the first error.</p>
+<p>Initialize an empty error collector.</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.ErrorCollector.add_error"><code class="name flex">
+<span>def <span class="ident">add_error</span></span>(<span>self,<br>code: str,<br>message: str,<br>context: str | None = None,<br>source: str | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_error(
+    self,
+    code: str,
+    message: str,
+    context: str | None = None,
+    source: str | None = None,
+) -&gt; None:
+    &#34;&#34;&#34;Add an error to the collector.&#34;&#34;&#34;
+    self._errors.append(
+        ErrorDetail(
+            code=code,
+            message=message,
+            context=context,
+            severity=ErrorSeverity.ERROR,
+            source=source,
+        )
+    )</code></pre>
+</details>
+<div class="desc"><p>Add an error to the collector.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorCollector.add_from_result"><code class="name flex">
+<span>def <span class="ident">add_from_result</span></span>(<span>self,<br>result: <a title="fin_statement_model.statements.utilities.result_types.Result" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a>[typing.Any],<br>source: str | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_from_result(self, result: Result[Any], source: str | None = None) -&gt; None:
+    &#34;&#34;&#34;Add errors from a Result object.&#34;&#34;&#34;
+    if result.is_failure():
+        for error in result.get_errors():
+            # Override source if provided
+            if source:
+                new_error = ErrorDetail(
+                    code=error.code,
+                    message=error.message,
+                    context=error.context,
+                    severity=error.severity,
+                    source=source,
+                )
+                if new_error.severity == ErrorSeverity.WARNING:
+                    self._warnings.append(new_error)
+                else:
+                    self._errors.append(new_error)
+            elif error.severity == ErrorSeverity.WARNING:
+                self._warnings.append(error)
+            else:
+                self._errors.append(error)</code></pre>
+</details>
+<div class="desc"><p>Add errors from a Result object.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorCollector.add_warning"><code class="name flex">
+<span>def <span class="ident">add_warning</span></span>(<span>self,<br>code: str,<br>message: str,<br>context: str | None = None,<br>source: str | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_warning(
+    self,
+    code: str,
+    message: str,
+    context: str | None = None,
+    source: str | None = None,
+) -&gt; None:
+    &#34;&#34;&#34;Add a warning to the collector.&#34;&#34;&#34;
+    self._warnings.append(
+        ErrorDetail(
+            code=code,
+            message=message,
+            context=context,
+            severity=ErrorSeverity.WARNING,
+            source=source,
+        )
+    )</code></pre>
+</details>
+<div class="desc"><p>Add a warning to the collector.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorCollector.get_all"><code class="name flex">
+<span>def <span class="ident">get_all</span></span>(<span>self) ‑> list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="result_types.html#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_all(self) -&gt; list[ErrorDetail]:
+    &#34;&#34;&#34;Get all collected errors and warnings.&#34;&#34;&#34;
+    return self._errors + self._warnings</code></pre>
+</details>
+<div class="desc"><p>Get all collected errors and warnings.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorCollector.get_errors"><code class="name flex">
+<span>def <span class="ident">get_errors</span></span>(<span>self) ‑> list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="result_types.html#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_errors(self) -&gt; list[ErrorDetail]:
+    &#34;&#34;&#34;Get all collected errors (not warnings).&#34;&#34;&#34;
+    return list(self._errors)</code></pre>
+</details>
+<div class="desc"><p>Get all collected errors (not warnings).</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorCollector.get_warnings"><code class="name flex">
+<span>def <span class="ident">get_warnings</span></span>(<span>self) ‑> list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="result_types.html#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_warnings(self) -&gt; list[ErrorDetail]:
+    &#34;&#34;&#34;Get all collected warnings.&#34;&#34;&#34;
+    return list(self._warnings)</code></pre>
+</details>
+<div class="desc"><p>Get all collected warnings.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorCollector.has_errors"><code class="name flex">
+<span>def <span class="ident">has_errors</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_errors(self) -&gt; bool:
+    &#34;&#34;&#34;Check if any errors have been collected.&#34;&#34;&#34;
+    return len(self._errors) &gt; 0</code></pre>
+</details>
+<div class="desc"><p>Check if any errors have been collected.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorCollector.has_warnings"><code class="name flex">
+<span>def <span class="ident">has_warnings</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_warnings(self) -&gt; bool:
+    &#34;&#34;&#34;Check if any warnings have been collected.&#34;&#34;&#34;
+    return len(self._warnings) &gt; 0</code></pre>
+</details>
+<div class="desc"><p>Check if any warnings have been collected.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorCollector.log_all"><code class="name flex">
+<span>def <span class="ident">log_all</span></span>(<span>self, prefix: str = '') ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def log_all(self, prefix: str = &#34;&#34;) -&gt; None:
+    &#34;&#34;&#34;Log all collected errors and warnings.&#34;&#34;&#34;
+    for warning in self._warnings:
+        logger.warning(&#34;%s%s&#34;, prefix, warning)
+    for error in self._errors:
+        logger.error(&#34;%s%s&#34;, prefix, error)</code></pre>
+</details>
+<div class="desc"><p>Log all collected errors and warnings.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorCollector.to_result"><code class="name flex">
+<span>def <span class="ident">to_result</span></span>(<span>self, value: ~T | None = None) ‑> <a title="fin_statement_model.statements.utilities.result_types.Result" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a>[~T]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_result(self, value: T | None = None) -&gt; Result[T]:
+    &#34;&#34;&#34;Convert collector state to a Result.
+
+    If there are errors, returns Failure.
+    Otherwise returns Success with the provided value.
+    &#34;&#34;&#34;
+    if self.has_errors():
+        return Failure(errors=self._errors)
+    # Cast value to T for Success
+    return Success(value=cast(&#34;T&#34;, value))</code></pre>
+</details>
+<div class="desc"><p>Convert collector state to a Result.</p>
+<p>If there are errors, returns Failure.
+Otherwise returns Success with the provided value.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorDetail"><code class="flex name class">
+<span>class <span class="ident">ErrorDetail</span></span>
+<span>(</span><span>code: str,<br>message: str,<br>context: str | None = None,<br>severity: <a title="fin_statement_model.statements.utilities.result_types.ErrorSeverity" href="result_types.html#fin_statement_model.statements.utilities.result_types.ErrorSeverity">ErrorSeverity</a> = ErrorSeverity.ERROR,<br>source: str | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass(frozen=True)
+class ErrorDetail:
+    &#34;&#34;&#34;Detailed information about an error.
+
+    Attributes:
+        code: Error code for programmatic handling
+        message: Human-readable error message
+        context: Optional context about where/what caused the error
+        severity: Severity level of the error
+        source: Optional source identifier (e.g., item ID, file path)
+    &#34;&#34;&#34;
+
+    code: str
+    message: str
+    context: str | None = None
+    severity: ErrorSeverity = ErrorSeverity.ERROR
+    source: str | None = None
+
+    def __str__(self) -&gt; str:
+        &#34;&#34;&#34;Format error as string.&#34;&#34;&#34;
+        parts = [f&#34;[{self.severity.value.upper()}]&#34;]
+        if self.source:
+            parts.append(f&#34;{self.source}:&#34;)
+        parts.append(self.message)
+        if self.context:
+            parts.append(f&#34;({self.context})&#34;)
+        return &#34; &#34;.join(parts)</code></pre>
+</details>
+<div class="desc"><p>Detailed information about an error.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>code</code></strong></dt>
+<dd>Error code for programmatic handling</dd>
+<dt><strong><code>message</code></strong></dt>
+<dd>Human-readable error message</dd>
+<dt><strong><code>context</code></strong></dt>
+<dd>Optional context about where/what caused the error</dd>
+<dt><strong><code>severity</code></strong></dt>
+<dd>Severity level of the error</dd>
+<dt><strong><code>source</code></strong></dt>
+<dd>Optional source identifier (e.g., item ID, file path)</dd>
+</dl></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.ErrorDetail.code"><code class="name">var <span class="ident">code</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorDetail.context"><code class="name">var <span class="ident">context</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorDetail.message"><code class="name">var <span class="ident">message</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorDetail.severity"><code class="name">var <span class="ident">severity</span> : <a title="fin_statement_model.statements.utilities.result_types.ErrorSeverity" href="result_types.html#fin_statement_model.statements.utilities.result_types.ErrorSeverity">ErrorSeverity</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorDetail.source"><code class="name">var <span class="ident">source</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorSeverity"><code class="flex name class">
+<span>class <span class="ident">ErrorSeverity</span></span>
+<span>(</span><span>*args, **kwds)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ErrorSeverity(Enum):
+    &#34;&#34;&#34;Severity levels for errors.&#34;&#34;&#34;
+
+    WARNING = &#34;warning&#34;
+    ERROR = &#34;error&#34;
+    CRITICAL = &#34;critical&#34;</code></pre>
+</details>
+<div class="desc"><p>Severity levels for errors.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.ErrorSeverity.CRITICAL"><code class="name">var <span class="ident">CRITICAL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorSeverity.ERROR"><code class="name">var <span class="ident">ERROR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ErrorSeverity.WARNING"><code class="name">var <span class="ident">WARNING</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.ExponentialBackoff"><code class="flex name class">
+<span>class <span class="ident">ExponentialBackoff</span></span>
+<span>(</span><span>base_delay: float = 1.0,<br>max_delay: float = 60.0,<br>multiplier: float = 2.0,<br>jitter: bool = True)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ExponentialBackoff(BackoffStrategy):
+    &#34;&#34;&#34;Exponential backoff strategy with optional jitter.&#34;&#34;&#34;
+
+    def __init__(
+        self,
+        base_delay: float = 1.0,
+        max_delay: float = 60.0,
+        multiplier: float = 2.0,
+        jitter: bool = True,
+    ):
+        &#34;&#34;&#34;Initialize exponential backoff.
+
+        Args:
+            base_delay: Initial delay in seconds
+            max_delay: Maximum delay in seconds
+            multiplier: Multiplier for each retry
+            jitter: Whether to add random jitter
+        &#34;&#34;&#34;
+        self.base_delay = base_delay
+        self.max_delay = max_delay
+        self.multiplier = multiplier
+        self.jitter = jitter
+
+    def get_delay(self, attempt: int) -&gt; float:
+        &#34;&#34;&#34;Calculate exponential backoff delay.&#34;&#34;&#34;
+        delay = min(self.base_delay * (self.multiplier ** (attempt - 1)), self.max_delay)
+
+        if self.jitter:
+            # Add up to 20% jitter (non-crypto randomness acceptable)
+            jitter_factor = secrets.randbelow(10000) / 10000  # 0.0-0.9999
+            jitter_amount = delay * 0.2 * jitter_factor
+            delay += jitter_amount
+
+        return delay</code></pre>
+</details>
+<div class="desc"><p>Exponential backoff strategy with optional jitter.</p>
+<p>Initialize exponential backoff.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>base_delay</code></strong></dt>
+<dd>Initial delay in seconds</dd>
+<dt><strong><code>max_delay</code></strong></dt>
+<dd>Maximum delay in seconds</dd>
+<dt><strong><code>multiplier</code></strong></dt>
+<dd>Multiplier for each retry</dd>
+<dt><strong><code>jitter</code></strong></dt>
+<dd>Whether to add random jitter</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.statements.utilities.retry_handler.BackoffStrategy" href="retry_handler.html#fin_statement_model.statements.utilities.retry_handler.BackoffStrategy">BackoffStrategy</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.ExponentialBackoff.get_delay"><code class="name flex">
+<span>def <span class="ident">get_delay</span></span>(<span>self, attempt: int) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_delay(self, attempt: int) -&gt; float:
+    &#34;&#34;&#34;Calculate exponential backoff delay.&#34;&#34;&#34;
+    delay = min(self.base_delay * (self.multiplier ** (attempt - 1)), self.max_delay)
+
+    if self.jitter:
+        # Add up to 20% jitter (non-crypto randomness acceptable)
+        jitter_factor = secrets.randbelow(10000) / 10000  # 0.0-0.9999
+        jitter_amount = delay * 0.2 * jitter_factor
+        delay += jitter_amount
+
+    return delay</code></pre>
+</details>
+<div class="desc"><p>Calculate exponential backoff delay.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.Failure"><code class="flex name class">
+<span>class <span class="ident">Failure</span></span>
+<span>(</span><span>errors: list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="result_types.html#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>] = &lt;factory&gt;)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass(frozen=True)
+class Failure(Result[T]):
+    &#34;&#34;&#34;Represents a failed operation result.&#34;&#34;&#34;
+
+    errors: list[ErrorDetail] = field(default_factory=list)
+
+    def __post_init__(self) -&gt; None:
+        &#34;&#34;&#34;Ensure at least one error is present.&#34;&#34;&#34;
+        if not self.errors:
+            # Add a default error if none provided
+            object.__setattr__(
+                self,
+                &#34;errors&#34;,
+                [
+                    ErrorDetail(
+                        code=&#34;unknown&#34;,
+                        message=&#34;Operation failed with no specific error&#34;,
+                    )
+                ],
+            )
+
+    def is_success(self) -&gt; bool:
+        &#34;&#34;&#34;Always returns False for Failure.&#34;&#34;&#34;
+        return False
+
+    def is_failure(self) -&gt; bool:
+        &#34;&#34;&#34;Always returns True for Failure.&#34;&#34;&#34;
+        return True
+
+    def get_value(self) -&gt; T | None:
+        &#34;&#34;&#34;Always returns None for Failure.&#34;&#34;&#34;
+        return None
+
+    def get_errors(self) -&gt; list[ErrorDetail]:
+        &#34;&#34;&#34;Return the error details.&#34;&#34;&#34;
+        return self.errors
+
+    @classmethod
+    def from_exception(cls, exc: Exception, code: str = &#34;exception&#34;) -&gt; &#34;Failure[T]&#34;:
+        &#34;&#34;&#34;Create a Failure from an exception.&#34;&#34;&#34;
+        return cls(
+            errors=[
+                ErrorDetail(
+                    code=code,
+                    message=str(exc),
+                    context=type(exc).__name__,
+                    severity=ErrorSeverity.ERROR,
+                )
+            ]
+        )</code></pre>
+</details>
+<div class="desc"><p>Represents a failed operation result.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.statements.utilities.result_types.Result" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a></li>
+<li>abc.ABC</li>
+<li>typing.Generic</li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.Failure.from_exception"><code class="name flex">
+<span>def <span class="ident">from_exception</span></span>(<span>exc: Exception, code: str = 'exception') ‑> <a title="fin_statement_model.statements.utilities.result_types.Failure" href="result_types.html#fin_statement_model.statements.utilities.result_types.Failure">Failure</a>[~T]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a Failure from an exception.</p></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.Failure.errors"><code class="name">var <span class="ident">errors</span> : list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="result_types.html#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.Failure.get_errors"><code class="name flex">
+<span>def <span class="ident">get_errors</span></span>(<span>self) ‑> list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="result_types.html#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_errors(self) -&gt; list[ErrorDetail]:
+    &#34;&#34;&#34;Return the error details.&#34;&#34;&#34;
+    return self.errors</code></pre>
+</details>
+<div class="desc"><p>Return the error details.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.Failure.get_value"><code class="name flex">
+<span>def <span class="ident">get_value</span></span>(<span>self) ‑> ~T | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_value(self) -&gt; T | None:
+    &#34;&#34;&#34;Always returns None for Failure.&#34;&#34;&#34;
+    return None</code></pre>
+</details>
+<div class="desc"><p>Always returns None for Failure.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.Failure.is_failure"><code class="name flex">
+<span>def <span class="ident">is_failure</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_failure(self) -&gt; bool:
+    &#34;&#34;&#34;Always returns True for Failure.&#34;&#34;&#34;
+    return True</code></pre>
+</details>
+<div class="desc"><p>Always returns True for Failure.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.Failure.is_success"><code class="name flex">
+<span>def <span class="ident">is_success</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_success(self) -&gt; bool:
+    &#34;&#34;&#34;Always returns False for Failure.&#34;&#34;&#34;
+    return False</code></pre>
+</details>
+<div class="desc"><p>Always returns False for Failure.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.statements.utilities.result_types.Result" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Result.unwrap" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result.unwrap">unwrap</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Result.unwrap_or" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result.unwrap_or">unwrap_or</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.statements.utilities.LinearBackoff"><code class="flex name class">
+<span>class <span class="ident">LinearBackoff</span></span>
+<span>(</span><span>base_delay: float = 1.0, increment: float = 1.0)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class LinearBackoff(BackoffStrategy):
+    &#34;&#34;&#34;Linear backoff strategy.&#34;&#34;&#34;
+
+    def __init__(self, base_delay: float = 1.0, increment: float = 1.0):
+        &#34;&#34;&#34;Initialize linear backoff.
+
+        Args:
+            base_delay: Initial delay in seconds
+            increment: Increment for each retry
+        &#34;&#34;&#34;
+        self.base_delay = base_delay
+        self.increment = increment
+
+    def get_delay(self, attempt: int) -&gt; float:
+        &#34;&#34;&#34;Calculate linear backoff delay.&#34;&#34;&#34;
+        return self.base_delay + (attempt - 1) * self.increment</code></pre>
+</details>
+<div class="desc"><p>Linear backoff strategy.</p>
+<p>Initialize linear backoff.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>base_delay</code></strong></dt>
+<dd>Initial delay in seconds</dd>
+<dt><strong><code>increment</code></strong></dt>
+<dd>Increment for each retry</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.statements.utilities.retry_handler.BackoffStrategy" href="retry_handler.html#fin_statement_model.statements.utilities.retry_handler.BackoffStrategy">BackoffStrategy</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.LinearBackoff.get_delay"><code class="name flex">
+<span>def <span class="ident">get_delay</span></span>(<span>self, attempt: int) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_delay(self, attempt: int) -&gt; float:
+    &#34;&#34;&#34;Calculate linear backoff delay.&#34;&#34;&#34;
+    return self.base_delay + (attempt - 1) * self.increment</code></pre>
+</details>
+<div class="desc"><p>Calculate linear backoff delay.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.Result"><code class="flex name class">
+<span>class <span class="ident">Result</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Result(ABC, Generic[T]):
+    &#34;&#34;&#34;Abstract base class for operation results.
+
+    Provides a functional approach to error handling, allowing
+    operations to return either success or failure without exceptions.
+    &#34;&#34;&#34;
+
+    @abstractmethod
+    def is_success(self) -&gt; bool:
+        &#34;&#34;&#34;Check if the result represents success.&#34;&#34;&#34;
+
+    @abstractmethod
+    def is_failure(self) -&gt; bool:
+        &#34;&#34;&#34;Check if the result represents failure.&#34;&#34;&#34;
+
+    @abstractmethod
+    def get_value(self) -&gt; T | None:
+        &#34;&#34;&#34;Get the success value if available.&#34;&#34;&#34;
+
+    @abstractmethod
+    def get_errors(self) -&gt; list[ErrorDetail]:
+        &#34;&#34;&#34;Get error details if this is a failure.&#34;&#34;&#34;
+
+    def unwrap(self) -&gt; T:
+        &#34;&#34;&#34;Get the value or raise an exception if failed.
+
+        Raises:
+            ValueError: If the result is a failure.
+        &#34;&#34;&#34;
+        if self.is_failure():
+            errors_str = &#34;\n&#34;.join(str(e) for e in self.get_errors())
+            raise ValueError(f&#34;Cannot unwrap failed result:\n{errors_str}&#34;)
+        return cast(&#34;T&#34;, self.get_value())
+
+    def unwrap_or(self, default: T) -&gt; T:
+        &#34;&#34;&#34;Get the value or return a default if failed.&#34;&#34;&#34;
+        return cast(&#34;T&#34;, self.get_value()) if self.is_success() else default</code></pre>
+</details>
+<div class="desc"><p>Abstract base class for operation results.</p>
+<p>Provides a functional approach to error handling, allowing
+operations to return either success or failure without exceptions.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+<li>typing.Generic</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.statements.utilities.result_types.Failure" href="result_types.html#fin_statement_model.statements.utilities.result_types.Failure">Failure</a></li>
+<li><a title="fin_statement_model.statements.utilities.result_types.Success" href="result_types.html#fin_statement_model.statements.utilities.result_types.Success">Success</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.Result.get_errors"><code class="name flex">
+<span>def <span class="ident">get_errors</span></span>(<span>self) ‑> list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="result_types.html#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def get_errors(self) -&gt; list[ErrorDetail]:
+    &#34;&#34;&#34;Get error details if this is a failure.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Get error details if this is a failure.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.Result.get_value"><code class="name flex">
+<span>def <span class="ident">get_value</span></span>(<span>self) ‑> ~T | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def get_value(self) -&gt; T | None:
+    &#34;&#34;&#34;Get the success value if available.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Get the success value if available.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.Result.is_failure"><code class="name flex">
+<span>def <span class="ident">is_failure</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def is_failure(self) -&gt; bool:
+    &#34;&#34;&#34;Check if the result represents failure.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Check if the result represents failure.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.Result.is_success"><code class="name flex">
+<span>def <span class="ident">is_success</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def is_success(self) -&gt; bool:
+    &#34;&#34;&#34;Check if the result represents success.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Check if the result represents success.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.Result.unwrap"><code class="name flex">
+<span>def <span class="ident">unwrap</span></span>(<span>self) ‑> ~T</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unwrap(self) -&gt; T:
+    &#34;&#34;&#34;Get the value or raise an exception if failed.
+
+    Raises:
+        ValueError: If the result is a failure.
+    &#34;&#34;&#34;
+    if self.is_failure():
+        errors_str = &#34;\n&#34;.join(str(e) for e in self.get_errors())
+        raise ValueError(f&#34;Cannot unwrap failed result:\n{errors_str}&#34;)
+    return cast(&#34;T&#34;, self.get_value())</code></pre>
+</details>
+<div class="desc"><p>Get the value or raise an exception if failed.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the result is a failure.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.Result.unwrap_or"><code class="name flex">
+<span>def <span class="ident">unwrap_or</span></span>(<span>self, default: ~T) ‑> ~T</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unwrap_or(self, default: T) -&gt; T:
+    &#34;&#34;&#34;Get the value or return a default if failed.&#34;&#34;&#34;
+    return cast(&#34;T&#34;, self.get_value()) if self.is_success() else default</code></pre>
+</details>
+<div class="desc"><p>Get the value or return a default if failed.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryConfig"><code class="flex name class">
+<span>class <span class="ident">RetryConfig</span></span>
+<span>(</span><span>max_attempts: int | None = None,<br>strategy: <a title="fin_statement_model.statements.utilities.retry_handler.RetryStrategy" href="retry_handler.html#fin_statement_model.statements.utilities.retry_handler.RetryStrategy">RetryStrategy</a> = RetryStrategy.BACKOFF,<br>backoff: ForwardRef('<a title="fin_statement_model.statements.utilities.BackoffStrategy" href="#fin_statement_model.statements.utilities.BackoffStrategy">BackoffStrategy</a>') | None = None,<br>retryable_errors: set[str] | None = None,<br>log_retries: bool = True,<br>collect_all_errors: bool = False)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class RetryConfig:
+    &#34;&#34;&#34;Configuration for retry behavior.
+
+    Attributes:
+        max_attempts: Maximum number of attempts (including initial).
+                     If not provided, uses config default from api.api_retry_count
+        strategy: Retry strategy to use
+        backoff: Optional backoff strategy for delays
+        retryable_errors: Set of error codes that are retryable
+        log_retries: Whether to log retry attempts
+        collect_all_errors: Whether to collect errors from all attempts
+    &#34;&#34;&#34;
+
+    max_attempts: int | None = None
+    strategy: RetryStrategy = RetryStrategy.BACKOFF
+    backoff: Optional[&#34;BackoffStrategy&#34;] = None
+    retryable_errors: set[str] | None = None
+    log_retries: bool = True
+    collect_all_errors: bool = False
+
+    def __post_init__(self) -&gt; None:
+        &#34;&#34;&#34;Validate configuration and set defaults.&#34;&#34;&#34;
+        # Use config default if not provided
+        if self.max_attempts is None:
+            self.max_attempts = cfg_or_param(&#34;api.api_retry_count&#34;, None)
+
+        if self.max_attempts &lt; 1:
+            raise ValueError(&#34;max_attempts must be at least 1&#34;)
+
+        if self.strategy == RetryStrategy.BACKOFF and not self.backoff:
+            # Default to exponential backoff
+            self.backoff = ExponentialBackoff()
+
+        if self.retryable_errors is None:
+            # Default retryable errors
+            self.retryable_errors = {
+                &#34;timeout&#34;,
+                &#34;connection_error&#34;,
+                &#34;rate_limit&#34;,
+                &#34;temporary_failure&#34;,
+                &#34;calculation_error&#34;,  # For graph calculations
+                &#34;node_not_ready&#34;,  # For dependency issues
+            }</code></pre>
+</details>
+<div class="desc"><p>Configuration for retry behavior.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>max_attempts</code></strong></dt>
+<dd>Maximum number of attempts (including initial).
+If not provided, uses config default from api.api_retry_count</dd>
+<dt><strong><code>strategy</code></strong></dt>
+<dd>Retry strategy to use</dd>
+<dt><strong><code>backoff</code></strong></dt>
+<dd>Optional backoff strategy for delays</dd>
+<dt><strong><code>retryable_errors</code></strong></dt>
+<dd>Set of error codes that are retryable</dd>
+<dt><strong><code>log_retries</code></strong></dt>
+<dd>Whether to log retry attempts</dd>
+<dt><strong><code>collect_all_errors</code></strong></dt>
+<dd>Whether to collect errors from all attempts</dd>
+</dl></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.RetryConfig.backoff"><code class="name">var <span class="ident">backoff</span> : <a title="fin_statement_model.statements.utilities.retry_handler.BackoffStrategy" href="retry_handler.html#fin_statement_model.statements.utilities.retry_handler.BackoffStrategy">BackoffStrategy</a> | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryConfig.collect_all_errors"><code class="name">var <span class="ident">collect_all_errors</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryConfig.log_retries"><code class="name">var <span class="ident">log_retries</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryConfig.max_attempts"><code class="name">var <span class="ident">max_attempts</span> : int | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryConfig.retryable_errors"><code class="name">var <span class="ident">retryable_errors</span> : set[str] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryConfig.strategy"><code class="name">var <span class="ident">strategy</span> : <a title="fin_statement_model.statements.utilities.retry_handler.RetryStrategy" href="retry_handler.html#fin_statement_model.statements.utilities.retry_handler.RetryStrategy">RetryStrategy</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryHandler"><code class="flex name class">
+<span>class <span class="ident">RetryHandler</span></span>
+<span>(</span><span>config: <a title="fin_statement_model.statements.utilities.retry_handler.RetryConfig" href="retry_handler.html#fin_statement_model.statements.utilities.retry_handler.RetryConfig">RetryConfig</a> | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RetryHandler:
+    &#34;&#34;&#34;Handles retry logic for operations that may fail transiently.&#34;&#34;&#34;
+
+    def __init__(self, config: RetryConfig | None = None):
+        &#34;&#34;&#34;Initialize retry handler.
+
+        Args:
+            config: Retry configuration, uses defaults if not provided
+        &#34;&#34;&#34;
+        self.config = config or RetryConfig()
+
+    def retry(
+        self,
+        operation: Callable[[], Result[T]],
+        operation_name: str | None = None,
+    ) -&gt; RetryResult[T]:
+        &#34;&#34;&#34;Execute an operation with retry logic.
+
+        Args:
+            operation: Callable that returns a Result
+            operation_name: Optional name for logging
+
+        Returns:
+            RetryResult containing the final result and metadata
+        &#34;&#34;&#34;
+        error_collector = ErrorCollector() if self.config.collect_all_errors else None
+        total_delay = 0.0
+        # Ensure max_attempts is int
+        max_attempts = cast(&#34;int&#34;, self.config.max_attempts)
+        op_name = operation_name or operation.__name__
+
+        for attempt in range(1, max_attempts + 1):
+            if attempt &gt; 1 and self.config.log_retries:
+                logger.info(&#34;Retrying %s (attempt %s/%s)&#34;, op_name, attempt, max_attempts)
+
+            # Execute the operation
+            try:
+                result = operation()
+            except Exception as e:  # noqa: BLE001 - convert any exception into Failure for retry logic
+                # Convert exception to Result
+                result = Failure.from_exception(e)
+
+            # Check if successful
+            if result.is_success():
+                return RetryResult(
+                    result=result,
+                    attempts=attempt,
+                    total_delay=total_delay,
+                    all_errors=error_collector.get_all() if error_collector else None,
+                )
+
+            # Handle failure
+            errors = result.get_errors()
+
+            # Collect errors if configured
+            if error_collector:
+                for error in errors:
+                    error_collector.add_error(
+                        code=error.code,
+                        message=f&#34;Attempt {attempt}: {error.message}&#34;,
+                        context=error.context,
+                        source=error.source,
+                    )
+
+            # Check if we should retry
+            if attempt &gt;= max_attempts:
+                # No more retries
+                if self.config.log_retries:
+                    logger.warning(
+                        &#34;%s failed after %s attempts. Final error: %s&#34;,
+                        op_name,
+                        attempt,
+                        errors[0].message if errors else &#34;Unknown&#34;,
+                    )
+                break
+
+            # Check if errors are retryable
+            if self.config.strategy == RetryStrategy.CONDITIONAL:
+                # Safe cast retryable_errors to non-nullable set
+                retryable_errors = cast(&#34;set[str]&#34;, self.config.retryable_errors)
+                retryable = any(is_retryable_error(error, retryable_errors) for error in errors)
+                if not retryable:
+                    if self.config.log_retries:
+                        logger.debug(
+                            &#34;%s failed with non-retryable error: %s&#34;,
+                            op_name,
+                            errors[0].code if errors else &#34;Unknown&#34;,
+                        )
+                    break
+
+            # Calculate delay
+            if self.config.strategy == RetryStrategy.BACKOFF and self.config.backoff:
+                delay = self.config.backoff.get_delay(attempt)
+                if self.config.log_retries:
+                    logger.debug(&#34;Waiting %.2fs before retry&#34;, delay)
+                time.sleep(delay)
+                total_delay += delay
+
+        # Return final result
+        return RetryResult(
+            result=result,
+            attempts=attempt,
+            total_delay=total_delay,
+            all_errors=error_collector.get_all() if error_collector else None,
+        )
+
+    def retry_async(
+        self,
+        operation: Callable[[], Result[T]],
+        operation_name: str | None = None,
+    ) -&gt; RetryResult[T]:
+        &#34;&#34;&#34;Execute an async operation with retry logic.
+
+        Note: This is a placeholder for future async support.
+        Currently just delegates to sync retry.
+
+        Args:
+            operation: Callable that returns a Result
+            operation_name: Optional name for logging
+
+        Returns:
+            RetryResult containing the final result and metadata
+        &#34;&#34;&#34;
+        # TODO: Implement proper async support when needed
+        return self.retry(operation, operation_name)</code></pre>
+</details>
+<div class="desc"><p>Handles retry logic for operations that may fail transiently.</p>
+<p>Initialize retry handler.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Retry configuration, uses defaults if not provided</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.RetryHandler.retry"><code class="name flex">
+<span>def <span class="ident">retry</span></span>(<span>self,<br>operation: Callable[[], <a title="fin_statement_model.statements.utilities.result_types.Result" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a>[~T]],<br>operation_name: str | None = None) ‑> <a title="fin_statement_model.statements.utilities.retry_handler.RetryResult" href="retry_handler.html#fin_statement_model.statements.utilities.retry_handler.RetryResult">RetryResult</a>[~T]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def retry(
+    self,
+    operation: Callable[[], Result[T]],
+    operation_name: str | None = None,
+) -&gt; RetryResult[T]:
+    &#34;&#34;&#34;Execute an operation with retry logic.
+
+    Args:
+        operation: Callable that returns a Result
+        operation_name: Optional name for logging
+
+    Returns:
+        RetryResult containing the final result and metadata
+    &#34;&#34;&#34;
+    error_collector = ErrorCollector() if self.config.collect_all_errors else None
+    total_delay = 0.0
+    # Ensure max_attempts is int
+    max_attempts = cast(&#34;int&#34;, self.config.max_attempts)
+    op_name = operation_name or operation.__name__
+
+    for attempt in range(1, max_attempts + 1):
+        if attempt &gt; 1 and self.config.log_retries:
+            logger.info(&#34;Retrying %s (attempt %s/%s)&#34;, op_name, attempt, max_attempts)
+
+        # Execute the operation
+        try:
+            result = operation()
+        except Exception as e:  # noqa: BLE001 - convert any exception into Failure for retry logic
+            # Convert exception to Result
+            result = Failure.from_exception(e)
+
+        # Check if successful
+        if result.is_success():
+            return RetryResult(
+                result=result,
+                attempts=attempt,
+                total_delay=total_delay,
+                all_errors=error_collector.get_all() if error_collector else None,
+            )
+
+        # Handle failure
+        errors = result.get_errors()
+
+        # Collect errors if configured
+        if error_collector:
+            for error in errors:
+                error_collector.add_error(
+                    code=error.code,
+                    message=f&#34;Attempt {attempt}: {error.message}&#34;,
+                    context=error.context,
+                    source=error.source,
+                )
+
+        # Check if we should retry
+        if attempt &gt;= max_attempts:
+            # No more retries
+            if self.config.log_retries:
+                logger.warning(
+                    &#34;%s failed after %s attempts. Final error: %s&#34;,
+                    op_name,
+                    attempt,
+                    errors[0].message if errors else &#34;Unknown&#34;,
+                )
+            break
+
+        # Check if errors are retryable
+        if self.config.strategy == RetryStrategy.CONDITIONAL:
+            # Safe cast retryable_errors to non-nullable set
+            retryable_errors = cast(&#34;set[str]&#34;, self.config.retryable_errors)
+            retryable = any(is_retryable_error(error, retryable_errors) for error in errors)
+            if not retryable:
+                if self.config.log_retries:
+                    logger.debug(
+                        &#34;%s failed with non-retryable error: %s&#34;,
+                        op_name,
+                        errors[0].code if errors else &#34;Unknown&#34;,
+                    )
+                break
+
+        # Calculate delay
+        if self.config.strategy == RetryStrategy.BACKOFF and self.config.backoff:
+            delay = self.config.backoff.get_delay(attempt)
+            if self.config.log_retries:
+                logger.debug(&#34;Waiting %.2fs before retry&#34;, delay)
+            time.sleep(delay)
+            total_delay += delay
+
+    # Return final result
+    return RetryResult(
+        result=result,
+        attempts=attempt,
+        total_delay=total_delay,
+        all_errors=error_collector.get_all() if error_collector else None,
+    )</code></pre>
+</details>
+<div class="desc"><p>Execute an operation with retry logic.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>operation</code></strong></dt>
+<dd>Callable that returns a Result</dd>
+<dt><strong><code>operation_name</code></strong></dt>
+<dd>Optional name for logging</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>RetryResult containing the final result and metadata</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryHandler.retry_async"><code class="name flex">
+<span>def <span class="ident">retry_async</span></span>(<span>self,<br>operation: Callable[[], <a title="fin_statement_model.statements.utilities.result_types.Result" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a>[~T]],<br>operation_name: str | None = None) ‑> <a title="fin_statement_model.statements.utilities.retry_handler.RetryResult" href="retry_handler.html#fin_statement_model.statements.utilities.retry_handler.RetryResult">RetryResult</a>[~T]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def retry_async(
+    self,
+    operation: Callable[[], Result[T]],
+    operation_name: str | None = None,
+) -&gt; RetryResult[T]:
+    &#34;&#34;&#34;Execute an async operation with retry logic.
+
+    Note: This is a placeholder for future async support.
+    Currently just delegates to sync retry.
+
+    Args:
+        operation: Callable that returns a Result
+        operation_name: Optional name for logging
+
+    Returns:
+        RetryResult containing the final result and metadata
+    &#34;&#34;&#34;
+    # TODO: Implement proper async support when needed
+    return self.retry(operation, operation_name)</code></pre>
+</details>
+<div class="desc"><p>Execute an async operation with retry logic.</p>
+<p>Note: This is a placeholder for future async support.
+Currently just delegates to sync retry.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>operation</code></strong></dt>
+<dd>Callable that returns a Result</dd>
+<dt><strong><code>operation_name</code></strong></dt>
+<dd>Optional name for logging</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>RetryResult containing the final result and metadata</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryResult"><code class="flex name class">
+<span>class <span class="ident">RetryResult</span></span>
+<span>(</span><span>result: <a title="fin_statement_model.statements.utilities.result_types.Result" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a>[~T],<br>attempts: int,<br>total_delay: float,<br>all_errors: list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="result_types.html#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class RetryResult(Generic[T]):
+    &#34;&#34;&#34;Result of a retry operation.
+
+    Attributes:
+        result: The final result (success or failure)
+        attempts: Number of attempts made
+        total_delay: Total delay time in seconds
+        all_errors: All errors collected if configured
+    &#34;&#34;&#34;
+
+    result: Result[T]
+    attempts: int
+    total_delay: float
+    all_errors: list[ErrorDetail] | None = None
+
+    @property
+    def success(self) -&gt; bool:
+        &#34;&#34;&#34;Check if the operation eventually succeeded.&#34;&#34;&#34;
+        return self.result.is_success()
+
+    def unwrap(self) -&gt; T:
+        &#34;&#34;&#34;Get the value or raise an exception.&#34;&#34;&#34;
+        return self.result.unwrap()
+
+    def unwrap_or(self, default: T) -&gt; T:
+        &#34;&#34;&#34;Get the value or return default.&#34;&#34;&#34;
+        return self.result.unwrap_or(default)</code></pre>
+</details>
+<div class="desc"><p>Result of a retry operation.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>result</code></strong></dt>
+<dd>The final result (success or failure)</dd>
+<dt><strong><code>attempts</code></strong></dt>
+<dd>Number of attempts made</dd>
+<dt><strong><code>total_delay</code></strong></dt>
+<dd>Total delay time in seconds</dd>
+<dt><strong><code>all_errors</code></strong></dt>
+<dd>All errors collected if configured</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>typing.Generic</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.RetryResult.all_errors"><code class="name">var <span class="ident">all_errors</span> : list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="result_types.html#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryResult.attempts"><code class="name">var <span class="ident">attempts</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryResult.result"><code class="name">var <span class="ident">result</span> : <a title="fin_statement_model.statements.utilities.result_types.Result" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a>[~T]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryResult.success"><code class="name">prop <span class="ident">success</span> : bool</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def success(self) -&gt; bool:
+    &#34;&#34;&#34;Check if the operation eventually succeeded.&#34;&#34;&#34;
+    return self.result.is_success()</code></pre>
+</details>
+<div class="desc"><p>Check if the operation eventually succeeded.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryResult.total_delay"><code class="name">var <span class="ident">total_delay</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.RetryResult.unwrap"><code class="name flex">
+<span>def <span class="ident">unwrap</span></span>(<span>self) ‑> ~T</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unwrap(self) -&gt; T:
+    &#34;&#34;&#34;Get the value or raise an exception.&#34;&#34;&#34;
+    return self.result.unwrap()</code></pre>
+</details>
+<div class="desc"><p>Get the value or raise an exception.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryResult.unwrap_or"><code class="name flex">
+<span>def <span class="ident">unwrap_or</span></span>(<span>self, default: ~T) ‑> ~T</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unwrap_or(self, default: T) -&gt; T:
+    &#34;&#34;&#34;Get the value or return default.&#34;&#34;&#34;
+    return self.result.unwrap_or(default)</code></pre>
+</details>
+<div class="desc"><p>Get the value or return default.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryStrategy"><code class="flex name class">
+<span>class <span class="ident">RetryStrategy</span></span>
+<span>(</span><span>*args, **kwds)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RetryStrategy(Enum):
+    &#34;&#34;&#34;Strategy for determining when to retry.&#34;&#34;&#34;
+
+    IMMEDIATE = &#34;immediate&#34;  # Retry immediately on failure
+    BACKOFF = &#34;backoff&#34;  # Use backoff strategy between retries
+    CONDITIONAL = &#34;conditional&#34;  # Retry only for specific error types</code></pre>
+</details>
+<div class="desc"><p>Strategy for determining when to retry.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.RetryStrategy.BACKOFF"><code class="name">var <span class="ident">BACKOFF</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryStrategy.CONDITIONAL"><code class="name">var <span class="ident">CONDITIONAL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.RetryStrategy.IMMEDIATE"><code class="name">var <span class="ident">IMMEDIATE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.Success"><code class="flex name class">
+<span>class <span class="ident">Success</span></span>
+<span>(</span><span>value: ~T)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass(frozen=True)
+class Success(Result[T]):
+    &#34;&#34;&#34;Represents a successful operation result.&#34;&#34;&#34;
+
+    value: T
+
+    def is_success(self) -&gt; bool:
+        &#34;&#34;&#34;Always returns True for Success.&#34;&#34;&#34;
+        return True
+
+    def is_failure(self) -&gt; bool:
+        &#34;&#34;&#34;Always returns False for Success.&#34;&#34;&#34;
+        return False
+
+    def get_value(self) -&gt; T | None:
+        &#34;&#34;&#34;Return the success value.&#34;&#34;&#34;
+        return self.value
+
+    def get_errors(self) -&gt; list[ErrorDetail]:
+        &#34;&#34;&#34;Return empty list for Success.&#34;&#34;&#34;
+        return []</code></pre>
+</details>
+<div class="desc"><p>Represents a successful operation result.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.statements.utilities.result_types.Result" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a></li>
+<li>abc.ABC</li>
+<li>typing.Generic</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.Success.value"><code class="name">var <span class="ident">value</span> : ~T</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.Success.get_errors"><code class="name flex">
+<span>def <span class="ident">get_errors</span></span>(<span>self) ‑> list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="result_types.html#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_errors(self) -&gt; list[ErrorDetail]:
+    &#34;&#34;&#34;Return empty list for Success.&#34;&#34;&#34;
+    return []</code></pre>
+</details>
+<div class="desc"><p>Return empty list for Success.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.Success.get_value"><code class="name flex">
+<span>def <span class="ident">get_value</span></span>(<span>self) ‑> ~T | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_value(self) -&gt; T | None:
+    &#34;&#34;&#34;Return the success value.&#34;&#34;&#34;
+    return self.value</code></pre>
+</details>
+<div class="desc"><p>Return the success value.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.Success.is_failure"><code class="name flex">
+<span>def <span class="ident">is_failure</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_failure(self) -&gt; bool:
+    &#34;&#34;&#34;Always returns False for Success.&#34;&#34;&#34;
+    return False</code></pre>
+</details>
+<div class="desc"><p>Always returns False for Success.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.Success.is_success"><code class="name flex">
+<span>def <span class="ident">is_success</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_success(self) -&gt; bool:
+    &#34;&#34;&#34;Always returns True for Success.&#34;&#34;&#34;
+    return True</code></pre>
+</details>
+<div class="desc"><p>Always returns True for Success.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.statements.utilities.result_types.Result" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result">Result</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Result.unwrap" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result.unwrap">unwrap</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Result.unwrap_or" href="result_types.html#fin_statement_model.statements.utilities.result_types.Result.unwrap_or">unwrap_or</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.statements" href="../index.html">fin_statement_model.statements</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.statements.utilities.cli_formatters" href="cli_formatters.html">fin_statement_model.statements.utilities.cli_formatters</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types" href="result_types.html">fin_statement_model.statements.utilities.result_types</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.retry_handler" href="retry_handler.html">fin_statement_model.statements.utilities.retry_handler</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.utilities.combine_results" href="#fin_statement_model.statements.utilities.combine_results">combine_results</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.retry_on_specific_errors" href="#fin_statement_model.statements.utilities.retry_on_specific_errors">retry_on_specific_errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.retry_with_exponential_backoff" href="#fin_statement_model.statements.utilities.retry_with_exponential_backoff">retry_with_exponential_backoff</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.BackoffStrategy" href="#fin_statement_model.statements.utilities.BackoffStrategy">BackoffStrategy</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.utilities.BackoffStrategy.get_delay" href="#fin_statement_model.statements.utilities.BackoffStrategy.get_delay">get_delay</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.ConstantBackoff" href="#fin_statement_model.statements.utilities.ConstantBackoff">ConstantBackoff</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.utilities.ConstantBackoff.get_delay" href="#fin_statement_model.statements.utilities.ConstantBackoff.get_delay">get_delay</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.ErrorCollector" href="#fin_statement_model.statements.utilities.ErrorCollector">ErrorCollector</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.statements.utilities.ErrorCollector.add_error" href="#fin_statement_model.statements.utilities.ErrorCollector.add_error">add_error</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorCollector.add_from_result" href="#fin_statement_model.statements.utilities.ErrorCollector.add_from_result">add_from_result</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorCollector.add_warning" href="#fin_statement_model.statements.utilities.ErrorCollector.add_warning">add_warning</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorCollector.get_all" href="#fin_statement_model.statements.utilities.ErrorCollector.get_all">get_all</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorCollector.get_errors" href="#fin_statement_model.statements.utilities.ErrorCollector.get_errors">get_errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorCollector.get_warnings" href="#fin_statement_model.statements.utilities.ErrorCollector.get_warnings">get_warnings</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorCollector.has_errors" href="#fin_statement_model.statements.utilities.ErrorCollector.has_errors">has_errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorCollector.has_warnings" href="#fin_statement_model.statements.utilities.ErrorCollector.has_warnings">has_warnings</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorCollector.log_all" href="#fin_statement_model.statements.utilities.ErrorCollector.log_all">log_all</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorCollector.to_result" href="#fin_statement_model.statements.utilities.ErrorCollector.to_result">to_result</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.ErrorDetail" href="#fin_statement_model.statements.utilities.ErrorDetail">ErrorDetail</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.utilities.ErrorDetail.code" href="#fin_statement_model.statements.utilities.ErrorDetail.code">code</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorDetail.context" href="#fin_statement_model.statements.utilities.ErrorDetail.context">context</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorDetail.message" href="#fin_statement_model.statements.utilities.ErrorDetail.message">message</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorDetail.severity" href="#fin_statement_model.statements.utilities.ErrorDetail.severity">severity</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorDetail.source" href="#fin_statement_model.statements.utilities.ErrorDetail.source">source</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.ErrorSeverity" href="#fin_statement_model.statements.utilities.ErrorSeverity">ErrorSeverity</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.utilities.ErrorSeverity.CRITICAL" href="#fin_statement_model.statements.utilities.ErrorSeverity.CRITICAL">CRITICAL</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorSeverity.ERROR" href="#fin_statement_model.statements.utilities.ErrorSeverity.ERROR">ERROR</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.ErrorSeverity.WARNING" href="#fin_statement_model.statements.utilities.ErrorSeverity.WARNING">WARNING</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.ExponentialBackoff" href="#fin_statement_model.statements.utilities.ExponentialBackoff">ExponentialBackoff</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.utilities.ExponentialBackoff.get_delay" href="#fin_statement_model.statements.utilities.ExponentialBackoff.get_delay">get_delay</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.Failure" href="#fin_statement_model.statements.utilities.Failure">Failure</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.statements.utilities.Failure.errors" href="#fin_statement_model.statements.utilities.Failure.errors">errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.Failure.from_exception" href="#fin_statement_model.statements.utilities.Failure.from_exception">from_exception</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.Failure.get_errors" href="#fin_statement_model.statements.utilities.Failure.get_errors">get_errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.Failure.get_value" href="#fin_statement_model.statements.utilities.Failure.get_value">get_value</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.Failure.is_failure" href="#fin_statement_model.statements.utilities.Failure.is_failure">is_failure</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.Failure.is_success" href="#fin_statement_model.statements.utilities.Failure.is_success">is_success</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.LinearBackoff" href="#fin_statement_model.statements.utilities.LinearBackoff">LinearBackoff</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.utilities.LinearBackoff.get_delay" href="#fin_statement_model.statements.utilities.LinearBackoff.get_delay">get_delay</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.Result" href="#fin_statement_model.statements.utilities.Result">Result</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.statements.utilities.Result.get_errors" href="#fin_statement_model.statements.utilities.Result.get_errors">get_errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.Result.get_value" href="#fin_statement_model.statements.utilities.Result.get_value">get_value</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.Result.is_failure" href="#fin_statement_model.statements.utilities.Result.is_failure">is_failure</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.Result.is_success" href="#fin_statement_model.statements.utilities.Result.is_success">is_success</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.Result.unwrap" href="#fin_statement_model.statements.utilities.Result.unwrap">unwrap</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.Result.unwrap_or" href="#fin_statement_model.statements.utilities.Result.unwrap_or">unwrap_or</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.RetryConfig" href="#fin_statement_model.statements.utilities.RetryConfig">RetryConfig</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.statements.utilities.RetryConfig.backoff" href="#fin_statement_model.statements.utilities.RetryConfig.backoff">backoff</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.RetryConfig.collect_all_errors" href="#fin_statement_model.statements.utilities.RetryConfig.collect_all_errors">collect_all_errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.RetryConfig.log_retries" href="#fin_statement_model.statements.utilities.RetryConfig.log_retries">log_retries</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.RetryConfig.max_attempts" href="#fin_statement_model.statements.utilities.RetryConfig.max_attempts">max_attempts</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.RetryConfig.retryable_errors" href="#fin_statement_model.statements.utilities.RetryConfig.retryable_errors">retryable_errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.RetryConfig.strategy" href="#fin_statement_model.statements.utilities.RetryConfig.strategy">strategy</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.RetryHandler" href="#fin_statement_model.statements.utilities.RetryHandler">RetryHandler</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.utilities.RetryHandler.retry" href="#fin_statement_model.statements.utilities.RetryHandler.retry">retry</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.RetryHandler.retry_async" href="#fin_statement_model.statements.utilities.RetryHandler.retry_async">retry_async</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.RetryResult" href="#fin_statement_model.statements.utilities.RetryResult">RetryResult</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.statements.utilities.RetryResult.all_errors" href="#fin_statement_model.statements.utilities.RetryResult.all_errors">all_errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.RetryResult.attempts" href="#fin_statement_model.statements.utilities.RetryResult.attempts">attempts</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.RetryResult.result" href="#fin_statement_model.statements.utilities.RetryResult.result">result</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.RetryResult.success" href="#fin_statement_model.statements.utilities.RetryResult.success">success</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.RetryResult.total_delay" href="#fin_statement_model.statements.utilities.RetryResult.total_delay">total_delay</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.RetryResult.unwrap" href="#fin_statement_model.statements.utilities.RetryResult.unwrap">unwrap</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.RetryResult.unwrap_or" href="#fin_statement_model.statements.utilities.RetryResult.unwrap_or">unwrap_or</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.RetryStrategy" href="#fin_statement_model.statements.utilities.RetryStrategy">RetryStrategy</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.utilities.RetryStrategy.BACKOFF" href="#fin_statement_model.statements.utilities.RetryStrategy.BACKOFF">BACKOFF</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.RetryStrategy.CONDITIONAL" href="#fin_statement_model.statements.utilities.RetryStrategy.CONDITIONAL">CONDITIONAL</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.RetryStrategy.IMMEDIATE" href="#fin_statement_model.statements.utilities.RetryStrategy.IMMEDIATE">IMMEDIATE</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.Success" href="#fin_statement_model.statements.utilities.Success">Success</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.utilities.Success.get_errors" href="#fin_statement_model.statements.utilities.Success.get_errors">get_errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.Success.get_value" href="#fin_statement_model.statements.utilities.Success.get_value">get_value</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.Success.is_failure" href="#fin_statement_model.statements.utilities.Success.is_failure">is_failure</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.Success.is_success" href="#fin_statement_model.statements.utilities.Success.is_success">is_success</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.Success.value" href="#fin_statement_model.statements.utilities.Success.value">value</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

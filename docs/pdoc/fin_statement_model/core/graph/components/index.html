@@ -1,0 +1,1652 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.core.graph.components API documentation</title>
+<meta name="description" content="Graph component mix-ins …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.core.graph.components</code></h1>
+</header>
+<section id="section-intro">
+<p>Graph component mix-ins.</p>
+<p>This package houses focused mix-ins extracted from the original, monolithic
+<code>graph.py</code> implementation.
+Each mix-in groups a coherent set of public and
+private methods, keeping every file well below the 500 LOC guideline while
+preserving the public behaviour of :class:<code><a title="fin_statement_model.core.graph.graph.Graph" href="../graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></code>.</p>
+<p>Each mix-in provides a distinct set of features for the Graph class:</p>
+<table>
+<thead>
+<tr>
+<th>Mix-in</th>
+<th>Responsibility / Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GraphBaseMixin</td>
+<td>Core state, constructor, and helpers shared by all mix-ins</td>
+</tr>
+<tr>
+<td>NodeOpsMixin</td>
+<td>Node creation, update, replacement, and value-setting</td>
+</tr>
+<tr>
+<td>CalcOpsMixin</td>
+<td>Calculation node helpers, metric management, calculation cache</td>
+</tr>
+<tr>
+<td>AdjustmentMixin</td>
+<td>Discretionary adjustment API and helpers</td>
+</tr>
+<tr>
+<td>MergeReprMixin</td>
+<td>Graph merging logic and developer-friendly <strong>repr</strong></td>
+</tr>
+<tr>
+<td>TraversalMixin</td>
+<td>Read-only traversal, validation, and dependency inspection</td>
+</tr>
+</tbody>
+</table>
+<p>These mix-ins are composed together in the main <code>Graph</code> class to provide a unified,
+extensible API for financial statement graph modeling.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.core.graph.components.AdjustmentMixin"><code class="flex name class">
+<span>class <span class="ident">AdjustmentMixin</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AdjustmentMixin:
+    &#34;&#34;&#34;Delegate discretionary-adjustment API calls to the underlying service.&#34;&#34;&#34;
+
+    # Public façade -----------------------------------------------------------
+    def get_adjusted_value(
+        self,
+        node_name: str,
+        period: str,
+        filter_input: AdjustmentFilterInput | None = None,
+        *,
+        return_flag: bool = False,
+    ) -&gt; Any:
+        base_value = self.calculate(node_name, period)  # type: ignore[attr-defined]
+        adjustments = self._adjustment_service.get_filtered_adjustments(  # type: ignore[attr-defined]
+            node_name,
+            period,
+            filter_input,
+        )
+        adjusted_value, was_adjusted = self._adjustment_service.apply_adjustments(  # type: ignore[attr-defined]
+            base_value,
+            adjustments,
+        )
+        return (adjusted_value, was_adjusted) if return_flag else adjusted_value
+
+    # Convenience wrappers -----------------------------------------------------
+    def add_adjustment(
+        self,
+        node_name: str,
+        period: str,
+        value: float,
+        reason: str,
+        adj_type: AdjustmentType = AdjustmentType.ADDITIVE,
+        scale: float = 1.0,
+        priority: int = 0,
+        tags: set[AdjustmentTag] | None = None,
+        scenario: str | None = None,
+        user: str | None = None,
+        *,
+        adj_id: UUID | None = None,
+    ) -&gt; Any:
+        return self._adjustment_service.add_adjustment(  # type: ignore[attr-defined]
+            node_name,
+            period,
+            value,
+            reason,
+            adj_type,
+            scale,
+            priority,
+            tags,
+            scenario,
+            user,
+            adj_id=adj_id,
+        )
+
+    def remove_adjustment(self, adj_id: UUID) -&gt; Any:
+        return self._adjustment_service.remove_adjustment(adj_id)  # type: ignore[attr-defined]
+
+    def get_adjustments(
+        self,
+        node_name: str,
+        period: str,
+        *,
+        scenario: str | None = None,
+    ) -&gt; Any:
+        return self._adjustment_service.get_adjustments(  # type: ignore[attr-defined]
+            node_name,
+            period,
+            scenario=scenario,
+        )
+
+    def list_all_adjustments(self) -&gt; Any:
+        return self._adjustment_service.list_all_adjustments()  # type: ignore[attr-defined]
+
+    def was_adjusted(
+        self,
+        node_name: str,
+        period: str,
+        filter_input: AdjustmentFilterInput | None = None,
+    ) -&gt; Any:
+        return self._adjustment_service.was_adjusted(  # type: ignore[attr-defined]
+            node_name,
+            period,
+            filter_input,
+        )</code></pre>
+</details>
+<div class="desc"><p>Delegate discretionary-adjustment API calls to the underlying service.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.graph.graph.Graph" href="../graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.components.AdjustmentMixin.add_adjustment"><code class="name flex">
+<span>def <span class="ident">add_adjustment</span></span>(<span>self,<br>node_name: str,<br>period: str,<br>value: float,<br>reason: str,<br>adj_type: AdjustmentType = AdjustmentType.ADDITIVE,<br>scale: float = 1.0,<br>priority: int = 0,<br>tags: set[AdjustmentTag] | None = None,<br>scenario: str | None = None,<br>user: str | None = None,<br>*,<br>adj_id: UUID | None = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_adjustment(
+    self,
+    node_name: str,
+    period: str,
+    value: float,
+    reason: str,
+    adj_type: AdjustmentType = AdjustmentType.ADDITIVE,
+    scale: float = 1.0,
+    priority: int = 0,
+    tags: set[AdjustmentTag] | None = None,
+    scenario: str | None = None,
+    user: str | None = None,
+    *,
+    adj_id: UUID | None = None,
+) -&gt; Any:
+    return self._adjustment_service.add_adjustment(  # type: ignore[attr-defined]
+        node_name,
+        period,
+        value,
+        reason,
+        adj_type,
+        scale,
+        priority,
+        tags,
+        scenario,
+        user,
+        adj_id=adj_id,
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.AdjustmentMixin.get_adjusted_value"><code class="name flex">
+<span>def <span class="ident">get_adjusted_value</span></span>(<span>self,<br>node_name: str,<br>period: str,<br>filter_input: AdjustmentFilterInput | None = None,<br>*,<br>return_flag: bool = False) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_adjusted_value(
+    self,
+    node_name: str,
+    period: str,
+    filter_input: AdjustmentFilterInput | None = None,
+    *,
+    return_flag: bool = False,
+) -&gt; Any:
+    base_value = self.calculate(node_name, period)  # type: ignore[attr-defined]
+    adjustments = self._adjustment_service.get_filtered_adjustments(  # type: ignore[attr-defined]
+        node_name,
+        period,
+        filter_input,
+    )
+    adjusted_value, was_adjusted = self._adjustment_service.apply_adjustments(  # type: ignore[attr-defined]
+        base_value,
+        adjustments,
+    )
+    return (adjusted_value, was_adjusted) if return_flag else adjusted_value</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.AdjustmentMixin.get_adjustments"><code class="name flex">
+<span>def <span class="ident">get_adjustments</span></span>(<span>self, node_name: str, period: str, *, scenario: str | None = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_adjustments(
+    self,
+    node_name: str,
+    period: str,
+    *,
+    scenario: str | None = None,
+) -&gt; Any:
+    return self._adjustment_service.get_adjustments(  # type: ignore[attr-defined]
+        node_name,
+        period,
+        scenario=scenario,
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.AdjustmentMixin.list_all_adjustments"><code class="name flex">
+<span>def <span class="ident">list_all_adjustments</span></span>(<span>self) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_all_adjustments(self) -&gt; Any:
+    return self._adjustment_service.list_all_adjustments()  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.AdjustmentMixin.remove_adjustment"><code class="name flex">
+<span>def <span class="ident">remove_adjustment</span></span>(<span>self, adj_id: UUID) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_adjustment(self, adj_id: UUID) -&gt; Any:
+    return self._adjustment_service.remove_adjustment(adj_id)  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.AdjustmentMixin.was_adjusted"><code class="name flex">
+<span>def <span class="ident">was_adjusted</span></span>(<span>self,<br>node_name: str,<br>period: str,<br>filter_input: AdjustmentFilterInput | None = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def was_adjusted(
+    self,
+    node_name: str,
+    period: str,
+    filter_input: AdjustmentFilterInput | None = None,
+) -&gt; Any:
+    return self._adjustment_service.was_adjusted(  # type: ignore[attr-defined]
+        node_name,
+        period,
+        filter_input,
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.graph.components.CalcOpsMixin"><code class="flex name class">
+<span>class <span class="ident">CalcOpsMixin</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CalcOpsMixin:
+    &#34;&#34;&#34;Thin façade methods delegating to the internal :class:`CalculationEngine`.&#34;&#34;&#34;
+
+    # ---------------------------------------------------------------------
+    # Calculation node helpers
+    # ---------------------------------------------------------------------
+    def add_calculation(
+        self,
+        name: str,
+        input_names: list[str],
+        operation_type: str,
+        formula_variable_names: list[str] | None = None,
+        **calculation_kwargs: Any,
+    ) -&gt; Any:
+        return self._calc_engine.add_calculation(  # type: ignore[attr-defined]
+            name,
+            input_names,
+            operation_type,
+            formula_variable_names=formula_variable_names,
+            **calculation_kwargs,
+        )
+
+    def add_metric(
+        self,
+        metric_name: str,
+        node_name: str | None = None,
+        *,
+        input_node_map: dict[str, str] | None = None,
+    ) -&gt; Any:
+        return self._calc_engine.add_metric(  # type: ignore[attr-defined]
+            metric_name,
+            node_name,
+            input_node_map=input_node_map,
+        )
+
+    def add_custom_calculation(
+        self,
+        name: str,
+        calculation_func: Callable[..., float],
+        inputs: list[str] | None = None,
+        description: str = &#34;&#34;,
+    ) -&gt; Any:
+        return self._calc_engine.add_custom_calculation(  # type: ignore[attr-defined]
+            name,
+            calculation_func,
+            inputs,
+            description,
+        )
+
+    def ensure_signed_nodes(self, base_node_ids: list[str], *, suffix: str = &#34;_signed&#34;) -&gt; Any:
+        return self._calc_engine.ensure_signed_nodes(  # type: ignore[attr-defined]
+            base_node_ids, suffix=suffix
+        )
+
+    def change_calculation_method(
+        self,
+        node_name: str,
+        new_method_key: str,
+        **kwargs: dict[str, Any],
+    ) -&gt; None:
+        self._calc_engine.change_calculation_method(  # type: ignore[attr-defined]
+            node_name,
+            new_method_key,
+            **kwargs,
+        )
+
+    # ------------------------------------------------------------------
+    # Calculation execution / cache interaction
+    # ------------------------------------------------------------------
+    def calculate(self, node_name: str, period: str) -&gt; Any:
+        return self._calc_engine.calculate(node_name, period)  # type: ignore[attr-defined]
+
+    def recalculate_all(self, periods: list[str] | None = None) -&gt; None:
+        self._calc_engine.recalc_all(periods)  # type: ignore[attr-defined]
+
+    # ------------------------------------------------------------------
+    # Metric inspection helpers
+    # ------------------------------------------------------------------
+    def get_metric(self, metric_id: str) -&gt; Any:
+        return self._calc_engine.get_metric(metric_id)  # type: ignore[attr-defined]
+
+    def get_available_metrics(self) -&gt; Any:
+        return self._calc_engine.get_available_metrics()  # type: ignore[attr-defined]
+
+    def get_metric_info(self, metric_id: str) -&gt; Any:
+        return self._calc_engine.get_metric_info(metric_id)  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"><p>Thin façade methods delegating to the internal :class:<code>CalculationEngine</code>.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.graph.graph.Graph" href="../graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.components.CalcOpsMixin.add_calculation"><code class="name flex">
+<span>def <span class="ident">add_calculation</span></span>(<span>self,<br>name: str,<br>input_names: list[str],<br>operation_type: str,<br>formula_variable_names: list[str] | None = None,<br>**calculation_kwargs: Any) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_calculation(
+    self,
+    name: str,
+    input_names: list[str],
+    operation_type: str,
+    formula_variable_names: list[str] | None = None,
+    **calculation_kwargs: Any,
+) -&gt; Any:
+    return self._calc_engine.add_calculation(  # type: ignore[attr-defined]
+        name,
+        input_names,
+        operation_type,
+        formula_variable_names=formula_variable_names,
+        **calculation_kwargs,
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.CalcOpsMixin.add_custom_calculation"><code class="name flex">
+<span>def <span class="ident">add_custom_calculation</span></span>(<span>self,<br>name: str,<br>calculation_func: Callable[..., float],<br>inputs: list[str] | None = None,<br>description: str = '') ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_custom_calculation(
+    self,
+    name: str,
+    calculation_func: Callable[..., float],
+    inputs: list[str] | None = None,
+    description: str = &#34;&#34;,
+) -&gt; Any:
+    return self._calc_engine.add_custom_calculation(  # type: ignore[attr-defined]
+        name,
+        calculation_func,
+        inputs,
+        description,
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.CalcOpsMixin.add_metric"><code class="name flex">
+<span>def <span class="ident">add_metric</span></span>(<span>self,<br>metric_name: str,<br>node_name: str | None = None,<br>*,<br>input_node_map: dict[str, str] | None = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_metric(
+    self,
+    metric_name: str,
+    node_name: str | None = None,
+    *,
+    input_node_map: dict[str, str] | None = None,
+) -&gt; Any:
+    return self._calc_engine.add_metric(  # type: ignore[attr-defined]
+        metric_name,
+        node_name,
+        input_node_map=input_node_map,
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.CalcOpsMixin.calculate"><code class="name flex">
+<span>def <span class="ident">calculate</span></span>(<span>self, node_name: str, period: str) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate(self, node_name: str, period: str) -&gt; Any:
+    return self._calc_engine.calculate(node_name, period)  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.CalcOpsMixin.change_calculation_method"><code class="name flex">
+<span>def <span class="ident">change_calculation_method</span></span>(<span>self, node_name: str, new_method_key: str, **kwargs: dict[str, Any]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def change_calculation_method(
+    self,
+    node_name: str,
+    new_method_key: str,
+    **kwargs: dict[str, Any],
+) -&gt; None:
+    self._calc_engine.change_calculation_method(  # type: ignore[attr-defined]
+        node_name,
+        new_method_key,
+        **kwargs,
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.CalcOpsMixin.ensure_signed_nodes"><code class="name flex">
+<span>def <span class="ident">ensure_signed_nodes</span></span>(<span>self, base_node_ids: list[str], *, suffix: str = '_signed') ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ensure_signed_nodes(self, base_node_ids: list[str], *, suffix: str = &#34;_signed&#34;) -&gt; Any:
+    return self._calc_engine.ensure_signed_nodes(  # type: ignore[attr-defined]
+        base_node_ids, suffix=suffix
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.CalcOpsMixin.get_available_metrics"><code class="name flex">
+<span>def <span class="ident">get_available_metrics</span></span>(<span>self) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_available_metrics(self) -&gt; Any:
+    return self._calc_engine.get_available_metrics()  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.CalcOpsMixin.get_metric"><code class="name flex">
+<span>def <span class="ident">get_metric</span></span>(<span>self, metric_id: str) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_metric(self, metric_id: str) -&gt; Any:
+    return self._calc_engine.get_metric(metric_id)  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.CalcOpsMixin.get_metric_info"><code class="name flex">
+<span>def <span class="ident">get_metric_info</span></span>(<span>self, metric_id: str) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_metric_info(self, metric_id: str) -&gt; Any:
+    return self._calc_engine.get_metric_info(metric_id)  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.CalcOpsMixin.recalculate_all"><code class="name flex">
+<span>def <span class="ident">recalculate_all</span></span>(<span>self, periods: list[str] | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def recalculate_all(self, periods: list[str] | None = None) -&gt; None:
+    self._calc_engine.recalc_all(periods)  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.graph.components.GraphBaseMixin"><code class="flex name class">
+<span>class <span class="ident">GraphBaseMixin</span></span>
+<span>(</span><span>periods: list[str] | None = None,<br>*,<br>calc_engine_cls: type[CalculationEngine] = fin_statement_model.core.graph.services.calculation_engine.CalculationEngine,<br>period_service_cls: type[PeriodService] = fin_statement_model.core.graph.services.period_service.PeriodService,<br>adjustment_service_cls: type[AdjustmentService] = fin_statement_model.core.graph.services.adjustment_service.AdjustmentService)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GraphBaseMixin:
+    &#34;&#34;&#34;Provide constructor and generic helpers shared by all graph mix-ins.&#34;&#34;&#34;
+
+    # ---------------------------------------------------------------------
+    # Construction &amp; core state
+    # ---------------------------------------------------------------------
+    def __init__(
+        self,
+        periods: list[str] | None = None,
+        *,
+        calc_engine_cls: type[CalculationEngine] = CalculationEngine,
+        period_service_cls: type[PeriodService] = PeriodService,
+        adjustment_service_cls: type[AdjustmentService] = AdjustmentService,
+    ) -&gt; None:
+        # NOTE: we do **not** call super().__init__() on purpose; this mix-in
+        # owns the concrete initialisation logic.
+
+        self._nodes: dict[str, Node] = {}
+
+        self._cache: dict[str, dict[str, float]] = {}
+        self._node_factory: NodeFactory = NodeFactory()
+
+        # Service layer ----------------------------------------------------
+        self._period_service = period_service_cls()
+
+        self._calc_engine = calc_engine_cls(
+            node_resolver=cast(&#34;Callable[[str], Node]&#34;, self.get_node),
+            period_provider=lambda: self._period_service.periods,
+            node_names_provider=lambda: list(self._nodes.keys()),
+            cache=self._cache,
+            node_factory=self._node_factory,
+            nodes_dict=self._nodes,
+            add_node_with_validation=lambda node: self._add_node_with_validation(node),
+            resolve_input_nodes=self._resolve_input_nodes,
+            add_periods=self.add_periods,
+        )
+
+        self.adjustment_manager = AdjustmentManager()
+        self._adjustment_service = adjustment_service_cls(manager=self.adjustment_manager)
+
+        if periods:
+            if not isinstance(periods, list):
+                raise TypeError(&#34;Initial periods must be a list&#34;)
+            self._period_service.add_periods(periods)
+
+        # Sub-APIs ---------------------------------------------------------
+        self.manipulator = GraphManipulator(self)
+        self.traverser = GraphTraverser(self)
+
+    # ------------------------------------------------------------------
+    # Simple public helpers / properties
+    # ------------------------------------------------------------------
+    @property
+    def nodes(self) -&gt; dict[str, Node]:
+        &#34;&#34;&#34;Dictionary mapping node names to :class:`~fin_statement_model.core.nodes.Node`.&#34;&#34;&#34;
+        return self._nodes
+
+    @property
+    def periods(self) -&gt; list[str]:
+        &#34;&#34;&#34;Return the current, sorted list of period identifiers managed by the graph.&#34;&#34;&#34;
+        return self._period_service.periods
+
+    # Delegation wrappers --------------------------------------------------
+    def add_periods(self, periods: list[str]) -&gt; None:
+        &#34;&#34;&#34;Add new period identifiers via :class:`~fin_statement_model.core.graph.services.PeriodService`.&#34;&#34;&#34;
+        self._period_service.add_periods(periods)
+
+    # ------------------------------------------------------------------
+    # Cache &amp; reset utilities
+    # ------------------------------------------------------------------
+    def clear_calculation_cache(self) -&gt; None:
+        &#34;&#34;&#34;Invalidate the central calculation cache only.&#34;&#34;&#34;
+        self._calc_engine.clear_all()
+        logger.debug(&#34;Cleared graph calculation cache via CalculationEngine.&#34;)
+
+    def clear_all_caches(self) -&gt; None:
+        &#34;&#34;&#34;Clear calculation cache **and** any per-node caches.&#34;&#34;&#34;
+        for node in self.nodes.values():
+            if hasattr(node, &#34;clear_cache&#34;):
+                try:
+                    node.clear_cache()
+                except NodeError as exc:  # pragma: no cover - non-fatal best-effort
+                    logger.debug(
+                        &#39;Failed to clear cache for node &#34;%s&#34;: %s&#39;,
+                        getattr(node, &#34;name&#34;, &#34;?&#34;),
+                        exc,
+                    )
+                    continue
+        self.clear_calculation_cache()
+
+    def clear(self) -&gt; None:
+        &#34;&#34;&#34;Fully reset the graph to an empty state (nodes, periods, adjustments, caches).&#34;&#34;&#34;
+        self._nodes = {}
+        self._period_service.clear()
+        self._cache.clear()
+        self.adjustment_manager.clear_all()
+        logger.info(&#34;Graph cleared: nodes, periods, adjustments, and caches reset.&#34;)
+
+    # ------------------------------------------------------------------
+    # Internal helpers shared by other mix-ins
+    # ------------------------------------------------------------------
+    def _add_node_with_validation(
+        self,
+        node: Node,
+        *,
+        check_cycles: bool = True,
+        validate_inputs: bool = True,
+    ) -&gt; Node:
+        if not node.name or not isinstance(node.name, str):
+            raise ValueError(&#34;Node name must be a non-empty string&#34;)
+
+        if node.name in self._nodes:
+            logger.warning(&#34;Overwriting existing node &#39;%s&#39;&#34;, node.name)
+
+        if validate_inputs and hasattr(node, &#34;inputs&#34;) and node.inputs:
+            self._validate_node_inputs(node)
+
+        if check_cycles and hasattr(node, &#34;inputs&#34;) and node.inputs and self.traverser.would_create_cycle(node):
+            cycle_path = None
+            for input_node in node.inputs:
+                if hasattr(input_node, &#34;name&#34;):
+                    path = self.traverser.find_cycle_path(input_node.name, node.name)
+                    if path:
+                        cycle_path = path
+                        break
+            raise CircularDependencyError(
+                f&#34;Adding node &#39;{node.name}&#39; would create a cycle&#34;,
+                cycle=cycle_path or [node.name, &#34;...&#34;, node.name],
+            )
+
+        self._nodes[node.name] = node
+
+        if hasattr(node, &#34;values&#34;) and isinstance(node.values, dict):
+            self.add_periods(list(node.values.keys()))
+
+        logger.debug(&#34;Added node &#39;%s&#39; to graph&#34;, node.name)
+        return node
+
+    def _validate_node_inputs(self, node: Node) -&gt; None:
+        missing_inputs: list[str] = (
+            [
+                input_node.name
+                for input_node in node.inputs
+                if hasattr(input_node, &#34;name&#34;) and input_node.name not in self._nodes
+            ]
+            if hasattr(node, &#34;inputs&#34;) and node.inputs
+            else []
+        )
+        if missing_inputs:
+            raise NodeError(
+                (f&#34;Cannot add node &#39;{node.name}&#39;: missing required input nodes {missing_inputs}&#34;),
+                node_id=node.name,
+            )
+
+    def _resolve_input_nodes(self, input_names: list[str]) -&gt; list[Node]:
+        resolved_inputs: list[Node] = []
+        missing: list[str] = []
+        for name in input_names:
+            node = self._nodes.get(name)
+            if node is None:
+                missing.append(name)
+            else:
+                resolved_inputs.append(node)
+        if missing:
+            raise NodeError(f&#34;Cannot resolve input nodes: missing nodes {missing}&#34;)
+        return resolved_inputs
+
+    # ------------------------------------------------------------------
+    # Minimal query required by CalculationEngine during construction
+    # ------------------------------------------------------------------
+    def get_node(self, name: str) -&gt; Node | None:
+        &#34;&#34;&#34;Lightweight resolver used by :pyclass:`CalculationEngine`.&#34;&#34;&#34;
+        return self._nodes.get(name)</code></pre>
+</details>
+<div class="desc"><p>Provide constructor and generic helpers shared by all graph mix-ins.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.graph.graph.Graph" href="../graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.components.GraphBaseMixin.nodes"><code class="name">prop <span class="ident">nodes</span> : dict[str, Node]</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def nodes(self) -&gt; dict[str, Node]:
+    &#34;&#34;&#34;Dictionary mapping node names to :class:`~fin_statement_model.core.nodes.Node`.&#34;&#34;&#34;
+    return self._nodes</code></pre>
+</details>
+<div class="desc"><p>Dictionary mapping node names to :class:<code>~fin_statement_model.core.nodes.Node</code>.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.GraphBaseMixin.periods"><code class="name">prop <span class="ident">periods</span> : list[str]</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def periods(self) -&gt; list[str]:
+    &#34;&#34;&#34;Return the current, sorted list of period identifiers managed by the graph.&#34;&#34;&#34;
+    return self._period_service.periods</code></pre>
+</details>
+<div class="desc"><p>Return the current, sorted list of period identifiers managed by the graph.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.components.GraphBaseMixin.add_periods"><code class="name flex">
+<span>def <span class="ident">add_periods</span></span>(<span>self, periods: list[str]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_periods(self, periods: list[str]) -&gt; None:
+    &#34;&#34;&#34;Add new period identifiers via :class:`~fin_statement_model.core.graph.services.PeriodService`.&#34;&#34;&#34;
+    self._period_service.add_periods(periods)</code></pre>
+</details>
+<div class="desc"><p>Add new period identifiers via :class:<code>~fin_statement_model.core.graph.services.PeriodService</code>.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.GraphBaseMixin.clear"><code class="name flex">
+<span>def <span class="ident">clear</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear(self) -&gt; None:
+    &#34;&#34;&#34;Fully reset the graph to an empty state (nodes, periods, adjustments, caches).&#34;&#34;&#34;
+    self._nodes = {}
+    self._period_service.clear()
+    self._cache.clear()
+    self.adjustment_manager.clear_all()
+    logger.info(&#34;Graph cleared: nodes, periods, adjustments, and caches reset.&#34;)</code></pre>
+</details>
+<div class="desc"><p>Fully reset the graph to an empty state (nodes, periods, adjustments, caches).</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.GraphBaseMixin.clear_all_caches"><code class="name flex">
+<span>def <span class="ident">clear_all_caches</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear_all_caches(self) -&gt; None:
+    &#34;&#34;&#34;Clear calculation cache **and** any per-node caches.&#34;&#34;&#34;
+    for node in self.nodes.values():
+        if hasattr(node, &#34;clear_cache&#34;):
+            try:
+                node.clear_cache()
+            except NodeError as exc:  # pragma: no cover - non-fatal best-effort
+                logger.debug(
+                    &#39;Failed to clear cache for node &#34;%s&#34;: %s&#39;,
+                    getattr(node, &#34;name&#34;, &#34;?&#34;),
+                    exc,
+                )
+                continue
+    self.clear_calculation_cache()</code></pre>
+</details>
+<div class="desc"><p>Clear calculation cache <strong>and</strong> any per-node caches.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.GraphBaseMixin.clear_calculation_cache"><code class="name flex">
+<span>def <span class="ident">clear_calculation_cache</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear_calculation_cache(self) -&gt; None:
+    &#34;&#34;&#34;Invalidate the central calculation cache only.&#34;&#34;&#34;
+    self._calc_engine.clear_all()
+    logger.debug(&#34;Cleared graph calculation cache via CalculationEngine.&#34;)</code></pre>
+</details>
+<div class="desc"><p>Invalidate the central calculation cache only.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.GraphBaseMixin.get_node"><code class="name flex">
+<span>def <span class="ident">get_node</span></span>(<span>self, name: str) ‑> Node | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_node(self, name: str) -&gt; Node | None:
+    &#34;&#34;&#34;Lightweight resolver used by :pyclass:`CalculationEngine`.&#34;&#34;&#34;
+    return self._nodes.get(name)</code></pre>
+</details>
+<div class="desc"><p>Lightweight resolver used by :pyclass:<code>CalculationEngine</code>.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.graph.components.MergeReprMixin"><code class="flex name class">
+<span>class <span class="ident">MergeReprMixin</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MergeReprMixin:
+    &#34;&#34;&#34;Utility mix-in housing `merge_from` and an informative `__repr__`.&#34;&#34;&#34;
+
+    # ------------------------------------------------------------------
+    # Graph merging ------------------------------------------------------
+    # ------------------------------------------------------------------
+    def merge_from(self, other_graph: MergeReprMixin) -&gt; None:
+        from fin_statement_model.core.graph.graph import (
+            Graph,
+        )  # local import to avoid cycles
+
+        if not isinstance(other_graph, Graph):
+            raise TypeError(&#34;Can only merge from another Graph instance.&#34;)
+
+        logger.info(&#34;Starting merge from graph %r into %r&#34;, other_graph, self)
+
+        new_periods = [p for p in other_graph.periods if p not in getattr(self, &#34;periods&#34;, [])]
+        if new_periods:
+            self.add_periods(new_periods)  # type: ignore[attr-defined]
+            logger.debug(&#34;Merged periods: %s&#34;, new_periods)
+
+        nodes_added = 0
+        nodes_updated = 0
+        for node_name, other_node in other_graph.nodes.items():
+            existing_node = self.get_node(node_name)  # type: ignore[attr-defined]
+            if existing_node is not None:
+                if (
+                    hasattr(existing_node, &#34;values&#34;)
+                    and hasattr(other_node, &#34;values&#34;)
+                    and isinstance(existing_node.values, dict)
+                    and isinstance(other_node.values, dict)
+                ):
+                    existing_node.values.update(other_node.values)
+                    nodes_updated += 1
+                    logger.debug(&#34;Merged values into existing node &#39;%s&#39;&#34;, node_name)
+            else:
+                try:
+                    self.add_node(other_node)  # type: ignore[attr-defined]
+                    nodes_added += 1
+                except (ValueError, TypeError, FinStatementModelError):
+                    logger.exception(&#34;Failed to add new node &#39;%s&#39; during merge&#34;, node_name)
+
+        logger.info(
+            &#34;Merge complete. Nodes added: %s, Nodes updated (values merged): %s&#34;,
+            nodes_added,
+            nodes_updated,
+        )
+
+    # ------------------------------------------------------------------
+    # Representation -----------------------------------------------------
+    # ------------------------------------------------------------------
+    def __repr__(self) -&gt; str:
+        num_nodes = len(self.nodes)  # type: ignore[attr-defined]
+        _periods = getattr(self, &#34;periods&#34;, [])
+        periods_str = &#34;, &#34;.join(map(repr, _periods)) if _periods else &#34;None&#34;
+
+        fs_item_count = 0
+        calc_node_count = 0
+        other_node_count = 0
+        dependencies_count = 0
+
+        for node in self.nodes.values():  # type: ignore[attr-defined]
+            if isinstance(node, FinancialStatementItemNode):
+                fs_item_count += 1
+            elif is_calculation_node(node):
+                calc_node_count += 1
+                if hasattr(node, &#34;get_dependencies&#34;):
+                    with contextlib.suppress(Exception):
+                        dependencies_count += len(node.get_dependencies())
+                elif hasattr(node, &#34;inputs&#34;):
+                    try:
+                        if isinstance(node.inputs, list):
+                            dependencies_count += len([inp.name for inp in node.inputs if hasattr(inp, &#34;name&#34;)])
+                        elif isinstance(node.inputs, dict):
+                            dependencies_count += len(node.inputs)
+                    except (ValueError, AttributeError) as exc:
+                        logger.debug(
+                            &#39;Failed counting dependencies for node &#34;%s&#34;: %s&#39;,
+                            getattr(node, &#34;name&#34;, &#34;?&#34;),
+                            exc,
+                        )
+            else:
+                other_node_count += 1
+
+        repr_parts = [
+            f&#34;Total Nodes: {num_nodes}&#34;,
+            f&#34;FS Items: {fs_item_count}&#34;,
+            f&#34;Calculations: {calc_node_count}&#34;,
+        ]
+        if other_node_count:
+            repr_parts.append(f&#34;Other: {other_node_count}&#34;)
+        repr_parts.append(f&#34;Dependencies: {dependencies_count}&#34;)
+        repr_parts.append(f&#34;Periods: [{periods_str}]&#34;)
+        return f&#34;&lt;{type(self).__name__}({&#39;, &#39;.join(repr_parts)})&gt;&#34;</code></pre>
+</details>
+<div class="desc"><p>Utility mix-in housing <code>merge_from</code> and an informative <code>__repr__</code>.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.graph.graph.Graph" href="../graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.components.MergeReprMixin.merge_from"><code class="name flex">
+<span>def <span class="ident">merge_from</span></span>(<span>self,<br>other_graph: <a title="fin_statement_model.core.graph.components.MergeReprMixin" href="#fin_statement_model.core.graph.components.MergeReprMixin">MergeReprMixin</a>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def merge_from(self, other_graph: MergeReprMixin) -&gt; None:
+    from fin_statement_model.core.graph.graph import (
+        Graph,
+    )  # local import to avoid cycles
+
+    if not isinstance(other_graph, Graph):
+        raise TypeError(&#34;Can only merge from another Graph instance.&#34;)
+
+    logger.info(&#34;Starting merge from graph %r into %r&#34;, other_graph, self)
+
+    new_periods = [p for p in other_graph.periods if p not in getattr(self, &#34;periods&#34;, [])]
+    if new_periods:
+        self.add_periods(new_periods)  # type: ignore[attr-defined]
+        logger.debug(&#34;Merged periods: %s&#34;, new_periods)
+
+    nodes_added = 0
+    nodes_updated = 0
+    for node_name, other_node in other_graph.nodes.items():
+        existing_node = self.get_node(node_name)  # type: ignore[attr-defined]
+        if existing_node is not None:
+            if (
+                hasattr(existing_node, &#34;values&#34;)
+                and hasattr(other_node, &#34;values&#34;)
+                and isinstance(existing_node.values, dict)
+                and isinstance(other_node.values, dict)
+            ):
+                existing_node.values.update(other_node.values)
+                nodes_updated += 1
+                logger.debug(&#34;Merged values into existing node &#39;%s&#39;&#34;, node_name)
+        else:
+            try:
+                self.add_node(other_node)  # type: ignore[attr-defined]
+                nodes_added += 1
+            except (ValueError, TypeError, FinStatementModelError):
+                logger.exception(&#34;Failed to add new node &#39;%s&#39; during merge&#34;, node_name)
+
+    logger.info(
+        &#34;Merge complete. Nodes added: %s, Nodes updated (values merged): %s&#34;,
+        nodes_added,
+        nodes_updated,
+    )</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.graph.components.NodeOpsMixin"><code class="flex name class">
+<span>class <span class="ident">NodeOpsMixin</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NodeOpsMixin:
+    &#34;&#34;&#34;Operations that **mutate** the graph structure or stored values.&#34;&#34;&#34;
+
+    # Attributes injected by &#34;GraphBaseMixin&#34; at runtime. They are declared here solely
+    # for the benefit of static type checkers (mypy) and have **no** runtime effect.
+    manipulator: Any  # provided by GraphBaseMixin
+    _add_node_with_validation: Any  # provided by GraphBaseMixin
+    add_periods: Any
+
+    # -- Simple FS item helpers -------------------------------------------------
+    def add_financial_statement_item(
+        self,
+        name: str,
+        values: dict[str, float],
+    ) -&gt; FinancialStatementItemNode:
+        from fin_statement_model.core.node_factory import NodeFactory
+
+        if not isinstance(values, dict):
+            raise TypeError(&#34;Values must be provided as a dict[str, float]&#34;)
+
+        new_node = NodeFactory().create_financial_statement_item(
+            name=name,
+            values=values.copy(),
+        )
+        added_node = cast(
+            &#34;FinancialStatementItemNode&#34;,
+            self._add_node_with_validation(
+                new_node,
+                check_cycles=False,
+                validate_inputs=False,
+            ),
+        )
+        logger.info(
+            &#34;Added FinancialStatementItemNode &#39;%s&#39; with periods %s&#34;,
+            name,
+            list(values.keys()),
+        )
+        return added_node
+
+    def update_financial_statement_item(
+        self,
+        name: str,
+        values: dict[str, float],
+        *,
+        replace_existing: bool = False,
+    ) -&gt; FinancialStatementItemNode:
+        node = self.manipulator.get_node(name)
+        if node is None:
+            raise NodeError(&#34;Node not found&#34;, node_id=name)
+        if not isinstance(node, FinancialStatementItemNode):
+            raise TypeError(f&#34;Node &#39;{name}&#39; is not a FinancialStatementItemNode&#34;)
+        if not isinstance(values, dict):
+            raise TypeError(&#34;Values must be provided as a dict[str, float]&#34;)
+
+        if replace_existing:
+            node.values = values.copy()
+        else:
+            node.values.update(values)
+        self.add_periods(list(values.keys()))
+        logger.info(
+            &#34;Updated FinancialStatementItemNode &#39;%s&#39; with periods %s; replace_existing=%s&#34;,
+            name,
+            list(values.keys()),
+            replace_existing,
+        )
+        return node
+
+    def get_financial_statement_items(self) -&gt; Any:
+        &#34;&#34;&#34;Return all FinancialStatementItemNode instances in the graph.&#34;&#34;&#34;
+        return [
+            node
+            for node in self.nodes.values()  # type: ignore[attr-defined]
+            if isinstance(node, FinancialStatementItemNode)
+        ]
+
+    # -- Generic manipulator proxies -------------------------------------------
+    def add_node(self, node: Node) -&gt; Any:
+        return self.manipulator.add_node(node)
+
+    def remove_node(self, node_name: str) -&gt; Any:
+        return self.manipulator.remove_node(node_name)
+
+    def replace_node(self, node_name: str, new_node: Node) -&gt; Any:
+        return self.manipulator.replace_node(node_name, new_node)
+
+    def has_node(self, node_id: str) -&gt; Any:
+        return self.manipulator.has_node(node_id)
+
+    def set_value(self, node_id: str, period: str, value: float) -&gt; Any:
+        return self.manipulator.set_value(node_id, period, value)</code></pre>
+</details>
+<div class="desc"><p>Operations that <strong>mutate</strong> the graph structure or stored values.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.graph.graph.Graph" href="../graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.components.NodeOpsMixin.add_periods"><code class="name">var <span class="ident">add_periods</span> : Any</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.NodeOpsMixin.manipulator"><code class="name">var <span class="ident">manipulator</span> : Any</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.components.NodeOpsMixin.add_financial_statement_item"><code class="name flex">
+<span>def <span class="ident">add_financial_statement_item</span></span>(<span>self, name: str, values: dict[str, float]) ‑> <a title="fin_statement_model.core.nodes.item_node.FinancialStatementItemNode" href="../../nodes/item_node.html#fin_statement_model.core.nodes.item_node.FinancialStatementItemNode">FinancialStatementItemNode</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_financial_statement_item(
+    self,
+    name: str,
+    values: dict[str, float],
+) -&gt; FinancialStatementItemNode:
+    from fin_statement_model.core.node_factory import NodeFactory
+
+    if not isinstance(values, dict):
+        raise TypeError(&#34;Values must be provided as a dict[str, float]&#34;)
+
+    new_node = NodeFactory().create_financial_statement_item(
+        name=name,
+        values=values.copy(),
+    )
+    added_node = cast(
+        &#34;FinancialStatementItemNode&#34;,
+        self._add_node_with_validation(
+            new_node,
+            check_cycles=False,
+            validate_inputs=False,
+        ),
+    )
+    logger.info(
+        &#34;Added FinancialStatementItemNode &#39;%s&#39; with periods %s&#34;,
+        name,
+        list(values.keys()),
+    )
+    return added_node</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.NodeOpsMixin.add_node"><code class="name flex">
+<span>def <span class="ident">add_node</span></span>(<span>self, node: Node) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_node(self, node: Node) -&gt; Any:
+    return self.manipulator.add_node(node)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.NodeOpsMixin.get_financial_statement_items"><code class="name flex">
+<span>def <span class="ident">get_financial_statement_items</span></span>(<span>self) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_financial_statement_items(self) -&gt; Any:
+    &#34;&#34;&#34;Return all FinancialStatementItemNode instances in the graph.&#34;&#34;&#34;
+    return [
+        node
+        for node in self.nodes.values()  # type: ignore[attr-defined]
+        if isinstance(node, FinancialStatementItemNode)
+    ]</code></pre>
+</details>
+<div class="desc"><p>Return all FinancialStatementItemNode instances in the graph.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.NodeOpsMixin.has_node"><code class="name flex">
+<span>def <span class="ident">has_node</span></span>(<span>self, node_id: str) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_node(self, node_id: str) -&gt; Any:
+    return self.manipulator.has_node(node_id)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.NodeOpsMixin.remove_node"><code class="name flex">
+<span>def <span class="ident">remove_node</span></span>(<span>self, node_name: str) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_node(self, node_name: str) -&gt; Any:
+    return self.manipulator.remove_node(node_name)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.NodeOpsMixin.replace_node"><code class="name flex">
+<span>def <span class="ident">replace_node</span></span>(<span>self, node_name: str, new_node: Node) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def replace_node(self, node_name: str, new_node: Node) -&gt; Any:
+    return self.manipulator.replace_node(node_name, new_node)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.NodeOpsMixin.set_value"><code class="name flex">
+<span>def <span class="ident">set_value</span></span>(<span>self, node_id: str, period: str, value: float) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_value(self, node_id: str, period: str, value: float) -&gt; Any:
+    return self.manipulator.set_value(node_id, period, value)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.NodeOpsMixin.update_financial_statement_item"><code class="name flex">
+<span>def <span class="ident">update_financial_statement_item</span></span>(<span>self, name: str, values: dict[str, float], *, replace_existing: bool = False) ‑> <a title="fin_statement_model.core.nodes.item_node.FinancialStatementItemNode" href="../../nodes/item_node.html#fin_statement_model.core.nodes.item_node.FinancialStatementItemNode">FinancialStatementItemNode</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_financial_statement_item(
+    self,
+    name: str,
+    values: dict[str, float],
+    *,
+    replace_existing: bool = False,
+) -&gt; FinancialStatementItemNode:
+    node = self.manipulator.get_node(name)
+    if node is None:
+        raise NodeError(&#34;Node not found&#34;, node_id=name)
+    if not isinstance(node, FinancialStatementItemNode):
+        raise TypeError(f&#34;Node &#39;{name}&#39; is not a FinancialStatementItemNode&#34;)
+    if not isinstance(values, dict):
+        raise TypeError(&#34;Values must be provided as a dict[str, float]&#34;)
+
+    if replace_existing:
+        node.values = values.copy()
+    else:
+        node.values.update(values)
+    self.add_periods(list(values.keys()))
+    logger.info(
+        &#34;Updated FinancialStatementItemNode &#39;%s&#39; with periods %s; replace_existing=%s&#34;,
+        name,
+        list(values.keys()),
+        replace_existing,
+    )
+    return node</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.graph.components.TraversalMixin"><code class="flex name class">
+<span>class <span class="ident">TraversalMixin</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TraversalMixin:
+    &#34;&#34;&#34;Expose :class:`fin_statement_model.core.graph.traverser.GraphTraverser` methods.&#34;&#34;&#34;
+
+    # ------------------------------------------------------------------
+    # Cycle detection &amp; reachability
+    # ------------------------------------------------------------------
+    def has_cycle(self, source_node: Node, target_node: Node) -&gt; Any:
+        if source_node.name not in self._nodes or target_node.name not in self._nodes:  # type: ignore[attr-defined]
+            return False
+        return self.traverser._is_reachable(source_node.name, target_node.name)  # type: ignore[attr-defined]
+
+    # ------------------------------------------------------------------
+    # Simple wrappers - keep return type *Any* to avoid strict coupling to
+    # Traverser signatures, which currently return ``Any`` for some methods.
+    # ------------------------------------------------------------------
+    def topological_sort(self) -&gt; Any:
+        return self.traverser.topological_sort()  # type: ignore[attr-defined]
+
+    def get_calculation_nodes(self) -&gt; Any:
+        return self.traverser.get_calculation_nodes()  # type: ignore[attr-defined]
+
+    def get_dependencies(self, node_id: str) -&gt; Any:
+        return self.traverser.get_dependencies(node_id)  # type: ignore[attr-defined]
+
+    def get_dependency_graph(self) -&gt; Any:
+        return self.traverser.get_dependency_graph()  # type: ignore[attr-defined]
+
+    def detect_cycles(self) -&gt; Any:
+        return self.traverser.detect_cycles()  # type: ignore[attr-defined]
+
+    def validate(self) -&gt; Any:
+        return self.traverser.validate()  # type: ignore[attr-defined]
+
+    def breadth_first_search(self, start_node: str, direction: str = &#34;successors&#34;) -&gt; Any:
+        return self.traverser.breadth_first_search(start_node, direction)  # type: ignore[attr-defined]
+
+    def get_direct_successors(self, node_id: str) -&gt; Any:
+        return self.traverser.get_direct_successors(node_id)  # type: ignore[attr-defined]
+
+    def get_direct_predecessors(self, node_id: str) -&gt; Any:
+        return self.traverser.get_direct_predecessors(node_id)  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"><p>Expose :class:<code><a title="fin_statement_model.core.graph.traverser.GraphTraverser" href="../traverser.html#fin_statement_model.core.graph.traverser.GraphTraverser">GraphTraverser</a></code> methods.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.graph.graph.Graph" href="../graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.components.TraversalMixin.breadth_first_search"><code class="name flex">
+<span>def <span class="ident">breadth_first_search</span></span>(<span>self, start_node: str, direction: str = 'successors') ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def breadth_first_search(self, start_node: str, direction: str = &#34;successors&#34;) -&gt; Any:
+    return self.traverser.breadth_first_search(start_node, direction)  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.TraversalMixin.detect_cycles"><code class="name flex">
+<span>def <span class="ident">detect_cycles</span></span>(<span>self) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def detect_cycles(self) -&gt; Any:
+    return self.traverser.detect_cycles()  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.TraversalMixin.get_calculation_nodes"><code class="name flex">
+<span>def <span class="ident">get_calculation_nodes</span></span>(<span>self) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_calculation_nodes(self) -&gt; Any:
+    return self.traverser.get_calculation_nodes()  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.TraversalMixin.get_dependencies"><code class="name flex">
+<span>def <span class="ident">get_dependencies</span></span>(<span>self, node_id: str) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_dependencies(self, node_id: str) -&gt; Any:
+    return self.traverser.get_dependencies(node_id)  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.TraversalMixin.get_dependency_graph"><code class="name flex">
+<span>def <span class="ident">get_dependency_graph</span></span>(<span>self) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_dependency_graph(self) -&gt; Any:
+    return self.traverser.get_dependency_graph()  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.TraversalMixin.get_direct_predecessors"><code class="name flex">
+<span>def <span class="ident">get_direct_predecessors</span></span>(<span>self, node_id: str) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_direct_predecessors(self, node_id: str) -&gt; Any:
+    return self.traverser.get_direct_predecessors(node_id)  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.TraversalMixin.get_direct_successors"><code class="name flex">
+<span>def <span class="ident">get_direct_successors</span></span>(<span>self, node_id: str) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_direct_successors(self, node_id: str) -&gt; Any:
+    return self.traverser.get_direct_successors(node_id)  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.TraversalMixin.has_cycle"><code class="name flex">
+<span>def <span class="ident">has_cycle</span></span>(<span>self, source_node: Node, target_node: Node) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_cycle(self, source_node: Node, target_node: Node) -&gt; Any:
+    if source_node.name not in self._nodes or target_node.name not in self._nodes:  # type: ignore[attr-defined]
+        return False
+    return self.traverser._is_reachable(source_node.name, target_node.name)  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.TraversalMixin.topological_sort"><code class="name flex">
+<span>def <span class="ident">topological_sort</span></span>(<span>self) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def topological_sort(self) -&gt; Any:
+    return self.traverser.topological_sort()  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.graph.components.TraversalMixin.validate"><code class="name flex">
+<span>def <span class="ident">validate</span></span>(<span>self) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate(self) -&gt; Any:
+    return self.traverser.validate()  # type: ignore[attr-defined]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.core.graph" href="../index.html">fin_statement_model.core.graph</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.core.graph.components.AdjustmentMixin" href="#fin_statement_model.core.graph.components.AdjustmentMixin">AdjustmentMixin</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.graph.components.AdjustmentMixin.add_adjustment" href="#fin_statement_model.core.graph.components.AdjustmentMixin.add_adjustment">add_adjustment</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.AdjustmentMixin.get_adjusted_value" href="#fin_statement_model.core.graph.components.AdjustmentMixin.get_adjusted_value">get_adjusted_value</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.AdjustmentMixin.get_adjustments" href="#fin_statement_model.core.graph.components.AdjustmentMixin.get_adjustments">get_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.AdjustmentMixin.list_all_adjustments" href="#fin_statement_model.core.graph.components.AdjustmentMixin.list_all_adjustments">list_all_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.AdjustmentMixin.remove_adjustment" href="#fin_statement_model.core.graph.components.AdjustmentMixin.remove_adjustment">remove_adjustment</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.AdjustmentMixin.was_adjusted" href="#fin_statement_model.core.graph.components.AdjustmentMixin.was_adjusted">was_adjusted</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.graph.components.CalcOpsMixin" href="#fin_statement_model.core.graph.components.CalcOpsMixin">CalcOpsMixin</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.graph.components.CalcOpsMixin.add_calculation" href="#fin_statement_model.core.graph.components.CalcOpsMixin.add_calculation">add_calculation</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.CalcOpsMixin.add_custom_calculation" href="#fin_statement_model.core.graph.components.CalcOpsMixin.add_custom_calculation">add_custom_calculation</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.CalcOpsMixin.add_metric" href="#fin_statement_model.core.graph.components.CalcOpsMixin.add_metric">add_metric</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.CalcOpsMixin.calculate" href="#fin_statement_model.core.graph.components.CalcOpsMixin.calculate">calculate</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.CalcOpsMixin.change_calculation_method" href="#fin_statement_model.core.graph.components.CalcOpsMixin.change_calculation_method">change_calculation_method</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.CalcOpsMixin.ensure_signed_nodes" href="#fin_statement_model.core.graph.components.CalcOpsMixin.ensure_signed_nodes">ensure_signed_nodes</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.CalcOpsMixin.get_available_metrics" href="#fin_statement_model.core.graph.components.CalcOpsMixin.get_available_metrics">get_available_metrics</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.CalcOpsMixin.get_metric" href="#fin_statement_model.core.graph.components.CalcOpsMixin.get_metric">get_metric</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.CalcOpsMixin.get_metric_info" href="#fin_statement_model.core.graph.components.CalcOpsMixin.get_metric_info">get_metric_info</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.CalcOpsMixin.recalculate_all" href="#fin_statement_model.core.graph.components.CalcOpsMixin.recalculate_all">recalculate_all</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.graph.components.GraphBaseMixin" href="#fin_statement_model.core.graph.components.GraphBaseMixin">GraphBaseMixin</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.graph.components.GraphBaseMixin.add_periods" href="#fin_statement_model.core.graph.components.GraphBaseMixin.add_periods">add_periods</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.GraphBaseMixin.clear" href="#fin_statement_model.core.graph.components.GraphBaseMixin.clear">clear</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.GraphBaseMixin.clear_all_caches" href="#fin_statement_model.core.graph.components.GraphBaseMixin.clear_all_caches">clear_all_caches</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.GraphBaseMixin.clear_calculation_cache" href="#fin_statement_model.core.graph.components.GraphBaseMixin.clear_calculation_cache">clear_calculation_cache</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.GraphBaseMixin.get_node" href="#fin_statement_model.core.graph.components.GraphBaseMixin.get_node">get_node</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.GraphBaseMixin.nodes" href="#fin_statement_model.core.graph.components.GraphBaseMixin.nodes">nodes</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.GraphBaseMixin.periods" href="#fin_statement_model.core.graph.components.GraphBaseMixin.periods">periods</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.graph.components.MergeReprMixin" href="#fin_statement_model.core.graph.components.MergeReprMixin">MergeReprMixin</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.graph.components.MergeReprMixin.merge_from" href="#fin_statement_model.core.graph.components.MergeReprMixin.merge_from">merge_from</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.graph.components.NodeOpsMixin" href="#fin_statement_model.core.graph.components.NodeOpsMixin">NodeOpsMixin</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.graph.components.NodeOpsMixin.add_financial_statement_item" href="#fin_statement_model.core.graph.components.NodeOpsMixin.add_financial_statement_item">add_financial_statement_item</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.NodeOpsMixin.add_node" href="#fin_statement_model.core.graph.components.NodeOpsMixin.add_node">add_node</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.NodeOpsMixin.add_periods" href="#fin_statement_model.core.graph.components.NodeOpsMixin.add_periods">add_periods</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.NodeOpsMixin.get_financial_statement_items" href="#fin_statement_model.core.graph.components.NodeOpsMixin.get_financial_statement_items">get_financial_statement_items</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.NodeOpsMixin.has_node" href="#fin_statement_model.core.graph.components.NodeOpsMixin.has_node">has_node</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.NodeOpsMixin.manipulator" href="#fin_statement_model.core.graph.components.NodeOpsMixin.manipulator">manipulator</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.NodeOpsMixin.remove_node" href="#fin_statement_model.core.graph.components.NodeOpsMixin.remove_node">remove_node</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.NodeOpsMixin.replace_node" href="#fin_statement_model.core.graph.components.NodeOpsMixin.replace_node">replace_node</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.NodeOpsMixin.set_value" href="#fin_statement_model.core.graph.components.NodeOpsMixin.set_value">set_value</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.NodeOpsMixin.update_financial_statement_item" href="#fin_statement_model.core.graph.components.NodeOpsMixin.update_financial_statement_item">update_financial_statement_item</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.graph.components.TraversalMixin" href="#fin_statement_model.core.graph.components.TraversalMixin">TraversalMixin</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.graph.components.TraversalMixin.breadth_first_search" href="#fin_statement_model.core.graph.components.TraversalMixin.breadth_first_search">breadth_first_search</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.TraversalMixin.detect_cycles" href="#fin_statement_model.core.graph.components.TraversalMixin.detect_cycles">detect_cycles</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.TraversalMixin.get_calculation_nodes" href="#fin_statement_model.core.graph.components.TraversalMixin.get_calculation_nodes">get_calculation_nodes</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.TraversalMixin.get_dependencies" href="#fin_statement_model.core.graph.components.TraversalMixin.get_dependencies">get_dependencies</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.TraversalMixin.get_dependency_graph" href="#fin_statement_model.core.graph.components.TraversalMixin.get_dependency_graph">get_dependency_graph</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.TraversalMixin.get_direct_predecessors" href="#fin_statement_model.core.graph.components.TraversalMixin.get_direct_predecessors">get_direct_predecessors</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.TraversalMixin.get_direct_successors" href="#fin_statement_model.core.graph.components.TraversalMixin.get_direct_successors">get_direct_successors</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.TraversalMixin.has_cycle" href="#fin_statement_model.core.graph.components.TraversalMixin.has_cycle">has_cycle</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.TraversalMixin.topological_sort" href="#fin_statement_model.core.graph.components.TraversalMixin.topological_sort">topological_sort</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.components.TraversalMixin.validate" href="#fin_statement_model.core.graph.components.TraversalMixin.validate">validate</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

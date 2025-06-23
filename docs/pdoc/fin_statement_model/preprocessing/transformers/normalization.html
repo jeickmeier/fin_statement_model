@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.preprocessing.transformers.normalization API documentation</title>
+<meta name="description" content="Provide the NormalizationTransformer for normalizing financial data …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.preprocessing.transformers.normalization</code></h1>
+</header>
+<section id="section-intro">
+<p>Provide the NormalizationTransformer for normalizing financial data.</p>
+<p>This module defines the transformer to normalize data using <em>percent_of</em>,
+<em>minmax</em>, <em>standard</em>, or <em>scale_by</em> methods within the preprocessing layer.</p>
+<h1 id="postpone-evaluation-of-type-annotations-pep-563649-so-that-subscripted">Postpone evaluation of type annotations (PEP 563/649) so that subscripted</h1>
+<h1 id="generics-like-pdseriesany-do-not-raise-typeerror-on-pandas">generics like <code>pd.Series[Any]</code> do <strong>not</strong> raise <code>TypeError</code> on pandas</h1>
+<h1 id="versions-that-lack-support-for-them-at-runtime">versions that lack support for them at runtime.</h1>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer"><code class="flex name class">
+<span>class <span class="ident">NormalizationTransformer</span></span>
+<span>(</span><span>normalization_type: str | NormalizationType = NormalizationType.PERCENT_OF,<br>reference: str | None = None,<br>scale_factor: float | None = None,<br>*,<br>config: NormalizationConfig | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NormalizationTransformer(DataTransformer):
+    &#34;&#34;&#34;Normalize financial data using various methods.
+
+    This transformer provides multiple normalization strategies commonly used in
+    financial analysis to make data comparable across different scales or to
+    express values as percentages of a reference metric.
+
+    Supported normalization types:
+        - **percent_of**: Express values as percentages of a reference column
+          (e.g., all items as % of revenue)
+        - **minmax**: Scale values to [0, 1] range based on min/max values
+        - **standard**: Standardize using (x - mean) / std deviation
+        - **scale_by**: Multiply all values by a fixed scale factor
+
+    Examples:
+        Express all income statement items as percentage of revenue:
+
+        &gt;&gt;&gt; import pandas as pd
+        &gt;&gt;&gt; from fin_statement_model.preprocessing.transformers import NormalizationTransformer
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Sample income statement data
+        &gt;&gt;&gt; data = pd.DataFrame(
+        ...     {&#34;revenue&#34;: [1000, 1100, 1200], &#34;cogs&#34;: [600, 650, 700], &#34;operating_expenses&#34;: [200, 220, 250]},
+        ...     index=[&#34;2021&#34;, &#34;2022&#34;, &#34;2023&#34;],
+        ... )
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Create transformer to express as % of revenue
+        &gt;&gt;&gt; normalizer = NormalizationTransformer(normalization_type=&#34;percent_of&#34;, reference=&#34;revenue&#34;)
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Transform the data
+        &gt;&gt;&gt; normalized = normalizer.transform(data)
+        &gt;&gt;&gt; print(normalized)
+        #       revenue  cogs  operating_expenses
+        # 2021    100.0  60.0               20.0
+        # 2022    100.0  59.1               20.0
+        # 2023    100.0  58.3               20.8
+
+        Scale financial data to millions:
+
+        &gt;&gt;&gt; # Scale values to millions (divide by 1,000,000)
+        &gt;&gt;&gt; scaler = NormalizationTransformer(normalization_type=&#34;scale_by&#34;, scale_factor=0.000001)
+        &gt;&gt;&gt; scaled = scaler.transform(data)
+
+    Note:
+        For &#39;percent_of&#39; normalization, if a reference value is 0 or NaN,
+        the corresponding output for that row will be NaN to avoid division
+        by zero errors.
+    &#34;&#34;&#34;
+
+    NORMALIZATION_TYPES: ClassVar[list[str]] = [t.value for t in NormalizationType]
+
+    # Runtime registry for user-supplied normalisation functions.
+    _CUSTOM_METHODS: ClassVar[dict[str, CustomNormFn]] = {}
+
+    # ------------------------------------------------------------------
+    # Public API for custom method registration
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def register_custom_method(cls, name: str, func: CustomNormFn, *, overwrite: bool = False) -&gt; None:
+        &#34;&#34;&#34;Register a custom normalisation *func* under *name*.
+
+        The callable **must** accept two arguments: the DataFrame to be
+        normalised and the *transformer instance* (so it can access config
+        such as ``reference`` / ``scale_factor``). It must return the
+        normalised DataFrame.
+
+        Args:
+            name: Identifier to use in ``NormalizationTransformer(..., normalization_type=name)``.
+            func: Callable implementing the normalisation.
+            overwrite: Allow replacing an existing registration. Defaults to *False*.
+        &#34;&#34;&#34;
+        if name in cls._CUSTOM_METHODS and not overwrite:
+            raise ValueError(f&#34;Custom normalization method &#39;{name}&#39; already registered.&#34;)
+        cls._CUSTOM_METHODS[name] = func
+        logger.info(&#34;Registered custom normalization method &#39;%s&#39;&#34;, name)
+
+    @classmethod
+    def list_custom_methods(cls) -&gt; list[str]:
+        &#34;&#34;&#34;Return names of all registered custom normalisation methods.&#34;&#34;&#34;
+        return list(cls._CUSTOM_METHODS.keys())
+
+    def __init__(
+        self,
+        normalization_type: str | NormalizationType = NormalizationType.PERCENT_OF,
+        reference: str | None = None,
+        scale_factor: float | None = None,
+        *,
+        config: NormalizationConfig | None = None,
+    ):
+        &#34;&#34;&#34;Initialize the normalizer with specified parameters.
+
+        Args:
+            normalization_type: Type of normalization to apply. Can be either
+                a string or NormalizationType enum value:
+                - &#39;percent_of&#39;: Express values as percentage of reference column
+                - &#39;minmax&#39;: Scale to [0,1] range
+                - &#39;standard&#39;: Apply z-score normalization
+                - &#39;scale_by&#39;: Multiply by scale_factor
+            reference: Name of the reference column for &#39;percent_of&#39; normalization.
+                Required when normalization_type is &#39;percent_of&#39;.
+            scale_factor: Multiplication factor for &#39;scale_by&#39; normalization.
+                Required when normalization_type is &#39;scale_by&#39;.
+                Common values: 0.001 (to thousands), 0.000001 (to millions)
+            config: Optional NormalizationConfig object containing configuration.
+                If provided, overrides other parameters.
+
+        Raises:
+            NormalizationError: If normalization_type is invalid, or if required
+                parameters are missing for the selected normalization type.
+        &#34;&#34;&#34;
+        # ------------------------------------------------------------------
+        # Configuration precedence: *either* supply a Pydantic config object
+        # *or* individual keyword-arguments. If both are provided we keep the
+        # config (first-class source-of-truth) and issue a gentle warning so
+        # that users can clean up their call-sites.
+        # ------------------------------------------------------------------
+
+        if config is not None and any(param is not None for param in (reference, scale_factor)):
+            warnings.warn(
+                &#34;Both &#39;config&#39; and individual kwargs supplied to NormalizationTransformer; the Pydantic config takes precedence.&#34;,
+                UserWarning,
+                stacklevel=2,
+            )
+
+        # Extract values from config if present (takes precedence)
+        if config is not None:
+            normalization_type = config.normalization_type or normalization_type
+            reference = config.reference or reference
+            scale_factor = config.scale_factor if config.scale_factor is not None else scale_factor
+
+        # Save incoming config dict for logging/debug via base class
+        super().__init__(config.model_dump() if config else None)
+        # Normalize enum to string
+        if isinstance(normalization_type, NormalizationType):
+            norm_type = normalization_type.value
+        else:
+            norm_type = normalization_type
+        if norm_type not in self.NORMALIZATION_TYPES and norm_type not in self._CUSTOM_METHODS:
+            raise NormalizationError(
+                f&#34;Invalid normalization type: {norm_type}. Must be one of {self.NORMALIZATION_TYPES}&#34;,
+                method=norm_type,
+            )
+        self.normalization_type = norm_type
+
+        self.reference = reference
+        self.scale_factor = scale_factor
+
+        # Validation
+        if self.normalization_type == NormalizationType.PERCENT_OF.value and not reference:
+            raise NormalizationError(
+                &#34;Reference field must be provided for percent_of normalization&#34;,
+                method=self.normalization_type,
+            )
+
+        if self.normalization_type == NormalizationType.SCALE_BY.value and scale_factor is None:
+            raise NormalizationError(
+                &#34;Scale factor must be provided for scale_by normalization&#34;,
+                method=self.normalization_type,
+            )
+
+    def transform(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+        &#34;&#34;&#34;Normalize the data based on the configured normalization type.
+
+        Args:
+            data: DataFrame containing financial data to normalize.
+                All columns will be normalized except the reference column
+                in &#39;percent_of&#39; normalization.
+
+        Returns:
+            DataFrame with normalized values. Original column names are preserved
+            for all normalization types.
+
+        Raises:
+            DataValidationError: If data is not a pandas DataFrame.
+            NormalizationError: If reference column is not found in DataFrame
+                (for &#39;percent_of&#39; normalization).
+        &#34;&#34;&#34;
+        if not isinstance(data, pd.DataFrame | pd.Series):
+            raise DataValidationError(
+                f&#34;Unsupported data type: {type(data)}. Expected pandas.DataFrame or pandas.Series&#34;,
+                validation_errors=[f&#34;Got type: {type(data).__name__}&#34;],
+            )
+        return super().transform(data)
+
+    def validate_config(self) -&gt; None:
+        &#34;&#34;&#34;Validate the transformer configuration.
+
+        Raises:
+            NormalizationError: If the configuration is invalid.
+        &#34;&#34;&#34;
+        super().validate_config()
+
+        if (
+            self.normalization_type not in self.NORMALIZATION_TYPES
+            and self.normalization_type not in self._CUSTOM_METHODS
+        ):
+            raise NormalizationError(
+                f&#34;Unknown normalization method: {self.normalization_type}. &#34;
+                f&#34;Supported methods are: {self.NORMALIZATION_TYPES}&#34;,
+                method=self.normalization_type,
+            )
+
+        if self.normalization_type == NormalizationType.PERCENT_OF.value and not self.reference:
+            raise NormalizationError(
+                &#34;Reference field must be provided for percent_of normalization&#34;,
+                method=self.normalization_type,
+            )
+
+        if self.normalization_type == NormalizationType.SCALE_BY.value and self.scale_factor is None:
+            raise NormalizationError(
+                &#34;Scale factor must be provided for scale_by normalization&#34;,
+                method=self.normalization_type,
+            )
+
+    def _transform_impl(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+        &#34;&#34;&#34;Apply the normalization transformation.
+
+        This is the core implementation method that handles both DataFrame
+        and Series inputs by converting Series to single-column DataFrames,
+        applying the normalization, and converting back if needed.
+
+        Args:
+            data: The data to transform. Can be either:
+                - pandas.DataFrame: For multi-column normalization
+                - pandas.Series: For single-column normalization
+
+        Returns:
+            The normalized data in the same format as the input
+            (DataFrame → DataFrame, Series → Series).
+
+        Raises:
+            DataValidationError: If the data type is not supported
+                (neither DataFrame nor Series).
+            NormalizationError: If there are issues during normalization,
+                such as missing reference columns or invalid values.
+
+        Examples:
+            &gt;&gt;&gt; transformer = NormalizationTransformer(normalization_type=&#34;scale_by&#34;, scale_factor=0.001)
+            &gt;&gt;&gt; df = pd.DataFrame({&#34;A&#34;: [1, 2, 3], &#34;B&#34;: [4, 5, 6]})
+            &gt;&gt;&gt; result = transformer._transform_impl(df)
+            &gt;&gt;&gt; series = pd.Series([1, 2, 3], name=&#34;values&#34;)
+            &gt;&gt;&gt; result_series = transformer._transform_impl(series)
+        &#34;&#34;&#34;
+        if not isinstance(data, pd.DataFrame | pd.Series):
+            raise DataValidationError(
+                f&#34;Unsupported data type: {type(data)}. Expected pandas.DataFrame or pandas.Series&#34;,
+                validation_errors=[f&#34;Got type: {type(data).__name__}&#34;],
+            )
+
+        df, was_series = self._coerce_to_dataframe(data)
+        result_df = self._normalize_dataframe(df)
+        if was_series:
+            return result_df.iloc[:, 0]
+        return result_df
+
+    def _apply_percent_of(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Return DataFrame expressed as percentage of the reference column.&#34;&#34;&#34;
+        if self.reference not in df.columns:
+            raise NormalizationError(
+                f&#34;Reference column &#39;{self.reference}&#39; not found in DataFrame&#34;,
+                method=self.normalization_type,
+                reference_field=self.reference,
+            )
+
+        result = df.copy()
+        reference_series = df[self.reference].replace(0, np.nan)
+
+        for col in df.columns:
+            if col == self.reference:
+                continue
+            if reference_series.isnull().all():
+                result[col] = np.nan
+                logger.warning(
+                    &#34;All reference values for &#39;%s&#39; are zero or NaN. &#39;%s&#39; will be NaN.&#34;,
+                    self.reference,
+                    col,
+                )
+            else:
+                result[col] = (df[col] / reference_series) * 100
+        return result
+
+    def _apply_minmax(self, df: pd.DataFrame) -&gt; pd.DataFrame:  # pragma: no cover
+        &#34;&#34;&#34;Scale values to [0,1] range using min-max normalisation.&#34;&#34;&#34;
+        result = df.copy()
+        for col in df.columns:
+            min_val = df[col].min()
+            max_val = df[col].max()
+            if max_val &gt; min_val:
+                result[col] = (df[col] - min_val) / (max_val - min_val)
+            else:  # constant column
+                result[col] = 0.0
+        return result
+
+    def _apply_standard(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Apply z-score standardisation (mean=0, std=1).&#34;&#34;&#34;
+        result = df.copy()
+        for col in df.columns:
+            mean = df[col].mean()
+            std = df[col].std()
+            if std &gt; 0:
+                result[col] = (df[col] - mean) / std
+            else:
+                result[col] = 0.0
+        return result
+
+    def _apply_scale_by(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Multiply all numeric values by the configured scale factor.&#34;&#34;&#34;
+        return df * self.scale_factor
+
+    def _normalize_dataframe(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Apply normalization to a DataFrame (delegates to specific helpers).&#34;&#34;&#34;
+        if self.normalization_type == NormalizationType.PERCENT_OF.value:
+            return self._apply_percent_of(df)
+        if self.normalization_type == NormalizationType.MINMAX.value:  # pragma: no cover
+            return self._apply_minmax(df)
+        if self.normalization_type == NormalizationType.STANDARD.value:
+            return self._apply_standard(df)
+        if self.normalization_type == NormalizationType.SCALE_BY.value:
+            return self._apply_scale_by(df)
+
+        # Custom method --------------------------------------------------
+        custom_func = self._CUSTOM_METHODS[self.normalization_type]
+        return custom_func(df, self)
+
+    # ------------------------------------------------------------------
+    # Data validation
+    # ------------------------------------------------------------------
+
+    def validate_input(self, data: object) -&gt; bool:
+        &#34;&#34;&#34;Return *True* when *data* is a DataFrame or Series.
+
+        This method implements the DataTransformer contract by specifying
+        exactly which input types are supported by the normalization
+        transformer.
+
+        Args:
+            data: The input data to validate. Can be any Python object,
+                 but only pandas DataFrame and Series are accepted.
+
+        Returns:
+            bool: True if data is either:
+                - pandas.DataFrame
+                - pandas.Series
+                False for all other types.
+
+        Examples:
+            &gt;&gt;&gt; transformer = NormalizationTransformer()
+            &gt;&gt;&gt; transformer.validate_input(pd.DataFrame())
+            True
+            &gt;&gt;&gt; transformer.validate_input(pd.Series())
+            True
+            &gt;&gt;&gt; transformer.validate_input([1, 2, 3])
+            False
+        &#34;&#34;&#34;
+        return isinstance(data, pd.DataFrame | pd.Series)</code></pre>
+</details>
+<div class="desc"><p>Normalize financial data using various methods.</p>
+<p>This transformer provides multiple normalization strategies commonly used in
+financial analysis to make data comparable across different scales or to
+express values as percentages of a reference metric.</p>
+<p>Supported normalization types:
+- <strong>percent_of</strong>: Express values as percentages of a reference column
+(e.g., all items as % of revenue)
+- <strong>minmax</strong>: Scale values to [0, 1] range based on min/max values
+- <strong>standard</strong>: Standardize using (x - mean) / std deviation
+- <strong>scale_by</strong>: Multiply all values by a fixed scale factor</p>
+<h2 id="examples">Examples</h2>
+<p>Express all income statement items as percentage of revenue:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; import pandas as pd
+&gt;&gt;&gt; from fin_statement_model.preprocessing.transformers import NormalizationTransformer
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Sample income statement data
+&gt;&gt;&gt; data = pd.DataFrame(
+...     {&quot;revenue&quot;: [1000, 1100, 1200], &quot;cogs&quot;: [600, 650, 700], &quot;operating_expenses&quot;: [200, 220, 250]},
+...     index=[&quot;2021&quot;, &quot;2022&quot;, &quot;2023&quot;],
+... )
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Create transformer to express as % of revenue
+&gt;&gt;&gt; normalizer = NormalizationTransformer(normalization_type=&quot;percent_of&quot;, reference=&quot;revenue&quot;)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Transform the data
+&gt;&gt;&gt; normalized = normalizer.transform(data)
+&gt;&gt;&gt; print(normalized)
+#       revenue  cogs  operating_expenses
+# 2021    100.0  60.0               20.0
+# 2022    100.0  59.1               20.0
+# 2023    100.0  58.3               20.8
+</code></pre>
+<p>Scale financial data to millions:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Scale values to millions (divide by 1,000,000)
+&gt;&gt;&gt; scaler = NormalizationTransformer(normalization_type=&quot;scale_by&quot;, scale_factor=0.000001)
+&gt;&gt;&gt; scaled = scaler.transform(data)
+</code></pre>
+<h2 id="note">Note</h2>
+<p>For 'percent_of' normalization, if a reference value is 0 or NaN,
+the corresponding output for that row will be NaN to avoid division
+by zero errors.</p>
+<p>Initialize the normalizer with specified parameters.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>normalization_type</code></strong></dt>
+<dd>Type of normalization to apply. Can be either
+a string or NormalizationType enum value:
+- 'percent_of': Express values as percentage of reference column
+- 'minmax': Scale to [0,1] range
+- 'standard': Apply z-score normalization
+- 'scale_by': Multiply by scale_factor</dd>
+<dt><strong><code>reference</code></strong></dt>
+<dd>Name of the reference column for 'percent_of' normalization.
+Required when normalization_type is 'percent_of'.</dd>
+<dt><strong><code>scale_factor</code></strong></dt>
+<dd>Multiplication factor for 'scale_by' normalization.
+Required when normalization_type is 'scale_by'.
+Common values: 0.001 (to thousands), 0.000001 (to millions)</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional NormalizationConfig object containing configuration.
+If provided, overrides other parameters.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>NormalizationError</code></dt>
+<dd>If normalization_type is invalid, or if required
+parameters are missing for the selected normalization type.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.NORMALIZATION_TYPES"><code class="name">var <span class="ident">NORMALIZATION_TYPES</span> : ClassVar[list[str]]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.list_custom_methods"><code class="name flex">
+<span>def <span class="ident">list_custom_methods</span></span>(<span>) ‑> list[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return names of all registered custom normalisation methods.</p></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.register_custom_method"><code class="name flex">
+<span>def <span class="ident">register_custom_method</span></span>(<span>name: str, func: CustomNormFn, *, overwrite: bool = False) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register a custom normalisation <em>func</em> under <em>name</em>.</p>
+<p>The callable <strong>must</strong> accept two arguments: the DataFrame to be
+normalised and the <em>transformer instance</em> (so it can access config
+such as <code>reference</code> / <code>scale_factor</code>). It must return the
+normalised DataFrame.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Identifier to use in <code>NormalizationTransformer(..., normalization_type=name)</code>.</dd>
+<dt><strong><code>func</code></strong></dt>
+<dd>Callable implementing the normalisation.</dd>
+<dt><strong><code>overwrite</code></strong></dt>
+<dd>Allow replacing an existing registration. Defaults to <em>False</em>.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.transform"><code class="name flex">
+<span>def <span class="ident">transform</span></span>(<span>self, data: pd.DataFrame | pd.Series[Any]) ‑> pd.DataFrame | pd.Series[Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+    &#34;&#34;&#34;Normalize the data based on the configured normalization type.
+
+    Args:
+        data: DataFrame containing financial data to normalize.
+            All columns will be normalized except the reference column
+            in &#39;percent_of&#39; normalization.
+
+    Returns:
+        DataFrame with normalized values. Original column names are preserved
+        for all normalization types.
+
+    Raises:
+        DataValidationError: If data is not a pandas DataFrame.
+        NormalizationError: If reference column is not found in DataFrame
+            (for &#39;percent_of&#39; normalization).
+    &#34;&#34;&#34;
+    if not isinstance(data, pd.DataFrame | pd.Series):
+        raise DataValidationError(
+            f&#34;Unsupported data type: {type(data)}. Expected pandas.DataFrame or pandas.Series&#34;,
+            validation_errors=[f&#34;Got type: {type(data).__name__}&#34;],
+        )
+    return super().transform(data)</code></pre>
+</details>
+<div class="desc"><p>Normalize the data based on the configured normalization type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>DataFrame containing financial data to normalize.
+All columns will be normalized except the reference column
+in 'percent_of' normalization.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>DataFrame with normalized values. Original column names are preserved
+for all normalization types.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>DataValidationError</code></dt>
+<dd>If data is not a pandas DataFrame.</dd>
+<dt><code>NormalizationError</code></dt>
+<dd>If reference column is not found in DataFrame
+(for 'percent_of' normalization).</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.validate_config"><code class="name flex">
+<span>def <span class="ident">validate_config</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_config(self) -&gt; None:
+    &#34;&#34;&#34;Validate the transformer configuration.
+
+    Raises:
+        NormalizationError: If the configuration is invalid.
+    &#34;&#34;&#34;
+    super().validate_config()
+
+    if (
+        self.normalization_type not in self.NORMALIZATION_TYPES
+        and self.normalization_type not in self._CUSTOM_METHODS
+    ):
+        raise NormalizationError(
+            f&#34;Unknown normalization method: {self.normalization_type}. &#34;
+            f&#34;Supported methods are: {self.NORMALIZATION_TYPES}&#34;,
+            method=self.normalization_type,
+        )
+
+    if self.normalization_type == NormalizationType.PERCENT_OF.value and not self.reference:
+        raise NormalizationError(
+            &#34;Reference field must be provided for percent_of normalization&#34;,
+            method=self.normalization_type,
+        )
+
+    if self.normalization_type == NormalizationType.SCALE_BY.value and self.scale_factor is None:
+        raise NormalizationError(
+            &#34;Scale factor must be provided for scale_by normalization&#34;,
+            method=self.normalization_type,
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate the transformer configuration.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>NormalizationError</code></dt>
+<dd>If the configuration is invalid.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.validate_input"><code class="name flex">
+<span>def <span class="ident">validate_input</span></span>(<span>self, data: object) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_input(self, data: object) -&gt; bool:
+    &#34;&#34;&#34;Return *True* when *data* is a DataFrame or Series.
+
+    This method implements the DataTransformer contract by specifying
+    exactly which input types are supported by the normalization
+    transformer.
+
+    Args:
+        data: The input data to validate. Can be any Python object,
+             but only pandas DataFrame and Series are accepted.
+
+    Returns:
+        bool: True if data is either:
+            - pandas.DataFrame
+            - pandas.Series
+            False for all other types.
+
+    Examples:
+        &gt;&gt;&gt; transformer = NormalizationTransformer()
+        &gt;&gt;&gt; transformer.validate_input(pd.DataFrame())
+        True
+        &gt;&gt;&gt; transformer.validate_input(pd.Series())
+        True
+        &gt;&gt;&gt; transformer.validate_input([1, 2, 3])
+        False
+    &#34;&#34;&#34;
+    return isinstance(data, pd.DataFrame | pd.Series)</code></pre>
+</details>
+<div class="desc"><p>Return <em>True</em> when <em>data</em> is a DataFrame or Series.</p>
+<p>This method implements the DataTransformer contract by specifying
+exactly which input types are supported by the normalization
+transformer.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The input data to validate. Can be any Python object,
+but only pandas DataFrame and Series are accepted.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if data is either:
+- pandas.DataFrame
+- pandas.Series
+False for all other types.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; transformer = NormalizationTransformer()
+&gt;&gt;&gt; transformer.validate_input(pd.DataFrame())
+True
+&gt;&gt;&gt; transformer.validate_input(pd.Series())
+True
+&gt;&gt;&gt; transformer.validate_input([1, 2, 3])
+False
+</code></pre></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.execute" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer.execute">execute</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul>
+<li><a href="#postpone-evaluation-of-type-annotations-pep-563649-so-that-subscripted">Postpone evaluation of type annotations (PEP 563/649) so that subscripted</a></li>
+<li><a href="#generics-like-pdseriesany-do-not-raise-typeerror-on-pandas">generics like pd.Series[Any] do not raise TypeError on pandas</a></li>
+<li><a href="#versions-that-lack-support-for-them-at-runtime">versions that lack support for them at runtime.</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.preprocessing.transformers" href="index.html">fin_statement_model.preprocessing.transformers</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer" href="#fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer">NormalizationTransformer</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.NORMALIZATION_TYPES" href="#fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.NORMALIZATION_TYPES">NORMALIZATION_TYPES</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.list_custom_methods" href="#fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.list_custom_methods">list_custom_methods</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.register_custom_method" href="#fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.register_custom_method">register_custom_method</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.transform" href="#fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.transform">transform</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.validate_config" href="#fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.validate_config">validate_config</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.validate_input" href="#fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer.validate_input">validate_input</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

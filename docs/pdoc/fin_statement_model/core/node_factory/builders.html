@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.core.node_factory.builders API documentation</title>
+<meta name="description" content="Builder helpers for the modular fin_statement_model.core.node_factory …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.core.node_factory.builders</code></h1>
+</header>
+<section id="section-intro">
+<p>Builder helpers for the modular fin_statement_model.core.node_factory.</p>
+<p>These functions provide registry-driven instantiation of node types, calculation nodes, and forecast nodes.
+They avoid eager imports to keep the core module lightweight. All builders validate input and raise
+ConfigurationError on failure.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.node_factory.builders import create_financial_statement_item
+&gt;&gt;&gt; node = create_financial_statement_item(&quot;Revenue&quot;, {&quot;2022&quot;: 100.0, &quot;2023&quot;: 120.0})
+&gt;&gt;&gt; node.name
+'Revenue'
+</code></pre>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.core.node_factory.builders.create_calculation_node"><code class="name flex">
+<span>def <span class="ident">create_calculation_node</span></span>(<span>*,<br>name: str,<br>inputs: list[Node],<br>calculation_type: str,<br>formula_variable_names: list[str] | None = None,<br>**calculation_kwargs: Any) ‑> Node</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_calculation_node(
+    *,
+    name: str,
+    inputs: list[Node],
+    calculation_type: str,
+    formula_variable_names: list[str] | None = None,
+    **calculation_kwargs: Any,
+) -&gt; Node:
+    &#34;&#34;&#34;Create a generic calculation node using alias lookup.
+
+    Args:
+        name: The name of the calculation node.
+        inputs: List of input Node instances.
+        calculation_type: Alias for the calculation type (e.g., &#39;addition&#39;, &#39;formula&#39;).
+        formula_variable_names: Optional list of variable names for formula calculations.
+        **calculation_kwargs: Additional keyword arguments for calculation or node attributes.
+
+    Returns:
+        Node: An instance of CalculationNode with the specified calculation logic.
+
+    Raises:
+        ConfigurationError: If the calculation_type is unknown or inputs are invalid.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.node_factory.builders import create_calculation_node
+        &gt;&gt;&gt; # Assume n1, n2 are Node instances
+        &gt;&gt;&gt; node = create_calculation_node(name=&#34;GrossProfit&#34;, inputs=[n1, n2], calculation_type=&#34;addition&#34;)
+        &gt;&gt;&gt; node.name
+        &#39;GrossProfit&#39;
+    &#34;&#34;&#34;
+    # Lazy import to avoid heavy dependency when this builder is unused
+    calculation_node_cls = _import_calculation_node()
+
+    # Validate inputs are Node instances
+    for n in inputs:
+        _ensure_node_instance(n)
+
+    try:
+        calc_cls = CalculationAliasRegistry.get(calculation_type)
+    except KeyError as exc:
+        raise ConfigurationError(
+            f&#34;Unknown calculation_type alias &#39;{calculation_type}&#39;. Registered: {CalculationAliasRegistry.list()}&#34;
+        ) from exc
+
+    # Special case: formula calculation needs variable names - tack them on via
+    # kwargs so constructor signature remains flexible.
+    if formula_variable_names is not None:
+        calculation_kwargs.setdefault(&#34;input_variable_names&#34;, formula_variable_names)
+
+    # Split kwargs between calculation-init and node extra attributes
+    node_extra_kwargs = {}
+    for key in (&#34;metric_name&#34;, &#34;metric_description&#34;):
+        if key in calculation_kwargs:
+            node_extra_kwargs[key] = calculation_kwargs.pop(key)
+
+    calculation_instance = calc_cls(**calculation_kwargs)
+
+    return cast(
+        &#34;Node&#34;,
+        calculation_node_cls(name, inputs, calculation_instance, **node_extra_kwargs),
+    )</code></pre>
+</details>
+<div class="desc"><p>Create a generic calculation node using alias lookup.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The name of the calculation node.</dd>
+<dt><strong><code>inputs</code></strong></dt>
+<dd>List of input Node instances.</dd>
+<dt><strong><code>calculation_type</code></strong></dt>
+<dd>Alias for the calculation type (e.g., 'addition', 'formula').</dd>
+<dt><strong><code>formula_variable_names</code></strong></dt>
+<dd>Optional list of variable names for formula calculations.</dd>
+<dt><strong><code>**calculation_kwargs</code></strong></dt>
+<dd>Additional keyword arguments for calculation or node attributes.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Node</code></dt>
+<dd>An instance of CalculationNode with the specified calculation logic.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ConfigurationError</code></dt>
+<dd>If the calculation_type is unknown or inputs are invalid.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.node_factory.builders import create_calculation_node
+&gt;&gt;&gt; # Assume n1, n2 are Node instances
+&gt;&gt;&gt; node = create_calculation_node(name=&quot;GrossProfit&quot;, inputs=[n1, n2], calculation_type=&quot;addition&quot;)
+&gt;&gt;&gt; node.name
+'GrossProfit'
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.node_factory.builders.create_financial_statement_item"><code class="name flex">
+<span>def <span class="ident">create_financial_statement_item</span></span>(<span>name: str, values: dict[str, float]) ‑> Node</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_financial_statement_item(name: str, values: dict[str, float]) -&gt; Node:
+    &#34;&#34;&#34;Instantiate a FinancialStatementItemNode via the registry.
+
+    Args:
+        name: The name of the financial statement item (e.g., &#39;Revenue&#39;).
+        values: A dictionary mapping period strings to float values.
+
+    Returns:
+        Node: An instance of FinancialStatementItemNode.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.node_factory.builders import create_financial_statement_item
+        &gt;&gt;&gt; node = create_financial_statement_item(&#34;Revenue&#34;, {&#34;2022&#34;: 100.0})
+        &gt;&gt;&gt; node.name
+        &#39;Revenue&#39;
+    &#34;&#34;&#34;
+    try:
+        node_cls = NodeTypeRegistry.get(&#34;financial_statement_item&#34;)
+    except KeyError:
+        # Fallback to direct import if not registered yet (pre-decorator phase)
+        from fin_statement_model.core.nodes.item_node import (
+            FinancialStatementItemNode,
+        )  # pylint: disable=import-outside-toplevel
+
+        node_cls = FinancialStatementItemNode
+
+    return cast(&#34;Node&#34;, node_cls(name, values))</code></pre>
+</details>
+<div class="desc"><p>Instantiate a FinancialStatementItemNode via the registry.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The name of the financial statement item (e.g., 'Revenue').</dd>
+<dt><strong><code>values</code></strong></dt>
+<dd>A dictionary mapping period strings to float values.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Node</code></dt>
+<dd>An instance of FinancialStatementItemNode.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.node_factory.builders import create_financial_statement_item
+&gt;&gt;&gt; node = create_financial_statement_item(&quot;Revenue&quot;, {&quot;2022&quot;: 100.0})
+&gt;&gt;&gt; node.name
+'Revenue'
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.node_factory.builders.create_forecast_node"><code class="name flex">
+<span>def <span class="ident">create_forecast_node</span></span>(<span>*,<br>forecast_type: str | None = None,<br>input_node: Node | None = None,<br>base_period: str | None = None,<br>forecast_periods: list[str] | None = None,<br>growth_params: Any = None,<br>name: str | None = None,<br>base_node: Node | None = None,<br>forecast_config: Any | None = None,<br>**_extra: Any) ‑> Node</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_forecast_node(
+    *,
+    forecast_type: str | None = None,
+    input_node: Node | None = None,
+    base_period: str | None = None,
+    forecast_periods: list[str] | None = None,
+    growth_params: Any = None,
+    name: str | None = None,
+    base_node: Node | None = None,
+    forecast_config: Any | None = None,
+    **_extra: Any,
+) -&gt; Node:
+    &#34;&#34;&#34;Instantiate a forecast node using forecast_type registry lookup.
+
+    Args:
+        forecast_type: The type of forecast node to create (e.g., &#39;simple&#39;, &#39;curve&#39;).
+        input_node: The input Node to forecast (or use base_node for legacy).
+        base_period: The base period string (e.g., &#39;2022&#39;).
+        forecast_periods: List of periods to forecast.
+        growth_params: Parameters for the forecast method.
+        name: (Legacy) Name of the node (ignored).
+        base_node: (Legacy) Alias for input_node.
+        forecast_config: (Not supported yet).
+        **_extra: Additional keyword arguments (ignored).
+
+    Returns:
+        Node: An instance of the appropriate ForecastNode subclass.
+
+    Raises:
+        ConfigurationError: If required parameters are missing or instantiation fails.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.node_factory.builders import create_forecast_node
+        &gt;&gt;&gt; # Assume n1 is a Node instance
+        &gt;&gt;&gt; node = create_forecast_node(
+        ...     forecast_type=&#34;simple&#34;, input_node=n1, base_period=&#34;2022&#34;, forecast_periods=[&#34;2023&#34;, &#34;2024&#34;]
+        ... )
+        &gt;&gt;&gt; node.name
+        n1.name  # Typically inherits from input_node
+    &#34;&#34;&#34;
+    # Map legacy parameters -------------------------------------------------
+    if input_node is None and base_node is not None:
+        input_node = base_node
+
+    if name is not None:
+        logger.debug(&#34;create_forecast_node: received legacy &#39;name&#39; parameter (ignored): %s&#34;, name)
+
+    if forecast_config is not None:
+        # TODO: parse ForecastConfig in a later iteration
+        raise ConfigurationError(&#34;create_forecast_node currently does not support &#39;forecast_config&#39; parameter.&#34;)
+
+    if forecast_type is None:
+        raise ConfigurationError(&#34;&#39;forecast_type&#39; must be provided.&#34;)
+    if input_node is None:
+        raise ConfigurationError(&#34;&#39;input_node&#39; (or &#39;base_node&#39;) must be provided.&#34;)
+    if base_period is None or forecast_periods is None:
+        raise ConfigurationError(&#34;&#39;base_period&#39; and &#39;forecast_periods&#39; are required.&#34;)
+
+    _ensure_node_instance(input_node)
+
+    try:
+        forecast_cls = ForecastTypeRegistry.get(forecast_type)
+    except KeyError as exc:
+        raise ConfigurationError(
+            f&#34;Unknown forecast_type &#39;{forecast_type}&#39;. Registered: {ForecastTypeRegistry.list()}&#34;
+        ) from exc
+
+    # ---------------------------------------------------------------------
+    # Dynamic constructor handling via reflection
+    # ---------------------------------------------------------------------
+    # We inspect the __init__ signature of the forecast class to determine
+    # whether it expects a fourth positional/keyword parameter (commonly
+    # `growth_params`). This avoids hard-coding special cases for each
+    # forecast_type and automatically works for any new classes added later.
+
+    try:
+        sig = inspect.signature(forecast_cls.__init__)
+        # Drop the implicit &#39;self&#39;
+        ctor_params = [p for p in sig.parameters.values() if p.name != &#34;self&#34;]
+
+        # Base signature is (input_node, base_period, forecast_periods)
+        args: list[Any] = [input_node, base_period, forecast_periods]
+
+        # If the constructor defines a 4th parameter OR has a parameter named
+        # &#39;growth_params&#39;, we append growth_params as the 4th argument.
+        needs_growth = False
+        if len(ctor_params) &gt; PARAMS_GROWTH_THRESHOLD:
+            needs_growth = True
+        else:
+            needs_growth = any(p.name == &#34;growth_params&#34; for p in ctor_params)
+
+        if needs_growth:
+            args.append(growth_params)
+
+        return cast(&#34;Node&#34;, forecast_cls(*args))
+
+    except TypeError as exc:
+        # Provide helpful context with expected signature
+        expected = [p.name for p in ctor_params]
+        raise ConfigurationError(
+            f&#34;Failed to instantiate forecast node for type &#39;{forecast_type}&#39;: {exc}\nConstructor parameters: {expected}&#34;
+        ) from exc</code></pre>
+</details>
+<div class="desc"><p>Instantiate a forecast node using forecast_type registry lookup.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>forecast_type</code></strong></dt>
+<dd>The type of forecast node to create (e.g., 'simple', 'curve').</dd>
+<dt><strong><code>input_node</code></strong></dt>
+<dd>The input Node to forecast (or use base_node for legacy).</dd>
+<dt><strong><code>base_period</code></strong></dt>
+<dd>The base period string (e.g., '2022').</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of periods to forecast.</dd>
+<dt><strong><code>growth_params</code></strong></dt>
+<dd>Parameters for the forecast method.</dd>
+<dt><strong><code>name</code></strong></dt>
+<dd>(Legacy) Name of the node (ignored).</dd>
+<dt><strong><code>base_node</code></strong></dt>
+<dd>(Legacy) Alias for input_node.</dd>
+<dt><strong><code>forecast_config</code></strong></dt>
+<dd>(Not supported yet).</dd>
+<dt><strong><code>**_extra</code></strong></dt>
+<dd>Additional keyword arguments (ignored).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Node</code></dt>
+<dd>An instance of the appropriate ForecastNode subclass.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ConfigurationError</code></dt>
+<dd>If required parameters are missing or instantiation fails.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.node_factory.builders import create_forecast_node
+&gt;&gt;&gt; # Assume n1 is a Node instance
+&gt;&gt;&gt; node = create_forecast_node(
+...     forecast_type=&quot;simple&quot;, input_node=n1, base_period=&quot;2022&quot;, forecast_periods=[&quot;2023&quot;, &quot;2024&quot;]
+... )
+&gt;&gt;&gt; node.name
+n1.name  # Typically inherits from input_node
+</code></pre></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.core.node_factory" href="index.html">fin_statement_model.core.node_factory</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.core.node_factory.builders.create_calculation_node" href="#fin_statement_model.core.node_factory.builders.create_calculation_node">create_calculation_node</a></code></li>
+<li><code><a title="fin_statement_model.core.node_factory.builders.create_financial_statement_item" href="#fin_statement_model.core.node_factory.builders.create_financial_statement_item">create_financial_statement_item</a></code></li>
+<li><code><a title="fin_statement_model.core.node_factory.builders.create_forecast_node" href="#fin_statement_model.core.node_factory.builders.create_forecast_node">create_forecast_node</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

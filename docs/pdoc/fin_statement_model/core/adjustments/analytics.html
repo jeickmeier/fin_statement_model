@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.core.adjustments.analytics API documentation</title>
+<meta name="description" content="Analytics functions for summarizing and analyzing adjustments …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.core.adjustments.analytics</code></h1>
+</header>
+<section id="section-intro">
+<p>Analytics functions for summarizing and analyzing adjustments.</p>
+<p>This module provides utilities for generating summaries and filtered lists of adjustments
+from an AdjustmentManager. It is useful for reporting, diagnostics, and exploratory analysis
+of adjustment data in financial models.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.adjustments.manager import AdjustmentManager
+&gt;&gt;&gt; from fin_statement_model.core.adjustments.analytics import summary, list_by_tag
+&gt;&gt;&gt; mgr = AdjustmentManager()
+&gt;&gt;&gt; # ... add adjustments to mgr ...
+&gt;&gt;&gt; df = summary(mgr)
+&gt;&gt;&gt; print(df.head())
+&gt;&gt;&gt; adj_list = list_by_tag(mgr, &quot;Scenario/Upside&quot;)
+&gt;&gt;&gt; print(len(adj_list))
+</code></pre>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.core.adjustments.analytics.list_by_tag"><code class="name flex">
+<span>def <span class="ident">list_by_tag</span></span>(<span>manager: <a title="fin_statement_model.core.adjustments.manager.AdjustmentManager" href="manager.html#fin_statement_model.core.adjustments.manager.AdjustmentManager">AdjustmentManager</a>,<br>tag_prefix: str,<br>filter_input: <a title="fin_statement_model.core.adjustments.models.AdjustmentFilter" href="models.html#fin_statement_model.core.adjustments.models.AdjustmentFilter">AdjustmentFilter</a> | set[str] | collections.abc.Callable[[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>], bool] | None = None) ‑> list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_by_tag(
+    manager: AdjustmentManager,
+    tag_prefix: str,
+    filter_input: (AdjustmentFilter | set[AdjustmentTag] | Callable[[Adjustment], bool] | None) = None,
+) -&gt; list[Adjustment]:
+    &#34;&#34;&#34;List all adjustments matching a tag prefix, optionally applying further filters.
+
+    Args:
+        manager: The AdjustmentManager instance containing the adjustments.
+        tag_prefix: The tag prefix string to match (e.g., &#34;NonRecurring&#34;).
+        filter_input: Optional additional filter criteria (AdjustmentFilter, set of tags,
+            callable, or None).
+
+    Returns:
+        A list of Adjustment objects that have at least one tag starting with
+        the tag_prefix and also match the optional filter_input.
+
+    Examples:
+        &gt;&gt;&gt; from fin_statement_model.core.adjustments.manager import AdjustmentManager
+        &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+        &gt;&gt;&gt; mgr = AdjustmentManager()
+        &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=1.0, reason=&#34;r&#34;, tags={&#34;X&#34;})
+        &gt;&gt;&gt; mgr.add_adjustment(adj)
+        &gt;&gt;&gt; result = list_by_tag(mgr, &#34;X&#34;)
+        &gt;&gt;&gt; result[0].node_name == &#34;A&#34;
+        True
+    &#34;&#34;&#34;
+    logger.debug(&#34;Listing adjustments by tag prefix: &#39;%s&#39;&#34;, tag_prefix)
+
+    # Get all adjustments and apply filters using the helper function
+    all_adjustments = manager.get_all_adjustments()
+    filtered_adjustments = _filter_adjustments_static(all_adjustments, filter_input)
+
+    # Apply the primary tag prefix filter
+    prefix_set = {tag_prefix}
+    final_list = [adj for adj in filtered_adjustments if tag_matches(adj.tags, prefix_set)]
+
+    logger.info(&#34;Found %s adjustments matching prefix &#39;%s&#39; and other filters.&#34;, len(final_list), tag_prefix)
+    # Sort by priority/timestamp for consistent output
+    return sorted(final_list, key=lambda x: (x.priority, x.timestamp))</code></pre>
+</details>
+<div class="desc"><p>List all adjustments matching a tag prefix, optionally applying further filters.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>manager</code></strong></dt>
+<dd>The AdjustmentManager instance containing the adjustments.</dd>
+<dt><strong><code>tag_prefix</code></strong></dt>
+<dd>The tag prefix string to match (e.g., "NonRecurring").</dd>
+<dt><strong><code>filter_input</code></strong></dt>
+<dd>Optional additional filter criteria (AdjustmentFilter, set of tags,
+callable, or None).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A list of Adjustment objects that have at least one tag starting with
+the tag_prefix and also match the optional filter_input.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.adjustments.manager import AdjustmentManager
+&gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+&gt;&gt;&gt; mgr = AdjustmentManager()
+&gt;&gt;&gt; adj = Adjustment(node_name=&quot;A&quot;, period=&quot;2023&quot;, value=1.0, reason=&quot;r&quot;, tags={&quot;X&quot;})
+&gt;&gt;&gt; mgr.add_adjustment(adj)
+&gt;&gt;&gt; result = list_by_tag(mgr, &quot;X&quot;)
+&gt;&gt;&gt; result[0].node_name == &quot;A&quot;
+True
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.analytics.summary"><code class="name flex">
+<span>def <span class="ident">summary</span></span>(<span>manager: <a title="fin_statement_model.core.adjustments.manager.AdjustmentManager" href="manager.html#fin_statement_model.core.adjustments.manager.AdjustmentManager">AdjustmentManager</a>,<br>filter_input: <a title="fin_statement_model.core.adjustments.models.AdjustmentFilter" href="models.html#fin_statement_model.core.adjustments.models.AdjustmentFilter">AdjustmentFilter</a> | set[str] | collections.abc.Callable[[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>], bool] | None = None,<br>group_by: list[str] | None = None) ‑> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def summary(
+    manager: AdjustmentManager,
+    filter_input: (AdjustmentFilter | set[AdjustmentTag] | Callable[[Adjustment], bool] | None) = None,
+    group_by: list[str] | None = None,
+) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;Generate a summary DataFrame of adjustments, optionally filtered and grouped.
+
+    Calculates count, sum of values, and mean of absolute values for adjustments.
+
+    Args:
+        manager: The AdjustmentManager instance containing the adjustments.
+        filter_input: Optional filter criteria (AdjustmentFilter, set of tags, callable, or None)
+            to apply before summarizing.
+        group_by: List of Adjustment attributes to group the summary by.
+            Defaults to [&#34;period&#34;, &#34;node_name&#34;]. Valid fields include
+            &#39;period&#39;, &#39;node_name&#39;, &#39;scenario&#39;, &#39;type&#39;, &#39;user&#39;.
+
+    Returns:
+        A pandas DataFrame with the summary statistics (count, sum, mean_abs_value)
+        indexed by the specified group_by columns.
+
+    Examples:
+        &gt;&gt;&gt; from fin_statement_model.core.adjustments.manager import AdjustmentManager
+        &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+        &gt;&gt;&gt; mgr = AdjustmentManager()
+        &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=2.0, reason=&#34;r&#34;)
+        &gt;&gt;&gt; mgr.add_adjustment(adj)
+        &gt;&gt;&gt; df = summary(mgr)
+        &gt;&gt;&gt; df.loc[(&#34;2023&#34;, &#34;A&#34;), &#34;sum_value&#34;] == 2.0
+        True
+    &#34;&#34;&#34;
+    if group_by is None:
+        group_by = [&#34;period&#34;, &#34;node_name&#34;]
+    logger.debug(&#34;Generating adjustment summary, grouping by: %s&#34;, group_by)
+
+    # Get all adjustments first
+    # TODO: Optimization - If filtering is very restrictive, could filter first.
+    # However, filtering requires period context which isn&#39;t directly available here.
+    # Get all adjustments and filter based on the filter_input&#39;s static properties.
+    # The period-based filtering (effective window) cannot be applied generically here.
+    all_adjustments = manager.get_all_adjustments()
+
+    # Apply filtering using the helper function
+    filtered_adjustments = _filter_adjustments_static(all_adjustments, filter_input)
+
+    if not filtered_adjustments:
+        logger.info(&#34;No adjustments found matching the filter criteria for summary.&#34;)
+        # Return empty DataFrame with expected columns
+        cols = [*group_by, &#34;count&#34;, &#34;sum_value&#34;, &#34;mean_abs_value&#34;]
+        return pd.DataFrame(columns=cols).set_index(group_by)
+
+    # Convert to DataFrame for easier aggregation
+    adj_data = [
+        adj.model_dump(include={*group_by, &#34;value&#34;})  # Include value for aggregation
+        for adj in filtered_adjustments
+    ]
+    df = pd.DataFrame(adj_data)
+
+    # Ensure correct types for grouping columns if needed (e.g., type as string)
+    if &#34;type&#34; in group_by:
+        df[&#34;type&#34;] = df[&#34;type&#34;].astype(str)
+
+    # Add absolute value for mean calculation
+    df[&#34;abs_value&#34;] = df[&#34;value&#34;].abs()
+
+    # Perform aggregation
+    summary_df = df.groupby(group_by).agg(
+        count=(&#34;value&#34;, &#34;size&#34;),
+        sum_value=(&#34;value&#34;, &#34;sum&#34;),
+        mean_abs_value=(&#34;abs_value&#34;, &#34;mean&#34;),
+    )
+
+    logger.info(&#34;Generated adjustment summary with %s groups.&#34;, len(summary_df))
+    return summary_df</code></pre>
+</details>
+<div class="desc"><p>Generate a summary DataFrame of adjustments, optionally filtered and grouped.</p>
+<p>Calculates count, sum of values, and mean of absolute values for adjustments.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>manager</code></strong></dt>
+<dd>The AdjustmentManager instance containing the adjustments.</dd>
+<dt><strong><code>filter_input</code></strong></dt>
+<dd>Optional filter criteria (AdjustmentFilter, set of tags, callable, or None)
+to apply before summarizing.</dd>
+<dt><strong><code>group_by</code></strong></dt>
+<dd>List of Adjustment attributes to group the summary by.
+Defaults to ["period", "node_name"]. Valid fields include
+'period', 'node_name', 'scenario', 'type', 'user'.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A pandas DataFrame with the summary statistics (count, sum, mean_abs_value)
+indexed by the specified group_by columns.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.adjustments.manager import AdjustmentManager
+&gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+&gt;&gt;&gt; mgr = AdjustmentManager()
+&gt;&gt;&gt; adj = Adjustment(node_name=&quot;A&quot;, period=&quot;2023&quot;, value=2.0, reason=&quot;r&quot;)
+&gt;&gt;&gt; mgr.add_adjustment(adj)
+&gt;&gt;&gt; df = summary(mgr)
+&gt;&gt;&gt; df.loc[(&quot;2023&quot;, &quot;A&quot;), &quot;sum_value&quot;] == 2.0
+True
+</code></pre></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.core.adjustments" href="index.html">fin_statement_model.core.adjustments</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.core.adjustments.analytics.list_by_tag" href="#fin_statement_model.core.adjustments.analytics.list_by_tag">list_by_tag</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.analytics.summary" href="#fin_statement_model.core.adjustments.analytics.summary">summary</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

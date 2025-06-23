@@ -1,0 +1,1302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.core.nodes.standard_registry API documentation</title>
+<meta name="description" content="Registry for standard node names and metadata …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.core.nodes.standard_registry</code></h1>
+</header>
+<section id="section-intro">
+<p>Registry for standard node names and metadata.</p>
+<p>This module provides a registry system for standardized node names,
+ensuring consistency across financial models and enabling metrics to work properly.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>StandardNodeDefinition: Pydantic model for node metadata (category, subcategory, description, alternate names, sign convention).</li>
+<li>StandardNodeRegistry: Manages loading, validation, and lookup of standard node definitions.</li>
+<li>Supports loading from organized YAML files and direct YAML file loading.</li>
+<li>Provides methods to resolve alternate names, validate names, list categories, and retrieve sign conventions.</li>
+<li>Used by the financial statement model to ensure canonical naming and robust metric calculation.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+&gt;&gt;&gt; standard_node_registry.is_standard_name(&quot;revenue&quot;)
+True
+&gt;&gt;&gt; standard_node_registry.get_standard_name(&quot;sales&quot;)
+'revenue'
+&gt;&gt;&gt; defn = standard_node_registry.get_definition(&quot;revenue&quot;)
+&gt;&gt;&gt; defn.category
+'income_statement'
+&gt;&gt;&gt; standard_node_registry.list_standard_names(&quot;balance_sheet_assets&quot;)[:3]
+['accounts_receivable', 'cash_and_equivalents', 'current_assets']
+&gt;&gt;&gt; standard_node_registry.get_sign_convention(&quot;treasury_stock&quot;)
+'negative'
+</code></pre>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition"><code class="flex name class">
+<span>class <span class="ident">StandardNodeDefinition</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StandardNodeDefinition(BaseModel):
+    &#34;&#34;&#34;Represent metadata for a standard node definition.
+
+    Attributes:
+        category (str): Main category (e.g., &#39;balance_sheet_assets&#39;).
+        subcategory (str): Subcategory within the main category.
+        description (str): Human-readable description of the node.
+        alternate_names (list[str]): Alternate names mapping to this standard.
+        sign_convention (str): Sign convention (&#39;positive&#39; or &#39;negative&#39;).
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import StandardNodeDefinition
+        &gt;&gt;&gt; defn = StandardNodeDefinition(
+        ...     category=&#34;income_statement&#34;,
+        ...     subcategory=&#34;top_line&#34;,
+        ...     description=&#34;Total revenue/sales&#34;,
+        ...     alternate_names=[&#34;sales&#34;, &#34;total_revenue&#34;],
+        ...     sign_convention=&#34;positive&#34;,
+        ... )
+        &gt;&gt;&gt; defn.category
+        &#39;income_statement&#39;
+        &gt;&gt;&gt; defn.alternate_names
+        [&#39;sales&#39;, &#39;total_revenue&#39;]
+    &#34;&#34;&#34;
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    category: str
+    subcategory: str
+    description: str
+    alternate_names: list[str] = []
+    sign_convention: str = &#34;positive&#34;  # &#39;positive&#39; or &#39;negative&#39;</code></pre>
+</details>
+<div class="desc"><p>Represent metadata for a standard node definition.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>category</code></strong> :&ensp;<code>str</code></dt>
+<dd>Main category (e.g., 'balance_sheet_assets').</dd>
+<dt><strong><code>subcategory</code></strong> :&ensp;<code>str</code></dt>
+<dd>Subcategory within the main category.</dd>
+<dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
+<dd>Human-readable description of the node.</dd>
+<dt><strong><code>alternate_names</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>Alternate names mapping to this standard.</dd>
+<dt><strong><code>sign_convention</code></strong> :&ensp;<code>str</code></dt>
+<dd>Sign convention ('positive' or 'negative').</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import StandardNodeDefinition
+&gt;&gt;&gt; defn = StandardNodeDefinition(
+...     category=&quot;income_statement&quot;,
+...     subcategory=&quot;top_line&quot;,
+...     description=&quot;Total revenue/sales&quot;,
+...     alternate_names=[&quot;sales&quot;, &quot;total_revenue&quot;],
+...     sign_convention=&quot;positive&quot;,
+... )
+&gt;&gt;&gt; defn.category
+'income_statement'
+&gt;&gt;&gt; defn.alternate_names
+['sales', 'total_revenue']
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.alternate_names"><code class="name">var <span class="ident">alternate_names</span> : list[str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.category"><code class="name">var <span class="ident">category</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.description"><code class="name">var <span class="ident">description</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.sign_convention"><code class="name">var <span class="ident">sign_convention</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.subcategory"><code class="name">var <span class="ident">subcategory</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry"><code class="flex name class">
+<span>class <span class="ident">StandardNodeRegistry</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StandardNodeRegistry:
+    &#34;&#34;&#34;Manage loading and access to standard node definitions.
+
+    Provide methods to load definitions, validate node names, and resolve alternate names.
+
+    Attributes:
+        _standard_nodes (dict[str, StandardNodeDefinition]): Map standard names to definitions.
+        _alternate_to_standard (dict[str, str]): Map alternate names to standard names.
+        _categories (set[str]): Registered categories.
+        _initialized (bool): Whether default nodes have been initialized.
+        _loaded_from (Optional[str]): Source path of loaded definitions.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
+        &gt;&gt;&gt; reg = StandardNodeRegistry()
+        &gt;&gt;&gt; reg._load_nodes_from_data(
+        ...     {
+        ...         &#34;revenue&#34;: {
+        ...             &#34;category&#34;: &#34;income_statement&#34;,
+        ...             &#34;subcategory&#34;: &#34;top_line&#34;,
+        ...             &#34;description&#34;: &#34;Total revenue&#34;,
+        ...             &#34;alternate_names&#34;: [&#34;sales&#34;],
+        ...             &#34;sign_convention&#34;: &#34;positive&#34;,
+        ...         }
+        ...     },
+        ...     &#34;test&#34;,
+        ... )
+        1
+        &gt;&gt;&gt; reg.is_standard_name(&#34;revenue&#34;)
+        True
+        &gt;&gt;&gt; reg.get_standard_name(&#34;sales&#34;)
+        &#39;revenue&#39;
+    &#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        &#34;&#34;&#34;Initialize an empty registry.&#34;&#34;&#34;
+        self._standard_nodes: dict[str, StandardNodeDefinition] = {}
+        self._alternate_to_standard: dict[str, str] = {}
+        self._categories: set[str] = set()
+        self._initialized: bool = False  # Track initialization state
+        self._loaded_from: str | None = None  # Track source
+
+    def _load_nodes_from_data(
+        self,
+        data: dict[str, Any],
+        source_description: str,
+        overwrite_existing: bool = False,
+    ) -&gt; int:
+        &#34;&#34;&#34;Load and process node definitions from parsed YAML data.
+
+        Args:
+            data (dict[str, Any]): Parsed YAML mapping node names to definitions.
+            source_description (str): Description of the data source for logging.
+            overwrite_existing (bool): Whether to replace existing definitions.
+
+        Returns:
+            int: Number of nodes successfully loaded.
+
+        Raises:
+            TypeError: If `data` is not a dict.
+            ValueError: If definitions are invalid or duplicates are detected.
+        &#34;&#34;&#34;
+        if not isinstance(data, dict):
+            raise TypeError(f&#34;Expected dict at root of {source_description}, got {type(data)}&#34;)
+
+        nodes_loaded = 0
+
+        # Load each node definition
+        for node_name, node_data in data.items():
+            if not isinstance(node_data, dict):
+                logger.warning(&#34;Skipping invalid node definition &#39;%s&#39; in %s: not a dict&#34;, node_name, source_description)
+                continue
+
+            try:
+                definition = StandardNodeDefinition(**node_data)
+
+                # Handle duplicate standard names
+                if node_name in self._standard_nodes:
+                    if not overwrite_existing:
+                        raise ValueError(f&#34;Duplicate standard node name: {node_name}&#34;)
+                    else:
+                        logger.debug(&#34;Overwriting existing standard node: %s from %s&#34;, node_name, source_description)
+
+                # Add to main registry
+                self._standard_nodes[node_name] = definition
+                self._categories.add(definition.category)
+
+                # Map alternate names
+                for alt_name in definition.alternate_names:
+                    if alt_name in self._alternate_to_standard:
+                        existing_standard = self._alternate_to_standard[alt_name]
+                        if not overwrite_existing and existing_standard != node_name:
+                            raise ValueError(
+                                f&#34;Alternate name &#39;{alt_name}&#39; already maps to &#34;
+                                f&#34;&#39;{existing_standard}&#39;, cannot also map to &#39;{node_name}&#39;&#34;
+                            )
+                        elif overwrite_existing and existing_standard != node_name:
+                            logger.debug(
+                                &#34;Alternate name &#39;%s&#39; already maps to &#39;%s&#39;, now mapping to &#39;%s&#39;&#34;,
+                                alt_name,
+                                existing_standard,
+                                node_name,
+                            )
+                    self._alternate_to_standard[alt_name] = node_name
+
+                nodes_loaded += 1
+
+            except Exception as e:
+                logger.exception(&#34;Error loading node &#39;%s&#39; from %s&#34;, node_name, source_description)
+                raise ValueError(f&#34;Invalid node definition for &#39;{node_name}&#39;: {e}&#34;) from e
+
+        return nodes_loaded
+
+    def get_standard_name(self, name: str) -&gt; str:
+        &#34;&#34;&#34;Get the standard name for a given node name.
+
+        If the name is already standard, returns it unchanged.
+        If it&#39;s an alternate name, returns the corresponding standard name.
+        If it&#39;s not recognized, returns the original name.
+
+        Args:
+            name (str): The node name to standardize.
+
+        Returns:
+            str: The standardized node name.
+
+        Example:
+            &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            &gt;&gt;&gt; standard_node_registry.get_standard_name(&#34;sales&#34;)
+            &#39;revenue&#39;
+        &#34;&#34;&#34;
+        # Check if it&#39;s already a standard name
+        if name in self._standard_nodes:
+            return name
+
+        # Check if it&#39;s an alternate name
+        if name in self._alternate_to_standard:
+            return self._alternate_to_standard[name]
+
+        # Not recognized, return as-is
+        return name
+
+    def is_standard_name(self, name: str) -&gt; bool:
+        &#34;&#34;&#34;Check if a name is a recognized standard node name.
+
+        Args:
+            name (str): The node name to check.
+
+        Returns:
+            bool: True if the name is a standard node name, False otherwise.
+
+        Example:
+            &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            &gt;&gt;&gt; standard_node_registry.is_standard_name(&#34;revenue&#34;)
+            True
+        &#34;&#34;&#34;
+        return name in self._standard_nodes
+
+    def is_alternate_name(self, name: str) -&gt; bool:
+        &#34;&#34;&#34;Check if a name is a recognized alternate name.
+
+        Args:
+            name (str): The node name to check.
+
+        Returns:
+            bool: True if the name is an alternate name, False otherwise.
+
+        Example:
+            &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            &gt;&gt;&gt; standard_node_registry.is_alternate_name(&#34;sales&#34;)
+            True
+        &#34;&#34;&#34;
+        return name in self._alternate_to_standard
+
+    def is_recognized_name(self, name: str) -&gt; bool:
+        &#34;&#34;&#34;Check if a name is either standard or alternate.
+
+        Args:
+            name (str): The node name to check.
+
+        Returns:
+            bool: True if the name is recognized, False otherwise.
+
+        Example:
+            &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            &gt;&gt;&gt; standard_node_registry.is_recognized_name(&#34;revenue&#34;)
+            True
+            &gt;&gt;&gt; standard_node_registry.is_recognized_name(&#34;sales&#34;)
+            True
+            &gt;&gt;&gt; standard_node_registry.is_recognized_name(&#34;not_a_node&#34;)
+            False
+        &#34;&#34;&#34;
+        return self.is_standard_name(name) or self.is_alternate_name(name)
+
+    def get_definition(self, name: str) -&gt; StandardNodeDefinition | None:
+        &#34;&#34;&#34;Get the definition for a node name.
+
+        Works with both standard and alternate names.
+
+        Args:
+            name (str): The node name to look up.
+
+        Returns:
+            Optional[StandardNodeDefinition]: The node definition if found, None otherwise.
+
+        Example:
+            &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            &gt;&gt;&gt; defn = standard_node_registry.get_definition(&#34;revenue&#34;)
+            &gt;&gt;&gt; defn.category
+            &#39;income_statement&#39;
+        &#34;&#34;&#34;
+        standard_name = self.get_standard_name(name)
+        return self._standard_nodes.get(standard_name)
+
+    def list_standard_names(self, category: str | None = None) -&gt; list[str]:
+        &#34;&#34;&#34;List all standard node names, optionally filtered by category.
+
+        Args:
+            category (Optional[str]): Optional category to filter by.
+
+        Returns:
+            list[str]: Sorted list of standard node names.
+
+        Example:
+            &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            &gt;&gt;&gt; standard_node_registry.list_standard_names(&#34;balance_sheet_assets&#34;)[:3]
+            [&#39;accounts_receivable&#39;, &#39;cash_and_equivalents&#39;, &#39;current_assets&#39;]
+        &#34;&#34;&#34;
+        if category:
+            names = [name for name, defn in self._standard_nodes.items() if defn.category == category]
+        else:
+            names = list(self._standard_nodes.keys())
+
+        return sorted(names)
+
+    def list_categories(self) -&gt; list[str]:
+        &#34;&#34;&#34;List all available categories.
+
+        Returns:
+            list[str]: Sorted list of categories.
+
+        Example:
+            &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            &gt;&gt;&gt; &#34;income_statement&#34; in standard_node_registry.list_categories()
+            True
+        &#34;&#34;&#34;
+        return sorted(self._categories)
+
+    def validate_node_name(self, name: str, strict: bool = False) -&gt; tuple[bool, str]:
+        &#34;&#34;&#34;Validate a node name against standards.
+
+        Args:
+            name (str): The node name to validate.
+            strict (bool): If True, only standard names are valid. If False, alternate names are also valid.
+
+        Returns:
+            tuple[bool, str]: Tuple of (is_valid, message).
+
+        Example:
+            &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            &gt;&gt;&gt; standard_node_registry.validate_node_name(&#34;revenue&#34;)
+            (True, &#34;&#39;revenue&#39; is a standard node name&#34;)
+            &gt;&gt;&gt; standard_node_registry.validate_node_name(&#34;sales&#34;)
+            (True, &#34;&#39;sales&#39; is valid (alternate for &#39;revenue&#39;)&#34;)
+            &gt;&gt;&gt; standard_node_registry.validate_node_name(&#34;not_a_node&#34;)
+            (False, &#34;&#39;not_a_node&#39; is not a recognized node name&#34;)
+        &#34;&#34;&#34;
+        if strict:
+            if self.is_standard_name(name):
+                return True, f&#34;&#39;{name}&#39; is a standard node name&#34;
+            elif self.is_alternate_name(name):
+                standard = self.get_standard_name(name)
+                return (
+                    False,
+                    f&#34;&#39;{name}&#39; is an alternate name. Use standard name &#39;{standard}&#39;&#34;,
+                )
+            else:
+                return False, f&#34;&#39;{name}&#39; is not a recognized node name&#34;
+        elif self.is_recognized_name(name):
+            if self.is_alternate_name(name):
+                standard = self.get_standard_name(name)
+                return True, f&#34;&#39;{name}&#39; is valid (alternate for &#39;{standard}&#39;)&#34;
+            else:
+                return True, f&#34;&#39;{name}&#39; is a standard node name&#34;
+        else:
+            return False, f&#34;&#39;{name}&#39; is not a recognized node name&#34;
+
+    def get_sign_convention(self, name: str) -&gt; str | None:
+        &#34;&#34;&#34;Get the sign convention for a node.
+
+        Args:
+            name (str): The node name (standard or alternate).
+
+        Returns:
+            Optional[str]: The sign convention (&#39;positive&#39; or &#39;negative&#39;) if found, None otherwise.
+
+        Example:
+            &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            &gt;&gt;&gt; standard_node_registry.get_sign_convention(&#34;treasury_stock&#34;)
+            &#39;negative&#39;
+        &#34;&#34;&#34;
+        definition = self.get_definition(name)
+        return definition.sign_convention if definition else None
+
+    def initialize_default_nodes(
+        self,
+        organized_path: Path | None = None,
+        force_reload: bool = False,
+    ) -&gt; int:
+        &#34;&#34;&#34;Load default standard nodes from organized directory.
+
+        Args:
+            organized_path (Optional[Path]): Base path to `standard_nodes_defn`. Defaults to package directory.
+            force_reload (bool): If True, reload even if already initialized.
+
+        Returns:
+            int: Count of nodes loaded.
+
+        Example:
+            &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+            &gt;&gt;&gt; count = standard_node_registry.initialize_default_nodes()
+            &gt;&gt;&gt; count &gt; 0
+            True
+        &#34;&#34;&#34;
+        if self._initialized and not force_reload:
+            logger.debug(&#34;Standard nodes already initialized from %s, skipping reload.&#34;, self._loaded_from)
+            return len(self._standard_nodes)
+
+        if organized_path is None:
+            organized_path = Path(__file__).parent / &#34;standard_nodes_defn&#34;
+
+        count = self._load_from_organized_structure(organized_path)
+        self._initialized = True
+        self._loaded_from = f&#34;organized structure at {organized_path}&#34;
+        logger.info(&#34;Successfully loaded %s standard nodes from organized structure&#34;, count)
+        return count
+
+    def _load_from_organized_structure(self, base_path: Path) -&gt; int:
+        &#34;&#34;&#34;Load standard nodes from an organized directory structure.
+
+        Args:
+            base_path (Path): Directory containing organized YAML node definition files.
+
+        Returns:
+            int: Number of nodes loaded.
+
+        Raises:
+            FileNotFoundError: If `base_path` does not exist.
+            ImportError: If module loading fails.
+            Exception: For other loading errors.
+        &#34;&#34;&#34;
+        if not base_path.exists():
+            raise FileNotFoundError(f&#34;Organized structure path not found: {base_path}&#34;)
+
+        # Check if it has the expected structure (contains __init__.py)
+        init_file = base_path / &#34;__init__.py&#34;
+        if not init_file.exists():
+            raise ValueError(f&#34;Invalid organized structure: missing __init__.py in {base_path}&#34;)
+
+        # Import and use the load_all_standard_nodes function
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location(&#34;standard_nodes_defn&#34;, init_file)
+        if spec is None or spec.loader is None:
+            raise ImportError(f&#34;Failed to load module from {init_file}&#34;)
+
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        # Clear existing data before loading
+        self._standard_nodes.clear()
+        self._alternate_to_standard.clear()
+        self._categories.clear()
+
+        # Call the loading function
+        if hasattr(module, &#34;load_all_standard_nodes&#34;):
+            loaded_count = module.load_all_standard_nodes(base_path)
+            return int(loaded_count)
+        else:
+            raise AttributeError(f&#34;Module at {init_file} missing load_all_standard_nodes function&#34;)
+
+    def is_initialized(self) -&gt; bool:
+        &#34;&#34;&#34;Check if the registry has been initialized with default nodes.&#34;&#34;&#34;
+        return self._initialized
+
+    def get_load_source(self) -&gt; str | None:
+        &#34;&#34;&#34;Get the source from which nodes were loaded.&#34;&#34;&#34;
+        return self._loaded_from
+
+    def reload(self) -&gt; int:
+        &#34;&#34;&#34;Force reload of standard nodes.&#34;&#34;&#34;
+        return self.initialize_default_nodes(force_reload=True)
+
+    def __len__(self) -&gt; int:
+        &#34;&#34;&#34;Return the number of standard nodes in the registry.&#34;&#34;&#34;
+        return len(self._standard_nodes)
+
+    def load_from_yaml_file(self, yaml_path: Path) -&gt; int:
+        &#34;&#34;&#34;Load standard node definitions from a YAML file.
+
+        Does not clear existing definitions before loading.
+
+        Args:
+            yaml_path (Path): Path to the YAML file with node definitions.
+
+        Returns:
+            int: Number of nodes loaded from the file.
+
+        Example:
+            &gt;&gt;&gt; from pathlib import Path
+            &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
+            &gt;&gt;&gt; reg = StandardNodeRegistry()
+            &gt;&gt;&gt; # reg.load_from_yaml_file(Path(&#39;path/to/file.yaml&#39;))  # doctest: +SKIP
+        &#34;&#34;&#34;
+        if not yaml_path.exists():
+            raise FileNotFoundError(f&#34;Standard nodes file not found: {yaml_path}&#34;)
+
+        try:
+            data = yaml.safe_load(yaml_path.read_text(encoding=&#34;utf-8&#34;))
+        except yaml.YAMLError as e:
+            raise ValueError(f&#34;Invalid YAML in {yaml_path}: {e}&#34;) from e
+
+        # Process the data without clearing existing
+        nodes_loaded = self._load_nodes_from_data(data, str(yaml_path), overwrite_existing=True)
+        if nodes_loaded:
+            self._initialized = True
+            self._loaded_from = str(yaml_path)
+        logger.debug(&#34;Loaded %s nodes from %s&#34;, nodes_loaded, yaml_path)
+        return nodes_loaded</code></pre>
+</details>
+<div class="desc"><p>Manage loading and access to standard node definitions.</p>
+<p>Provide methods to load definitions, validate node names, and resolve alternate names.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>_standard_nodes</code></strong> :&ensp;<code>dict[str, <a title="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition">StandardNodeDefinition</a>]</code></dt>
+<dd>Map standard names to definitions.</dd>
+<dt><strong><code>_alternate_to_standard</code></strong> :&ensp;<code>dict[str, str]</code></dt>
+<dd>Map alternate names to standard names.</dd>
+<dt><strong><code>_categories</code></strong> :&ensp;<code>set[str]</code></dt>
+<dd>Registered categories.</dd>
+<dt><strong><code>_initialized</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether default nodes have been initialized.</dd>
+<dt><strong><code>_loaded_from</code></strong> :&ensp;<code>Optional[str]</code></dt>
+<dd>Source path of loaded definitions.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
+&gt;&gt;&gt; reg = StandardNodeRegistry()
+&gt;&gt;&gt; reg._load_nodes_from_data(
+...     {
+...         &quot;revenue&quot;: {
+...             &quot;category&quot;: &quot;income_statement&quot;,
+...             &quot;subcategory&quot;: &quot;top_line&quot;,
+...             &quot;description&quot;: &quot;Total revenue&quot;,
+...             &quot;alternate_names&quot;: [&quot;sales&quot;],
+...             &quot;sign_convention&quot;: &quot;positive&quot;,
+...         }
+...     },
+...     &quot;test&quot;,
+... )
+1
+&gt;&gt;&gt; reg.is_standard_name(&quot;revenue&quot;)
+True
+&gt;&gt;&gt; reg.get_standard_name(&quot;sales&quot;)
+'revenue'
+</code></pre>
+<p>Initialize an empty registry.</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.get_definition"><code class="name flex">
+<span>def <span class="ident">get_definition</span></span>(<span>self, name: str) ‑> <a title="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition">StandardNodeDefinition</a> | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_definition(self, name: str) -&gt; StandardNodeDefinition | None:
+    &#34;&#34;&#34;Get the definition for a node name.
+
+    Works with both standard and alternate names.
+
+    Args:
+        name (str): The node name to look up.
+
+    Returns:
+        Optional[StandardNodeDefinition]: The node definition if found, None otherwise.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+        &gt;&gt;&gt; defn = standard_node_registry.get_definition(&#34;revenue&#34;)
+        &gt;&gt;&gt; defn.category
+        &#39;income_statement&#39;
+    &#34;&#34;&#34;
+    standard_name = self.get_standard_name(name)
+    return self._standard_nodes.get(standard_name)</code></pre>
+</details>
+<div class="desc"><p>Get the definition for a node name.</p>
+<p>Works with both standard and alternate names.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The node name to look up.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[<a title="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition">StandardNodeDefinition</a>]</code></dt>
+<dd>The node definition if found, None otherwise.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+&gt;&gt;&gt; defn = standard_node_registry.get_definition(&quot;revenue&quot;)
+&gt;&gt;&gt; defn.category
+'income_statement'
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.get_load_source"><code class="name flex">
+<span>def <span class="ident">get_load_source</span></span>(<span>self) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_load_source(self) -&gt; str | None:
+    &#34;&#34;&#34;Get the source from which nodes were loaded.&#34;&#34;&#34;
+    return self._loaded_from</code></pre>
+</details>
+<div class="desc"><p>Get the source from which nodes were loaded.</p></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.get_sign_convention"><code class="name flex">
+<span>def <span class="ident">get_sign_convention</span></span>(<span>self, name: str) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_sign_convention(self, name: str) -&gt; str | None:
+    &#34;&#34;&#34;Get the sign convention for a node.
+
+    Args:
+        name (str): The node name (standard or alternate).
+
+    Returns:
+        Optional[str]: The sign convention (&#39;positive&#39; or &#39;negative&#39;) if found, None otherwise.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+        &gt;&gt;&gt; standard_node_registry.get_sign_convention(&#34;treasury_stock&#34;)
+        &#39;negative&#39;
+    &#34;&#34;&#34;
+    definition = self.get_definition(name)
+    return definition.sign_convention if definition else None</code></pre>
+</details>
+<div class="desc"><p>Get the sign convention for a node.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The node name (standard or alternate).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[str]</code></dt>
+<dd>The sign convention ('positive' or 'negative') if found, None otherwise.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+&gt;&gt;&gt; standard_node_registry.get_sign_convention(&quot;treasury_stock&quot;)
+'negative'
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.get_standard_name"><code class="name flex">
+<span>def <span class="ident">get_standard_name</span></span>(<span>self, name: str) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_standard_name(self, name: str) -&gt; str:
+    &#34;&#34;&#34;Get the standard name for a given node name.
+
+    If the name is already standard, returns it unchanged.
+    If it&#39;s an alternate name, returns the corresponding standard name.
+    If it&#39;s not recognized, returns the original name.
+
+    Args:
+        name (str): The node name to standardize.
+
+    Returns:
+        str: The standardized node name.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+        &gt;&gt;&gt; standard_node_registry.get_standard_name(&#34;sales&#34;)
+        &#39;revenue&#39;
+    &#34;&#34;&#34;
+    # Check if it&#39;s already a standard name
+    if name in self._standard_nodes:
+        return name
+
+    # Check if it&#39;s an alternate name
+    if name in self._alternate_to_standard:
+        return self._alternate_to_standard[name]
+
+    # Not recognized, return as-is
+    return name</code></pre>
+</details>
+<div class="desc"><p>Get the standard name for a given node name.</p>
+<p>If the name is already standard, returns it unchanged.
+If it's an alternate name, returns the corresponding standard name.
+If it's not recognized, returns the original name.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The node name to standardize.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The standardized node name.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+&gt;&gt;&gt; standard_node_registry.get_standard_name(&quot;sales&quot;)
+'revenue'
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.initialize_default_nodes"><code class="name flex">
+<span>def <span class="ident">initialize_default_nodes</span></span>(<span>self, organized_path: pathlib.Path | None = None, force_reload: bool = False) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def initialize_default_nodes(
+    self,
+    organized_path: Path | None = None,
+    force_reload: bool = False,
+) -&gt; int:
+    &#34;&#34;&#34;Load default standard nodes from organized directory.
+
+    Args:
+        organized_path (Optional[Path]): Base path to `standard_nodes_defn`. Defaults to package directory.
+        force_reload (bool): If True, reload even if already initialized.
+
+    Returns:
+        int: Count of nodes loaded.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+        &gt;&gt;&gt; count = standard_node_registry.initialize_default_nodes()
+        &gt;&gt;&gt; count &gt; 0
+        True
+    &#34;&#34;&#34;
+    if self._initialized and not force_reload:
+        logger.debug(&#34;Standard nodes already initialized from %s, skipping reload.&#34;, self._loaded_from)
+        return len(self._standard_nodes)
+
+    if organized_path is None:
+        organized_path = Path(__file__).parent / &#34;standard_nodes_defn&#34;
+
+    count = self._load_from_organized_structure(organized_path)
+    self._initialized = True
+    self._loaded_from = f&#34;organized structure at {organized_path}&#34;
+    logger.info(&#34;Successfully loaded %s standard nodes from organized structure&#34;, count)
+    return count</code></pre>
+</details>
+<div class="desc"><p>Load default standard nodes from organized directory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>organized_path</code></strong> :&ensp;<code>Optional[Path]</code></dt>
+<dd>Base path to <code>standard_nodes_defn</code>. Defaults to package directory.</dd>
+<dt><strong><code>force_reload</code></strong> :&ensp;<code>bool</code></dt>
+<dd>If True, reload even if already initialized.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Count of nodes loaded.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+&gt;&gt;&gt; count = standard_node_registry.initialize_default_nodes()
+&gt;&gt;&gt; count &gt; 0
+True
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.is_alternate_name"><code class="name flex">
+<span>def <span class="ident">is_alternate_name</span></span>(<span>self, name: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_alternate_name(self, name: str) -&gt; bool:
+    &#34;&#34;&#34;Check if a name is a recognized alternate name.
+
+    Args:
+        name (str): The node name to check.
+
+    Returns:
+        bool: True if the name is an alternate name, False otherwise.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+        &gt;&gt;&gt; standard_node_registry.is_alternate_name(&#34;sales&#34;)
+        True
+    &#34;&#34;&#34;
+    return name in self._alternate_to_standard</code></pre>
+</details>
+<div class="desc"><p>Check if a name is a recognized alternate name.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The node name to check.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the name is an alternate name, False otherwise.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+&gt;&gt;&gt; standard_node_registry.is_alternate_name(&quot;sales&quot;)
+True
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.is_initialized"><code class="name flex">
+<span>def <span class="ident">is_initialized</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_initialized(self) -&gt; bool:
+    &#34;&#34;&#34;Check if the registry has been initialized with default nodes.&#34;&#34;&#34;
+    return self._initialized</code></pre>
+</details>
+<div class="desc"><p>Check if the registry has been initialized with default nodes.</p></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.is_recognized_name"><code class="name flex">
+<span>def <span class="ident">is_recognized_name</span></span>(<span>self, name: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_recognized_name(self, name: str) -&gt; bool:
+    &#34;&#34;&#34;Check if a name is either standard or alternate.
+
+    Args:
+        name (str): The node name to check.
+
+    Returns:
+        bool: True if the name is recognized, False otherwise.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+        &gt;&gt;&gt; standard_node_registry.is_recognized_name(&#34;revenue&#34;)
+        True
+        &gt;&gt;&gt; standard_node_registry.is_recognized_name(&#34;sales&#34;)
+        True
+        &gt;&gt;&gt; standard_node_registry.is_recognized_name(&#34;not_a_node&#34;)
+        False
+    &#34;&#34;&#34;
+    return self.is_standard_name(name) or self.is_alternate_name(name)</code></pre>
+</details>
+<div class="desc"><p>Check if a name is either standard or alternate.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The node name to check.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the name is recognized, False otherwise.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+&gt;&gt;&gt; standard_node_registry.is_recognized_name(&quot;revenue&quot;)
+True
+&gt;&gt;&gt; standard_node_registry.is_recognized_name(&quot;sales&quot;)
+True
+&gt;&gt;&gt; standard_node_registry.is_recognized_name(&quot;not_a_node&quot;)
+False
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.is_standard_name"><code class="name flex">
+<span>def <span class="ident">is_standard_name</span></span>(<span>self, name: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_standard_name(self, name: str) -&gt; bool:
+    &#34;&#34;&#34;Check if a name is a recognized standard node name.
+
+    Args:
+        name (str): The node name to check.
+
+    Returns:
+        bool: True if the name is a standard node name, False otherwise.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+        &gt;&gt;&gt; standard_node_registry.is_standard_name(&#34;revenue&#34;)
+        True
+    &#34;&#34;&#34;
+    return name in self._standard_nodes</code></pre>
+</details>
+<div class="desc"><p>Check if a name is a recognized standard node name.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The node name to check.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the name is a standard node name, False otherwise.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+&gt;&gt;&gt; standard_node_registry.is_standard_name(&quot;revenue&quot;)
+True
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.list_categories"><code class="name flex">
+<span>def <span class="ident">list_categories</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_categories(self) -&gt; list[str]:
+    &#34;&#34;&#34;List all available categories.
+
+    Returns:
+        list[str]: Sorted list of categories.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+        &gt;&gt;&gt; &#34;income_statement&#34; in standard_node_registry.list_categories()
+        True
+    &#34;&#34;&#34;
+    return sorted(self._categories)</code></pre>
+</details>
+<div class="desc"><p>List all available categories.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list[str]</code></dt>
+<dd>Sorted list of categories.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+&gt;&gt;&gt; &quot;income_statement&quot; in standard_node_registry.list_categories()
+True
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.list_standard_names"><code class="name flex">
+<span>def <span class="ident">list_standard_names</span></span>(<span>self, category: str | None = None) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_standard_names(self, category: str | None = None) -&gt; list[str]:
+    &#34;&#34;&#34;List all standard node names, optionally filtered by category.
+
+    Args:
+        category (Optional[str]): Optional category to filter by.
+
+    Returns:
+        list[str]: Sorted list of standard node names.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+        &gt;&gt;&gt; standard_node_registry.list_standard_names(&#34;balance_sheet_assets&#34;)[:3]
+        [&#39;accounts_receivable&#39;, &#39;cash_and_equivalents&#39;, &#39;current_assets&#39;]
+    &#34;&#34;&#34;
+    if category:
+        names = [name for name, defn in self._standard_nodes.items() if defn.category == category]
+    else:
+        names = list(self._standard_nodes.keys())
+
+    return sorted(names)</code></pre>
+</details>
+<div class="desc"><p>List all standard node names, optionally filtered by category.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>category</code></strong> :&ensp;<code>Optional[str]</code></dt>
+<dd>Optional category to filter by.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list[str]</code></dt>
+<dd>Sorted list of standard node names.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+&gt;&gt;&gt; standard_node_registry.list_standard_names(&quot;balance_sheet_assets&quot;)[:3]
+['accounts_receivable', 'cash_and_equivalents', 'current_assets']
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.load_from_yaml_file"><code class="name flex">
+<span>def <span class="ident">load_from_yaml_file</span></span>(<span>self, yaml_path: pathlib.Path) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_from_yaml_file(self, yaml_path: Path) -&gt; int:
+    &#34;&#34;&#34;Load standard node definitions from a YAML file.
+
+    Does not clear existing definitions before loading.
+
+    Args:
+        yaml_path (Path): Path to the YAML file with node definitions.
+
+    Returns:
+        int: Number of nodes loaded from the file.
+
+    Example:
+        &gt;&gt;&gt; from pathlib import Path
+        &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
+        &gt;&gt;&gt; reg = StandardNodeRegistry()
+        &gt;&gt;&gt; # reg.load_from_yaml_file(Path(&#39;path/to/file.yaml&#39;))  # doctest: +SKIP
+    &#34;&#34;&#34;
+    if not yaml_path.exists():
+        raise FileNotFoundError(f&#34;Standard nodes file not found: {yaml_path}&#34;)
+
+    try:
+        data = yaml.safe_load(yaml_path.read_text(encoding=&#34;utf-8&#34;))
+    except yaml.YAMLError as e:
+        raise ValueError(f&#34;Invalid YAML in {yaml_path}: {e}&#34;) from e
+
+    # Process the data without clearing existing
+    nodes_loaded = self._load_nodes_from_data(data, str(yaml_path), overwrite_existing=True)
+    if nodes_loaded:
+        self._initialized = True
+        self._loaded_from = str(yaml_path)
+    logger.debug(&#34;Loaded %s nodes from %s&#34;, nodes_loaded, yaml_path)
+    return nodes_loaded</code></pre>
+</details>
+<div class="desc"><p>Load standard node definitions from a YAML file.</p>
+<p>Does not clear existing definitions before loading.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>yaml_path</code></strong> :&ensp;<code>Path</code></dt>
+<dd>Path to the YAML file with node definitions.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Number of nodes loaded from the file.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from pathlib import Path
+&gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
+&gt;&gt;&gt; reg = StandardNodeRegistry()
+&gt;&gt;&gt; # reg.load_from_yaml_file(Path('path/to/file.yaml'))  # doctest: +SKIP
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.reload"><code class="name flex">
+<span>def <span class="ident">reload</span></span>(<span>self) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reload(self) -&gt; int:
+    &#34;&#34;&#34;Force reload of standard nodes.&#34;&#34;&#34;
+    return self.initialize_default_nodes(force_reload=True)</code></pre>
+</details>
+<div class="desc"><p>Force reload of standard nodes.</p></div>
+</dd>
+<dt id="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.validate_node_name"><code class="name flex">
+<span>def <span class="ident">validate_node_name</span></span>(<span>self, name: str, strict: bool = False) ‑> tuple[bool, str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_node_name(self, name: str, strict: bool = False) -&gt; tuple[bool, str]:
+    &#34;&#34;&#34;Validate a node name against standards.
+
+    Args:
+        name (str): The node name to validate.
+        strict (bool): If True, only standard names are valid. If False, alternate names are also valid.
+
+    Returns:
+        tuple[bool, str]: Tuple of (is_valid, message).
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+        &gt;&gt;&gt; standard_node_registry.validate_node_name(&#34;revenue&#34;)
+        (True, &#34;&#39;revenue&#39; is a standard node name&#34;)
+        &gt;&gt;&gt; standard_node_registry.validate_node_name(&#34;sales&#34;)
+        (True, &#34;&#39;sales&#39; is valid (alternate for &#39;revenue&#39;)&#34;)
+        &gt;&gt;&gt; standard_node_registry.validate_node_name(&#34;not_a_node&#34;)
+        (False, &#34;&#39;not_a_node&#39; is not a recognized node name&#34;)
+    &#34;&#34;&#34;
+    if strict:
+        if self.is_standard_name(name):
+            return True, f&#34;&#39;{name}&#39; is a standard node name&#34;
+        elif self.is_alternate_name(name):
+            standard = self.get_standard_name(name)
+            return (
+                False,
+                f&#34;&#39;{name}&#39; is an alternate name. Use standard name &#39;{standard}&#39;&#34;,
+            )
+        else:
+            return False, f&#34;&#39;{name}&#39; is not a recognized node name&#34;
+    elif self.is_recognized_name(name):
+        if self.is_alternate_name(name):
+            standard = self.get_standard_name(name)
+            return True, f&#34;&#39;{name}&#39; is valid (alternate for &#39;{standard}&#39;)&#34;
+        else:
+            return True, f&#34;&#39;{name}&#39; is a standard node name&#34;
+    else:
+        return False, f&#34;&#39;{name}&#39; is not a recognized node name&#34;</code></pre>
+</details>
+<div class="desc"><p>Validate a node name against standards.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The node name to validate.</dd>
+<dt><strong><code>strict</code></strong> :&ensp;<code>bool</code></dt>
+<dd>If True, only standard names are valid. If False, alternate names are also valid.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple[bool, str]</code></dt>
+<dd>Tuple of (is_valid, message).</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.nodes.standard_registry import standard_node_registry
+&gt;&gt;&gt; standard_node_registry.validate_node_name(&quot;revenue&quot;)
+(True, &quot;'revenue' is a standard node name&quot;)
+&gt;&gt;&gt; standard_node_registry.validate_node_name(&quot;sales&quot;)
+(True, &quot;'sales' is valid (alternate for 'revenue')&quot;)
+&gt;&gt;&gt; standard_node_registry.validate_node_name(&quot;not_a_node&quot;)
+(False, &quot;'not_a_node' is not a recognized node name&quot;)
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.core.nodes" href="index.html">fin_statement_model.core.nodes</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition">StandardNodeDefinition</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.alternate_names" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.alternate_names">alternate_names</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.category" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.category">category</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.description" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.description">description</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.model_config" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.sign_convention" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.sign_convention">sign_convention</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.subcategory" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeDefinition.subcategory">subcategory</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry">StandardNodeRegistry</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.get_definition" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.get_definition">get_definition</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.get_load_source" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.get_load_source">get_load_source</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.get_sign_convention" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.get_sign_convention">get_sign_convention</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.get_standard_name" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.get_standard_name">get_standard_name</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.initialize_default_nodes" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.initialize_default_nodes">initialize_default_nodes</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.is_alternate_name" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.is_alternate_name">is_alternate_name</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.is_initialized" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.is_initialized">is_initialized</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.is_recognized_name" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.is_recognized_name">is_recognized_name</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.is_standard_name" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.is_standard_name">is_standard_name</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.list_categories" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.list_categories">list_categories</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.list_standard_names" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.list_standard_names">list_standard_names</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.load_from_yaml_file" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.load_from_yaml_file">load_from_yaml_file</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.reload" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.reload">reload</a></code></li>
+<li><code><a title="fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.validate_node_name" href="#fin_statement_model.core.nodes.standard_registry.StandardNodeRegistry.validate_node_name">validate_node_name</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

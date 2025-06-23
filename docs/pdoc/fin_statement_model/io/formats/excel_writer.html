@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.io.formats.excel_writer API documentation</title>
+<meta name="description" content="Data writer for exporting graph data to Microsoft Excel files …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.io.formats.excel_writer</code></h1>
+</header>
+<section id="section-intro">
+<p>Data writer for exporting graph data to Microsoft Excel files.</p>
+<p>This module provides the <code><a title="fin_statement_model.io.formats.excel_writer.ExcelWriter" href="#fin_statement_model.io.formats.excel_writer.ExcelWriter">ExcelWriter</a></code>, a <code>DataWriter</code> implementation that
+serializes a <code>Graph</code> object into a Microsoft Excel file (<code>.xlsx</code>). It first
+converts the graph data to a pandas DataFrame and then uses pandas' Excel
+writing capabilities.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.io.formats.excel_writer.ExcelWriter"><code class="flex name class">
+<span>class <span class="ident">ExcelWriter</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.ExcelWriterConfig" href="../config/models.html#fin_statement_model.io.config.models.ExcelWriterConfig">ExcelWriterConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_writer(&#34;excel&#34;, schema=ExcelWriterConfig)
+class ExcelWriter(BaseTableWriter, ConfigurationMixin):
+    &#34;&#34;&#34;Writes graph data to an Excel file.
+
+    This writer serializes a `Graph` object to a Microsoft Excel file. The process
+    involves an intermediate step of converting the graph data into a pandas
+    DataFrame, with node names as the index and periods as columns.
+
+    The behavior of the writer, such as the output sheet name and whether to
+    recalculate the graph, is controlled by an `ExcelWriterConfig` object.
+    Additional pandas-specific options can also be passed.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: ExcelWriterConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the ExcelWriter.
+
+        Args:
+            cfg: Non-optional validated `ExcelWriterConfig` instance.
+        &#34;&#34;&#34;
+        super().__init__()
+        self.cfg = cfg
+
+    @handle_write_errors()
+    def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; None:
+        &#34;&#34;&#34;Write graph data to an Excel file, converting via DataFrame first.
+
+        Args:
+            graph (Graph): The Graph object containing the data to write.
+            target (Any): Path to the target Excel file.
+            **kwargs: Optional runtime overrides of configured defaults:
+                sheet_name (str): Excel sheet name.
+                recalculate (bool): Whether to recalculate graph before export.
+                include_nodes (list[str]): List of node names to include in export.
+                excel_writer_kwargs (dict): Additional kwargs for pandas.DataFrame.to_excel.
+
+        Raises:
+            WriteError: If an error occurs during the writing process.
+        &#34;&#34;&#34;
+        file_path = str(target)
+
+        # Runtime overrides: kwargs override configured defaults
+        sheet_name = self._param(&#34;sheet_name&#34;, kwargs, self.cfg, default=&#34;Sheet1&#34;)
+        recalculate = self._param(&#34;recalculate&#34;, kwargs, self.cfg, default=True)
+        include_nodes = self._param(&#34;include_nodes&#34;, kwargs, self.cfg)
+        excel_writer_options = self._param(&#34;excel_writer_kwargs&#34;, kwargs, self.cfg, default={})
+
+        logger.info(&#34;Exporting graph to Excel file: %s, sheet: %s&#34;, file_path, sheet_name)
+
+        # Convert graph to DataFrame
+        df = self.to_dataframe(graph, include_nodes=include_nodes, recalc=recalculate)
+
+        # Write DataFrame to Excel
+        self._write_to_excel(df, file_path, sheet_name, excel_writer_options)
+
+        logger.info(&#34;Successfully exported graph to %s, sheet &#39;%s&#39;&#34;, file_path, sheet_name)
+
+    def _write_to_excel(
+        self,
+        df: Any,
+        file_path: str,
+        sheet_name: str,
+        excel_writer_options: dict[str, Any],
+    ) -&gt; None:
+        &#34;&#34;&#34;Write DataFrame to Excel file.
+
+        Args:
+            df: The pandas DataFrame to write.
+            file_path: Path to the output file.
+            sheet_name: Name of the Excel sheet.
+            excel_writer_options: Additional options for pandas.to_excel().
+        &#34;&#34;&#34;
+        output_path = Path(file_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        df.to_excel(
+            output_path,
+            sheet_name=sheet_name,
+            index=True,  # Keep node names as index column
+            **excel_writer_options,
+        )</code></pre>
+</details>
+<div class="desc"><p>Writes graph data to an Excel file.</p>
+<p>This writer serializes a <code>Graph</code> object to a Microsoft Excel file. The process
+involves an intermediate step of converting the graph data into a pandas
+DataFrame, with node names as the index and periods as columns.</p>
+<p>The behavior of the writer, such as the output sheet name and whether to
+recalculate the graph, is controlled by an <code>ExcelWriterConfig</code> object.
+Additional pandas-specific options can also be passed.</p>
+<p>Initialize the ExcelWriter.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>Non-optional validated <code>ExcelWriterConfig</code> instance.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter">BaseTableWriter</a></li>
+<li><a title="fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter">DataFrameBasedWriter</a></li>
+<li><a title="fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin">ValueExtractionMixin</a></li>
+<li><a title="fin_statement_model.io.core.base.DataWriter" href="../core/base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a></li>
+<li>abc.ABC</li>
+<li><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.excel_writer.ExcelWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: Any = None,<br>**kwargs: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@handle_write_errors()
+def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; None:
+    &#34;&#34;&#34;Write graph data to an Excel file, converting via DataFrame first.
+
+    Args:
+        graph (Graph): The Graph object containing the data to write.
+        target (Any): Path to the target Excel file.
+        **kwargs: Optional runtime overrides of configured defaults:
+            sheet_name (str): Excel sheet name.
+            recalculate (bool): Whether to recalculate graph before export.
+            include_nodes (list[str]): List of node names to include in export.
+            excel_writer_kwargs (dict): Additional kwargs for pandas.DataFrame.to_excel.
+
+    Raises:
+        WriteError: If an error occurs during the writing process.
+    &#34;&#34;&#34;
+    file_path = str(target)
+
+    # Runtime overrides: kwargs override configured defaults
+    sheet_name = self._param(&#34;sheet_name&#34;, kwargs, self.cfg, default=&#34;Sheet1&#34;)
+    recalculate = self._param(&#34;recalculate&#34;, kwargs, self.cfg, default=True)
+    include_nodes = self._param(&#34;include_nodes&#34;, kwargs, self.cfg)
+    excel_writer_options = self._param(&#34;excel_writer_kwargs&#34;, kwargs, self.cfg, default={})
+
+    logger.info(&#34;Exporting graph to Excel file: %s, sheet: %s&#34;, file_path, sheet_name)
+
+    # Convert graph to DataFrame
+    df = self.to_dataframe(graph, include_nodes=include_nodes, recalc=recalculate)
+
+    # Write DataFrame to Excel
+    self._write_to_excel(df, file_path, sheet_name, excel_writer_options)
+
+    logger.info(&#34;Successfully exported graph to %s, sheet &#39;%s&#39;&#34;, file_path, sheet_name)</code></pre>
+</details>
+<div class="desc"><p>Write graph data to an Excel file, converting via DataFrame first.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong> :&ensp;<code>Graph</code></dt>
+<dd>The Graph object containing the data to write.</dd>
+<dt><strong><code>target</code></strong> :&ensp;<code>Any</code></dt>
+<dd>Path to the target Excel file.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Optional runtime overrides of configured defaults:
+sheet_name (str): Excel sheet name.
+recalculate (bool): Whether to recalculate graph before export.
+include_nodes (list[str]): List of node names to include in export.
+excel_writer_kwargs (dict): Additional kwargs for pandas.DataFrame.to_excel.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>WriteError</code></dt>
+<dd>If an error occurs during the writing process.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter">BaseTableWriter</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.extract_graph_data" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter.extract_graph_data">extract_graph_data</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.extract_node_value" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin.extract_node_value">extract_node_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dataframe" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dataframe">to_dataframe</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dict" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dict">to_dict</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.io.formats" href="index.html">fin_statement_model.io.formats</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.excel_writer.ExcelWriter" href="#fin_statement_model.io.formats.excel_writer.ExcelWriter">ExcelWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.excel_writer.ExcelWriter.write" href="#fin_statement_model.io.formats.excel_writer.ExcelWriter.write">write</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

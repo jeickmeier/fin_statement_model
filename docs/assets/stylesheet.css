@@ -1,0 +1,13 @@
+/* Make the main content area wider (or full-width) */
+
+.md-grid {
+    max-width: 100%;          /* 1440 px looks good on most screens
+                                   or use 100% for edge-to-edge */
+  }
+  
+  /* (Optional) shrink the right-hand ToC column on large screens */
+  @media screen and (min-width: 76.25em) {
+    .md-sidebar--secondary {
+      width: 10rem;             /* default is 20 rem; tweak to taste */
+    }
+  }

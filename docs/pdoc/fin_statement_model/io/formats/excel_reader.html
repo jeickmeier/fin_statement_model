@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.io.formats.excel_reader API documentation</title>
+<meta name="description" content="Data reader for Microsoft Excel files …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.io.formats.excel_reader</code></h1>
+</header>
+<section id="section-intro">
+<p>Data reader for Microsoft Excel files.</p>
+<p>This module provides the <code><a title="fin_statement_model.io.formats.excel_reader.ExcelReader" href="#fin_statement_model.io.formats.excel_reader.ExcelReader">ExcelReader</a></code>, a <code>DataReader</code> implementation for reading
+financial data from Excel worksheets. It expects the data to be in a "wide"
+format, where rows represent financial items and columns represent periods.</p>
+<p>The reader is built on top of the <code>DataFrameReaderBase</code> and uses pandas to
+load the data from the specified sheet.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.io.formats.excel_reader.ExcelReader"><code class="flex name class">
+<span>class <span class="ident">ExcelReader</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.ExcelReaderConfig" href="../config/models.html#fin_statement_model.io.config.models.ExcelReaderConfig">ExcelReaderConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_reader(&#34;excel&#34;, schema=ExcelReaderConfig)
+class ExcelReader(DataFrameReaderBase):
+    &#34;&#34;&#34;Reads financial statement data from an Excel file into a Graph.
+
+    This reader is designed to handle &#34;wide&#34; format data from an Excel sheet,
+    where rows typically represent financial items and columns represent periods.
+    It is highly configurable, allowing the user to specify the sheet name,
+    the location of item names, and the location of period headers.
+
+    Configuration is provided via an `ExcelReaderConfig` object. Runtime overrides
+    for certain options can be passed as keyword arguments to the `read` method.
+
+    Attributes:
+        layout (str): Specifies the expected data layout, hardcoded to &#34;wide&#34;.
+        file_extensions (tuple[str, ...]): A tuple of valid file extensions.
+    &#34;&#34;&#34;
+
+    layout = &#34;wide&#34;
+
+    file_extensions = (&#34;.xls&#34;, &#34;.xlsx&#34;, &#34;.xlsm&#34;)
+
+    def __init__(self, cfg: ExcelReaderConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the ExcelReader.
+
+        Args:
+            cfg: A validated `ExcelReaderConfig` instance.
+        &#34;&#34;&#34;
+        self.cfg = cfg
+
+    def _read_excel_data(
+        self,
+        file_path: str,
+        sheet_name: str,
+        periods_row: int,
+        items_col: int,
+        header_row: int,
+        nrows: int | None,
+        skiprows: int | None,
+    ) -&gt; tuple[pd.DataFrame, list[str]]:
+        &#34;&#34;&#34;Read core data and period headers from an Excel sheet.
+
+        This helper method reads a specified sheet from an Excel file into a raw
+        pandas DataFrame without a header. It then extracts the period labels from
+        the `periods_row` and reconstructs the main DataFrame using the `header_row`.
+        This approach provides flexibility in handling various Excel layouts.
+
+        Args:
+            file_path: The path to the Excel file.
+            sheet_name: The name or index of the sheet to read.
+            periods_row: The 1-indexed row number containing the period labels.
+            items_col: The 1-indexed column number containing the item names.
+            header_row: The 1-indexed row number to use for the DataFrame header.
+            nrows: The optional number of rows to read.
+            skiprows: The optional number of rows to skip at the beginning.
+
+        Returns:
+            A tuple containing:
+                - The main pandas DataFrame with the correct header.
+                - A list of period header strings.
+        &#34;&#34;&#34;
+        # Read sheet without assigning header so we can slice any row later
+        raw_df = pd.read_excel(
+            file_path,
+            sheet_name=sheet_name,
+            header=None,
+            skiprows=skiprows,
+            nrows=nrows,
+        )
+
+        periods_row_idx = periods_row - 1
+        header_row_idx = header_row - 1
+
+        # Extract period headers from requested row
+        period_headers = raw_df.iloc[periods_row_idx].astype(str).tolist()
+
+        # Rebuild DataFrame starting from header_row
+        df = raw_df.drop(index=list(range(header_row_idx + 1))).reset_index(drop=True)
+        df.columns = pd.Index(raw_df.iloc[header_row_idx])
+
+        # Validate items column index
+        self.validate_column_bounds(df, items_col - 1, file_path, f&#34;items_col ({items_col})&#34;)
+
+        return df, period_headers
+
+    # ------------------------------------------------------------------
+    # WideTableReader hook implementation
+    # ------------------------------------------------------------------
+    def _load_dataframe(self, source: Any, **kwargs: Any) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Load data from an Excel file into a pandas DataFrame.
+
+        This method implements the `_load_dataframe` hook from `DataFrameReaderBase`.
+        It validates the file, resolves configuration options for the sheet name,
+        row/column locations, and other parameters. It then calls `_read_excel_data`
+        to perform the read operation and prepares the resulting DataFrame by ensuring
+        its column names are set correctly based on the extracted period headers.
+
+        Args:
+            source (Any): The file path to the Excel file.
+            **kwargs (Any): Optional runtime overrides for configuration.
+
+        Returns:
+            A pandas DataFrame ready for parsing by `DataFrameReaderBase`.
+        &#34;&#34;&#34;
+        file_path = source
+        # Basic file validation
+        self.validate_file_exists(file_path)
+        self.validate_file_extension(file_path)
+
+        # Resolve configuration values using DataFrameReaderBase helper
+        sheet_name = self._param(&#34;sheet_name&#34;, kwargs, default=&#34;Sheet1&#34;)
+        periods_row = self._param(&#34;periods_row&#34;, kwargs, default=1)
+        items_col = self._param(&#34;items_col&#34;, kwargs, default=1)
+        header_row = self._param(&#34;header_row&#34;, kwargs)
+
+        # XOR enforcement - raise early if both provided via kwargs (override) or cfg.
+        if header_row is not None and &#34;periods_row&#34; in kwargs and kwargs.get(&#34;periods_row&#34;) is not None:
+            raise ReadError(
+                &#34;Provide either header_row or periods_row, not both.&#34;,
+                source=str(source),
+                reader_type=&#34;ExcelReader&#34;,
+            )
+
+        if header_row is None:
+            # Fallback to periods_row if caller omitted header_row
+            header_row = periods_row
+
+        nrows = self._param(&#34;nrows&#34;, kwargs)
+        skiprows = self._param(&#34;skiprows&#34;, kwargs)
+
+        # Read underlying sheet to DataFrame (may include header row)
+        df_raw, period_headers = self._read_excel_data(
+            file_path,
+            sheet_name,
+            periods_row,
+            items_col,
+            header_row,
+            nrows,
+            skiprows,
+        )
+
+        # Use extracted period headers to rename DataFrame columns if needed.
+        if header_row - 1 != periods_row - 1:
+            # DataFrame columns are from header_row, replace period part
+            new_cols = list(df_raw.columns)
+            for idx in range(items_col, len(new_cols)):
+                # align index offset by items_col
+                if idx - items_col &lt; len(period_headers):
+                    new_cols[idx] = str(period_headers[idx])
+            df_raw.columns = pd.Index(new_cols)
+        # No else branch needed - when header_row equals periods_row renaming is
+        # a no-op *by design* and no longer merits a warning.
+
+        return df_raw</code></pre>
+</details>
+<div class="desc"><p>Reads financial statement data from an Excel file into a Graph.</p>
+<p>This reader is designed to handle "wide" format data from an Excel sheet,
+where rows typically represent financial items and columns represent periods.
+It is highly configurable, allowing the user to specify the sheet name,
+the location of item names, and the location of period headers.</p>
+<p>Configuration is provided via an <code>ExcelReaderConfig</code> object. Runtime overrides
+for certain options can be passed as keyword arguments to the <code>read</code> method.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>layout</code></strong> :&ensp;<code>str</code></dt>
+<dd>Specifies the expected data layout, hardcoded to "wide".</dd>
+<dt><strong><code>file_extensions</code></strong> :&ensp;<code>tuple[str, &hellip;]</code></dt>
+<dd>A tuple of valid file extensions.</dd>
+</dl>
+<p>Initialize the ExcelReader.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>A validated <code>ExcelReaderConfig</code> instance.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase">DataFrameReaderBase</a></li>
+<li><a title="fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader" href="../core/mixins/file_based_reader.html#fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader">FileBasedReader</a></li>
+<li><a title="fin_statement_model.io.core.base.DataReader" href="../core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li><a title="fin_statement_model.io.core.mixins.mapping.MappingAwareMixin" href="../core/mixins/mapping.html#fin_statement_model.io.core.mixins.mapping.MappingAwareMixin">MappingAwareMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin">ValidationMixin</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.excel_reader.ExcelReader.file_extensions"><code class="name">var <span class="ident">file_extensions</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase">DataFrameReaderBase</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.clear_config_overrides" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.create_validation_summary" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.create_validation_summary">create_validation_summary</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_config_with_env_fallback" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_effective_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_validation_context" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.get_validation_context">get_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.layout" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.layout">layout</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.merge_configurations" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.read" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.read">read</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.require_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.set_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.set_config_override" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.set_validation_context" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.set_validation_context">set_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_column_bounds" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_column_bounds">validate_column_bounds</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_file_exists" href="../core/mixins/file_based_reader.html#fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader.validate_file_exists">validate_file_exists</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_file_extension" href="../core/mixins/file_based_reader.html#fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader.validate_file_extension">validate_file_extension</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_node_name" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_node_name">validate_node_name</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_numeric_value" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_numeric_value">validate_numeric_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_periods_exist" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_periods_exist">validate_periods_exist</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_required_columns" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_required_columns">validate_required_columns</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.io.formats" href="index.html">fin_statement_model.io.formats</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.excel_reader.ExcelReader" href="#fin_statement_model.io.formats.excel_reader.ExcelReader">ExcelReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.excel_reader.ExcelReader.file_extensions" href="#fin_statement_model.io.formats.excel_reader.ExcelReader.file_extensions">file_extensions</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

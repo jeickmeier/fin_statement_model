@@ -1,0 +1,1002 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.statements.utilities.result_types API documentation</title>
+<meta name="description" content="Common result types for standardized error handling in the statements module …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.statements.utilities.result_types</code></h1>
+</header>
+<section id="section-intro">
+<p>Common result types for standardized error handling in the statements module.</p>
+<p>This module provides consistent result types and error collection utilities
+to standardize error handling across the statements package. These types
+enable functional error handling without exceptions for operations that
+can fail in expected ways.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorCollector"><code class="flex name class">
+<span>class <span class="ident">ErrorCollector</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ErrorCollector:
+    &#34;&#34;&#34;Collects errors during multi-step operations.
+
+    Useful for operations that should continue collecting errors
+    rather than failing fast on the first error.
+    &#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        &#34;&#34;&#34;Initialize an empty error collector.&#34;&#34;&#34;
+        self._errors: list[ErrorDetail] = []
+        self._warnings: list[ErrorDetail] = []
+
+    def add_error(
+        self,
+        code: str,
+        message: str,
+        context: str | None = None,
+        source: str | None = None,
+    ) -&gt; None:
+        &#34;&#34;&#34;Add an error to the collector.&#34;&#34;&#34;
+        self._errors.append(
+            ErrorDetail(
+                code=code,
+                message=message,
+                context=context,
+                severity=ErrorSeverity.ERROR,
+                source=source,
+            )
+        )
+
+    def add_warning(
+        self,
+        code: str,
+        message: str,
+        context: str | None = None,
+        source: str | None = None,
+    ) -&gt; None:
+        &#34;&#34;&#34;Add a warning to the collector.&#34;&#34;&#34;
+        self._warnings.append(
+            ErrorDetail(
+                code=code,
+                message=message,
+                context=context,
+                severity=ErrorSeverity.WARNING,
+                source=source,
+            )
+        )
+
+    def add_from_result(self, result: Result[Any], source: str | None = None) -&gt; None:
+        &#34;&#34;&#34;Add errors from a Result object.&#34;&#34;&#34;
+        if result.is_failure():
+            for error in result.get_errors():
+                # Override source if provided
+                if source:
+                    new_error = ErrorDetail(
+                        code=error.code,
+                        message=error.message,
+                        context=error.context,
+                        severity=error.severity,
+                        source=source,
+                    )
+                    if new_error.severity == ErrorSeverity.WARNING:
+                        self._warnings.append(new_error)
+                    else:
+                        self._errors.append(new_error)
+                elif error.severity == ErrorSeverity.WARNING:
+                    self._warnings.append(error)
+                else:
+                    self._errors.append(error)
+
+    def has_errors(self) -&gt; bool:
+        &#34;&#34;&#34;Check if any errors have been collected.&#34;&#34;&#34;
+        return len(self._errors) &gt; 0
+
+    def has_warnings(self) -&gt; bool:
+        &#34;&#34;&#34;Check if any warnings have been collected.&#34;&#34;&#34;
+        return len(self._warnings) &gt; 0
+
+    def get_errors(self) -&gt; list[ErrorDetail]:
+        &#34;&#34;&#34;Get all collected errors (not warnings).&#34;&#34;&#34;
+        return list(self._errors)
+
+    def get_warnings(self) -&gt; list[ErrorDetail]:
+        &#34;&#34;&#34;Get all collected warnings.&#34;&#34;&#34;
+        return list(self._warnings)
+
+    def get_all(self) -&gt; list[ErrorDetail]:
+        &#34;&#34;&#34;Get all collected errors and warnings.&#34;&#34;&#34;
+        return self._errors + self._warnings
+
+    def to_result(self, value: T | None = None) -&gt; Result[T]:
+        &#34;&#34;&#34;Convert collector state to a Result.
+
+        If there are errors, returns Failure.
+        Otherwise returns Success with the provided value.
+        &#34;&#34;&#34;
+        if self.has_errors():
+            return Failure(errors=self._errors)
+        # Cast value to T for Success
+        return Success(value=cast(&#34;T&#34;, value))
+
+    def log_all(self, prefix: str = &#34;&#34;) -&gt; None:
+        &#34;&#34;&#34;Log all collected errors and warnings.&#34;&#34;&#34;
+        for warning in self._warnings:
+            logger.warning(&#34;%s%s&#34;, prefix, warning)
+        for error in self._errors:
+            logger.error(&#34;%s%s&#34;, prefix, error)</code></pre>
+</details>
+<div class="desc"><p>Collects errors during multi-step operations.</p>
+<p>Useful for operations that should continue collecting errors
+rather than failing fast on the first error.</p>
+<p>Initialize an empty error collector.</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorCollector.add_error"><code class="name flex">
+<span>def <span class="ident">add_error</span></span>(<span>self,<br>code: str,<br>message: str,<br>context: str | None = None,<br>source: str | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_error(
+    self,
+    code: str,
+    message: str,
+    context: str | None = None,
+    source: str | None = None,
+) -&gt; None:
+    &#34;&#34;&#34;Add an error to the collector.&#34;&#34;&#34;
+    self._errors.append(
+        ErrorDetail(
+            code=code,
+            message=message,
+            context=context,
+            severity=ErrorSeverity.ERROR,
+            source=source,
+        )
+    )</code></pre>
+</details>
+<div class="desc"><p>Add an error to the collector.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorCollector.add_from_result"><code class="name flex">
+<span>def <span class="ident">add_from_result</span></span>(<span>self,<br>result: <a title="fin_statement_model.statements.utilities.result_types.Result" href="#fin_statement_model.statements.utilities.result_types.Result">Result</a>[typing.Any],<br>source: str | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_from_result(self, result: Result[Any], source: str | None = None) -&gt; None:
+    &#34;&#34;&#34;Add errors from a Result object.&#34;&#34;&#34;
+    if result.is_failure():
+        for error in result.get_errors():
+            # Override source if provided
+            if source:
+                new_error = ErrorDetail(
+                    code=error.code,
+                    message=error.message,
+                    context=error.context,
+                    severity=error.severity,
+                    source=source,
+                )
+                if new_error.severity == ErrorSeverity.WARNING:
+                    self._warnings.append(new_error)
+                else:
+                    self._errors.append(new_error)
+            elif error.severity == ErrorSeverity.WARNING:
+                self._warnings.append(error)
+            else:
+                self._errors.append(error)</code></pre>
+</details>
+<div class="desc"><p>Add errors from a Result object.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorCollector.add_warning"><code class="name flex">
+<span>def <span class="ident">add_warning</span></span>(<span>self,<br>code: str,<br>message: str,<br>context: str | None = None,<br>source: str | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_warning(
+    self,
+    code: str,
+    message: str,
+    context: str | None = None,
+    source: str | None = None,
+) -&gt; None:
+    &#34;&#34;&#34;Add a warning to the collector.&#34;&#34;&#34;
+    self._warnings.append(
+        ErrorDetail(
+            code=code,
+            message=message,
+            context=context,
+            severity=ErrorSeverity.WARNING,
+            source=source,
+        )
+    )</code></pre>
+</details>
+<div class="desc"><p>Add a warning to the collector.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorCollector.get_all"><code class="name flex">
+<span>def <span class="ident">get_all</span></span>(<span>self) ‑> list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_all(self) -&gt; list[ErrorDetail]:
+    &#34;&#34;&#34;Get all collected errors and warnings.&#34;&#34;&#34;
+    return self._errors + self._warnings</code></pre>
+</details>
+<div class="desc"><p>Get all collected errors and warnings.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorCollector.get_errors"><code class="name flex">
+<span>def <span class="ident">get_errors</span></span>(<span>self) ‑> list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_errors(self) -&gt; list[ErrorDetail]:
+    &#34;&#34;&#34;Get all collected errors (not warnings).&#34;&#34;&#34;
+    return list(self._errors)</code></pre>
+</details>
+<div class="desc"><p>Get all collected errors (not warnings).</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorCollector.get_warnings"><code class="name flex">
+<span>def <span class="ident">get_warnings</span></span>(<span>self) ‑> list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_warnings(self) -&gt; list[ErrorDetail]:
+    &#34;&#34;&#34;Get all collected warnings.&#34;&#34;&#34;
+    return list(self._warnings)</code></pre>
+</details>
+<div class="desc"><p>Get all collected warnings.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorCollector.has_errors"><code class="name flex">
+<span>def <span class="ident">has_errors</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_errors(self) -&gt; bool:
+    &#34;&#34;&#34;Check if any errors have been collected.&#34;&#34;&#34;
+    return len(self._errors) &gt; 0</code></pre>
+</details>
+<div class="desc"><p>Check if any errors have been collected.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorCollector.has_warnings"><code class="name flex">
+<span>def <span class="ident">has_warnings</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_warnings(self) -&gt; bool:
+    &#34;&#34;&#34;Check if any warnings have been collected.&#34;&#34;&#34;
+    return len(self._warnings) &gt; 0</code></pre>
+</details>
+<div class="desc"><p>Check if any warnings have been collected.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorCollector.log_all"><code class="name flex">
+<span>def <span class="ident">log_all</span></span>(<span>self, prefix: str = '') ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def log_all(self, prefix: str = &#34;&#34;) -&gt; None:
+    &#34;&#34;&#34;Log all collected errors and warnings.&#34;&#34;&#34;
+    for warning in self._warnings:
+        logger.warning(&#34;%s%s&#34;, prefix, warning)
+    for error in self._errors:
+        logger.error(&#34;%s%s&#34;, prefix, error)</code></pre>
+</details>
+<div class="desc"><p>Log all collected errors and warnings.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorCollector.to_result"><code class="name flex">
+<span>def <span class="ident">to_result</span></span>(<span>self, value: ~T | None = None) ‑> <a title="fin_statement_model.statements.utilities.result_types.Result" href="#fin_statement_model.statements.utilities.result_types.Result">Result</a>[~T]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_result(self, value: T | None = None) -&gt; Result[T]:
+    &#34;&#34;&#34;Convert collector state to a Result.
+
+    If there are errors, returns Failure.
+    Otherwise returns Success with the provided value.
+    &#34;&#34;&#34;
+    if self.has_errors():
+        return Failure(errors=self._errors)
+    # Cast value to T for Success
+    return Success(value=cast(&#34;T&#34;, value))</code></pre>
+</details>
+<div class="desc"><p>Convert collector state to a Result.</p>
+<p>If there are errors, returns Failure.
+Otherwise returns Success with the provided value.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorDetail"><code class="flex name class">
+<span>class <span class="ident">ErrorDetail</span></span>
+<span>(</span><span>code: str,<br>message: str,<br>context: str | None = None,<br>severity: <a title="fin_statement_model.statements.utilities.result_types.ErrorSeverity" href="#fin_statement_model.statements.utilities.result_types.ErrorSeverity">ErrorSeverity</a> = ErrorSeverity.ERROR,<br>source: str | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass(frozen=True)
+class ErrorDetail:
+    &#34;&#34;&#34;Detailed information about an error.
+
+    Attributes:
+        code: Error code for programmatic handling
+        message: Human-readable error message
+        context: Optional context about where/what caused the error
+        severity: Severity level of the error
+        source: Optional source identifier (e.g., item ID, file path)
+    &#34;&#34;&#34;
+
+    code: str
+    message: str
+    context: str | None = None
+    severity: ErrorSeverity = ErrorSeverity.ERROR
+    source: str | None = None
+
+    def __str__(self) -&gt; str:
+        &#34;&#34;&#34;Format error as string.&#34;&#34;&#34;
+        parts = [f&#34;[{self.severity.value.upper()}]&#34;]
+        if self.source:
+            parts.append(f&#34;{self.source}:&#34;)
+        parts.append(self.message)
+        if self.context:
+            parts.append(f&#34;({self.context})&#34;)
+        return &#34; &#34;.join(parts)</code></pre>
+</details>
+<div class="desc"><p>Detailed information about an error.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>code</code></strong></dt>
+<dd>Error code for programmatic handling</dd>
+<dt><strong><code>message</code></strong></dt>
+<dd>Human-readable error message</dd>
+<dt><strong><code>context</code></strong></dt>
+<dd>Optional context about where/what caused the error</dd>
+<dt><strong><code>severity</code></strong></dt>
+<dd>Severity level of the error</dd>
+<dt><strong><code>source</code></strong></dt>
+<dd>Optional source identifier (e.g., item ID, file path)</dd>
+</dl></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorDetail.code"><code class="name">var <span class="ident">code</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorDetail.context"><code class="name">var <span class="ident">context</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorDetail.message"><code class="name">var <span class="ident">message</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorDetail.severity"><code class="name">var <span class="ident">severity</span> : <a title="fin_statement_model.statements.utilities.result_types.ErrorSeverity" href="#fin_statement_model.statements.utilities.result_types.ErrorSeverity">ErrorSeverity</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorDetail.source"><code class="name">var <span class="ident">source</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorSeverity"><code class="flex name class">
+<span>class <span class="ident">ErrorSeverity</span></span>
+<span>(</span><span>*args, **kwds)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ErrorSeverity(Enum):
+    &#34;&#34;&#34;Severity levels for errors.&#34;&#34;&#34;
+
+    WARNING = &#34;warning&#34;
+    ERROR = &#34;error&#34;
+    CRITICAL = &#34;critical&#34;</code></pre>
+</details>
+<div class="desc"><p>Severity levels for errors.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorSeverity.CRITICAL"><code class="name">var <span class="ident">CRITICAL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorSeverity.ERROR"><code class="name">var <span class="ident">ERROR</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.ErrorSeverity.WARNING"><code class="name">var <span class="ident">WARNING</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.Failure"><code class="flex name class">
+<span>class <span class="ident">Failure</span></span>
+<span>(</span><span>errors: list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>] = &lt;factory&gt;)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass(frozen=True)
+class Failure(Result[T]):
+    &#34;&#34;&#34;Represents a failed operation result.&#34;&#34;&#34;
+
+    errors: list[ErrorDetail] = field(default_factory=list)
+
+    def __post_init__(self) -&gt; None:
+        &#34;&#34;&#34;Ensure at least one error is present.&#34;&#34;&#34;
+        if not self.errors:
+            # Add a default error if none provided
+            object.__setattr__(
+                self,
+                &#34;errors&#34;,
+                [
+                    ErrorDetail(
+                        code=&#34;unknown&#34;,
+                        message=&#34;Operation failed with no specific error&#34;,
+                    )
+                ],
+            )
+
+    def is_success(self) -&gt; bool:
+        &#34;&#34;&#34;Always returns False for Failure.&#34;&#34;&#34;
+        return False
+
+    def is_failure(self) -&gt; bool:
+        &#34;&#34;&#34;Always returns True for Failure.&#34;&#34;&#34;
+        return True
+
+    def get_value(self) -&gt; T | None:
+        &#34;&#34;&#34;Always returns None for Failure.&#34;&#34;&#34;
+        return None
+
+    def get_errors(self) -&gt; list[ErrorDetail]:
+        &#34;&#34;&#34;Return the error details.&#34;&#34;&#34;
+        return self.errors
+
+    @classmethod
+    def from_exception(cls, exc: Exception, code: str = &#34;exception&#34;) -&gt; &#34;Failure[T]&#34;:
+        &#34;&#34;&#34;Create a Failure from an exception.&#34;&#34;&#34;
+        return cls(
+            errors=[
+                ErrorDetail(
+                    code=code,
+                    message=str(exc),
+                    context=type(exc).__name__,
+                    severity=ErrorSeverity.ERROR,
+                )
+            ]
+        )</code></pre>
+</details>
+<div class="desc"><p>Represents a failed operation result.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.statements.utilities.result_types.Result" href="#fin_statement_model.statements.utilities.result_types.Result">Result</a></li>
+<li>abc.ABC</li>
+<li>typing.Generic</li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.result_types.Failure.from_exception"><code class="name flex">
+<span>def <span class="ident">from_exception</span></span>(<span>exc: Exception, code: str = 'exception') ‑> <a title="fin_statement_model.statements.utilities.result_types.Failure" href="#fin_statement_model.statements.utilities.result_types.Failure">Failure</a>[~T]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a Failure from an exception.</p></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.result_types.Failure.errors"><code class="name">var <span class="ident">errors</span> : list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.result_types.Failure.get_errors"><code class="name flex">
+<span>def <span class="ident">get_errors</span></span>(<span>self) ‑> list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_errors(self) -&gt; list[ErrorDetail]:
+    &#34;&#34;&#34;Return the error details.&#34;&#34;&#34;
+    return self.errors</code></pre>
+</details>
+<div class="desc"><p>Return the error details.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.Failure.get_value"><code class="name flex">
+<span>def <span class="ident">get_value</span></span>(<span>self) ‑> ~T | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_value(self) -&gt; T | None:
+    &#34;&#34;&#34;Always returns None for Failure.&#34;&#34;&#34;
+    return None</code></pre>
+</details>
+<div class="desc"><p>Always returns None for Failure.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.Failure.is_failure"><code class="name flex">
+<span>def <span class="ident">is_failure</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_failure(self) -&gt; bool:
+    &#34;&#34;&#34;Always returns True for Failure.&#34;&#34;&#34;
+    return True</code></pre>
+</details>
+<div class="desc"><p>Always returns True for Failure.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.Failure.is_success"><code class="name flex">
+<span>def <span class="ident">is_success</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_success(self) -&gt; bool:
+    &#34;&#34;&#34;Always returns False for Failure.&#34;&#34;&#34;
+    return False</code></pre>
+</details>
+<div class="desc"><p>Always returns False for Failure.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.statements.utilities.result_types.Result" href="#fin_statement_model.statements.utilities.result_types.Result">Result</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Result.unwrap" href="#fin_statement_model.statements.utilities.result_types.Result.unwrap">unwrap</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Result.unwrap_or" href="#fin_statement_model.statements.utilities.result_types.Result.unwrap_or">unwrap_or</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.Result"><code class="flex name class">
+<span>class <span class="ident">Result</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Result(ABC, Generic[T]):
+    &#34;&#34;&#34;Abstract base class for operation results.
+
+    Provides a functional approach to error handling, allowing
+    operations to return either success or failure without exceptions.
+    &#34;&#34;&#34;
+
+    @abstractmethod
+    def is_success(self) -&gt; bool:
+        &#34;&#34;&#34;Check if the result represents success.&#34;&#34;&#34;
+
+    @abstractmethod
+    def is_failure(self) -&gt; bool:
+        &#34;&#34;&#34;Check if the result represents failure.&#34;&#34;&#34;
+
+    @abstractmethod
+    def get_value(self) -&gt; T | None:
+        &#34;&#34;&#34;Get the success value if available.&#34;&#34;&#34;
+
+    @abstractmethod
+    def get_errors(self) -&gt; list[ErrorDetail]:
+        &#34;&#34;&#34;Get error details if this is a failure.&#34;&#34;&#34;
+
+    def unwrap(self) -&gt; T:
+        &#34;&#34;&#34;Get the value or raise an exception if failed.
+
+        Raises:
+            ValueError: If the result is a failure.
+        &#34;&#34;&#34;
+        if self.is_failure():
+            errors_str = &#34;\n&#34;.join(str(e) for e in self.get_errors())
+            raise ValueError(f&#34;Cannot unwrap failed result:\n{errors_str}&#34;)
+        return cast(&#34;T&#34;, self.get_value())
+
+    def unwrap_or(self, default: T) -&gt; T:
+        &#34;&#34;&#34;Get the value or return a default if failed.&#34;&#34;&#34;
+        return cast(&#34;T&#34;, self.get_value()) if self.is_success() else default</code></pre>
+</details>
+<div class="desc"><p>Abstract base class for operation results.</p>
+<p>Provides a functional approach to error handling, allowing
+operations to return either success or failure without exceptions.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+<li>typing.Generic</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.statements.utilities.result_types.Failure" href="#fin_statement_model.statements.utilities.result_types.Failure">Failure</a></li>
+<li><a title="fin_statement_model.statements.utilities.result_types.Success" href="#fin_statement_model.statements.utilities.result_types.Success">Success</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.result_types.Result.get_errors"><code class="name flex">
+<span>def <span class="ident">get_errors</span></span>(<span>self) ‑> list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def get_errors(self) -&gt; list[ErrorDetail]:
+    &#34;&#34;&#34;Get error details if this is a failure.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Get error details if this is a failure.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.Result.get_value"><code class="name flex">
+<span>def <span class="ident">get_value</span></span>(<span>self) ‑> ~T | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def get_value(self) -&gt; T | None:
+    &#34;&#34;&#34;Get the success value if available.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Get the success value if available.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.Result.is_failure"><code class="name flex">
+<span>def <span class="ident">is_failure</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def is_failure(self) -&gt; bool:
+    &#34;&#34;&#34;Check if the result represents failure.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Check if the result represents failure.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.Result.is_success"><code class="name flex">
+<span>def <span class="ident">is_success</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def is_success(self) -&gt; bool:
+    &#34;&#34;&#34;Check if the result represents success.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Check if the result represents success.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.Result.unwrap"><code class="name flex">
+<span>def <span class="ident">unwrap</span></span>(<span>self) ‑> ~T</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unwrap(self) -&gt; T:
+    &#34;&#34;&#34;Get the value or raise an exception if failed.
+
+    Raises:
+        ValueError: If the result is a failure.
+    &#34;&#34;&#34;
+    if self.is_failure():
+        errors_str = &#34;\n&#34;.join(str(e) for e in self.get_errors())
+        raise ValueError(f&#34;Cannot unwrap failed result:\n{errors_str}&#34;)
+    return cast(&#34;T&#34;, self.get_value())</code></pre>
+</details>
+<div class="desc"><p>Get the value or raise an exception if failed.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the result is a failure.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.Result.unwrap_or"><code class="name flex">
+<span>def <span class="ident">unwrap_or</span></span>(<span>self, default: ~T) ‑> ~T</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unwrap_or(self, default: T) -&gt; T:
+    &#34;&#34;&#34;Get the value or return a default if failed.&#34;&#34;&#34;
+    return cast(&#34;T&#34;, self.get_value()) if self.is_success() else default</code></pre>
+</details>
+<div class="desc"><p>Get the value or return a default if failed.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.Success"><code class="flex name class">
+<span>class <span class="ident">Success</span></span>
+<span>(</span><span>value: ~T)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass(frozen=True)
+class Success(Result[T]):
+    &#34;&#34;&#34;Represents a successful operation result.&#34;&#34;&#34;
+
+    value: T
+
+    def is_success(self) -&gt; bool:
+        &#34;&#34;&#34;Always returns True for Success.&#34;&#34;&#34;
+        return True
+
+    def is_failure(self) -&gt; bool:
+        &#34;&#34;&#34;Always returns False for Success.&#34;&#34;&#34;
+        return False
+
+    def get_value(self) -&gt; T | None:
+        &#34;&#34;&#34;Return the success value.&#34;&#34;&#34;
+        return self.value
+
+    def get_errors(self) -&gt; list[ErrorDetail]:
+        &#34;&#34;&#34;Return empty list for Success.&#34;&#34;&#34;
+        return []</code></pre>
+</details>
+<div class="desc"><p>Represents a successful operation result.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.statements.utilities.result_types.Result" href="#fin_statement_model.statements.utilities.result_types.Result">Result</a></li>
+<li>abc.ABC</li>
+<li>typing.Generic</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.result_types.Success.value"><code class="name">var <span class="ident">value</span> : ~T</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.utilities.result_types.Success.get_errors"><code class="name flex">
+<span>def <span class="ident">get_errors</span></span>(<span>self) ‑> list[<a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_errors(self) -&gt; list[ErrorDetail]:
+    &#34;&#34;&#34;Return empty list for Success.&#34;&#34;&#34;
+    return []</code></pre>
+</details>
+<div class="desc"><p>Return empty list for Success.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.Success.get_value"><code class="name flex">
+<span>def <span class="ident">get_value</span></span>(<span>self) ‑> ~T | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_value(self) -&gt; T | None:
+    &#34;&#34;&#34;Return the success value.&#34;&#34;&#34;
+    return self.value</code></pre>
+</details>
+<div class="desc"><p>Return the success value.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.Success.is_failure"><code class="name flex">
+<span>def <span class="ident">is_failure</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_failure(self) -&gt; bool:
+    &#34;&#34;&#34;Always returns False for Success.&#34;&#34;&#34;
+    return False</code></pre>
+</details>
+<div class="desc"><p>Always returns False for Success.</p></div>
+</dd>
+<dt id="fin_statement_model.statements.utilities.result_types.Success.is_success"><code class="name flex">
+<span>def <span class="ident">is_success</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_success(self) -&gt; bool:
+    &#34;&#34;&#34;Always returns True for Success.&#34;&#34;&#34;
+    return True</code></pre>
+</details>
+<div class="desc"><p>Always returns True for Success.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.statements.utilities.result_types.Result" href="#fin_statement_model.statements.utilities.result_types.Result">Result</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Result.unwrap" href="#fin_statement_model.statements.utilities.result_types.Result.unwrap">unwrap</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Result.unwrap_or" href="#fin_statement_model.statements.utilities.result_types.Result.unwrap_or">unwrap_or</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.statements.utilities" href="index.html">fin_statement_model.statements.utilities</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.result_types.ErrorCollector" href="#fin_statement_model.statements.utilities.result_types.ErrorCollector">ErrorCollector</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorCollector.add_error" href="#fin_statement_model.statements.utilities.result_types.ErrorCollector.add_error">add_error</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorCollector.add_from_result" href="#fin_statement_model.statements.utilities.result_types.ErrorCollector.add_from_result">add_from_result</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorCollector.add_warning" href="#fin_statement_model.statements.utilities.result_types.ErrorCollector.add_warning">add_warning</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorCollector.get_all" href="#fin_statement_model.statements.utilities.result_types.ErrorCollector.get_all">get_all</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorCollector.get_errors" href="#fin_statement_model.statements.utilities.result_types.ErrorCollector.get_errors">get_errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorCollector.get_warnings" href="#fin_statement_model.statements.utilities.result_types.ErrorCollector.get_warnings">get_warnings</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorCollector.has_errors" href="#fin_statement_model.statements.utilities.result_types.ErrorCollector.has_errors">has_errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorCollector.has_warnings" href="#fin_statement_model.statements.utilities.result_types.ErrorCollector.has_warnings">has_warnings</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorCollector.log_all" href="#fin_statement_model.statements.utilities.result_types.ErrorCollector.log_all">log_all</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorCollector.to_result" href="#fin_statement_model.statements.utilities.result_types.ErrorCollector.to_result">to_result</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.result_types.ErrorDetail" href="#fin_statement_model.statements.utilities.result_types.ErrorDetail">ErrorDetail</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorDetail.code" href="#fin_statement_model.statements.utilities.result_types.ErrorDetail.code">code</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorDetail.context" href="#fin_statement_model.statements.utilities.result_types.ErrorDetail.context">context</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorDetail.message" href="#fin_statement_model.statements.utilities.result_types.ErrorDetail.message">message</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorDetail.severity" href="#fin_statement_model.statements.utilities.result_types.ErrorDetail.severity">severity</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorDetail.source" href="#fin_statement_model.statements.utilities.result_types.ErrorDetail.source">source</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.result_types.ErrorSeverity" href="#fin_statement_model.statements.utilities.result_types.ErrorSeverity">ErrorSeverity</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorSeverity.CRITICAL" href="#fin_statement_model.statements.utilities.result_types.ErrorSeverity.CRITICAL">CRITICAL</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorSeverity.ERROR" href="#fin_statement_model.statements.utilities.result_types.ErrorSeverity.ERROR">ERROR</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.ErrorSeverity.WARNING" href="#fin_statement_model.statements.utilities.result_types.ErrorSeverity.WARNING">WARNING</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.result_types.Failure" href="#fin_statement_model.statements.utilities.result_types.Failure">Failure</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Failure.errors" href="#fin_statement_model.statements.utilities.result_types.Failure.errors">errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Failure.from_exception" href="#fin_statement_model.statements.utilities.result_types.Failure.from_exception">from_exception</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Failure.get_errors" href="#fin_statement_model.statements.utilities.result_types.Failure.get_errors">get_errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Failure.get_value" href="#fin_statement_model.statements.utilities.result_types.Failure.get_value">get_value</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Failure.is_failure" href="#fin_statement_model.statements.utilities.result_types.Failure.is_failure">is_failure</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Failure.is_success" href="#fin_statement_model.statements.utilities.result_types.Failure.is_success">is_success</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.result_types.Result" href="#fin_statement_model.statements.utilities.result_types.Result">Result</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Result.get_errors" href="#fin_statement_model.statements.utilities.result_types.Result.get_errors">get_errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Result.get_value" href="#fin_statement_model.statements.utilities.result_types.Result.get_value">get_value</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Result.is_failure" href="#fin_statement_model.statements.utilities.result_types.Result.is_failure">is_failure</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Result.is_success" href="#fin_statement_model.statements.utilities.result_types.Result.is_success">is_success</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Result.unwrap" href="#fin_statement_model.statements.utilities.result_types.Result.unwrap">unwrap</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Result.unwrap_or" href="#fin_statement_model.statements.utilities.result_types.Result.unwrap_or">unwrap_or</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.statements.utilities.result_types.Success" href="#fin_statement_model.statements.utilities.result_types.Success">Success</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Success.get_errors" href="#fin_statement_model.statements.utilities.result_types.Success.get_errors">get_errors</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Success.get_value" href="#fin_statement_model.statements.utilities.result_types.Success.get_value">get_value</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Success.is_failure" href="#fin_statement_model.statements.utilities.result_types.Success.is_failure">is_failure</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Success.is_success" href="#fin_statement_model.statements.utilities.result_types.Success.is_success">is_success</a></code></li>
+<li><code><a title="fin_statement_model.statements.utilities.result_types.Success.value" href="#fin_statement_model.statements.utilities.result_types.Success.value">value</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

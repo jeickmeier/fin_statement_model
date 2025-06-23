@@ -1,0 +1,980 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.core.adjustments.manager API documentation</title>
+<meta name="description" content="Manages the storage, retrieval, and application of adjustments …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.core.adjustments.manager</code></h1>
+</header>
+<section id="section-intro">
+<p>Manages the storage, retrieval, and application of adjustments.</p>
+<p>This module provides the AdjustmentManager class, which is responsible for
+storing, filtering, and applying adjustments to node values in financial models.
+It supports advanced filtering, scenario management, and sequential application
+of multiple adjustments.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+&gt;&gt;&gt; from fin_statement_model.core.adjustments.manager import AdjustmentManager
+&gt;&gt;&gt; mgr = AdjustmentManager()
+&gt;&gt;&gt; adj = Adjustment(node_name=&quot;A&quot;, period=&quot;2023&quot;, value=10.0, reason=&quot;Manual&quot;)
+&gt;&gt;&gt; mgr.add_adjustment(adj)
+&gt;&gt;&gt; mgr.get_adjustments(&quot;A&quot;, &quot;2023&quot;)[0].value == 10.0
+</code></pre>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.core.adjustments.manager.AdjustmentManager"><code class="flex name class">
+<span>class <span class="ident">AdjustmentManager</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AdjustmentManager:
+    &#34;&#34;&#34;Handle storage, retrieval, and application of adjustments.
+
+    This class provides methods to add, remove, filter, and apply adjustments
+    to base values. It supports advanced filtering by scenario, tags, types,
+    and period, and can apply multiple adjustments in a deterministic order.
+
+    Examples:
+        &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+        &gt;&gt;&gt; mgr = AdjustmentManager()
+        &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=5.0, reason=&#34;r&#34;)
+        &gt;&gt;&gt; mgr.add_adjustment(adj)
+        &gt;&gt;&gt; len(mgr.get_all_adjustments())
+        1
+        &gt;&gt;&gt; mgr.remove_adjustment(adj.id)
+        True
+    &#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        &#34;&#34;&#34;Initialize the adjustment manager with empty storage.
+
+        This sets up internal indices for storing and retrieving adjustments.
+
+        Examples:
+            &gt;&gt;&gt; mgr = AdjustmentManager()
+            &gt;&gt;&gt; len(mgr.get_all_adjustments())
+            0
+        &#34;&#34;&#34;
+        # Primary index: (scenario, node_name, period) -&gt; list[Adjustment]
+        self._by_location: dict[tuple[str, str, str], list[Adjustment]] = defaultdict(list)
+        # Secondary index for quick lookup and removal by ID
+        self._by_id: dict[UUID, Adjustment] = {}
+
+    def add_adjustment(self, adj: Adjustment) -&gt; None:
+        &#34;&#34;&#34;Add an adjustment to the manager.
+
+        If an adjustment with the same ID already exists, it is replaced.
+
+        Args:
+            adj: The Adjustment object to add.
+
+        Returns:
+            None
+
+        Examples:
+            &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+            &gt;&gt;&gt; mgr = AdjustmentManager()
+            &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=1.0, reason=&#34;r&#34;)
+            &gt;&gt;&gt; mgr.add_adjustment(adj)
+            &gt;&gt;&gt; mgr.get_adjustments(&#34;A&#34;, &#34;2023&#34;)[0].value == 1.0
+            True
+        &#34;&#34;&#34;
+        # If an adjustment with the same ID already exists, remove it first
+        if adj.id in self._by_id:
+            self.remove_adjustment(adj.id)
+
+        self._by_id[adj.id] = adj
+        key = (adj.scenario, adj.node_name, adj.period)
+        self._by_location[key].append(adj)
+        # Keep the list sorted by priority, then timestamp for consistent application order
+        self._by_location[key].sort(key=lambda x: (x.priority, x.timestamp))
+
+    def remove_adjustment(self, adj_id: UUID) -&gt; bool:
+        &#34;&#34;&#34;Remove an adjustment by its ID.
+
+        Args:
+            adj_id: The UUID of the adjustment to remove.
+
+        Returns:
+            True if the adjustment was found and removed, False otherwise.
+
+        Examples:
+            &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+            &gt;&gt;&gt; mgr = AdjustmentManager()
+            &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=1.0, reason=&#34;r&#34;)
+            &gt;&gt;&gt; mgr.add_adjustment(adj)
+            &gt;&gt;&gt; mgr.remove_adjustment(adj.id)
+            True
+        &#34;&#34;&#34;
+        if adj_id not in self._by_id:
+            return False
+
+        adj_to_remove = self._by_id.pop(adj_id)
+        key = (adj_to_remove.scenario, adj_to_remove.node_name, adj_to_remove.period)
+
+        if key in self._by_location:
+            # Filter out the specific adjustment object instance
+            self._by_location[key] = [a for a in self._by_location[key] if a.id != adj_id]
+            # If the list becomes empty, remove the key
+            if not self._by_location[key]:
+                del self._by_location[key]
+        return True
+
+    def _apply_one(self, base_value: float, adj: Adjustment) -&gt; float:
+        &#34;&#34;&#34;Apply a single adjustment based on its type and scale.
+
+        Args:
+            base_value: The original numeric value.
+            adj: The Adjustment object to apply.
+
+        Returns:
+            The adjusted value as a float.
+
+        Examples:
+            &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment, AdjustmentType
+            &gt;&gt;&gt; mgr = AdjustmentManager()
+            &gt;&gt;&gt; adj = Adjustment(
+            ...     node_name=&#34;A&#34;, period=&#34;2023&#34;, value=2.0, type=AdjustmentType.MULTIPLICATIVE, reason=&#34;r&#34;
+            ... )
+            &gt;&gt;&gt; mgr._apply_one(10.0, adj)
+            20.0
+        &#34;&#34;&#34;
+        if adj.type == AdjustmentType.ADDITIVE:
+            # Ensuring result is float
+            return float(base_value + adj.value * adj.scale)
+        elif adj.type == AdjustmentType.MULTIPLICATIVE:
+            # Ensure base_value is not zero to avoid issues with 0**(negative scale)
+            # If base is 0, multiplicative adjustment usually results in 0 unless value is 0.
+            # We also need to handle potential complex numbers if base is negative and scale is fractional.
+            # For simplicity, let&#39;s assume standard financial contexts where this is less common
+            # or handle it by convention (e.g., multiplicative doesn&#39;t apply to zero/negative base).
+            # Let&#39;s default to returning 0 if base is 0 for multiplicative.
+            if base_value == 0:
+                return 0.0
+            # Consider adding checks or specific handling for negative base + fractional scale if needed.
+            # Cast to float after exponentiation and multiplication
+            return float(base_value * (adj.value**adj.scale))
+        elif adj.type == AdjustmentType.REPLACEMENT:
+            # Scale is ignored for replacement type as per spec
+            # Cast to float to satisfy return type
+            return float(adj.value)
+        else:
+            # Should not happen with Enum, but defensively return base value
+            return base_value  # pragma: no cover
+
+    def apply_adjustments(self, base_value: float, adjustments: list[Adjustment]) -&gt; tuple[float, bool]:
+        &#34;&#34;&#34;Apply a list of adjustments sequentially to a base value.
+
+        Adjustments are applied in order of priority (lower first), then timestamp.
+
+        Args:
+            base_value: The starting value before adjustments.
+            adjustments: A list of Adjustment objects to apply.
+
+        Returns:
+            A tuple of (final adjusted value, boolean indicating if any adjustment was applied).
+
+        Examples:
+            &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+            &gt;&gt;&gt; mgr = AdjustmentManager()
+            &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=5.0, reason=&#34;r&#34;)
+            &gt;&gt;&gt; mgr.apply_adjustments(100.0, [adj])
+            (105.0, True)
+        &#34;&#34;&#34;
+        if not adjustments:
+            return base_value, False
+
+        current_value = base_value
+        applied_flag = False
+
+        # Sort by priority (ascending), then timestamp (ascending) as per spec
+        # Note: add_adjustment already sorts the list in _by_location, but
+        # this ensures correctness if an unsorted list is passed directly.
+        sorted_adjustments = sorted(adjustments, key=lambda x: (x.priority, x.timestamp))
+
+        for adj in sorted_adjustments:
+            current_value = self._apply_one(current_value, adj)
+            applied_flag = True
+
+        return current_value, applied_flag
+
+    def get_adjustments(self, node_name: str, period: str, *, scenario: str = DEFAULT_SCENARIO) -&gt; list[Adjustment]:
+        &#34;&#34;&#34;Retrieve all adjustments for a specific node, period, and scenario.
+
+        Args:
+            node_name: The name of the target node.
+            period: The period to retrieve adjustments for.
+            scenario: The scenario name to filter adjustments by.
+
+        Returns:
+            A list of Adjustment objects for the specified node, period, and scenario.
+
+        Examples:
+            &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+            &gt;&gt;&gt; mgr = AdjustmentManager()
+            &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=1.0, reason=&#34;r&#34;)
+            &gt;&gt;&gt; mgr.add_adjustment(adj)
+            &gt;&gt;&gt; len(mgr.get_adjustments(&#34;A&#34;, &#34;2023&#34;))
+            1
+        &#34;&#34;&#34;
+        key = (scenario, node_name, period)
+        # Return a copy to prevent external modification of the internal list
+        return list(self._by_location.get(key, []))
+
+    def _normalize_filter(self, filter_input: AdjustmentFilterInput, period: str | None = None) -&gt; AdjustmentFilter:
+        &#34;&#34;&#34;Convert flexible filter input into a baseline AdjustmentFilter instance.
+
+        Args:
+            filter_input: Criteria for selecting adjustments. Can be:
+                - None: use default filter (only default scenario).
+                - AdjustmentFilter: existing filter instance.
+                - set of tags: shorthand for include_tags filter.
+                - Callable[..., bool]: predicate accepting one or two args
+                  (Adjustment[, period]).
+            period: The period context for the filter (optional).
+
+        Returns:
+            A baseline AdjustmentFilter object for scenario and period checks.
+
+        Examples:
+            &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import AdjustmentFilter
+            &gt;&gt;&gt; mgr = AdjustmentManager()
+            &gt;&gt;&gt; f = mgr._normalize_filter(AdjustmentFilter(include_tags={&#34;X&#34;}), &#34;2023&#34;)
+            &gt;&gt;&gt; isinstance(f, AdjustmentFilter)
+            True
+        &#34;&#34;&#34;
+        if filter_input is None:
+            # Default filter includes only the default scenario and sets the period context
+            return AdjustmentFilter(include_scenarios={DEFAULT_SCENARIO}, period=period)
+        elif isinstance(filter_input, AdjustmentFilter):
+            # If period context wasn&#39;t set on the filter, set it now
+            if filter_input.period is None:
+                return filter_input.model_copy(update={&#34;period&#34;: period})
+            return filter_input
+        elif isinstance(filter_input, set):
+            # Shorthand for include_tags filter
+            # Assume shorthand applies only to DEFAULT_SCENARIO unless specified otherwise?
+            # Let&#39;s keep it simple: Shorthand applies to DEFAULT_SCENARIO only.
+            return AdjustmentFilter(
+                include_tags=filter_input,
+                include_scenarios={DEFAULT_SCENARIO},
+                period=period,
+            )
+        elif callable(filter_input):
+            # For callable predicates we still construct a baseline AdjustmentFilter so
+            # that core scenario / period checks remain in place. The callable itself
+            # will be evaluated later in `get_filtered_adjustments`. We purposefully do
+            # not restrict `include_scenarios` here - the caller can implement any
+            # scenario logic inside the predicate if desired.
+            return AdjustmentFilter(period=period)
+        else:
+            raise TypeError(f&#34;Invalid filter_input type: {type(filter_input)}&#34;)
+
+    def get_filtered_adjustments(
+        self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None
+    ) -&gt; list[Adjustment]:
+        &#34;&#34;&#34;Retrieve adjustments for a node and period that match given filter criteria.
+
+        Args:
+            node_name: The target node name.
+            period: The period to retrieve adjustments for.
+            filter_input: Criteria for selecting adjustments. Can be:
+                - None: applies default filter (default scenario, all adjustments).
+                - AdjustmentFilter: filter by scenarios, tags, types, and period window.
+                - set of tags: shorthand for include_tags filter.
+                - Callable[[Adjustment], bool] or Callable[[Adjustment, str], bool]:
+                    predicate to select adjustments. Two-arg predicates receive
+                    the current period as the second argument.
+
+        Returns:
+            A list of matching Adjustment objects sorted by priority and timestamp.
+
+        Examples:
+            &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+            &gt;&gt;&gt; mgr = AdjustmentManager()
+            &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=1.0, reason=&#34;r&#34;, tags={&#34;X&#34;})
+            &gt;&gt;&gt; mgr.add_adjustment(adj)
+            &gt;&gt;&gt; result = mgr.get_filtered_adjustments(&#34;A&#34;, &#34;2023&#34;, {&#34;X&#34;})
+            &gt;&gt;&gt; result[0].node_name == &#34;A&#34;
+            True
+        &#34;&#34;&#34;
+        normalized_filter = self._normalize_filter(filter_input, period)
+
+        candidate_adjustments: list[Adjustment] = []
+
+        # Determine which scenarios to check based on the filter
+        scenarios_to_check: set[str]
+        if normalized_filter.include_scenarios is not None:
+            scenarios_to_check = normalized_filter.include_scenarios.copy()  # Work on a copy
+            if normalized_filter.exclude_scenarios is not None:
+                scenarios_to_check -= normalized_filter.exclude_scenarios
+        elif normalized_filter.exclude_scenarios is not None:
+            # Get all scenarios currently known to the manager
+            all_known_scenarios = {adj.scenario for adj in self._by_id.values()}
+            scenarios_to_check = all_known_scenarios - normalized_filter.exclude_scenarios
+        else:
+            # No include/exclude specified: check all scenarios relevant for this node/period
+            # This requires checking keys in _by_location
+            scenarios_to_check = {key[0] for key in self._by_location if key[1] == node_name and key[2] == period}
+            # If no specific adjustments exist for this node/period, we might check default?
+            # Let&#39;s assume we only check scenarios that *have* adjustments for this location.
+            if not scenarios_to_check:
+                # Maybe return empty list early if no scenarios found for location?
+                # Or should it behave differently? For now, proceed with empty set.
+                pass
+
+        # Gather candidates from relevant locations
+        for scenario in scenarios_to_check:
+            key = (scenario, node_name, period)
+            candidate_adjustments.extend(self._by_location.get(key, []))
+
+        # Apply the filter logic
+        matching_adjustments: list[Adjustment] = []
+        if callable(filter_input):
+            # Determine how many positional arguments the predicate expects. If it
+            # accepts two parameters we pass the current period as contextual
+            # information. This allows users to write filters that combine
+            # adjustment attributes with the calculation period in their logic.
+            try:
+                param_count = len(inspect.signature(filter_input).parameters)
+            except (TypeError, ValueError):
+                # Fallback in case the predicate is not introspectable (e.g., built-ins)
+                param_count = 1
+
+            if param_count == 1:
+                matching_adjustments = [
+                    adj for adj in candidate_adjustments if filter_input(adj) and normalized_filter.matches(adj)
+                ]
+            elif param_count == 2:  # noqa: PLR2004
+                matching_adjustments = [
+                    adj for adj in candidate_adjustments if filter_input(adj, period) and normalized_filter.matches(adj)
+                ]
+            else:
+                raise TypeError(&#34;Callable adjustment filter must accept one or two positional arguments&#34;)
+        else:
+            # Apply the normalized AdjustmentFilter&#39;s matches method
+            matching_adjustments = [adj for adj in candidate_adjustments if normalized_filter.matches(adj)]
+
+        # Return sorted list (sorting might be redundant if fetched lists are pre-sorted
+        # and filtering maintains order, but ensures correctness)
+        return sorted(matching_adjustments, key=lambda x: (x.priority, x.timestamp))
+
+    def get_all_adjustments(self) -&gt; list[Adjustment]:
+        &#34;&#34;&#34;List all adjustments stored in the manager.
+
+        Returns:
+            A list of all Adjustment objects currently stored.
+
+        Examples:
+            &gt;&gt;&gt; mgr = AdjustmentManager()
+            &gt;&gt;&gt; len(mgr.get_all_adjustments())
+            0
+        &#34;&#34;&#34;
+        # Return a copy to prevent external modification
+        return list(self._by_id.values())
+
+    def clear_all(self) -&gt; None:
+        &#34;&#34;&#34;Remove all adjustments from the manager.
+
+        Clears all internal storage.
+
+        Returns:
+            None
+
+        Examples:
+            &gt;&gt;&gt; mgr = AdjustmentManager()
+            &gt;&gt;&gt; mgr.clear_all()
+            &gt;&gt;&gt; len(mgr.get_all_adjustments())
+            0
+        &#34;&#34;&#34;
+        self._by_location.clear()
+        self._by_id.clear()
+
+    def load_adjustments(self, adjustments: list[Adjustment]) -&gt; None:
+        &#34;&#34;&#34;Clear existing adjustments and load a new list of adjustments.
+
+        Args:
+            adjustments: A list of Adjustment objects to load into the manager.
+
+        Returns:
+            None
+
+        Examples:
+            &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+            &gt;&gt;&gt; mgr = AdjustmentManager()
+            &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=1.0, reason=&#34;r&#34;)
+            &gt;&gt;&gt; mgr.load_adjustments([adj])
+            &gt;&gt;&gt; len(mgr.get_all_adjustments())
+            1
+        &#34;&#34;&#34;
+        self.clear_all()
+        for adj in adjustments:
+            self.add_adjustment(adj)</code></pre>
+</details>
+<div class="desc"><p>Handle storage, retrieval, and application of adjustments.</p>
+<p>This class provides methods to add, remove, filter, and apply adjustments
+to base values. It supports advanced filtering by scenario, tags, types,
+and period, and can apply multiple adjustments in a deterministic order.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+&gt;&gt;&gt; mgr = AdjustmentManager()
+&gt;&gt;&gt; adj = Adjustment(node_name=&quot;A&quot;, period=&quot;2023&quot;, value=5.0, reason=&quot;r&quot;)
+&gt;&gt;&gt; mgr.add_adjustment(adj)
+&gt;&gt;&gt; len(mgr.get_all_adjustments())
+1
+&gt;&gt;&gt; mgr.remove_adjustment(adj.id)
+True
+</code></pre>
+<p>Initialize the adjustment manager with empty storage.</p>
+<p>This sets up internal indices for storing and retrieving adjustments.</p>
+<h2 id="examples_1">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; mgr = AdjustmentManager()
+&gt;&gt;&gt; len(mgr.get_all_adjustments())
+0
+</code></pre></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.adjustments.manager.AdjustmentManager.add_adjustment"><code class="name flex">
+<span>def <span class="ident">add_adjustment</span></span>(<span>self, adj: Adjustment) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_adjustment(self, adj: Adjustment) -&gt; None:
+    &#34;&#34;&#34;Add an adjustment to the manager.
+
+    If an adjustment with the same ID already exists, it is replaced.
+
+    Args:
+        adj: The Adjustment object to add.
+
+    Returns:
+        None
+
+    Examples:
+        &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+        &gt;&gt;&gt; mgr = AdjustmentManager()
+        &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=1.0, reason=&#34;r&#34;)
+        &gt;&gt;&gt; mgr.add_adjustment(adj)
+        &gt;&gt;&gt; mgr.get_adjustments(&#34;A&#34;, &#34;2023&#34;)[0].value == 1.0
+        True
+    &#34;&#34;&#34;
+    # If an adjustment with the same ID already exists, remove it first
+    if adj.id in self._by_id:
+        self.remove_adjustment(adj.id)
+
+    self._by_id[adj.id] = adj
+    key = (adj.scenario, adj.node_name, adj.period)
+    self._by_location[key].append(adj)
+    # Keep the list sorted by priority, then timestamp for consistent application order
+    self._by_location[key].sort(key=lambda x: (x.priority, x.timestamp))</code></pre>
+</details>
+<div class="desc"><p>Add an adjustment to the manager.</p>
+<p>If an adjustment with the same ID already exists, it is replaced.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>adj</code></strong></dt>
+<dd>The Adjustment object to add.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+&gt;&gt;&gt; mgr = AdjustmentManager()
+&gt;&gt;&gt; adj = Adjustment(node_name=&quot;A&quot;, period=&quot;2023&quot;, value=1.0, reason=&quot;r&quot;)
+&gt;&gt;&gt; mgr.add_adjustment(adj)
+&gt;&gt;&gt; mgr.get_adjustments(&quot;A&quot;, &quot;2023&quot;)[0].value == 1.0
+True
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.manager.AdjustmentManager.apply_adjustments"><code class="name flex">
+<span>def <span class="ident">apply_adjustments</span></span>(<span>self, base_value: float, adjustments: list[Adjustment]) ‑> tuple[float, bool]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def apply_adjustments(self, base_value: float, adjustments: list[Adjustment]) -&gt; tuple[float, bool]:
+    &#34;&#34;&#34;Apply a list of adjustments sequentially to a base value.
+
+    Adjustments are applied in order of priority (lower first), then timestamp.
+
+    Args:
+        base_value: The starting value before adjustments.
+        adjustments: A list of Adjustment objects to apply.
+
+    Returns:
+        A tuple of (final adjusted value, boolean indicating if any adjustment was applied).
+
+    Examples:
+        &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+        &gt;&gt;&gt; mgr = AdjustmentManager()
+        &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=5.0, reason=&#34;r&#34;)
+        &gt;&gt;&gt; mgr.apply_adjustments(100.0, [adj])
+        (105.0, True)
+    &#34;&#34;&#34;
+    if not adjustments:
+        return base_value, False
+
+    current_value = base_value
+    applied_flag = False
+
+    # Sort by priority (ascending), then timestamp (ascending) as per spec
+    # Note: add_adjustment already sorts the list in _by_location, but
+    # this ensures correctness if an unsorted list is passed directly.
+    sorted_adjustments = sorted(adjustments, key=lambda x: (x.priority, x.timestamp))
+
+    for adj in sorted_adjustments:
+        current_value = self._apply_one(current_value, adj)
+        applied_flag = True
+
+    return current_value, applied_flag</code></pre>
+</details>
+<div class="desc"><p>Apply a list of adjustments sequentially to a base value.</p>
+<p>Adjustments are applied in order of priority (lower first), then timestamp.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>base_value</code></strong></dt>
+<dd>The starting value before adjustments.</dd>
+<dt><strong><code>adjustments</code></strong></dt>
+<dd>A list of Adjustment objects to apply.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A tuple of (final adjusted value, boolean indicating if any adjustment was applied).</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+&gt;&gt;&gt; mgr = AdjustmentManager()
+&gt;&gt;&gt; adj = Adjustment(node_name=&quot;A&quot;, period=&quot;2023&quot;, value=5.0, reason=&quot;r&quot;)
+&gt;&gt;&gt; mgr.apply_adjustments(100.0, [adj])
+(105.0, True)
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.manager.AdjustmentManager.clear_all"><code class="name flex">
+<span>def <span class="ident">clear_all</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear_all(self) -&gt; None:
+    &#34;&#34;&#34;Remove all adjustments from the manager.
+
+    Clears all internal storage.
+
+    Returns:
+        None
+
+    Examples:
+        &gt;&gt;&gt; mgr = AdjustmentManager()
+        &gt;&gt;&gt; mgr.clear_all()
+        &gt;&gt;&gt; len(mgr.get_all_adjustments())
+        0
+    &#34;&#34;&#34;
+    self._by_location.clear()
+    self._by_id.clear()</code></pre>
+</details>
+<div class="desc"><p>Remove all adjustments from the manager.</p>
+<p>Clears all internal storage.</p>
+<h2 id="returns">Returns</h2>
+<p>None</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; mgr = AdjustmentManager()
+&gt;&gt;&gt; mgr.clear_all()
+&gt;&gt;&gt; len(mgr.get_all_adjustments())
+0
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.manager.AdjustmentManager.get_adjustments"><code class="name flex">
+<span>def <span class="ident">get_adjustments</span></span>(<span>self, node_name: str, period: str, *, scenario: str = 'default') ‑> list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_adjustments(self, node_name: str, period: str, *, scenario: str = DEFAULT_SCENARIO) -&gt; list[Adjustment]:
+    &#34;&#34;&#34;Retrieve all adjustments for a specific node, period, and scenario.
+
+    Args:
+        node_name: The name of the target node.
+        period: The period to retrieve adjustments for.
+        scenario: The scenario name to filter adjustments by.
+
+    Returns:
+        A list of Adjustment objects for the specified node, period, and scenario.
+
+    Examples:
+        &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+        &gt;&gt;&gt; mgr = AdjustmentManager()
+        &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=1.0, reason=&#34;r&#34;)
+        &gt;&gt;&gt; mgr.add_adjustment(adj)
+        &gt;&gt;&gt; len(mgr.get_adjustments(&#34;A&#34;, &#34;2023&#34;))
+        1
+    &#34;&#34;&#34;
+    key = (scenario, node_name, period)
+    # Return a copy to prevent external modification of the internal list
+    return list(self._by_location.get(key, []))</code></pre>
+</details>
+<div class="desc"><p>Retrieve all adjustments for a specific node, period, and scenario.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_name</code></strong></dt>
+<dd>The name of the target node.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>The period to retrieve adjustments for.</dd>
+<dt><strong><code>scenario</code></strong></dt>
+<dd>The scenario name to filter adjustments by.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A list of Adjustment objects for the specified node, period, and scenario.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+&gt;&gt;&gt; mgr = AdjustmentManager()
+&gt;&gt;&gt; adj = Adjustment(node_name=&quot;A&quot;, period=&quot;2023&quot;, value=1.0, reason=&quot;r&quot;)
+&gt;&gt;&gt; mgr.add_adjustment(adj)
+&gt;&gt;&gt; len(mgr.get_adjustments(&quot;A&quot;, &quot;2023&quot;))
+1
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.manager.AdjustmentManager.get_all_adjustments"><code class="name flex">
+<span>def <span class="ident">get_all_adjustments</span></span>(<span>self) ‑> list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_all_adjustments(self) -&gt; list[Adjustment]:
+    &#34;&#34;&#34;List all adjustments stored in the manager.
+
+    Returns:
+        A list of all Adjustment objects currently stored.
+
+    Examples:
+        &gt;&gt;&gt; mgr = AdjustmentManager()
+        &gt;&gt;&gt; len(mgr.get_all_adjustments())
+        0
+    &#34;&#34;&#34;
+    # Return a copy to prevent external modification
+    return list(self._by_id.values())</code></pre>
+</details>
+<div class="desc"><p>List all adjustments stored in the manager.</p>
+<h2 id="returns">Returns</h2>
+<p>A list of all Adjustment objects currently stored.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; mgr = AdjustmentManager()
+&gt;&gt;&gt; len(mgr.get_all_adjustments())
+0
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.manager.AdjustmentManager.get_filtered_adjustments"><code class="name flex">
+<span>def <span class="ident">get_filtered_adjustments</span></span>(<span>self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None) ‑> list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_filtered_adjustments(
+    self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None
+) -&gt; list[Adjustment]:
+    &#34;&#34;&#34;Retrieve adjustments for a node and period that match given filter criteria.
+
+    Args:
+        node_name: The target node name.
+        period: The period to retrieve adjustments for.
+        filter_input: Criteria for selecting adjustments. Can be:
+            - None: applies default filter (default scenario, all adjustments).
+            - AdjustmentFilter: filter by scenarios, tags, types, and period window.
+            - set of tags: shorthand for include_tags filter.
+            - Callable[[Adjustment], bool] or Callable[[Adjustment, str], bool]:
+                predicate to select adjustments. Two-arg predicates receive
+                the current period as the second argument.
+
+    Returns:
+        A list of matching Adjustment objects sorted by priority and timestamp.
+
+    Examples:
+        &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+        &gt;&gt;&gt; mgr = AdjustmentManager()
+        &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=1.0, reason=&#34;r&#34;, tags={&#34;X&#34;})
+        &gt;&gt;&gt; mgr.add_adjustment(adj)
+        &gt;&gt;&gt; result = mgr.get_filtered_adjustments(&#34;A&#34;, &#34;2023&#34;, {&#34;X&#34;})
+        &gt;&gt;&gt; result[0].node_name == &#34;A&#34;
+        True
+    &#34;&#34;&#34;
+    normalized_filter = self._normalize_filter(filter_input, period)
+
+    candidate_adjustments: list[Adjustment] = []
+
+    # Determine which scenarios to check based on the filter
+    scenarios_to_check: set[str]
+    if normalized_filter.include_scenarios is not None:
+        scenarios_to_check = normalized_filter.include_scenarios.copy()  # Work on a copy
+        if normalized_filter.exclude_scenarios is not None:
+            scenarios_to_check -= normalized_filter.exclude_scenarios
+    elif normalized_filter.exclude_scenarios is not None:
+        # Get all scenarios currently known to the manager
+        all_known_scenarios = {adj.scenario for adj in self._by_id.values()}
+        scenarios_to_check = all_known_scenarios - normalized_filter.exclude_scenarios
+    else:
+        # No include/exclude specified: check all scenarios relevant for this node/period
+        # This requires checking keys in _by_location
+        scenarios_to_check = {key[0] for key in self._by_location if key[1] == node_name and key[2] == period}
+        # If no specific adjustments exist for this node/period, we might check default?
+        # Let&#39;s assume we only check scenarios that *have* adjustments for this location.
+        if not scenarios_to_check:
+            # Maybe return empty list early if no scenarios found for location?
+            # Or should it behave differently? For now, proceed with empty set.
+            pass
+
+    # Gather candidates from relevant locations
+    for scenario in scenarios_to_check:
+        key = (scenario, node_name, period)
+        candidate_adjustments.extend(self._by_location.get(key, []))
+
+    # Apply the filter logic
+    matching_adjustments: list[Adjustment] = []
+    if callable(filter_input):
+        # Determine how many positional arguments the predicate expects. If it
+        # accepts two parameters we pass the current period as contextual
+        # information. This allows users to write filters that combine
+        # adjustment attributes with the calculation period in their logic.
+        try:
+            param_count = len(inspect.signature(filter_input).parameters)
+        except (TypeError, ValueError):
+            # Fallback in case the predicate is not introspectable (e.g., built-ins)
+            param_count = 1
+
+        if param_count == 1:
+            matching_adjustments = [
+                adj for adj in candidate_adjustments if filter_input(adj) and normalized_filter.matches(adj)
+            ]
+        elif param_count == 2:  # noqa: PLR2004
+            matching_adjustments = [
+                adj for adj in candidate_adjustments if filter_input(adj, period) and normalized_filter.matches(adj)
+            ]
+        else:
+            raise TypeError(&#34;Callable adjustment filter must accept one or two positional arguments&#34;)
+    else:
+        # Apply the normalized AdjustmentFilter&#39;s matches method
+        matching_adjustments = [adj for adj in candidate_adjustments if normalized_filter.matches(adj)]
+
+    # Return sorted list (sorting might be redundant if fetched lists are pre-sorted
+    # and filtering maintains order, but ensures correctness)
+    return sorted(matching_adjustments, key=lambda x: (x.priority, x.timestamp))</code></pre>
+</details>
+<div class="desc"><p>Retrieve adjustments for a node and period that match given filter criteria.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_name</code></strong></dt>
+<dd>The target node name.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>The period to retrieve adjustments for.</dd>
+<dt><strong><code>filter_input</code></strong></dt>
+<dd>Criteria for selecting adjustments. Can be:
+- None: applies default filter (default scenario, all adjustments).
+- AdjustmentFilter: filter by scenarios, tags, types, and period window.
+- set of tags: shorthand for include_tags filter.
+- Callable[[Adjustment], bool] or Callable[[Adjustment, str], bool]:
+predicate to select adjustments. Two-arg predicates receive
+the current period as the second argument.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A list of matching Adjustment objects sorted by priority and timestamp.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+&gt;&gt;&gt; mgr = AdjustmentManager()
+&gt;&gt;&gt; adj = Adjustment(node_name=&quot;A&quot;, period=&quot;2023&quot;, value=1.0, reason=&quot;r&quot;, tags={&quot;X&quot;})
+&gt;&gt;&gt; mgr.add_adjustment(adj)
+&gt;&gt;&gt; result = mgr.get_filtered_adjustments(&quot;A&quot;, &quot;2023&quot;, {&quot;X&quot;})
+&gt;&gt;&gt; result[0].node_name == &quot;A&quot;
+True
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.manager.AdjustmentManager.load_adjustments"><code class="name flex">
+<span>def <span class="ident">load_adjustments</span></span>(<span>self, adjustments: list[Adjustment]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_adjustments(self, adjustments: list[Adjustment]) -&gt; None:
+    &#34;&#34;&#34;Clear existing adjustments and load a new list of adjustments.
+
+    Args:
+        adjustments: A list of Adjustment objects to load into the manager.
+
+    Returns:
+        None
+
+    Examples:
+        &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+        &gt;&gt;&gt; mgr = AdjustmentManager()
+        &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=1.0, reason=&#34;r&#34;)
+        &gt;&gt;&gt; mgr.load_adjustments([adj])
+        &gt;&gt;&gt; len(mgr.get_all_adjustments())
+        1
+    &#34;&#34;&#34;
+    self.clear_all()
+    for adj in adjustments:
+        self.add_adjustment(adj)</code></pre>
+</details>
+<div class="desc"><p>Clear existing adjustments and load a new list of adjustments.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>adjustments</code></strong></dt>
+<dd>A list of Adjustment objects to load into the manager.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+&gt;&gt;&gt; mgr = AdjustmentManager()
+&gt;&gt;&gt; adj = Adjustment(node_name=&quot;A&quot;, period=&quot;2023&quot;, value=1.0, reason=&quot;r&quot;)
+&gt;&gt;&gt; mgr.load_adjustments([adj])
+&gt;&gt;&gt; len(mgr.get_all_adjustments())
+1
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.core.adjustments.manager.AdjustmentManager.remove_adjustment"><code class="name flex">
+<span>def <span class="ident">remove_adjustment</span></span>(<span>self, adj_id: UUID) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_adjustment(self, adj_id: UUID) -&gt; bool:
+    &#34;&#34;&#34;Remove an adjustment by its ID.
+
+    Args:
+        adj_id: The UUID of the adjustment to remove.
+
+    Returns:
+        True if the adjustment was found and removed, False otherwise.
+
+    Examples:
+        &gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+        &gt;&gt;&gt; mgr = AdjustmentManager()
+        &gt;&gt;&gt; adj = Adjustment(node_name=&#34;A&#34;, period=&#34;2023&#34;, value=1.0, reason=&#34;r&#34;)
+        &gt;&gt;&gt; mgr.add_adjustment(adj)
+        &gt;&gt;&gt; mgr.remove_adjustment(adj.id)
+        True
+    &#34;&#34;&#34;
+    if adj_id not in self._by_id:
+        return False
+
+    adj_to_remove = self._by_id.pop(adj_id)
+    key = (adj_to_remove.scenario, adj_to_remove.node_name, adj_to_remove.period)
+
+    if key in self._by_location:
+        # Filter out the specific adjustment object instance
+        self._by_location[key] = [a for a in self._by_location[key] if a.id != adj_id]
+        # If the list becomes empty, remove the key
+        if not self._by_location[key]:
+            del self._by_location[key]
+    return True</code></pre>
+</details>
+<div class="desc"><p>Remove an adjustment by its ID.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>adj_id</code></strong></dt>
+<dd>The UUID of the adjustment to remove.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if the adjustment was found and removed, False otherwise.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.adjustments.models import Adjustment
+&gt;&gt;&gt; mgr = AdjustmentManager()
+&gt;&gt;&gt; adj = Adjustment(node_name=&quot;A&quot;, period=&quot;2023&quot;, value=1.0, reason=&quot;r&quot;)
+&gt;&gt;&gt; mgr.add_adjustment(adj)
+&gt;&gt;&gt; mgr.remove_adjustment(adj.id)
+True
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.core.adjustments" href="index.html">fin_statement_model.core.adjustments</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.core.adjustments.manager.AdjustmentManager" href="#fin_statement_model.core.adjustments.manager.AdjustmentManager">AdjustmentManager</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.adjustments.manager.AdjustmentManager.add_adjustment" href="#fin_statement_model.core.adjustments.manager.AdjustmentManager.add_adjustment">add_adjustment</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.manager.AdjustmentManager.apply_adjustments" href="#fin_statement_model.core.adjustments.manager.AdjustmentManager.apply_adjustments">apply_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.manager.AdjustmentManager.clear_all" href="#fin_statement_model.core.adjustments.manager.AdjustmentManager.clear_all">clear_all</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.manager.AdjustmentManager.get_adjustments" href="#fin_statement_model.core.adjustments.manager.AdjustmentManager.get_adjustments">get_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.manager.AdjustmentManager.get_all_adjustments" href="#fin_statement_model.core.adjustments.manager.AdjustmentManager.get_all_adjustments">get_all_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.manager.AdjustmentManager.get_filtered_adjustments" href="#fin_statement_model.core.adjustments.manager.AdjustmentManager.get_filtered_adjustments">get_filtered_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.manager.AdjustmentManager.load_adjustments" href="#fin_statement_model.core.adjustments.manager.AdjustmentManager.load_adjustments">load_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.adjustments.manager.AdjustmentManager.remove_adjustment" href="#fin_statement_model.core.adjustments.manager.AdjustmentManager.remove_adjustment">remove_adjustment</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

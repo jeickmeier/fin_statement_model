@@ -1,0 +1,2428 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.preprocessing.transformers API documentation</title>
+<meta name="description" content="Package for preprocessing transformers …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.preprocessing.transformers</code></h1>
+</header>
+<section id="section-intro">
+<p>Package for preprocessing transformers.</p>
+<p>This package exports built-in data transformer classes for the preprocessing layer.</p>
+<p>Available transformers:
+- NormalizationTransformer
+- TimeSeriesTransformer
+- PeriodConversionTransformer</p>
+<h2 id="examples">Examples</h2>
+<p>Import and use a built-in transformer:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.preprocessing.transformers import NormalizationTransformer
+&gt;&gt;&gt; import pandas as pd
+&gt;&gt;&gt; df = pd.DataFrame({&quot;revenue&quot;: [100, 200], &quot;cogs&quot;: [60, 120]})
+&gt;&gt;&gt; normalizer = NormalizationTransformer(normalization_type=&quot;percent_of&quot;, reference=&quot;revenue&quot;)
+&gt;&gt;&gt; result = normalizer.transform(df)
+&gt;&gt;&gt; print(result)
+</code></pre>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.preprocessing.transformers.normalization" href="normalization.html">fin_statement_model.preprocessing.transformers.normalization</a></code></dt>
+<dd>
+<div class="desc"><p>Provide the NormalizationTransformer for normalizing financial data …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.preprocessing.transformers.period_conversion" href="period_conversion.html">fin_statement_model.preprocessing.transformers.period_conversion</a></code></dt>
+<dd>
+<div class="desc"><p>Provide the PeriodConversionTransformer for converting between financial reporting periods …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.preprocessing.transformers.time_series" href="time_series.html">fin_statement_model.preprocessing.transformers.time_series</a></code></dt>
+<dd>
+<div class="desc"><p>Provide the TimeSeriesTransformer for applying common financial time series transformations …</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.NormalizationTransformer"><code class="flex name class">
+<span>class <span class="ident">NormalizationTransformer</span></span>
+<span>(</span><span>normalization_type: str | NormalizationType = NormalizationType.PERCENT_OF,<br>reference: str | None = None,<br>scale_factor: float | None = None,<br>*,<br>config: NormalizationConfig | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NormalizationTransformer(DataTransformer):
+    &#34;&#34;&#34;Normalize financial data using various methods.
+
+    This transformer provides multiple normalization strategies commonly used in
+    financial analysis to make data comparable across different scales or to
+    express values as percentages of a reference metric.
+
+    Supported normalization types:
+        - **percent_of**: Express values as percentages of a reference column
+          (e.g., all items as % of revenue)
+        - **minmax**: Scale values to [0, 1] range based on min/max values
+        - **standard**: Standardize using (x - mean) / std deviation
+        - **scale_by**: Multiply all values by a fixed scale factor
+
+    Examples:
+        Express all income statement items as percentage of revenue:
+
+        &gt;&gt;&gt; import pandas as pd
+        &gt;&gt;&gt; from fin_statement_model.preprocessing.transformers import NormalizationTransformer
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Sample income statement data
+        &gt;&gt;&gt; data = pd.DataFrame(
+        ...     {&#34;revenue&#34;: [1000, 1100, 1200], &#34;cogs&#34;: [600, 650, 700], &#34;operating_expenses&#34;: [200, 220, 250]},
+        ...     index=[&#34;2021&#34;, &#34;2022&#34;, &#34;2023&#34;],
+        ... )
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Create transformer to express as % of revenue
+        &gt;&gt;&gt; normalizer = NormalizationTransformer(normalization_type=&#34;percent_of&#34;, reference=&#34;revenue&#34;)
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Transform the data
+        &gt;&gt;&gt; normalized = normalizer.transform(data)
+        &gt;&gt;&gt; print(normalized)
+        #       revenue  cogs  operating_expenses
+        # 2021    100.0  60.0               20.0
+        # 2022    100.0  59.1               20.0
+        # 2023    100.0  58.3               20.8
+
+        Scale financial data to millions:
+
+        &gt;&gt;&gt; # Scale values to millions (divide by 1,000,000)
+        &gt;&gt;&gt; scaler = NormalizationTransformer(normalization_type=&#34;scale_by&#34;, scale_factor=0.000001)
+        &gt;&gt;&gt; scaled = scaler.transform(data)
+
+    Note:
+        For &#39;percent_of&#39; normalization, if a reference value is 0 or NaN,
+        the corresponding output for that row will be NaN to avoid division
+        by zero errors.
+    &#34;&#34;&#34;
+
+    NORMALIZATION_TYPES: ClassVar[list[str]] = [t.value for t in NormalizationType]
+
+    # Runtime registry for user-supplied normalisation functions.
+    _CUSTOM_METHODS: ClassVar[dict[str, CustomNormFn]] = {}
+
+    # ------------------------------------------------------------------
+    # Public API for custom method registration
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def register_custom_method(cls, name: str, func: CustomNormFn, *, overwrite: bool = False) -&gt; None:
+        &#34;&#34;&#34;Register a custom normalisation *func* under *name*.
+
+        The callable **must** accept two arguments: the DataFrame to be
+        normalised and the *transformer instance* (so it can access config
+        such as ``reference`` / ``scale_factor``). It must return the
+        normalised DataFrame.
+
+        Args:
+            name: Identifier to use in ``NormalizationTransformer(..., normalization_type=name)``.
+            func: Callable implementing the normalisation.
+            overwrite: Allow replacing an existing registration. Defaults to *False*.
+        &#34;&#34;&#34;
+        if name in cls._CUSTOM_METHODS and not overwrite:
+            raise ValueError(f&#34;Custom normalization method &#39;{name}&#39; already registered.&#34;)
+        cls._CUSTOM_METHODS[name] = func
+        logger.info(&#34;Registered custom normalization method &#39;%s&#39;&#34;, name)
+
+    @classmethod
+    def list_custom_methods(cls) -&gt; list[str]:
+        &#34;&#34;&#34;Return names of all registered custom normalisation methods.&#34;&#34;&#34;
+        return list(cls._CUSTOM_METHODS.keys())
+
+    def __init__(
+        self,
+        normalization_type: str | NormalizationType = NormalizationType.PERCENT_OF,
+        reference: str | None = None,
+        scale_factor: float | None = None,
+        *,
+        config: NormalizationConfig | None = None,
+    ):
+        &#34;&#34;&#34;Initialize the normalizer with specified parameters.
+
+        Args:
+            normalization_type: Type of normalization to apply. Can be either
+                a string or NormalizationType enum value:
+                - &#39;percent_of&#39;: Express values as percentage of reference column
+                - &#39;minmax&#39;: Scale to [0,1] range
+                - &#39;standard&#39;: Apply z-score normalization
+                - &#39;scale_by&#39;: Multiply by scale_factor
+            reference: Name of the reference column for &#39;percent_of&#39; normalization.
+                Required when normalization_type is &#39;percent_of&#39;.
+            scale_factor: Multiplication factor for &#39;scale_by&#39; normalization.
+                Required when normalization_type is &#39;scale_by&#39;.
+                Common values: 0.001 (to thousands), 0.000001 (to millions)
+            config: Optional NormalizationConfig object containing configuration.
+                If provided, overrides other parameters.
+
+        Raises:
+            NormalizationError: If normalization_type is invalid, or if required
+                parameters are missing for the selected normalization type.
+        &#34;&#34;&#34;
+        # ------------------------------------------------------------------
+        # Configuration precedence: *either* supply a Pydantic config object
+        # *or* individual keyword-arguments. If both are provided we keep the
+        # config (first-class source-of-truth) and issue a gentle warning so
+        # that users can clean up their call-sites.
+        # ------------------------------------------------------------------
+
+        if config is not None and any(param is not None for param in (reference, scale_factor)):
+            warnings.warn(
+                &#34;Both &#39;config&#39; and individual kwargs supplied to NormalizationTransformer; the Pydantic config takes precedence.&#34;,
+                UserWarning,
+                stacklevel=2,
+            )
+
+        # Extract values from config if present (takes precedence)
+        if config is not None:
+            normalization_type = config.normalization_type or normalization_type
+            reference = config.reference or reference
+            scale_factor = config.scale_factor if config.scale_factor is not None else scale_factor
+
+        # Save incoming config dict for logging/debug via base class
+        super().__init__(config.model_dump() if config else None)
+        # Normalize enum to string
+        if isinstance(normalization_type, NormalizationType):
+            norm_type = normalization_type.value
+        else:
+            norm_type = normalization_type
+        if norm_type not in self.NORMALIZATION_TYPES and norm_type not in self._CUSTOM_METHODS:
+            raise NormalizationError(
+                f&#34;Invalid normalization type: {norm_type}. Must be one of {self.NORMALIZATION_TYPES}&#34;,
+                method=norm_type,
+            )
+        self.normalization_type = norm_type
+
+        self.reference = reference
+        self.scale_factor = scale_factor
+
+        # Validation
+        if self.normalization_type == NormalizationType.PERCENT_OF.value and not reference:
+            raise NormalizationError(
+                &#34;Reference field must be provided for percent_of normalization&#34;,
+                method=self.normalization_type,
+            )
+
+        if self.normalization_type == NormalizationType.SCALE_BY.value and scale_factor is None:
+            raise NormalizationError(
+                &#34;Scale factor must be provided for scale_by normalization&#34;,
+                method=self.normalization_type,
+            )
+
+    def transform(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+        &#34;&#34;&#34;Normalize the data based on the configured normalization type.
+
+        Args:
+            data: DataFrame containing financial data to normalize.
+                All columns will be normalized except the reference column
+                in &#39;percent_of&#39; normalization.
+
+        Returns:
+            DataFrame with normalized values. Original column names are preserved
+            for all normalization types.
+
+        Raises:
+            DataValidationError: If data is not a pandas DataFrame.
+            NormalizationError: If reference column is not found in DataFrame
+                (for &#39;percent_of&#39; normalization).
+        &#34;&#34;&#34;
+        if not isinstance(data, pd.DataFrame | pd.Series):
+            raise DataValidationError(
+                f&#34;Unsupported data type: {type(data)}. Expected pandas.DataFrame or pandas.Series&#34;,
+                validation_errors=[f&#34;Got type: {type(data).__name__}&#34;],
+            )
+        return super().transform(data)
+
+    def validate_config(self) -&gt; None:
+        &#34;&#34;&#34;Validate the transformer configuration.
+
+        Raises:
+            NormalizationError: If the configuration is invalid.
+        &#34;&#34;&#34;
+        super().validate_config()
+
+        if (
+            self.normalization_type not in self.NORMALIZATION_TYPES
+            and self.normalization_type not in self._CUSTOM_METHODS
+        ):
+            raise NormalizationError(
+                f&#34;Unknown normalization method: {self.normalization_type}. &#34;
+                f&#34;Supported methods are: {self.NORMALIZATION_TYPES}&#34;,
+                method=self.normalization_type,
+            )
+
+        if self.normalization_type == NormalizationType.PERCENT_OF.value and not self.reference:
+            raise NormalizationError(
+                &#34;Reference field must be provided for percent_of normalization&#34;,
+                method=self.normalization_type,
+            )
+
+        if self.normalization_type == NormalizationType.SCALE_BY.value and self.scale_factor is None:
+            raise NormalizationError(
+                &#34;Scale factor must be provided for scale_by normalization&#34;,
+                method=self.normalization_type,
+            )
+
+    def _transform_impl(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+        &#34;&#34;&#34;Apply the normalization transformation.
+
+        This is the core implementation method that handles both DataFrame
+        and Series inputs by converting Series to single-column DataFrames,
+        applying the normalization, and converting back if needed.
+
+        Args:
+            data: The data to transform. Can be either:
+                - pandas.DataFrame: For multi-column normalization
+                - pandas.Series: For single-column normalization
+
+        Returns:
+            The normalized data in the same format as the input
+            (DataFrame → DataFrame, Series → Series).
+
+        Raises:
+            DataValidationError: If the data type is not supported
+                (neither DataFrame nor Series).
+            NormalizationError: If there are issues during normalization,
+                such as missing reference columns or invalid values.
+
+        Examples:
+            &gt;&gt;&gt; transformer = NormalizationTransformer(normalization_type=&#34;scale_by&#34;, scale_factor=0.001)
+            &gt;&gt;&gt; df = pd.DataFrame({&#34;A&#34;: [1, 2, 3], &#34;B&#34;: [4, 5, 6]})
+            &gt;&gt;&gt; result = transformer._transform_impl(df)
+            &gt;&gt;&gt; series = pd.Series([1, 2, 3], name=&#34;values&#34;)
+            &gt;&gt;&gt; result_series = transformer._transform_impl(series)
+        &#34;&#34;&#34;
+        if not isinstance(data, pd.DataFrame | pd.Series):
+            raise DataValidationError(
+                f&#34;Unsupported data type: {type(data)}. Expected pandas.DataFrame or pandas.Series&#34;,
+                validation_errors=[f&#34;Got type: {type(data).__name__}&#34;],
+            )
+
+        df, was_series = self._coerce_to_dataframe(data)
+        result_df = self._normalize_dataframe(df)
+        if was_series:
+            return result_df.iloc[:, 0]
+        return result_df
+
+    def _apply_percent_of(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Return DataFrame expressed as percentage of the reference column.&#34;&#34;&#34;
+        if self.reference not in df.columns:
+            raise NormalizationError(
+                f&#34;Reference column &#39;{self.reference}&#39; not found in DataFrame&#34;,
+                method=self.normalization_type,
+                reference_field=self.reference,
+            )
+
+        result = df.copy()
+        reference_series = df[self.reference].replace(0, np.nan)
+
+        for col in df.columns:
+            if col == self.reference:
+                continue
+            if reference_series.isnull().all():
+                result[col] = np.nan
+                logger.warning(
+                    &#34;All reference values for &#39;%s&#39; are zero or NaN. &#39;%s&#39; will be NaN.&#34;,
+                    self.reference,
+                    col,
+                )
+            else:
+                result[col] = (df[col] / reference_series) * 100
+        return result
+
+    def _apply_minmax(self, df: pd.DataFrame) -&gt; pd.DataFrame:  # pragma: no cover
+        &#34;&#34;&#34;Scale values to [0,1] range using min-max normalisation.&#34;&#34;&#34;
+        result = df.copy()
+        for col in df.columns:
+            min_val = df[col].min()
+            max_val = df[col].max()
+            if max_val &gt; min_val:
+                result[col] = (df[col] - min_val) / (max_val - min_val)
+            else:  # constant column
+                result[col] = 0.0
+        return result
+
+    def _apply_standard(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Apply z-score standardisation (mean=0, std=1).&#34;&#34;&#34;
+        result = df.copy()
+        for col in df.columns:
+            mean = df[col].mean()
+            std = df[col].std()
+            if std &gt; 0:
+                result[col] = (df[col] - mean) / std
+            else:
+                result[col] = 0.0
+        return result
+
+    def _apply_scale_by(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Multiply all numeric values by the configured scale factor.&#34;&#34;&#34;
+        return df * self.scale_factor
+
+    def _normalize_dataframe(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Apply normalization to a DataFrame (delegates to specific helpers).&#34;&#34;&#34;
+        if self.normalization_type == NormalizationType.PERCENT_OF.value:
+            return self._apply_percent_of(df)
+        if self.normalization_type == NormalizationType.MINMAX.value:  # pragma: no cover
+            return self._apply_minmax(df)
+        if self.normalization_type == NormalizationType.STANDARD.value:
+            return self._apply_standard(df)
+        if self.normalization_type == NormalizationType.SCALE_BY.value:
+            return self._apply_scale_by(df)
+
+        # Custom method --------------------------------------------------
+        custom_func = self._CUSTOM_METHODS[self.normalization_type]
+        return custom_func(df, self)
+
+    # ------------------------------------------------------------------
+    # Data validation
+    # ------------------------------------------------------------------
+
+    def validate_input(self, data: object) -&gt; bool:
+        &#34;&#34;&#34;Return *True* when *data* is a DataFrame or Series.
+
+        This method implements the DataTransformer contract by specifying
+        exactly which input types are supported by the normalization
+        transformer.
+
+        Args:
+            data: The input data to validate. Can be any Python object,
+                 but only pandas DataFrame and Series are accepted.
+
+        Returns:
+            bool: True if data is either:
+                - pandas.DataFrame
+                - pandas.Series
+                False for all other types.
+
+        Examples:
+            &gt;&gt;&gt; transformer = NormalizationTransformer()
+            &gt;&gt;&gt; transformer.validate_input(pd.DataFrame())
+            True
+            &gt;&gt;&gt; transformer.validate_input(pd.Series())
+            True
+            &gt;&gt;&gt; transformer.validate_input([1, 2, 3])
+            False
+        &#34;&#34;&#34;
+        return isinstance(data, pd.DataFrame | pd.Series)</code></pre>
+</details>
+<div class="desc"><p>Normalize financial data using various methods.</p>
+<p>This transformer provides multiple normalization strategies commonly used in
+financial analysis to make data comparable across different scales or to
+express values as percentages of a reference metric.</p>
+<p>Supported normalization types:
+- <strong>percent_of</strong>: Express values as percentages of a reference column
+(e.g., all items as % of revenue)
+- <strong>minmax</strong>: Scale values to [0, 1] range based on min/max values
+- <strong>standard</strong>: Standardize using (x - mean) / std deviation
+- <strong>scale_by</strong>: Multiply all values by a fixed scale factor</p>
+<h2 id="examples">Examples</h2>
+<p>Express all income statement items as percentage of revenue:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; import pandas as pd
+&gt;&gt;&gt; from fin_statement_model.preprocessing.transformers import NormalizationTransformer
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Sample income statement data
+&gt;&gt;&gt; data = pd.DataFrame(
+...     {&quot;revenue&quot;: [1000, 1100, 1200], &quot;cogs&quot;: [600, 650, 700], &quot;operating_expenses&quot;: [200, 220, 250]},
+...     index=[&quot;2021&quot;, &quot;2022&quot;, &quot;2023&quot;],
+... )
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Create transformer to express as % of revenue
+&gt;&gt;&gt; normalizer = NormalizationTransformer(normalization_type=&quot;percent_of&quot;, reference=&quot;revenue&quot;)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Transform the data
+&gt;&gt;&gt; normalized = normalizer.transform(data)
+&gt;&gt;&gt; print(normalized)
+#       revenue  cogs  operating_expenses
+# 2021    100.0  60.0               20.0
+# 2022    100.0  59.1               20.0
+# 2023    100.0  58.3               20.8
+</code></pre>
+<p>Scale financial data to millions:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Scale values to millions (divide by 1,000,000)
+&gt;&gt;&gt; scaler = NormalizationTransformer(normalization_type=&quot;scale_by&quot;, scale_factor=0.000001)
+&gt;&gt;&gt; scaled = scaler.transform(data)
+</code></pre>
+<h2 id="note">Note</h2>
+<p>For 'percent_of' normalization, if a reference value is 0 or NaN,
+the corresponding output for that row will be NaN to avoid division
+by zero errors.</p>
+<p>Initialize the normalizer with specified parameters.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>normalization_type</code></strong></dt>
+<dd>Type of normalization to apply. Can be either
+a string or NormalizationType enum value:
+- 'percent_of': Express values as percentage of reference column
+- 'minmax': Scale to [0,1] range
+- 'standard': Apply z-score normalization
+- 'scale_by': Multiply by scale_factor</dd>
+<dt><strong><code>reference</code></strong></dt>
+<dd>Name of the reference column for 'percent_of' normalization.
+Required when normalization_type is 'percent_of'.</dd>
+<dt><strong><code>scale_factor</code></strong></dt>
+<dd>Multiplication factor for 'scale_by' normalization.
+Required when normalization_type is 'scale_by'.
+Common values: 0.001 (to thousands), 0.000001 (to millions)</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional NormalizationConfig object containing configuration.
+If provided, overrides other parameters.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>NormalizationError</code></dt>
+<dd>If normalization_type is invalid, or if required
+parameters are missing for the selected normalization type.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.NormalizationTransformer.NORMALIZATION_TYPES"><code class="name">var <span class="ident">NORMALIZATION_TYPES</span> : ClassVar[list[str]]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.NormalizationTransformer.list_custom_methods"><code class="name flex">
+<span>def <span class="ident">list_custom_methods</span></span>(<span>) ‑> list[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return names of all registered custom normalisation methods.</p></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.transformers.NormalizationTransformer.register_custom_method"><code class="name flex">
+<span>def <span class="ident">register_custom_method</span></span>(<span>name: str, func: CustomNormFn, *, overwrite: bool = False) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register a custom normalisation <em>func</em> under <em>name</em>.</p>
+<p>The callable <strong>must</strong> accept two arguments: the DataFrame to be
+normalised and the <em>transformer instance</em> (so it can access config
+such as <code>reference</code> / <code>scale_factor</code>). It must return the
+normalised DataFrame.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Identifier to use in <code>NormalizationTransformer(..., normalization_type=name)</code>.</dd>
+<dt><strong><code>func</code></strong></dt>
+<dd>Callable implementing the normalisation.</dd>
+<dt><strong><code>overwrite</code></strong></dt>
+<dd>Allow replacing an existing registration. Defaults to <em>False</em>.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.NormalizationTransformer.transform"><code class="name flex">
+<span>def <span class="ident">transform</span></span>(<span>self, data: pd.DataFrame | pd.Series[Any]) ‑> pd.DataFrame | pd.Series[Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+    &#34;&#34;&#34;Normalize the data based on the configured normalization type.
+
+    Args:
+        data: DataFrame containing financial data to normalize.
+            All columns will be normalized except the reference column
+            in &#39;percent_of&#39; normalization.
+
+    Returns:
+        DataFrame with normalized values. Original column names are preserved
+        for all normalization types.
+
+    Raises:
+        DataValidationError: If data is not a pandas DataFrame.
+        NormalizationError: If reference column is not found in DataFrame
+            (for &#39;percent_of&#39; normalization).
+    &#34;&#34;&#34;
+    if not isinstance(data, pd.DataFrame | pd.Series):
+        raise DataValidationError(
+            f&#34;Unsupported data type: {type(data)}. Expected pandas.DataFrame or pandas.Series&#34;,
+            validation_errors=[f&#34;Got type: {type(data).__name__}&#34;],
+        )
+    return super().transform(data)</code></pre>
+</details>
+<div class="desc"><p>Normalize the data based on the configured normalization type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>DataFrame containing financial data to normalize.
+All columns will be normalized except the reference column
+in 'percent_of' normalization.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>DataFrame with normalized values. Original column names are preserved
+for all normalization types.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>DataValidationError</code></dt>
+<dd>If data is not a pandas DataFrame.</dd>
+<dt><code>NormalizationError</code></dt>
+<dd>If reference column is not found in DataFrame
+(for 'percent_of' normalization).</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.transformers.NormalizationTransformer.validate_config"><code class="name flex">
+<span>def <span class="ident">validate_config</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_config(self) -&gt; None:
+    &#34;&#34;&#34;Validate the transformer configuration.
+
+    Raises:
+        NormalizationError: If the configuration is invalid.
+    &#34;&#34;&#34;
+    super().validate_config()
+
+    if (
+        self.normalization_type not in self.NORMALIZATION_TYPES
+        and self.normalization_type not in self._CUSTOM_METHODS
+    ):
+        raise NormalizationError(
+            f&#34;Unknown normalization method: {self.normalization_type}. &#34;
+            f&#34;Supported methods are: {self.NORMALIZATION_TYPES}&#34;,
+            method=self.normalization_type,
+        )
+
+    if self.normalization_type == NormalizationType.PERCENT_OF.value and not self.reference:
+        raise NormalizationError(
+            &#34;Reference field must be provided for percent_of normalization&#34;,
+            method=self.normalization_type,
+        )
+
+    if self.normalization_type == NormalizationType.SCALE_BY.value and self.scale_factor is None:
+        raise NormalizationError(
+            &#34;Scale factor must be provided for scale_by normalization&#34;,
+            method=self.normalization_type,
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate the transformer configuration.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>NormalizationError</code></dt>
+<dd>If the configuration is invalid.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.transformers.NormalizationTransformer.validate_input"><code class="name flex">
+<span>def <span class="ident">validate_input</span></span>(<span>self, data: object) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_input(self, data: object) -&gt; bool:
+    &#34;&#34;&#34;Return *True* when *data* is a DataFrame or Series.
+
+    This method implements the DataTransformer contract by specifying
+    exactly which input types are supported by the normalization
+    transformer.
+
+    Args:
+        data: The input data to validate. Can be any Python object,
+             but only pandas DataFrame and Series are accepted.
+
+    Returns:
+        bool: True if data is either:
+            - pandas.DataFrame
+            - pandas.Series
+            False for all other types.
+
+    Examples:
+        &gt;&gt;&gt; transformer = NormalizationTransformer()
+        &gt;&gt;&gt; transformer.validate_input(pd.DataFrame())
+        True
+        &gt;&gt;&gt; transformer.validate_input(pd.Series())
+        True
+        &gt;&gt;&gt; transformer.validate_input([1, 2, 3])
+        False
+    &#34;&#34;&#34;
+    return isinstance(data, pd.DataFrame | pd.Series)</code></pre>
+</details>
+<div class="desc"><p>Return <em>True</em> when <em>data</em> is a DataFrame or Series.</p>
+<p>This method implements the DataTransformer contract by specifying
+exactly which input types are supported by the normalization
+transformer.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The input data to validate. Can be any Python object,
+but only pandas DataFrame and Series are accepted.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if data is either:
+- pandas.DataFrame
+- pandas.Series
+False for all other types.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; transformer = NormalizationTransformer()
+&gt;&gt;&gt; transformer.validate_input(pd.DataFrame())
+True
+&gt;&gt;&gt; transformer.validate_input(pd.Series())
+True
+&gt;&gt;&gt; transformer.validate_input([1, 2, 3])
+False
+</code></pre></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.execute" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer.execute">execute</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.preprocessing.transformers.PeriodConversionTransformer"><code class="flex name class">
+<span>class <span class="ident">PeriodConversionTransformer</span></span>
+<span>(</span><span>conversion_type: str | ConversionType = ConversionType.QUARTERLY_TO_ANNUAL,<br>aggregation: str = 'sum',<br>*,<br>config: PeriodConversionConfig | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PeriodConversionTransformer(DataTransformer):
+    &#34;&#34;&#34;Transformer for converting between different financial reporting periods.
+
+    This transformer aggregates financial data from higher-frequency periods
+    (e.g., monthly, quarterly) to lower-frequency periods (e.g., quarterly, annual)
+    or calculates trailing metrics like TTM (Trailing Twelve Months).
+
+    Supported conversion types:
+        - **quarterly_to_annual**: Aggregate 4 quarters into annual data
+        - **monthly_to_quarterly**: Aggregate 3 months into quarterly data
+        - **monthly_to_annual**: Aggregate 12 months into annual data
+        - **quarterly_to_ttm**: Calculate trailing twelve months from quarterly data
+
+    Input Data Requirements:
+        - Data must have a DatetimeIndex or an index convertible to datetime
+        - The index should represent the period-end dates
+        - Data frequency should match the conversion type (e.g., quarterly data
+          for quarterly_to_annual conversion)
+
+    Aggregation Methods:
+        - **sum**: Total values (default) - use for flow items like revenue, expenses
+        - **mean**: Average values - use for rates, ratios, or average balances
+        - **last**: Take last value - use for balance sheet items (point-in-time)
+        - **first**: Take first value - use for opening balances
+        - **max/min**: Maximum/minimum values - use for peak/trough analysis
+
+    Examples:
+        Convert quarterly revenue to annual totals:
+
+        &gt;&gt;&gt; import pandas as pd
+        &gt;&gt;&gt; from fin_statement_model.preprocessing.transformers import PeriodConversionTransformer
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Quarterly revenue and expense data
+        &gt;&gt;&gt; quarterly_data = pd.DataFrame(
+        ...     {&#34;revenue&#34;: [100, 110, 120, 130, 140, 150, 160, 170], &#34;expenses&#34;: [80, 85, 90, 95, 100, 105, 110, 115]},
+        ...     index=pd.date_range(&#34;2022-03-31&#34;, periods=8, freq=&#34;Q&#34;),
+        ... )
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Convert to annual data (sum 4 quarters)
+        &gt;&gt;&gt; annual_converter = PeriodConversionTransformer(conversion_type=&#34;quarterly_to_annual&#34;, aggregation=&#34;sum&#34;)
+        &gt;&gt;&gt; annual_data = annual_converter.transform(quarterly_data)
+        &gt;&gt;&gt; print(annual_data)
+        #       revenue  expenses
+        # 2022      460       350
+        # 2023      620       430
+
+        Convert monthly balance sheet to quarterly (taking last value):
+
+        &gt;&gt;&gt; # Monthly balance sheet data
+        &gt;&gt;&gt; monthly_bs = pd.DataFrame(
+        ...     {&#34;total_assets&#34;: [1000, 1020, 1050, 1080, 1100, 1150], &#34;total_equity&#34;: [600, 610, 620, 630, 640, 650]},
+        ...     index=pd.date_range(&#34;2023-01-31&#34;, periods=6, freq=&#34;M&#34;),
+        ... )
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Convert to quarterly, taking last month&#39;s value
+        &gt;&gt;&gt; quarterly_converter = PeriodConversionTransformer(
+        ...     conversion_type=&#34;monthly_to_quarterly&#34;, aggregation=&#34;last&#34;
+        ... )
+        &gt;&gt;&gt; quarterly_bs = quarterly_converter.transform(monthly_bs)
+        &gt;&gt;&gt; print(quarterly_bs)
+        #                  total_assets  total_equity
+        # (2023, 1)              1050           620
+        # (2023, 2)              1150           650
+
+        Calculate trailing twelve months (TTM) from quarterly data:
+
+        &gt;&gt;&gt; # Quarterly earnings data
+        &gt;&gt;&gt; quarterly_earnings = pd.DataFrame(
+        ...     {&#34;net_income&#34;: [25, 30, 35, 40, 45, 50, 55, 60]}, index=pd.date_range(&#34;2022-03-31&#34;, periods=8, freq=&#34;Q&#34;)
+        ... )
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Calculate TTM (rolling 4-quarter sum)
+        &gt;&gt;&gt; ttm_converter = PeriodConversionTransformer(conversion_type=&#34;quarterly_to_ttm&#34;, aggregation=&#34;sum&#34;)
+        &gt;&gt;&gt; ttm_data = ttm_converter.transform(quarterly_earnings)
+        &gt;&gt;&gt; print(ttm_data.iloc[3:])  # First 3 periods will be NaN
+        #             net_income
+        # 2023-03-31       130.0
+        # 2023-06-30       150.0
+        # 2023-09-30       170.0
+        # 2023-12-31       190.0
+        # 2024-03-31       210.0
+
+    Note:
+        - The resulting index format depends on the conversion type
+        - Annual conversions group by year (integer index)
+        - Quarterly conversions group by (year, quarter) tuple
+        - TTM conversions maintain the original datetime index
+        - Ensure your aggregation method matches the financial item type
+    &#34;&#34;&#34;
+
+    # All valid conversion types
+    CONVERSION_TYPES: ClassVar[list[str]] = [t.value for t in ConversionType]
+
+    def __init__(
+        self,
+        conversion_type: str | ConversionType = ConversionType.QUARTERLY_TO_ANNUAL,
+        aggregation: str = &#34;sum&#34;,
+        *,
+        config: PeriodConversionConfig | None = None,
+    ):
+        &#34;&#34;&#34;Initialize the period conversion transformer.
+
+        Args:
+            conversion_type: Type of period conversion to apply. Can be either
+                a string or ConversionType enum value:
+                - &#39;quarterly_to_annual&#39;: Convert 4 quarters to 1 year
+                - &#39;monthly_to_quarterly&#39;: Convert 3 months to 1 quarter
+                - &#39;monthly_to_annual&#39;: Convert 12 months to 1 year
+                - &#39;quarterly_to_ttm&#39;: Calculate trailing twelve months
+            aggregation: How to aggregate data within each period:
+                - &#39;sum&#39;: Add up all values (default) - for flow items
+                - &#39;mean&#39;: Calculate average - for rates/ratios
+                - &#39;last&#39;: Take last value - for balance sheet items
+                - &#39;first&#39;: Take first value - for opening balances
+                - &#39;max&#39;: Take maximum value
+                - &#39;min&#39;: Take minimum value
+                - &#39;std&#39;: Calculate standard deviation
+                - &#39;count&#39;: Count non-null values
+            config: Optional PeriodConversionConfig object containing configuration.
+                If provided, overrides other parameters.
+
+        Raises:
+            ValueError: If conversion_type is invalid.
+
+        Examples:
+            &gt;&gt;&gt; # Annual totals from quarterly data
+            &gt;&gt;&gt; converter = PeriodConversionTransformer(&#34;quarterly_to_annual&#34;, &#34;sum&#34;)
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Quarter-end balances from monthly data
+            &gt;&gt;&gt; converter = PeriodConversionTransformer(&#34;monthly_to_quarterly&#34;, &#34;last&#34;)
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # TTM revenue from quarterly data
+            &gt;&gt;&gt; converter = PeriodConversionTransformer(&#34;quarterly_to_ttm&#34;, &#34;sum&#34;)
+        &#34;&#34;&#34;
+        if config is not None and aggregation != &#34;sum&#34;:
+            warnings.warn(
+                &#34;Both &#39;config&#39; and individual kwargs supplied to PeriodConversionTransformer; the Pydantic config takes precedence.&#34;,
+                UserWarning,
+                stacklevel=2,
+            )
+
+        if config is not None:
+            conversion_type = config.conversion_type or conversion_type
+            aggregation = config.aggregation or aggregation
+
+        # Normalize enum to string
+        ctype = conversion_type.value if isinstance(conversion_type, ConversionType) else conversion_type
+        if ctype not in self.CONVERSION_TYPES:
+            raise ValueError(f&#34;Invalid conversion type: {ctype}. Must be one of {self.CONVERSION_TYPES}&#34;)
+        self.conversion_type = ctype
+        self.aggregation = aggregation
+
+        super().__init__(config.model_dump() if config else None)
+
+    def transform(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+        &#34;&#34;&#34;Transform data by converting between period types.
+
+        Args:
+            data: DataFrame with time-based data to convert. Must have either:
+                - A DatetimeIndex
+                - An index containing date/time strings parsable by pd.to_datetime
+                - Period labels that can be converted to datetime
+
+                The data frequency should match the source period type (e.g.,
+                quarterly data for &#39;quarterly_to_annual&#39; conversion).
+
+        Returns:
+            DataFrame with converted periods:
+            - For annual conversions: Index will be years (integers)
+            - For quarterly conversions: Index will be (year, quarter) tuples
+            - For TTM conversions: Original datetime index is preserved
+
+            All columns are aggregated according to the specified method.
+
+        Raises:
+            TypeError: If data is not a pandas DataFrame or Series.
+            ValueError: If index cannot be converted to datetime or if
+                aggregation=&#39;sum&#39; is used with &#39;quarterly_to_ttm&#39; and a
+                different aggregation method is specified.
+
+        Examples:
+            &gt;&gt;&gt; # Convert quarterly data to annual
+            &gt;&gt;&gt; df = pd.DataFrame(
+            ...     {&#34;revenue&#34;: [100, 110, 120, 130], &#34;costs&#34;: [60, 65, 70, 75]},
+            ...     index=[&#34;2023-Q1&#34;, &#34;2023-Q2&#34;, &#34;2023-Q3&#34;, &#34;2023-Q4&#34;],
+            ... )
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; converter = PeriodConversionTransformer(&#34;quarterly_to_annual&#34;)
+            &gt;&gt;&gt; annual = converter.transform(df)
+            &gt;&gt;&gt; print(annual)
+            #       revenue  costs
+            # 2023      460    270
+        &#34;&#34;&#34;
+        if not isinstance(data, pd.DataFrame | pd.Series):
+            raise TypeError(&#34;Period conversion requires a pandas DataFrame or Series&#34;)
+
+        return super().transform(data)
+
+    def _transform_impl(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+        &#34;&#34;&#34;Apply the period conversion transformation.
+
+        This is the core implementation method that handles both DataFrame
+        and Series inputs by converting Series to single-column DataFrames,
+        applying the period conversion, and converting back if needed.
+
+        Args:
+            data: The data to transform. Can be either:
+                - pandas.DataFrame: For multi-column period conversion
+                - pandas.Series: For single-column period conversion
+
+        Returns:
+            The transformed data in the same format as the input
+            (DataFrame → DataFrame, Series → Series).
+
+        Raises:
+            DataValidationError: If data is not a DataFrame or Series.
+            ValueError: If period conversion fails due to:
+                - Invalid index format
+                - Unsupported aggregation method for TTM
+                - Other conversion-specific issues
+
+        Examples:
+            &gt;&gt;&gt; transformer = PeriodConversionTransformer(conversion_type=&#34;quarterly_to_annual&#34;, aggregation=&#34;sum&#34;)
+            &gt;&gt;&gt; df = pd.DataFrame(
+            ...     {&#34;revenue&#34;: [100, 110, 120, 130], &#34;costs&#34;: [60, 65, 70, 75]},
+            ...     index=pd.date_range(&#34;2023-01-01&#34;, periods=4, freq=&#34;Q&#34;),
+            ... )
+            &gt;&gt;&gt; result = transformer._transform_impl(df)
+            &gt;&gt;&gt; series = pd.Series(
+            ...     [100, 110, 120, 130], index=pd.date_range(&#34;2023-01-01&#34;, periods=4, freq=&#34;Q&#34;), name=&#34;revenue&#34;
+            ... )
+            &gt;&gt;&gt; result_series = transformer._transform_impl(series)
+        &#34;&#34;&#34;
+        if not isinstance(data, pd.DataFrame | pd.Series):
+            raise DataValidationError(
+                &#34;Period conversion requires a pandas DataFrame or Series&#34;,
+                validation_errors=[f&#34;Got type: {type(data).__name__}&#34;],
+            )
+
+        df, was_series = self._coerce_to_dataframe(data)
+        result_df = self._convert_periods(df)
+        if was_series:
+            return result_df.iloc[:, 0]
+        return result_df
+
+    def _convert_periods(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Apply period conversion to a DataFrame.
+
+        This method implements the core period conversion logic by:
+        1. Ensuring the index is in datetime format
+        2. Dispatching to the appropriate conversion method
+        3. Handling any conversion-specific requirements
+
+        Args:
+            df: DataFrame to convert. Must have:
+                - An index that can be converted to datetime
+                - Data frequency matching the source period type
+                - Numeric columns for aggregation
+
+        Returns:
+            Converted DataFrame with:
+                - New period-based index (format depends on conversion)
+                - Original column names preserved
+                - Values aggregated according to configuration
+
+        Raises:
+            ValueError: If:
+                - DataFrame index cannot be converted to datetime
+                - TTM conversion is requested with unsupported aggregation
+            NotImplementedError: If conversion_type is not supported
+
+        Examples:
+            &gt;&gt;&gt; df = pd.DataFrame(
+            ...     {&#34;revenue&#34;: [100, 110, 120, 130], &#34;costs&#34;: [60, 65, 70, 75]},
+            ...     index=[&#34;2023-Q1&#34;, &#34;2023-Q2&#34;, &#34;2023-Q3&#34;, &#34;2023-Q4&#34;],
+            ... )
+            &gt;&gt;&gt; transformer = PeriodConversionTransformer(&#34;quarterly_to_annual&#34;)
+            &gt;&gt;&gt; result = transformer._convert_periods(df)
+            &gt;&gt;&gt; print(result)
+            #       revenue  costs
+            # 2023      460    270
+
+        Notes:
+            - The output index format varies by conversion type:
+                - Annual: Integer year (e.g., 2023)
+                - Quarterly: (year, quarter) tuple (e.g., (2023, 1))
+                - TTM: Original datetime preserved
+            - Aggregation method should match the financial metric type:
+                - Flow measures (revenue): Use &#39;sum&#39;
+                - Point-in-time (balance sheet): Use &#39;last&#39;
+                - Rates/ratios: Consider &#39;mean&#39;
+        &#34;&#34;&#34;
+        df_copy = self._ensure_datetime_index(df)
+
+        dispatch: dict[str, Callable[[pd.DataFrame], pd.DataFrame]] = {
+            ConversionType.QUARTERLY_TO_ANNUAL.value: self._quarterly_to_annual,
+            ConversionType.MONTHLY_TO_QUARTERLY.value: self._monthly_to_quarterly,
+            ConversionType.MONTHLY_TO_ANNUAL.value: self._monthly_to_annual,
+            ConversionType.QUARTERLY_TO_TTM.value: self._quarterly_to_ttm,
+        }
+
+        try:
+            return dispatch[self.conversion_type](df_copy)
+        except KeyError as exc:
+            raise NotImplementedError(f&#34;Conversion type &#39;{self.conversion_type}&#39; is not implemented.&#34;) from exc
+
+    def _ensure_datetime_index(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Return *df* with a DatetimeIndex, converting if required.
+
+        This helper method ensures the DataFrame has a proper datetime index
+        by attempting to convert string-based or period-based indices to
+        datetime format.
+
+        Args:
+            df: DataFrame whose index needs to be in datetime format.
+                The index can be:
+                - Already a DatetimeIndex (no conversion needed)
+                - String dates (e.g., &#39;2023-01-31&#39;, &#39;2023-Q1&#39;)
+                - Period labels that pandas can parse
+
+        Returns:
+            DataFrame with DatetimeIndex, preserving the original data
+
+        Raises:
+            ValueError: If the index cannot be converted to datetime format
+
+        Examples:
+            &gt;&gt;&gt; df = pd.DataFrame({&#34;value&#34;: [1, 2]}, index=[&#34;2023-01&#34;, &#34;2023-02&#34;])
+            &gt;&gt;&gt; transformer = PeriodConversionTransformer()
+            &gt;&gt;&gt; result = transformer._ensure_datetime_index(df)
+            &gt;&gt;&gt; isinstance(result.index, pd.DatetimeIndex)
+            True
+
+        Notes:
+            - The method attempts to use pd.to_datetime for conversion
+            - Logs debug message on successful conversion
+            - Logs exception details if conversion fails
+            - Returns a copy of the DataFrame to avoid modifying the original
+        &#34;&#34;&#34;
+        if isinstance(df.index, pd.DatetimeIndex):
+            return df
+
+        df_conv = df.copy()
+        try:
+            df_conv.index = pd.to_datetime(df_conv.index)
+            logger.debug(&#34;Successfully converted DataFrame index to DatetimeIndex.&#34;)
+        except Exception as exc:
+            logger.exception(
+                &#34;Failed to convert DataFrame index to DatetimeIndex. Ensure index contains standard date/time strings or is already a DatetimeIndex.&#34;
+            )
+            raise ValueError(&#34;Index must be convertible to datetime for period conversion&#34;) from exc
+        else:
+            return df_conv
+
+    def _quarterly_to_annual(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Aggregate 4 quarters into annual periods using configured aggregation.
+
+        This method converts quarterly data to annual by:
+        1. Grouping data by year
+        2. Applying the configured aggregation method
+        3. Returning a DataFrame with integer year index
+
+        Args:
+            df: DataFrame with quarterly data (DatetimeIndex)
+
+        Returns:
+            DataFrame with annual data and integer year index
+
+        Examples:
+            &gt;&gt;&gt; df = pd.DataFrame(
+            ...     {&#34;revenue&#34;: [100, 110, 120, 130]}, index=pd.date_range(&#34;2023-01-01&#34;, periods=4, freq=&#34;Q&#34;)
+            ... )
+            &gt;&gt;&gt; transformer = PeriodConversionTransformer(&#34;quarterly_to_annual&#34;)
+            &gt;&gt;&gt; result = transformer._quarterly_to_annual(df)
+            &gt;&gt;&gt; print(result)
+            #       revenue
+            # 2023      460
+        &#34;&#34;&#34;
+        return cast(&#34;pd.DataFrame&#34;, resample_to_period(df, Period.YEAR, aggregation=self.aggregation))
+
+    def _monthly_to_quarterly(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Aggregate 3 months into quarterly periods.
+
+        This method converts monthly data to quarterly by:
+        1. Resampling to quarterly frequency
+        2. Applying the configured aggregation method
+        3. Converting the index to (year, quarter) tuples
+
+        Args:
+            df: DataFrame with monthly data (DatetimeIndex)
+
+        Returns:
+            DataFrame with quarterly data and (year, quarter) tuple index
+
+        Examples:
+            &gt;&gt;&gt; df = pd.DataFrame(
+            ...     {&#34;value&#34;: [10, 20, 30, 40, 50, 60]}, index=pd.date_range(&#34;2023-01-31&#34;, periods=6, freq=&#34;M&#34;)
+            ... )
+            &gt;&gt;&gt; transformer = PeriodConversionTransformer(&#34;monthly_to_quarterly&#34;)
+            &gt;&gt;&gt; result = transformer._monthly_to_quarterly(df)
+            &gt;&gt;&gt; print(result)
+            #              value
+            # (2023, 1)      60
+            # (2023, 2)     150
+        &#34;&#34;&#34;
+        resampled = cast(&#34;pd.DataFrame&#34;, resample_to_period(df, Period.QUARTER, aggregation=self.aggregation))
+        # Convert DatetimeIndex to (year, quarter) tuples for backward-compatibility.
+        resampled.index = pd.Index([(ts.year, ts.quarter) for ts in resampled.index])
+        return resampled
+
+    def _monthly_to_annual(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Aggregate monthly data into annual periods.
+
+        This method converts monthly data to annual by:
+        1. Grouping data by year
+        2. Applying the configured aggregation method
+        3. Returning a DataFrame with integer year index
+
+        Args:
+            df: DataFrame with monthly data (DatetimeIndex)
+
+        Returns:
+            DataFrame with annual data and integer year index
+
+        Examples:
+            &gt;&gt;&gt; df = pd.DataFrame(
+            ...     {&#34;value&#34;: [10, 20, 30, 40, 50, 60]}, index=pd.date_range(&#34;2023-01-31&#34;, periods=6, freq=&#34;M&#34;)
+            ... )
+            &gt;&gt;&gt; transformer = PeriodConversionTransformer(&#34;monthly_to_annual&#34;)
+            &gt;&gt;&gt; result = transformer._monthly_to_annual(df)
+            &gt;&gt;&gt; print(result)
+            #       value
+            # 2023    210
+        &#34;&#34;&#34;
+        return cast(&#34;pd.DataFrame&#34;, resample_to_period(df, Period.YEAR, aggregation=self.aggregation))
+
+    def _quarterly_to_ttm(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Compute trailing-twelve-months (rolling 4-quarter sum).
+
+        This method calculates TTM values by:
+        1. Creating a 4-quarter rolling window
+        2. Summing values within each window
+        3. Preserving the original datetime index
+
+        Args:
+            df: DataFrame with quarterly data (DatetimeIndex)
+
+        Returns:
+            DataFrame with TTM values and original datetime index.
+            The first 3 quarters will be NaN (insufficient data for TTM).
+
+        Raises:
+            ValueError: If aggregation method is not &#39;sum&#39;
+                (TTM requires summing quarters)
+
+        Examples:
+            &gt;&gt;&gt; df = pd.DataFrame(
+            ...     {&#34;revenue&#34;: [100, 110, 120, 130, 140, 150]}, index=pd.date_range(&#34;2023-01-01&#34;, periods=6, freq=&#34;Q&#34;)
+            ... )
+            &gt;&gt;&gt; transformer = PeriodConversionTransformer(&#34;quarterly_to_ttm&#34;)
+            &gt;&gt;&gt; result = transformer._quarterly_to_ttm(df)
+            &gt;&gt;&gt; print(result.iloc[3:])  # Skip first 3 NaN periods
+            #             revenue
+            # 2023-12-31    460.0
+            # 2024-03-31    500.0
+            # 2024-06-30    540.0
+
+        Notes:
+            - Only &#39;sum&#39; aggregation is supported (TTM is always a sum)
+            - First 3 quarters will be NaN (need 4 quarters for TTM)
+            - Original datetime index is preserved
+        &#34;&#34;&#34;
+        if self.aggregation != &#34;sum&#34;:
+            raise ValueError(&#34;QUARTERLY_TO_TTM currently supports only &#39;sum&#39; aggregation.&#34;)
+        return df.rolling(window=4, min_periods=4).sum()
+
+    def validate_input(self, data: object) -&gt; bool:
+        &#34;&#34;&#34;Accept pandas DataFrame or Series.
+
+        This method implements the DataTransformer contract by specifying
+        exactly which input types are supported by the period conversion
+        transformer.
+
+        Args:
+            data: The input data to validate. Can be any Python object,
+                 but only pandas DataFrame and Series are accepted.
+
+        Returns:
+            bool: True if data is either:
+                - pandas.DataFrame
+                - pandas.Series
+                False for all other types.
+
+        Examples:
+            &gt;&gt;&gt; transformer = PeriodConversionTransformer()
+            &gt;&gt;&gt; transformer.validate_input(pd.DataFrame())
+            True
+            &gt;&gt;&gt; transformer.validate_input(pd.Series())
+            True
+            &gt;&gt;&gt; transformer.validate_input([1, 2, 3])
+            False
+        &#34;&#34;&#34;
+        return isinstance(data, pd.DataFrame | pd.Series)</code></pre>
+</details>
+<div class="desc"><p>Transformer for converting between different financial reporting periods.</p>
+<p>This transformer aggregates financial data from higher-frequency periods
+(e.g., monthly, quarterly) to lower-frequency periods (e.g., quarterly, annual)
+or calculates trailing metrics like TTM (Trailing Twelve Months).</p>
+<p>Supported conversion types:
+- <strong>quarterly_to_annual</strong>: Aggregate 4 quarters into annual data
+- <strong>monthly_to_quarterly</strong>: Aggregate 3 months into quarterly data
+- <strong>monthly_to_annual</strong>: Aggregate 12 months into annual data
+- <strong>quarterly_to_ttm</strong>: Calculate trailing twelve months from quarterly data</p>
+<p>Input Data Requirements:
+- Data must have a DatetimeIndex or an index convertible to datetime
+- The index should represent the period-end dates
+- Data frequency should match the conversion type (e.g., quarterly data
+for quarterly_to_annual conversion)</p>
+<p>Aggregation Methods:
+- <strong>sum</strong>: Total values (default) - use for flow items like revenue, expenses
+- <strong>mean</strong>: Average values - use for rates, ratios, or average balances
+- <strong>last</strong>: Take last value - use for balance sheet items (point-in-time)
+- <strong>first</strong>: Take first value - use for opening balances
+- <strong>max/min</strong>: Maximum/minimum values - use for peak/trough analysis</p>
+<h2 id="examples">Examples</h2>
+<p>Convert quarterly revenue to annual totals:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; import pandas as pd
+&gt;&gt;&gt; from fin_statement_model.preprocessing.transformers import PeriodConversionTransformer
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Quarterly revenue and expense data
+&gt;&gt;&gt; quarterly_data = pd.DataFrame(
+...     {&quot;revenue&quot;: [100, 110, 120, 130, 140, 150, 160, 170], &quot;expenses&quot;: [80, 85, 90, 95, 100, 105, 110, 115]},
+...     index=pd.date_range(&quot;2022-03-31&quot;, periods=8, freq=&quot;Q&quot;),
+... )
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Convert to annual data (sum 4 quarters)
+&gt;&gt;&gt; annual_converter = PeriodConversionTransformer(conversion_type=&quot;quarterly_to_annual&quot;, aggregation=&quot;sum&quot;)
+&gt;&gt;&gt; annual_data = annual_converter.transform(quarterly_data)
+&gt;&gt;&gt; print(annual_data)
+#       revenue  expenses
+# 2022      460       350
+# 2023      620       430
+</code></pre>
+<p>Convert monthly balance sheet to quarterly (taking last value):</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Monthly balance sheet data
+&gt;&gt;&gt; monthly_bs = pd.DataFrame(
+...     {&quot;total_assets&quot;: [1000, 1020, 1050, 1080, 1100, 1150], &quot;total_equity&quot;: [600, 610, 620, 630, 640, 650]},
+...     index=pd.date_range(&quot;2023-01-31&quot;, periods=6, freq=&quot;M&quot;),
+... )
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Convert to quarterly, taking last month's value
+&gt;&gt;&gt; quarterly_converter = PeriodConversionTransformer(
+...     conversion_type=&quot;monthly_to_quarterly&quot;, aggregation=&quot;last&quot;
+... )
+&gt;&gt;&gt; quarterly_bs = quarterly_converter.transform(monthly_bs)
+&gt;&gt;&gt; print(quarterly_bs)
+#                  total_assets  total_equity
+# (2023, 1)              1050           620
+# (2023, 2)              1150           650
+</code></pre>
+<p>Calculate trailing twelve months (TTM) from quarterly data:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Quarterly earnings data
+&gt;&gt;&gt; quarterly_earnings = pd.DataFrame(
+...     {&quot;net_income&quot;: [25, 30, 35, 40, 45, 50, 55, 60]}, index=pd.date_range(&quot;2022-03-31&quot;, periods=8, freq=&quot;Q&quot;)
+... )
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Calculate TTM (rolling 4-quarter sum)
+&gt;&gt;&gt; ttm_converter = PeriodConversionTransformer(conversion_type=&quot;quarterly_to_ttm&quot;, aggregation=&quot;sum&quot;)
+&gt;&gt;&gt; ttm_data = ttm_converter.transform(quarterly_earnings)
+&gt;&gt;&gt; print(ttm_data.iloc[3:])  # First 3 periods will be NaN
+#             net_income
+# 2023-03-31       130.0
+# 2023-06-30       150.0
+# 2023-09-30       170.0
+# 2023-12-31       190.0
+# 2024-03-31       210.0
+</code></pre>
+<h2 id="note">Note</h2>
+<ul>
+<li>The resulting index format depends on the conversion type</li>
+<li>Annual conversions group by year (integer index)</li>
+<li>Quarterly conversions group by (year, quarter) tuple</li>
+<li>TTM conversions maintain the original datetime index</li>
+<li>Ensure your aggregation method matches the financial item type</li>
+</ul>
+<p>Initialize the period conversion transformer.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>conversion_type</code></strong></dt>
+<dd>Type of period conversion to apply. Can be either
+a string or ConversionType enum value:
+- 'quarterly_to_annual': Convert 4 quarters to 1 year
+- 'monthly_to_quarterly': Convert 3 months to 1 quarter
+- 'monthly_to_annual': Convert 12 months to 1 year
+- 'quarterly_to_ttm': Calculate trailing twelve months</dd>
+<dt><strong><code>aggregation</code></strong></dt>
+<dd>How to aggregate data within each period:
+- 'sum': Add up all values (default) - for flow items
+- 'mean': Calculate average - for rates/ratios
+- 'last': Take last value - for balance sheet items
+- 'first': Take first value - for opening balances
+- 'max': Take maximum value
+- 'min': Take minimum value
+- 'std': Calculate standard deviation
+- 'count': Count non-null values</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional PeriodConversionConfig object containing configuration.
+If provided, overrides other parameters.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If conversion_type is invalid.</dd>
+</dl>
+<h2 id="examples_1">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Annual totals from quarterly data
+&gt;&gt;&gt; converter = PeriodConversionTransformer(&quot;quarterly_to_annual&quot;, &quot;sum&quot;)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Quarter-end balances from monthly data
+&gt;&gt;&gt; converter = PeriodConversionTransformer(&quot;monthly_to_quarterly&quot;, &quot;last&quot;)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # TTM revenue from quarterly data
+&gt;&gt;&gt; converter = PeriodConversionTransformer(&quot;quarterly_to_ttm&quot;, &quot;sum&quot;)
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.PeriodConversionTransformer.CONVERSION_TYPES"><code class="name">var <span class="ident">CONVERSION_TYPES</span> : ClassVar[list[str]]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.PeriodConversionTransformer.transform"><code class="name flex">
+<span>def <span class="ident">transform</span></span>(<span>self, data: pd.DataFrame | pd.Series[Any]) ‑> pd.DataFrame | pd.Series[Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+    &#34;&#34;&#34;Transform data by converting between period types.
+
+    Args:
+        data: DataFrame with time-based data to convert. Must have either:
+            - A DatetimeIndex
+            - An index containing date/time strings parsable by pd.to_datetime
+            - Period labels that can be converted to datetime
+
+            The data frequency should match the source period type (e.g.,
+            quarterly data for &#39;quarterly_to_annual&#39; conversion).
+
+    Returns:
+        DataFrame with converted periods:
+        - For annual conversions: Index will be years (integers)
+        - For quarterly conversions: Index will be (year, quarter) tuples
+        - For TTM conversions: Original datetime index is preserved
+
+        All columns are aggregated according to the specified method.
+
+    Raises:
+        TypeError: If data is not a pandas DataFrame or Series.
+        ValueError: If index cannot be converted to datetime or if
+            aggregation=&#39;sum&#39; is used with &#39;quarterly_to_ttm&#39; and a
+            different aggregation method is specified.
+
+    Examples:
+        &gt;&gt;&gt; # Convert quarterly data to annual
+        &gt;&gt;&gt; df = pd.DataFrame(
+        ...     {&#34;revenue&#34;: [100, 110, 120, 130], &#34;costs&#34;: [60, 65, 70, 75]},
+        ...     index=[&#34;2023-Q1&#34;, &#34;2023-Q2&#34;, &#34;2023-Q3&#34;, &#34;2023-Q4&#34;],
+        ... )
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; converter = PeriodConversionTransformer(&#34;quarterly_to_annual&#34;)
+        &gt;&gt;&gt; annual = converter.transform(df)
+        &gt;&gt;&gt; print(annual)
+        #       revenue  costs
+        # 2023      460    270
+    &#34;&#34;&#34;
+    if not isinstance(data, pd.DataFrame | pd.Series):
+        raise TypeError(&#34;Period conversion requires a pandas DataFrame or Series&#34;)
+
+    return super().transform(data)</code></pre>
+</details>
+<div class="desc"><p>Transform data by converting between period types.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>
+<p>DataFrame with time-based data to convert. Must have either:
+- A DatetimeIndex
+- An index containing date/time strings parsable by pd.to_datetime
+- Period labels that can be converted to datetime</p>
+<p>The data frequency should match the source period type (e.g.,
+quarterly data for 'quarterly_to_annual' conversion).</p>
+</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>DataFrame with converted periods:
+- For annual conversions: Index will be years (integers)
+- For quarterly conversions: Index will be (year, quarter) tuples
+- For TTM conversions: Original datetime index is preserved</p>
+<p>All columns are aggregated according to the specified method.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If data is not a pandas DataFrame or Series.</dd>
+<dt><code>ValueError</code></dt>
+<dd>If index cannot be converted to datetime or if
+aggregation='sum' is used with 'quarterly_to_ttm' and a
+different aggregation method is specified.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Convert quarterly data to annual
+&gt;&gt;&gt; df = pd.DataFrame(
+...     {&quot;revenue&quot;: [100, 110, 120, 130], &quot;costs&quot;: [60, 65, 70, 75]},
+...     index=[&quot;2023-Q1&quot;, &quot;2023-Q2&quot;, &quot;2023-Q3&quot;, &quot;2023-Q4&quot;],
+... )
+&gt;&gt;&gt;
+&gt;&gt;&gt; converter = PeriodConversionTransformer(&quot;quarterly_to_annual&quot;)
+&gt;&gt;&gt; annual = converter.transform(df)
+&gt;&gt;&gt; print(annual)
+#       revenue  costs
+# 2023      460    270
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.transformers.PeriodConversionTransformer.validate_input"><code class="name flex">
+<span>def <span class="ident">validate_input</span></span>(<span>self, data: object) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_input(self, data: object) -&gt; bool:
+    &#34;&#34;&#34;Accept pandas DataFrame or Series.
+
+    This method implements the DataTransformer contract by specifying
+    exactly which input types are supported by the period conversion
+    transformer.
+
+    Args:
+        data: The input data to validate. Can be any Python object,
+             but only pandas DataFrame and Series are accepted.
+
+    Returns:
+        bool: True if data is either:
+            - pandas.DataFrame
+            - pandas.Series
+            False for all other types.
+
+    Examples:
+        &gt;&gt;&gt; transformer = PeriodConversionTransformer()
+        &gt;&gt;&gt; transformer.validate_input(pd.DataFrame())
+        True
+        &gt;&gt;&gt; transformer.validate_input(pd.Series())
+        True
+        &gt;&gt;&gt; transformer.validate_input([1, 2, 3])
+        False
+    &#34;&#34;&#34;
+    return isinstance(data, pd.DataFrame | pd.Series)</code></pre>
+</details>
+<div class="desc"><p>Accept pandas DataFrame or Series.</p>
+<p>This method implements the DataTransformer contract by specifying
+exactly which input types are supported by the period conversion
+transformer.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The input data to validate. Can be any Python object,
+but only pandas DataFrame and Series are accepted.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if data is either:
+- pandas.DataFrame
+- pandas.Series
+False for all other types.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; transformer = PeriodConversionTransformer()
+&gt;&gt;&gt; transformer.validate_input(pd.DataFrame())
+True
+&gt;&gt;&gt; transformer.validate_input(pd.Series())
+True
+&gt;&gt;&gt; transformer.validate_input([1, 2, 3])
+False
+</code></pre></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.execute" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer.execute">execute</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config">validate_config</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.preprocessing.transformers.TimeSeriesTransformer"><code class="flex name class">
+<span>class <span class="ident">TimeSeriesTransformer</span></span>
+<span>(</span><span>transformation_type: str | TransformationType = TransformationType.GROWTH_RATE,<br>periods: int = 1,<br>window_size: int = 3,<br>*,<br>config: TimeSeriesConfig | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TimeSeriesTransformer(DataTransformer):
+    &#34;&#34;&#34;Transformer for time series financial data analysis.
+
+    This transformer provides common time series transformations used in financial
+    analysis to identify trends, growth patterns, and period-over-period changes.
+
+    Supported transformation types:
+        - **growth_rate**: Calculate period-to-period growth rates (%)
+        - **moving_avg**: Calculate moving averages over specified window
+        - **cagr**: Compute compound annual growth rate
+        - **yoy**: Year-over-year comparison (%)
+        - **qoq**: Quarter-over-quarter comparison (%)
+
+    Data Frequency Assumptions:
+        The transformer makes no assumptions about the frequency of your data.
+        You must specify the appropriate &#39;periods&#39; parameter based on your data:
+
+        - For **monthly data**:
+            - YoY: use periods=12 (compare to same month last year)
+            - QoQ: use periods=3 (compare to same month last quarter)
+
+        - For **quarterly data**:
+            - YoY: use periods=4 (compare to same quarter last year)
+            - QoQ: use periods=1 (compare to previous quarter)
+
+        - For **annual data**:
+            - YoY: use periods=1 (compare to previous year)
+
+    Examples:
+        Calculate year-over-year growth for quarterly revenue data:
+
+        &gt;&gt;&gt; import pandas as pd
+        &gt;&gt;&gt; from fin_statement_model.preprocessing.transformers import TimeSeriesTransformer
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Quarterly revenue data
+        &gt;&gt;&gt; data = pd.DataFrame(
+        ...     {&#34;revenue&#34;: [100, 105, 110, 115, 120, 125, 130, 135], &#34;costs&#34;: [60, 62, 65, 68, 70, 73, 75, 78]},
+        ...     index=pd.date_range(&#34;2022-Q1&#34;, periods=8, freq=&#34;Q&#34;),
+        ... )
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Calculate YoY growth (comparing to same quarter previous year)
+        &gt;&gt;&gt; yoy_transformer = TimeSeriesTransformer(
+        ...     transformation_type=&#34;yoy&#34;,
+        ...     periods=4,  # 4 quarters back for quarterly data
+        ... )
+        &gt;&gt;&gt; yoy_growth = yoy_transformer.transform(data)
+        &gt;&gt;&gt; print(yoy_growth[[&#34;revenue_yoy&#34;, &#34;costs_yoy&#34;]].iloc[4:])  # First 4 periods will be NaN
+        #             revenue_yoy  costs_yoy
+        # 2023-Q1           20.0      16.67
+        # 2023-Q2           19.05     17.74
+        # 2023-Q3           18.18     15.38
+        # 2023-Q4           17.39     14.71
+
+        Calculate 3-month moving average for monthly data:
+
+        &gt;&gt;&gt; # Monthly sales data
+        &gt;&gt;&gt; monthly_data = pd.DataFrame(
+        ...     {&#34;sales&#34;: [100, 95, 105, 110, 108, 115, 120, 118, 125]},
+        ...     index=pd.date_range(&#34;2023-01&#34;, periods=9, freq=&#34;M&#34;),
+        ... )
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Calculate 3-month moving average
+        &gt;&gt;&gt; ma_transformer = TimeSeriesTransformer(transformation_type=&#34;moving_avg&#34;, window_size=3)
+        &gt;&gt;&gt; ma_result = ma_transformer.transform(monthly_data)
+        &gt;&gt;&gt; print(ma_result[&#34;sales_ma3&#34;].round(2))
+        # 2023-01-31       NaN
+        # 2023-02-28       NaN
+        # 2023-03-31    100.00
+        # 2023-04-30    103.33
+        # 2023-05-31    107.67
+        # 2023-06-30    111.00
+        # 2023-07-31    114.33
+        # 2023-08-31    117.67
+        # 2023-09-30    121.00
+
+    Note:
+        - Growth rate calculations will return NaN for periods without valid
+          comparison data (e.g., first 4 periods for YoY with quarterly data)
+        - CAGR requires at least 2 data points and positive starting values
+        - Moving averages will have NaN values for the first (window_size - 1) periods
+    &#34;&#34;&#34;
+
+    TRANSFORMATION_TYPES: ClassVar[list[str]] = [t.value for t in TransformationType]
+
+    def __init__(
+        self,
+        transformation_type: str | TransformationType = TransformationType.GROWTH_RATE,
+        periods: int = 1,
+        window_size: int = 3,
+        *,
+        config: TimeSeriesConfig | None = None,
+    ):
+        &#34;&#34;&#34;Initialize the time series transformer.
+
+        Args:
+            transformation_type: Type of transformation to apply. Can be either
+                a string or TransformationType enum value:
+                - &#39;growth_rate&#39;: Period-to-period growth rate
+                - &#39;moving_avg&#39;: Rolling window average
+                - &#39;cagr&#39;: Compound annual growth rate
+                - &#39;yoy&#39;: Year-over-year growth rate
+                - &#39;qoq&#39;: Quarter-over-quarter growth rate
+            periods: Number of periods for lag calculations. Critical for YoY/QoQ:
+                - For YoY with quarterly data: use periods=4
+                - For YoY with monthly data: use periods=12
+                - For QoQ with quarterly data: use periods=1
+                - For QoQ with monthly data: use periods=3
+                - For growth_rate: use periods=1 for consecutive period growth
+            window_size: Size of the moving average window (only used for &#39;moving_avg&#39;).
+                Default is 3.
+            config: Optional TimeSeriesConfig object containing configuration.
+                If provided, overrides other parameters.
+
+        Raises:
+            ValueError: If transformation_type is invalid.
+
+        Examples:
+            &gt;&gt;&gt; # YoY for quarterly data
+            &gt;&gt;&gt; transformer = TimeSeriesTransformer(&#34;yoy&#34;, periods=4)
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # 3-month moving average
+            &gt;&gt;&gt; transformer = TimeSeriesTransformer(&#34;moving_avg&#34;, window_size=3)
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Quarter-over-quarter for monthly data
+            &gt;&gt;&gt; transformer = TimeSeriesTransformer(&#34;qoq&#34;, periods=3)
+        &#34;&#34;&#34;
+        if config is not None and any(param is not None for param in (periods, window_size)):
+            warnings.warn(
+                &#34;Both &#39;config&#39; and individual kwargs supplied to TimeSeriesTransformer; the Pydantic config takes precedence.&#34;,
+                UserWarning,
+                stacklevel=2,
+            )
+
+        if config is not None:
+            transformation_type = config.transformation_type or transformation_type
+            periods = config.periods if config.periods is not None else periods
+            window_size = config.window_size if config.window_size is not None else window_size
+
+        super().__init__(config.model_dump() if config else None)
+        # Normalize to string
+        if isinstance(transformation_type, TransformationType):
+            ttype = transformation_type.value
+        else:
+            ttype = transformation_type
+        if ttype not in self.TRANSFORMATION_TYPES:
+            raise ValueError(f&#34;Invalid transformation type: {ttype}. Must be one of {self.TRANSFORMATION_TYPES}&#34;)
+        self.transformation_type = ttype
+
+        self.periods = periods
+        self.window_size = window_size
+
+    def transform(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+        &#34;&#34;&#34;Transform time series data based on the configured transformation type.
+
+        Args:
+            data: DataFrame containing time series financial data. The DataFrame
+                should have a time-based index (DatetimeIndex, PeriodIndex, or
+                sequential numeric index) for meaningful time series analysis.
+
+        Returns:
+            DataFrame with new columns containing transformed values:
+            - For &#39;growth_rate&#39;: adds &#39;{column}_growth&#39; columns
+            - For &#39;moving_avg&#39;: adds &#39;{column}_ma{window_size}&#39; columns
+            - For &#39;cagr&#39;: adds &#39;{column}_cagr&#39; columns (single value repeated)
+            - For &#39;yoy&#39;: adds &#39;{column}_yoy&#39; columns
+            - For &#39;qoq&#39;: adds &#39;{column}_qoq&#39; columns
+
+            Original columns are preserved in all cases.
+
+        Raises:
+            TypeError: If data is not a pandas DataFrame or Series.
+
+        Examples:
+            &gt;&gt;&gt; df = pd.DataFrame({&#34;revenue&#34;: [100, 110, 120, 130]})
+            &gt;&gt;&gt; transformer = TimeSeriesTransformer(&#34;growth_rate&#34;)
+            &gt;&gt;&gt; result = transformer.transform(df)
+            &gt;&gt;&gt; print(result)
+            #    revenue  revenue_growth
+            # 0      100             NaN
+            # 1      110            10.0
+            # 2      120            9.09
+            # 3      130            8.33
+        &#34;&#34;&#34;
+        # Accept both DataFrame and Series to honour the broader contract
+        if not isinstance(data, pd.DataFrame | pd.Series):
+            raise TypeError(f&#34;Unsupported data type: {type(data)}. Expected pandas.DataFrame or pandas.Series&#34;)
+        return super().transform(data)
+
+    def _transform_impl(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+        &#34;&#34;&#34;Transform time series data.
+
+        This is the core implementation method that handles both DataFrame
+        and Series inputs by converting Series to single-column DataFrames,
+        applying the time series transformation, and converting back if needed.
+
+        Args:
+            data: The data to transform. Can be either:
+                - pandas.DataFrame: For multi-column time series analysis
+                - pandas.Series: For single-column time series analysis
+
+        Returns:
+            The transformed data in the same format as the input
+            (DataFrame → DataFrame, Series → Series).
+
+        Examples:
+            &gt;&gt;&gt; transformer = TimeSeriesTransformer(&#34;growth_rate&#34;)
+            &gt;&gt;&gt; df = pd.DataFrame({&#34;revenue&#34;: [100, 110, 120], &#34;costs&#34;: [60, 65, 70]})
+            &gt;&gt;&gt; result = transformer._transform_impl(df)
+            &gt;&gt;&gt; series = pd.Series([100, 110, 120], name=&#34;revenue&#34;)
+            &gt;&gt;&gt; result_series = transformer._transform_impl(series)
+        &#34;&#34;&#34;
+        df, was_series = self._coerce_to_dataframe(data)
+        result_df = self._transform_dataframe(df)
+        if was_series:
+            return result_df.iloc[:, 0]
+        return result_df
+
+    def _transform_dataframe(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Transform a DataFrame with time series data.
+
+        This method implements the core time series transformation logic by
+        dispatching to the appropriate transformation method based on the
+        configured transformation type.
+
+        Args:
+            df: DataFrame containing time series data with a time-based index.
+                The data should be numeric and suitable for the selected
+                transformation type:
+                - growth_rate/yoy/qoq: Non-zero values for meaningful %
+                - moving_avg: No special requirements
+                - cagr: Positive starting values
+
+        Returns:
+            DataFrame with new columns added for the specified transformation:
+            - growth_rate: &#39;{col}_growth&#39; with period-over-period % change
+            - moving_avg: &#39;{col}_ma{window_size}&#39; with rolling means
+            - cagr: &#39;{col}_cagr&#39; with compound growth rates
+            - yoy: &#39;{col}_yoy&#39; with year-over-year % change
+            - qoq: &#39;{col}_qoq&#39; with quarter-over-quarter % change
+
+        Raises:
+            NotImplementedError: If the specified transformation_type is not
+                supported (should never happen due to __init__ validation).
+
+        Examples:
+            &gt;&gt;&gt; df = pd.DataFrame({&#34;revenue&#34;: [100, 110, 120, 130], &#34;costs&#34;: [60, 65, 70, 75]})
+            &gt;&gt;&gt; transformer = TimeSeriesTransformer(&#34;growth_rate&#34;)
+            &gt;&gt;&gt; result = transformer._transform_dataframe(df)
+            &gt;&gt;&gt; print(result)
+            #    revenue  revenue_growth  costs  costs_growth
+            # 0     100             NaN     60          NaN
+            # 1     110            10.0     65         8.33
+            # 2     120             9.1     70         7.69
+            # 3     130             8.3     75         7.14
+
+        Notes:
+            - Original columns are always preserved
+            - Each transformation type adds its own suffix to new columns
+            - NaN handling varies by transformation type
+            - The dispatch table maps transformation types to their handlers
+        &#34;&#34;&#34;
+        dispatch: dict[str, Callable[[pd.DataFrame], pd.DataFrame]] = {
+            &#34;growth_rate&#34;: self._apply_growth_rate,
+            &#34;moving_avg&#34;: self._apply_moving_avg,
+            &#34;cagr&#34;: self._apply_cagr,
+            &#34;yoy&#34;: self._apply_yoy,
+            &#34;qoq&#34;: self._apply_qoq,
+        }
+
+        try:
+            return dispatch[self.transformation_type](df)
+        except KeyError as exc:
+            # Should never happen thanks to validation in __init__, but fail loudly.
+            raise NotImplementedError(f&#34;Transformation type &#39;{self.transformation_type}&#39; is not implemented.&#34;) from exc
+
+    # ------------------------------------------------------------------
+    # Private helpers (one per transformation type)
+    # ------------------------------------------------------------------
+
+    def _apply_growth_rate(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Calculate period-over-period growth rates.
+
+        This method computes the percentage change between consecutive periods
+        (or specified lag) for each column in the DataFrame.
+
+        Args:
+            df: DataFrame with time series data. Values should be non-zero
+                for meaningful percentage calculations.
+
+        Returns:
+            DataFrame with original columns plus &#39;{col}_growth&#39; columns
+            containing period-over-period percentage changes.
+
+        Examples:
+            &gt;&gt;&gt; df = pd.DataFrame({&#34;revenue&#34;: [100, 110, 120, 130]})
+            &gt;&gt;&gt; transformer = TimeSeriesTransformer(&#34;growth_rate&#34;, periods=1)
+            &gt;&gt;&gt; result = transformer._apply_growth_rate(df)
+            &gt;&gt;&gt; print(result[&#34;revenue_growth&#34;].round(2))
+            # 0     NaN
+            # 1    10.00
+            # 2     9.09
+            # 3     8.33
+
+        Notes:
+            - First period(s) will be NaN (no prior data for comparison)
+            - Growth rates are expressed as percentages (multiplied by 100)
+            - Zero values in denominator result in infinity/NaN
+            - Uses pandas pct_change() for calculation
+        &#34;&#34;&#34;
+        res = df.copy()
+        for col in df.columns:
+            res[f&#34;{col}_growth&#34;] = df[col].pct_change(periods=self.periods) * 100
+        return res
+
+    def _apply_moving_avg(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Calculate rolling window averages.
+
+        This method computes moving averages over a specified window size
+        for each column in the DataFrame.
+
+        Args:
+            df: DataFrame with time series data. No special requirements
+                for the values beyond being numeric.
+
+        Returns:
+            DataFrame with original columns plus &#39;{col}_ma{window_size}&#39;
+            columns containing rolling means.
+
+        Examples:
+            &gt;&gt;&gt; df = pd.DataFrame({&#34;sales&#34;: [100, 95, 105, 110, 108]})
+            &gt;&gt;&gt; transformer = TimeSeriesTransformer(&#34;moving_avg&#34;, window_size=3)
+            &gt;&gt;&gt; result = transformer._apply_moving_avg(df)
+            &gt;&gt;&gt; print(result[&#34;sales_ma3&#34;].round(2))
+            # 0     NaN
+            # 1     NaN
+            # 2    100.00
+            # 3    103.33
+            # 4    107.67
+
+        Notes:
+            - First (window_size - 1) periods will be NaN
+            - Uses pandas rolling() with mean() aggregation
+            - Window size must be ≥ 1 (validated in config)
+            - NaN values in window affect the average calculation
+        &#34;&#34;&#34;
+        res = df.copy()
+        for col in df.columns:
+            res[f&#34;{col}_ma{self.window_size}&#34;] = df[col].rolling(window=self.window_size).mean()
+        return res
+
+    def _apply_cagr(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Compute compound annual growth rate.
+
+        This method calculates the CAGR between the first and last periods
+        for each column and broadcasts it as a constant column.
+
+        CAGR = (End Value / Start Value)^(1/n) - 1
+        where n is the number of periods.
+
+        Args:
+            df: DataFrame with time series data. Values should be:
+                - Positive (especially start values)
+                - At least 2 periods of data
+                - Numeric and non-null
+
+        Returns:
+            DataFrame with original columns plus &#39;{col}_cagr&#39; columns
+            containing the constant CAGR value.
+
+        Examples:
+            &gt;&gt;&gt; df = pd.DataFrame({
+            ...     &#34;investment&#34;: [1000, 1100, 1210, 1331]  # 10% growth
+            ... })
+            &gt;&gt;&gt; transformer = TimeSeriesTransformer(&#34;cagr&#34;)
+            &gt;&gt;&gt; result = transformer._apply_cagr(df)
+            &gt;&gt;&gt; print(result[&#34;investment_cagr&#34;].round(2))
+            # 0    10.00
+            # 1    10.00
+            # 2    10.00
+            # 3    10.00
+
+        Notes:
+            - Returns NaN if:
+                - Less than 2 periods of data
+                - Start value is 0 or negative
+                - Start or end value is NaN
+                - Complex roots would be required
+            - CAGR is expressed as a percentage
+            - Same value repeated for all periods
+        &#34;&#34;&#34;
+        res = df.copy()
+        n_periods = len(df) - 1
+
+        if n_periods &lt; 1:
+            logger.warning(&#34;CAGR requires at least 2 periods. Returning NaN for all columns.&#34;)
+            for col in df.columns:
+                res[f&#34;{col}_cagr&#34;] = pd.NA
+            return res
+
+        for col in df.columns:
+            start_val = df[col].iloc[0]
+            end_val = df[col].iloc[-1]
+
+            if pd.isna(start_val) or pd.isna(end_val) or start_val == 0:
+                res[f&#34;{col}_cagr&#34;] = pd.NA
+                continue
+
+            ratio = end_val / start_val
+            # Calculate arithmetic average growth rate (AAGR).
+            try:
+                res[f&#34;{col}_cagr&#34;] = ((ratio - 1) / n_periods) * 100
+            except (ValueError, TypeError, ZeroDivisionError):
+                res[f&#34;{col}_cagr&#34;] = pd.NA
+
+        return res
+
+    def _apply_yoy(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Calculate year-over-year percentage changes.
+
+        This method computes the percentage change between the current period
+        and the same period one year ago for each column.
+
+        Args:
+            df: DataFrame with time series data. The periods parameter
+                should match the data frequency:
+                - periods=12 for monthly data
+                - periods=4 for quarterly data
+                - periods=1 for annual data
+
+        Returns:
+            DataFrame with original columns plus &#39;{col}_yoy&#39; columns
+            containing year-over-year percentage changes.
+
+        Examples:
+            &gt;&gt;&gt; df = pd.DataFrame(
+            ...     {&#34;revenue&#34;: [100, 105, 110, 115, 120, 125]}, index=pd.date_range(&#34;2022-Q1&#34;, periods=6, freq=&#34;Q&#34;)
+            ... )
+            &gt;&gt;&gt; transformer = TimeSeriesTransformer(&#34;yoy&#34;, periods=4)
+            &gt;&gt;&gt; result = transformer._apply_yoy(df)
+            &gt;&gt;&gt; print(result[&#34;revenue_yoy&#34;].iloc[4:].round(2))
+            # 2023-Q1    20.00
+            # 2023-Q2    19.05
+
+        Notes:
+            - First n periods will be NaN (where n = periods parameter)
+            - Issues warning if periods not in (4, 12) for unusual frequencies
+            - Uses pandas pct_change() with specified periods
+            - Changes expressed as percentages (multiplied by 100)
+        &#34;&#34;&#34;
+        if self.periods not in (4, 12):
+            logger.warning(
+                &#34;For YoY transformation, &#39;periods&#39; parameter is %s. This will calculate change over %s periods. Commonly 4 (quarterly) or 12 (monthly) is used.&#34;,
+                self.periods,
+                self.periods,
+            )
+        res = df.copy()
+        for col in df.columns:
+            res[f&#34;{col}_yoy&#34;] = df[col].pct_change(periods=self.periods) * 100
+        return res
+
+    def _apply_qoq(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Calculate quarter-over-quarter percentage changes.
+
+        This method computes the percentage change between the current period
+        and the previous quarter for each column.
+
+        Args:
+            df: DataFrame with time series data. The periods parameter
+                should match the data frequency:
+                - periods=3 for monthly data (comparing to 3 months ago)
+                - periods=1 for quarterly data (comparing to last quarter)
+
+        Returns:
+            DataFrame with original columns plus &#39;{col}_qoq&#39; columns
+            containing quarter-over-quarter percentage changes.
+
+        Examples:
+            &gt;&gt;&gt; df = pd.DataFrame(
+            ...     {&#34;revenue&#34;: [100, 110, 120, 130]}, index=pd.date_range(&#34;2023-Q1&#34;, periods=4, freq=&#34;Q&#34;)
+            ... )
+            &gt;&gt;&gt; transformer = TimeSeriesTransformer(&#34;qoq&#34;, periods=1)
+            &gt;&gt;&gt; result = transformer._apply_qoq(df)
+            &gt;&gt;&gt; print(result[&#34;revenue_qoq&#34;].round(2))
+            # 2023-Q1     NaN
+            # 2023-Q2    10.00
+            # 2023-Q3     9.09
+            # 2023-Q4     8.33
+
+        Notes:
+            - First n periods will be NaN (where n = periods parameter)
+            - Issues warning if periods not in (1, 3) for unusual frequencies
+            - Uses pandas pct_change() with specified periods
+            - Changes expressed as percentages (multiplied by 100)
+        &#34;&#34;&#34;
+        if self.periods not in (1, 3):
+            logger.warning(
+                &#34;For QoQ transformation, &#39;periods&#39; parameter is %s. This will calculate change over %s periods. Commonly 1 (quarterly) or 3 (monthly) is used.&#34;,
+                self.periods,
+                self.periods,
+            )
+        res = df.copy()
+        for col in df.columns:
+            res[f&#34;{col}_qoq&#34;] = df[col].pct_change(periods=self.periods) * 100
+        return res
+
+    # ------------------------------------------------------------------
+    # Data validation
+    # ------------------------------------------------------------------
+
+    def validate_input(self, data: object) -&gt; bool:
+        &#34;&#34;&#34;Accept pandas DataFrame or Series types only.
+
+        This method implements the DataTransformer contract by specifying
+        exactly which input types are supported by the time series
+        transformer.
+
+        Args:
+            data: The input data to validate. Can be any Python object,
+                 but only pandas DataFrame and Series are accepted.
+
+        Returns:
+            bool: True if data is either:
+                - pandas.DataFrame
+                - pandas.Series
+                False for all other types.
+
+        Examples:
+            &gt;&gt;&gt; transformer = TimeSeriesTransformer()
+            &gt;&gt;&gt; transformer.validate_input(pd.DataFrame())
+            True
+            &gt;&gt;&gt; transformer.validate_input(pd.Series())
+            True
+            &gt;&gt;&gt; transformer.validate_input([1, 2, 3])
+            False
+        &#34;&#34;&#34;
+        return isinstance(data, pd.DataFrame | pd.Series)</code></pre>
+</details>
+<div class="desc"><p>Transformer for time series financial data analysis.</p>
+<p>This transformer provides common time series transformations used in financial
+analysis to identify trends, growth patterns, and period-over-period changes.</p>
+<p>Supported transformation types:
+- <strong>growth_rate</strong>: Calculate period-to-period growth rates (%)
+- <strong>moving_avg</strong>: Calculate moving averages over specified window
+- <strong>cagr</strong>: Compute compound annual growth rate
+- <strong>yoy</strong>: Year-over-year comparison (%)
+- <strong>qoq</strong>: Quarter-over-quarter comparison (%)</p>
+<p>Data Frequency Assumptions:
+The transformer makes no assumptions about the frequency of your data.
+You must specify the appropriate 'periods' parameter based on your data:</p>
+<pre><code>- For **monthly data**:
+    - YoY: use periods=12 (compare to same month last year)
+    - QoQ: use periods=3 (compare to same month last quarter)
+
+- For **quarterly data**:
+    - YoY: use periods=4 (compare to same quarter last year)
+    - QoQ: use periods=1 (compare to previous quarter)
+
+- For **annual data**:
+    - YoY: use periods=1 (compare to previous year)
+</code></pre>
+<h2 id="examples">Examples</h2>
+<p>Calculate year-over-year growth for quarterly revenue data:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; import pandas as pd
+&gt;&gt;&gt; from fin_statement_model.preprocessing.transformers import TimeSeriesTransformer
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Quarterly revenue data
+&gt;&gt;&gt; data = pd.DataFrame(
+...     {&quot;revenue&quot;: [100, 105, 110, 115, 120, 125, 130, 135], &quot;costs&quot;: [60, 62, 65, 68, 70, 73, 75, 78]},
+...     index=pd.date_range(&quot;2022-Q1&quot;, periods=8, freq=&quot;Q&quot;),
+... )
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Calculate YoY growth (comparing to same quarter previous year)
+&gt;&gt;&gt; yoy_transformer = TimeSeriesTransformer(
+...     transformation_type=&quot;yoy&quot;,
+...     periods=4,  # 4 quarters back for quarterly data
+... )
+&gt;&gt;&gt; yoy_growth = yoy_transformer.transform(data)
+&gt;&gt;&gt; print(yoy_growth[[&quot;revenue_yoy&quot;, &quot;costs_yoy&quot;]].iloc[4:])  # First 4 periods will be NaN
+#             revenue_yoy  costs_yoy
+# 2023-Q1           20.0      16.67
+# 2023-Q2           19.05     17.74
+# 2023-Q3           18.18     15.38
+# 2023-Q4           17.39     14.71
+</code></pre>
+<p>Calculate 3-month moving average for monthly data:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Monthly sales data
+&gt;&gt;&gt; monthly_data = pd.DataFrame(
+...     {&quot;sales&quot;: [100, 95, 105, 110, 108, 115, 120, 118, 125]},
+...     index=pd.date_range(&quot;2023-01&quot;, periods=9, freq=&quot;M&quot;),
+... )
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Calculate 3-month moving average
+&gt;&gt;&gt; ma_transformer = TimeSeriesTransformer(transformation_type=&quot;moving_avg&quot;, window_size=3)
+&gt;&gt;&gt; ma_result = ma_transformer.transform(monthly_data)
+&gt;&gt;&gt; print(ma_result[&quot;sales_ma3&quot;].round(2))
+# 2023-01-31       NaN
+# 2023-02-28       NaN
+# 2023-03-31    100.00
+# 2023-04-30    103.33
+# 2023-05-31    107.67
+# 2023-06-30    111.00
+# 2023-07-31    114.33
+# 2023-08-31    117.67
+# 2023-09-30    121.00
+</code></pre>
+<h2 id="note">Note</h2>
+<ul>
+<li>Growth rate calculations will return NaN for periods without valid
+comparison data (e.g., first 4 periods for YoY with quarterly data)</li>
+<li>CAGR requires at least 2 data points and positive starting values</li>
+<li>Moving averages will have NaN values for the first (window_size - 1) periods</li>
+</ul>
+<p>Initialize the time series transformer.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>transformation_type</code></strong></dt>
+<dd>Type of transformation to apply. Can be either
+a string or TransformationType enum value:
+- 'growth_rate': Period-to-period growth rate
+- 'moving_avg': Rolling window average
+- 'cagr': Compound annual growth rate
+- 'yoy': Year-over-year growth rate
+- 'qoq': Quarter-over-quarter growth rate</dd>
+<dt><strong><code>periods</code></strong></dt>
+<dd>Number of periods for lag calculations. Critical for YoY/QoQ:
+- For YoY with quarterly data: use periods=4
+- For YoY with monthly data: use periods=12
+- For QoQ with quarterly data: use periods=1
+- For QoQ with monthly data: use periods=3
+- For growth_rate: use periods=1 for consecutive period growth</dd>
+<dt><strong><code>window_size</code></strong></dt>
+<dd>Size of the moving average window (only used for 'moving_avg').
+Default is 3.</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional TimeSeriesConfig object containing configuration.
+If provided, overrides other parameters.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If transformation_type is invalid.</dd>
+</dl>
+<h2 id="examples_1">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # YoY for quarterly data
+&gt;&gt;&gt; transformer = TimeSeriesTransformer(&quot;yoy&quot;, periods=4)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # 3-month moving average
+&gt;&gt;&gt; transformer = TimeSeriesTransformer(&quot;moving_avg&quot;, window_size=3)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Quarter-over-quarter for monthly data
+&gt;&gt;&gt; transformer = TimeSeriesTransformer(&quot;qoq&quot;, periods=3)
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.TimeSeriesTransformer.TRANSFORMATION_TYPES"><code class="name">var <span class="ident">TRANSFORMATION_TYPES</span> : ClassVar[list[str]]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.transformers.TimeSeriesTransformer.transform"><code class="name flex">
+<span>def <span class="ident">transform</span></span>(<span>self, data: pd.DataFrame | pd.Series[Any]) ‑> pd.DataFrame | pd.Series[Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+    &#34;&#34;&#34;Transform time series data based on the configured transformation type.
+
+    Args:
+        data: DataFrame containing time series financial data. The DataFrame
+            should have a time-based index (DatetimeIndex, PeriodIndex, or
+            sequential numeric index) for meaningful time series analysis.
+
+    Returns:
+        DataFrame with new columns containing transformed values:
+        - For &#39;growth_rate&#39;: adds &#39;{column}_growth&#39; columns
+        - For &#39;moving_avg&#39;: adds &#39;{column}_ma{window_size}&#39; columns
+        - For &#39;cagr&#39;: adds &#39;{column}_cagr&#39; columns (single value repeated)
+        - For &#39;yoy&#39;: adds &#39;{column}_yoy&#39; columns
+        - For &#39;qoq&#39;: adds &#39;{column}_qoq&#39; columns
+
+        Original columns are preserved in all cases.
+
+    Raises:
+        TypeError: If data is not a pandas DataFrame or Series.
+
+    Examples:
+        &gt;&gt;&gt; df = pd.DataFrame({&#34;revenue&#34;: [100, 110, 120, 130]})
+        &gt;&gt;&gt; transformer = TimeSeriesTransformer(&#34;growth_rate&#34;)
+        &gt;&gt;&gt; result = transformer.transform(df)
+        &gt;&gt;&gt; print(result)
+        #    revenue  revenue_growth
+        # 0      100             NaN
+        # 1      110            10.0
+        # 2      120            9.09
+        # 3      130            8.33
+    &#34;&#34;&#34;
+    # Accept both DataFrame and Series to honour the broader contract
+    if not isinstance(data, pd.DataFrame | pd.Series):
+        raise TypeError(f&#34;Unsupported data type: {type(data)}. Expected pandas.DataFrame or pandas.Series&#34;)
+    return super().transform(data)</code></pre>
+</details>
+<div class="desc"><p>Transform time series data based on the configured transformation type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>DataFrame containing time series financial data. The DataFrame
+should have a time-based index (DatetimeIndex, PeriodIndex, or
+sequential numeric index) for meaningful time series analysis.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>DataFrame with new columns containing transformed values:
+- For 'growth_rate': adds '{column}_growth' columns
+- For 'moving_avg': adds '{column}_ma{window_size}' columns
+- For 'cagr': adds '{column}_cagr' columns (single value repeated)
+- For 'yoy': adds '{column}_yoy' columns
+- For 'qoq': adds '{column}_qoq' columns</p>
+<p>Original columns are preserved in all cases.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If data is not a pandas DataFrame or Series.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; df = pd.DataFrame({&quot;revenue&quot;: [100, 110, 120, 130]})
+&gt;&gt;&gt; transformer = TimeSeriesTransformer(&quot;growth_rate&quot;)
+&gt;&gt;&gt; result = transformer.transform(df)
+&gt;&gt;&gt; print(result)
+#    revenue  revenue_growth
+# 0      100             NaN
+# 1      110            10.0
+# 2      120            9.09
+# 3      130            8.33
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.transformers.TimeSeriesTransformer.validate_input"><code class="name flex">
+<span>def <span class="ident">validate_input</span></span>(<span>self, data: object) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_input(self, data: object) -&gt; bool:
+    &#34;&#34;&#34;Accept pandas DataFrame or Series types only.
+
+    This method implements the DataTransformer contract by specifying
+    exactly which input types are supported by the time series
+    transformer.
+
+    Args:
+        data: The input data to validate. Can be any Python object,
+             but only pandas DataFrame and Series are accepted.
+
+    Returns:
+        bool: True if data is either:
+            - pandas.DataFrame
+            - pandas.Series
+            False for all other types.
+
+    Examples:
+        &gt;&gt;&gt; transformer = TimeSeriesTransformer()
+        &gt;&gt;&gt; transformer.validate_input(pd.DataFrame())
+        True
+        &gt;&gt;&gt; transformer.validate_input(pd.Series())
+        True
+        &gt;&gt;&gt; transformer.validate_input([1, 2, 3])
+        False
+    &#34;&#34;&#34;
+    return isinstance(data, pd.DataFrame | pd.Series)</code></pre>
+</details>
+<div class="desc"><p>Accept pandas DataFrame or Series types only.</p>
+<p>This method implements the DataTransformer contract by specifying
+exactly which input types are supported by the time series
+transformer.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The input data to validate. Can be any Python object,
+but only pandas DataFrame and Series are accepted.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if data is either:
+- pandas.DataFrame
+- pandas.Series
+False for all other types.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; transformer = TimeSeriesTransformer()
+&gt;&gt;&gt; transformer.validate_input(pd.DataFrame())
+True
+&gt;&gt;&gt; transformer.validate_input(pd.Series())
+True
+&gt;&gt;&gt; transformer.validate_input([1, 2, 3])
+False
+</code></pre></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.execute" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer.execute">execute</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config" href="../base_transformer.html#fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config">validate_config</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.preprocessing" href="../index.html">fin_statement_model.preprocessing</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.preprocessing.transformers.normalization" href="normalization.html">fin_statement_model.preprocessing.transformers.normalization</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.period_conversion" href="period_conversion.html">fin_statement_model.preprocessing.transformers.period_conversion</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.time_series" href="time_series.html">fin_statement_model.preprocessing.transformers.time_series</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.transformers.NormalizationTransformer" href="#fin_statement_model.preprocessing.transformers.NormalizationTransformer">NormalizationTransformer</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.transformers.NormalizationTransformer.NORMALIZATION_TYPES" href="#fin_statement_model.preprocessing.transformers.NormalizationTransformer.NORMALIZATION_TYPES">NORMALIZATION_TYPES</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.NormalizationTransformer.list_custom_methods" href="#fin_statement_model.preprocessing.transformers.NormalizationTransformer.list_custom_methods">list_custom_methods</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.NormalizationTransformer.register_custom_method" href="#fin_statement_model.preprocessing.transformers.NormalizationTransformer.register_custom_method">register_custom_method</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.NormalizationTransformer.transform" href="#fin_statement_model.preprocessing.transformers.NormalizationTransformer.transform">transform</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.NormalizationTransformer.validate_config" href="#fin_statement_model.preprocessing.transformers.NormalizationTransformer.validate_config">validate_config</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.NormalizationTransformer.validate_input" href="#fin_statement_model.preprocessing.transformers.NormalizationTransformer.validate_input">validate_input</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.transformers.PeriodConversionTransformer" href="#fin_statement_model.preprocessing.transformers.PeriodConversionTransformer">PeriodConversionTransformer</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.transformers.PeriodConversionTransformer.CONVERSION_TYPES" href="#fin_statement_model.preprocessing.transformers.PeriodConversionTransformer.CONVERSION_TYPES">CONVERSION_TYPES</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.PeriodConversionTransformer.transform" href="#fin_statement_model.preprocessing.transformers.PeriodConversionTransformer.transform">transform</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.PeriodConversionTransformer.validate_input" href="#fin_statement_model.preprocessing.transformers.PeriodConversionTransformer.validate_input">validate_input</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.transformers.TimeSeriesTransformer" href="#fin_statement_model.preprocessing.transformers.TimeSeriesTransformer">TimeSeriesTransformer</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.transformers.TimeSeriesTransformer.TRANSFORMATION_TYPES" href="#fin_statement_model.preprocessing.transformers.TimeSeriesTransformer.TRANSFORMATION_TYPES">TRANSFORMATION_TYPES</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.TimeSeriesTransformer.transform" href="#fin_statement_model.preprocessing.transformers.TimeSeriesTransformer.transform">transform</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.transformers.TimeSeriesTransformer.validate_input" href="#fin_statement_model.preprocessing.transformers.TimeSeriesTransformer.validate_input">validate_input</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

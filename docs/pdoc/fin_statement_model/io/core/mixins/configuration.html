@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.io.core.mixins.configuration API documentation</title>
+<meta name="description" content="Configuration utilities extracted from the legacy *mixins.py* …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.io.core.mixins.configuration</code></h1>
+</header>
+<section id="section-intro">
+<p>Configuration utilities extracted from the legacy <em>mixins.py</em>.</p>
+<p>Provides :class:<code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></code> that supplies readers/writers with
+helper methods for validating and accessing their pydantic configuration
+objects, handling runtime overrides and env-var fallbacks.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin"><code class="flex name class">
+<span>class <span class="ident">ConfigurationMixin</span></span>
+<span>(</span><span>*args: Any, **kwargs: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ConfigurationMixin:  # pylint: disable=too-many-public-methods
+    &#34;&#34;&#34;Mixin that offers safe, validated access to reader/writer config objects.&#34;&#34;&#34;
+
+    def __init__(self, *args: Any, **kwargs: Any) -&gt; None:
+        &#34;&#34;&#34;Initialise mixin and set up internal override/context storage.&#34;&#34;&#34;
+        super().__init__(*args, **kwargs)
+
+        # ------------------------------------------------------------------
+        # Internal state
+        # ------------------------------------------------------------------
+        # _config_context - free-form metadata that *callers* can attach to the
+        # mixin to improve log messages and error reporting (e.g. ticker=&#34;AAPL&#34;,
+        # operation=&#34;api_read&#34;).  It **does not** influence behaviour besides
+        # being emitted via :pymeth:`ValidationResultCollector` summaries.
+        #
+        # _config_overrides - runtime key→value map injected via
+        # :pymeth:`set_config_override`.  When present, it *silently* overrides
+        # the value returned by :pymeth:`get_config_value`.  This mechanism is
+        # only required when the same reader/writer instance is reused with
+        # different per-call overrides (see planned batched-API support).
+        #
+        # Both attributes are **advanced** features.  They are kept private and
+        # undocumented in the public API.  If you are maintaining code outside
+        # this package, prefer passing per-call kwargs to `.read()` / `.write()`
+        # instead of using overrides directly.
+        # ------------------------------------------------------------------
+
+        self._config_context: dict[str, Any] = {}
+        self._config_overrides: dict[str, Any] = {}
+
+    # ------------------------------------------------------------------
+    # Context helpers
+    # ------------------------------------------------------------------
+    def set_config_context(self, **context: Any) -&gt; None:
+        &#34;&#34;&#34;Set key-value pairs in the configuration context.&#34;&#34;&#34;
+        self._config_context.update(context)
+
+    def get_config_context(self) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Get a copy of the configuration context.&#34;&#34;&#34;
+        return self._config_context.copy()
+
+    # ------------------------------------------------------------------
+    # Override helpers
+    # ------------------------------------------------------------------
+    def set_config_override(self, key: str, value: Any) -&gt; None:
+        &#34;&#34;&#34;Set a runtime configuration override.&#34;&#34;&#34;
+        self._config_overrides[key] = value
+
+    def clear_config_overrides(self) -&gt; None:
+        &#34;&#34;&#34;Clear all runtime configuration overrides.&#34;&#34;&#34;
+        self._config_overrides.clear()
+
+    # ------------------------------------------------------------------
+    # Value retrieval
+    # ------------------------------------------------------------------
+    def get_config_value(
+        self,
+        key: str,
+        default: Any = None,
+        *,
+        required: bool = False,
+        value_type: type | None = None,
+        validator: Callable[[Any], bool] | None = None,
+    ) -&gt; Any:
+        &#34;&#34;&#34;Get a configuration value, with optional validation.&#34;&#34;&#34;
+        # ------------------------------------------------------------------
+        # Defensive guard - ensure internal attributes exist even if the
+        # concrete reader/writer forgot to call ``ConfigurationMixin.__init__``
+        # in its own ``__init__`` implementation.  This avoids cryptic
+        # AttributeError crashes (see issue #csv_reader_init) and degrades
+        # gracefully by falling back to an empty override/context mapping.
+        # ------------------------------------------------------------------
+        if not hasattr(self, &#34;_config_overrides&#34;):
+            # Late-initialise missing attributes to keep behaviour predictable.
+            self._config_overrides = {}
+        if not hasattr(self, &#34;_config_context&#34;):
+            self._config_context = {}
+
+        # Override precedence
+        if key in self._config_overrides:
+            value = self._config_overrides[key]
+        elif hasattr(self, &#34;cfg&#34;) and self.cfg is not None:
+            value = getattr(self.cfg, key, default)
+        else:
+            value = default
+
+        # Required check
+        if required and value is None:
+            raise ReadError(
+                f&#34;Required configuration value &#39;{key}&#39; is missing&#34;,
+                reader_type=self.__class__.__name__,
+            )
+
+        # Type coercion
+        if value is not None and value_type is not None and not isinstance(value, value_type):
+            try:
+                value = value_type(value)
+            except (ValueError, TypeError) as exc:
+                raise ReadError(
+                    f&#34;Configuration value &#39;{key}&#39; has invalid type. Expected {value_type.__name__}, got {type(value).__name__}&#34;,
+                    reader_type=self.__class__.__name__,
+                    original_error=exc,
+                ) from exc
+
+        # Custom validator
+        if value is not None and validator is not None:
+            try:
+                if not validator(value):
+                    raise ReadError(
+                        f&#34;Configuration value &#39;{key}&#39; failed validation&#34;,
+                        reader_type=self.__class__.__name__,
+                    )
+            except ValueError as exc:
+                raise ReadError(
+                    f&#34;Configuration validation error for &#39;{key}&#39;: {exc}&#34;,
+                    reader_type=self.__class__.__name__,
+                    original_error=exc,
+                ) from exc
+
+        return value
+
+    def require_config_value(
+        self,
+        key: str,
+        *,
+        value_type: type | None = None,
+        validator: Callable[[Any], bool] | None = None,
+    ) -&gt; Any:
+        &#34;&#34;&#34;Get a required configuration value.&#34;&#34;&#34;
+        return self.get_config_value(key, required=True, value_type=value_type, validator=validator)
+
+    # ------------------------------------------------------------------
+    # Env var fallback helper
+    # ------------------------------------------------------------------
+    def get_config_with_env_fallback(
+        self,
+        key: str,
+        env_var: str,
+        *,
+        default: Any = None,
+        value_type: type | None = None,
+    ) -&gt; Any:
+        &#34;&#34;&#34;Get a configuration value, falling back to an environment variable.&#34;&#34;&#34;
+        import os
+
+        value = self.get_config_value(key)
+
+        # Fallback to environment variable if config value is missing
+        if value is None:
+            env_raw = os.getenv(env_var)
+            if env_raw is not None:
+                value = parse_env_value(env_raw)
+
+        # Apply default as last resort
+        if value is None:
+            value = default
+
+        if value is not None and value_type is not None and not isinstance(value, value_type):
+            try:
+                value = value_type(value)
+            except (ValueError, TypeError):
+                logger.warning(
+                    &#34;Failed to convert %s value &#39;%s&#39; to %s; using as-is&#34;,
+                    key,
+                    value,
+                    value_type.__name__,
+                )
+        return value
+
+    # ------------------------------------------------------------------
+    # Introspection helpers
+    # ------------------------------------------------------------------
+    def validate_configuration(self) -&gt; ValidationResultCollector:
+        &#34;&#34;&#34;Validate the handler&#39;s configuration object.&#34;&#34;&#34;
+        collector = ValidationResultCollector(context=self._config_context)
+        if not hasattr(self, &#34;cfg&#34;) or self.cfg is None:
+            collector.add_result(&#34;configuration&#34;, False, &#34;Missing configuration object&#34;, &#34;structure&#34;)
+            return collector
+        try:
+            if hasattr(self.cfg, &#34;model_validate&#34;):
+                collector.add_result(&#34;configuration&#34;, True, &#34;Configuration object is valid&#34;, &#34;structure&#34;)
+            else:
+                collector.add_result(
+                    &#34;configuration&#34;,
+                    True,
+                    &#34;Configuration object exists (non-Pydantic)&#34;,
+                    &#34;structure&#34;,
+                )
+        except (ValueError, AttributeError, TypeError) as exc:
+            collector.add_result(
+                &#34;configuration&#34;,
+                False,
+                f&#34;Configuration validation failed: {exc}&#34;,
+                &#34;validation&#34;,
+            )
+        return collector
+
+    def get_effective_configuration(self) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Get the effective configuration, including overrides.&#34;&#34;&#34;
+        cfg_dict: dict[str, Any] = {}
+        if hasattr(self, &#34;cfg&#34;) and self.cfg is not None:
+            if hasattr(self.cfg, &#34;model_dump&#34;):
+                cfg_dict = self.cfg.model_dump()
+            elif hasattr(self.cfg, &#34;__dict__&#34;):
+                cfg_dict = vars(self.cfg).copy()
+        cfg_dict.update(self._config_overrides)
+        return cfg_dict
+
+    def merge_configurations(self, *configs: Any) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Recursively merge multiple configuration sources.
+
+        This helper converts all supported *config* objects into plain
+        dictionaries and then applies :func:`fin_statement_model.utils.merge.deep_merge`
+        to ensure a consistent, **deep** merge semantics across the code-base.
+
+        Args:
+            *configs: Arbitrary configuration objects. Supported types are
+                ``dict``-like, Pydantic models (``.model_dump``) and objects with
+                a ``__dict__`` attribute.
+
+        Returns:
+            A new dictionary representing the recursively merged configuration.
+        &#34;&#34;&#34;
+        from fin_statement_model.utils.merge import (
+            deep_merge,
+        )  # Local import to avoid circular deps
+
+        merged: dict[str, Any] = {}
+
+        for cfg in configs:
+            if cfg is None:
+                continue
+
+            # ------------------------------------------------------------------
+            # Normalise input → plain dict
+            # ------------------------------------------------------------------
+            if hasattr(cfg, &#34;model_dump&#34;):
+                cfg_dict = cfg.model_dump()
+            elif isinstance(cfg, dict):
+                cfg_dict = cfg
+            elif hasattr(cfg, &#34;__dict__&#34;):
+                cfg_dict = vars(cfg)
+            else:
+                logger.warning(&#34;Unsupported configuration type for merge: %s&#34;, type(cfg))
+                continue
+
+            # ------------------------------------------------------------------
+            # Deep-merge into the accumulator
+            # ------------------------------------------------------------------
+            merged = deep_merge(merged, cfg_dict)
+
+        return merged</code></pre>
+</details>
+<div class="desc"><p>Mixin that offers safe, validated access to reader/writer config objects.</p>
+<p>Initialise mixin and set up internal override/context storage.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase" href="../dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase">DataFrameReaderBase</a></li>
+<li><a title="fin_statement_model.io.formats.dataframe_writer.DataFrameWriter" href="../../formats/dataframe_writer.html#fin_statement_model.io.formats.dataframe_writer.DataFrameWriter">DataFrameWriter</a></li>
+<li><a title="fin_statement_model.io.formats.dict_reader.DictReader" href="../../formats/dict_reader.html#fin_statement_model.io.formats.dict_reader.DictReader">DictReader</a></li>
+<li><a title="fin_statement_model.io.formats.dict_writer.DictWriter" href="../../formats/dict_writer.html#fin_statement_model.io.formats.dict_writer.DictWriter">DictWriter</a></li>
+<li><a title="fin_statement_model.io.formats.excel_writer.ExcelWriter" href="../../formats/excel_writer.html#fin_statement_model.io.formats.excel_writer.ExcelWriter">ExcelWriter</a></li>
+<li><a title="fin_statement_model.io.formats.fmp_reader.FmpReader" href="../../formats/fmp_reader.html#fin_statement_model.io.formats.fmp_reader.FmpReader">FmpReader</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides"><code class="name flex">
+<span>def <span class="ident">clear_config_overrides</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear_config_overrides(self) -&gt; None:
+    &#34;&#34;&#34;Clear all runtime configuration overrides.&#34;&#34;&#34;
+    self._config_overrides.clear()</code></pre>
+</details>
+<div class="desc"><p>Clear all runtime configuration overrides.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context"><code class="name flex">
+<span>def <span class="ident">get_config_context</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_config_context(self) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Get a copy of the configuration context.&#34;&#34;&#34;
+    return self._config_context.copy()</code></pre>
+</details>
+<div class="desc"><p>Get a copy of the configuration context.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value"><code class="name flex">
+<span>def <span class="ident">get_config_value</span></span>(<span>self,<br>key: str,<br>default: Any = None,<br>*,<br>required: bool = False,<br>value_type: type | None = None,<br>validator: Callable[[Any], bool] | None = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_config_value(
+    self,
+    key: str,
+    default: Any = None,
+    *,
+    required: bool = False,
+    value_type: type | None = None,
+    validator: Callable[[Any], bool] | None = None,
+) -&gt; Any:
+    &#34;&#34;&#34;Get a configuration value, with optional validation.&#34;&#34;&#34;
+    # ------------------------------------------------------------------
+    # Defensive guard - ensure internal attributes exist even if the
+    # concrete reader/writer forgot to call ``ConfigurationMixin.__init__``
+    # in its own ``__init__`` implementation.  This avoids cryptic
+    # AttributeError crashes (see issue #csv_reader_init) and degrades
+    # gracefully by falling back to an empty override/context mapping.
+    # ------------------------------------------------------------------
+    if not hasattr(self, &#34;_config_overrides&#34;):
+        # Late-initialise missing attributes to keep behaviour predictable.
+        self._config_overrides = {}
+    if not hasattr(self, &#34;_config_context&#34;):
+        self._config_context = {}
+
+    # Override precedence
+    if key in self._config_overrides:
+        value = self._config_overrides[key]
+    elif hasattr(self, &#34;cfg&#34;) and self.cfg is not None:
+        value = getattr(self.cfg, key, default)
+    else:
+        value = default
+
+    # Required check
+    if required and value is None:
+        raise ReadError(
+            f&#34;Required configuration value &#39;{key}&#39; is missing&#34;,
+            reader_type=self.__class__.__name__,
+        )
+
+    # Type coercion
+    if value is not None and value_type is not None and not isinstance(value, value_type):
+        try:
+            value = value_type(value)
+        except (ValueError, TypeError) as exc:
+            raise ReadError(
+                f&#34;Configuration value &#39;{key}&#39; has invalid type. Expected {value_type.__name__}, got {type(value).__name__}&#34;,
+                reader_type=self.__class__.__name__,
+                original_error=exc,
+            ) from exc
+
+    # Custom validator
+    if value is not None and validator is not None:
+        try:
+            if not validator(value):
+                raise ReadError(
+                    f&#34;Configuration value &#39;{key}&#39; failed validation&#34;,
+                    reader_type=self.__class__.__name__,
+                )
+        except ValueError as exc:
+            raise ReadError(
+                f&#34;Configuration validation error for &#39;{key}&#39;: {exc}&#34;,
+                reader_type=self.__class__.__name__,
+                original_error=exc,
+            ) from exc
+
+    return value</code></pre>
+</details>
+<div class="desc"><p>Get a configuration value, with optional validation.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback"><code class="name flex">
+<span>def <span class="ident">get_config_with_env_fallback</span></span>(<span>self, key: str, env_var: str, *, default: Any = None, value_type: type | None = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_config_with_env_fallback(
+    self,
+    key: str,
+    env_var: str,
+    *,
+    default: Any = None,
+    value_type: type | None = None,
+) -&gt; Any:
+    &#34;&#34;&#34;Get a configuration value, falling back to an environment variable.&#34;&#34;&#34;
+    import os
+
+    value = self.get_config_value(key)
+
+    # Fallback to environment variable if config value is missing
+    if value is None:
+        env_raw = os.getenv(env_var)
+        if env_raw is not None:
+            value = parse_env_value(env_raw)
+
+    # Apply default as last resort
+    if value is None:
+        value = default
+
+    if value is not None and value_type is not None and not isinstance(value, value_type):
+        try:
+            value = value_type(value)
+        except (ValueError, TypeError):
+            logger.warning(
+                &#34;Failed to convert %s value &#39;%s&#39; to %s; using as-is&#34;,
+                key,
+                value,
+                value_type.__name__,
+            )
+    return value</code></pre>
+</details>
+<div class="desc"><p>Get a configuration value, falling back to an environment variable.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration"><code class="name flex">
+<span>def <span class="ident">get_effective_configuration</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_effective_configuration(self) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Get the effective configuration, including overrides.&#34;&#34;&#34;
+    cfg_dict: dict[str, Any] = {}
+    if hasattr(self, &#34;cfg&#34;) and self.cfg is not None:
+        if hasattr(self.cfg, &#34;model_dump&#34;):
+            cfg_dict = self.cfg.model_dump()
+        elif hasattr(self.cfg, &#34;__dict__&#34;):
+            cfg_dict = vars(self.cfg).copy()
+    cfg_dict.update(self._config_overrides)
+    return cfg_dict</code></pre>
+</details>
+<div class="desc"><p>Get the effective configuration, including overrides.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations"><code class="name flex">
+<span>def <span class="ident">merge_configurations</span></span>(<span>self, *configs: Any) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def merge_configurations(self, *configs: Any) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Recursively merge multiple configuration sources.
+
+    This helper converts all supported *config* objects into plain
+    dictionaries and then applies :func:`fin_statement_model.utils.merge.deep_merge`
+    to ensure a consistent, **deep** merge semantics across the code-base.
+
+    Args:
+        *configs: Arbitrary configuration objects. Supported types are
+            ``dict``-like, Pydantic models (``.model_dump``) and objects with
+            a ``__dict__`` attribute.
+
+    Returns:
+        A new dictionary representing the recursively merged configuration.
+    &#34;&#34;&#34;
+    from fin_statement_model.utils.merge import (
+        deep_merge,
+    )  # Local import to avoid circular deps
+
+    merged: dict[str, Any] = {}
+
+    for cfg in configs:
+        if cfg is None:
+            continue
+
+        # ------------------------------------------------------------------
+        # Normalise input → plain dict
+        # ------------------------------------------------------------------
+        if hasattr(cfg, &#34;model_dump&#34;):
+            cfg_dict = cfg.model_dump()
+        elif isinstance(cfg, dict):
+            cfg_dict = cfg
+        elif hasattr(cfg, &#34;__dict__&#34;):
+            cfg_dict = vars(cfg)
+        else:
+            logger.warning(&#34;Unsupported configuration type for merge: %s&#34;, type(cfg))
+            continue
+
+        # ------------------------------------------------------------------
+        # Deep-merge into the accumulator
+        # ------------------------------------------------------------------
+        merged = deep_merge(merged, cfg_dict)
+
+    return merged</code></pre>
+</details>
+<div class="desc"><p>Recursively merge multiple configuration sources.</p>
+<p>This helper converts all supported <em>config</em> objects into plain
+dictionaries and then applies :func:<code><a title="fin_statement_model.utils.merge.deep_merge" href="../../../utils/merge.html#fin_statement_model.utils.merge.deep_merge">deep_merge()</a></code>
+to ensure a consistent, <strong>deep</strong> merge semantics across the code-base.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>*configs</code></strong></dt>
+<dd>Arbitrary configuration objects. Supported types are
+<code>dict</code>-like, Pydantic models (<code>.model_dump</code>) and objects with
+a <code>__dict__</code> attribute.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A new dictionary representing the recursively merged configuration.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value"><code class="name flex">
+<span>def <span class="ident">require_config_value</span></span>(<span>self,<br>key: str,<br>*,<br>value_type: type | None = None,<br>validator: Callable[[Any], bool] | None = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def require_config_value(
+    self,
+    key: str,
+    *,
+    value_type: type | None = None,
+    validator: Callable[[Any], bool] | None = None,
+) -&gt; Any:
+    &#34;&#34;&#34;Get a required configuration value.&#34;&#34;&#34;
+    return self.get_config_value(key, required=True, value_type=value_type, validator=validator)</code></pre>
+</details>
+<div class="desc"><p>Get a required configuration value.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context"><code class="name flex">
+<span>def <span class="ident">set_config_context</span></span>(<span>self, **context: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_config_context(self, **context: Any) -&gt; None:
+    &#34;&#34;&#34;Set key-value pairs in the configuration context.&#34;&#34;&#34;
+    self._config_context.update(context)</code></pre>
+</details>
+<div class="desc"><p>Set key-value pairs in the configuration context.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override"><code class="name flex">
+<span>def <span class="ident">set_config_override</span></span>(<span>self, key: str, value: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_config_override(self, key: str, value: Any) -&gt; None:
+    &#34;&#34;&#34;Set a runtime configuration override.&#34;&#34;&#34;
+    self._config_overrides[key] = value</code></pre>
+</details>
+<div class="desc"><p>Set a runtime configuration override.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration"><code class="name flex">
+<span>def <span class="ident">validate_configuration</span></span>(<span>self) ‑> <a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector" href="validation.html#fin_statement_model.io.core.mixins.validation.ValidationResultCollector">ValidationResultCollector</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_configuration(self) -&gt; ValidationResultCollector:
+    &#34;&#34;&#34;Validate the handler&#39;s configuration object.&#34;&#34;&#34;
+    collector = ValidationResultCollector(context=self._config_context)
+    if not hasattr(self, &#34;cfg&#34;) or self.cfg is None:
+        collector.add_result(&#34;configuration&#34;, False, &#34;Missing configuration object&#34;, &#34;structure&#34;)
+        return collector
+    try:
+        if hasattr(self.cfg, &#34;model_validate&#34;):
+            collector.add_result(&#34;configuration&#34;, True, &#34;Configuration object is valid&#34;, &#34;structure&#34;)
+        else:
+            collector.add_result(
+                &#34;configuration&#34;,
+                True,
+                &#34;Configuration object exists (non-Pydantic)&#34;,
+                &#34;structure&#34;,
+            )
+    except (ValueError, AttributeError, TypeError) as exc:
+        collector.add_result(
+            &#34;configuration&#34;,
+            False,
+            f&#34;Configuration validation failed: {exc}&#34;,
+            &#34;validation&#34;,
+        )
+    return collector</code></pre>
+</details>
+<div class="desc"><p>Validate the handler's configuration object.</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.io.core.mixins" href="index.html">fin_statement_model.io.core.mixins</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides" href="#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context" href="#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value" href="#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback" href="#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration" href="#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations" href="#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value" href="#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context" href="#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override" href="#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration" href="#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

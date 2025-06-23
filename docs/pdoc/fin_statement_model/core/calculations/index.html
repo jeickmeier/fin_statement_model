@@ -1,0 +1,2040 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.core.calculations API documentation</title>
+<meta name="description" content="Calculation strategies for the Financial Statement Model …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.core.calculations</code></h1>
+</header>
+<section id="section-intro">
+<p>Calculation strategies for the Financial Statement Model.</p>
+<p>This package provides a flexible, extensible system for defining and applying calculation algorithms to financial model nodes. It includes:</p>
+<ul>
+<li>Abstract base class <code><a title="fin_statement_model.core.calculations.Calculation" href="#fin_statement_model.core.calculations.Calculation">Calculation</a></code> for all calculation strategies.</li>
+<li>Built-in calculation types:<ul>
+<li>AdditionCalculation: Sums input node values.</li>
+<li>SubtractionCalculation: First input minus sum of the rest.</li>
+<li>MultiplicationCalculation: Product of all input node values.</li>
+<li>DivisionCalculation: First input divided by product of the rest.</li>
+<li>WeightedAverageCalculation: Weighted or simple average of input node values.</li>
+<li>CustomFormulaCalculation: User-supplied Python function for custom logic.</li>
+<li>FormulaCalculation: Evaluates a mathematical formula string using named variables.</li>
+</ul>
+</li>
+<li>A global <code><a title="fin_statement_model.core.calculations.Registry" href="#fin_statement_model.core.calculations.Registry">Registry</a></code> for registering and retrieving calculation classes by name.</li>
+<li>Extensibility: Users can define and register their own calculation types.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.calculations import AdditionCalculation, Registry
+&gt;&gt;&gt; class MockNode:
+...     def __init__(self, value):
+...         self._value = value
+...
+...     def calculate(self, period):
+...         return self._value
+&gt;&gt;&gt; nodes = [MockNode(10), MockNode(20)]
+&gt;&gt;&gt; calc = AdditionCalculation()
+&gt;&gt;&gt; calc.calculate(nodes, &quot;2023Q4&quot;)
+30.0
+&gt;&gt;&gt; CalcClass = Registry.get(&quot;AdditionCalculation&quot;)
+&gt;&gt;&gt; calc2 = CalcClass()
+&gt;&gt;&gt; calc2.calculate(nodes, &quot;2023Q4&quot;)
+30.0
+</code></pre>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.core.calculations.calculation" href="calculation.html">fin_statement_model.core.calculations.calculation</a></code></dt>
+<dd>
+<div class="desc"><p>Calculation for the Financial Statement Model …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.calculations.registry" href="registry.html">fin_statement_model.core.calculations.registry</a></code></dt>
+<dd>
+<div class="desc"><p>Registry for calculation classes in the Financial Statement Model …</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.core.calculations.AdditionCalculation"><code class="flex name class">
+<span>class <span class="ident">AdditionCalculation</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AdditionCalculation(Calculation):
+    &#34;&#34;&#34;Implements an addition calculation, summing values from multiple input nodes.
+
+    This calculation sums the values obtained from calling
+    the `calculate` method on each of the provided input nodes for a given period.
+    &#34;&#34;&#34;
+
+    def calculate(self, inputs: list[Node], period: str) -&gt; float:
+        &#34;&#34;&#34;Sums the calculated values from all input nodes for the specified period.
+
+        Args:
+            inputs: A list of Node objects.
+            period: The time period string (e.g., &#34;2023Q4&#34;) for the calculation.
+
+        Returns:
+            The total sum of the values calculated from the input nodes. Returns
+            0.0 if the input list is empty.
+
+        Examples:
+            &gt;&gt;&gt; class MockNode:
+            ...     def __init__(self, value):
+            ...         self._value = value
+            ...
+            ...     def calculate(self, period):
+            ...         return self._value
+            &gt;&gt;&gt; strategy = AdditionCalculation()
+            &gt;&gt;&gt; nodes = [MockNode(10), MockNode(20), MockNode(5)]
+            &gt;&gt;&gt; strategy.calculate(nodes, &#34;2023&#34;)
+            35.0
+            &gt;&gt;&gt; strategy.calculate([], &#34;2023&#34;)
+            0.0
+        &#34;&#34;&#34;
+        logger.debug(&#34;Applying addition calculation for period %s&#34;, period)
+        # Using a generator expression for potentially better memory efficiency
+        return sum(input_node.calculate(period) for input_node in inputs)
+
+    @property
+    def description(self) -&gt; str:
+        &#34;&#34;&#34;Returns a description of the addition calculation.&#34;&#34;&#34;
+        return &#34;Addition (sum of all inputs)&#34;</code></pre>
+</details>
+<div class="desc"><p>Implements an addition calculation, summing values from multiple input nodes.</p>
+<p>This calculation sums the values obtained from calling
+the <code>calculate</code> method on each of the provided input nodes for a given period.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.calculations.calculation.Calculation" href="calculation.html#fin_statement_model.core.calculations.calculation.Calculation">Calculation</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.AdditionCalculation.description"><code class="name">prop <span class="ident">description</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def description(self) -&gt; str:
+    &#34;&#34;&#34;Returns a description of the addition calculation.&#34;&#34;&#34;
+    return &#34;Addition (sum of all inputs)&#34;</code></pre>
+</details>
+<div class="desc"><p>Returns a description of the addition calculation.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.AdditionCalculation.calculate"><code class="name flex">
+<span>def <span class="ident">calculate</span></span>(<span>self,<br>inputs: list[<a title="fin_statement_model.core.nodes.base.Node" href="../nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>],<br>period: str) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate(self, inputs: list[Node], period: str) -&gt; float:
+    &#34;&#34;&#34;Sums the calculated values from all input nodes for the specified period.
+
+    Args:
+        inputs: A list of Node objects.
+        period: The time period string (e.g., &#34;2023Q4&#34;) for the calculation.
+
+    Returns:
+        The total sum of the values calculated from the input nodes. Returns
+        0.0 if the input list is empty.
+
+    Examples:
+        &gt;&gt;&gt; class MockNode:
+        ...     def __init__(self, value):
+        ...         self._value = value
+        ...
+        ...     def calculate(self, period):
+        ...         return self._value
+        &gt;&gt;&gt; strategy = AdditionCalculation()
+        &gt;&gt;&gt; nodes = [MockNode(10), MockNode(20), MockNode(5)]
+        &gt;&gt;&gt; strategy.calculate(nodes, &#34;2023&#34;)
+        35.0
+        &gt;&gt;&gt; strategy.calculate([], &#34;2023&#34;)
+        0.0
+    &#34;&#34;&#34;
+    logger.debug(&#34;Applying addition calculation for period %s&#34;, period)
+    # Using a generator expression for potentially better memory efficiency
+    return sum(input_node.calculate(period) for input_node in inputs)</code></pre>
+</details>
+<div class="desc"><p>Sums the calculated values from all input nodes for the specified period.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>inputs</code></strong></dt>
+<dd>A list of Node objects.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>The time period string (e.g., "2023Q4") for the calculation.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The total sum of the values calculated from the input nodes. Returns
+0.0 if the input list is empty.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class MockNode:
+...     def __init__(self, value):
+...         self._value = value
+...
+...     def calculate(self, period):
+...         return self._value
+&gt;&gt;&gt; strategy = AdditionCalculation()
+&gt;&gt;&gt; nodes = [MockNode(10), MockNode(20), MockNode(5)]
+&gt;&gt;&gt; strategy.calculate(nodes, &quot;2023&quot;)
+35.0
+&gt;&gt;&gt; strategy.calculate([], &quot;2023&quot;)
+0.0
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.calculations.Calculation"><code class="flex name class">
+<span>class <span class="ident">Calculation</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Calculation(ABC):
+    &#34;&#34;&#34;Abstract base class for all calculations.
+
+    This class defines the interface that all concrete calculation classes must
+    implement. It employs a calculation pattern, allowing the algorithm
+    used by a CalculationNode to be selected at runtime.
+
+    Each concrete calculation encapsulates a specific method for computing a
+    financial value based on a list of input nodes and a given time period.
+    &#34;&#34;&#34;
+
+    @abstractmethod
+    def calculate(self, inputs: list[Node], period: str) -&gt; float:
+        &#34;&#34;&#34;Calculate a value based on input nodes for a specific period.
+
+        This abstract method must be implemented by all concrete calculation classes.
+        It defines the core logic for the calculation.
+
+        Args:
+            inputs: A list of input Node objects whose values will be used in
+                the calculation.
+            period: The time period string (e.g., &#34;2023Q1&#34;) for which the
+                calculation should be performed.
+
+        Returns:
+            The calculated numerical value as a float.
+
+        Raises:
+            NotImplementedError: If the method is not implemented by a subclass.
+            ValueError: If the inputs are invalid for the specific calculation
+                (e.g., wrong number of inputs, incompatible types).
+            ZeroDivisionError: If the calculation involves division and a divisor
+                is zero.
+            Exception: Other exceptions depending on the calculation logic.
+        &#34;&#34;&#34;
+        # pragma: no cover
+
+    @property
+    def description(self) -&gt; str:
+        &#34;&#34;&#34;Provides a human-readable description of the calculation.
+
+        This is useful for documentation, debugging, and for user interfaces
+        that need to explain how a value is derived.
+
+        Returns:
+            A string describing the calculation.
+        &#34;&#34;&#34;
+        # Default implementation returns the class name. Subclasses should override
+        # for more specific descriptions.
+        class_name = self.__class__.__name__  # pragma: no cover
+        return class_name</code></pre>
+</details>
+<div class="desc"><p>Abstract base class for all calculations.</p>
+<p>This class defines the interface that all concrete calculation classes must
+implement. It employs a calculation pattern, allowing the algorithm
+used by a CalculationNode to be selected at runtime.</p>
+<p>Each concrete calculation encapsulates a specific method for computing a
+financial value based on a list of input nodes and a given time period.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.calculations.calculation.AdditionCalculation" href="calculation.html#fin_statement_model.core.calculations.calculation.AdditionCalculation">AdditionCalculation</a></li>
+<li><a title="fin_statement_model.core.calculations.calculation.CustomFormulaCalculation" href="calculation.html#fin_statement_model.core.calculations.calculation.CustomFormulaCalculation">CustomFormulaCalculation</a></li>
+<li><a title="fin_statement_model.core.calculations.calculation.DivisionCalculation" href="calculation.html#fin_statement_model.core.calculations.calculation.DivisionCalculation">DivisionCalculation</a></li>
+<li><a title="fin_statement_model.core.calculations.calculation.FormulaCalculation" href="calculation.html#fin_statement_model.core.calculations.calculation.FormulaCalculation">FormulaCalculation</a></li>
+<li><a title="fin_statement_model.core.calculations.calculation.MultiplicationCalculation" href="calculation.html#fin_statement_model.core.calculations.calculation.MultiplicationCalculation">MultiplicationCalculation</a></li>
+<li><a title="fin_statement_model.core.calculations.calculation.SubtractionCalculation" href="calculation.html#fin_statement_model.core.calculations.calculation.SubtractionCalculation">SubtractionCalculation</a></li>
+<li><a title="fin_statement_model.core.calculations.calculation.WeightedAverageCalculation" href="calculation.html#fin_statement_model.core.calculations.calculation.WeightedAverageCalculation">WeightedAverageCalculation</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.Calculation.description"><code class="name">prop <span class="ident">description</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def description(self) -&gt; str:
+    &#34;&#34;&#34;Provides a human-readable description of the calculation.
+
+    This is useful for documentation, debugging, and for user interfaces
+    that need to explain how a value is derived.
+
+    Returns:
+        A string describing the calculation.
+    &#34;&#34;&#34;
+    # Default implementation returns the class name. Subclasses should override
+    # for more specific descriptions.
+    class_name = self.__class__.__name__  # pragma: no cover
+    return class_name</code></pre>
+</details>
+<div class="desc"><p>Provides a human-readable description of the calculation.</p>
+<p>This is useful for documentation, debugging, and for user interfaces
+that need to explain how a value is derived.</p>
+<h2 id="returns">Returns</h2>
+<p>A string describing the calculation.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.Calculation.calculate"><code class="name flex">
+<span>def <span class="ident">calculate</span></span>(<span>self,<br>inputs: list[<a title="fin_statement_model.core.nodes.base.Node" href="../nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>],<br>period: str) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def calculate(self, inputs: list[Node], period: str) -&gt; float:
+    &#34;&#34;&#34;Calculate a value based on input nodes for a specific period.
+
+    This abstract method must be implemented by all concrete calculation classes.
+    It defines the core logic for the calculation.
+
+    Args:
+        inputs: A list of input Node objects whose values will be used in
+            the calculation.
+        period: The time period string (e.g., &#34;2023Q1&#34;) for which the
+            calculation should be performed.
+
+    Returns:
+        The calculated numerical value as a float.
+
+    Raises:
+        NotImplementedError: If the method is not implemented by a subclass.
+        ValueError: If the inputs are invalid for the specific calculation
+            (e.g., wrong number of inputs, incompatible types).
+        ZeroDivisionError: If the calculation involves division and a divisor
+            is zero.
+        Exception: Other exceptions depending on the calculation logic.
+    &#34;&#34;&#34;
+    # pragma: no cover</code></pre>
+</details>
+<div class="desc"><p>Calculate a value based on input nodes for a specific period.</p>
+<p>This abstract method must be implemented by all concrete calculation classes.
+It defines the core logic for the calculation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>inputs</code></strong></dt>
+<dd>A list of input Node objects whose values will be used in
+the calculation.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>The time period string (e.g., "2023Q1") for which the
+calculation should be performed.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The calculated numerical value as a float.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>NotImplementedError</code></dt>
+<dd>If the method is not implemented by a subclass.</dd>
+<dt><code>ValueError</code></dt>
+<dd>If the inputs are invalid for the specific calculation
+(e.g., wrong number of inputs, incompatible types).</dd>
+<dt><code>ZeroDivisionError</code></dt>
+<dd>If the calculation involves division and a divisor
+is zero.</dd>
+<dt><code>Exception</code></dt>
+<dd>Other exceptions depending on the calculation logic.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.calculations.CustomFormulaCalculation"><code class="flex name class">
+<span>class <span class="ident">CustomFormulaCalculation</span></span>
+<span>(</span><span>formula_function: Callable[[dict[str, float]], float])</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CustomFormulaCalculation(Calculation):
+    &#34;&#34;&#34;Executes a user-defined Python function to calculate a value.
+
+    This calculation provides maximum flexibility by allowing any custom Python
+    function to be used for calculation. The function receives a dictionary
+    mapping input node names (or fallback names) to their calculated values
+    for the period and should return a single float result.
+    &#34;&#34;&#34;
+
+    def __init__(self, formula_function: FormulaFunc):
+        &#34;&#34;&#34;Initializes the CustomFormulaCalculation with a calculation function.
+
+        Args:
+            formula_function: A callable (function, lambda, etc.) that accepts
+                a single argument: a dictionary mapping string keys (input node
+                names or `input_&lt;i&gt;`) to their float values for the period.
+                It must return a float.
+
+        Raises:
+            TypeError: If `formula_function` is not callable.
+        &#34;&#34;&#34;
+        if not callable(formula_function):
+            raise StrategyError(
+                &#34;formula_function must be callable&#34;,
+                strategy_type=&#34;CustomFormulaCalculation&#34;,
+            )
+        self.formula_function = formula_function
+        logger.info(&#34;Initialized CustomFormulaCalculation with function: %s&#34;, formula_function.__name__)
+
+    def calculate(self, inputs: list[Node], period: str) -&gt; float:
+        &#34;&#34;&#34;Applies the custom formula function to the calculated input values.
+
+        Args:
+            inputs: A list of Node objects.
+            period: The time period string (e.g., &#34;2025M1&#34;) for the calculation.
+
+        Returns:
+            The float result returned by the `formula_function`.
+
+        Raises:
+            CalculationError: If the `formula_function` encounters an error during execution
+                (e.g., incorrect input keys, calculation errors). Wraps the original exception.
+
+        Examples:
+            &gt;&gt;&gt; class MockNode:
+            ...     def __init__(self, name, value):
+            ...         self.name = name
+            ...         self._value = value
+            ...
+            ...     def calculate(self, period):
+            ...         return self._value
+            &gt;&gt;&gt; def my_formula(data):
+            ...     # Example: Gross Profit Margin
+            ...     return (data[&#34;revenue&#34;] - data[&#34;cogs&#34;]) / data[&#34;revenue&#34;] * 100
+            &gt;&gt;&gt; strategy = CustomFormulaCalculation(my_formula)
+            &gt;&gt;&gt; nodes = [MockNode(&#34;revenue&#34;, 1000), MockNode(&#34;cogs&#34;, 600)]
+            &gt;&gt;&gt; strategy.calculate(nodes, &#34;2023&#34;)
+            40.0
+            &gt;&gt;&gt; # Example with unnamed nodes
+            &gt;&gt;&gt; def simple_sum(data):
+            ...     return data[&#34;input_0&#34;] + data[&#34;input_1&#34;]
+            &gt;&gt;&gt; strategy_unnamed = CustomFormulaCalculation(simple_sum)
+            &gt;&gt;&gt; nodes_unnamed = [MockNode(None, 10), MockNode(None, 20)]  # No names
+            &gt;&gt;&gt; strategy_unnamed.calculate(nodes_unnamed, &#34;2023&#34;)
+            30.0
+        &#34;&#34;&#34;
+        # Prepare input values dictionary, using names if available
+        input_values: dict[str, float] = {}
+        for i, node in enumerate(inputs):
+            # Prefer node.name if it exists and is a non-empty string
+            key = getattr(node, &#34;name&#34;, None)
+            if not isinstance(key, str) or not key:
+                key = f&#34;input_{i}&#34;
+            input_values[key] = node.calculate(period)
+
+        logger.debug(&#34;Applying custom formula calculation for period %s with inputs: %s&#34;, period, input_values)
+        try:
+            # Execute the user-provided function
+            result = self.formula_function(input_values)
+            if not isinstance(result, int | float):
+                logger.warning(
+                    &#34;Custom formula function %s returned non-numeric type: %s. Attempting cast.&#34;,
+                    self.formula_function.__name__,
+                    type(result),
+                )
+                # Attempt conversion, but be aware this might fail or be lossy
+                try:
+                    return float(result)
+                except (ValueError, TypeError) as cast_err:
+                    raise CalculationError(
+                        f&#34;Custom formula {self.formula_function.__name__} result &#34;
+                        f&#34;({result!r}) could not be cast to float.&#34;,
+                        period=period,
+                        details={
+                            &#34;result&#34;: result,
+                            &#34;result_type&#34;: type(result).__name__,
+                        },
+                    ) from cast_err
+            return float(result)  # Ensure result is float
+        except Exception as e:
+            # Catch any exception from the custom function and wrap it
+            logger.exception(
+                &#34;Error executing custom formula &#39;%s&#39;&#34;,
+                self.formula_function.__name__,
+            )
+            raise CalculationError(
+                f&#34;Error in custom formula &#39;{self.formula_function.__name__}&#39;: {e}&#34;,
+                period=period,
+                details={&#34;original_error&#34;: str(e)},
+            ) from e
+
+    @property
+    def description(self) -&gt; str:
+        &#34;&#34;&#34;Returns a description of the custom formula calculation.&#34;&#34;&#34;
+        func_name = getattr(self.formula_function, &#34;__name__&#34;, &#34;[anonymous function]&#34;)
+        return f&#34;Custom Formula (using function: {func_name})&#34;</code></pre>
+</details>
+<div class="desc"><p>Executes a user-defined Python function to calculate a value.</p>
+<p>This calculation provides maximum flexibility by allowing any custom Python
+function to be used for calculation. The function receives a dictionary
+mapping input node names (or fallback names) to their calculated values
+for the period and should return a single float result.</p>
+<p>Initializes the CustomFormulaCalculation with a calculation function.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>formula_function</code></strong></dt>
+<dd>A callable (function, lambda, etc.) that accepts
+a single argument: a dictionary mapping string keys (input node
+names or <code>input_&lt;i&gt;</code>) to their float values for the period.
+It must return a float.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If <code>formula_function</code> is not callable.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.calculations.calculation.Calculation" href="calculation.html#fin_statement_model.core.calculations.calculation.Calculation">Calculation</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.CustomFormulaCalculation.description"><code class="name">prop <span class="ident">description</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def description(self) -&gt; str:
+    &#34;&#34;&#34;Returns a description of the custom formula calculation.&#34;&#34;&#34;
+    func_name = getattr(self.formula_function, &#34;__name__&#34;, &#34;[anonymous function]&#34;)
+    return f&#34;Custom Formula (using function: {func_name})&#34;</code></pre>
+</details>
+<div class="desc"><p>Returns a description of the custom formula calculation.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.CustomFormulaCalculation.calculate"><code class="name flex">
+<span>def <span class="ident">calculate</span></span>(<span>self,<br>inputs: list[<a title="fin_statement_model.core.nodes.base.Node" href="../nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>],<br>period: str) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate(self, inputs: list[Node], period: str) -&gt; float:
+    &#34;&#34;&#34;Applies the custom formula function to the calculated input values.
+
+    Args:
+        inputs: A list of Node objects.
+        period: The time period string (e.g., &#34;2025M1&#34;) for the calculation.
+
+    Returns:
+        The float result returned by the `formula_function`.
+
+    Raises:
+        CalculationError: If the `formula_function` encounters an error during execution
+            (e.g., incorrect input keys, calculation errors). Wraps the original exception.
+
+    Examples:
+        &gt;&gt;&gt; class MockNode:
+        ...     def __init__(self, name, value):
+        ...         self.name = name
+        ...         self._value = value
+        ...
+        ...     def calculate(self, period):
+        ...         return self._value
+        &gt;&gt;&gt; def my_formula(data):
+        ...     # Example: Gross Profit Margin
+        ...     return (data[&#34;revenue&#34;] - data[&#34;cogs&#34;]) / data[&#34;revenue&#34;] * 100
+        &gt;&gt;&gt; strategy = CustomFormulaCalculation(my_formula)
+        &gt;&gt;&gt; nodes = [MockNode(&#34;revenue&#34;, 1000), MockNode(&#34;cogs&#34;, 600)]
+        &gt;&gt;&gt; strategy.calculate(nodes, &#34;2023&#34;)
+        40.0
+        &gt;&gt;&gt; # Example with unnamed nodes
+        &gt;&gt;&gt; def simple_sum(data):
+        ...     return data[&#34;input_0&#34;] + data[&#34;input_1&#34;]
+        &gt;&gt;&gt; strategy_unnamed = CustomFormulaCalculation(simple_sum)
+        &gt;&gt;&gt; nodes_unnamed = [MockNode(None, 10), MockNode(None, 20)]  # No names
+        &gt;&gt;&gt; strategy_unnamed.calculate(nodes_unnamed, &#34;2023&#34;)
+        30.0
+    &#34;&#34;&#34;
+    # Prepare input values dictionary, using names if available
+    input_values: dict[str, float] = {}
+    for i, node in enumerate(inputs):
+        # Prefer node.name if it exists and is a non-empty string
+        key = getattr(node, &#34;name&#34;, None)
+        if not isinstance(key, str) or not key:
+            key = f&#34;input_{i}&#34;
+        input_values[key] = node.calculate(period)
+
+    logger.debug(&#34;Applying custom formula calculation for period %s with inputs: %s&#34;, period, input_values)
+    try:
+        # Execute the user-provided function
+        result = self.formula_function(input_values)
+        if not isinstance(result, int | float):
+            logger.warning(
+                &#34;Custom formula function %s returned non-numeric type: %s. Attempting cast.&#34;,
+                self.formula_function.__name__,
+                type(result),
+            )
+            # Attempt conversion, but be aware this might fail or be lossy
+            try:
+                return float(result)
+            except (ValueError, TypeError) as cast_err:
+                raise CalculationError(
+                    f&#34;Custom formula {self.formula_function.__name__} result &#34;
+                    f&#34;({result!r}) could not be cast to float.&#34;,
+                    period=period,
+                    details={
+                        &#34;result&#34;: result,
+                        &#34;result_type&#34;: type(result).__name__,
+                    },
+                ) from cast_err
+        return float(result)  # Ensure result is float
+    except Exception as e:
+        # Catch any exception from the custom function and wrap it
+        logger.exception(
+            &#34;Error executing custom formula &#39;%s&#39;&#34;,
+            self.formula_function.__name__,
+        )
+        raise CalculationError(
+            f&#34;Error in custom formula &#39;{self.formula_function.__name__}&#39;: {e}&#34;,
+            period=period,
+            details={&#34;original_error&#34;: str(e)},
+        ) from e</code></pre>
+</details>
+<div class="desc"><p>Applies the custom formula function to the calculated input values.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>inputs</code></strong></dt>
+<dd>A list of Node objects.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>The time period string (e.g., "2025M1") for the calculation.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The float result returned by the <code>formula_function</code>.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>CalculationError</code></dt>
+<dd>If the <code>formula_function</code> encounters an error during execution
+(e.g., incorrect input keys, calculation errors). Wraps the original exception.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class MockNode:
+...     def __init__(self, name, value):
+...         self.name = name
+...         self._value = value
+...
+...     def calculate(self, period):
+...         return self._value
+&gt;&gt;&gt; def my_formula(data):
+...     # Example: Gross Profit Margin
+...     return (data[&quot;revenue&quot;] - data[&quot;cogs&quot;]) / data[&quot;revenue&quot;] * 100
+&gt;&gt;&gt; strategy = CustomFormulaCalculation(my_formula)
+&gt;&gt;&gt; nodes = [MockNode(&quot;revenue&quot;, 1000), MockNode(&quot;cogs&quot;, 600)]
+&gt;&gt;&gt; strategy.calculate(nodes, &quot;2023&quot;)
+40.0
+&gt;&gt;&gt; # Example with unnamed nodes
+&gt;&gt;&gt; def simple_sum(data):
+...     return data[&quot;input_0&quot;] + data[&quot;input_1&quot;]
+&gt;&gt;&gt; strategy_unnamed = CustomFormulaCalculation(simple_sum)
+&gt;&gt;&gt; nodes_unnamed = [MockNode(None, 10), MockNode(None, 20)]  # No names
+&gt;&gt;&gt; strategy_unnamed.calculate(nodes_unnamed, &quot;2023&quot;)
+30.0
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.calculations.DivisionCalculation"><code class="flex name class">
+<span>class <span class="ident">DivisionCalculation</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DivisionCalculation(Calculation):
+    &#34;&#34;&#34;Implements a division calculation: first input divided by the product of the rest.
+
+    This calculation takes the calculated value of the first node (numerator) and
+    divides it by the product of the calculated values of all subsequent nodes
+    (denominator) for a specific period.
+    &#34;&#34;&#34;
+
+    def calculate(self, inputs: list[Node], period: str) -&gt; float:
+        &#34;&#34;&#34;Calculates the division: first input / (product of subsequent inputs).
+
+        Args:
+            inputs: A list of Node objects. Must contain at least two nodes.
+            period: The time period string (e.g., &#34;2024Q2&#34;) for the calculation.
+
+        Returns:
+            The result of the division.
+
+        Raises:
+            CalculationError: If the `inputs` list contains fewer than two nodes or if the denominator product is zero.
+
+        Examples:
+            &gt;&gt;&gt; class MockNode:
+            ...     def __init__(self, value):
+            ...         self._value = value
+            ...
+            ...     def calculate(self, period):
+            ...         return self._value
+            &gt;&gt;&gt; strategy = DivisionCalculation()
+            &gt;&gt;&gt; nodes = [MockNode(100), MockNode(5), MockNode(2)]
+            &gt;&gt;&gt; strategy.calculate(nodes, &#34;2023&#34;)
+            10.0
+            &gt;&gt;&gt; nodes_zero_denom = [MockNode(100), MockNode(5), MockNode(0)]
+            &gt;&gt;&gt; try:
+            ...     strategy.calculate(nodes_zero_denom, &#34;2023&#34;)
+            ... except CalculationError as e:
+            ...     # Example: logging the error instead of printing
+            ...     logger.error(e)
+            Division by zero: Denominator product is zero
+        &#34;&#34;&#34;
+        if len(inputs) &lt; MIN_REQUIRED_INPUTS:
+            raise CalculationError(
+                &#34;Division calculation requires at least two input nodes&#34;,
+                details={&#34;strategy&#34;: &#34;DivisionCalculation&#34;, &#34;input_count&#34;: len(inputs)},
+            )
+
+        logger.debug(&#34;Applying division calculation for period %s&#34;, period)
+
+        values = [node.calculate(period) for node in inputs]
+        numerator = values[0]
+
+        denominator = 1.0
+        for val in values[1:]:
+            denominator *= val
+
+        if denominator == 0.0:
+            raise CalculationError(
+                &#34;Division by zero: Denominator product is zero&#34;,
+                period=period,
+                details={&#34;numerator&#34;: numerator, &#34;denominator&#34;: denominator},
+            )
+
+        return numerator / denominator
+
+    @property
+    def description(self) -&gt; str:
+        &#34;&#34;&#34;Returns a description of the division calculation.&#34;&#34;&#34;
+        return &#34;Division (first input / product of subsequent inputs)&#34;</code></pre>
+</details>
+<div class="desc"><p>Implements a division calculation: first input divided by the product of the rest.</p>
+<p>This calculation takes the calculated value of the first node (numerator) and
+divides it by the product of the calculated values of all subsequent nodes
+(denominator) for a specific period.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.calculations.calculation.Calculation" href="calculation.html#fin_statement_model.core.calculations.calculation.Calculation">Calculation</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.DivisionCalculation.description"><code class="name">prop <span class="ident">description</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def description(self) -&gt; str:
+    &#34;&#34;&#34;Returns a description of the division calculation.&#34;&#34;&#34;
+    return &#34;Division (first input / product of subsequent inputs)&#34;</code></pre>
+</details>
+<div class="desc"><p>Returns a description of the division calculation.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.DivisionCalculation.calculate"><code class="name flex">
+<span>def <span class="ident">calculate</span></span>(<span>self,<br>inputs: list[<a title="fin_statement_model.core.nodes.base.Node" href="../nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>],<br>period: str) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate(self, inputs: list[Node], period: str) -&gt; float:
+    &#34;&#34;&#34;Calculates the division: first input / (product of subsequent inputs).
+
+    Args:
+        inputs: A list of Node objects. Must contain at least two nodes.
+        period: The time period string (e.g., &#34;2024Q2&#34;) for the calculation.
+
+    Returns:
+        The result of the division.
+
+    Raises:
+        CalculationError: If the `inputs` list contains fewer than two nodes or if the denominator product is zero.
+
+    Examples:
+        &gt;&gt;&gt; class MockNode:
+        ...     def __init__(self, value):
+        ...         self._value = value
+        ...
+        ...     def calculate(self, period):
+        ...         return self._value
+        &gt;&gt;&gt; strategy = DivisionCalculation()
+        &gt;&gt;&gt; nodes = [MockNode(100), MockNode(5), MockNode(2)]
+        &gt;&gt;&gt; strategy.calculate(nodes, &#34;2023&#34;)
+        10.0
+        &gt;&gt;&gt; nodes_zero_denom = [MockNode(100), MockNode(5), MockNode(0)]
+        &gt;&gt;&gt; try:
+        ...     strategy.calculate(nodes_zero_denom, &#34;2023&#34;)
+        ... except CalculationError as e:
+        ...     # Example: logging the error instead of printing
+        ...     logger.error(e)
+        Division by zero: Denominator product is zero
+    &#34;&#34;&#34;
+    if len(inputs) &lt; MIN_REQUIRED_INPUTS:
+        raise CalculationError(
+            &#34;Division calculation requires at least two input nodes&#34;,
+            details={&#34;strategy&#34;: &#34;DivisionCalculation&#34;, &#34;input_count&#34;: len(inputs)},
+        )
+
+    logger.debug(&#34;Applying division calculation for period %s&#34;, period)
+
+    values = [node.calculate(period) for node in inputs]
+    numerator = values[0]
+
+    denominator = 1.0
+    for val in values[1:]:
+        denominator *= val
+
+    if denominator == 0.0:
+        raise CalculationError(
+            &#34;Division by zero: Denominator product is zero&#34;,
+            period=period,
+            details={&#34;numerator&#34;: numerator, &#34;denominator&#34;: denominator},
+        )
+
+    return numerator / denominator</code></pre>
+</details>
+<div class="desc"><p>Calculates the division: first input / (product of subsequent inputs).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>inputs</code></strong></dt>
+<dd>A list of Node objects. Must contain at least two nodes.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>The time period string (e.g., "2024Q2") for the calculation.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The result of the division.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>CalculationError</code></dt>
+<dd>If the <code>inputs</code> list contains fewer than two nodes or if the denominator product is zero.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class MockNode:
+...     def __init__(self, value):
+...         self._value = value
+...
+...     def calculate(self, period):
+...         return self._value
+&gt;&gt;&gt; strategy = DivisionCalculation()
+&gt;&gt;&gt; nodes = [MockNode(100), MockNode(5), MockNode(2)]
+&gt;&gt;&gt; strategy.calculate(nodes, &quot;2023&quot;)
+10.0
+&gt;&gt;&gt; nodes_zero_denom = [MockNode(100), MockNode(5), MockNode(0)]
+&gt;&gt;&gt; try:
+...     strategy.calculate(nodes_zero_denom, &quot;2023&quot;)
+... except CalculationError as e:
+...     # Example: logging the error instead of printing
+...     logger.error(e)
+Division by zero: Denominator product is zero
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.calculations.FormulaCalculation"><code class="flex name class">
+<span>class <span class="ident">FormulaCalculation</span></span>
+<span>(</span><span>formula: str, input_variable_names: list[str])</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class FormulaCalculation(Calculation):
+    &#34;&#34;&#34;Evaluates a mathematical formula string using *asteval* for safety.
+
+    The class evaluates arithmetic expressions that reference input nodes by the
+    variable names supplied in *input_variable_names*. Evaluation is delegated
+    to the ``asteval`` interpreter which executes a restricted subset of
+    Python&#39;s syntax with no access to built-ins or the filesystem, providing a
+    safer and more maintainable alternative to a hand-rolled AST walker.
+
+    Attributes:
+        formula: The expression string (e.g. ``&#34;a + b / 2&#34;``).
+        input_variable_names: Ordered list of variable names corresponding to
+            the order of *inputs* passed to :py:meth:`calculate`.
+    &#34;&#34;&#34;
+
+    def __init__(self, formula: str, input_variable_names: list[str]):
+        &#34;&#34;&#34;Initialise the :class:`FormulaCalculation`.
+
+        Args:
+            formula: Mathematical expression to evaluate.
+            input_variable_names: Names that will map to the provided input
+                nodes in the same order.
+
+        Raises:
+            StrategyError: If *asteval* is not installed.
+        &#34;&#34;&#34;
+        try:
+            from asteval import (
+                Interpreter,
+            )  # local import to avoid hard dep at import time
+        except ImportError as exc:  # pragma: no cover - caught by tests if missing
+            raise StrategyError(
+                &#34;Package &#39;asteval&#39; is required for FormulaCalculation. Install it via &#39;pip install asteval&#39;.&#34;,
+                strategy_type=&#34;FormulaCalculation&#34;,
+            ) from exc
+
+        self.formula = formula
+        self.input_variable_names = input_variable_names
+        # Prepare a locked-down interpreter: minimal built-ins, no numpy, no print
+        self._interpreter_cls = Interpreter  # store class; instance created per calculation
+        logger.info(
+            &#34;Initialised FormulaCalculation using asteval with formula &#39;%s&#39; and variables %s&#34;,
+            formula,
+            input_variable_names,
+        )
+
+    # ---------------------------------------------------------------------
+    # Public API
+    # ---------------------------------------------------------------------
+    def calculate(self, inputs: list[Node], period: str) -&gt; float:
+        &#34;&#34;&#34;Evaluate *formula* for *period* using values from *inputs*.
+
+        Args:
+            inputs: Nodes supplying variable values.
+            period: The current period label (e.g. ``&#34;2024Q1&#34;``).
+
+        Returns:
+            Evaluated numeric result.
+
+        Raises:
+            StrategyError: If the number of *inputs* does not match
+                *input_variable_names*.
+            CalculationError: If evaluation fails or returns a non-numeric
+                result.
+        &#34;&#34;&#34;
+        if len(inputs) != len(self.input_variable_names):
+            raise StrategyError(
+                f&#34;Number of inputs ({len(inputs)}) must match number of variable names &#34;
+                f&#34;({len(self.input_variable_names)})&#34;,
+                strategy_type=&#34;FormulaCalculation&#34;,
+            )
+
+        # Map variable names -&gt; calculated values for the given period
+        local_vars: dict[str, float] = {
+            name: node.calculate(period) for name, node in zip(self.input_variable_names, inputs, strict=False)
+        }
+
+        # Create a fresh interpreter each call to avoid symbol leakage between periods
+        from asteval import Interpreter
+
+        ae = Interpreter(symtable={}, minimal=True, no_print=True, use_numpy=False)
+        ae.symtable.update(local_vars)
+
+        logger.debug(
+            &#34;Evaluating formula &#39;%s&#39; for period %s with variables %s&#34;,
+            self.formula,
+            period,
+            local_vars,
+        )
+        try:
+            result = ae(self.formula)
+        except Exception as exc:  # pragma: no cover - generic catch to wrap
+            logger.exception(
+                &#34;Error evaluating formula &#39;%s&#39;&#34;,
+                self.formula,
+            )
+            raise CalculationError(
+                f&#34;Error evaluating formula: {self.formula}. Error: {exc}&#34;,
+                period=period,
+                details={&#34;formula&#34;: self.formula, &#34;original_error&#34;: str(exc)},
+            ) from exc
+
+        if not isinstance(result, int | float):
+            raise CalculationError(
+                &#34;Formula result is not numeric.&#34;,
+                period=period,
+                details={&#34;formula&#34;: self.formula, &#34;result_type&#34;: type(result).__name__},
+            )
+
+        return float(result)
+
+    # ------------------------------------------------------------------
+    # Misc
+    # ------------------------------------------------------------------
+    @property
+    def description(self) -&gt; str:
+        &#34;&#34;&#34;Return a human-readable description of the calculation.&#34;&#34;&#34;
+        return f&#34;Formula (evaluated via asteval): {self.formula}&#34;</code></pre>
+</details>
+<div class="desc"><p>Evaluates a mathematical formula string using <em>asteval</em> for safety.</p>
+<p>The class evaluates arithmetic expressions that reference input nodes by the
+variable names supplied in <em>input_variable_names</em>. Evaluation is delegated
+to the <code>asteval</code> interpreter which executes a restricted subset of
+Python's syntax with no access to built-ins or the filesystem, providing a
+safer and more maintainable alternative to a hand-rolled AST walker.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>formula</code></strong></dt>
+<dd>The expression string (e.g. <code>"a + b / 2"</code>).</dd>
+<dt><strong><code>input_variable_names</code></strong></dt>
+<dd>Ordered list of variable names corresponding to
+the order of <em>inputs</em> passed to :py:meth:<code>calculate</code>.</dd>
+</dl>
+<p>Initialise the :class:<code><a title="fin_statement_model.core.calculations.FormulaCalculation" href="#fin_statement_model.core.calculations.FormulaCalculation">FormulaCalculation</a></code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>formula</code></strong></dt>
+<dd>Mathematical expression to evaluate.</dd>
+<dt><strong><code>input_variable_names</code></strong></dt>
+<dd>Names that will map to the provided input
+nodes in the same order.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>StrategyError</code></dt>
+<dd>If <em>asteval</em> is not installed.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.calculations.calculation.Calculation" href="calculation.html#fin_statement_model.core.calculations.calculation.Calculation">Calculation</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.FormulaCalculation.description"><code class="name">prop <span class="ident">description</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def description(self) -&gt; str:
+    &#34;&#34;&#34;Return a human-readable description of the calculation.&#34;&#34;&#34;
+    return f&#34;Formula (evaluated via asteval): {self.formula}&#34;</code></pre>
+</details>
+<div class="desc"><p>Return a human-readable description of the calculation.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.FormulaCalculation.calculate"><code class="name flex">
+<span>def <span class="ident">calculate</span></span>(<span>self,<br>inputs: list[<a title="fin_statement_model.core.nodes.base.Node" href="../nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>],<br>period: str) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate(self, inputs: list[Node], period: str) -&gt; float:
+    &#34;&#34;&#34;Evaluate *formula* for *period* using values from *inputs*.
+
+    Args:
+        inputs: Nodes supplying variable values.
+        period: The current period label (e.g. ``&#34;2024Q1&#34;``).
+
+    Returns:
+        Evaluated numeric result.
+
+    Raises:
+        StrategyError: If the number of *inputs* does not match
+            *input_variable_names*.
+        CalculationError: If evaluation fails or returns a non-numeric
+            result.
+    &#34;&#34;&#34;
+    if len(inputs) != len(self.input_variable_names):
+        raise StrategyError(
+            f&#34;Number of inputs ({len(inputs)}) must match number of variable names &#34;
+            f&#34;({len(self.input_variable_names)})&#34;,
+            strategy_type=&#34;FormulaCalculation&#34;,
+        )
+
+    # Map variable names -&gt; calculated values for the given period
+    local_vars: dict[str, float] = {
+        name: node.calculate(period) for name, node in zip(self.input_variable_names, inputs, strict=False)
+    }
+
+    # Create a fresh interpreter each call to avoid symbol leakage between periods
+    from asteval import Interpreter
+
+    ae = Interpreter(symtable={}, minimal=True, no_print=True, use_numpy=False)
+    ae.symtable.update(local_vars)
+
+    logger.debug(
+        &#34;Evaluating formula &#39;%s&#39; for period %s with variables %s&#34;,
+        self.formula,
+        period,
+        local_vars,
+    )
+    try:
+        result = ae(self.formula)
+    except Exception as exc:  # pragma: no cover - generic catch to wrap
+        logger.exception(
+            &#34;Error evaluating formula &#39;%s&#39;&#34;,
+            self.formula,
+        )
+        raise CalculationError(
+            f&#34;Error evaluating formula: {self.formula}. Error: {exc}&#34;,
+            period=period,
+            details={&#34;formula&#34;: self.formula, &#34;original_error&#34;: str(exc)},
+        ) from exc
+
+    if not isinstance(result, int | float):
+        raise CalculationError(
+            &#34;Formula result is not numeric.&#34;,
+            period=period,
+            details={&#34;formula&#34;: self.formula, &#34;result_type&#34;: type(result).__name__},
+        )
+
+    return float(result)</code></pre>
+</details>
+<div class="desc"><p>Evaluate <em>formula</em> for <em>period</em> using values from <em>inputs</em>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>inputs</code></strong></dt>
+<dd>Nodes supplying variable values.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>The current period label (e.g. <code>"2024Q1"</code>).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Evaluated numeric result.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>StrategyError</code></dt>
+<dd>If the number of <em>inputs</em> does not match
+<em>input_variable_names</em>.</dd>
+<dt><code>CalculationError</code></dt>
+<dd>If evaluation fails or returns a non-numeric
+result.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.calculations.MultiplicationCalculation"><code class="flex name class">
+<span>class <span class="ident">MultiplicationCalculation</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MultiplicationCalculation(Calculation):
+    &#34;&#34;&#34;Implements a multiplication calculation, calculating the product of input values.
+
+    This calculation multiplies the calculated values of all provided input nodes
+    for a given period.
+    &#34;&#34;&#34;
+
+    def calculate(self, inputs: list[Node], period: str) -&gt; float:
+        &#34;&#34;&#34;Calculates the product of the values from all input nodes.
+
+        Args:
+            inputs: A list of Node objects.
+            period: The time period string (e.g., &#34;2023FY&#34;) for the calculation.
+
+        Returns:
+            The product of all input values. Returns 1.0 (multiplicative identity)
+            if the input list is empty.
+
+        Examples:
+            &gt;&gt;&gt; class MockNode:
+            ...     def __init__(self, value):
+            ...         self._value = value
+            ...
+            ...     def calculate(self, period):
+            ...         return self._value
+            &gt;&gt;&gt; strategy = MultiplicationCalculation()
+            &gt;&gt;&gt; nodes = [MockNode(2), MockNode(3), MockNode(4)]
+            &gt;&gt;&gt; strategy.calculate(nodes, &#34;2023&#34;)
+            24.0
+            &gt;&gt;&gt; strategy.calculate([], &#34;2023&#34;)
+            1.0
+        &#34;&#34;&#34;
+        # Multiplication calculation should ideally return 1.0 for empty inputs.
+        # Raising error if empty seems less conventional for multiplication.
+        if not inputs:
+            logger.warning(&#34;Multiplication calculation called with empty inputs, returning 1.0&#34;)
+            return 1.0
+
+        logger.debug(&#34;Applying multiplication calculation for period %s&#34;, period)
+        result = 1.0
+        for input_node in inputs:
+            result *= input_node.calculate(period)
+        return result
+
+    @property
+    def description(self) -&gt; str:
+        &#34;&#34;&#34;Returns a description of the multiplication calculation.&#34;&#34;&#34;
+        return &#34;Multiplication (product of all inputs)&#34;</code></pre>
+</details>
+<div class="desc"><p>Implements a multiplication calculation, calculating the product of input values.</p>
+<p>This calculation multiplies the calculated values of all provided input nodes
+for a given period.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.calculations.calculation.Calculation" href="calculation.html#fin_statement_model.core.calculations.calculation.Calculation">Calculation</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.MultiplicationCalculation.description"><code class="name">prop <span class="ident">description</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def description(self) -&gt; str:
+    &#34;&#34;&#34;Returns a description of the multiplication calculation.&#34;&#34;&#34;
+    return &#34;Multiplication (product of all inputs)&#34;</code></pre>
+</details>
+<div class="desc"><p>Returns a description of the multiplication calculation.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.MultiplicationCalculation.calculate"><code class="name flex">
+<span>def <span class="ident">calculate</span></span>(<span>self,<br>inputs: list[<a title="fin_statement_model.core.nodes.base.Node" href="../nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>],<br>period: str) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate(self, inputs: list[Node], period: str) -&gt; float:
+    &#34;&#34;&#34;Calculates the product of the values from all input nodes.
+
+    Args:
+        inputs: A list of Node objects.
+        period: The time period string (e.g., &#34;2023FY&#34;) for the calculation.
+
+    Returns:
+        The product of all input values. Returns 1.0 (multiplicative identity)
+        if the input list is empty.
+
+    Examples:
+        &gt;&gt;&gt; class MockNode:
+        ...     def __init__(self, value):
+        ...         self._value = value
+        ...
+        ...     def calculate(self, period):
+        ...         return self._value
+        &gt;&gt;&gt; strategy = MultiplicationCalculation()
+        &gt;&gt;&gt; nodes = [MockNode(2), MockNode(3), MockNode(4)]
+        &gt;&gt;&gt; strategy.calculate(nodes, &#34;2023&#34;)
+        24.0
+        &gt;&gt;&gt; strategy.calculate([], &#34;2023&#34;)
+        1.0
+    &#34;&#34;&#34;
+    # Multiplication calculation should ideally return 1.0 for empty inputs.
+    # Raising error if empty seems less conventional for multiplication.
+    if not inputs:
+        logger.warning(&#34;Multiplication calculation called with empty inputs, returning 1.0&#34;)
+        return 1.0
+
+    logger.debug(&#34;Applying multiplication calculation for period %s&#34;, period)
+    result = 1.0
+    for input_node in inputs:
+        result *= input_node.calculate(period)
+    return result</code></pre>
+</details>
+<div class="desc"><p>Calculates the product of the values from all input nodes.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>inputs</code></strong></dt>
+<dd>A list of Node objects.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>The time period string (e.g., "2023FY") for the calculation.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The product of all input values. Returns 1.0 (multiplicative identity)
+if the input list is empty.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class MockNode:
+...     def __init__(self, value):
+...         self._value = value
+...
+...     def calculate(self, period):
+...         return self._value
+&gt;&gt;&gt; strategy = MultiplicationCalculation()
+&gt;&gt;&gt; nodes = [MockNode(2), MockNode(3), MockNode(4)]
+&gt;&gt;&gt; strategy.calculate(nodes, &quot;2023&quot;)
+24.0
+&gt;&gt;&gt; strategy.calculate([], &quot;2023&quot;)
+1.0
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.calculations.Registry"><code class="flex name class">
+<span>class <span class="ident">Registry</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Registry:
+    &#34;&#34;&#34;A central registry for managing and accessing calculation classes.
+
+    This class uses class methods to provide a global registry. Calculations
+    are stored in a dictionary mapping their class name (string) to the
+    calculation class itself.
+
+    Attributes:
+        _strategies: A dictionary holding the registered calculation classes.
+                     Keys are calculation class names (str), values are calculation
+                     types (Type[Calculation]).
+    &#34;&#34;&#34;
+
+    _strategies: ClassVar[dict[str, type[Calculation]]] = {}  # Use dict, type
+
+    @classmethod
+    def register(cls, calculation: type[Calculation]) -&gt; None:
+        &#34;&#34;&#34;Register a calculation class with the registry.
+
+        If a calculation with the same name is already registered, it will be
+        overwritten.
+
+        Args:
+            calculation: The calculation class (Type[Calculation]) to register.
+                         The class&#39;s __name__ attribute will be used as the key.
+        &#34;&#34;&#34;
+        if not issubclass(calculation, Calculation):
+            raise TypeError(f&#34;Can only register subclasses of Calculation, not {calculation}&#34;)
+        cls._strategies[calculation.__name__] = calculation
+        logger.debug(&#34;Registered calculation: %s&#34;, calculation.__name__)
+
+    @classmethod
+    def get(cls, name: str) -&gt; type[Calculation]:
+        &#34;&#34;&#34;Retrieve a calculation class from the registry by its name.
+
+        Args:
+            name: The string name of the calculation class to retrieve.
+
+        Returns:
+            The calculation class (Type[Calculation]) associated with the given name.
+
+        Raises:
+            KeyError: If no calculation with the specified name is found in the
+                      registry.
+        &#34;&#34;&#34;
+        # Debug print including id of the dictionary
+        if name not in cls._strategies:
+            logger.error(&#34;Attempted to access unregistered calculation: %s&#34;, name)
+            raise KeyError(f&#34;Calculation &#39;{name}&#39; not found in registry.&#34;)
+        return cls._strategies[name]
+
+    @classmethod
+    def list(cls) -&gt; dict[str, type[Calculation]]:  # Use dict, type
+        &#34;&#34;&#34;List all registered calculation classes.
+
+        Returns:
+            A dictionary containing all registered calculation names (str) and their
+            corresponding calculation classes (Type[Calculation]). Returns a copy
+            to prevent modification of the internal registry.
+        &#34;&#34;&#34;
+        return cls._strategies.copy()</code></pre>
+</details>
+<div class="desc"><p>A central registry for managing and accessing calculation classes.</p>
+<p>This class uses class methods to provide a global registry. Calculations
+are stored in a dictionary mapping their class name (string) to the
+calculation class itself.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>_strategies</code></strong></dt>
+<dd>A dictionary holding the registered calculation classes.
+Keys are calculation class names (str), values are calculation
+types (Type[Calculation]).</dd>
+</dl></div>
+<h3>Static methods</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.Registry.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>name: str) ‑> type[<a title="fin_statement_model.core.calculations.calculation.Calculation" href="calculation.html#fin_statement_model.core.calculations.calculation.Calculation">Calculation</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrieve a calculation class from the registry by its name.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The string name of the calculation class to retrieve.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The calculation class (Type[Calculation]) associated with the given name.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>KeyError</code></dt>
+<dd>If no calculation with the specified name is found in the
+registry.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.core.calculations.Registry.list"><code class="name flex">
+<span>def <span class="ident">list</span></span>(<span>) ‑> dict[str, type[<a title="fin_statement_model.core.calculations.calculation.Calculation" href="calculation.html#fin_statement_model.core.calculations.calculation.Calculation">Calculation</a>]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>List all registered calculation classes.</p>
+<h2 id="returns">Returns</h2>
+<p>A dictionary containing all registered calculation names (str) and their
+corresponding calculation classes (Type[Calculation]). Returns a copy
+to prevent modification of the internal registry.</p></div>
+</dd>
+<dt id="fin_statement_model.core.calculations.Registry.register"><code class="name flex">
+<span>def <span class="ident">register</span></span>(<span>calculation: type[<a title="fin_statement_model.core.calculations.calculation.Calculation" href="calculation.html#fin_statement_model.core.calculations.calculation.Calculation">Calculation</a>]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register a calculation class with the registry.</p>
+<p>If a calculation with the same name is already registered, it will be
+overwritten.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>calculation</code></strong></dt>
+<dd>The calculation class (Type[Calculation]) to register.
+The class's <strong>name</strong> attribute will be used as the key.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.calculations.SubtractionCalculation"><code class="flex name class">
+<span>class <span class="ident">SubtractionCalculation</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SubtractionCalculation(Calculation):
+    &#34;&#34;&#34;Implements a subtraction calculation: first input minus the sum of the rest.
+
+    This calculation takes the calculated value of the first node in the input list
+    and subtracts the sum of the calculated values of all subsequent nodes for
+    a specific period.
+    &#34;&#34;&#34;
+
+    def calculate(self, inputs: list[Node], period: str) -&gt; float:
+        &#34;&#34;&#34;Calculates the difference: value of the first input minus the sum of others.
+
+        Args:
+            inputs: A list of Node objects. Must contain at least one node.
+            period: The time period string (e.g., &#34;2024Q1&#34;) for the calculation.
+
+        Returns:
+            The result of the subtraction. If only one input node is provided,
+            its value is returned.
+
+        Raises:
+            CalculationError: If the `inputs` list is empty.
+
+        Examples:
+            &gt;&gt;&gt; class MockNode:
+            ...     def __init__(self, value):
+            ...         self._value = value
+            ...
+            ...     def calculate(self, period):
+            ...         return self._value
+            &gt;&gt;&gt; strategy = SubtractionCalculation()
+            &gt;&gt;&gt; nodes = [MockNode(100), MockNode(20), MockNode(30)]
+            &gt;&gt;&gt; strategy.calculate(nodes, &#34;2023&#34;)
+            50.0
+            &gt;&gt;&gt; nodes_single = [MockNode(100)]
+            &gt;&gt;&gt; strategy.calculate(nodes_single, &#34;2023&#34;)
+            100.0
+        &#34;&#34;&#34;
+        if not inputs:
+            raise CalculationError(
+                &#34;Subtraction calculation requires at least one input node&#34;,
+                details={&#34;strategy&#34;: &#34;SubtractionCalculation&#34;},
+            )
+
+        logger.debug(&#34;Applying subtraction calculation for period %s&#34;, period)
+        # Calculate values first to avoid multiple calls if nodes are complex
+        values = [node.calculate(period) for node in inputs]
+        return values[0] - sum(values[1:])
+
+    @property
+    def description(self) -&gt; str:
+        &#34;&#34;&#34;Returns a description of the subtraction calculation.&#34;&#34;&#34;
+        return &#34;Subtraction (first input minus sum of subsequent inputs)&#34;</code></pre>
+</details>
+<div class="desc"><p>Implements a subtraction calculation: first input minus the sum of the rest.</p>
+<p>This calculation takes the calculated value of the first node in the input list
+and subtracts the sum of the calculated values of all subsequent nodes for
+a specific period.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.calculations.calculation.Calculation" href="calculation.html#fin_statement_model.core.calculations.calculation.Calculation">Calculation</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.SubtractionCalculation.description"><code class="name">prop <span class="ident">description</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def description(self) -&gt; str:
+    &#34;&#34;&#34;Returns a description of the subtraction calculation.&#34;&#34;&#34;
+    return &#34;Subtraction (first input minus sum of subsequent inputs)&#34;</code></pre>
+</details>
+<div class="desc"><p>Returns a description of the subtraction calculation.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.SubtractionCalculation.calculate"><code class="name flex">
+<span>def <span class="ident">calculate</span></span>(<span>self,<br>inputs: list[<a title="fin_statement_model.core.nodes.base.Node" href="../nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>],<br>period: str) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate(self, inputs: list[Node], period: str) -&gt; float:
+    &#34;&#34;&#34;Calculates the difference: value of the first input minus the sum of others.
+
+    Args:
+        inputs: A list of Node objects. Must contain at least one node.
+        period: The time period string (e.g., &#34;2024Q1&#34;) for the calculation.
+
+    Returns:
+        The result of the subtraction. If only one input node is provided,
+        its value is returned.
+
+    Raises:
+        CalculationError: If the `inputs` list is empty.
+
+    Examples:
+        &gt;&gt;&gt; class MockNode:
+        ...     def __init__(self, value):
+        ...         self._value = value
+        ...
+        ...     def calculate(self, period):
+        ...         return self._value
+        &gt;&gt;&gt; strategy = SubtractionCalculation()
+        &gt;&gt;&gt; nodes = [MockNode(100), MockNode(20), MockNode(30)]
+        &gt;&gt;&gt; strategy.calculate(nodes, &#34;2023&#34;)
+        50.0
+        &gt;&gt;&gt; nodes_single = [MockNode(100)]
+        &gt;&gt;&gt; strategy.calculate(nodes_single, &#34;2023&#34;)
+        100.0
+    &#34;&#34;&#34;
+    if not inputs:
+        raise CalculationError(
+            &#34;Subtraction calculation requires at least one input node&#34;,
+            details={&#34;strategy&#34;: &#34;SubtractionCalculation&#34;},
+        )
+
+    logger.debug(&#34;Applying subtraction calculation for period %s&#34;, period)
+    # Calculate values first to avoid multiple calls if nodes are complex
+    values = [node.calculate(period) for node in inputs]
+    return values[0] - sum(values[1:])</code></pre>
+</details>
+<div class="desc"><p>Calculates the difference: value of the first input minus the sum of others.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>inputs</code></strong></dt>
+<dd>A list of Node objects. Must contain at least one node.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>The time period string (e.g., "2024Q1") for the calculation.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The result of the subtraction. If only one input node is provided,
+its value is returned.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>CalculationError</code></dt>
+<dd>If the <code>inputs</code> list is empty.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class MockNode:
+...     def __init__(self, value):
+...         self._value = value
+...
+...     def calculate(self, period):
+...         return self._value
+&gt;&gt;&gt; strategy = SubtractionCalculation()
+&gt;&gt;&gt; nodes = [MockNode(100), MockNode(20), MockNode(30)]
+&gt;&gt;&gt; strategy.calculate(nodes, &quot;2023&quot;)
+50.0
+&gt;&gt;&gt; nodes_single = [MockNode(100)]
+&gt;&gt;&gt; strategy.calculate(nodes_single, &quot;2023&quot;)
+100.0
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.core.calculations.WeightedAverageCalculation"><code class="flex name class">
+<span>class <span class="ident">WeightedAverageCalculation</span></span>
+<span>(</span><span>weights: list[float] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class WeightedAverageCalculation(Calculation):
+    &#34;&#34;&#34;Calculates the weighted average of input node values.
+
+    This calculation computes the average of the values from input nodes, where each
+    node&#39;s contribution is weighted. If no weights are provided during
+    initialization, it defaults to an equal weighting (simple average).
+    &#34;&#34;&#34;
+
+    def __init__(self, weights: list[float] | None = None):
+        &#34;&#34;&#34;Initializes the WeightedAverageCalculation.
+
+        Args:
+            weights: An optional list of floats representing the weight for each
+                corresponding input node. The length of this list must match the
+                number of input nodes provided to the `calculate` method. If None,
+                equal weights are assumed.
+        &#34;&#34;&#34;
+        # Validate weights if provided immediately? No, validation happens in calculate
+        # as the number of inputs isn&#39;t known here.
+        self.weights = weights
+        logger.info(&#34;Initialized WeightedAverageCalculation with weights: %s&#34;, weights)
+
+    def calculate(self, inputs: list[Node], period: str) -&gt; float:
+        &#34;&#34;&#34;Computes the weighted average of the input node values for the period.
+
+        Args:
+            inputs: A list of Node objects.
+            period: The time period string (e.g., &#34;2023H1&#34;) for the calculation.
+
+        Returns:
+            The calculated weighted average as a float.
+
+        Raises:
+            CalculationError: If the `inputs` list is empty or if the sum of weights is zero.
+            StrategyError: If `weights` were provided and length does not match number of inputs.
+
+        Examples:
+            &gt;&gt;&gt; class MockNode:
+            ...     def __init__(self, value):
+            ...         self._value = value
+            ...
+            ...     def calculate(self, period):
+            ...         return self._value
+            &gt;&gt;&gt; # Equal weights (simple average)
+            &gt;&gt;&gt; strategy_equal = WeightedAverageCalculation()
+            &gt;&gt;&gt; nodes = [MockNode(10), MockNode(20), MockNode(30)]
+            &gt;&gt;&gt; strategy_equal.calculate(nodes, &#34;2023&#34;)
+            20.0
+            &gt;&gt;&gt; # Custom weights
+            &gt;&gt;&gt; strategy_custom = WeightedAverageCalculation(weights=[0.5, 0.3, 0.2])
+            &gt;&gt;&gt; strategy_custom.calculate(nodes, &#34;2023&#34;)
+            17.0
+            &gt;&gt;&gt; # Mismatched weights
+            &gt;&gt;&gt; strategy_mismatch = WeightedAverageCalculation(weights=[0.5, 0.5])
+            &gt;&gt;&gt; try:
+            ...     strategy_mismatch.calculate(nodes, &#34;2023&#34;)
+            ... except StrategyError as e:
+            ...     # Example: logging the error instead of printing
+            ...     logger.error(e)
+            Number of weights (2) must match number of inputs (3)
+        &#34;&#34;&#34;
+        if not inputs:
+            raise CalculationError(
+                &#34;Weighted average calculation requires at least one input node&#34;,
+                details={&#34;strategy&#34;: &#34;WeightedAverageCalculation&#34;},
+            )
+
+        num_inputs = len(inputs)
+        effective_weights: list[float]
+
+        if self.weights is None:
+            # Use equal weights if none provided
+            if num_inputs == 0:  # Should be caught by the check above, but defensive
+                return 0.0
+            equal_weight = 1.0 / num_inputs
+            effective_weights = [equal_weight] * num_inputs
+            logger.debug(&#34;Using equal weights for weighted average.&#34;)
+        elif len(self.weights) == num_inputs:
+            effective_weights = self.weights
+            logger.debug(&#34;Using provided weights: %s&#34;, effective_weights)
+        else:
+            raise StrategyError(
+                f&#34;Number of weights ({len(self.weights)}) must match number of inputs ({num_inputs})&#34;,
+                strategy_type=&#34;WeightedAverageCalculation&#34;,
+            )
+
+        logger.debug(&#34;Applying weighted average calculation for period %s&#34;, period)
+        weighted_sum = 0.0
+        total_weight = sum(effective_weights)
+        input_values = [node.calculate(period) for node in inputs]
+
+        if total_weight == 0.0:
+            # Avoid division by zero. If weights are all zero, the concept is ill-defined.
+            # Returning 0 might be a reasonable default, or raising an error.
+            # Let&#39;s raise ValueError for clarity.
+            raise CalculationError(
+                &#34;Total weight for weighted average cannot be zero.&#34;,
+                period=period,
+                details={&#34;weights&#34;: effective_weights},
+            )
+
+        for value, weight in zip(input_values, effective_weights, strict=False):
+            weighted_sum += value * weight
+
+        # If weights don&#39;t sum to 1, this isn&#39;t a standard weighted average.
+        # Decide whether to normalize or return the weighted sum directly.
+        # Normalize by total weight for a true weighted average.
+        return weighted_sum / total_weight
+
+    @property
+    def description(self) -&gt; str:
+        &#34;&#34;&#34;Returns a description of the weighted average calculation.&#34;&#34;&#34;
+        if self.weights:
+            return f&#34;Weighted Average (using provided weights: {self.weights})&#34;
+        else:
+            return &#34;Weighted Average (using equal weights)&#34;</code></pre>
+</details>
+<div class="desc"><p>Calculates the weighted average of input node values.</p>
+<p>This calculation computes the average of the values from input nodes, where each
+node's contribution is weighted. If no weights are provided during
+initialization, it defaults to an equal weighting (simple average).</p>
+<p>Initializes the WeightedAverageCalculation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>weights</code></strong></dt>
+<dd>An optional list of floats representing the weight for each
+corresponding input node. The length of this list must match the
+number of input nodes provided to the <code>calculate</code> method. If None,
+equal weights are assumed.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.calculations.calculation.Calculation" href="calculation.html#fin_statement_model.core.calculations.calculation.Calculation">Calculation</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.WeightedAverageCalculation.description"><code class="name">prop <span class="ident">description</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def description(self) -&gt; str:
+    &#34;&#34;&#34;Returns a description of the weighted average calculation.&#34;&#34;&#34;
+    if self.weights:
+        return f&#34;Weighted Average (using provided weights: {self.weights})&#34;
+    else:
+        return &#34;Weighted Average (using equal weights)&#34;</code></pre>
+</details>
+<div class="desc"><p>Returns a description of the weighted average calculation.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.calculations.WeightedAverageCalculation.calculate"><code class="name flex">
+<span>def <span class="ident">calculate</span></span>(<span>self,<br>inputs: list[<a title="fin_statement_model.core.nodes.base.Node" href="../nodes/base.html#fin_statement_model.core.nodes.base.Node">Node</a>],<br>period: str) ‑> float</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate(self, inputs: list[Node], period: str) -&gt; float:
+    &#34;&#34;&#34;Computes the weighted average of the input node values for the period.
+
+    Args:
+        inputs: A list of Node objects.
+        period: The time period string (e.g., &#34;2023H1&#34;) for the calculation.
+
+    Returns:
+        The calculated weighted average as a float.
+
+    Raises:
+        CalculationError: If the `inputs` list is empty or if the sum of weights is zero.
+        StrategyError: If `weights` were provided and length does not match number of inputs.
+
+    Examples:
+        &gt;&gt;&gt; class MockNode:
+        ...     def __init__(self, value):
+        ...         self._value = value
+        ...
+        ...     def calculate(self, period):
+        ...         return self._value
+        &gt;&gt;&gt; # Equal weights (simple average)
+        &gt;&gt;&gt; strategy_equal = WeightedAverageCalculation()
+        &gt;&gt;&gt; nodes = [MockNode(10), MockNode(20), MockNode(30)]
+        &gt;&gt;&gt; strategy_equal.calculate(nodes, &#34;2023&#34;)
+        20.0
+        &gt;&gt;&gt; # Custom weights
+        &gt;&gt;&gt; strategy_custom = WeightedAverageCalculation(weights=[0.5, 0.3, 0.2])
+        &gt;&gt;&gt; strategy_custom.calculate(nodes, &#34;2023&#34;)
+        17.0
+        &gt;&gt;&gt; # Mismatched weights
+        &gt;&gt;&gt; strategy_mismatch = WeightedAverageCalculation(weights=[0.5, 0.5])
+        &gt;&gt;&gt; try:
+        ...     strategy_mismatch.calculate(nodes, &#34;2023&#34;)
+        ... except StrategyError as e:
+        ...     # Example: logging the error instead of printing
+        ...     logger.error(e)
+        Number of weights (2) must match number of inputs (3)
+    &#34;&#34;&#34;
+    if not inputs:
+        raise CalculationError(
+            &#34;Weighted average calculation requires at least one input node&#34;,
+            details={&#34;strategy&#34;: &#34;WeightedAverageCalculation&#34;},
+        )
+
+    num_inputs = len(inputs)
+    effective_weights: list[float]
+
+    if self.weights is None:
+        # Use equal weights if none provided
+        if num_inputs == 0:  # Should be caught by the check above, but defensive
+            return 0.0
+        equal_weight = 1.0 / num_inputs
+        effective_weights = [equal_weight] * num_inputs
+        logger.debug(&#34;Using equal weights for weighted average.&#34;)
+    elif len(self.weights) == num_inputs:
+        effective_weights = self.weights
+        logger.debug(&#34;Using provided weights: %s&#34;, effective_weights)
+    else:
+        raise StrategyError(
+            f&#34;Number of weights ({len(self.weights)}) must match number of inputs ({num_inputs})&#34;,
+            strategy_type=&#34;WeightedAverageCalculation&#34;,
+        )
+
+    logger.debug(&#34;Applying weighted average calculation for period %s&#34;, period)
+    weighted_sum = 0.0
+    total_weight = sum(effective_weights)
+    input_values = [node.calculate(period) for node in inputs]
+
+    if total_weight == 0.0:
+        # Avoid division by zero. If weights are all zero, the concept is ill-defined.
+        # Returning 0 might be a reasonable default, or raising an error.
+        # Let&#39;s raise ValueError for clarity.
+        raise CalculationError(
+            &#34;Total weight for weighted average cannot be zero.&#34;,
+            period=period,
+            details={&#34;weights&#34;: effective_weights},
+        )
+
+    for value, weight in zip(input_values, effective_weights, strict=False):
+        weighted_sum += value * weight
+
+    # If weights don&#39;t sum to 1, this isn&#39;t a standard weighted average.
+    # Decide whether to normalize or return the weighted sum directly.
+    # Normalize by total weight for a true weighted average.
+    return weighted_sum / total_weight</code></pre>
+</details>
+<div class="desc"><p>Computes the weighted average of the input node values for the period.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>inputs</code></strong></dt>
+<dd>A list of Node objects.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>The time period string (e.g., "2023H1") for the calculation.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The calculated weighted average as a float.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>CalculationError</code></dt>
+<dd>If the <code>inputs</code> list is empty or if the sum of weights is zero.</dd>
+<dt><code>StrategyError</code></dt>
+<dd>If <code>weights</code> were provided and length does not match number of inputs.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class MockNode:
+...     def __init__(self, value):
+...         self._value = value
+...
+...     def calculate(self, period):
+...         return self._value
+&gt;&gt;&gt; # Equal weights (simple average)
+&gt;&gt;&gt; strategy_equal = WeightedAverageCalculation()
+&gt;&gt;&gt; nodes = [MockNode(10), MockNode(20), MockNode(30)]
+&gt;&gt;&gt; strategy_equal.calculate(nodes, &quot;2023&quot;)
+20.0
+&gt;&gt;&gt; # Custom weights
+&gt;&gt;&gt; strategy_custom = WeightedAverageCalculation(weights=[0.5, 0.3, 0.2])
+&gt;&gt;&gt; strategy_custom.calculate(nodes, &quot;2023&quot;)
+17.0
+&gt;&gt;&gt; # Mismatched weights
+&gt;&gt;&gt; strategy_mismatch = WeightedAverageCalculation(weights=[0.5, 0.5])
+&gt;&gt;&gt; try:
+...     strategy_mismatch.calculate(nodes, &quot;2023&quot;)
+... except StrategyError as e:
+...     # Example: logging the error instead of printing
+...     logger.error(e)
+Number of weights (2) must match number of inputs (3)
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.core" href="../index.html">fin_statement_model.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.core.calculations.calculation" href="calculation.html">fin_statement_model.core.calculations.calculation</a></code></li>
+<li><code><a title="fin_statement_model.core.calculations.registry" href="registry.html">fin_statement_model.core.calculations.registry</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.core.calculations.AdditionCalculation" href="#fin_statement_model.core.calculations.AdditionCalculation">AdditionCalculation</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.calculations.AdditionCalculation.calculate" href="#fin_statement_model.core.calculations.AdditionCalculation.calculate">calculate</a></code></li>
+<li><code><a title="fin_statement_model.core.calculations.AdditionCalculation.description" href="#fin_statement_model.core.calculations.AdditionCalculation.description">description</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.calculations.Calculation" href="#fin_statement_model.core.calculations.Calculation">Calculation</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.calculations.Calculation.calculate" href="#fin_statement_model.core.calculations.Calculation.calculate">calculate</a></code></li>
+<li><code><a title="fin_statement_model.core.calculations.Calculation.description" href="#fin_statement_model.core.calculations.Calculation.description">description</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.calculations.CustomFormulaCalculation" href="#fin_statement_model.core.calculations.CustomFormulaCalculation">CustomFormulaCalculation</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.calculations.CustomFormulaCalculation.calculate" href="#fin_statement_model.core.calculations.CustomFormulaCalculation.calculate">calculate</a></code></li>
+<li><code><a title="fin_statement_model.core.calculations.CustomFormulaCalculation.description" href="#fin_statement_model.core.calculations.CustomFormulaCalculation.description">description</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.calculations.DivisionCalculation" href="#fin_statement_model.core.calculations.DivisionCalculation">DivisionCalculation</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.calculations.DivisionCalculation.calculate" href="#fin_statement_model.core.calculations.DivisionCalculation.calculate">calculate</a></code></li>
+<li><code><a title="fin_statement_model.core.calculations.DivisionCalculation.description" href="#fin_statement_model.core.calculations.DivisionCalculation.description">description</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.calculations.FormulaCalculation" href="#fin_statement_model.core.calculations.FormulaCalculation">FormulaCalculation</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.calculations.FormulaCalculation.calculate" href="#fin_statement_model.core.calculations.FormulaCalculation.calculate">calculate</a></code></li>
+<li><code><a title="fin_statement_model.core.calculations.FormulaCalculation.description" href="#fin_statement_model.core.calculations.FormulaCalculation.description">description</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.calculations.MultiplicationCalculation" href="#fin_statement_model.core.calculations.MultiplicationCalculation">MultiplicationCalculation</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.calculations.MultiplicationCalculation.calculate" href="#fin_statement_model.core.calculations.MultiplicationCalculation.calculate">calculate</a></code></li>
+<li><code><a title="fin_statement_model.core.calculations.MultiplicationCalculation.description" href="#fin_statement_model.core.calculations.MultiplicationCalculation.description">description</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.calculations.Registry" href="#fin_statement_model.core.calculations.Registry">Registry</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.calculations.Registry.get" href="#fin_statement_model.core.calculations.Registry.get">get</a></code></li>
+<li><code><a title="fin_statement_model.core.calculations.Registry.list" href="#fin_statement_model.core.calculations.Registry.list">list</a></code></li>
+<li><code><a title="fin_statement_model.core.calculations.Registry.register" href="#fin_statement_model.core.calculations.Registry.register">register</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.calculations.SubtractionCalculation" href="#fin_statement_model.core.calculations.SubtractionCalculation">SubtractionCalculation</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.calculations.SubtractionCalculation.calculate" href="#fin_statement_model.core.calculations.SubtractionCalculation.calculate">calculate</a></code></li>
+<li><code><a title="fin_statement_model.core.calculations.SubtractionCalculation.description" href="#fin_statement_model.core.calculations.SubtractionCalculation.description">description</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.core.calculations.WeightedAverageCalculation" href="#fin_statement_model.core.calculations.WeightedAverageCalculation">WeightedAverageCalculation</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.calculations.WeightedAverageCalculation.calculate" href="#fin_statement_model.core.calculations.WeightedAverageCalculation.calculate">calculate</a></code></li>
+<li><code><a title="fin_statement_model.core.calculations.WeightedAverageCalculation.description" href="#fin_statement_model.core.calculations.WeightedAverageCalculation.description">description</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

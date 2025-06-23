@@ -1,0 +1,2862 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.io.core API documentation</title>
+<meta name="description" content="Core IO components including base classes, registry, and utilities.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.io.core</code></h1>
+</header>
+<section id="section-intro">
+<p>Core IO components including base classes, registry, and utilities.</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.io.core.base" href="base.html">fin_statement_model.io.core.base</a></code></dt>
+<dd>
+<div class="desc"><p>Abstract base classes for data readers and writers …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.core.base_table_writer" href="base_table_writer.html">fin_statement_model.io.core.base_table_writer</a></code></dt>
+<dd>
+<div class="desc"><p>Common helpers for writers that export Graphs as tables …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.core.dataframe_reader_base" href="dataframe_reader_base.html">fin_statement_model.io.core.dataframe_reader_base</a></code></dt>
+<dd>
+<div class="desc"><p>Generic helper for readers that ingest pandas.DataFrame-like sources …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.core.facade" href="facade.html">fin_statement_model.io.core.facade</a></code></dt>
+<dd>
+<div class="desc"><p>High-level facade functions for simplified I/O operations …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.core.file_utils" href="file_utils.html">fin_statement_model.io.core.file_utils</a></code></dt>
+<dd>
+<div class="desc"><p>fin_statement_model.io.core.file_utils …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.core.mixins" href="mixins/index.html">fin_statement_model.io.core.mixins</a></code></dt>
+<dd>
+<div class="desc"><p>Composite namespace for IO mixins …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.core.registry" href="registry.html">fin_statement_model.io.core.registry</a></code></dt>
+<dd>
+<div class="desc"><p>Registry system for managing I/O format handlers …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.core.types" href="types.html">fin_statement_model.io.core.types</a></code></dt>
+<dd>
+<div class="desc"><p>Core type aliases shared across the IO package …</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.io.core.get_reader"><code class="name flex">
+<span>def <span class="ident">get_reader</span></span>(<span>format_type: str, **kwargs: Any) ‑> <a title="fin_statement_model.io.core.base.DataReader" href="base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_reader(format_type: str, **kwargs: Any) -&gt; DataReader:
+    &#34;&#34;&#34;Get an instance of the registered DataReader for the given format type.
+
+    Args:
+        format_type: The string identifier for the format.
+        **kwargs: Keyword arguments to pass to the reader&#39;s constructor.
+
+    Returns:
+        An initialized DataReader instance.
+
+    Raises:
+        FormatNotSupportedError: If no reader is registered for the format type.
+        ReadError: If validation fails for known reader types.
+    &#34;&#34;&#34;
+    return cast(
+        &#34;DataReader&#34;,
+        _get_handler(
+            format_type=format_type,
+            registry=_reader_registry,
+            handler_type=&#34;read&#34;,
+            error_class=ReadError,
+            **kwargs,
+        ),
+    )</code></pre>
+</details>
+<div class="desc"><p>Get an instance of the registered DataReader for the given format type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The string identifier for the format.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Keyword arguments to pass to the reader's constructor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>An initialized DataReader instance.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>FormatNotSupportedError</code></dt>
+<dd>If no reader is registered for the format type.</dd>
+<dt><code>ReadError</code></dt>
+<dd>If validation fails for known reader types.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.get_writer"><code class="name flex">
+<span>def <span class="ident">get_writer</span></span>(<span>format_type: str, **kwargs: Any) ‑> <a title="fin_statement_model.io.core.base.DataWriter" href="base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_writer(format_type: str, **kwargs: Any) -&gt; DataWriter:
+    &#34;&#34;&#34;Get an instance of the registered DataWriter for the given format type.
+
+    Args:
+        format_type: The string identifier for the format.
+        **kwargs: Keyword arguments to pass to the writer&#39;s constructor.
+
+    Returns:
+        An initialized DataWriter instance.
+
+    Raises:
+        FormatNotSupportedError: If no writer is registered for the format type.
+        WriteError: If validation fails for known writer types.
+    &#34;&#34;&#34;
+    return cast(
+        &#34;DataWriter&#34;,
+        _get_handler(
+            format_type=format_type,
+            registry=_writer_registry,
+            handler_type=&#34;write&#34;,
+            error_class=WriteError,
+            **kwargs,
+        ),
+    )</code></pre>
+</details>
+<div class="desc"><p>Get an instance of the registered DataWriter for the given format type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The string identifier for the format.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Keyword arguments to pass to the writer's constructor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>An initialized DataWriter instance.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>FormatNotSupportedError</code></dt>
+<dd>If no writer is registered for the format type.</dd>
+<dt><code>WriteError</code></dt>
+<dd>If validation fails for known writer types.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.handle_read_errors"><code class="name flex">
+<span>def <span class="ident">handle_read_errors</span></span>(<span>) ‑> Callable[[~F], ~F]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def handle_read_errors() -&gt; Callable[[F], F]:
+    &#34;&#34;&#34;Create a decorator to wrap reader methods and convert generic exceptions.
+
+    This decorator is designed to be applied to the `read` method of any `DataReader`
+    subclass. It catches common exceptions that may occur during a read operation—such
+    as `FileNotFoundError` or `ValueError`—and re-raises them as a `ReadError`,
+    enriching them with contextual information like the source and reader type.
+
+    This standardization allows callers to handle all read-related failures by
+    catching a single, specific exception type.
+
+    Returns:
+        A decorator that can be applied to a reader&#39;s `read` method.
+
+    Example:
+        ```python
+        # class MyReader(DataReader):
+        #     @handle_read_errors()
+        #     def read(self, source: str, **kwargs) -&gt; Graph:
+        #         # ... implementation that might raise FileNotFoundError, etc.
+        #         if not os.path.exists(source):
+        #             raise FileNotFoundError(f&#34;Can&#39;t find {source}&#34;)
+        #         return Graph()
+        #
+        # # Calling MyReader().read(&#34;bad_path.txt&#34;) will raise a ReadError.
+        ```
+    &#34;&#34;&#34;
+
+    def decorator(func: F) -&gt; F:
+        @functools.wraps(func)
+        def wrapper(self: Any, source: Any, **kwargs: Any) -&gt; Any:
+            try:
+                return func(self, source, **kwargs)
+            except ReadError:
+                raise  # Re-raise as-is so callers can pattern-match
+            except FileNotFoundError as e:
+                err = ReadError(
+                    f&#34;File not found: {source}&#34;,
+                    source=str(source),
+                    reader_type=self.__class__.__name__,
+                    original_error=e,
+                )
+                raise err.with_traceback(e.__traceback__) from e
+            except ValueError as e:
+                err = ReadError(
+                    f&#34;Invalid value encountered: {e}&#34;,
+                    source=str(source),
+                    reader_type=self.__class__.__name__,
+                    original_error=e,
+                )
+                raise err.with_traceback(e.__traceback__) from e
+            except Exception as e:
+                logger.exception(&#34;Failed to read from %s&#34;, source)
+                err = ReadError(
+                    f&#34;Failed to process source: {e}&#34;,
+                    source=str(source),
+                    reader_type=self.__class__.__name__,
+                    original_error=e,
+                )
+                raise err.with_traceback(e.__traceback__) from e
+
+        return wrapper  # type: ignore[return-value]
+
+    return decorator</code></pre>
+</details>
+<div class="desc"><p>Create a decorator to wrap reader methods and convert generic exceptions.</p>
+<p>This decorator is designed to be applied to the <code>read</code> method of any <code><a title="fin_statement_model.io.core.DataReader" href="#fin_statement_model.io.core.DataReader">DataReader</a></code>
+subclass. It catches common exceptions that may occur during a read operation—such
+as <code>FileNotFoundError</code> or <code>ValueError</code>—and re-raises them as a <code>ReadError</code>,
+enriching them with contextual information like the source and reader type.</p>
+<p>This standardization allows callers to handle all read-related failures by
+catching a single, specific exception type.</p>
+<h2 id="returns">Returns</h2>
+<p>A decorator that can be applied to a reader's <code>read</code> method.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python"># class MyReader(DataReader):
+#     @handle_read_errors()
+#     def read(self, source: str, **kwargs) -&gt; Graph:
+#         # ... implementation that might raise FileNotFoundError, etc.
+#         if not os.path.exists(source):
+#             raise FileNotFoundError(f&quot;Can't find {source}&quot;)
+#         return Graph()
+#
+# # Calling MyReader().read(&quot;bad_path.txt&quot;) will raise a ReadError.
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.io.core.handle_write_errors"><code class="name flex">
+<span>def <span class="ident">handle_write_errors</span></span>(<span>) ‑> Callable[[~F], ~F]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def handle_write_errors() -&gt; Callable[[F], F]:
+    &#34;&#34;&#34;Create a decorator to wrap writer methods and convert generic exceptions.
+
+    This decorator is designed to be applied to the `write` method of any `DataWriter`
+    subclass. It catches generic `Exception` instances that may occur during a write
+    operation and re-raises them as a `WriteError`, enriching them with context
+    such as the target and writer type.
+
+    This standardization allows callers to handle all write-related failures by
+    catching a single, specific exception type.
+
+    Returns:
+        A decorator that can be applied to a writer&#39;s `write` method.
+
+    Example:
+        ```python
+        # class MyWriter(DataWriter):
+        #     @handle_write_errors()
+        #     def write(self, graph: Graph, target: str, **kwargs):
+        #         # ... implementation that might raise IOError, etc.
+        #         with open(target, &#39;w&#39;) as f: # This could fail
+        #             f.write(&#34;data&#34;)
+        #
+        # # Calling MyWriter().write(g, &#34;/no_permission/file.txt&#34;) will raise WriteError.
+        ```
+    &#34;&#34;&#34;
+
+    def decorator(func: F) -&gt; F:
+        @functools.wraps(func)
+        def wrapper(self: Any, graph: Any, target: Any = None, **kwargs: Any) -&gt; Any:
+            try:
+                return func(self, graph, target, **kwargs)
+            except WriteError:
+                raise
+            except Exception as e:
+                logger.exception(&#34;Failed to write to %s&#34;, target)
+                err = WriteError(
+                    f&#34;Failed to write data: {e}&#34;,
+                    target=str(target) if target else &#34;unknown&#34;,
+                    writer_type=self.__class__.__name__,
+                    original_error=e,
+                )
+                raise err.with_traceback(e.__traceback__) from e
+
+        return wrapper  # type: ignore[return-value]
+
+    return decorator</code></pre>
+</details>
+<div class="desc"><p>Create a decorator to wrap writer methods and convert generic exceptions.</p>
+<p>This decorator is designed to be applied to the <code>write</code> method of any <code><a title="fin_statement_model.io.core.DataWriter" href="#fin_statement_model.io.core.DataWriter">DataWriter</a></code>
+subclass. It catches generic <code>Exception</code> instances that may occur during a write
+operation and re-raises them as a <code>WriteError</code>, enriching them with context
+such as the target and writer type.</p>
+<p>This standardization allows callers to handle all write-related failures by
+catching a single, specific exception type.</p>
+<h2 id="returns">Returns</h2>
+<p>A decorator that can be applied to a writer's <code>write</code> method.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python"># class MyWriter(DataWriter):
+#     @handle_write_errors()
+#     def write(self, graph: Graph, target: str, **kwargs):
+#         # ... implementation that might raise IOError, etc.
+#         with open(target, 'w') as f: # This could fail
+#             f.write(&quot;data&quot;)
+#
+# # Calling MyWriter().write(g, &quot;/no_permission/file.txt&quot;) will raise WriteError.
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.io.core.list_readers"><code class="name flex">
+<span>def <span class="ident">list_readers</span></span>(<span>) ‑> dict[str, type[<a title="fin_statement_model.io.core.base.DataReader" href="base.html#fin_statement_model.io.core.base.DataReader">DataReader</a>]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_readers() -&gt; dict[str, type[DataReader]]:
+    &#34;&#34;&#34;Return a copy of the registered reader classes.&#34;&#34;&#34;
+    return _reader_registry.list_formats()</code></pre>
+</details>
+<div class="desc"><p>Return a copy of the registered reader classes.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.list_writers"><code class="name flex">
+<span>def <span class="ident">list_writers</span></span>(<span>) ‑> dict[str, type[<a title="fin_statement_model.io.core.base.DataWriter" href="base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a>]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_writers() -&gt; dict[str, type[DataWriter]]:
+    &#34;&#34;&#34;Return a copy of the registered writer classes.&#34;&#34;&#34;
+    return _writer_registry.list_formats()</code></pre>
+</details>
+<div class="desc"><p>Return a copy of the registered writer classes.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.read_data"><code class="name flex">
+<span>def <span class="ident">read_data</span></span>(<span>format_type: str,<br>source: Any,<br>*,<br>config: dict[str, typing.Any] | typing.Any | None = None,<br>**read_kwargs: Any) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read_data(
+    format_type: str,
+    source: Any,
+    *,
+    config: dict[str, Any] | Any | None = None,
+    **read_kwargs: Any,
+) -&gt; Graph:
+    &#34;&#34;&#34;Reads data from a source using the specified format.
+
+    This function acts as a facade for the underlying reader implementations.
+    It uses the `format_type` to look up the appropriate reader class in the registry.
+    The `source` and `**kwargs` are combined and validated against the specific
+    reader&#39;s Pydantic configuration model (e.g., `CsvReaderConfig`).
+
+    The validated configuration is used to initialize the reader instance.
+    The `source` (which might be the original object for dict/dataframe formats, or
+    the validated string path/ticker otherwise) and the original `**kwargs` are then
+    passed to the reader instance&#39;s `.read()` method, which handles format-specific
+    read-time options.
+
+    Args:
+        format_type (str): The format identifier (e.g., &#39;excel&#39;, &#39;csv&#39;, &#39;fmp&#39;, &#39;dict&#39;).
+        source (Any): The data source. Its type depends on `format_type`:
+            - `str`: file path (for &#39;excel&#39;, &#39;csv&#39;), ticker symbol (for &#39;fmp&#39;).
+            - `pd.DataFrame`: for &#39;dataframe&#39;.
+            - `dict`: for &#39;dict&#39;.
+        config: Optional dictionary or Pydantic model instance for reader
+            configuration (e.g., `api_key`, `delimiter`, `sheet_name`).
+        **read_kwargs: Additional keyword arguments passed directly to the
+            reader&#39;s `.read()` method (e.g., `periods`). Consult the specific
+            reader&#39;s documentation for available options.
+
+    Returns:
+        Graph: A new Graph object populated with the read data.
+
+    Raises:
+        ReadError: If reading fails.
+        FormatNotSupportedError: If the format_type is not registered.
+        Exception: Other errors during reader initialization or reading.
+
+    Examples:
+        Reading a CSV file with a custom delimiter:
+        ```python
+        # from fin_statement_model.io import read_data
+        # # Assume &#39;my_data.csv&#39; exists and is pipe-delimited
+        # graph = read_data(
+        #     format_type=&#34;csv&#34;,
+        #     source=&#34;my_data.csv&#34;,
+        #     config={&#34;delimiter&#34;: &#34;|&#34;}
+        # )
+        ```
+
+        Reading from the FMP API:
+        ```python
+        # from fin_statement_model.io import read_data
+        # graph = read_data(
+        #     format_type=&#34;fmp&#34;,
+        #     source=&#34;AAPL&#34;,
+        #     config={
+        #         &#34;statement_type&#34;: &#34;income_statement&#34;,
+        #         &#34;api_key&#34;: &#34;YOUR_API_KEY&#34;,
+        #     }
+        # )
+        ```
+    &#34;&#34;&#34;
+    logger.info(&#34;Attempting to read data using format &#39;%s&#39; from source type &#39;%s&#39;&#34;, format_type, type(source).__name__)
+
+    # Build the constructor-time config strictly from the *config* argument.
+    # Runtime-specific options stay in **read_kwargs** and are forwarded untouched.
+    if config is None:
+        config_kwargs: dict[str, Any] = {&#34;source&#34;: source, &#34;format_type&#34;: format_type}
+    else:
+        if isinstance(config, dict):
+            config_kwargs = config.copy()
+        elif hasattr(config, &#34;model_dump&#34;):
+            # The `model_dump` method is provided by Pydantic&#39;s BaseModel.
+            config_kwargs = config.model_dump()
+        else:
+            config_kwargs = dict(config.__dict__)
+        config_kwargs.update({&#34;source&#34;: source, &#34;format_type&#34;: format_type})
+
+    reader = get_reader(**config_kwargs)
+    return reader.read(config_kwargs[&#34;source&#34;], **read_kwargs)</code></pre>
+</details>
+<div class="desc"><p>Reads data from a source using the specified format.</p>
+<p>This function acts as a facade for the underlying reader implementations.
+It uses the <code>format_type</code> to look up the appropriate reader class in the registry.
+The <code>source</code> and <code>**kwargs</code> are combined and validated against the specific
+reader's Pydantic configuration model (e.g., <code>CsvReaderConfig</code>).</p>
+<p>The validated configuration is used to initialize the reader instance.
+The <code>source</code> (which might be the original object for dict/dataframe formats, or
+the validated string path/ticker otherwise) and the original <code>**kwargs</code> are then
+passed to the reader instance's <code>.read()</code> method, which handles format-specific
+read-time options.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>The format identifier (e.g., 'excel', 'csv', 'fmp', 'dict').</dd>
+<dt><strong><code>source</code></strong> :&ensp;<code>Any</code></dt>
+<dd>The data source. Its type depends on <code>format_type</code>:
+- <code>str</code>: file path (for 'excel', 'csv'), ticker symbol (for 'fmp').
+- <code>pd.DataFrame</code>: for 'dataframe'.
+- <code>dict</code>: for 'dict'.</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional dictionary or Pydantic model instance for reader
+configuration (e.g., <code>api_key</code>, <code>delimiter</code>, <code>sheet_name</code>).</dd>
+<dt><strong><code>**read_kwargs</code></strong></dt>
+<dd>Additional keyword arguments passed directly to the
+reader's <code>.read()</code> method (e.g., <code>periods</code>). Consult the specific
+reader's documentation for available options.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Graph</code></dt>
+<dd>A new Graph object populated with the read data.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If reading fails.</dd>
+<dt><code>FormatNotSupportedError</code></dt>
+<dd>If the format_type is not registered.</dd>
+<dt><code>Exception</code></dt>
+<dd>Other errors during reader initialization or reading.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<p>Reading a CSV file with a custom delimiter:</p>
+<pre><code class="language-python"># from fin_statement_model.io import read_data
+# # Assume 'my_data.csv' exists and is pipe-delimited
+# graph = read_data(
+#     format_type=&quot;csv&quot;,
+#     source=&quot;my_data.csv&quot;,
+#     config={&quot;delimiter&quot;: &quot;|&quot;}
+# )
+</code></pre>
+<p>Reading from the FMP API:</p>
+<pre><code class="language-python"># from fin_statement_model.io import read_data
+# graph = read_data(
+#     format_type=&quot;fmp&quot;,
+#     source=&quot;AAPL&quot;,
+#     config={
+#         &quot;statement_type&quot;: &quot;income_statement&quot;,
+#         &quot;api_key&quot;: &quot;YOUR_API_KEY&quot;,
+#     }
+# )
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.io.core.register_reader"><code class="name flex">
+<span>def <span class="ident">register_reader</span></span>(<span>format_type: str, *, schema: type[pydantic.main.BaseModel] | None = None) ‑> Callable[[type[<a title="fin_statement_model.io.core.base.DataReader" href="base.html#fin_statement_model.io.core.base.DataReader">DataReader</a>]], type[<a title="fin_statement_model.io.core.base.DataReader" href="base.html#fin_statement_model.io.core.base.DataReader">DataReader</a>]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def register_reader(
+    format_type: str,
+    *,
+    schema: type[BaseModel] | None = None,
+) -&gt; Callable[[type[DataReader]], type[DataReader]]:
+    &#34;&#34;&#34;Decorator to register a DataReader class for a specific format type.
+
+    Args:
+        format_type: The string identifier for the format (e.g., &#39;excel&#39;, &#39;csv&#39;).
+        schema: Optional Pydantic schema class for configuration validation.
+
+    Returns:
+        A decorator function that registers the class and returns it unmodified.
+
+    Raises:
+        ValueError: If the format_type is already registered for a reader.
+    &#34;&#34;&#34;
+    # Require schema at registration time (legacy schema-less removed)
+    if schema is None:
+        raise ValueError(f&#34;Schema required for reader &#39;{format_type}&#39;; legacy schema-less mode removed.&#34;)
+    return _reader_registry.register(format_type, schema=schema)</code></pre>
+</details>
+<div class="desc"><p>Decorator to register a DataReader class for a specific format type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The string identifier for the format (e.g., 'excel', 'csv').</dd>
+<dt><strong><code>schema</code></strong></dt>
+<dd>Optional Pydantic schema class for configuration validation.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A decorator function that registers the class and returns it unmodified.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the format_type is already registered for a reader.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.register_writer"><code class="name flex">
+<span>def <span class="ident">register_writer</span></span>(<span>format_type: str, *, schema: type[pydantic.main.BaseModel] | None = None) ‑> Callable[[type[<a title="fin_statement_model.io.core.base.DataWriter" href="base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a>]], type[<a title="fin_statement_model.io.core.base.DataWriter" href="base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a>]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def register_writer(
+    format_type: str,
+    *,
+    schema: type[BaseModel] | None = None,
+) -&gt; Callable[[type[DataWriter]], type[DataWriter]]:
+    &#34;&#34;&#34;Decorator to register a DataWriter class for a specific format type.
+
+    Args:
+        format_type: The string identifier for the format (e.g., &#39;excel&#39;, &#39;json&#39;).
+        schema: Optional Pydantic schema class for configuration validation.
+
+    Returns:
+        A decorator function that registers the class and returns it unmodified.
+
+    Raises:
+        ValueError: If the format_type is already registered for a writer.
+    &#34;&#34;&#34;
+    # Require schema at registration time (legacy schema-less removed)
+    if schema is None:
+        raise ValueError(f&#34;Schema required for writer &#39;{format_type}&#39;; legacy schema-less mode removed.&#34;)
+    return _writer_registry.register(format_type, schema=schema)</code></pre>
+</details>
+<div class="desc"><p>Decorator to register a DataWriter class for a specific format type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The string identifier for the format (e.g., 'excel', 'json').</dd>
+<dt><strong><code>schema</code></strong></dt>
+<dd>Optional Pydantic schema class for configuration validation.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A decorator function that registers the class and returns it unmodified.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the format_type is already registered for a writer.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.write_data"><code class="name flex">
+<span>def <span class="ident">write_data</span></span>(<span>format_type: str,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: Any,<br>*,<br>config: dict[str, typing.Any] | typing.Any | None = None,<br>**write_kwargs: Any) ‑> object</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_data(
+    format_type: str,
+    graph: Graph,
+    target: Any,
+    *,
+    config: dict[str, Any] | Any | None = None,
+    **write_kwargs: Any,
+) -&gt; object:
+    &#34;&#34;&#34;Writes graph data to a target using the specified format.
+
+    Similar to `read_data`, this acts as a facade for writer implementations.
+    It uses `format_type` to find the writer class in the registry.
+    The `target` and `**kwargs` are combined and validated against the specific
+    writer&#39;s Pydantic configuration model (e.g., `ExcelWriterConfig`).
+
+    The validated configuration initializes the writer instance.
+    The original `graph`, `target`, and `**kwargs` are then passed to the writer
+    instance&#39;s `.write()` method for format-specific write-time options.
+
+    Args:
+        format_type (str): The format identifier (e.g., &#39;excel&#39;, &#39;dataframe&#39;, &#39;dict&#39;).
+        graph (Graph): The graph object containing data to write.
+        target (Any): The destination target. Its type depends on `format_type`:
+            - `str`: file path (usually required for file-based writers like &#39;excel&#39;).
+            - Ignored: for writers that return objects (like &#39;dataframe&#39;, &#39;dict&#39;).
+        config: Optional dictionary or Pydantic model for writer
+            configuration (e.g., `sheet_name`, `recalculate`).
+        **write_kwargs: Additional keyword arguments passed directly to the
+            writer&#39;s `.write()` method. Consult the specific writer&#39;s
+            documentation for available options.
+
+    Returns:
+        object: The result of the write operation. For writers like DataFrameWriter
+                or DictWriter, this is the created object. For file writers, it&#39;s None.
+
+    Raises:
+        WriteError: If writing fails.
+        FormatNotSupportedError: If the format_type is not registered.
+        Exception: Other errors during writer initialization or writing.
+
+    Examples:
+        Writing graph data to an Excel file:
+        ```python
+        # from fin_statement_model.io import write_data
+        # from fin_statement_model.core import Graph
+        # g = Graph(periods=[&#34;2023&#34;])
+        # # ... populate graph with nodes ...
+        # write_data(
+        #     format_type=&#34;excel&#34;,
+        #     graph=g,
+        #     target=&#34;output.xlsx&#34;,
+        #     config={&#34;sheet_name&#34;: &#34;MyData&#34;}
+        # )
+        ```
+
+        Getting data as a dictionary:
+        ```python
+        # from fin_statement_model.io import write_data
+        # from fin_statement_model.core import Graph
+        # g = Graph(periods=[&#34;2023&#34;])
+        # # ... populate graph with nodes ...
+        # data_dict = write_data(
+        #     format_type=&#34;dict&#34;,
+        #     graph=g,
+        #     target=None  # Target is ignored for dict writer
+        # )
+        ```
+    &#34;&#34;&#34;
+    logger.info(
+        &#34;Attempting to write graph data using format &#39;%s&#39; to target type &#39;%s&#39;&#34;, format_type, type(target).__name__
+    )
+
+    # Build constructor-time config strictly from *config* argument.
+    if config is None:
+        config_kwargs: dict[str, Any] = {&#34;target&#34;: target, &#34;format_type&#34;: format_type}
+    else:
+        if isinstance(config, dict):
+            config_kwargs = config.copy()
+        elif hasattr(config, &#34;model_dump&#34;):
+            # Pydantic v2 models - see note above.
+            config_kwargs = config.model_dump()
+        else:
+            config_kwargs = dict(config.__dict__)
+        config_kwargs.update({&#34;target&#34;: target, &#34;format_type&#34;: format_type})
+
+    writer = get_writer(**config_kwargs)
+    return writer.write(graph, target, **write_kwargs)</code></pre>
+</details>
+<div class="desc"><p>Writes graph data to a target using the specified format.</p>
+<p>Similar to <code><a title="fin_statement_model.io.core.read_data" href="#fin_statement_model.io.core.read_data">read_data()</a></code>, this acts as a facade for writer implementations.
+It uses <code>format_type</code> to find the writer class in the registry.
+The <code>target</code> and <code>**kwargs</code> are combined and validated against the specific
+writer's Pydantic configuration model (e.g., <code>ExcelWriterConfig</code>).</p>
+<p>The validated configuration initializes the writer instance.
+The original <code>graph</code>, <code>target</code>, and <code>**kwargs</code> are then passed to the writer
+instance's <code>.write()</code> method for format-specific write-time options.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>The format identifier (e.g., 'excel', 'dataframe', 'dict').</dd>
+<dt><strong><code>graph</code></strong> :&ensp;<code>Graph</code></dt>
+<dd>The graph object containing data to write.</dd>
+<dt><strong><code>target</code></strong> :&ensp;<code>Any</code></dt>
+<dd>The destination target. Its type depends on <code>format_type</code>:
+- <code>str</code>: file path (usually required for file-based writers like 'excel').
+- Ignored: for writers that return objects (like 'dataframe', 'dict').</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional dictionary or Pydantic model for writer
+configuration (e.g., <code>sheet_name</code>, <code>recalculate</code>).</dd>
+<dt><strong><code>**write_kwargs</code></strong></dt>
+<dd>Additional keyword arguments passed directly to the
+writer's <code>.write()</code> method. Consult the specific writer's
+documentation for available options.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>object</code></dt>
+<dd>The result of the write operation. For writers like DataFrameWriter
+or DictWriter, this is the created object. For file writers, it's None.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>WriteError</code></dt>
+<dd>If writing fails.</dd>
+<dt><code>FormatNotSupportedError</code></dt>
+<dd>If the format_type is not registered.</dd>
+<dt><code>Exception</code></dt>
+<dd>Other errors during writer initialization or writing.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<p>Writing graph data to an Excel file:</p>
+<pre><code class="language-python"># from fin_statement_model.io import write_data
+# from fin_statement_model.core import Graph
+# g = Graph(periods=[&quot;2023&quot;])
+# # ... populate graph with nodes ...
+# write_data(
+#     format_type=&quot;excel&quot;,
+#     graph=g,
+#     target=&quot;output.xlsx&quot;,
+#     config={&quot;sheet_name&quot;: &quot;MyData&quot;}
+# )
+</code></pre>
+<p>Getting data as a dictionary:</p>
+<pre><code class="language-python"># from fin_statement_model.io import write_data
+# from fin_statement_model.core import Graph
+# g = Graph(periods=[&quot;2023&quot;])
+# # ... populate graph with nodes ...
+# data_dict = write_data(
+#     format_type=&quot;dict&quot;,
+#     graph=g,
+#     target=None  # Target is ignored for dict writer
+# )
+</code></pre></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.io.core.ConfigurationMixin"><code class="flex name class">
+<span>class <span class="ident">ConfigurationMixin</span></span>
+<span>(</span><span>*args: Any, **kwargs: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ConfigurationMixin:  # pylint: disable=too-many-public-methods
+    &#34;&#34;&#34;Mixin that offers safe, validated access to reader/writer config objects.&#34;&#34;&#34;
+
+    def __init__(self, *args: Any, **kwargs: Any) -&gt; None:
+        &#34;&#34;&#34;Initialise mixin and set up internal override/context storage.&#34;&#34;&#34;
+        super().__init__(*args, **kwargs)
+
+        # ------------------------------------------------------------------
+        # Internal state
+        # ------------------------------------------------------------------
+        # _config_context - free-form metadata that *callers* can attach to the
+        # mixin to improve log messages and error reporting (e.g. ticker=&#34;AAPL&#34;,
+        # operation=&#34;api_read&#34;).  It **does not** influence behaviour besides
+        # being emitted via :pymeth:`ValidationResultCollector` summaries.
+        #
+        # _config_overrides - runtime key→value map injected via
+        # :pymeth:`set_config_override`.  When present, it *silently* overrides
+        # the value returned by :pymeth:`get_config_value`.  This mechanism is
+        # only required when the same reader/writer instance is reused with
+        # different per-call overrides (see planned batched-API support).
+        #
+        # Both attributes are **advanced** features.  They are kept private and
+        # undocumented in the public API.  If you are maintaining code outside
+        # this package, prefer passing per-call kwargs to `.read()` / `.write()`
+        # instead of using overrides directly.
+        # ------------------------------------------------------------------
+
+        self._config_context: dict[str, Any] = {}
+        self._config_overrides: dict[str, Any] = {}
+
+    # ------------------------------------------------------------------
+    # Context helpers
+    # ------------------------------------------------------------------
+    def set_config_context(self, **context: Any) -&gt; None:
+        &#34;&#34;&#34;Set key-value pairs in the configuration context.&#34;&#34;&#34;
+        self._config_context.update(context)
+
+    def get_config_context(self) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Get a copy of the configuration context.&#34;&#34;&#34;
+        return self._config_context.copy()
+
+    # ------------------------------------------------------------------
+    # Override helpers
+    # ------------------------------------------------------------------
+    def set_config_override(self, key: str, value: Any) -&gt; None:
+        &#34;&#34;&#34;Set a runtime configuration override.&#34;&#34;&#34;
+        self._config_overrides[key] = value
+
+    def clear_config_overrides(self) -&gt; None:
+        &#34;&#34;&#34;Clear all runtime configuration overrides.&#34;&#34;&#34;
+        self._config_overrides.clear()
+
+    # ------------------------------------------------------------------
+    # Value retrieval
+    # ------------------------------------------------------------------
+    def get_config_value(
+        self,
+        key: str,
+        default: Any = None,
+        *,
+        required: bool = False,
+        value_type: type | None = None,
+        validator: Callable[[Any], bool] | None = None,
+    ) -&gt; Any:
+        &#34;&#34;&#34;Get a configuration value, with optional validation.&#34;&#34;&#34;
+        # ------------------------------------------------------------------
+        # Defensive guard - ensure internal attributes exist even if the
+        # concrete reader/writer forgot to call ``ConfigurationMixin.__init__``
+        # in its own ``__init__`` implementation.  This avoids cryptic
+        # AttributeError crashes (see issue #csv_reader_init) and degrades
+        # gracefully by falling back to an empty override/context mapping.
+        # ------------------------------------------------------------------
+        if not hasattr(self, &#34;_config_overrides&#34;):
+            # Late-initialise missing attributes to keep behaviour predictable.
+            self._config_overrides = {}
+        if not hasattr(self, &#34;_config_context&#34;):
+            self._config_context = {}
+
+        # Override precedence
+        if key in self._config_overrides:
+            value = self._config_overrides[key]
+        elif hasattr(self, &#34;cfg&#34;) and self.cfg is not None:
+            value = getattr(self.cfg, key, default)
+        else:
+            value = default
+
+        # Required check
+        if required and value is None:
+            raise ReadError(
+                f&#34;Required configuration value &#39;{key}&#39; is missing&#34;,
+                reader_type=self.__class__.__name__,
+            )
+
+        # Type coercion
+        if value is not None and value_type is not None and not isinstance(value, value_type):
+            try:
+                value = value_type(value)
+            except (ValueError, TypeError) as exc:
+                raise ReadError(
+                    f&#34;Configuration value &#39;{key}&#39; has invalid type. Expected {value_type.__name__}, got {type(value).__name__}&#34;,
+                    reader_type=self.__class__.__name__,
+                    original_error=exc,
+                ) from exc
+
+        # Custom validator
+        if value is not None and validator is not None:
+            try:
+                if not validator(value):
+                    raise ReadError(
+                        f&#34;Configuration value &#39;{key}&#39; failed validation&#34;,
+                        reader_type=self.__class__.__name__,
+                    )
+            except ValueError as exc:
+                raise ReadError(
+                    f&#34;Configuration validation error for &#39;{key}&#39;: {exc}&#34;,
+                    reader_type=self.__class__.__name__,
+                    original_error=exc,
+                ) from exc
+
+        return value
+
+    def require_config_value(
+        self,
+        key: str,
+        *,
+        value_type: type | None = None,
+        validator: Callable[[Any], bool] | None = None,
+    ) -&gt; Any:
+        &#34;&#34;&#34;Get a required configuration value.&#34;&#34;&#34;
+        return self.get_config_value(key, required=True, value_type=value_type, validator=validator)
+
+    # ------------------------------------------------------------------
+    # Env var fallback helper
+    # ------------------------------------------------------------------
+    def get_config_with_env_fallback(
+        self,
+        key: str,
+        env_var: str,
+        *,
+        default: Any = None,
+        value_type: type | None = None,
+    ) -&gt; Any:
+        &#34;&#34;&#34;Get a configuration value, falling back to an environment variable.&#34;&#34;&#34;
+        import os
+
+        value = self.get_config_value(key)
+
+        # Fallback to environment variable if config value is missing
+        if value is None:
+            env_raw = os.getenv(env_var)
+            if env_raw is not None:
+                value = parse_env_value(env_raw)
+
+        # Apply default as last resort
+        if value is None:
+            value = default
+
+        if value is not None and value_type is not None and not isinstance(value, value_type):
+            try:
+                value = value_type(value)
+            except (ValueError, TypeError):
+                logger.warning(
+                    &#34;Failed to convert %s value &#39;%s&#39; to %s; using as-is&#34;,
+                    key,
+                    value,
+                    value_type.__name__,
+                )
+        return value
+
+    # ------------------------------------------------------------------
+    # Introspection helpers
+    # ------------------------------------------------------------------
+    def validate_configuration(self) -&gt; ValidationResultCollector:
+        &#34;&#34;&#34;Validate the handler&#39;s configuration object.&#34;&#34;&#34;
+        collector = ValidationResultCollector(context=self._config_context)
+        if not hasattr(self, &#34;cfg&#34;) or self.cfg is None:
+            collector.add_result(&#34;configuration&#34;, False, &#34;Missing configuration object&#34;, &#34;structure&#34;)
+            return collector
+        try:
+            if hasattr(self.cfg, &#34;model_validate&#34;):
+                collector.add_result(&#34;configuration&#34;, True, &#34;Configuration object is valid&#34;, &#34;structure&#34;)
+            else:
+                collector.add_result(
+                    &#34;configuration&#34;,
+                    True,
+                    &#34;Configuration object exists (non-Pydantic)&#34;,
+                    &#34;structure&#34;,
+                )
+        except (ValueError, AttributeError, TypeError) as exc:
+            collector.add_result(
+                &#34;configuration&#34;,
+                False,
+                f&#34;Configuration validation failed: {exc}&#34;,
+                &#34;validation&#34;,
+            )
+        return collector
+
+    def get_effective_configuration(self) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Get the effective configuration, including overrides.&#34;&#34;&#34;
+        cfg_dict: dict[str, Any] = {}
+        if hasattr(self, &#34;cfg&#34;) and self.cfg is not None:
+            if hasattr(self.cfg, &#34;model_dump&#34;):
+                cfg_dict = self.cfg.model_dump()
+            elif hasattr(self.cfg, &#34;__dict__&#34;):
+                cfg_dict = vars(self.cfg).copy()
+        cfg_dict.update(self._config_overrides)
+        return cfg_dict
+
+    def merge_configurations(self, *configs: Any) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Recursively merge multiple configuration sources.
+
+        This helper converts all supported *config* objects into plain
+        dictionaries and then applies :func:`fin_statement_model.utils.merge.deep_merge`
+        to ensure a consistent, **deep** merge semantics across the code-base.
+
+        Args:
+            *configs: Arbitrary configuration objects. Supported types are
+                ``dict``-like, Pydantic models (``.model_dump``) and objects with
+                a ``__dict__`` attribute.
+
+        Returns:
+            A new dictionary representing the recursively merged configuration.
+        &#34;&#34;&#34;
+        from fin_statement_model.utils.merge import (
+            deep_merge,
+        )  # Local import to avoid circular deps
+
+        merged: dict[str, Any] = {}
+
+        for cfg in configs:
+            if cfg is None:
+                continue
+
+            # ------------------------------------------------------------------
+            # Normalise input → plain dict
+            # ------------------------------------------------------------------
+            if hasattr(cfg, &#34;model_dump&#34;):
+                cfg_dict = cfg.model_dump()
+            elif isinstance(cfg, dict):
+                cfg_dict = cfg
+            elif hasattr(cfg, &#34;__dict__&#34;):
+                cfg_dict = vars(cfg)
+            else:
+                logger.warning(&#34;Unsupported configuration type for merge: %s&#34;, type(cfg))
+                continue
+
+            # ------------------------------------------------------------------
+            # Deep-merge into the accumulator
+            # ------------------------------------------------------------------
+            merged = deep_merge(merged, cfg_dict)
+
+        return merged</code></pre>
+</details>
+<div class="desc"><p>Mixin that offers safe, validated access to reader/writer config objects.</p>
+<p>Initialise mixin and set up internal override/context storage.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase" href="dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase">DataFrameReaderBase</a></li>
+<li><a title="fin_statement_model.io.formats.dataframe_writer.DataFrameWriter" href="../formats/dataframe_writer.html#fin_statement_model.io.formats.dataframe_writer.DataFrameWriter">DataFrameWriter</a></li>
+<li><a title="fin_statement_model.io.formats.dict_reader.DictReader" href="../formats/dict_reader.html#fin_statement_model.io.formats.dict_reader.DictReader">DictReader</a></li>
+<li><a title="fin_statement_model.io.formats.dict_writer.DictWriter" href="../formats/dict_writer.html#fin_statement_model.io.formats.dict_writer.DictWriter">DictWriter</a></li>
+<li><a title="fin_statement_model.io.formats.excel_writer.ExcelWriter" href="../formats/excel_writer.html#fin_statement_model.io.formats.excel_writer.ExcelWriter">ExcelWriter</a></li>
+<li><a title="fin_statement_model.io.formats.fmp_reader.FmpReader" href="../formats/fmp_reader.html#fin_statement_model.io.formats.fmp_reader.FmpReader">FmpReader</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.ConfigurationMixin.clear_config_overrides"><code class="name flex">
+<span>def <span class="ident">clear_config_overrides</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear_config_overrides(self) -&gt; None:
+    &#34;&#34;&#34;Clear all runtime configuration overrides.&#34;&#34;&#34;
+    self._config_overrides.clear()</code></pre>
+</details>
+<div class="desc"><p>Clear all runtime configuration overrides.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ConfigurationMixin.get_config_context"><code class="name flex">
+<span>def <span class="ident">get_config_context</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_config_context(self) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Get a copy of the configuration context.&#34;&#34;&#34;
+    return self._config_context.copy()</code></pre>
+</details>
+<div class="desc"><p>Get a copy of the configuration context.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ConfigurationMixin.get_config_value"><code class="name flex">
+<span>def <span class="ident">get_config_value</span></span>(<span>self,<br>key: str,<br>default: Any = None,<br>*,<br>required: bool = False,<br>value_type: type | None = None,<br>validator: Callable[[Any], bool] | None = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_config_value(
+    self,
+    key: str,
+    default: Any = None,
+    *,
+    required: bool = False,
+    value_type: type | None = None,
+    validator: Callable[[Any], bool] | None = None,
+) -&gt; Any:
+    &#34;&#34;&#34;Get a configuration value, with optional validation.&#34;&#34;&#34;
+    # ------------------------------------------------------------------
+    # Defensive guard - ensure internal attributes exist even if the
+    # concrete reader/writer forgot to call ``ConfigurationMixin.__init__``
+    # in its own ``__init__`` implementation.  This avoids cryptic
+    # AttributeError crashes (see issue #csv_reader_init) and degrades
+    # gracefully by falling back to an empty override/context mapping.
+    # ------------------------------------------------------------------
+    if not hasattr(self, &#34;_config_overrides&#34;):
+        # Late-initialise missing attributes to keep behaviour predictable.
+        self._config_overrides = {}
+    if not hasattr(self, &#34;_config_context&#34;):
+        self._config_context = {}
+
+    # Override precedence
+    if key in self._config_overrides:
+        value = self._config_overrides[key]
+    elif hasattr(self, &#34;cfg&#34;) and self.cfg is not None:
+        value = getattr(self.cfg, key, default)
+    else:
+        value = default
+
+    # Required check
+    if required and value is None:
+        raise ReadError(
+            f&#34;Required configuration value &#39;{key}&#39; is missing&#34;,
+            reader_type=self.__class__.__name__,
+        )
+
+    # Type coercion
+    if value is not None and value_type is not None and not isinstance(value, value_type):
+        try:
+            value = value_type(value)
+        except (ValueError, TypeError) as exc:
+            raise ReadError(
+                f&#34;Configuration value &#39;{key}&#39; has invalid type. Expected {value_type.__name__}, got {type(value).__name__}&#34;,
+                reader_type=self.__class__.__name__,
+                original_error=exc,
+            ) from exc
+
+    # Custom validator
+    if value is not None and validator is not None:
+        try:
+            if not validator(value):
+                raise ReadError(
+                    f&#34;Configuration value &#39;{key}&#39; failed validation&#34;,
+                    reader_type=self.__class__.__name__,
+                )
+        except ValueError as exc:
+            raise ReadError(
+                f&#34;Configuration validation error for &#39;{key}&#39;: {exc}&#34;,
+                reader_type=self.__class__.__name__,
+                original_error=exc,
+            ) from exc
+
+    return value</code></pre>
+</details>
+<div class="desc"><p>Get a configuration value, with optional validation.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ConfigurationMixin.get_config_with_env_fallback"><code class="name flex">
+<span>def <span class="ident">get_config_with_env_fallback</span></span>(<span>self, key: str, env_var: str, *, default: Any = None, value_type: type | None = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_config_with_env_fallback(
+    self,
+    key: str,
+    env_var: str,
+    *,
+    default: Any = None,
+    value_type: type | None = None,
+) -&gt; Any:
+    &#34;&#34;&#34;Get a configuration value, falling back to an environment variable.&#34;&#34;&#34;
+    import os
+
+    value = self.get_config_value(key)
+
+    # Fallback to environment variable if config value is missing
+    if value is None:
+        env_raw = os.getenv(env_var)
+        if env_raw is not None:
+            value = parse_env_value(env_raw)
+
+    # Apply default as last resort
+    if value is None:
+        value = default
+
+    if value is not None and value_type is not None and not isinstance(value, value_type):
+        try:
+            value = value_type(value)
+        except (ValueError, TypeError):
+            logger.warning(
+                &#34;Failed to convert %s value &#39;%s&#39; to %s; using as-is&#34;,
+                key,
+                value,
+                value_type.__name__,
+            )
+    return value</code></pre>
+</details>
+<div class="desc"><p>Get a configuration value, falling back to an environment variable.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ConfigurationMixin.get_effective_configuration"><code class="name flex">
+<span>def <span class="ident">get_effective_configuration</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_effective_configuration(self) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Get the effective configuration, including overrides.&#34;&#34;&#34;
+    cfg_dict: dict[str, Any] = {}
+    if hasattr(self, &#34;cfg&#34;) and self.cfg is not None:
+        if hasattr(self.cfg, &#34;model_dump&#34;):
+            cfg_dict = self.cfg.model_dump()
+        elif hasattr(self.cfg, &#34;__dict__&#34;):
+            cfg_dict = vars(self.cfg).copy()
+    cfg_dict.update(self._config_overrides)
+    return cfg_dict</code></pre>
+</details>
+<div class="desc"><p>Get the effective configuration, including overrides.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ConfigurationMixin.merge_configurations"><code class="name flex">
+<span>def <span class="ident">merge_configurations</span></span>(<span>self, *configs: Any) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def merge_configurations(self, *configs: Any) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Recursively merge multiple configuration sources.
+
+    This helper converts all supported *config* objects into plain
+    dictionaries and then applies :func:`fin_statement_model.utils.merge.deep_merge`
+    to ensure a consistent, **deep** merge semantics across the code-base.
+
+    Args:
+        *configs: Arbitrary configuration objects. Supported types are
+            ``dict``-like, Pydantic models (``.model_dump``) and objects with
+            a ``__dict__`` attribute.
+
+    Returns:
+        A new dictionary representing the recursively merged configuration.
+    &#34;&#34;&#34;
+    from fin_statement_model.utils.merge import (
+        deep_merge,
+    )  # Local import to avoid circular deps
+
+    merged: dict[str, Any] = {}
+
+    for cfg in configs:
+        if cfg is None:
+            continue
+
+        # ------------------------------------------------------------------
+        # Normalise input → plain dict
+        # ------------------------------------------------------------------
+        if hasattr(cfg, &#34;model_dump&#34;):
+            cfg_dict = cfg.model_dump()
+        elif isinstance(cfg, dict):
+            cfg_dict = cfg
+        elif hasattr(cfg, &#34;__dict__&#34;):
+            cfg_dict = vars(cfg)
+        else:
+            logger.warning(&#34;Unsupported configuration type for merge: %s&#34;, type(cfg))
+            continue
+
+        # ------------------------------------------------------------------
+        # Deep-merge into the accumulator
+        # ------------------------------------------------------------------
+        merged = deep_merge(merged, cfg_dict)
+
+    return merged</code></pre>
+</details>
+<div class="desc"><p>Recursively merge multiple configuration sources.</p>
+<p>This helper converts all supported <em>config</em> objects into plain
+dictionaries and then applies :func:<code><a title="fin_statement_model.utils.merge.deep_merge" href="../../utils/merge.html#fin_statement_model.utils.merge.deep_merge">deep_merge()</a></code>
+to ensure a consistent, <strong>deep</strong> merge semantics across the code-base.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>*configs</code></strong></dt>
+<dd>Arbitrary configuration objects. Supported types are
+<code>dict</code>-like, Pydantic models (<code>.model_dump</code>) and objects with
+a <code>__dict__</code> attribute.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A new dictionary representing the recursively merged configuration.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ConfigurationMixin.require_config_value"><code class="name flex">
+<span>def <span class="ident">require_config_value</span></span>(<span>self,<br>key: str,<br>*,<br>value_type: type | None = None,<br>validator: Callable[[Any], bool] | None = None) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def require_config_value(
+    self,
+    key: str,
+    *,
+    value_type: type | None = None,
+    validator: Callable[[Any], bool] | None = None,
+) -&gt; Any:
+    &#34;&#34;&#34;Get a required configuration value.&#34;&#34;&#34;
+    return self.get_config_value(key, required=True, value_type=value_type, validator=validator)</code></pre>
+</details>
+<div class="desc"><p>Get a required configuration value.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ConfigurationMixin.set_config_context"><code class="name flex">
+<span>def <span class="ident">set_config_context</span></span>(<span>self, **context: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_config_context(self, **context: Any) -&gt; None:
+    &#34;&#34;&#34;Set key-value pairs in the configuration context.&#34;&#34;&#34;
+    self._config_context.update(context)</code></pre>
+</details>
+<div class="desc"><p>Set key-value pairs in the configuration context.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ConfigurationMixin.set_config_override"><code class="name flex">
+<span>def <span class="ident">set_config_override</span></span>(<span>self, key: str, value: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_config_override(self, key: str, value: Any) -&gt; None:
+    &#34;&#34;&#34;Set a runtime configuration override.&#34;&#34;&#34;
+    self._config_overrides[key] = value</code></pre>
+</details>
+<div class="desc"><p>Set a runtime configuration override.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ConfigurationMixin.validate_configuration"><code class="name flex">
+<span>def <span class="ident">validate_configuration</span></span>(<span>self) ‑> <a title="fin_statement_model.io.core.mixins.validation.ValidationResultCollector" href="mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationResultCollector">ValidationResultCollector</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_configuration(self) -&gt; ValidationResultCollector:
+    &#34;&#34;&#34;Validate the handler&#39;s configuration object.&#34;&#34;&#34;
+    collector = ValidationResultCollector(context=self._config_context)
+    if not hasattr(self, &#34;cfg&#34;) or self.cfg is None:
+        collector.add_result(&#34;configuration&#34;, False, &#34;Missing configuration object&#34;, &#34;structure&#34;)
+        return collector
+    try:
+        if hasattr(self.cfg, &#34;model_validate&#34;):
+            collector.add_result(&#34;configuration&#34;, True, &#34;Configuration object is valid&#34;, &#34;structure&#34;)
+        else:
+            collector.add_result(
+                &#34;configuration&#34;,
+                True,
+                &#34;Configuration object exists (non-Pydantic)&#34;,
+                &#34;structure&#34;,
+            )
+    except (ValueError, AttributeError, TypeError) as exc:
+        collector.add_result(
+            &#34;configuration&#34;,
+            False,
+            f&#34;Configuration validation failed: {exc}&#34;,
+            &#34;validation&#34;,
+        )
+    return collector</code></pre>
+</details>
+<div class="desc"><p>Validate the handler's configuration object.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.core.DataFrameBasedWriter"><code class="flex name class">
+<span>class <span class="ident">DataFrameBasedWriter</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataFrameBasedWriter(ValueExtractionMixin, DataWriter, ABC):
+    &#34;&#34;&#34;Base writer that turns graph data into a pandas.DataFrame.&#34;&#34;&#34;
+
+    def extract_graph_data(
+        self,
+        graph: Graph,
+        *,
+        include_nodes: list[str] | None = None,
+        calculate: bool = True,
+    ) -&gt; dict[str, dict[str, float]]:
+        &#34;&#34;&#34;Extract all node data from a graph into a nested dictionary.&#34;&#34;&#34;
+        periods = sorted(graph.periods) if graph.periods else []
+        data: dict[str, dict[str, float]] = {}
+        nodes = include_nodes if include_nodes else list(graph.nodes.keys())
+        if include_nodes:
+            missing = [n for n in include_nodes if n not in graph.nodes]
+            if missing:
+                logger.warning(&#34;Requested nodes not found in graph: %s&#34;, missing)
+                nodes = [n for n in include_nodes if n in graph.nodes]
+        for node_id in nodes:
+            node = graph.nodes[node_id]
+            row: dict[str, float] = {}
+            for period in periods:
+                val = self.extract_node_value(node, period, calculate=calculate)
+                if val is None or not np.isfinite(val):
+                    val = np.nan
+                row[period] = float(val)
+            data[node_id] = row
+        return data
+
+    # concrete writers override --------------------------------------------------
+    @abstractmethod
+    def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; Any:
+        &#34;&#34;&#34;Write graph data to a target.
+
+        Subclasses must implement the logic to write the graph data to the
+        specified target, which could be a file path or an in-memory object.
+
+        Args:
+            graph: The `Graph` object to write.
+            target: The destination for the write operation.
+            **kwargs: Additional format-specific options.
+
+        Returns:
+            The result of the write operation, which could be None for file-based
+            writers or an object (e.g., a DataFrame) for in-memory writers.
+        &#34;&#34;&#34;
+        raise NotImplementedError</code></pre>
+</details>
+<div class="desc"><p>Base writer that turns graph data into a pandas.DataFrame.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin" href="mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin">ValueExtractionMixin</a></li>
+<li><a title="fin_statement_model.io.core.base.DataWriter" href="base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter" href="base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter">BaseTableWriter</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.DataFrameBasedWriter.extract_graph_data"><code class="name flex">
+<span>def <span class="ident">extract_graph_data</span></span>(<span>self,<br>graph: Graph,<br>*,<br>include_nodes: list[str] | None = None,<br>calculate: bool = True) ‑> dict[str, dict[str, float]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extract_graph_data(
+    self,
+    graph: Graph,
+    *,
+    include_nodes: list[str] | None = None,
+    calculate: bool = True,
+) -&gt; dict[str, dict[str, float]]:
+    &#34;&#34;&#34;Extract all node data from a graph into a nested dictionary.&#34;&#34;&#34;
+    periods = sorted(graph.periods) if graph.periods else []
+    data: dict[str, dict[str, float]] = {}
+    nodes = include_nodes if include_nodes else list(graph.nodes.keys())
+    if include_nodes:
+        missing = [n for n in include_nodes if n not in graph.nodes]
+        if missing:
+            logger.warning(&#34;Requested nodes not found in graph: %s&#34;, missing)
+            nodes = [n for n in include_nodes if n in graph.nodes]
+    for node_id in nodes:
+        node = graph.nodes[node_id]
+        row: dict[str, float] = {}
+        for period in periods:
+            val = self.extract_node_value(node, period, calculate=calculate)
+            if val is None or not np.isfinite(val):
+                val = np.nan
+            row[period] = float(val)
+        data[node_id] = row
+    return data</code></pre>
+</details>
+<div class="desc"><p>Extract all node data from a graph into a nested dictionary.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.DataFrameBasedWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self, graph: Graph, target: Any = None, **kwargs: Any) ‑> Any</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; Any:
+    &#34;&#34;&#34;Write graph data to a target.
+
+    Subclasses must implement the logic to write the graph data to the
+    specified target, which could be a file path or an in-memory object.
+
+    Args:
+        graph: The `Graph` object to write.
+        target: The destination for the write operation.
+        **kwargs: Additional format-specific options.
+
+    Returns:
+        The result of the write operation, which could be None for file-based
+        writers or an object (e.g., a DataFrame) for in-memory writers.
+    &#34;&#34;&#34;
+    raise NotImplementedError</code></pre>
+</details>
+<div class="desc"><p>Write graph data to a target.</p>
+<p>Subclasses must implement the logic to write the graph data to the
+specified target, which could be a file path or an in-memory object.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The <code>Graph</code> object to write.</dd>
+<dt><strong><code>target</code></strong></dt>
+<dd>The destination for the write operation.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional format-specific options.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The result of the write operation, which could be None for file-based
+writers or an object (e.g., a DataFrame) for in-memory writers.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin" href="mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin">ValueExtractionMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin.extract_node_value" href="mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin.extract_node_value">extract_node_value</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.core.DataReader"><code class="flex name class">
+<span>class <span class="ident">DataReader</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataReader(ABC):
+    &#34;&#34;&#34;Abstract base class for all data readers.
+
+    This ABC defines the contract for all reader classes in the I/O subpackage.
+    Any class that reads data from an external source (like a file or API) and
+    transforms it into a `Graph` object should inherit from `DataReader`.
+
+    Subclasses must implement the `read` method.
+    &#34;&#34;&#34;
+
+    @abstractmethod
+    def read(self, source: Any, **kwargs: dict[str, Any]) -&gt; Graph:
+        &#34;&#34;&#34;Read data from the specified source and return a Graph.
+
+        Args:
+            source: The data source. Type depends on the reader implementation
+                (e.g., file path `str`, ticker `str`, `pd.DataFrame`, `dict`).
+            **kwargs: Additional format-specific options for reading.
+
+        Returns:
+            A Graph object populated with the data from the source.
+
+        Raises:
+            ReadError: If an error occurs during the reading process.
+            NotImplementedError: If the method is not implemented by a subclass.
+        &#34;&#34;&#34;
+        raise NotImplementedError</code></pre>
+</details>
+<div class="desc"><p>Abstract base class for all data readers.</p>
+<p>This ABC defines the contract for all reader classes in the I/O subpackage.
+Any class that reads data from an external source (like a file or API) and
+transforms it into a <code>Graph</code> object should inherit from <code><a title="fin_statement_model.io.core.DataReader" href="#fin_statement_model.io.core.DataReader">DataReader</a></code>.</p>
+<p>Subclasses must implement the <code>read</code> method.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader" href="mixins/file_based_reader.html#fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader">FileBasedReader</a></li>
+<li><a title="fin_statement_model.io.formats.dict_reader.DictReader" href="../formats/dict_reader.html#fin_statement_model.io.formats.dict_reader.DictReader">DictReader</a></li>
+<li><a title="fin_statement_model.io.formats.fmp_reader.FmpReader" href="../formats/fmp_reader.html#fin_statement_model.io.formats.fmp_reader.FmpReader">FmpReader</a></li>
+<li><a title="fin_statement_model.io.graph.definition_io.GraphDefinitionReader" href="../graph/definition_io.html#fin_statement_model.io.graph.definition_io.GraphDefinitionReader">GraphDefinitionReader</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.DataReader.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self, source: Any, **kwargs: dict[str, typing.Any]) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def read(self, source: Any, **kwargs: dict[str, Any]) -&gt; Graph:
+    &#34;&#34;&#34;Read data from the specified source and return a Graph.
+
+    Args:
+        source: The data source. Type depends on the reader implementation
+            (e.g., file path `str`, ticker `str`, `pd.DataFrame`, `dict`).
+        **kwargs: Additional format-specific options for reading.
+
+    Returns:
+        A Graph object populated with the data from the source.
+
+    Raises:
+        ReadError: If an error occurs during the reading process.
+        NotImplementedError: If the method is not implemented by a subclass.
+    &#34;&#34;&#34;
+    raise NotImplementedError</code></pre>
+</details>
+<div class="desc"><p>Read data from the specified source and return a Graph.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source</code></strong></dt>
+<dd>The data source. Type depends on the reader implementation
+(e.g., file path <code>str</code>, ticker <code>str</code>, <code>pd.DataFrame</code>, <code>dict</code>).</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional format-specific options for reading.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A Graph object populated with the data from the source.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If an error occurs during the reading process.</dd>
+<dt><code>NotImplementedError</code></dt>
+<dd>If the method is not implemented by a subclass.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.core.DataWriter"><code class="flex name class">
+<span>class <span class="ident">DataWriter</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataWriter(ABC):
+    &#34;&#34;&#34;Abstract base class for all data writers.
+
+    This ABC defines the contract for all writer classes in the I/O subpackage.
+    Any class that serializes a `Graph` object into an external format (like a
+    file or a dictionary) should inherit from `DataWriter`.
+
+    Subclasses must implement the `write` method.
+    &#34;&#34;&#34;
+
+    @abstractmethod
+    def write(self, graph: Graph, target: Any, **kwargs: dict[str, Any]) -&gt; object:
+        &#34;&#34;&#34;Write data from the Graph object to the specified target.
+
+        Args:
+            graph: The Graph object containing the data to write.
+            target: The destination target. Type depends on the writer implementation
+                (e.g., file path `str`, or ignored if the writer returns an object).
+            **kwargs: Additional format-specific options for writing.
+
+        Raises:
+            WriteError: If an error occurs during the writing process.
+            NotImplementedError: If the method is not implemented by a subclass.
+        &#34;&#34;&#34;
+        raise NotImplementedError</code></pre>
+</details>
+<div class="desc"><p>Abstract base class for all data writers.</p>
+<p>This ABC defines the contract for all writer classes in the I/O subpackage.
+Any class that serializes a <code>Graph</code> object into an external format (like a
+file or a dictionary) should inherit from <code><a title="fin_statement_model.io.core.DataWriter" href="#fin_statement_model.io.core.DataWriter">DataWriter</a></code>.</p>
+<p>Subclasses must implement the <code>write</code> method.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter" href="mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter">DataFrameBasedWriter</a></li>
+<li><a title="fin_statement_model.io.formats.markdown_writer.MarkdownWriter" href="../formats/markdown_writer.html#fin_statement_model.io.formats.markdown_writer.MarkdownWriter">MarkdownWriter</a></li>
+<li><a title="fin_statement_model.io.graph.definition_io.GraphDefinitionWriter" href="../graph/definition_io.html#fin_statement_model.io.graph.definition_io.GraphDefinitionWriter">GraphDefinitionWriter</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.DataWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: Any,<br>**kwargs: dict[str, typing.Any]) ‑> object</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def write(self, graph: Graph, target: Any, **kwargs: dict[str, Any]) -&gt; object:
+    &#34;&#34;&#34;Write data from the Graph object to the specified target.
+
+    Args:
+        graph: The Graph object containing the data to write.
+        target: The destination target. Type depends on the writer implementation
+            (e.g., file path `str`, or ignored if the writer returns an object).
+        **kwargs: Additional format-specific options for writing.
+
+    Raises:
+        WriteError: If an error occurs during the writing process.
+        NotImplementedError: If the method is not implemented by a subclass.
+    &#34;&#34;&#34;
+    raise NotImplementedError</code></pre>
+</details>
+<div class="desc"><p>Write data from the Graph object to the specified target.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The Graph object containing the data to write.</dd>
+<dt><strong><code>target</code></strong></dt>
+<dd>The destination target. Type depends on the writer implementation
+(e.g., file path <code>str</code>, or ignored if the writer returns an object).</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional format-specific options for writing.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>WriteError</code></dt>
+<dd>If an error occurs during the writing process.</dd>
+<dt><code>NotImplementedError</code></dt>
+<dd>If the method is not implemented by a subclass.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.core.FileBasedReader"><code class="flex name class">
+<span>class <span class="ident">FileBasedReader</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class FileBasedReader(DataReader, ABC):
+    &#34;&#34;&#34;Base class for readers that ingest data from the filesystem.
+
+    Concrete subclasses **should** declare a class attribute
+    ``file_extensions`` with the tuple of valid extensions, e.g.::
+
+        class CsvReader(FileBasedReader):
+            file_extensions = (&#34;.csv&#34;, &#34;.txt&#34;)
+
+    The :pymeth:`validate_file_extension` helper will automatically use this
+    attribute when *valid_extensions* is omitted, removing the need for each
+    reader to repeat the tuple in every call site.
+    &#34;&#34;&#34;
+
+    # Default to *no* restriction - subclasses override
+    file_extensions: tuple[str, ...] | None = None
+
+    # ------------------------------------------------------------------
+    # Validation helpers
+    # ------------------------------------------------------------------
+    def validate_file_exists(self, path: str) -&gt; None:
+        &#34;&#34;&#34;Check if a file exists at *path* using shared helper.&#34;&#34;&#34;
+        _validate_file_exists(path, reader_type=self.__class__.__name__)
+
+    def validate_file_extension(self, path: str, valid_extensions: tuple[str, ...] | None = None) -&gt; None:
+        &#34;&#34;&#34;Validate *path* ends with an allowed extension.
+
+        Args:
+            path: The file path to validate.
+            valid_extensions: **Rarely needed.**  By default the method falls
+                back to the calling subclass&#39; :pyattr:`file_extensions` class
+                attribute.  Passing a tuple here is only required for edge
+                cases (e.g. runtime-determined extensions) and should **not**
+                be used from normal reader implementations - this keeps the
+                extension contract declarative and discoverable at the class
+                definition site.
+        &#34;&#34;&#34;
+        exts = valid_extensions if valid_extensions is not None else self.file_extensions
+        _validate_file_extension(
+            path,
+            exts,
+            reader_type=self.__class__.__name__,
+        )
+
+    # ------------------------------------------------------------------
+    # Abstract API
+    # ------------------------------------------------------------------
+    @abstractmethod
+    def read(self, source: str, **kwargs: Any) -&gt; Graph:
+        &#34;&#34;&#34;Read data from a file and return a Graph.
+
+        Subclasses must implement the file reading logic and return a `Graph`
+        object populated with the data from the source file.
+
+        Args:
+            source: The path to the source file.
+            **kwargs: Additional format-specific options for reading.
+
+        Returns:
+            A `Graph` object.
+        &#34;&#34;&#34;
+        raise NotImplementedError</code></pre>
+</details>
+<div class="desc"><p>Base class for readers that ingest data from the filesystem.</p>
+<p>Concrete subclasses <strong>should</strong> declare a class attribute
+<code>file_extensions</code> with the tuple of valid extensions, e.g.::</p>
+<pre><code>class CsvReader(FileBasedReader):
+    file_extensions = (".csv", ".txt")
+</code></pre>
+<p>The :pymeth:<code>validate_file_extension</code> helper will automatically use this
+attribute when <em>valid_extensions</em> is omitted, removing the need for each
+reader to repeat the tuple in every call site.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base.DataReader" href="base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase" href="dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase">DataFrameReaderBase</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.io.core.FileBasedReader.file_extensions"><code class="name">var <span class="ident">file_extensions</span> : tuple[str, ...] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.FileBasedReader.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self, source: str, **kwargs: Any) ‑> Graph</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def read(self, source: str, **kwargs: Any) -&gt; Graph:
+    &#34;&#34;&#34;Read data from a file and return a Graph.
+
+    Subclasses must implement the file reading logic and return a `Graph`
+    object populated with the data from the source file.
+
+    Args:
+        source: The path to the source file.
+        **kwargs: Additional format-specific options for reading.
+
+    Returns:
+        A `Graph` object.
+    &#34;&#34;&#34;
+    raise NotImplementedError</code></pre>
+</details>
+<div class="desc"><p>Read data from a file and return a Graph.</p>
+<p>Subclasses must implement the file reading logic and return a <code>Graph</code>
+object populated with the data from the source file.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source</code></strong></dt>
+<dd>The path to the source file.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional format-specific options for reading.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A <code>Graph</code> object.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.FileBasedReader.validate_file_exists"><code class="name flex">
+<span>def <span class="ident">validate_file_exists</span></span>(<span>self, path: str) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_file_exists(self, path: str) -&gt; None:
+    &#34;&#34;&#34;Check if a file exists at *path* using shared helper.&#34;&#34;&#34;
+    _validate_file_exists(path, reader_type=self.__class__.__name__)</code></pre>
+</details>
+<div class="desc"><p>Check if a file exists at <em>path</em> using shared helper.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.FileBasedReader.validate_file_extension"><code class="name flex">
+<span>def <span class="ident">validate_file_extension</span></span>(<span>self, path: str, valid_extensions: tuple[str, ...] | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_file_extension(self, path: str, valid_extensions: tuple[str, ...] | None = None) -&gt; None:
+    &#34;&#34;&#34;Validate *path* ends with an allowed extension.
+
+    Args:
+        path: The file path to validate.
+        valid_extensions: **Rarely needed.**  By default the method falls
+            back to the calling subclass&#39; :pyattr:`file_extensions` class
+            attribute.  Passing a tuple here is only required for edge
+            cases (e.g. runtime-determined extensions) and should **not**
+            be used from normal reader implementations - this keeps the
+            extension contract declarative and discoverable at the class
+            definition site.
+    &#34;&#34;&#34;
+    exts = valid_extensions if valid_extensions is not None else self.file_extensions
+    _validate_file_extension(
+        path,
+        exts,
+        reader_type=self.__class__.__name__,
+    )</code></pre>
+</details>
+<div class="desc"><p>Validate <em>path</em> ends with an allowed extension.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong></dt>
+<dd>The file path to validate.</dd>
+<dt><strong><code>valid_extensions</code></strong></dt>
+<dd><strong>Rarely needed.</strong>
+By default the method falls
+back to the calling subclass' :pyattr:<code>file_extensions</code> class
+attribute.
+Passing a tuple here is only required for edge
+cases (e.g. runtime-determined extensions) and should <strong>not</strong>
+be used from normal reader implementations - this keeps the
+extension contract declarative and discoverable at the class
+definition site.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.core.HandlerRegistry"><code class="flex name class">
+<span>class <span class="ident">HandlerRegistry</span></span>
+<span>(</span><span>handler_type: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class HandlerRegistry(Generic[T]):
+    &#34;&#34;&#34;Generic registry for managing format handlers (readers or writers).
+
+    This class provides a reusable registry pattern for registering and
+    retrieving handler classes by format type.
+
+    Attributes:
+        _registry: Internal dictionary mapping format types to handler classes.
+        _handler_type: String describing the handler type (&#39;reader&#39; or &#39;writer&#39;).
+        _schema_map: Internal dictionary mapping format types to Pydantic schema classes.
+    &#34;&#34;&#34;
+
+    def __init__(self, handler_type: str):
+        &#34;&#34;&#34;Initialize the registry.
+
+        Args:
+            handler_type: Type of handlers (&#39;reader&#39; or &#39;writer&#39;) for error messages.
+        &#34;&#34;&#34;
+        self._registry: dict[str, type[T]] = {}
+        self._handler_type = handler_type
+        self._schema_map: dict[str, type[BaseModel]] = {}
+
+    def register(self, format_type: str, *, schema: type[BaseModel] | None = None) -&gt; Callable[[type[T]], type[T]]:
+        &#34;&#34;&#34;Create a decorator to register a handler class for a format type.
+
+        Args:
+            format_type: The format identifier (e.g., &#39;excel&#39;, &#39;csv&#39;).
+            schema: Optional Pydantic schema for the format.
+
+        Returns:
+            A decorator function that registers the class.
+
+        Raises:
+            ValueError: If the format is already registered to a different class.
+        &#34;&#34;&#34;
+
+        def decorator(cls: type[T]) -&gt; type[T]:
+            if format_type in self._registry:
+                # Allow re-registration of the same class (idempotent)
+                if self._registry[format_type] is not cls:
+                    raise ValueError(
+                        f&#34;{self._handler_type.capitalize()} format type &#39;{format_type}&#39; &#34;
+                        f&#34;already registered to {self._registry[format_type]}.&#34;
+                    )
+                logger.debug(&#34;Re-registering %s format type &#39;%s&#39; to %s&#34;, self._handler_type, format_type, cls.__name__)
+            else:
+                logger.debug(&#34;Registering %s format type &#39;%s&#39; to %s&#34;, self._handler_type, format_type, cls.__name__)
+
+            self._registry[format_type] = cls
+            if schema is not None:
+                self._schema_map[format_type] = schema
+            return cls
+
+        return decorator
+
+    def get(self, format_type: str) -&gt; type[T]:
+        &#34;&#34;&#34;Get the registered handler class for a format type.
+
+        Args:
+            format_type: The format identifier.
+
+        Returns:
+            The registered handler class.
+
+        Raises:
+            FormatNotSupportedError: If no handler is registered for the format.
+        &#34;&#34;&#34;
+        if format_type not in self._registry:
+            raise FormatNotSupportedError(format_type=format_type, operation=f&#34;{self._handler_type} operations&#34;)
+
+        return self._registry[format_type]
+
+    def list_formats(self) -&gt; dict[str, type[T]]:
+        &#34;&#34;&#34;Return a copy of all registered format handlers.
+
+        Returns:
+            Dictionary mapping format types to handler classes.
+        &#34;&#34;&#34;
+        return self._registry.copy()
+
+    def is_registered(self, format_type: str) -&gt; bool:
+        &#34;&#34;&#34;Check if a format type is registered.
+
+        Args:
+            format_type: The format identifier to check.
+
+        Returns:
+            True if the format is registered, False otherwise.
+        &#34;&#34;&#34;
+        return format_type in self._registry
+
+    def unregister(self, format_type: str) -&gt; type[T] | None:
+        &#34;&#34;&#34;Remove a format handler from the registry.
+
+        This method is primarily useful for testing.
+
+        Args:
+            format_type: The format identifier to remove.
+
+        Returns:
+            The removed handler class, or None if not found.
+        &#34;&#34;&#34;
+        return self._registry.pop(format_type, None)
+
+    def clear(self) -&gt; None:
+        &#34;&#34;&#34;Clear all registered handlers.
+
+        This method is primarily useful for testing.
+        &#34;&#34;&#34;
+        self._registry.clear()
+
+    def __contains__(self, format_type: str) -&gt; bool:
+        &#34;&#34;&#34;Check if a format type is registered using &#39;in&#39; operator.
+
+        Args:
+            format_type: The format identifier to check.
+
+        Returns:
+            True if the format is registered, False otherwise.
+        &#34;&#34;&#34;
+        return format_type in self._registry
+
+    def __len__(self) -&gt; int:
+        &#34;&#34;&#34;Return the number of registered formats.
+
+        Returns:
+            Number of registered format handlers.
+        &#34;&#34;&#34;
+        return len(self._registry)
+
+    def get_schema(self, format_type: str) -&gt; type[BaseModel] | None:
+        &#34;&#34;&#34;Return the Pydantic schema for a registered format type, if any.&#34;&#34;&#34;
+        return self._schema_map.get(format_type)</code></pre>
+</details>
+<div class="desc"><p>Generic registry for managing format handlers (readers or writers).</p>
+<p>This class provides a reusable registry pattern for registering and
+retrieving handler classes by format type.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>_registry</code></strong></dt>
+<dd>Internal dictionary mapping format types to handler classes.</dd>
+<dt><strong><code>_handler_type</code></strong></dt>
+<dd>String describing the handler type ('reader' or 'writer').</dd>
+<dt><strong><code>_schema_map</code></strong></dt>
+<dd>Internal dictionary mapping format types to Pydantic schema classes.</dd>
+</dl>
+<p>Initialize the registry.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>handler_type</code></strong></dt>
+<dd>Type of handlers ('reader' or 'writer') for error messages.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>typing.Generic</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.HandlerRegistry.clear"><code class="name flex">
+<span>def <span class="ident">clear</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear(self) -&gt; None:
+    &#34;&#34;&#34;Clear all registered handlers.
+
+    This method is primarily useful for testing.
+    &#34;&#34;&#34;
+    self._registry.clear()</code></pre>
+</details>
+<div class="desc"><p>Clear all registered handlers.</p>
+<p>This method is primarily useful for testing.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.HandlerRegistry.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>self, format_type: str) ‑> type[~T]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get(self, format_type: str) -&gt; type[T]:
+    &#34;&#34;&#34;Get the registered handler class for a format type.
+
+    Args:
+        format_type: The format identifier.
+
+    Returns:
+        The registered handler class.
+
+    Raises:
+        FormatNotSupportedError: If no handler is registered for the format.
+    &#34;&#34;&#34;
+    if format_type not in self._registry:
+        raise FormatNotSupportedError(format_type=format_type, operation=f&#34;{self._handler_type} operations&#34;)
+
+    return self._registry[format_type]</code></pre>
+</details>
+<div class="desc"><p>Get the registered handler class for a format type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The format identifier.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The registered handler class.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>FormatNotSupportedError</code></dt>
+<dd>If no handler is registered for the format.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.HandlerRegistry.get_schema"><code class="name flex">
+<span>def <span class="ident">get_schema</span></span>(<span>self, format_type: str) ‑> type[pydantic.main.BaseModel] | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_schema(self, format_type: str) -&gt; type[BaseModel] | None:
+    &#34;&#34;&#34;Return the Pydantic schema for a registered format type, if any.&#34;&#34;&#34;
+    return self._schema_map.get(format_type)</code></pre>
+</details>
+<div class="desc"><p>Return the Pydantic schema for a registered format type, if any.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.HandlerRegistry.is_registered"><code class="name flex">
+<span>def <span class="ident">is_registered</span></span>(<span>self, format_type: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_registered(self, format_type: str) -&gt; bool:
+    &#34;&#34;&#34;Check if a format type is registered.
+
+    Args:
+        format_type: The format identifier to check.
+
+    Returns:
+        True if the format is registered, False otherwise.
+    &#34;&#34;&#34;
+    return format_type in self._registry</code></pre>
+</details>
+<div class="desc"><p>Check if a format type is registered.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The format identifier to check.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if the format is registered, False otherwise.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.HandlerRegistry.list_formats"><code class="name flex">
+<span>def <span class="ident">list_formats</span></span>(<span>self) ‑> dict[str, type[~T]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_formats(self) -&gt; dict[str, type[T]]:
+    &#34;&#34;&#34;Return a copy of all registered format handlers.
+
+    Returns:
+        Dictionary mapping format types to handler classes.
+    &#34;&#34;&#34;
+    return self._registry.copy()</code></pre>
+</details>
+<div class="desc"><p>Return a copy of all registered format handlers.</p>
+<h2 id="returns">Returns</h2>
+<p>Dictionary mapping format types to handler classes.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.HandlerRegistry.register"><code class="name flex">
+<span>def <span class="ident">register</span></span>(<span>self, format_type: str, *, schema: type[pydantic.main.BaseModel] | None = None) ‑> Callable[[type[~T]], type[~T]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def register(self, format_type: str, *, schema: type[BaseModel] | None = None) -&gt; Callable[[type[T]], type[T]]:
+    &#34;&#34;&#34;Create a decorator to register a handler class for a format type.
+
+    Args:
+        format_type: The format identifier (e.g., &#39;excel&#39;, &#39;csv&#39;).
+        schema: Optional Pydantic schema for the format.
+
+    Returns:
+        A decorator function that registers the class.
+
+    Raises:
+        ValueError: If the format is already registered to a different class.
+    &#34;&#34;&#34;
+
+    def decorator(cls: type[T]) -&gt; type[T]:
+        if format_type in self._registry:
+            # Allow re-registration of the same class (idempotent)
+            if self._registry[format_type] is not cls:
+                raise ValueError(
+                    f&#34;{self._handler_type.capitalize()} format type &#39;{format_type}&#39; &#34;
+                    f&#34;already registered to {self._registry[format_type]}.&#34;
+                )
+            logger.debug(&#34;Re-registering %s format type &#39;%s&#39; to %s&#34;, self._handler_type, format_type, cls.__name__)
+        else:
+            logger.debug(&#34;Registering %s format type &#39;%s&#39; to %s&#34;, self._handler_type, format_type, cls.__name__)
+
+        self._registry[format_type] = cls
+        if schema is not None:
+            self._schema_map[format_type] = schema
+        return cls
+
+    return decorator</code></pre>
+</details>
+<div class="desc"><p>Create a decorator to register a handler class for a format type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The format identifier (e.g., 'excel', 'csv').</dd>
+<dt><strong><code>schema</code></strong></dt>
+<dd>Optional Pydantic schema for the format.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A decorator function that registers the class.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the format is already registered to a different class.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.HandlerRegistry.unregister"><code class="name flex">
+<span>def <span class="ident">unregister</span></span>(<span>self, format_type: str) ‑> type[~T] | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unregister(self, format_type: str) -&gt; type[T] | None:
+    &#34;&#34;&#34;Remove a format handler from the registry.
+
+    This method is primarily useful for testing.
+
+    Args:
+        format_type: The format identifier to remove.
+
+    Returns:
+        The removed handler class, or None if not found.
+    &#34;&#34;&#34;
+    return self._registry.pop(format_type, None)</code></pre>
+</details>
+<div class="desc"><p>Remove a format handler from the registry.</p>
+<p>This method is primarily useful for testing.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The format identifier to remove.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The removed handler class, or None if not found.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.core.ValidationResultCollector"><code class="flex name class">
+<span>class <span class="ident">ValidationResultCollector</span></span>
+<span>(</span><span>context: dict[str, Any] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ValidationResultCollector:
+    &#34;&#34;&#34;Collects validation results (errors &amp; warnings) during reader processing.&#34;&#34;&#34;
+
+    def __init__(self, context: dict[str, Any] | None = None) -&gt; None:
+        &#34;&#34;&#34;Create a new collector.
+
+        Args:
+            context: Optional context information (e.g., file path) that will
+                be included in summary reports.
+        &#34;&#34;&#34;
+        self.results: list[tuple[str, bool, str, str]] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
+        self.context = context or {}
+        self._categories: dict[str, int] = {}
+
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+    def add_result(self, item_name: str, is_valid: bool, message: str, category: str = &#34;general&#34;) -&gt; None:
+        &#34;&#34;&#34;Record a validation *result* (error or success).
+
+        Args:
+            item_name: Human-readable identifier of the item being validated.
+            is_valid: Whether the validation succeeded.
+            message: Associated message (error/warning/ok information).
+            category: Logical category used for aggregated statistics.
+        &#34;&#34;&#34;
+        self.results.append((item_name, is_valid, message, category))
+        if not is_valid:
+            self.errors.append(f&#34;{item_name}: {message}&#34;)
+            self._categories[category] = self._categories.get(category, 0) + 1
+        elif &#34;warning&#34; in message.lower():
+            self.warnings.append(f&#34;{item_name}: {message}&#34;)
+
+    def add_warning(self, item_name: str, message: str, category: str = &#34;warning&#34;) -&gt; None:
+        &#34;&#34;&#34;Convenience wrapper to add a *warning* result.&#34;&#34;&#34;
+        self.warnings.append(f&#34;{item_name}: {message}&#34;)
+        self.results.append((item_name, True, f&#34;WARNING: {message}&#34;, category))
+
+    # Simple accessors ---------------------------------------------------
+    def has_errors(self) -&gt; bool:
+        &#34;&#34;&#34;Return ``True`` when any validation errors have been recorded.&#34;&#34;&#34;
+        return bool(self.errors)
+
+    def has_warnings(self) -&gt; bool:
+        &#34;&#34;&#34;Return ``True`` if one or more warnings were recorded.&#34;&#34;&#34;
+        return bool(self.warnings)
+
+    def get_error_count_by_category(self) -&gt; dict[str, int]:
+        &#34;&#34;&#34;Return aggregated error counts keyed by *category*.&#34;&#34;&#34;
+        return self._categories.copy()
+
+    def get_items_with_errors(self) -&gt; list[str]:
+        &#34;&#34;&#34;Return the set of item names that failed validation.&#34;&#34;&#34;
+        return [item for item, valid, _, _ in self.results if not valid]
+
+    def get_summary(self) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Return a machine-readable summary of collected validation results.&#34;&#34;&#34;
+        total = len(self.results)
+        valid = sum(1 for _, is_valid, _, _ in self.results if is_valid)
+        return {
+            &#34;total&#34;: total,
+            &#34;valid&#34;: valid,
+            &#34;invalid&#34;: total - valid,
+            &#34;errors&#34;: self.errors.copy(),
+            &#34;warnings&#34;: self.warnings.copy(),
+            &#34;error_rate&#34;: (total - valid) / total if total else 0.0,
+            &#34;warning_count&#34;: len(self.warnings),
+            &#34;categories&#34;: self._categories.copy(),
+            &#34;context&#34;: self.context.copy(),
+            &#34;items_with_errors&#34;: self.get_items_with_errors(),
+        }
+
+    # Mutating helpers ---------------------------------------------------
+    def clear(self) -&gt; None:
+        &#34;&#34;&#34;Reset the collector, discarding **all** stored results.&#34;&#34;&#34;
+        self.results.clear()
+        self.errors.clear()
+        self.warnings.clear()
+        self._categories.clear()
+
+    def merge(self, other: ValidationResultCollector) -&gt; None:
+        &#34;&#34;&#34;Merge *other* collector contents into *self*.&#34;&#34;&#34;
+        for item, valid, message, category in other.results:
+            self.add_result(item, valid, message, category)
+
+    # Pretty print -------------------------------------------------------
+    def get_detailed_report(self) -&gt; str:
+        &#34;&#34;&#34;Return a human-readable multi-line validation report.&#34;&#34;&#34;
+        summary = self.get_summary()
+        lines: list[str] = [
+            &#34;=== Validation Report ===&#34;,
+            f&#34;Total items processed: {summary[&#39;total&#39;]}&#34;,
+            f&#34;Valid items: {summary[&#39;valid&#39;]}&#34;,
+            f&#34;Invalid items: {summary[&#39;invalid&#39;]}&#34;,
+            f&#34;Warnings: {summary[&#39;warning_count&#39;]}&#34;,
+            f&#34;Overall success rate: {(1 - summary[&#39;error_rate&#39;]) * 100:.1f}%&#34;,
+        ]
+        if self.errors:
+            lines.append(&#34;\n--- First 10 Errors ---&#34;)
+            lines.extend(f&#34;  * {e}&#34; for e in self.errors[:MAX_ERROR_PREVIEW])
+            if len(self.errors) &gt; MAX_ERROR_PREVIEW:
+                lines.append(f&#34;  ... and {len(self.errors) - MAX_ERROR_PREVIEW} more errors&#34;)
+        if self.warnings:
+            lines.append(&#34;\n--- First 5 Warnings ---&#34;)
+            lines.extend(f&#34;  * {w}&#34; for w in self.warnings[:MAX_WARNING_PREVIEW])
+            if len(self.warnings) &gt; MAX_WARNING_PREVIEW:
+                lines.append(f&#34;  ... and {len(self.warnings) - MAX_WARNING_PREVIEW} more warnings&#34;)
+        return &#34;\n&#34;.join(lines)</code></pre>
+</details>
+<div class="desc"><p>Collects validation results (errors &amp; warnings) during reader processing.</p>
+<p>Create a new collector.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>context</code></strong></dt>
+<dd>Optional context information (e.g., file path) that will
+be included in summary reports.</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.ValidationResultCollector.add_result"><code class="name flex">
+<span>def <span class="ident">add_result</span></span>(<span>self, item_name: str, is_valid: bool, message: str, category: str = 'general') ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_result(self, item_name: str, is_valid: bool, message: str, category: str = &#34;general&#34;) -&gt; None:
+    &#34;&#34;&#34;Record a validation *result* (error or success).
+
+    Args:
+        item_name: Human-readable identifier of the item being validated.
+        is_valid: Whether the validation succeeded.
+        message: Associated message (error/warning/ok information).
+        category: Logical category used for aggregated statistics.
+    &#34;&#34;&#34;
+    self.results.append((item_name, is_valid, message, category))
+    if not is_valid:
+        self.errors.append(f&#34;{item_name}: {message}&#34;)
+        self._categories[category] = self._categories.get(category, 0) + 1
+    elif &#34;warning&#34; in message.lower():
+        self.warnings.append(f&#34;{item_name}: {message}&#34;)</code></pre>
+</details>
+<div class="desc"><p>Record a validation <em>result</em> (error or success).</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>item_name</code></strong></dt>
+<dd>Human-readable identifier of the item being validated.</dd>
+<dt><strong><code>is_valid</code></strong></dt>
+<dd>Whether the validation succeeded.</dd>
+<dt><strong><code>message</code></strong></dt>
+<dd>Associated message (error/warning/ok information).</dd>
+<dt><strong><code>category</code></strong></dt>
+<dd>Logical category used for aggregated statistics.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.ValidationResultCollector.add_warning"><code class="name flex">
+<span>def <span class="ident">add_warning</span></span>(<span>self, item_name: str, message: str, category: str = 'warning') ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_warning(self, item_name: str, message: str, category: str = &#34;warning&#34;) -&gt; None:
+    &#34;&#34;&#34;Convenience wrapper to add a *warning* result.&#34;&#34;&#34;
+    self.warnings.append(f&#34;{item_name}: {message}&#34;)
+    self.results.append((item_name, True, f&#34;WARNING: {message}&#34;, category))</code></pre>
+</details>
+<div class="desc"><p>Convenience wrapper to add a <em>warning</em> result.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ValidationResultCollector.clear"><code class="name flex">
+<span>def <span class="ident">clear</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear(self) -&gt; None:
+    &#34;&#34;&#34;Reset the collector, discarding **all** stored results.&#34;&#34;&#34;
+    self.results.clear()
+    self.errors.clear()
+    self.warnings.clear()
+    self._categories.clear()</code></pre>
+</details>
+<div class="desc"><p>Reset the collector, discarding <strong>all</strong> stored results.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ValidationResultCollector.get_detailed_report"><code class="name flex">
+<span>def <span class="ident">get_detailed_report</span></span>(<span>self) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_detailed_report(self) -&gt; str:
+    &#34;&#34;&#34;Return a human-readable multi-line validation report.&#34;&#34;&#34;
+    summary = self.get_summary()
+    lines: list[str] = [
+        &#34;=== Validation Report ===&#34;,
+        f&#34;Total items processed: {summary[&#39;total&#39;]}&#34;,
+        f&#34;Valid items: {summary[&#39;valid&#39;]}&#34;,
+        f&#34;Invalid items: {summary[&#39;invalid&#39;]}&#34;,
+        f&#34;Warnings: {summary[&#39;warning_count&#39;]}&#34;,
+        f&#34;Overall success rate: {(1 - summary[&#39;error_rate&#39;]) * 100:.1f}%&#34;,
+    ]
+    if self.errors:
+        lines.append(&#34;\n--- First 10 Errors ---&#34;)
+        lines.extend(f&#34;  * {e}&#34; for e in self.errors[:MAX_ERROR_PREVIEW])
+        if len(self.errors) &gt; MAX_ERROR_PREVIEW:
+            lines.append(f&#34;  ... and {len(self.errors) - MAX_ERROR_PREVIEW} more errors&#34;)
+    if self.warnings:
+        lines.append(&#34;\n--- First 5 Warnings ---&#34;)
+        lines.extend(f&#34;  * {w}&#34; for w in self.warnings[:MAX_WARNING_PREVIEW])
+        if len(self.warnings) &gt; MAX_WARNING_PREVIEW:
+            lines.append(f&#34;  ... and {len(self.warnings) - MAX_WARNING_PREVIEW} more warnings&#34;)
+    return &#34;\n&#34;.join(lines)</code></pre>
+</details>
+<div class="desc"><p>Return a human-readable multi-line validation report.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ValidationResultCollector.get_error_count_by_category"><code class="name flex">
+<span>def <span class="ident">get_error_count_by_category</span></span>(<span>self) ‑> dict[str, int]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_error_count_by_category(self) -&gt; dict[str, int]:
+    &#34;&#34;&#34;Return aggregated error counts keyed by *category*.&#34;&#34;&#34;
+    return self._categories.copy()</code></pre>
+</details>
+<div class="desc"><p>Return aggregated error counts keyed by <em>category</em>.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ValidationResultCollector.get_items_with_errors"><code class="name flex">
+<span>def <span class="ident">get_items_with_errors</span></span>(<span>self) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_items_with_errors(self) -&gt; list[str]:
+    &#34;&#34;&#34;Return the set of item names that failed validation.&#34;&#34;&#34;
+    return [item for item, valid, _, _ in self.results if not valid]</code></pre>
+</details>
+<div class="desc"><p>Return the set of item names that failed validation.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ValidationResultCollector.get_summary"><code class="name flex">
+<span>def <span class="ident">get_summary</span></span>(<span>self) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_summary(self) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Return a machine-readable summary of collected validation results.&#34;&#34;&#34;
+    total = len(self.results)
+    valid = sum(1 for _, is_valid, _, _ in self.results if is_valid)
+    return {
+        &#34;total&#34;: total,
+        &#34;valid&#34;: valid,
+        &#34;invalid&#34;: total - valid,
+        &#34;errors&#34;: self.errors.copy(),
+        &#34;warnings&#34;: self.warnings.copy(),
+        &#34;error_rate&#34;: (total - valid) / total if total else 0.0,
+        &#34;warning_count&#34;: len(self.warnings),
+        &#34;categories&#34;: self._categories.copy(),
+        &#34;context&#34;: self.context.copy(),
+        &#34;items_with_errors&#34;: self.get_items_with_errors(),
+    }</code></pre>
+</details>
+<div class="desc"><p>Return a machine-readable summary of collected validation results.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ValidationResultCollector.has_errors"><code class="name flex">
+<span>def <span class="ident">has_errors</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_errors(self) -&gt; bool:
+    &#34;&#34;&#34;Return ``True`` when any validation errors have been recorded.&#34;&#34;&#34;
+    return bool(self.errors)</code></pre>
+</details>
+<div class="desc"><p>Return <code>True</code> when any validation errors have been recorded.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ValidationResultCollector.has_warnings"><code class="name flex">
+<span>def <span class="ident">has_warnings</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_warnings(self) -&gt; bool:
+    &#34;&#34;&#34;Return ``True`` if one or more warnings were recorded.&#34;&#34;&#34;
+    return bool(self.warnings)</code></pre>
+</details>
+<div class="desc"><p>Return <code>True</code> if one or more warnings were recorded.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.ValidationResultCollector.merge"><code class="name flex">
+<span>def <span class="ident">merge</span></span>(<span>self,<br>other: <a title="fin_statement_model.io.core.ValidationResultCollector" href="#fin_statement_model.io.core.ValidationResultCollector">ValidationResultCollector</a>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def merge(self, other: ValidationResultCollector) -&gt; None:
+    &#34;&#34;&#34;Merge *other* collector contents into *self*.&#34;&#34;&#34;
+    for item, valid, message, category in other.results:
+        self.add_result(item, valid, message, category)</code></pre>
+</details>
+<div class="desc"><p>Merge <em>other</em> collector contents into <em>self</em>.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.core.ValueExtractionMixin"><code class="flex name class">
+<span>class <span class="ident">ValueExtractionMixin</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ValueExtractionMixin:
+    &#34;&#34;&#34;Shared helper to pull numeric values from graph nodes consistently.&#34;&#34;&#34;
+
+    def extract_node_value(self, node: Any, period: str, *, calculate: bool = True) -&gt; float | None:
+        &#34;&#34;&#34;Extract a numeric value from a graph node for a specific period.&#34;&#34;&#34;
+        try:
+            if hasattr(node, &#34;values&#34;) and isinstance(node.values, dict):
+                val = node.values.get(period)
+                if isinstance(val, int | float):
+                    return float(val)
+
+            # Fall back to expensive calculation only if requested
+            if calculate and hasattr(node, &#34;calculate&#34;) and callable(node.calculate):
+                val = node.calculate(period)
+                if isinstance(val, int | float):
+                    return float(val)
+        except (ValueError, ArithmeticError, AttributeError) as exc:
+            logger.debug(
+                &#34;Failed to extract value from node &#39;%s&#39; period &#39;%s&#39;: %s&#34;,
+                getattr(node, &#34;name&#34;, &#34;?&#34;),
+                period,
+                exc,
+            )
+            return None
+
+        # Explicitly return None when no exception occurred but value extraction
+        # was unsuccessful. Located outside the try/except to satisfy TRY300.
+        return None</code></pre>
+</details>
+<div class="desc"><p>Shared helper to pull numeric values from graph nodes consistently.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter" href="mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter">DataFrameBasedWriter</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.ValueExtractionMixin.extract_node_value"><code class="name flex">
+<span>def <span class="ident">extract_node_value</span></span>(<span>self, node: Any, period: str, *, calculate: bool = True) ‑> float | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def extract_node_value(self, node: Any, period: str, *, calculate: bool = True) -&gt; float | None:
+    &#34;&#34;&#34;Extract a numeric value from a graph node for a specific period.&#34;&#34;&#34;
+    try:
+        if hasattr(node, &#34;values&#34;) and isinstance(node.values, dict):
+            val = node.values.get(period)
+            if isinstance(val, int | float):
+                return float(val)
+
+        # Fall back to expensive calculation only if requested
+        if calculate and hasattr(node, &#34;calculate&#34;) and callable(node.calculate):
+            val = node.calculate(period)
+            if isinstance(val, int | float):
+                return float(val)
+    except (ValueError, ArithmeticError, AttributeError) as exc:
+        logger.debug(
+            &#34;Failed to extract value from node &#39;%s&#39; period &#39;%s&#39;: %s&#34;,
+            getattr(node, &#34;name&#34;, &#34;?&#34;),
+            period,
+            exc,
+        )
+        return None
+
+    # Explicitly return None when no exception occurred but value extraction
+    # was unsuccessful. Located outside the try/except to satisfy TRY300.
+    return None</code></pre>
+</details>
+<div class="desc"><p>Extract a numeric value from a graph node for a specific period.</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.io" href="../index.html">fin_statement_model.io</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.io.core.base" href="base.html">fin_statement_model.io.core.base</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer" href="base_table_writer.html">fin_statement_model.io.core.base_table_writer</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base" href="dataframe_reader_base.html">fin_statement_model.io.core.dataframe_reader_base</a></code></li>
+<li><code><a title="fin_statement_model.io.core.facade" href="facade.html">fin_statement_model.io.core.facade</a></code></li>
+<li><code><a title="fin_statement_model.io.core.file_utils" href="file_utils.html">fin_statement_model.io.core.file_utils</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins" href="mixins/index.html">fin_statement_model.io.core.mixins</a></code></li>
+<li><code><a title="fin_statement_model.io.core.registry" href="registry.html">fin_statement_model.io.core.registry</a></code></li>
+<li><code><a title="fin_statement_model.io.core.types" href="types.html">fin_statement_model.io.core.types</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.io.core.get_reader" href="#fin_statement_model.io.core.get_reader">get_reader</a></code></li>
+<li><code><a title="fin_statement_model.io.core.get_writer" href="#fin_statement_model.io.core.get_writer">get_writer</a></code></li>
+<li><code><a title="fin_statement_model.io.core.handle_read_errors" href="#fin_statement_model.io.core.handle_read_errors">handle_read_errors</a></code></li>
+<li><code><a title="fin_statement_model.io.core.handle_write_errors" href="#fin_statement_model.io.core.handle_write_errors">handle_write_errors</a></code></li>
+<li><code><a title="fin_statement_model.io.core.list_readers" href="#fin_statement_model.io.core.list_readers">list_readers</a></code></li>
+<li><code><a title="fin_statement_model.io.core.list_writers" href="#fin_statement_model.io.core.list_writers">list_writers</a></code></li>
+<li><code><a title="fin_statement_model.io.core.read_data" href="#fin_statement_model.io.core.read_data">read_data</a></code></li>
+<li><code><a title="fin_statement_model.io.core.register_reader" href="#fin_statement_model.io.core.register_reader">register_reader</a></code></li>
+<li><code><a title="fin_statement_model.io.core.register_writer" href="#fin_statement_model.io.core.register_writer">register_writer</a></code></li>
+<li><code><a title="fin_statement_model.io.core.write_data" href="#fin_statement_model.io.core.write_data">write_data</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.io.core.ConfigurationMixin" href="#fin_statement_model.io.core.ConfigurationMixin">ConfigurationMixin</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.ConfigurationMixin.clear_config_overrides" href="#fin_statement_model.io.core.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ConfigurationMixin.get_config_context" href="#fin_statement_model.io.core.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ConfigurationMixin.get_config_value" href="#fin_statement_model.io.core.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ConfigurationMixin.get_config_with_env_fallback" href="#fin_statement_model.io.core.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ConfigurationMixin.get_effective_configuration" href="#fin_statement_model.io.core.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ConfigurationMixin.merge_configurations" href="#fin_statement_model.io.core.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ConfigurationMixin.require_config_value" href="#fin_statement_model.io.core.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ConfigurationMixin.set_config_context" href="#fin_statement_model.io.core.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ConfigurationMixin.set_config_override" href="#fin_statement_model.io.core.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ConfigurationMixin.validate_configuration" href="#fin_statement_model.io.core.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.DataFrameBasedWriter" href="#fin_statement_model.io.core.DataFrameBasedWriter">DataFrameBasedWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.DataFrameBasedWriter.extract_graph_data" href="#fin_statement_model.io.core.DataFrameBasedWriter.extract_graph_data">extract_graph_data</a></code></li>
+<li><code><a title="fin_statement_model.io.core.DataFrameBasedWriter.write" href="#fin_statement_model.io.core.DataFrameBasedWriter.write">write</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.DataReader" href="#fin_statement_model.io.core.DataReader">DataReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.DataReader.read" href="#fin_statement_model.io.core.DataReader.read">read</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.DataWriter" href="#fin_statement_model.io.core.DataWriter">DataWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.DataWriter.write" href="#fin_statement_model.io.core.DataWriter.write">write</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.FileBasedReader" href="#fin_statement_model.io.core.FileBasedReader">FileBasedReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.FileBasedReader.file_extensions" href="#fin_statement_model.io.core.FileBasedReader.file_extensions">file_extensions</a></code></li>
+<li><code><a title="fin_statement_model.io.core.FileBasedReader.read" href="#fin_statement_model.io.core.FileBasedReader.read">read</a></code></li>
+<li><code><a title="fin_statement_model.io.core.FileBasedReader.validate_file_exists" href="#fin_statement_model.io.core.FileBasedReader.validate_file_exists">validate_file_exists</a></code></li>
+<li><code><a title="fin_statement_model.io.core.FileBasedReader.validate_file_extension" href="#fin_statement_model.io.core.FileBasedReader.validate_file_extension">validate_file_extension</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.HandlerRegistry" href="#fin_statement_model.io.core.HandlerRegistry">HandlerRegistry</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.io.core.HandlerRegistry.clear" href="#fin_statement_model.io.core.HandlerRegistry.clear">clear</a></code></li>
+<li><code><a title="fin_statement_model.io.core.HandlerRegistry.get" href="#fin_statement_model.io.core.HandlerRegistry.get">get</a></code></li>
+<li><code><a title="fin_statement_model.io.core.HandlerRegistry.get_schema" href="#fin_statement_model.io.core.HandlerRegistry.get_schema">get_schema</a></code></li>
+<li><code><a title="fin_statement_model.io.core.HandlerRegistry.is_registered" href="#fin_statement_model.io.core.HandlerRegistry.is_registered">is_registered</a></code></li>
+<li><code><a title="fin_statement_model.io.core.HandlerRegistry.list_formats" href="#fin_statement_model.io.core.HandlerRegistry.list_formats">list_formats</a></code></li>
+<li><code><a title="fin_statement_model.io.core.HandlerRegistry.register" href="#fin_statement_model.io.core.HandlerRegistry.register">register</a></code></li>
+<li><code><a title="fin_statement_model.io.core.HandlerRegistry.unregister" href="#fin_statement_model.io.core.HandlerRegistry.unregister">unregister</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.ValidationResultCollector" href="#fin_statement_model.io.core.ValidationResultCollector">ValidationResultCollector</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.ValidationResultCollector.add_result" href="#fin_statement_model.io.core.ValidationResultCollector.add_result">add_result</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ValidationResultCollector.add_warning" href="#fin_statement_model.io.core.ValidationResultCollector.add_warning">add_warning</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ValidationResultCollector.clear" href="#fin_statement_model.io.core.ValidationResultCollector.clear">clear</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ValidationResultCollector.get_detailed_report" href="#fin_statement_model.io.core.ValidationResultCollector.get_detailed_report">get_detailed_report</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ValidationResultCollector.get_error_count_by_category" href="#fin_statement_model.io.core.ValidationResultCollector.get_error_count_by_category">get_error_count_by_category</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ValidationResultCollector.get_items_with_errors" href="#fin_statement_model.io.core.ValidationResultCollector.get_items_with_errors">get_items_with_errors</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ValidationResultCollector.get_summary" href="#fin_statement_model.io.core.ValidationResultCollector.get_summary">get_summary</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ValidationResultCollector.has_errors" href="#fin_statement_model.io.core.ValidationResultCollector.has_errors">has_errors</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ValidationResultCollector.has_warnings" href="#fin_statement_model.io.core.ValidationResultCollector.has_warnings">has_warnings</a></code></li>
+<li><code><a title="fin_statement_model.io.core.ValidationResultCollector.merge" href="#fin_statement_model.io.core.ValidationResultCollector.merge">merge</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.ValueExtractionMixin" href="#fin_statement_model.io.core.ValueExtractionMixin">ValueExtractionMixin</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.ValueExtractionMixin.extract_node_value" href="#fin_statement_model.io.core.ValueExtractionMixin.extract_node_value">extract_node_value</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>
