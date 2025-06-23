@@ -12,7 +12,7 @@ class _DummyGraph:
     def __init__(self, periods: list[str]):
         self.periods = list(periods)
 
-    def add_periods(self, new: list[str]) -> None:  # noqa: D401 – simple helper
+    def add_periods(self, new: list[str]) -> None:  # noqa: D401 - simple helper
         self.periods.extend(new)
 
 

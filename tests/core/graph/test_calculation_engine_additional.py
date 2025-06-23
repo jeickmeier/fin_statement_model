@@ -13,7 +13,7 @@ from fin_statement_model.core.errors import CalculationError, NodeError
 
 
 # -----------------------------------------------------------------------------
-# Helper – build a graph with two data nodes and two periods
+# Helper - build a graph with two data nodes and two periods
 # -----------------------------------------------------------------------------
 
 
@@ -26,7 +26,7 @@ def _make_graph_two_periods() -> Graph:
 
 
 # -----------------------------------------------------------------------------
-# recalc_all – exercise explicit period selection paths
+# recalc_all - exercise explicit period selection paths
 # -----------------------------------------------------------------------------
 
 
@@ -46,7 +46,7 @@ def test_recalc_all_with_explicit_period_list() -> None:
 
 
 # -----------------------------------------------------------------------------
-# calculate – error handling (ZeroDivisionError → CalculationError)
+# calculate - error handling (ZeroDivisionError → CalculationError)
 # -----------------------------------------------------------------------------
 
 
@@ -67,7 +67,7 @@ def test_calculate_error_path_zero_division() -> None:
 
 
 # -----------------------------------------------------------------------------
-# ensure_signed_nodes – negative branch when base missing
+# ensure_signed_nodes - negative branch when base missing
 # -----------------------------------------------------------------------------
 
 
@@ -79,7 +79,7 @@ def test_ensure_signed_nodes_missing_base() -> None:
 
 
 # -----------------------------------------------------------------------------
-# Metric helpers – get_metric / list / info
+# Metric helpers - get_metric / list / info
 # -----------------------------------------------------------------------------
 
 

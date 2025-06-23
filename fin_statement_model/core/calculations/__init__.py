@@ -17,30 +17,38 @@ This package provides a flexible, extensible system for defining and applying ca
 Example:
     >>> from fin_statement_model.core.calculations import AdditionCalculation, Registry
     >>> class MockNode:
-    ...     def __init__(self, value): self._value = value
-    ...     def calculate(self, period): return self._value
+    ...     def __init__(self, value):
+    ...         self._value = value
+    ...
+    ...     def calculate(self, period):
+    ...         return self._value
     >>> nodes = [MockNode(10), MockNode(20)]
     >>> calc = AdditionCalculation()
-    >>> calc.calculate(nodes, '2023Q4')
+    >>> calc.calculate(nodes, "2023Q4")
     30.0
-    >>> CalcClass = Registry.get('AdditionCalculation')
+    >>> CalcClass = Registry.get("AdditionCalculation")
     >>> calc2 = CalcClass()
-    >>> calc2.calculate(nodes, '2023Q4')
+    >>> calc2.calculate(nodes, "2023Q4")
     30.0
 """
 
+from fin_statement_model.core.node_factory import NodeFactory as _NodeFactory
+from fin_statement_model.core.node_factory.registries import (
+    CalculationAliasRegistry as _CalcRegistry,
+    calc_alias,
+)
+
 from .calculation import (
-    Calculation,
     AdditionCalculation,
-    SubtractionCalculation,
-    MultiplicationCalculation,
-    DivisionCalculation,
-    WeightedAverageCalculation,
+    Calculation,
     CustomFormulaCalculation,
+    DivisionCalculation,
     FormulaCalculation,
+    MultiplicationCalculation,
+    SubtractionCalculation,
+    WeightedAverageCalculation,
 )
 from .registry import Registry
-from fin_statement_model.core.node_factory.registries import calc_alias
 
 # Register calculations
 Registry.register(AdditionCalculation)
@@ -59,6 +67,20 @@ calc_alias("division")(DivisionCalculation)
 calc_alias("weighted_average")(WeightedAverageCalculation)
 calc_alias("custom_formula")(CustomFormulaCalculation)
 calc_alias("formula")(FormulaCalculation)
+
+# ---------------------------------------------------------------------------
+# Ensure NodeFactory alias mapping is kept in sync
+# ---------------------------------------------------------------------------
+# ``NodeFactory`` takes a snapshot of the alias registry at import time.  If it
+# was imported *before* the calculations package finished registering its
+# aliases the mapping may be stale which leads to look-ups such as
+# ``Graph.change_calculation_method(..., "addition")`` failing at runtime.  To
+# guard against this we always (re-)populate the mapping *after* the official
+# registrations above.
+
+# Overwrite the snapshot with the current registry content so any aliases added
+# later (including by extensions) are reflected immediately.
+_NodeFactory._calculation_methods = {alias: cls.__name__ for alias, cls in _CalcRegistry.items()}
 
 __all__ = [
     "AdditionCalculation",

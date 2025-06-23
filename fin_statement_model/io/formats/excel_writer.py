@@ -11,12 +11,12 @@ from pathlib import Path
 from typing import Any
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.io.core.mixins import ConfigurationMixin, handle_write_errors
-from fin_statement_model.io.core.base_table_writer import BaseTableWriter
-from fin_statement_model.io.core.registry import register_writer
 from fin_statement_model.io.config.models import (
     ExcelWriterConfig,
 )
+from fin_statement_model.io.core.base_table_writer import BaseTableWriter
+from fin_statement_model.io.core.mixins import ConfigurationMixin, handle_write_errors
+from fin_statement_model.io.core.registry import register_writer
 
 logger = logging.getLogger(__name__)
 
@@ -65,11 +65,9 @@ class ExcelWriter(BaseTableWriter, ConfigurationMixin):
         sheet_name = self._param("sheet_name", kwargs, self.cfg, default="Sheet1")
         recalculate = self._param("recalculate", kwargs, self.cfg, default=True)
         include_nodes = self._param("include_nodes", kwargs, self.cfg)
-        excel_writer_options = self._param(
-            "excel_writer_kwargs", kwargs, self.cfg, default={}
-        )
+        excel_writer_options = self._param("excel_writer_kwargs", kwargs, self.cfg, default={})
 
-        logger.info(f"Exporting graph to Excel file: {file_path}, sheet: {sheet_name}")
+        logger.info("Exporting graph to Excel file: %s, sheet: %s", file_path, sheet_name)
 
         # Convert graph to DataFrame
         df = self.to_dataframe(graph, include_nodes=include_nodes, recalc=recalculate)
@@ -77,7 +75,7 @@ class ExcelWriter(BaseTableWriter, ConfigurationMixin):
         # Write DataFrame to Excel
         self._write_to_excel(df, file_path, sheet_name, excel_writer_options)
 
-        logger.info(f"Successfully exported graph to {file_path}, sheet '{sheet_name}'")
+        logger.info("Successfully exported graph to %s, sheet '%s'", file_path, sheet_name)
 
     def _write_to_excel(
         self,

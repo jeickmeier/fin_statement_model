@@ -30,10 +30,10 @@ from ._node_ops import NodeOpsMixin
 from ._traversal_ops import TraversalMixin
 
 __all__: list[str] = [
-    "GraphBaseMixin",
-    "NodeOpsMixin",
-    "CalcOpsMixin",
     "AdjustmentMixin",
+    "CalcOpsMixin",
+    "GraphBaseMixin",
     "MergeReprMixin",
+    "NodeOpsMixin",
     "TraversalMixin",
 ]

@@ -21,14 +21,14 @@ Metrics are organized into logical categories:
 
 Example:
     >>> from fin_statement_model.core.metrics import metric_registry, calculate_metric, interpret_metric
-    >>> count = metric_registry.load_metrics_from_directory('fin_statement_model/core/metrics/metric_defn')
+    >>> count = metric_registry.load_metrics_from_directory("fin_statement_model/core/metrics/metric_defn")
     >>> print(f"Loaded {count} metrics")
     >>> print(metric_registry.list_metrics()[:5])
     >>> # Prepare data_nodes = { 'revenue': RevenueNode(...), ... }
-    >>> value = calculate_metric('current_ratio', data_nodes, period='2023')
-    >>> metric_def = metric_registry.get('current_ratio')
+    >>> value = calculate_metric("current_ratio", data_nodes, period="2023")
+    >>> metric_def = metric_registry.get("current_ratio")
     >>> analysis = interpret_metric(metric_def, value)
-    >>> print(analysis['rating'])
+    >>> print(analysis["rating"])
 """
 
 import logging
@@ -38,9 +38,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from fin_statement_model.core.nodes.base import Node
 
+from .interpretation import MetricInterpreter, MetricRating, interpret_metric
 from .models import MetricDefinition, MetricInterpretation
 from .registry import MetricRegistry, metric_registry
-from .interpretation import MetricInterpreter, MetricRating, interpret_metric
 
 logger = logging.getLogger(__name__)
 
@@ -53,9 +53,7 @@ try:
         from .metric_defn import load_organized_metrics
 
         organized_count = load_organized_metrics()
-        logger.info(
-            f"Successfully loaded {organized_count} metrics from organized structure"
-        )
+        logger.info("Successfully loaded %s metrics from organized structure", organized_count)
     else:
         logger.warning("Organized metric structure not found - no metrics loaded")
 
@@ -94,11 +92,11 @@ def calculate_metric(
         >>> from fin_statement_model.core.metrics import calculate_metric, metric_registry
         >>> # Assume metric_registry is already loaded and data_nodes is prepared
         >>> data_nodes = {
-        ...     'net_operating_income': DummyNode({'2023': 1000000}),
-        ...     'total_debt': DummyNode({'2023': 10000000})
+        ...     "net_operating_income": DummyNode({"2023": 1000000}),
+        ...     "total_debt": DummyNode({"2023": 10000000}),
         ... }
         >>> # Suppose 'debt_yield' is defined as net_operating_income / total_debt * 100
-        >>> debt_yield = calculate_metric('debt_yield', data_nodes, '2023')
+        >>> debt_yield = calculate_metric("debt_yield", data_nodes, "2023")
         >>> print(f"Debt Yield: {debt_yield:.1f}%")
         Debt Yield: 10.0%
     """
@@ -113,7 +111,7 @@ def calculate_metric(
         raise KeyError(
             f"Metric '{metric_name}' not found in registry. "
             f"Available metrics: {available_metrics[:10]}..."  # Show first 10
-        )
+        ) from None
 
     # Build input mapping for the formula
     inputs = {}

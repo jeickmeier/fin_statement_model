@@ -25,8 +25,6 @@ import logging
 import logging.handlers
 import os
 import sys
-from typing import Optional
-
 
 # Default format for log messages
 DEFAULT_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -60,9 +58,9 @@ def get_logger(name: str) -> logging.Logger:
 
 
 def setup_logging(
-    level: Optional[str] = None,
-    format_string: Optional[str] = None,
-    log_file_path: Optional[str] = None,
+    level: str | None = None,
+    format_string: str | None = None,
+    log_file_path: str | None = None,
     detailed: bool = False,
 ) -> None:
     """Configure logging for the fin_statement_model library.
@@ -93,7 +91,7 @@ def setup_logging(
         ...     level="DEBUG",
         ...     format_string="%(asctime)s %(levelname)s %(message)s",
         ...     log_file_path="fin_model.log",
-        ...     detailed=True
+        ...     detailed=True,
         ... )
         >>> logger = logging_config.get_logger("fin_statement_model.core")
         >>> logger.debug("Advanced logging enabled!")
@@ -138,12 +136,8 @@ def setup_logging(
 
     # Set specific log levels for noisy sub-modules if needed
     # For example, reduce verbosity of certain components during normal operation
-    logging.getLogger("fin_statement_model.io.formats").setLevel(
-        max(numeric_level, logging.INFO)
-    )
-    logging.getLogger("fin_statement_model.core.graph.traverser").setLevel(
-        max(numeric_level, logging.INFO)
-    )
+    logging.getLogger("fin_statement_model.io.formats").setLevel(max(numeric_level, logging.INFO))
+    logging.getLogger("fin_statement_model.core.graph.traverser").setLevel(max(numeric_level, logging.INFO))
 
 
 def configure_library_logging() -> None:
@@ -191,12 +185,5 @@ configure_library_logging()
 #    - Good: logger.info(f"Loaded {count} metrics from {filepath}")
 #    - Bad: logger.info("Metrics loaded")
 #
-# 4. Use logger.exception() in except blocks to capture stack traces:
-#    try:
-#        risky_operation()
-#    except Exception:
-#        logger.exception("Failed to perform risky operation")
-#
-# 5. For performance-sensitive code, check log level before expensive operations:
-#    if logger.isEnabledFor(logging.DEBUG):
-#        logger.debug(f"Expensive debug info: {expensive_function()}")
+# 4. Prefer ``logger.exception`` in except blocks to capture stack traces.
+# 5. Guard expensive debug-only computations using ``logger.isEnabledFor`` checks.

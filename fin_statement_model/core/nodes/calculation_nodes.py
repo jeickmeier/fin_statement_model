@@ -14,7 +14,11 @@ Features:
 
 Example:
     >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
-    >>> from fin_statement_model.core.nodes.calculation_nodes import CalculationNode, FormulaCalculationNode, CustomCalculationNode
+    >>> from fin_statement_model.core.nodes.calculation_nodes import (
+    ...     CalculationNode,
+    ...     FormulaCalculationNode,
+    ...     CustomCalculationNode,
+    ... )
     >>> class SumCalculation:
     ...     def calculate(self, inputs, period):
     ...         return sum(node.calculate(period) for node in inputs)
@@ -26,13 +30,15 @@ Example:
     >>> formula_node = FormulaCalculationNode("gp", inputs={"rev": node_a, "cost": node_b}, formula="rev - cost")
     >>> formula_node.calculate("2023")
     -10.0
-    >>> def add(a, b): return a + b
+    >>> def add(a, b):
+    ...     return a + b
     >>> custom_node = CustomCalculationNode("add_node", inputs=[node_a, node_b], formula_func=add)
     >>> custom_node.calculate("2023")
     30.0
 """
 
-from typing import Optional, Any, Callable, cast
+from collections.abc import Callable
+from typing import Any, cast
 
 from fin_statement_model.core.calculations.calculation import (
     Calculation,
@@ -41,9 +47,8 @@ from fin_statement_model.core.calculations.calculation import (
 from fin_statement_model.core.errors import (
     CalculationError,
 )
-from fin_statement_model.core.nodes.base import Node
 from fin_statement_model.core.node_factory.registries import node_type
-
+from fin_statement_model.core.nodes.base import Node
 
 # === CalculationNode ===
 
@@ -79,9 +84,7 @@ class CalculationNode(Node):
         30.0
     """
 
-    def __init__(
-        self, name: str, inputs: list[Node], calculation: Calculation, **kwargs: Any
-    ):
+    def __init__(self, name: str, inputs: list[Node], calculation: Calculation, **kwargs: Any):
         """Initialize the CalculationNode.
 
         Args:
@@ -109,12 +112,8 @@ class CalculationNode(Node):
         super().__init__(name)
         if not isinstance(inputs, list) or not all(isinstance(n, Node) for n in inputs):
             raise TypeError("CalculationNode inputs must be a list of Node instances.")
-        if not hasattr(calculation, "calculate") or not callable(
-            getattr(calculation, "calculate")
-        ):
-            raise TypeError(
-                "Calculation object must have a callable 'calculate' method."
-            )
+        if not hasattr(calculation, "calculate") or not callable(calculation.calculate):
+            raise TypeError("Calculation object must have a callable 'calculate' method.")
 
         self.inputs = inputs
         self.calculation = calculation
@@ -194,12 +193,8 @@ class CalculationNode(Node):
             >>> sum_node = CalculationNode("sum_ab", inputs=[node_a, node_b], calculation=SumCalculation())
             >>> sum_node.set_calculation(SumCalculation())
         """
-        if not hasattr(calculation, "calculate") or not callable(
-            getattr(calculation, "calculate")
-        ):
-            raise TypeError(
-                "New calculation object must have a callable 'calculate' method."
-            )
+        if not hasattr(calculation, "calculate") or not callable(calculation.calculate):
+            raise TypeError("New calculation object must have a callable 'calculate' method.")
         self.calculation = calculation
         self.clear_cache()  # Clear cache as logic has changed
 
@@ -282,9 +277,7 @@ class CalculationNode(Node):
             elif type_key == "formula" and hasattr(self.calculation, "formula"):
                 calculation_args["formula"] = self.calculation.formula
                 if hasattr(self.calculation, "input_variable_names"):
-                    node_dict["formula_variable_names"] = (
-                        self.calculation.input_variable_names
-                    )
+                    node_dict["formula_variable_names"] = self.calculation.input_variable_names
             elif type_key == "custom_formula":
                 node_dict["serialization_warning"] = (
                     "CustomFormulaCalculation uses a Python function which cannot be serialized. "
@@ -334,9 +327,7 @@ class CalculationNode(Node):
             raise ValueError("Missing 'name' field in CalculationNode data")
 
         if context is None:
-            raise ValueError(
-                "'context' must be provided to deserialize CalculationNode"
-            )
+            raise ValueError("'context' must be provided to deserialize CalculationNode")
 
         input_names = data.get("inputs", [])
         if not isinstance(input_names, list):
@@ -416,8 +407,8 @@ class FormulaCalculationNode(CalculationNode):
         name: str,
         inputs: dict[str, Node],
         formula: str,
-        metric_name: Optional[str] = None,
-        metric_description: Optional[str] = None,
+        metric_name: str | None = None,
+        metric_description: str | None = None,
     ):
         """Create a FormulaCalculationNode.
 
@@ -442,12 +433,8 @@ class FormulaCalculationNode(CalculationNode):
             >>> formula_node.calculate("2023")
             40.0
         """
-        if not isinstance(inputs, dict) or not all(
-            isinstance(n, Node) for n in inputs.values()
-        ):
-            raise TypeError(
-                "FormulaCalculationNode inputs must be a dict of Node instances."
-            )
+        if not isinstance(inputs, dict) or not all(isinstance(n, Node) for n in inputs.values()):
+            raise TypeError("FormulaCalculationNode inputs must be a dict of Node instances.")
 
         # Store the formula and metric attributes
         self.formula = formula
@@ -527,18 +514,14 @@ class FormulaCalculationNode(CalculationNode):
             >>> # See FormulaCalculationNode usage in main module docstring
         """
         if data.get("type") != "formula_calculation":
-            raise ValueError(
-                f"Invalid type for FormulaCalculationNode: {data.get('type')}"
-            )
+            raise ValueError(f"Invalid type for FormulaCalculationNode: {data.get('type')}")
 
         name = data.get("name")
         if not name:
             raise ValueError("Missing 'name' field in FormulaCalculationNode data")
 
         if context is None:
-            raise ValueError(
-                "'context' must be provided to deserialize FormulaCalculationNode"
-            )
+            raise ValueError("'context' must be provided to deserialize FormulaCalculationNode")
 
         formula = data.get("formula")
         if not formula:
@@ -548,13 +531,11 @@ class FormulaCalculationNode(CalculationNode):
         formula_variable_names = data.get("formula_variable_names", [])
 
         if len(input_names) != len(formula_variable_names):
-            raise ValueError(
-                "Mismatch between inputs and formula_variable_names in FormulaCalculationNode data"
-            )
+            raise ValueError("Mismatch between inputs and formula_variable_names in FormulaCalculationNode data")
 
         # Resolve input nodes from context and create inputs dict
         inputs_dict = {}
-        for var_name, input_name in zip(formula_variable_names, input_names):
+        for var_name, input_name in zip(formula_variable_names, input_names, strict=False):
             if input_name not in context:
                 raise ValueError(f"Input node '{input_name}' not found in context")
             inputs_dict[var_name] = context[input_name]
@@ -594,7 +575,8 @@ class CustomCalculationNode(Node):
 
     Example:
         >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
-        >>> def add(a, b): return a + b
+        >>> def add(a, b):
+        ...     return a + b
         >>> a = FinancialStatementItemNode("A", {"2023": 10})
         >>> b = FinancialStatementItemNode("B", {"2023": 5})
         >>> node = CustomCalculationNode("add_node", inputs=[a, b], formula_func=add)
@@ -607,7 +589,7 @@ class CustomCalculationNode(Node):
         name: str,
         inputs: list[Node],
         formula_func: Callable[..., float],
-        description: Optional[str] = None,
+        description: str | None = None,
     ) -> None:
         """Create a CustomCalculationNode.
 
@@ -622,7 +604,8 @@ class CustomCalculationNode(Node):
 
         Example:
             >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
-            >>> def add(a, b): return a + b
+            >>> def add(a, b):
+            ...     return a + b
             >>> a = FinancialStatementItemNode("A", {"2023": 10})
             >>> b = FinancialStatementItemNode("B", {"2023": 5})
             >>> node = CustomCalculationNode("add_node", inputs=[a, b], formula_func=add)
@@ -631,13 +614,9 @@ class CustomCalculationNode(Node):
         """
         super().__init__(name)
         if not isinstance(inputs, list) or not all(isinstance(n, Node) for n in inputs):
-            raise TypeError(
-                "CustomCalculationNode inputs must be a list of Node instances"
-            )
+            raise TypeError("CustomCalculationNode inputs must be a list of Node instances")
         if not callable(formula_func):
-            raise TypeError(
-                "CustomCalculationNode formula_func must be a callable function"
-            )
+            raise TypeError("CustomCalculationNode formula_func must be a callable function")
 
         self.inputs = inputs
         self.formula_func = formula_func
@@ -660,7 +639,8 @@ class CustomCalculationNode(Node):
 
         Example:
             >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
-            >>> def add(a, b): return a + b
+            >>> def add(a, b):
+            ...     return a + b
             >>> a = FinancialStatementItemNode("A", {"2023": 10})
             >>> b = FinancialStatementItemNode("B", {"2023": 5})
             >>> node = CustomCalculationNode("add_node", inputs=[a, b], formula_func=add)
@@ -684,9 +664,7 @@ class CustomCalculationNode(Node):
             # Calculate the value using the provided function
             result = self.formula_func(*input_values)
             if not isinstance(result, int | float):
-                raise TypeError(
-                    f"Formula did not return a numeric value. Got {type(result).__name__}."
-                )
+                raise TypeError(f"Formula did not return a numeric value. Got {type(result).__name__}.")
 
             # Cache and return the result
             self._values[period] = float(result)
@@ -705,7 +683,8 @@ class CustomCalculationNode(Node):
 
         Example:
             >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
-            >>> def add(a, b): return a + b
+            >>> def add(a, b):
+            ...     return a + b
             >>> a = FinancialStatementItemNode("A", {"2023": 10})
             >>> b = FinancialStatementItemNode("B", {"2023": 5})
             >>> node = CustomCalculationNode("add_node", inputs=[a, b], formula_func=add)
@@ -721,7 +700,8 @@ class CustomCalculationNode(Node):
 
         Example:
             >>> from fin_statement_model.core.nodes.item_node import FinancialStatementItemNode
-            >>> def add(a, b): return a + b
+            >>> def add(a, b):
+            ...     return a + b
             >>> a = FinancialStatementItemNode("A", {"2023": 10})
             >>> b = FinancialStatementItemNode("B", {"2023": 5})
             >>> node = CustomCalculationNode("add_node", inputs=[a, b], formula_func=add)

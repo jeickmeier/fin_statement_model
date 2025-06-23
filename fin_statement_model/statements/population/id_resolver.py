@@ -6,13 +6,12 @@ having different ID mapping rules, including standard node references.
 """
 
 import logging
-from typing import Optional
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
 from fin_statement_model.statements.structure import (
-    StatementStructure,
     LineItem,
+    StatementStructure,
 )
 
 logger = logging.getLogger(__name__)
@@ -51,7 +50,7 @@ class IDResolver:
 
     def _build_cache(self) -> None:
         """Pre-build ID mappings for all items in the statement."""
-        logger.debug(f"Building ID cache for statement '{self.statement.id}'")
+        logger.debug("Building ID cache for statement '%s'", self.statement.id)
 
         for item in self.statement.get_all_items():
             if isinstance(item, LineItem):
@@ -60,20 +59,22 @@ class IDResolver:
                 if resolved_node_id:
                     # LineItems map their ID to their resolved node_id
                     self._item_to_node_cache[item.id] = resolved_node_id
-                    self._node_to_items_cache.setdefault(resolved_node_id, []).append(
-                        item.id
-                    )
+                    self._node_to_items_cache.setdefault(resolved_node_id, []).append(item.id)
 
                     # Log if using standard node reference for debugging
                     if item.standard_node_ref:
                         logger.debug(
-                            f"Resolved standard node reference '{item.standard_node_ref}' "
-                            f"to '{resolved_node_id}' for item '{item.id}'"
+                            "Resolved standard node reference '%s' to '%s' for item '%s'",
+                            item.standard_node_ref,
+                            resolved_node_id,
+                            item.id,
                         )
                 else:
                     logger.warning(
-                        f"Could not resolve node reference for LineItem '{item.id}'. "
-                        f"node_id: {item.node_id}, standard_node_ref: {item.standard_node_ref}"
+                        "Could not resolve node reference for LineItem '%s'. node_id: %s, standard_node_ref: %s",
+                        item.id,
+                        item.node_id,
+                        item.standard_node_ref,
                     )
             else:
                 # Other items use their ID directly as the node ID
@@ -81,11 +82,12 @@ class IDResolver:
                 self._node_to_items_cache.setdefault(item.id, []).append(item.id)
 
         logger.debug(
-            f"ID cache built: {len(self._item_to_node_cache)} item->node mappings, "
-            f"{len(self._node_to_items_cache)} unique nodes"
+            "ID cache built: %s item->node mappings, %s unique nodes",
+            len(self._item_to_node_cache),
+            len(self._node_to_items_cache),
         )
 
-    def resolve(self, item_id: str, graph: Optional[Graph] = None) -> Optional[str]:
+    def resolve(self, item_id: str, graph: Graph | None = None) -> str | None:
         """Resolve a statement item ID to its graph node ID.
 
         Resolution process:
@@ -118,9 +120,7 @@ class IDResolver:
 
         return None
 
-    def resolve_multiple(
-        self, item_ids: list[str], graph: Optional[Graph] = None
-    ) -> dict[str, Optional[str]]:
+    def resolve_multiple(self, item_ids: list[str], graph: Graph | None = None) -> dict[str, str | None]:
         """Resolve multiple item IDs at once.
 
         Args:
@@ -168,7 +168,7 @@ class IDResolver:
         """
         self._item_to_node_cache.clear()
         self._node_to_items_cache.clear()
-        logger.debug(f"ID cache invalidated for statement '{self.statement.id}'")
+        logger.debug("ID cache invalidated for statement '%s'", self.statement.id)
 
     def refresh_cache(self) -> None:
         """Rebuild the cache from the current statement structure."""

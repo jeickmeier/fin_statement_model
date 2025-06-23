@@ -10,8 +10,6 @@ exceptions like `ReadError` or `FormatNotSupportedError`, or catch all I/O-relat
 errors by trapping `IOError`.
 """
 
-from typing import Optional
-
 # Use absolute import based on project structure
 from fin_statement_model.core.errors import FinancialModelError
 
@@ -22,9 +20,9 @@ class IOError(FinancialModelError):
     def __init__(
         self,
         message: str,
-        source_or_target: Optional[str] = None,
-        format_type: Optional[str] = None,
-        original_error: Optional[Exception] = None,
+        source_or_target: str | None = None,
+        format_type: str | None = None,
+        original_error: Exception | None = None,
     ):
         """Initializes the IOError.
 
@@ -44,9 +42,7 @@ class IOError(FinancialModelError):
         if format_type:
             context.append(f"format '{format_type}'")
 
-        full_message = (
-            f"{message} involving {' and '.join(context)}" if context else message
-        )
+        full_message = f"{message} involving {' and '.join(context)}" if context else message
 
         if original_error:
             full_message = f"{full_message}: {original_error!s}"
@@ -60,9 +56,9 @@ class ReadError(IOError):
     def __init__(
         self,
         message: str,
-        source: Optional[str] = None,
-        reader_type: Optional[str] = None,
-        original_error: Optional[Exception] = None,
+        source: str | None = None,
+        reader_type: str | None = None,
+        original_error: Exception | None = None,
     ):
         """Initializes the ReadError.
 
@@ -86,9 +82,9 @@ class WriteError(IOError):
     def __init__(
         self,
         message: str,
-        target: Optional[str] = None,
-        writer_type: Optional[str] = None,
-        original_error: Optional[Exception] = None,
+        target: str | None = None,
+        writer_type: str | None = None,
+        original_error: Exception | None = None,
     ):
         """Initializes the WriteError.
 

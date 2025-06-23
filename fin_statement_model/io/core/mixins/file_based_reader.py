@@ -8,14 +8,16 @@ concrete file readers (CSV, Excel, etc.) implement.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.base import DataReader
 from fin_statement_model.io.core.file_utils import (
     validate_file_exists as _validate_file_exists,
     validate_file_extension as _validate_file_extension,
 )
+
+if TYPE_CHECKING:
+    from fin_statement_model.core.graph import Graph
 
 
 class FileBasedReader(DataReader, ABC):
@@ -32,7 +34,7 @@ class FileBasedReader(DataReader, ABC):
     reader to repeat the tuple in every call site.
     """
 
-    # Default to *no* restriction – subclasses override
+    # Default to *no* restriction - subclasses override
     file_extensions: tuple[str, ...] | None = None
 
     # ------------------------------------------------------------------
@@ -42,9 +44,7 @@ class FileBasedReader(DataReader, ABC):
         """Check if a file exists at *path* using shared helper."""
         _validate_file_exists(path, reader_type=self.__class__.__name__)
 
-    def validate_file_extension(
-        self, path: str, valid_extensions: tuple[str, ...] | None = None
-    ) -> None:
+    def validate_file_extension(self, path: str, valid_extensions: tuple[str, ...] | None = None) -> None:
         """Validate *path* ends with an allowed extension.
 
         Args:
@@ -53,13 +53,11 @@ class FileBasedReader(DataReader, ABC):
                 back to the calling subclass' :pyattr:`file_extensions` class
                 attribute.  Passing a tuple here is only required for edge
                 cases (e.g. runtime-determined extensions) and should **not**
-                be used from normal reader implementations – this keeps the
+                be used from normal reader implementations - this keeps the
                 extension contract declarative and discoverable at the class
                 definition site.
         """
-        exts = (
-            valid_extensions if valid_extensions is not None else self.file_extensions
-        )
+        exts = valid_extensions if valid_extensions is not None else self.file_extensions
         _validate_file_extension(
             path,
             exts,

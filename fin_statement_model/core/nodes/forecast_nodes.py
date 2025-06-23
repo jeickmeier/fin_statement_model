@@ -27,16 +27,20 @@ Example:
     105.0
 """
 
-import logging
-from collections.abc import Callable
-from typing import Optional, Any
 from abc import abstractmethod
+from collections.abc import Callable
+import logging
+from typing import Any
+
+from fin_statement_model.core.node_factory.registries import forecast_type
 
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node
-from fin_statement_model.core.node_factory.registries import forecast_type
 
 logger = logging.getLogger(__name__)
+
+# Minimum historical data points required to compute growth rates
+MIN_HISTORICAL_PERIODS: int = 2
 
 
 class ForecastNode(Node):
@@ -142,18 +146,14 @@ class ForecastNode(Node):
 
         # For forecast periods, calculate using growth rate
         if period not in self.forecast_periods:
-            raise ValueError(
-                f"Period '{period}' not in forecast periods for {self.name}"
-            )
+            raise ValueError(f"Period '{period}' not in forecast periods for {self.name}")
 
         # Get the previous period's value
         prev_period = self._get_previous_period(period)
         prev_value = self.calculate(prev_period)
 
         # Get the growth rate for this period
-        growth_factor = self._get_growth_factor_for_period(
-            period, prev_period, prev_value
-        )
+        growth_factor = self._get_growth_factor_for_period(period, prev_period, prev_value)
 
         # Calculate the new value
         return prev_value * (1 + growth_factor)
@@ -164,16 +164,12 @@ class ForecastNode(Node):
         return all_periods[idx - 1]
 
     @abstractmethod
-    def _get_growth_factor_for_period(
-        self, period: str, prev_period: str, prev_value: float
-    ) -> float:
+    def _get_growth_factor_for_period(self, period: str, prev_period: str, prev_value: float) -> float:
         """Return the growth factor for *period*.
 
         Subclasses must implement this to provide their specific growth logic.
         """
-        raise NotImplementedError(
-            "Subclasses must implement _get_growth_factor_for_period."
-        )
+        raise NotImplementedError("Subclasses must implement _get_growth_factor_for_period.")
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize this node to a dictionary.
@@ -243,7 +239,7 @@ class FixedGrowthForecastNode(ForecastNode):
         input_node: Node,
         base_period: str,
         forecast_periods: list[str],
-        growth_rate: Optional[float] = None,
+        growth_rate: float | None = None,
     ):
         """Create a FixedGrowthForecastNode.
 
@@ -263,15 +259,14 @@ class FixedGrowthForecastNode(ForecastNode):
             growth_rate = cfg("forecasting.default_growth_rate")
 
         self.growth_rate = float(growth_rate)  # Ensure it's a float
-        logger.debug(
-            f"Created FixedGrowthForecastNode with growth rate: {self.growth_rate}"
-        )
+        logger.debug("Created FixedGrowthForecastNode with growth rate: %s", self.growth_rate)
 
-    def _get_growth_factor_for_period(
-        self, period: str, prev_period: str, prev_value: float
-    ) -> float:
+    def _get_growth_factor_for_period(self, period: str, prev_period: str, prev_value: float) -> float:
+        _ = (prev_period, prev_value)  # Mark unused parameters to satisfy linters
         logger.debug(
-            f"FixedGrowthForecastNode: Using growth rate {self.growth_rate} for period {period}"
+            "FixedGrowthForecastNode: Using growth rate %s for period %s",
+            self.growth_rate,
+            period,
         )
         return self.growth_rate
 
@@ -282,12 +277,10 @@ class FixedGrowthForecastNode(ForecastNode):
             Dictionary containing the node's forecast configuration.
         """
         base_dict = super().to_dict()
-        base_dict.update(
-            {
-                "forecast_type": "simple",
-                "growth_params": self.growth_rate,
-            }
-        )
+        base_dict.update({
+            "forecast_type": "simple",
+            "growth_params": self.growth_rate,
+        })
         return base_dict
 
     @classmethod
@@ -309,9 +302,7 @@ class FixedGrowthForecastNode(ForecastNode):
             ValueError: If the data is invalid or missing required fields.
         """
         if context is None:
-            raise ValueError(
-                "'context' must be provided to deserialize FixedGrowthForecastNode"
-            )
+            raise ValueError("'context' must be provided to deserialize FixedGrowthForecastNode")
 
         name = data.get("name")
         if not name:
@@ -319,9 +310,7 @@ class FixedGrowthForecastNode(ForecastNode):
 
         base_node_name = data.get("base_node_name")
         if not base_node_name:
-            raise ValueError(
-                "Missing 'base_node_name' field in FixedGrowthForecastNode data"
-            )
+            raise ValueError("Missing 'base_node_name' field in FixedGrowthForecastNode data")
 
         if base_node_name not in context:
             raise ValueError(f"Base node '{base_node_name}' not found in context")
@@ -332,9 +321,7 @@ class FixedGrowthForecastNode(ForecastNode):
         growth_params = data.get("growth_params")
 
         if not base_period:
-            raise ValueError(
-                "Missing 'base_period' field in FixedGrowthForecastNode data"
-            )
+            raise ValueError("Missing 'base_period' field in FixedGrowthForecastNode data")
 
         node = cls(
             input_node=base_node,
@@ -389,27 +376,24 @@ class CurveGrowthForecastNode(ForecastNode):
         super().__init__(input_node, base_period, forecast_periods)
         if len(growth_rates) != len(forecast_periods):
             raise ValueError("Number of growth rates must match forecast periods.")
-        self.growth_rates = [
-            float(rate) for rate in growth_rates
-        ]  # Ensure all are floats
-        logger.debug(
-            f"Created CurveGrowthForecastNode with growth rates: {self.growth_rates}"
-        )
-        logger.debug(f"  Base period: {base_period}")
-        logger.debug(f"  Forecast periods: {forecast_periods}")
-        logger.debug(f"  Base value: {input_node.calculate(base_period)}")
+        self.growth_rates = [float(rate) for rate in growth_rates]  # Ensure all are floats
+        logger.debug("Created CurveGrowthForecastNode with growth rates: %s", self.growth_rates)
+        logger.debug("  Base period: %s", base_period)
+        logger.debug("  Forecast periods: %s", forecast_periods)
+        logger.debug("  Base value: %s", input_node.calculate(base_period))
 
-    def _get_growth_factor_for_period(
-        self, period: str, prev_period: str, prev_value: float
-    ) -> float:
+    def _get_growth_factor_for_period(self, period: str, prev_period: str, prev_value: float) -> float:
+        _ = (period, prev_period, prev_value)  # Parameters are intentionally unused
         """Get the growth factor for a specific period."""
         idx = self.forecast_periods.index(period)
         growth_rate = self.growth_rates[idx]
         logger.debug(
-            f"CurveGrowthForecastNode: Using growth rate {growth_rate} for period {period}"
+            "CurveGrowthForecastNode: Using growth rate %s for period %s",
+            growth_rate,
+            period,
         )
-        logger.debug(f"  Previous period: {prev_period}")
-        logger.debug(f"  Previous value: {prev_value}")
+        logger.debug("  Previous period: %s", prev_period)
+        logger.debug("  Previous value: %s", prev_value)
         return growth_rate
 
     def to_dict(self) -> dict[str, Any]:
@@ -419,12 +403,10 @@ class CurveGrowthForecastNode(ForecastNode):
             Dictionary containing the node's forecast configuration.
         """
         base_dict = super().to_dict()
-        base_dict.update(
-            {
-                "forecast_type": "curve",
-                "growth_params": self.growth_rates.copy(),
-            }
-        )
+        base_dict.update({
+            "forecast_type": "curve",
+            "growth_params": self.growth_rates.copy(),
+        })
         return base_dict
 
     @classmethod
@@ -446,9 +428,7 @@ class CurveGrowthForecastNode(ForecastNode):
             ValueError: If the data is invalid or missing required fields.
         """
         if context is None:
-            raise ValueError(
-                "'context' must be provided to deserialize CurveGrowthForecastNode"
-            )
+            raise ValueError("'context' must be provided to deserialize CurveGrowthForecastNode")
 
         name = data.get("name")
         if not name:
@@ -456,9 +436,7 @@ class CurveGrowthForecastNode(ForecastNode):
 
         base_node_name = data.get("base_node_name")
         if not base_node_name:
-            raise ValueError(
-                "Missing 'base_node_name' field in CurveGrowthForecastNode data"
-            )
+            raise ValueError("Missing 'base_node_name' field in CurveGrowthForecastNode data")
 
         if base_node_name not in context:
             raise ValueError(f"Base node '{base_node_name}' not found in context")
@@ -469,14 +447,10 @@ class CurveGrowthForecastNode(ForecastNode):
         growth_params = data.get("growth_params", [])
 
         if not base_period:
-            raise ValueError(
-                "Missing 'base_period' field in CurveGrowthForecastNode data"
-            )
+            raise ValueError("Missing 'base_period' field in CurveGrowthForecastNode data")
 
         if not isinstance(growth_params, list):
-            raise TypeError(
-                "'growth_params' must be a list for CurveGrowthForecastNode"
-            )
+            raise TypeError("'growth_params' must be a list for CurveGrowthForecastNode")
 
         node = cls(
             input_node=base_node,
@@ -533,9 +507,8 @@ class StatisticalGrowthForecastNode(ForecastNode):
         super().__init__(input_node, base_period, forecast_periods)
         self.distribution_callable = distribution_callable
 
-    def _get_growth_factor_for_period(
-        self, period: str, prev_period: str, prev_value: float
-    ) -> float:
+    def _get_growth_factor_for_period(self, period: str, prev_period: str, prev_value: float) -> float:
+        _ = (period, prev_period, prev_value)  # Parameters are intentionally unused
         return self.distribution_callable()
 
     def to_dict(self) -> dict[str, Any]:
@@ -548,18 +521,16 @@ class StatisticalGrowthForecastNode(ForecastNode):
             The distribution_callable cannot be serialized, so a warning is included.
         """
         base_dict = super().to_dict()
-        base_dict.update(
-            {
-                "forecast_type": "statistical",
-                "serialization_warning": (
-                    "StatisticalGrowthForecastNode uses a distribution callable which cannot be serialized. "
-                    "Manual reconstruction required."
-                ),
-            }
-        )
+        base_dict.update({
+            "forecast_type": "statistical",
+            "serialization_warning": (
+                "StatisticalGrowthForecastNode uses a distribution callable which cannot be serialized. "
+                "Manual reconstruction required."
+            ),
+        })
         return base_dict
 
-    # Deserialization intentionally unsupported – distribution_callable is not serializable.
+    # Deserialization intentionally unsupported - distribution_callable is not serializable.
 
     @classmethod
     def from_dict(
@@ -569,8 +540,7 @@ class StatisticalGrowthForecastNode(ForecastNode):
     ) -> "StatisticalGrowthForecastNode":  # pragma: no cover
         """Deserialization is not supported for StatisticalGrowthForecastNode."""
         raise NotImplementedError(
-            "StatisticalGrowthForecastNode cannot be deserialized; "
-            "distribution_callable is not serializable."
+            "StatisticalGrowthForecastNode cannot be deserialized; distribution_callable is not serializable."
         )
 
 
@@ -616,9 +586,8 @@ class CustomGrowthForecastNode(ForecastNode):
         super().__init__(input_node, base_period, forecast_periods)
         self.growth_function = growth_function
 
-    def _get_growth_factor_for_period(
-        self, period: str, prev_period: str, prev_value: float
-    ) -> float:
+    def _get_growth_factor_for_period(self, period: str, prev_period: str, prev_value: float) -> float:
+        _ = (period, prev_period, prev_value)  # Parameters are intentionally unused
         return self.growth_function(period, prev_period, prev_value)
 
     def to_dict(self) -> dict[str, Any]:
@@ -631,18 +600,16 @@ class CustomGrowthForecastNode(ForecastNode):
             The growth_function cannot be serialized, so a warning is included.
         """
         base_dict = super().to_dict()
-        base_dict.update(
-            {
-                "forecast_type": "custom",
-                "serialization_warning": (
-                    "CustomGrowthForecastNode uses a growth function which cannot be serialized. "
-                    "Manual reconstruction required."
-                ),
-            }
-        )
+        base_dict.update({
+            "forecast_type": "custom",
+            "serialization_warning": (
+                "CustomGrowthForecastNode uses a growth function which cannot be serialized. "
+                "Manual reconstruction required."
+            ),
+        })
         return base_dict
 
-    # Deserialization intentionally unsupported – growth_function is not serializable.
+    # Deserialization intentionally unsupported - growth_function is not serializable.
 
     @classmethod
     def from_dict(
@@ -652,8 +619,7 @@ class CustomGrowthForecastNode(ForecastNode):
     ) -> "CustomGrowthForecastNode":  # pragma: no cover
         """Deserialization is not supported for CustomGrowthForecastNode."""
         raise NotImplementedError(
-            "CustomGrowthForecastNode cannot be deserialized; "
-            "growth_function is not serializable."
+            "CustomGrowthForecastNode cannot be deserialized; growth_function is not serializable."
         )
 
 
@@ -691,9 +657,7 @@ class AverageValueForecastNode(ForecastNode):
         """
         super().__init__(input_node, base_period, forecast_periods)
         self.average_value = self._calculate_average_value()
-        logger.debug(
-            f"Created AverageValueForecastNode with average value: {self.average_value}"
-        )
+        logger.debug("Created AverageValueForecastNode with average value: %s", self.average_value)
 
     def _calculate_average_value(self) -> float:
         """Calculate the average historical value up to the base period.
@@ -701,13 +665,9 @@ class AverageValueForecastNode(ForecastNode):
         Returns:
             float: The average of historical values or 0.0 if none.
         """
-        values = [
-            value for period, value in self.values.items() if period <= self.base_period
-        ]
+        values = [value for period, value in self.values.items() if period <= self.base_period]
         if not values:
-            logger.warning(
-                f"No historical values found for {self.name}, using 0.0 as average"
-            )
+            logger.warning("No historical values found for %s, using 0.0 as average", self.name)
             return 0.0
         # Compute average and ensure float type
         return float(sum(values)) / len(values)
@@ -721,16 +681,13 @@ class AverageValueForecastNode(ForecastNode):
 
         # For forecast periods, return the constant average value
         if period not in self.forecast_periods:
-            raise ValueError(
-                f"Period '{period}' not in forecast periods for {self.name}"
-            )
+            raise ValueError(f"Period '{period}' not in forecast periods for {self.name}")
 
         return self.average_value
 
-    def _get_growth_factor_for_period(
-        self, period: str, prev_period: str, prev_value: float
-    ) -> float:
+    def _get_growth_factor_for_period(self, period: str, prev_period: str, prev_value: float) -> float:
         """Not used for average value forecasts."""
+        _ = (period, prev_period, prev_value)  # Parameters intentionally unused
         return 0.0
 
     def to_dict(self) -> dict[str, Any]:
@@ -740,12 +697,10 @@ class AverageValueForecastNode(ForecastNode):
             Dictionary containing the node's forecast configuration.
         """
         base_dict = super().to_dict()
-        base_dict.update(
-            {
-                "forecast_type": "average",
-                "average_value": self.average_value,
-            }
-        )
+        base_dict.update({
+            "forecast_type": "average",
+            "average_value": self.average_value,
+        })
         return base_dict
 
     @classmethod
@@ -767,9 +722,7 @@ class AverageValueForecastNode(ForecastNode):
             ValueError: If the data is invalid or missing required fields.
         """
         if context is None:
-            raise ValueError(
-                "'context' must be provided to deserialize AverageValueForecastNode"
-            )
+            raise ValueError("'context' must be provided to deserialize AverageValueForecastNode")
 
         name = data.get("name")
         if not name:
@@ -777,9 +730,7 @@ class AverageValueForecastNode(ForecastNode):
 
         base_node_name = data.get("base_node_name")
         if not base_node_name:
-            raise ValueError(
-                "Missing 'base_node_name' field in AverageValueForecastNode data"
-            )
+            raise ValueError("Missing 'base_node_name' field in AverageValueForecastNode data")
 
         if base_node_name not in context:
             raise ValueError(f"Base node '{base_node_name}' not found in context")
@@ -789,9 +740,7 @@ class AverageValueForecastNode(ForecastNode):
         forecast_periods = data.get("forecast_periods", [])
 
         if not base_period:
-            raise ValueError(
-                "Missing 'base_period' field in AverageValueForecastNode data"
-            )
+            raise ValueError("Missing 'base_period' field in AverageValueForecastNode data")
 
         node = cls(
             input_node=base_node,
@@ -838,9 +787,7 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
         """
         super().__init__(input_node, base_period, forecast_periods)
         self.avg_growth_rate = self._calculate_average_growth_rate()
-        logger.debug(
-            f"Created AverageHistoricalGrowthForecastNode with growth rate: {self.avg_growth_rate}"
-        )
+        logger.debug("Created AverageHistoricalGrowthForecastNode with growth rate: %s", self.avg_growth_rate)
 
     def _calculate_average_growth_rate(self) -> float:
         """Calculate the average growth rate from historical values.
@@ -851,10 +798,8 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
         # Get historical periods up to base_period, sorted
         historical_periods = sorted([p for p in self.values if p <= self.base_period])
 
-        if len(historical_periods) < 2:
-            logger.warning(
-                f"Insufficient historical data for {self.name}, using 0.0 as growth rate"
-            )
+        if len(historical_periods) < MIN_HISTORICAL_PERIODS:
+            logger.warning("Insufficient historical data for %s, using 0.0 as growth rate", self.name)
             return 0.0
 
         # Calculate growth rates between consecutive periods
@@ -870,17 +815,14 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
                 growth_rates.append(growth_rate)
 
         if not growth_rates:
-            logger.warning(
-                f"No valid growth rates calculated for {self.name}, using 0.0"
-            )
+            logger.warning("No valid growth rates calculated for %s, using 0.0", self.name)
             return 0.0
 
         # Compute average growth rate and ensure float type
         return float(sum(growth_rates)) / len(growth_rates)
 
-    def _get_growth_factor_for_period(
-        self, period: str, prev_period: str, prev_value: float
-    ) -> float:
+    def _get_growth_factor_for_period(self, period: str, prev_period: str, prev_value: float) -> float:
+        _ = (period, prev_period, prev_value)  # Parameters are intentionally unused
         return self.avg_growth_rate
 
     def to_dict(self) -> dict[str, Any]:
@@ -890,12 +832,10 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
             Dictionary containing the node's forecast configuration.
         """
         base_dict = super().to_dict()
-        base_dict.update(
-            {
-                "forecast_type": "historical_growth",
-                "avg_growth_rate": self.avg_growth_rate,
-            }
-        )
+        base_dict.update({
+            "forecast_type": "historical_growth",
+            "avg_growth_rate": self.avg_growth_rate,
+        })
         return base_dict
 
     @classmethod
@@ -917,21 +857,15 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
             ValueError: If the data is invalid or missing required fields.
         """
         if context is None:
-            raise ValueError(
-                "'context' must be provided to deserialize AverageHistoricalGrowthForecastNode"
-            )
+            raise ValueError("'context' must be provided to deserialize AverageHistoricalGrowthForecastNode")
 
         name = data.get("name")
         if not name:
-            raise ValueError(
-                "Missing 'name' field in AverageHistoricalGrowthForecastNode data"
-            )
+            raise ValueError("Missing 'name' field in AverageHistoricalGrowthForecastNode data")
 
         base_node_name = data.get("base_node_name")
         if not base_node_name:
-            raise ValueError(
-                "Missing 'base_node_name' field in AverageHistoricalGrowthForecastNode data"
-            )
+            raise ValueError("Missing 'base_node_name' field in AverageHistoricalGrowthForecastNode data")
 
         if base_node_name not in context:
             raise ValueError(f"Base node '{base_node_name}' not found in context")
@@ -941,9 +875,7 @@ class AverageHistoricalGrowthForecastNode(ForecastNode):
         forecast_periods = data.get("forecast_periods", [])
 
         if not base_period:
-            raise ValueError(
-                "Missing 'base_period' field in AverageHistoricalGrowthForecastNode data"
-            )
+            raise ValueError("Missing 'base_period' field in AverageHistoricalGrowthForecastNode data")
 
         node = cls(
             input_node=base_node,

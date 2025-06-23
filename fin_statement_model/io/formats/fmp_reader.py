@@ -10,26 +10,25 @@ of the JSON response into a `Graph` object. It also supports mapping of API fiel
 names to the library's canonical node names.
 """
 
-import logging
-import requests
-from typing import Optional, Any, cast
-import numpy as np
 from functools import lru_cache
+import logging
 import re
+from typing import Any, cast
 
+import numpy as np
+import requests
 
 from fin_statement_model.config import cfg
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
+from fin_statement_model.io.config.models import FmpReaderConfig
 from fin_statement_model.io.core.base import DataReader
 from fin_statement_model.io.core.mixins import (
-    MappingAwareMixin,
     ConfigurationMixin,
+    MappingAwareMixin,
 )
 from fin_statement_model.io.core.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
-
-from fin_statement_model.io.config.models import FmpReaderConfig
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +68,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
         ```
     """
 
-    # Base URL components – keeping version separate for easier future upgrade.
+    # Base URL components - keeping version separate for easier future upgrade.
     _API_HOST = "https://financialmodelingprep.com/api"
     _API_VERSION = "v3"
     BASE_URL = f"{_API_HOST}/{_API_VERSION}"
@@ -80,7 +79,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
     _CAMEL_TO_SNAKE_RE = re.compile(r"(?<!^)(?=[A-Z])")
 
     @classmethod
-    def _get_default_mapping_path(cls) -> Optional[str]:
+    def _get_default_mapping_path(cls) -> str | None:
         """Specify the default mapping file for FMP."""
         return "fmp_default_mappings.yaml"
 
@@ -100,7 +99,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
 
     @classmethod
     @lru_cache(maxsize=8)
-    def _cached_validate_key(cls, api_key: str) -> None:  # noqa: D401
+    def _cached_validate_key(cls, api_key: str) -> None:
         """Cached helper that actually calls the FMP API once per key."""
         if not api_key:
             raise ValueError("Missing API key")
@@ -122,8 +121,8 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
             )
         try:
             self._cached_validate_key(api_key)
-        except Exception as e:  # noqa: BLE001
-            logger.error("FMP API key validation failed: %s", e, exc_info=True)
+        except Exception as e:
+            logger.exception("FMP API key validation failed")
             raise ReadError(
                 f"FMP API key validation failed: {e}",
                 source="FMP API",
@@ -145,7 +144,6 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
         The public behaviour (signature, raised exceptions, logging side-effects)
         remains unchanged.
         """
-
         ticker = source
         self.set_config_context(ticker=ticker, operation="api_read")
 
@@ -167,7 +165,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
                 reader_type="FmpReader",
             )
 
-        self._validate_api_key(cast(str, api_key))
+        self._validate_api_key(cast("str", api_key))
 
         # Prepare field-name mapping for this request
         try:
@@ -178,7 +176,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
                 source=ticker,
                 reader_type="FmpReader",
                 original_error=te,
-            )
+            ) from te
 
         # ------------------------------------------------------------------
         # 1. Build URL & params  -------------------------------------------------
@@ -187,7 +185,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
             statement_type=statement_type,
             period_type=period_type_arg,
             limit=limit,
-            api_key=cast(str, api_key),
+            api_key=cast("str", api_key),
         )
 
         # ------------------------------------------------------------------
@@ -196,9 +194,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
 
         # Shortcut: empty payload → empty graph
         if not api_data:
-            logger.warning(
-                "FMP API returned empty list for %s %s.", ticker, statement_type
-            )
+            logger.warning("FMP API returned empty list for %s %s.", ticker, statement_type)
             return Graph(periods=[])
 
         # ------------------------------------------------------------------
@@ -218,7 +214,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
         return graph
 
     # ------------------------------------------------------------------
-    # Private helpers – extracted from the monolithic read() implementation
+    # Private helpers - extracted from the monolithic read() implementation
     # ------------------------------------------------------------------
 
     def _build_api_request(
@@ -245,7 +241,12 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
         ticker: str,
         statement_type: str,
     ) -> list[dict[str, Any]]:
-        """Perform the HTTP request and return the decoded JSON list."""
+        """Perform the HTTP request and return the decoded JSON list.
+
+        The method separates the network call (inside the ``try`` block) from the
+        normal, exception-free return path (in the ``else`` block) to appease
+        Ruff's TRY300 rule while keeping the logic clear and unchanged.
+        """
         try:
             logger.info(
                 "Fetching %s for %s from FMP API (%s periods)…",
@@ -253,23 +254,30 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
                 ticker,
                 params.get("limit"),
             )
+
             response = requests.get(url, params=params, timeout=cfg("api.api_timeout"))
             response.raise_for_status()
+
             payload = response.json()
+
             if not isinstance(payload, list):
                 raise ReadError(
-                    f"Unexpected API response format. Expected list, got {type(payload).__name__}.",
+                    (f"Unexpected API response format. Expected list, got {type(payload).__name__}."),
                     source=f"FMP API ({ticker})",
                     reader_type="FmpReader",
                 )
-            return payload
+
         except requests.exceptions.RequestException as rex:
+            # Convert low-level network issues to domain-specific ReadError.
             raise ReadError(
                 f"FMP API request failed: {rex}",
                 source=f"FMP API ({ticker})",
                 reader_type="FmpReader",
                 original_error=rex,
             ) from rex
+        else:
+            # Only executed if no exception was raised in the ``try`` block.
+            return payload
 
     def _parse_fmp_response(
         self,
@@ -306,9 +314,9 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
                     node_name = self._camel_to_snake(api_field)
 
                 if node_name not in item_matrix:
-                    item_matrix[node_name] = {p: np.nan for p in periods}
+                    item_matrix[node_name] = dict.fromkeys(periods, np.nan)
 
-                if isinstance(value, (int, float)):
+                if isinstance(value, int | float):
                     item_matrix[node_name][period] = float(value)
 
         return periods, item_matrix
@@ -325,9 +333,7 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
         for node_name, period_values in item_matrix.items():
             valid_values = {p: v for p, v in period_values.items() if not np.isnan(v)}
             if valid_values:
-                graph.add_node(
-                    FinancialStatementItemNode(name=node_name, values=valid_values)
-                )
+                graph.add_node(FinancialStatementItemNode(name=node_name, values=valid_values))
         return graph
 
     # ------------------------------------------------------------------
@@ -335,6 +341,6 @@ class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
     # ------------------------------------------------------------------
 
     @classmethod
-    def _camel_to_snake(cls, name: str) -> str:  # noqa: D401
+    def _camel_to_snake(cls, name: str) -> str:
         """Convert *CamelCase* or *camelCase* to *snake_case* quickly."""
         return cls._CAMEL_TO_SNAKE_RE.sub("_", name).lower()

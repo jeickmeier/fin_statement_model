@@ -7,11 +7,14 @@ implementations (ExcelWriter, DictWriter, etc.).
 
 from __future__ import annotations
 
-from typing import Optional, Any
+from typing import TYPE_CHECKING, Any
+
 import pandas as pd
 
-from fin_statement_model.io.core.mixins import DataFrameBasedWriter
-from fin_statement_model.core.graph import Graph
+from fin_statement_model.io.core.mixins.value_extraction import DataFrameBasedWriter
+
+if TYPE_CHECKING:
+    from fin_statement_model.core.graph import Graph
 
 
 class BaseTableWriter(DataFrameBasedWriter):
@@ -32,15 +35,13 @@ class BaseTableWriter(DataFrameBasedWriter):
         self,
         graph: Graph,
         *,
-        include_nodes: Optional[list[str]] = None,
+        include_nodes: list[str] | None = None,
         recalc: bool = False,
     ) -> pd.DataFrame:
         """Return a pandas DataFrame representation of *graph*."""
         if recalc and graph.periods:
             graph.recalculate_all(periods=graph.periods)
-        data = self.extract_graph_data(
-            graph, include_nodes=include_nodes, calculate=True
-        )
+        data = self.extract_graph_data(graph, include_nodes=include_nodes, calculate=True)
         periods_sorted = sorted(graph.periods) if graph.periods else []
         return pd.DataFrame.from_dict(data, orient="index", columns=periods_sorted)
 
@@ -48,15 +49,13 @@ class BaseTableWriter(DataFrameBasedWriter):
         self,
         graph: Graph,
         *,
-        include_nodes: Optional[list[str]] = None,
+        include_nodes: list[str] | None = None,
         recalc: bool = False,
     ) -> dict[str, dict[str, float]]:
         """Return a nested dict representation of *graph*."""
         if recalc and graph.periods:
             graph.recalculate_all(periods=graph.periods)
-        return self.extract_graph_data(
-            graph, include_nodes=include_nodes, calculate=True
-        )
+        return self.extract_graph_data(graph, include_nodes=include_nodes, calculate=True)
 
     # ------------------------------------------------------------------
     # Param-resolution helper shared by all writers
@@ -68,7 +67,7 @@ class BaseTableWriter(DataFrameBasedWriter):
         cfg: Any | None,
         *,
         default: Any = None,
-    ) -> Any:  # noqa: D401
+    ) -> Any:
         """Return effective value for *name* with precedence: overrides → cfg → default."""
         if name in overrides:
             return overrides[name]

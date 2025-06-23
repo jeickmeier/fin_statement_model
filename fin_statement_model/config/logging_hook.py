@@ -12,28 +12,28 @@ to trigger it automatically.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from fin_statement_model import logging_config
 
-from .models import Config
+if TYPE_CHECKING:
+    from .models import Config
 
 __all__ = [
     "apply_logging_config",
 ]
 
 
-def apply_logging_config(cfg: Config) -> None:  # noqa: D401
+def apply_logging_config(cfg: Config) -> None:
     """Apply logging configuration settings contained in `cfg`.
 
     This function reads the `logging` section of the provided configuration
     object and passes the values to the central `logging_config.setup_logging`
     function to reconfigure the application's loggers.
     """
-
     logging_config.setup_logging(
         level=cfg.logging.level,
         format_string=cfg.logging.format,
         detailed=cfg.logging.detailed,
-        log_file_path=(
-            str(cfg.logging.log_file_path) if cfg.logging.log_file_path else None
-        ),
+        log_file_path=(str(cfg.logging.log_file_path) if cfg.logging.log_file_path else None),
     )

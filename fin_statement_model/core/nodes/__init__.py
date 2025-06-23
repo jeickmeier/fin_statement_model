@@ -28,11 +28,15 @@ Forecast Nodes:
 Also provides `standard_node_registry` and `is_calculation_node` helper.
 
 Example:
-    >>> from fin_statement_model.core.nodes import FinancialStatementItemNode, FormulaCalculationNode, is_calculation_node
-    >>> revenue = FinancialStatementItemNode('revenue', {'2022': 1000, '2023': 1200})
-    >>> cogs = FinancialStatementItemNode('cogs', {'2022': 400, '2023': 500})
-    >>> gp = FormulaCalculationNode('gross_profit', inputs={'rev': revenue, 'cost': cogs}, formula='rev - cost')
-    >>> gp.calculate('2023')
+    >>> from fin_statement_model.core.nodes import (
+    ...     FinancialStatementItemNode,
+    ...     FormulaCalculationNode,
+    ...     is_calculation_node,
+    ... )
+    >>> revenue = FinancialStatementItemNode("revenue", {"2022": 1000, "2023": 1200})
+    >>> cogs = FinancialStatementItemNode("cogs", {"2022": 400, "2023": 500})
+    >>> gp = FormulaCalculationNode("gross_profit", inputs={"rev": revenue, "cost": cogs}, formula="rev - cost")
+    >>> gp.calculate("2023")
     700
     >>> is_calculation_node(gp)
     True
@@ -44,29 +48,29 @@ import logging
 
 # Import all node classes using actual file names
 from .base import Node
-from .item_node import FinancialStatementItemNode
 from .calculation_nodes import (
     CalculationNode,
-    FormulaCalculationNode,
     CustomCalculationNode,
-)
-from .stats_nodes import (
-    YoYGrowthNode,
-    MultiPeriodStatNode,
-    TwoPeriodAverageNode,
+    FormulaCalculationNode,
 )
 from .forecast_nodes import (
-    ForecastNode,
-    FixedGrowthForecastNode,
-    CurveGrowthForecastNode,
-    StatisticalGrowthForecastNode,
-    CustomGrowthForecastNode,
-    AverageValueForecastNode,
     AverageHistoricalGrowthForecastNode,
+    AverageValueForecastNode,
+    CurveGrowthForecastNode,
+    CustomGrowthForecastNode,
+    FixedGrowthForecastNode,
+    ForecastNode,
+    StatisticalGrowthForecastNode,
 )
+from .item_node import FinancialStatementItemNode
 
 # Import standard registry
 from .standard_registry import standard_node_registry
+from .stats_nodes import (
+    MultiPeriodStatNode,
+    TwoPeriodAverageNode,
+    YoYGrowthNode,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -103,25 +107,24 @@ def is_calculation_node(node: Node) -> bool:
 
     Example:
         >>> from fin_statement_model.core.nodes import is_calculation_node, FinancialStatementItemNode, CalculationNode
-        >>> data_node = FinancialStatementItemNode('rev', {'2023': 100})
+        >>> data_node = FinancialStatementItemNode("rev", {"2023": 100})
         >>> is_calculation_node(data_node)
         False
         >>> class DummyCalc:
-        ...     def calculate(self, inputs, period): return 1.0
-        >>> calc_node = CalculationNode('sum', inputs=[data_node], calculation=DummyCalc())
+        ...     def calculate(self, inputs, period):
+        ...         return 1.0
+        >>> calc_node = CalculationNode("sum", inputs=[data_node], calculation=DummyCalc())
         >>> is_calculation_node(calc_node)
         True
     """
     return isinstance(
         node,
-        (
-            CalculationNode,
-            ForecastNode,
-            CustomCalculationNode,
-            YoYGrowthNode,
-            MultiPeriodStatNode,
-            TwoPeriodAverageNode,
-        ),
+        CalculationNode
+        | ForecastNode
+        | CustomCalculationNode
+        | YoYGrowthNode
+        | MultiPeriodStatNode
+        | TwoPeriodAverageNode,
     )
 
 
@@ -141,6 +144,6 @@ __all__ = [
     "StatisticalGrowthForecastNode",
     "TwoPeriodAverageNode",
     "YoYGrowthNode",
-    "standard_node_registry",
     "is_calculation_node",
+    "standard_node_registry",
 ]

@@ -1,5 +1,4 @@
-"""
-Builder helpers for the modular fin_statement_model.core.node_factory.
+"""Builder helpers for the modular fin_statement_model.core.node_factory.
 
 These functions provide registry-driven instantiation of node types, calculation nodes, and forecast nodes.
 They avoid eager imports to keep the core module lightweight. All builders validate input and raise
@@ -7,29 +6,29 @@ ConfigurationError on failure.
 
 Examples:
     >>> from fin_statement_model.core.node_factory.builders import create_financial_statement_item
-    >>> node = create_financial_statement_item('Revenue', {'2022': 100.0, '2023': 120.0})
+    >>> node = create_financial_statement_item("Revenue", {"2022": 100.0, "2023": 120.0})
     >>> node.name
     'Revenue'
 """
 
 from __future__ import annotations
 
-import logging
-from typing import Any, Dict, List, TYPE_CHECKING, Type, cast
 import inspect  # Local import to avoid cost when builder unused
+import logging
+from typing import TYPE_CHECKING, Any, cast
 
+from fin_statement_model.core.errors import ConfigurationError
 from fin_statement_model.core.node_factory.registries import (
     CalculationAliasRegistry,
     ForecastTypeRegistry,
     NodeTypeRegistry,
 )
-from fin_statement_model.core.errors import ConfigurationError
 
 logger = logging.getLogger(__name__)
 
 __all__: list[str] = [
-    "create_financial_statement_item",
     "create_calculation_node",
+    "create_financial_statement_item",
     "create_forecast_node",
 ]
 
@@ -41,9 +40,8 @@ if TYPE_CHECKING:  # pragma: no cover
 # ---------------------------------------------------------------------------
 
 
-def _import_calculation_node() -> Type[Any]:  # noqa: D401
+def _import_calculation_node() -> type[Any]:
     """Lazy import ``CalculationNode`` to avoid circulars at import time."""
-
     from fin_statement_model.core.nodes.calculation_nodes import (
         CalculationNode,
     )  # pylint: disable=import-outside-toplevel
@@ -51,15 +49,14 @@ def _import_calculation_node() -> Type[Any]:  # noqa: D401
     return CalculationNode
 
 
-def _ensure_node_instance(node_obj: Any) -> None:  # noqa: D401
+def _ensure_node_instance(node_obj: Any) -> None:
     """Raise if *node_obj* is not a subclass of :class:`core.nodes.Node`."""
-
     from fin_statement_model.core.nodes.base import (
         Node,
     )  # pylint: disable=import-outside-toplevel
 
     if not isinstance(node_obj, Node):
-        raise TypeError("inputs must be Node instances – got %r" % type(node_obj))
+        raise TypeError(f"inputs must be Node instances - got {type(node_obj)!r}")
 
 
 # ---------------------------------------------------------------------------
@@ -67,7 +64,7 @@ def _ensure_node_instance(node_obj: Any) -> None:  # noqa: D401
 # ---------------------------------------------------------------------------
 
 
-def create_financial_statement_item(name: str, values: Dict[str, float]) -> "Node":
+def create_financial_statement_item(name: str, values: dict[str, float]) -> Node:
     """Instantiate a FinancialStatementItemNode via the registry.
 
     Args:
@@ -79,11 +76,10 @@ def create_financial_statement_item(name: str, values: Dict[str, float]) -> "Nod
 
     Example:
         >>> from fin_statement_model.core.node_factory.builders import create_financial_statement_item
-        >>> node = create_financial_statement_item('Revenue', {'2022': 100.0})
+        >>> node = create_financial_statement_item("Revenue", {"2022": 100.0})
         >>> node.name
         'Revenue'
     """
-
     try:
         node_cls = NodeTypeRegistry.get("financial_statement_item")
     except KeyError:
@@ -100,11 +96,11 @@ def create_financial_statement_item(name: str, values: Dict[str, float]) -> "Nod
 def create_calculation_node(
     *,
     name: str,
-    inputs: List["Node"],
+    inputs: list[Node],
     calculation_type: str,
-    formula_variable_names: List[str] | None = None,
+    formula_variable_names: list[str] | None = None,
     **calculation_kwargs: Any,
-) -> "Node":
+) -> Node:
     """Create a generic calculation node using alias lookup.
 
     Args:
@@ -123,13 +119,12 @@ def create_calculation_node(
     Example:
         >>> from fin_statement_model.core.node_factory.builders import create_calculation_node
         >>> # Assume n1, n2 are Node instances
-        >>> node = create_calculation_node(name='GrossProfit', inputs=[n1, n2], calculation_type='addition')
+        >>> node = create_calculation_node(name="GrossProfit", inputs=[n1, n2], calculation_type="addition")
         >>> node.name
         'GrossProfit'
     """
-
     # Lazy import to avoid heavy dependency when this builder is unused
-    CalculationNode = _import_calculation_node()
+    calculation_node_cls = _import_calculation_node()
 
     # Validate inputs are Node instances
     for n in inputs:
@@ -139,11 +134,10 @@ def create_calculation_node(
         calc_cls = CalculationAliasRegistry.get(calculation_type)
     except KeyError as exc:
         raise ConfigurationError(
-            f"Unknown calculation_type alias '{calculation_type}'. Registered: "
-            f"{CalculationAliasRegistry.list()}"
+            f"Unknown calculation_type alias '{calculation_type}'. Registered: {CalculationAliasRegistry.list()}"
         ) from exc
 
-    # Special case: formula calculation needs variable names – tack them on via
+    # Special case: formula calculation needs variable names - tack them on via
     # kwargs so constructor signature remains flexible.
     if formula_variable_names is not None:
         calculation_kwargs.setdefault("input_variable_names", formula_variable_names)
@@ -158,22 +152,22 @@ def create_calculation_node(
 
     return cast(
         "Node",
-        CalculationNode(name, inputs, calculation_instance, **node_extra_kwargs),
+        calculation_node_cls(name, inputs, calculation_instance, **node_extra_kwargs),
     )
 
 
 def create_forecast_node(
     *,
     forecast_type: str | None = None,
-    input_node: "Node" | None = None,
+    input_node: Node | None = None,
     base_period: str | None = None,
-    forecast_periods: List[str] | None = None,
+    forecast_periods: list[str] | None = None,
     growth_params: Any = None,
     name: str | None = None,
-    base_node: "Node" | None = None,
+    base_node: Node | None = None,
     forecast_config: Any | None = None,
     **_extra: Any,
-) -> "Node":
+) -> Node:
     """Instantiate a forecast node using forecast_type registry lookup.
 
     Args:
@@ -196,20 +190,22 @@ def create_forecast_node(
     Example:
         >>> from fin_statement_model.core.node_factory.builders import create_forecast_node
         >>> # Assume n1 is a Node instance
-        >>> node = create_forecast_node(forecast_type='simple', input_node=n1, base_period='2022', forecast_periods=['2023', '2024'])
+        >>> node = create_forecast_node(
+        ...     forecast_type="simple", input_node=n1, base_period="2022", forecast_periods=["2023", "2024"]
+        ... )
         >>> node.name
         n1.name  # Typically inherits from input_node
     """
-
     # Map legacy parameters -------------------------------------------------
     if input_node is None and base_node is not None:
         input_node = base_node
 
+    if name is not None:
+        logger.debug("create_forecast_node: received legacy 'name' parameter (ignored): %s", name)
+
     if forecast_config is not None:
         # TODO: parse ForecastConfig in a later iteration
-        raise ConfigurationError(
-            "create_forecast_node currently does not support 'forecast_config' parameter."
-        )
+        raise ConfigurationError("create_forecast_node currently does not support 'forecast_config' parameter.")
 
     if forecast_type is None:
         raise ConfigurationError("'forecast_type' must be provided.")
@@ -246,7 +242,7 @@ def create_forecast_node(
         # If the constructor defines a 4th parameter OR has a parameter named
         # 'growth_params', we append growth_params as the 4th argument.
         needs_growth = False
-        if len(ctor_params) > 3:
+        if len(ctor_params) > PARAMS_GROWTH_THRESHOLD:
             needs_growth = True
         else:
             needs_growth = any(p.name == "growth_params" for p in ctor_params)
@@ -260,6 +256,9 @@ def create_forecast_node(
         # Provide helpful context with expected signature
         expected = [p.name for p in ctor_params]
         raise ConfigurationError(
-            f"Failed to instantiate forecast node for type '{forecast_type}': {exc}\n"
-            f"Constructor parameters: {expected}"
+            f"Failed to instantiate forecast node for type '{forecast_type}': {exc}\nConstructor parameters: {expected}"
         ) from exc
+
+
+# Threshold number of constructor parameters indicating growth support
+PARAMS_GROWTH_THRESHOLD: int = 3

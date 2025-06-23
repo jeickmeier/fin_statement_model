@@ -6,20 +6,20 @@ to produce human-readable reports of financial statements.
 """
 
 import logging
-from typing import Any, Optional, Union
+from typing import Any
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.io.core.base import DataWriter
 from fin_statement_model.io.config.models import MarkdownWriterConfig
-from fin_statement_model.io.exceptions import WriteError
+from fin_statement_model.io.core.base import DataWriter
+from fin_statement_model.io.core.mixins import handle_write_errors
 from fin_statement_model.io.core.registry import register_writer
-from fin_statement_model.statements.structure import StatementStructure
+from fin_statement_model.io.exceptions import WriteError
 from fin_statement_model.statements.formatting.markdown import (
+    MarkdownNotesBuilder,
     MarkdownStatementRenderer,
     MarkdownTableFormatter,
-    MarkdownNotesBuilder,
 )
-from fin_statement_model.io.core.mixins import handle_write_errors
+from fin_statement_model.statements.structure import StatementStructure
 
 logger = logging.getLogger(__name__)
 
@@ -36,16 +36,16 @@ class MarkdownWriter(DataWriter):
     forecasts and adjustments.
     """
 
-    def __init__(self, config: Optional[MarkdownWriterConfig] = None):
+    def __init__(self, config: MarkdownWriterConfig | None = None):
         """Initializes the MarkdownWriter."""
         # Provide a default config; missing fields are handled by Pydantic defaults.
         self.config = config or MarkdownWriterConfig(
             format_type="markdown",
             target=None,
         )
-        logger.debug(f"Initialized MarkdownWriter with config: {self.config}")
+        logger.debug("Initialized MarkdownWriter with config: %s", self.config)
 
-    def _format_value(self, value: Union[float, int, str, None]) -> str:
+    def _format_value(self, value: float | int | str | None) -> str:
         """Format a numeric value for display in the Markdown table."""
         if value is None:
             return ""
@@ -71,7 +71,9 @@ class MarkdownWriter(DataWriter):
             WriteError: If 'statement_structure' is not provided.
         """
         logger.info(
-            f"Writing graph to Markdown format (target ignored: {target}) using kwargs: {kwargs.keys()}"
+            "Writing graph to Markdown format (target ignored: %s) using kwargs: %s",
+            target,
+            kwargs.keys(),
         )
 
         try:
@@ -80,12 +82,8 @@ class MarkdownWriter(DataWriter):
             if statement_structure is None:
                 raise WriteError("Must provide 'statement_structure' argument.")
 
-            filtered_kwargs = {
-                k: v for k, v in kwargs.items() if k != "statement_structure"
-            }
-            return self._write_with_structure(
-                graph, statement_structure, **filtered_kwargs
-            )
+            filtered_kwargs = {k: v for k, v in kwargs.items() if k != "statement_structure"}
+            return self._write_with_structure(graph, statement_structure, **filtered_kwargs)
         except NotImplementedError as nie:
             logger.exception("Markdown write failed")
             raise WriteError(
@@ -95,7 +93,8 @@ class MarkdownWriter(DataWriter):
                 original_error=nie,
             ) from nie
         except Exception as e:
-            logger.exception("Error writing Markdown for graph", exc_info=True)
+            # logger.exception includes exc_info by default; passing exc_info=True is redundant.
+            logger.exception("Error writing Markdown for graph")
             raise WriteError(
                 message=f"Failed to generate Markdown table: {e}",
                 target=target,
@@ -103,9 +102,7 @@ class MarkdownWriter(DataWriter):
                 original_error=e,
             ) from e
 
-    def _write_with_structure(
-        self, graph: Graph, statement_structure: StatementStructure, **kwargs: Any
-    ) -> str:
+    def _write_with_structure(self, graph: Graph, statement_structure: StatementStructure, **kwargs: Any) -> str:
         """Write using the new StatementStructure approach.
 
         Args:

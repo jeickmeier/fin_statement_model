@@ -20,7 +20,7 @@ Examples:
     ...     input_names=["Revenue", "COGS"],
     ...     operation_type="formula",
     ...     formula="input_0 - input_1",
-    ...     formula_variable_names=["input_0", "input_1"]
+    ...     formula_variable_names=["input_0", "input_1"],
     ... )
     >>> g.get_dependencies("GrossProfit")
     ['Revenue', 'COGS']
@@ -30,9 +30,10 @@ Examples:
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from fin_statement_model.core.nodes import Node  # for type annotations only
+if TYPE_CHECKING:
+    from fin_statement_model.core.nodes import Node
 
 __all__: list[str] = ["TraversalMixin"]
 
@@ -49,7 +50,7 @@ class TraversalMixin:
         return self.traverser._is_reachable(source_node.name, target_node.name)  # type: ignore[attr-defined]
 
     # ------------------------------------------------------------------
-    # Simple wrappers – keep return type *Any* to avoid strict coupling to
+    # Simple wrappers - keep return type *Any* to avoid strict coupling to
     # Traverser signatures, which currently return ``Any`` for some methods.
     # ------------------------------------------------------------------
     def topological_sort(self) -> Any:
@@ -70,9 +71,7 @@ class TraversalMixin:
     def validate(self) -> Any:
         return self.traverser.validate()  # type: ignore[attr-defined]
 
-    def breadth_first_search(
-        self, start_node: str, direction: str = "successors"
-    ) -> Any:
+    def breadth_first_search(self, start_node: str, direction: str = "successors") -> Any:
         return self.traverser.breadth_first_search(start_node, direction)  # type: ignore[attr-defined]
 
     def get_direct_successors(self, node_id: str) -> Any:

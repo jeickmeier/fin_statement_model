@@ -22,12 +22,14 @@ Example:
 """
 
 from typing import Any
+
 import numpy as np
 from pydantic import ValidationError
+
 from fin_statement_model.config.access import cfg
+from fin_statement_model.forecasting.types import StatisticalConfig
 
 from .base import BaseForecastMethod
-from fin_statement_model.forecasting.types import StatisticalConfig
 
 
 class StatisticalForecastMethod(BaseForecastMethod):
@@ -82,9 +84,7 @@ class StatisticalForecastMethod(BaseForecastMethod):
             ValueError: If required keys or values are missing or invalid.
         """
         if not isinstance(config, dict):
-            raise TypeError(
-                f"Statistical method requires dict configuration, got {type(config)}"
-            )
+            raise TypeError(f"Statistical method requires dict configuration, got {type(config)}")
 
         if "distribution" not in config:
             raise ValueError("Statistical method requires 'distribution' key")
@@ -94,15 +94,11 @@ class StatisticalForecastMethod(BaseForecastMethod):
 
         # Validate using StatisticalConfig model (raises ValidationError or ForecastConfigurationError)
         try:
-            StatisticalConfig(
-                distribution=config["distribution"], params=config["params"]
-            )
+            StatisticalConfig(distribution=config["distribution"], params=config["params"])
         except (ValueError, TypeError, ValidationError) as e:
             raise ValueError(f"Invalid statistical configuration: {e}") from e
 
-    def normalize_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory.
 
         Args:
@@ -123,33 +119,23 @@ class StatisticalForecastMethod(BaseForecastMethod):
             >>> callable(out["growth_params"])
             True
         """
+        _ = forecast_periods  # Parameter intentionally unused
         # Create validated config
-        stat_config = StatisticalConfig(
-            distribution=config["distribution"], params=config["params"]
-        )
+        stat_config = StatisticalConfig(distribution=config["distribution"], params=config["params"])
 
         # Seed RNG if configured
         seed = cfg("forecasting.random_seed")
-        if seed is not None:
-            rng = np.random.RandomState(seed)
-        else:
-            rng = np.random.RandomState()
+        rng = np.random.RandomState(seed) if seed is not None else np.random.RandomState()
 
         # Create generator function based on distribution
         def generator() -> float:
             """Generate a random growth rate from the specified distribution."""
             if stat_config.distribution == "normal":
-                return float(
-                    rng.normal(stat_config.params["mean"], stat_config.params["std"])
-                )
+                return float(rng.normal(stat_config.params["mean"], stat_config.params["std"]))
             elif stat_config.distribution == "uniform":
-                return float(
-                    rng.uniform(stat_config.params["low"], stat_config.params["high"])
-                )
+                return float(rng.uniform(stat_config.params["low"], stat_config.params["high"]))
             else:
                 # This shouldn't happen due to validation, but just in case
-                raise ValueError(
-                    f"Unsupported distribution: {stat_config.distribution}"
-                )
+                raise ValueError(f"Unsupported distribution: {stat_config.distribution}")
 
         return {"forecast_type": self.internal_type, "growth_params": generator}

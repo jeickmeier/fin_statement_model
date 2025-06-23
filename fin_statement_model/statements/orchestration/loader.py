@@ -5,12 +5,12 @@ from in-memory configuration dictionaries.
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from fin_statement_model.core.errors import ConfigurationError, StatementError
-from fin_statement_model.statements.structure.builder import StatementStructureBuilder
 from fin_statement_model.statements.configs.validator import StatementConfig
 from fin_statement_model.statements.registry import StatementRegistry
+from fin_statement_model.statements.structure.builder import StatementStructureBuilder
 from fin_statement_model.statements.validation import UnifiedNodeValidator
 
 logger = logging.getLogger(__name__)
@@ -21,10 +21,10 @@ __all__ = ["load_build_register_statements"]
 def load_build_register_statements(
     raw_configs: dict[str, dict[str, Any]],
     registry: StatementRegistry,
-    builder: Optional[StatementStructureBuilder] = None,
+    builder: StatementStructureBuilder | None = None,
     enable_node_validation: bool = False,
     node_validation_strict: bool = False,
-    node_validator: Optional[UnifiedNodeValidator] = None,
+    node_validator: UnifiedNodeValidator | None = None,
 ) -> list[str]:
     """Load, validate, build, and register statement structures from config dicts.
 
@@ -84,16 +84,14 @@ def load_build_register_statements(
             registry.register(statement)
             loaded_statement_ids.append(statement.id)
         except (ConfigurationError, StatementError, ValueError) as e:
-            logger.exception(f"Failed to process/register statement '{stmt_id}'.")
+            logger.exception("Failed to process/register statement '%s'.", stmt_id)
             errors.append((stmt_id, str(e)))
         except Exception as e:
-            logger.exception(f"Unexpected error processing statement '{stmt_id}'.")
+            logger.exception("Unexpected error processing statement '%s'.", stmt_id)
             errors.append((stmt_id, f"Unexpected error: {e!s}"))
 
     if errors:
         error_details = "; ".join(f"{sid}: {msg}" for sid, msg in errors)
-        logger.warning(
-            f"Encountered {len(errors)} errors during statement loading/building: {error_details}"
-        )
+        logger.warning("Encountered %s errors during statement loading/building: %s", len(errors), error_details)
 
     return loaded_statement_ids

@@ -2,7 +2,6 @@ import json
 import pathlib
 import re
 import sys
-from typing import List
 
 import nox
 
@@ -13,7 +12,7 @@ import nox
 BASELINE_FILE = pathlib.Path(".type_ignore_baseline.json")
 
 
-def count_type_ignores(paths: List[pathlib.Path]) -> int:
+def count_type_ignores(paths: list[pathlib.Path]) -> int:
     """Count occurrences of ``# type: ignore`` in the given Python files.
 
     Args:
@@ -97,7 +96,6 @@ def enforce_type_ignore_budget(root: pathlib.Path, budget: int = 20) -> None:
 @nox.session(reuse_venv=True)
 def lint(session: nox.Session) -> None:
     """Run static-analysis checks (Ruff, MyPy) and enforce ignore budget."""
-
     # Core runtime deps required by the test-suite (+ dev tooling)
     session.install(
         # Dev / QA tools
@@ -124,28 +122,28 @@ def lint(session: nox.Session) -> None:
     )
 
     # ---------------------------------------------------------------------
-    # Ruff – Linting (+ auto-fix in CI is disabled; we only report issues)
+    # Ruff - Linting (+ auto-fix in CI is disabled; we only report issues)
     # ---------------------------------------------------------------------
     session.log("Running Ruff...")
     session.run(
-        "ruff", "check", "fin_statement_model", "--line-length", "100", external=True
+        "ruff", "check", "fin_statement_model", "--line-length", "120", external=True
     )
 
     # ---------------------------------------------------------------------
-    # MyPy – Static type checking (strict mode configured in `mypy.ini`)
+    # MyPy - Static type checking (strict mode configured in `mypy.ini`)
     # ---------------------------------------------------------------------
     session.log("Running MyPy (strict)...")
     session.run("mypy", "fin_statement_model", external=True)
 
     # ---------------------------------------------------------------------
-    # Pytest – Unit tests (tests live under the top-level ``tests`` package)
+    # Pytest - Unit tests (tests live under the top-level ``tests`` package)
     # ---------------------------------------------------------------------
     session.log("Running Pytest...")
     # The default invocation respects options from `pytest.ini` (including coverage)
     session.run("pytest", external=True)
 
     # ---------------------------------------------------------------------
-    # Custom guard – Limit the number of `# type: ignore` usages.
+    # Custom guard - Limit the number of `# type: ignore` usages.
     # ---------------------------------------------------------------------
     session.log("Checking `# type: ignore` budget (<= 20)...")
     enforce_type_ignore_budget(pathlib.Path("."), budget=20)

@@ -17,7 +17,7 @@ Examples:
     Raise a normalization error:
 
     >>> from fin_statement_model.preprocessing.errors import NormalizationError
-    >>> raise NormalizationError('Reference column missing', method='percent_of', reference_field='revenue')
+    >>> raise NormalizationError("Reference column missing", method="percent_of", reference_field="revenue")
     Traceback (most recent call last):
         ...
     NormalizationError: Reference column missing
@@ -26,13 +26,14 @@ Examples:
 
     >>> from fin_statement_model.preprocessing.errors import PeriodConversionError
     >>> try:
-    ...     raise PeriodConversionError('Invalid period', source_period='Q', target_period='A')
+    ...     raise PeriodConversionError("Invalid period", source_period="Q", target_period="A")
     ... except PeriodConversionError as e:
     ...     print(e)
     Invalid period
 """
 
-from typing import Optional, Any
+from typing import Any
+
 from fin_statement_model.core.errors import (
     FinancialModelError,
     TransformationError,
@@ -55,7 +56,7 @@ class PreprocessingError(FinancialModelError):
 
     Examples:
         >>> from fin_statement_model.preprocessing.errors import PreprocessingError
-        >>> raise PreprocessingError('General preprocessing error')
+        >>> raise PreprocessingError("General preprocessing error")
         Traceback (most recent call last):
             ...
         PreprocessingError: General preprocessing error
@@ -75,7 +76,7 @@ class TransformerRegistrationError(PreprocessingError):
 
     Examples:
         >>> from fin_statement_model.preprocessing.errors import TransformerRegistrationError
-        >>> raise TransformerRegistrationError('Duplicate', transformer_name='MyTransformer')
+        >>> raise TransformerRegistrationError("Duplicate", transformer_name="MyTransformer")
         Traceback (most recent call last):
             ...
         TransformerRegistrationError: Duplicate for transformer 'MyTransformer'
@@ -84,9 +85,10 @@ class TransformerRegistrationError(PreprocessingError):
     def __init__(
         self,
         message: str,
-        transformer_name: Optional[str] = None,
-        existing_class: Optional[type] = None,
+        transformer_name: str | None = None,
+        existing_class: type | None = None,
     ):
+        """Initialize the TransformerRegistrationError."""
         self.transformer_name = transformer_name
         self.existing_class = existing_class
 
@@ -94,9 +96,7 @@ class TransformerRegistrationError(PreprocessingError):
         if transformer_name:
             full_message = f"{message} for transformer '{transformer_name}'"
         if existing_class:
-            full_message = (
-                f"{full_message} (already registered as {existing_class.__name__})"
-            )
+            full_message = f"{full_message} (already registered as {existing_class.__name__})"
 
         super().__init__(full_message)
 
@@ -115,7 +115,9 @@ class TransformerConfigurationError(PreprocessingError):
 
     Examples:
         >>> from fin_statement_model.preprocessing.errors import TransformerConfigurationError
-        >>> raise TransformerConfigurationError('Missing config', transformer_name='Normalizer', missing_params=['reference'])
+        >>> raise TransformerConfigurationError(
+        ...     "Missing config", transformer_name="Normalizer", missing_params=["reference"]
+        ... )
         Traceback (most recent call last):
             ...
         TransformerConfigurationError: Missing config (Transformer: Normalizer; Missing params: reference)
@@ -124,10 +126,11 @@ class TransformerConfigurationError(PreprocessingError):
     def __init__(
         self,
         message: str,
-        transformer_name: Optional[str] = None,
-        config: Optional[dict[str, Any]] = None,
-        missing_params: Optional[list[str]] = None,
+        transformer_name: str | None = None,
+        config: dict[str, Any] | None = None,
+        missing_params: list[str] | None = None,
     ):
+        """Initialize the TransformerConfigurationError."""
         self.transformer_name = transformer_name
         self.config = config
         self.missing_params = missing_params or []
@@ -159,7 +162,7 @@ class PeriodConversionError(TransformationError):
 
     Examples:
         >>> from fin_statement_model.preprocessing.errors import PeriodConversionError
-        >>> raise PeriodConversionError('Invalid period', source_period='Q', target_period='A')
+        >>> raise PeriodConversionError("Invalid period", source_period="Q", target_period="A")
         Traceback (most recent call last):
             ...
         PeriodConversionError: Invalid period
@@ -168,10 +171,11 @@ class PeriodConversionError(TransformationError):
     def __init__(
         self,
         message: str,
-        source_period: Optional[str] = None,
-        target_period: Optional[str] = None,
-        date_column: Optional[str] = None,
+        source_period: str | None = None,
+        target_period: str | None = None,
+        date_column: str | None = None,
     ):
+        """Initialize the PeriodConversionError."""
         self.source_period = source_period
         self.target_period = target_period
         self.date_column = date_column
@@ -203,7 +207,7 @@ class NormalizationError(TransformationError):
 
     Examples:
         >>> from fin_statement_model.preprocessing.errors import NormalizationError
-        >>> raise NormalizationError('Reference missing', method='percent_of', reference_field='revenue')
+        >>> raise NormalizationError("Reference missing", method="percent_of", reference_field="revenue")
         Traceback (most recent call last):
             ...
         NormalizationError: Reference missing
@@ -212,10 +216,11 @@ class NormalizationError(TransformationError):
     def __init__(
         self,
         message: str,
-        method: Optional[str] = None,
-        reference_field: Optional[str] = None,
-        scale_factor: Optional[float] = None,
+        method: str | None = None,
+        reference_field: str | None = None,
+        scale_factor: float | None = None,
     ):
+        """Initialize the NormalizationError."""
         self.method = method
         self.reference_field = reference_field
         self.scale_factor = scale_factor
@@ -249,7 +254,7 @@ class TimeSeriesError(TransformationError):
 
     Examples:
         >>> from fin_statement_model.preprocessing.errors import TimeSeriesError
-        >>> raise TimeSeriesError('Invalid window', operation='moving_avg', window_size=3)
+        >>> raise TimeSeriesError("Invalid window", operation="moving_avg", window_size=3)
         Traceback (most recent call last):
             ...
         TimeSeriesError: Invalid window
@@ -258,10 +263,11 @@ class TimeSeriesError(TransformationError):
     def __init__(
         self,
         message: str,
-        operation: Optional[str] = None,
-        window_size: Optional[int] = None,
-        column: Optional[str] = None,
+        operation: str | None = None,
+        window_size: int | None = None,
+        column: str | None = None,
     ):
+        """Initialize the TimeSeriesError."""
         self.operation = operation
         self.window_size = window_size
         self.column = column

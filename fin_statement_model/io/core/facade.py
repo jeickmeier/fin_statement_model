@@ -14,15 +14,11 @@ import logging
 from typing import Any
 
 from fin_statement_model.core.graph import Graph
+
 from .registry import get_reader, get_writer
 
-# Keep import solely for re-export in docstrings – alias with underscore to
+# Keep import solely for re-export in docstrings - alias with underscore to
 # silence linter about unused names.
-from fin_statement_model.io.exceptions import (  # noqa: F401
-    ReadError,
-    WriteError,
-    FormatNotSupportedError,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -92,9 +88,7 @@ def read_data(
         # )
         ```
     """
-    logger.info(
-        f"Attempting to read data using format '{format_type}' from source type '{type(source).__name__}'"
-    )
+    logger.info("Attempting to read data using format '%s' from source type '%s'", format_type, type(source).__name__)
 
     # Build the constructor-time config strictly from the *config* argument.
     # Runtime-specific options stay in **read_kwargs** and are forwarded untouched.
@@ -183,7 +177,7 @@ def write_data(
         ```
     """
     logger.info(
-        f"Attempting to write graph data using format '{format_type}' to target type '{type(target).__name__}'"
+        "Attempting to write graph data using format '%s' to target type '%s'", format_type, type(target).__name__
     )
 
     # Build constructor-time config strictly from *config* argument.
@@ -193,7 +187,7 @@ def write_data(
         if isinstance(config, dict):
             config_kwargs = config.copy()
         elif hasattr(config, "model_dump"):
-            # Pydantic v2 models – see note above.
+            # Pydantic v2 models - see note above.
             config_kwargs = config.model_dump()
         else:
             config_kwargs = dict(config.__dict__)

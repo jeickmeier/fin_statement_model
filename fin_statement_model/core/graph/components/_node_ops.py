@@ -22,7 +22,7 @@ Examples:
 from __future__ import annotations
 
 import logging
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from fin_statement_model.core.errors import NodeError
 from fin_statement_model.core.nodes import FinancialStatementItemNode, Node
@@ -32,8 +32,18 @@ logger = logging.getLogger(__name__)
 __all__: list[str] = ["NodeOpsMixin"]
 
 
+if TYPE_CHECKING:
+    from fin_statement_model.core.nodes import Node  # pragma: no cover
+
+
 class NodeOpsMixin:
     """Operations that **mutate** the graph structure or stored values."""
+
+    # Attributes injected by "GraphBaseMixin" at runtime. They are declared here solely
+    # for the benefit of static type checkers (mypy) and have **no** runtime effect.
+    manipulator: Any  # provided by GraphBaseMixin
+    _add_node_with_validation: Any  # provided by GraphBaseMixin
+    add_periods: Any
 
     # -- Simple FS item helpers -------------------------------------------------
     def add_financial_statement_item(
@@ -51,8 +61,8 @@ class NodeOpsMixin:
             values=values.copy(),
         )
         added_node = cast(
-            FinancialStatementItemNode,
-            self._add_node_with_validation(  # type: ignore[attr-defined]
+            "FinancialStatementItemNode",
+            self._add_node_with_validation(
                 new_node,
                 check_cycles=False,
                 validate_inputs=False,
@@ -72,7 +82,7 @@ class NodeOpsMixin:
         *,
         replace_existing: bool = False,
     ) -> FinancialStatementItemNode:
-        node = self.manipulator.get_node(name)  # type: ignore[attr-defined]
+        node = self.manipulator.get_node(name)
         if node is None:
             raise NodeError("Node not found", node_id=name)
         if not isinstance(node, FinancialStatementItemNode):
@@ -84,7 +94,7 @@ class NodeOpsMixin:
             node.values = values.copy()
         else:
             node.values.update(values)
-        self.add_periods(list(values.keys()))  # type: ignore[attr-defined]
+        self.add_periods(list(values.keys()))
         logger.info(
             "Updated FinancialStatementItemNode '%s' with periods %s; replace_existing=%s",
             name,
@@ -94,22 +104,25 @@ class NodeOpsMixin:
         return node
 
     def get_financial_statement_items(self) -> Any:
-        from fin_statement_model.core.nodes import FinancialStatementItemNode as _FSIN
-
-        return [node for node in self.nodes.values() if isinstance(node, _FSIN)]  # type: ignore[attr-defined]
+        """Return all FinancialStatementItemNode instances in the graph."""
+        return [
+            node
+            for node in self.nodes.values()  # type: ignore[attr-defined]
+            if isinstance(node, FinancialStatementItemNode)
+        ]
 
     # -- Generic manipulator proxies -------------------------------------------
     def add_node(self, node: Node) -> Any:
-        return self.manipulator.add_node(node)  # type: ignore[attr-defined]
+        return self.manipulator.add_node(node)
 
     def remove_node(self, node_name: str) -> Any:
-        return self.manipulator.remove_node(node_name)  # type: ignore[attr-defined]
+        return self.manipulator.remove_node(node_name)
 
     def replace_node(self, node_name: str, new_node: Node) -> Any:
-        return self.manipulator.replace_node(node_name, new_node)  # type: ignore[attr-defined]
+        return self.manipulator.replace_node(node_name, new_node)
 
     def has_node(self, node_id: str) -> Any:
-        return self.manipulator.has_node(node_id)  # type: ignore[attr-defined]
+        return self.manipulator.has_node(node_id)
 
     def set_value(self, node_id: str, period: str, value: float) -> Any:
-        return self.manipulator.set_value(node_id, period, value)  # type: ignore[attr-defined]
+        return self.manipulator.set_value(node_id, period, value)

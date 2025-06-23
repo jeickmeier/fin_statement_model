@@ -4,15 +4,19 @@ This module provides a comprehensive validator that combines basic validation
 with context-aware pattern recognition for financial statement nodes.
 """
 
+from dataclasses import dataclass, field
 import logging
 import re
-from typing import Optional, ClassVar, Any
-from dataclasses import dataclass, field
+from typing import Any, ClassVar
 
 from fin_statement_model.core.nodes import Node
 from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
 
 logger = logging.getLogger(__name__)
+
+MIN_SUFFIX_LENGTH: int = 3
+SUGGESTION_LIMIT: int = 3
+MIN_STRING_SIMILARITY_LENGTH: int = 3
 
 
 @dataclass
@@ -59,9 +63,9 @@ class UnifiedNodeValidator:
     def __init__(
         self,
         registry: StandardNodeRegistry,
-        strict_mode: Optional[bool] = None,
-        auto_standardize: Optional[bool] = None,
-        warn_on_non_standard: Optional[bool] = None,
+        strict_mode: bool | None = None,
+        auto_standardize: bool | None = None,
+        warn_on_non_standard: bool | None = None,
         enable_patterns: bool = True,
     ):
         """Initialize the unified validator.
@@ -81,18 +85,12 @@ class UnifiedNodeValidator:
         config = get_config()
 
         self._registry = registry
-        self.strict_mode = (
-            strict_mode if strict_mode is not None else config.validation.strict_mode
-        )
+        self.strict_mode = strict_mode if strict_mode is not None else config.validation.strict_mode
         self.auto_standardize = (
-            auto_standardize
-            if auto_standardize is not None
-            else config.validation.auto_standardize_names
+            auto_standardize if auto_standardize is not None else config.validation.auto_standardize_names
         )
         self.warn_on_non_standard = (
-            warn_on_non_standard
-            if warn_on_non_standard is not None
-            else config.validation.warn_on_non_standard
+            warn_on_non_standard if warn_on_non_standard is not None else config.validation.warn_on_non_standard
         )
         self.enable_patterns = enable_patterns
         self._validation_cache: dict[str, ValidationResult] = {}
@@ -100,8 +98,8 @@ class UnifiedNodeValidator:
     def validate(
         self,
         name: str,
-        node_type: Optional[str] = None,
-        parent_nodes: Optional[list[str]] = None,
+        node_type: str | None = None,
+        parent_nodes: list[str] | None = None,
         use_cache: bool = True,
     ) -> ValidationResult:
         """Validate a node name with full context awareness.
@@ -129,10 +127,12 @@ class UnifiedNodeValidator:
 
         # Log warnings if configured
         if self.warn_on_non_standard and result.category in ["custom", "invalid"]:
-            logger.warning(f"{result.message}")
+            logger.warning("%s", result.message)
             if result.suggestions:
                 logger.info(
-                    f"Suggestions for '{name}': {'; '.join(result.suggestions)}"
+                    "Suggestions for '%s': %s",
+                    name,
+                    "; ".join(result.suggestions),
                 )
 
         return result
@@ -140,8 +140,8 @@ class UnifiedNodeValidator:
     def _perform_validation(
         self,
         name: str,
-        node_type: Optional[str],
-        parent_nodes: Optional[list[str]],
+        node_type: str | None,
+        parent_nodes: list[str] | None,
     ) -> ValidationResult:
         """Perform the actual validation logic."""
         # Normalize name to lowercase for registry checks
@@ -174,9 +174,7 @@ class UnifiedNodeValidator:
 
         # Pattern recognition if enabled
         if self.enable_patterns:
-            pattern_result = self._check_pattern_validations(
-                name, node_type, parent_nodes
-            )
+            pattern_result = self._check_pattern_validations(name, node_type, parent_nodes)
             if pattern_result:
                 return pattern_result
 
@@ -197,9 +195,10 @@ class UnifiedNodeValidator:
     def _check_pattern_validations(
         self,
         name: str,
-        node_type: Optional[str],
-        parent_nodes: Optional[list[str]],
-    ) -> Optional[ValidationResult]:
+        node_type: str | None,
+        parent_nodes: list[str] | None,
+    ) -> ValidationResult | None:
+        _ = parent_nodes  # Parameter intentionally unused in current implementation
         """Check all pattern-based validations."""
         # Check formula patterns first (more specific)
         if node_type in ["calculation", "formula", None]:
@@ -263,9 +262,7 @@ class UnifiedNodeValidator:
                 "unit",
             ]
 
-            if len(suffix) > 2 and any(
-                keyword in suffix.lower() for keyword in segment_keywords
-            ):
+            if len(suffix) >= MIN_SUFFIX_LENGTH and any(keyword in suffix.lower() for keyword in segment_keywords):
                 # Normalize base name for registry check
                 is_base_standard = self._registry.is_recognized_name(base_name.lower())
 
@@ -280,7 +277,7 @@ class UnifiedNodeValidator:
 
         return None
 
-    def _check_formula_ending(self, name: str) -> Optional[tuple[str, str]]:
+    def _check_formula_ending(self, name: str) -> tuple[str, str] | None:
         """Check if name ends with a formula pattern."""
         name_lower = name.lower()
 
@@ -297,7 +294,8 @@ class UnifiedNodeValidator:
         name: str,
         patterns: list[tuple[str, str]],
         pattern_category: str,
-    ) -> Optional[tuple[str, str, str]]:
+    ) -> tuple[str, str, str] | None:
+        _ = pattern_category  # Parameter intentionally unused
         """Check if name matches any pattern in the list."""
         name_lower = name.lower()
 
@@ -305,11 +303,7 @@ class UnifiedNodeValidator:
             match = re.match(pattern, name_lower)
             if match:
                 base_name = match.group(1)
-                suffix = (
-                    match.group(2)
-                    if (match.lastindex is not None and match.lastindex > 1)
-                    else ""
-                )
+                suffix = match.group(2) if (match.lastindex is not None and match.lastindex > 1) else ""
                 return base_name, suffix, pattern_type
 
         return None
@@ -336,45 +330,35 @@ class UnifiedNodeValidator:
                 score = overlap / min_len * 0.8
 
             if score > 0:
-                suggestions_with_scores.append(
-                    (score, f"Consider using standard name: '{std_name}'")
-                )
+                suggestions_with_scores.append((score, f"Consider using standard name: '{std_name}'"))
 
         # Sort by score (highest first) and take top suggestions
         suggestions_with_scores.sort(key=lambda x: x[0], reverse=True)
-        suggestions = [msg for _, msg in suggestions_with_scores[:3]]
+        suggestions = [msg for _, msg in suggestions_with_scores[:SUGGESTION_LIMIT]]
 
         # Check for pattern improvements
-        if "_" in name and len(suggestions) < 3:
+        if "_" in name and len(suggestions) < SUGGESTION_LIMIT:
             parts = name.split("_", 1)
             base = parts[0]
 
             # Suggest standardizing the base
             for std_name in self._registry.list_standard_names():
                 if self._is_similar(base.lower(), std_name.lower()):
-                    suggestions.append(
-                        f"Consider using '{std_name}_{parts[1]}' for consistency"
-                    )
+                    suggestions.append(f"Consider using '{std_name}_{parts[1]}' for consistency")
                     break
 
         # Generic suggestions if nothing specific found
         if not suggestions:
-            if any(
-                suffix in name for suffix in ["_margin", "_ratio", "_growth", "_pct"]
-            ):
-                suggestions.append(
-                    "Formula node detected - ensure base name follows standard conventions"
-                )
+            if any(suffix in name for suffix in ["_margin", "_ratio", "_growth", "_pct"]):
+                suggestions.append("Formula node detected - ensure base name follows standard conventions")
             else:
-                suggestions.append(
-                    "Consider using a standard node name for better metric compatibility"
-                )
+                suggestions.append("Consider using a standard node name for better metric compatibility")
 
-        return suggestions[:3]  # Return top 3 suggestions
+        return suggestions[:SUGGESTION_LIMIT]  # Return top 3 suggestions
 
     def _is_similar(self, str1: str, str2: str, threshold: float = 0.6) -> bool:
         """Check if two strings are similar enough."""
-        if len(str1) < 3 or len(str2) < 3:
+        if len(str1) < MIN_STRING_SIMILARITY_LENGTH or len(str2) < MIN_STRING_SIMILARITY_LENGTH:
             return False
 
         # Check if one is a prefix of the other
@@ -394,8 +378,8 @@ class UnifiedNodeValidator:
     def validate_batch(
         self,
         names: list[str],
-        node_types: Optional[dict[str, str]] = None,
-        parent_map: Optional[dict[str, list[str]]] = None,
+        node_types: dict[str, str] | None = None,
+        parent_map: dict[str, list[str]] | None = None,
     ) -> dict[str, ValidationResult]:
         """Validate multiple node names efficiently.
 
@@ -489,8 +473,6 @@ class UnifiedNodeValidator:
         self._validation_cache.clear()
 
 
-def create_validator(
-    registry: StandardNodeRegistry, **kwargs: Any
-) -> UnifiedNodeValidator:
+def create_validator(registry: StandardNodeRegistry, **kwargs: Any) -> UnifiedNodeValidator:
     """Create a validator instance with the given configuration."""
     return UnifiedNodeValidator(registry, **kwargs)

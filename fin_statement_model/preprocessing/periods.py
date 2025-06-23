@@ -12,7 +12,7 @@ Features:
 Examples:
     Infer period from pandas offset alias:
 
-    >>> Period.infer_from_offset('Q')
+    >>> Period.infer_from_offset("Q")
     <Period.QUARTER: 'Q'>
 
     Get months in a quarter:
@@ -23,8 +23,8 @@ Examples:
     Resample monthly data to annual:
 
     >>> import pandas as pd
-    >>> df = pd.DataFrame({'value': [1, 2, 3, 4, 5, 6]}, index=pd.date_range('2023-01-31', periods=6, freq='M'))
-    >>> resample_to_period(df, Period.YEAR, aggregation='sum')
+    >>> df = pd.DataFrame({"value": [1, 2, 3, 4, 5, 6]}, index=pd.date_range("2023-01-31", periods=6, freq="M"))
+    >>> resample_to_period(df, Period.YEAR, aggregation="sum")
        value
     2023     21
 """
@@ -32,16 +32,19 @@ Examples:
 from __future__ import annotations
 
 from enum import Enum
-from typing import Final, Mapping, Union
+from typing import TYPE_CHECKING, Any, Final
 
 import pandas as pd
 
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
 __all__ = [
-    "Period",
-    "MONTHS_IN_YEAR",
     "MONTHS_IN_QUARTER",
-    "quarter_to_months",
+    "MONTHS_IN_YEAR",
+    "Period",
     "month_to_quarter",
+    "quarter_to_months",
     "resample_to_period",
 ]
 
@@ -106,7 +109,7 @@ class Period(str, Enum):
         return mapping[self]
 
     @staticmethod
-    def infer_from_offset(alias: str) -> "Period":
+    def infer_from_offset(alias: str) -> Period:
         """Infer Period from a pandas offset alias ("ME", "QE", "YE", etc.).
 
         Args:
@@ -119,11 +122,11 @@ class Period(str, Enum):
             ValueError: If alias cannot be mapped to a Period
 
         Examples:
-            >>> Period.infer_from_offset('ME')
+            >>> Period.infer_from_offset("ME")
             <Period.MONTH: 'ME'>
-            >>> Period.infer_from_offset('QE')
+            >>> Period.infer_from_offset("QE")
             <Period.QUARTER: 'QE'>
-            >>> Period.infer_from_offset('YE')
+            >>> Period.infer_from_offset("YE")
             <Period.YEAR: 'YE'>
         """
         alias = alias.upper()
@@ -137,7 +140,7 @@ class Period(str, Enum):
 
 
 # ---------------------------------------------------------------------------
-# Conversion tables – kept as *constants* for fast lookup.
+# Conversion tables - kept as *constants* for fast lookup.
 # ---------------------------------------------------------------------------
 
 MONTHS_IN_YEAR: Final[int] = 12
@@ -164,9 +167,7 @@ def quarter_to_months(year: int, quarter: int) -> list[pd.Timestamp]:
 
     start_month = 3 * (quarter - 1) + 1
     months = [start_month + i for i in range(3)]
-    return [
-        pd.Timestamp(year=year, month=m, day=1) + pd.offsets.MonthEnd() for m in months
-    ]
+    return [pd.Timestamp(year=year, month=m, day=1) + pd.offsets.MonthEnd() for m in months]
 
 
 def month_to_quarter(ts: pd.Timestamp) -> tuple[int, int]:
@@ -180,7 +181,7 @@ def month_to_quarter(ts: pd.Timestamp) -> tuple[int, int]:
 
     Examples:
         >>> import pandas as pd
-        >>> month_to_quarter(pd.Timestamp('2023-05-31'))
+        >>> month_to_quarter(pd.Timestamp("2023-05-31"))
         (2023, 2)
     """
     quarter = (ts.month - 1) // 3 + 1
@@ -191,12 +192,29 @@ def month_to_quarter(ts: pd.Timestamp) -> tuple[int, int]:
 # Resampling helper (simpler interface than pandas.Grouper strings everywhere).
 # ---------------------------------------------------------------------------
 
-DfOrSeries = Union[pd.DataFrame, pd.Series]
+# NOTE:
+# We cannot subscript ``pd.Series`` at *runtime* on pandas < 2.0 because the
+# class is not a PEP 585 generic alias in older pandas versions.  Attempting
+# to evaluate ``pd.Series[Any]`` therefore raises ``TypeError: 'Series' is not
+# subscriptable`` when this module is imported - which breaks the entire
+# test-suite.  To keep static type checkers (mypy, Pyright, etc.) happy *and*
+# avoid the runtime error, we define the alias conditionally:
+#   * During **type checking** we use the fully-parametrised generic form so
+#     that tools understand the expected element type.
+#   * At **runtime** we fall back to the *unparametrised* ``pd.Series`` class
+#     which works across all supported pandas versions.
+
+if TYPE_CHECKING:  # pragma: no cover - evaluated only by static analysers
+    from pandas import Series as _Series
+
+    DfOrSeries = pd.DataFrame | _Series[Any]
+else:
+    # Runtime-safe alias: still correctly represents the union of the two
+    # containers but avoids subscripted ``Series``.
+    DfOrSeries = pd.DataFrame | pd.Series
 
 
-def resample_to_period(
-    df: DfOrSeries, target: Period, *, aggregation: str = "sum"
-) -> DfOrSeries:
+def resample_to_period(df: DfOrSeries, target: Period, *, aggregation: str = "sum") -> DfOrSeries:
     """Resample *df*/*Series* to *target* granularity using *aggregation* method.
 
     This is a thin wrapper around *pandas.DataFrame.resample* that selects the
@@ -215,8 +233,8 @@ def resample_to_period(
 
     Examples:
         >>> import pandas as pd
-        >>> df = pd.DataFrame({'value': [1, 2, 3, 4]}, index=pd.date_range('2023-01-31', periods=4, freq='ME'))
-        >>> resample_to_period(df, Period.QUARTER, aggregation='sum')
+        >>> df = pd.DataFrame({"value": [1, 2, 3, 4]}, index=pd.date_range("2023-01-31", periods=4, freq="ME"))
+        >>> resample_to_period(df, Period.QUARTER, aggregation="sum")
                value
         2023Q1      6
     """

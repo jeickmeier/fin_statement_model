@@ -1,4 +1,4 @@
-"""Graph merging logic and developer‐friendly `__repr__`.
+r"""Graph merging logic and developer-friendly `__repr__`.
 
 MergeReprMixin provides utilities for merging another graph's nodes and periods into the current graph,
 and for generating a developer-friendly string representation of the graph's structure and contents.
@@ -20,8 +20,10 @@ Examples:
 
 from __future__ import annotations
 
+import contextlib
 import logging
 
+from fin_statement_model.core.errors import FinStatementModelError
 from fin_statement_model.core.nodes import (
     FinancialStatementItemNode,
     is_calculation_node,
@@ -38,7 +40,7 @@ class MergeReprMixin:
     # ------------------------------------------------------------------
     # Graph merging ------------------------------------------------------
     # ------------------------------------------------------------------
-    def merge_from(self, other_graph: "MergeReprMixin") -> None:
+    def merge_from(self, other_graph: MergeReprMixin) -> None:
         from fin_statement_model.core.graph.graph import (
             Graph,
         )  # local import to avoid cycles
@@ -48,9 +50,7 @@ class MergeReprMixin:
 
         logger.info("Starting merge from graph %r into %r", other_graph, self)
 
-        new_periods = [
-            p for p in other_graph.periods if p not in getattr(self, "periods", [])
-        ]
+        new_periods = [p for p in other_graph.periods if p not in getattr(self, "periods", [])]
         if new_periods:
             self.add_periods(new_periods)  # type: ignore[attr-defined]
             logger.debug("Merged periods: %s", new_periods)
@@ -73,10 +73,8 @@ class MergeReprMixin:
                 try:
                     self.add_node(other_node)  # type: ignore[attr-defined]
                     nodes_added += 1
-                except Exception:
-                    logger.exception(
-                        "Failed to add new node '%s' during merge:", node_name
-                    )
+                except (ValueError, TypeError, FinStatementModelError):
+                    logger.exception("Failed to add new node '%s' during merge", node_name)
 
         logger.info(
             "Merge complete. Nodes added: %s, Nodes updated (values merged): %s",
@@ -103,24 +101,20 @@ class MergeReprMixin:
             elif is_calculation_node(node):
                 calc_node_count += 1
                 if hasattr(node, "get_dependencies"):
-                    try:
+                    with contextlib.suppress(Exception):
                         dependencies_count += len(node.get_dependencies())
-                    except Exception:
-                        pass
                 elif hasattr(node, "inputs"):
                     try:
                         if isinstance(node.inputs, list):
-                            dependencies_count += len(
-                                [
-                                    inp.name
-                                    for inp in node.inputs
-                                    if hasattr(inp, "name")
-                                ]
-                            )
+                            dependencies_count += len([inp.name for inp in node.inputs if hasattr(inp, "name")])
                         elif isinstance(node.inputs, dict):
                             dependencies_count += len(node.inputs)
-                    except Exception:
-                        pass
+                    except (ValueError, AttributeError) as exc:
+                        logger.debug(
+                            'Failed counting dependencies for node "%s": %s',
+                            getattr(node, "name", "?"),
+                            exc,
+                        )
             else:
                 other_node_count += 1
 

@@ -20,7 +20,7 @@ from fin_statement_model.core.nodes import FinancialStatementItemNode
 
 def test_period_service_basic_add_and_clear() -> None:
     ps = PeriodService()
-    # Add unsorted & duplicate periods – service should deduplicate + sort
+    # Add unsorted & duplicate periods - service should deduplicate + sort
     ps.add_periods(["c", "a", "b", "a"])
     assert ps.periods == ["a", "b", "c"]
     # contains helper

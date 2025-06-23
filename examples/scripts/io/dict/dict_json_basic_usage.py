@@ -1,4 +1,5 @@
-"""dict_json_basic_usage.py
+"""dict_json_basic_usage.py.
+
 Demonstration of reading financial data from a JSON file via the *dict* IO
 format and writing it back out.
 
@@ -64,28 +65,20 @@ def dict_to_graph(data: dict[str, dict[str, float]]) -> Graph:
 # -----------------------------------------------------------------------------
 
 
-def main(_: list[str] | None = None) -> None:  # noqa: D401
+def main(_: list[str] | None = None) -> None:
     """End-to-end example using dict reader/writer with JSON input/output."""
     if not SAMPLE_JSON.exists():
         raise FileNotFoundError(f"Sample JSON not found: {SAMPLE_JSON}")
 
-    print(f"Loading sample JSON from: {SAMPLE_JSON}\n")
     data_in = load_json_to_dict(SAMPLE_JSON)
 
     graph = dict_to_graph(data_in)
 
-    print("Graph periods:", graph.periods)
-    print("Graph nodes and values:")
     for name, node in graph.nodes.items():
-        print(f"  - {name}: {node.values}")
+        pass
 
     # Export graph back to dict
-    export_dict: dict[str, dict[str, float]] = write_data(
-        format_type="dict", graph=graph, target=None
-    )  # type: ignore[assignment]
-
-    print("\nExported dictionary JSON:\n")
-    print(json.dumps(export_dict, indent=2))
+    write_data(format_type="dict", graph=graph, target=None)  # type: ignore[assignment]
 
 
 if __name__ == "__main__":

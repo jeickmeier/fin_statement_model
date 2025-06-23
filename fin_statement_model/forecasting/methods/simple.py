@@ -74,17 +74,11 @@ class SimpleForecastMethod(BaseForecastMethod):
             if not config:
                 raise ValueError("Simple method: empty list provided")
             if not isinstance(config[0], int | float):
-                raise TypeError(
-                    f"Simple method requires numeric growth rate, got {type(config[0])}"
-                )
+                raise TypeError(f"Simple method requires numeric growth rate, got {type(config[0])}")
         elif not isinstance(config, int | float):
-            raise TypeError(
-                f"Simple method requires numeric growth rate, got {type(config)}"
-            )
+            raise TypeError(f"Simple method requires numeric growth rate, got {type(config)}")
 
-    def normalize_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory.
 
         Args:
@@ -100,6 +94,7 @@ class SimpleForecastMethod(BaseForecastMethod):
             >>> method.normalize_params(0.05, ["2024", "2025"])
             {'forecast_type': 'simple', 'growth_params': 0.05}
         """
+        _ = (forecast_periods,)  # Parameter intentionally unused (config is used)
         # Handle list input - take first value
         growth_rate = float(config[0]) if isinstance(config, list) else float(config)
 

@@ -1,4 +1,5 @@
-"""csv_wide_basic_usage.py
+"""csv_wide_basic_usage.py.
+
 Example showing how to use the DataFrame-based reader to ingest *wide*-layout
 financial data.
 
@@ -52,8 +53,6 @@ def read_wide_csv_to_graph(csv_path: str | Path) -> Graph:
     # Load CSV → DataFrame, set the first column (item) as index so periods are columns
     df_raw = pd.read_csv(csv_path, index_col=0)
 
-    print("Loaded DataFrame:\n", df_raw, "\n")
-
     graph = read_data(
         format_type="dataframe",
         source=df_raw,
@@ -66,21 +65,15 @@ def read_wide_csv_to_graph(csv_path: str | Path) -> Graph:
 # -----------------------------------------------------------------------------
 
 
-def main(_: list[str] | None = None) -> None:  # noqa: D401
+def main(_: list[str] | None = None) -> None:
     """End-to-end demonstration of the wide-format workflow."""
     graph = read_wide_csv_to_graph(SAMPLE_CSV_WIDE)
 
-    print("Graph periods:", graph.periods)
-    print("Graph nodes and values:")
     for name, node in graph.nodes.items():
-        print(f"  - {name}: {node.values}")
+        pass
 
     # Export graph → nested dict using the DictWriter
-    data_dict: dict[str, dict[str, float]] = write_data(
-        format_type="dict", graph=graph, target=None
-    )  # type: ignore[assignment]
-
-    print("\nExported dict representation:\n", data_dict)
+    write_data(format_type="dict", graph=graph, target=None)  # type: ignore[assignment]
 
 
 if __name__ == "__main__":

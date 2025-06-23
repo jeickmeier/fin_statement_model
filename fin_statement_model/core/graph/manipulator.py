@@ -35,7 +35,7 @@ prefer the higher-level convenience methods on `Graph` itself whenever possible.
 """
 
 import logging
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 from fin_statement_model.core.errors import NodeError
 from fin_statement_model.core.nodes import CalculationNode, Node
@@ -106,31 +106,23 @@ class GraphManipulator:
             None
         """
         for nd in self.graph._nodes.values():
-            if (
-                isinstance(nd, CalculationNode)
-                and hasattr(nd, "input_names")
-                and nd.input_names
-            ):
+            if isinstance(nd, CalculationNode) and hasattr(nd, "input_names") and nd.input_names:
                 try:
                     resolved_inputs: list[Node] = []
                     for name in nd.input_names:
                         input_node = self.get_node(name)
                         if input_node is None:
-                            raise NodeError(
-                                f"Input node '{name}' not found for calculation node '{nd.name}'"
-                            )
+                            raise NodeError(f"Input node '{name}' not found for calculation node '{nd.name}'")
                         resolved_inputs.append(input_node)
                     nd.inputs = resolved_inputs
                     if hasattr(nd, "clear_cache"):
                         nd.clear_cache()
                 except NodeError:
-                    logger.exception(f"Error updating inputs for node '{nd.name}'")
+                    logger.exception("Error updating inputs for node '%s'", nd.name)
                 except AttributeError:
-                    logger.warning(
-                        f"Node '{nd.name}' has input_names but no 'inputs' attribute to update."
-                    )
+                    logger.warning("Node '%s' has input_names but no 'inputs' attribute to update.", nd.name)
 
-    def get_node(self, name: str) -> Optional[Node]:
+    def get_node(self, name: str) -> Node | None:
         """Retrieve a node from the graph by its unique name.
 
         Args:
@@ -142,7 +134,7 @@ class GraphManipulator:
         Examples:
             >>> manipulator.get_node("Revenue")
         """
-        return cast(Optional[Node], self.graph._nodes.get(name))
+        return cast("Node | None", self.graph._nodes.get(name))
 
     def replace_node(self, node_name: str, new_node: Node) -> None:
         """Replace an existing node with a new one, ensuring consistency.
@@ -164,9 +156,7 @@ class GraphManipulator:
         if not self.has_node(node_name):
             raise NodeError(f"Node '{node_name}' not found, cannot replace.")
         if node_name != new_node.name:
-            raise ValueError(
-                "New node name must match the name of the node being replaced."
-            )
+            raise ValueError("New node name must match the name of the node being replaced.")
         self.remove_node(node_name)
         self.add_node(new_node)
 
@@ -226,9 +216,7 @@ class GraphManipulator:
         if not nd:
             raise NodeError(message=f"Node '{node_id}' does not exist", node_id=node_id)
         if not hasattr(nd, "set_value"):
-            raise TypeError(
-                f"Node '{node_id}' of type {type(nd).__name__} does not support set_value."
-            )
+            raise TypeError(f"Node '{node_id}' of type {type(nd).__name__} does not support set_value.")
         nd.set_value(period, value)
         # Clear all caches (node-level and central) after mutation.
         self.graph.clear_all_caches()

@@ -7,9 +7,10 @@ of concrete readers/writers to standardise exception conversion into
 
 from __future__ import annotations
 
+from collections.abc import Callable
 import functools
 import logging
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 from fin_statement_model.io.exceptions import ReadError, WriteError
 
@@ -48,7 +49,7 @@ def handle_read_errors() -> Callable[[F], F]:
 
     def decorator(func: F) -> F:
         @functools.wraps(func)
-        def wrapper(self: Any, source: Any, **kwargs: Any) -> Any:  # noqa: ANN001
+        def wrapper(self: Any, source: Any, **kwargs: Any) -> Any:
             try:
                 return func(self, source, **kwargs)
             except ReadError:
@@ -69,10 +70,8 @@ def handle_read_errors() -> Callable[[F], F]:
                     original_error=e,
                 )
                 raise err.with_traceback(e.__traceback__) from e
-            except (
-                Exception
-            ) as e:  # noqa: BLE001 – We really want to catch *everything* here.
-                logger.error("Failed to read from %s: %s", source, e, exc_info=True)
+            except Exception as e:
+                logger.exception("Failed to read from %s", source)
                 err = ReadError(
                     f"Failed to process source: {e}",
                     source=str(source),
@@ -115,15 +114,13 @@ def handle_write_errors() -> Callable[[F], F]:
 
     def decorator(func: F) -> F:
         @functools.wraps(func)
-        def wrapper(
-            self: Any, graph: Any, target: Any = None, **kwargs: Any
-        ) -> Any:  # noqa: ANN001
+        def wrapper(self: Any, graph: Any, target: Any = None, **kwargs: Any) -> Any:
             try:
                 return func(self, graph, target, **kwargs)
             except WriteError:
                 raise
-            except Exception as e:  # noqa: BLE001
-                logger.error("Failed to write to %s: %s", target, e, exc_info=True)
+            except Exception as e:
+                logger.exception("Failed to write to %s", target)
                 err = WriteError(
                     f"Failed to write data: {e}",
                     target=str(target) if target else "unknown",

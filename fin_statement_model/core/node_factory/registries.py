@@ -2,12 +2,12 @@
 
 The three public registries are:
 
-* ``CalculationAliasRegistry``   – maps *alias strings* ("addition") to
+* ``CalculationAliasRegistry``   - maps *alias strings* ("addition") to
   :class:`~fin_statement_model.core.calculations.calculation.Calculation`
   subclasses.
-* ``NodeTypeRegistry``           – maps the value of ``node_dict['type']`` to
+* ``NodeTypeRegistry``           - maps the value of ``node_dict['type']`` to
   concrete node classes.
-* ``ForecastTypeRegistry``       – maps forecast‐type identifiers ("simple",
+* ``ForecastTypeRegistry``       - maps forecast-type identifiers ("simple",
   "curve", …) to subclasses of
   :class:`fin_statement_model.core.nodes.forecast_nodes.ForecastNode`.
 
@@ -15,22 +15,25 @@ Each registry exposes a decorator helper so classes can self-register:
 
 >>> from fin_statement_model.core.node_factory.registries import calc_alias
 >>> @calc_alias("addition")
-... class AdditionCalculation(Calculation):
-...     ...
+... class AdditionCalculation(Calculation): ...
 
 This keeps ``node_factory`` free from hard-coded look-up tables and allows
 extensions to register their own classes at import time without touching core
 code.
 
 Examples:
-    >>> 'addition' in CalculationAliasRegistry
+    >>> "addition" in CalculationAliasRegistry
     True
 """
 
 from __future__ import annotations
 
 import logging
-from typing import Any, Callable, Dict, Generic, List, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
+
+if TYPE_CHECKING:
+    import builtins
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +41,7 @@ logger = logging.getLogger(__name__)
 _T = TypeVar("_T", bound=object)
 
 
-class _BaseRegistry(Dict[str, _T], Generic[_T]):
+class _BaseRegistry(dict[str, _T], Generic[_T]):
     """A thin dict wrapper adding validation and decorator helpers.
 
     This registry is used to map string keys to classes or callables, with support for
@@ -48,27 +51,25 @@ class _BaseRegistry(Dict[str, _T], Generic[_T]):
         name: The name of the registry (for error messages).
 
     Example:
-        >>> reg = _BaseRegistry(name='TestRegistry')
-        >>> reg.register('foo', int)
-        >>> reg.get('foo')
+        >>> reg = _BaseRegistry(name="TestRegistry")
+        >>> reg.register("foo", int)
+        >>> reg.get("foo")
         <class 'int'>
-        >>> @reg.decorator('bar')
+        >>> @reg.decorator("bar")
         ... class Bar:
         ...     pass
-        >>> reg.get('bar').__name__ == 'Bar'
+        >>> reg.get("bar").__name__ == "Bar"
         True
     """
 
-    def __init__(self, *, name: str) -> None:  # noqa: D401
+    def __init__(self, *, name: str) -> None:
         super().__init__()
         self._name = name
 
     # ------------------------------------------------------------------
     # Public helpers
     # ------------------------------------------------------------------
-    def register(
-        self, key: str, obj: _T, *, overwrite: bool = False
-    ) -> None:  # noqa: D401
+    def register(self, key: str, obj: _T, *, overwrite: bool = False) -> None:
         """Register an object under a key.
 
         Args:
@@ -80,13 +81,11 @@ class _BaseRegistry(Dict[str, _T], Generic[_T]):
             KeyError: If the key is already registered and overwrite is False.
         """
         if not overwrite and key in self:
-            raise KeyError(
-                f"{self._name}: key '{key}' already registered to {self[key]}."
-            )
+            raise KeyError(f"{self._name}: key '{key}' already registered to {self[key]}.")
         logger.debug("%s: registering key '%s' → %s", self._name, key, obj)
         self[key] = obj
 
-    def decorator(self, key: str) -> Callable[[_T], _T]:  # noqa: D401
+    def decorator(self, key: str) -> Callable[[_T], _T]:
         """Return a class decorator that registers the decorated object.
 
         Args:
@@ -96,15 +95,15 @@ class _BaseRegistry(Dict[str, _T], Generic[_T]):
             Callable: A decorator that registers the class.
 
         Example:
-            >>> reg = _BaseRegistry(name='TestRegistry')
-            >>> @reg.decorator('foo')
+            >>> reg = _BaseRegistry(name="TestRegistry")
+            >>> @reg.decorator("foo")
             ... class Foo:
             ...     pass
-            >>> reg.get('foo').__name__ == 'Foo'
+            >>> reg.get("foo").__name__ == "Foo"
             True
         """
 
-        def _decorator(obj: _T) -> _T:  # noqa: D401
+        def _decorator(obj: _T) -> _T:
             self.register(key, obj, overwrite=True)
             return obj
 
@@ -126,21 +125,18 @@ class _BaseRegistry(Dict[str, _T], Generic[_T]):
         try:
             return super().__getitem__(key)
         except KeyError:  # pragma: no cover
-            raise KeyError(
-                f"{self._name}: unknown key '{key}'. Available: {sorted(self.keys())}"  # noqa: E501
-            ) from None
+            raise KeyError(f"{self._name}: unknown key '{key}'. Available: {sorted(self.keys())}") from None
 
-    def list(self) -> List[str]:  # noqa: D401
+    def list(self) -> builtins.list[str]:
         """Return a sorted list of registered keys.
 
         Returns:
             List[str]: Sorted list of keys.
         """
-
         return sorted(self.keys())
 
     # Hide mutating dict API methods to discourage direct use ---------------
-    def __delitem__(self, __key: str) -> None:  # noqa: D401
+    def __delitem__(self, __key: str) -> None:
         """Prevent deletion of registry items at runtime.
 
         Raises:
@@ -150,12 +146,10 @@ class _BaseRegistry(Dict[str, _T], Generic[_T]):
 
 
 # ---------------------------------------------------------------------------
-# Concrete registries – created eagerly so decorators work at import time
+# Concrete registries - created eagerly so decorators work at import time
 # ---------------------------------------------------------------------------
 
-CalculationAliasRegistry: _BaseRegistry[Any] = _BaseRegistry(
-    name="CalculationAliasRegistry"
-)
+CalculationAliasRegistry: _BaseRegistry[Any] = _BaseRegistry(name="CalculationAliasRegistry")
 NodeTypeRegistry: _BaseRegistry[Any] = _BaseRegistry(name="NodeTypeRegistry")
 ForecastTypeRegistry: _BaseRegistry[Any] = _BaseRegistry(name="ForecastTypeRegistry")
 
@@ -168,9 +162,9 @@ forecast_type: Callable[[str], Callable[[Any], Any]] = ForecastTypeRegistry.deco
 
 __all__: list[str] = [
     "CalculationAliasRegistry",
-    "NodeTypeRegistry",
     "ForecastTypeRegistry",
+    "NodeTypeRegistry",
     "calc_alias",
-    "node_type",
     "forecast_type",
+    "node_type",
 ]

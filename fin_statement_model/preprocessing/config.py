@@ -15,20 +15,17 @@ Examples:
     Basic usage with direct instantiation:
 
     >>> from fin_statement_model.preprocessing.config import NormalizationConfig
-    >>> config = NormalizationConfig(
-    ...     normalization_type='percent_of',
-    ...     reference='revenue'
-    ... )
+    >>> config = NormalizationConfig(normalization_type="percent_of", reference="revenue")
 
     Using the fluent DSL interface:
 
-    >>> config = NormalizationConfig.percent_of('revenue')
+    >>> config = NormalizationConfig.percent_of("revenue")
     >>> time_series = TimeSeriesConfig.moving_avg(window_size=4)
     >>> period_conv = PeriodConversionConfig.quarterly_to_annual()
 """
 
 from enum import Enum
-from typing import Optional
+
 from pydantic import BaseModel, ConfigDict, model_validator
 
 
@@ -143,14 +140,11 @@ class NormalizationConfig(BaseModel):
     Examples:
         Calculate percentages of revenue:
 
-        >>> config = NormalizationConfig(
-        ...     normalization_type='percent_of',
-        ...     reference='revenue'
-        ... )
+        >>> config = NormalizationConfig(normalization_type="percent_of", reference="revenue")
 
         Using the fluent DSL:
 
-        >>> config = NormalizationConfig.percent_of('revenue')
+        >>> config = NormalizationConfig.percent_of("revenue")
         >>> config = NormalizationConfig.scale_by(0.001)  # Convert to thousands
 
     Notes:
@@ -159,9 +153,9 @@ class NormalizationConfig(BaseModel):
         - 'minmax' and 'standard' don't require additional parameters
     """
 
-    normalization_type: Optional[str] = None
-    reference: Optional[str] = None
-    scale_factor: Optional[float] = None
+    normalization_type: str | None = None
+    reference: str | None = None
+    scale_factor: float | None = None
 
     # Disallow extra attributes via model_config (equivalent to extra="forbid")
     model_config = ConfigDict(extra="forbid")
@@ -171,7 +165,7 @@ class NormalizationConfig(BaseModel):
     # ------------------------------------------------------------------
 
     @model_validator(mode="after")
-    def _check_required_fields(self) -> "NormalizationConfig":  # noqa: D401
+    def _check_required_fields(self) -> "NormalizationConfig":
         """Validate that required fields are present for each normalization type.
 
         Returns:
@@ -182,13 +176,9 @@ class NormalizationConfig(BaseModel):
         """
         ntype = self.normalization_type or NormalizationType.PERCENT_OF.value
         if ntype == NormalizationType.PERCENT_OF.value and not self.reference:
-            raise ValueError(
-                "reference must be provided when normalization_type='percent_of'"
-            )
+            raise ValueError("reference must be provided when normalization_type='percent_of'")
         if ntype == NormalizationType.SCALE_BY.value and self.scale_factor is None:
-            raise ValueError(
-                "scale_factor must be provided when normalization_type='scale_by'"
-            )
+            raise ValueError("scale_factor must be provided when normalization_type='scale_by'")
         return self
 
     # ------------------------------------------------------------------
@@ -206,15 +196,13 @@ class NormalizationConfig(BaseModel):
             Config for calculating percentages relative to reference
 
         Examples:
-            >>> config = NormalizationConfig.percent_of('revenue')
+            >>> config = NormalizationConfig.percent_of("revenue")
             >>> config.normalization_type
             'percent_of'
             >>> config.reference
             'revenue'
         """
-        return cls(
-            normalization_type=NormalizationType.PERCENT_OF.value, reference=reference
-        )
+        return cls(normalization_type=NormalizationType.PERCENT_OF.value, reference=reference)
 
     @classmethod
     def minmax(cls) -> "NormalizationConfig":
@@ -292,8 +280,8 @@ class TimeSeriesConfig(BaseModel):
         Calculate Year-over-Year growth:
 
         >>> config = TimeSeriesConfig(
-        ...     transformation_type='yoy',
-        ...     periods=4  # Four quarters
+        ...     transformation_type="yoy",
+        ...     periods=4,  # Four quarters
         ... )
 
         Using the fluent DSL:
@@ -307,9 +295,9 @@ class TimeSeriesConfig(BaseModel):
         - QOQ defaults to 1 period
     """
 
-    transformation_type: Optional[str] = None
-    periods: Optional[int] = None
-    window_size: Optional[int] = None
+    transformation_type: str | None = None
+    periods: int | None = None
+    window_size: int | None = None
 
     model_config = ConfigDict(extra="forbid")
 
@@ -325,9 +313,7 @@ class TimeSeriesConfig(BaseModel):
         """
         ttype = self.transformation_type or TransformationType.GROWTH_RATE.value
         if ttype == TransformationType.MOVING_AVG.value and not self.window_size:
-            raise ValueError(
-                "window_size must be provided for moving_avg transformation"
-            )
+            raise ValueError("window_size must be provided for moving_avg transformation")
         return self
 
     # ------------------------------------------------------------------
@@ -351,9 +337,7 @@ class TimeSeriesConfig(BaseModel):
             >>> config.periods
             2
         """
-        return cls(
-            transformation_type=TransformationType.GROWTH_RATE.value, periods=periods
-        )
+        return cls(transformation_type=TransformationType.GROWTH_RATE.value, periods=periods)
 
     @classmethod
     def moving_avg(cls, window_size: int) -> "TimeSeriesConfig":
@@ -408,9 +392,7 @@ class TimeSeriesConfig(BaseModel):
             >>> config.periods
             4
         """
-        return cls(
-            transformation_type=TransformationType.YOY.value, periods=periods or 4
-        )
+        return cls(transformation_type=TransformationType.YOY.value, periods=periods or 4)
 
     @classmethod
     def qoq(cls, periods: int | None = None) -> "TimeSeriesConfig":
@@ -429,9 +411,7 @@ class TimeSeriesConfig(BaseModel):
             >>> config.periods
             1
         """
-        return cls(
-            transformation_type=TransformationType.QOQ.value, periods=periods or 1
-        )
+        return cls(transformation_type=TransformationType.QOQ.value, periods=periods or 1)
 
 
 class PeriodConversionConfig(BaseModel):
@@ -457,14 +437,11 @@ class PeriodConversionConfig(BaseModel):
     Examples:
         Convert quarterly data to annual sums:
 
-        >>> config = PeriodConversionConfig(
-        ...     conversion_type='quarterly_to_annual',
-        ...     aggregation='sum'
-        ... )
+        >>> config = PeriodConversionConfig(conversion_type="quarterly_to_annual", aggregation="sum")
 
         Using the fluent DSL:
 
-        >>> config = PeriodConversionConfig.quarterly_to_annual('sum')
+        >>> config = PeriodConversionConfig.quarterly_to_annual("sum")
         >>> config = PeriodConversionConfig.quarterly_to_ttm()
 
     Notes:
@@ -475,8 +452,8 @@ class PeriodConversionConfig(BaseModel):
             - Ratios/percentages: Consider 'mean' or 'last'
     """
 
-    conversion_type: Optional[str] = None
-    aggregation: Optional[str] = None
+    conversion_type: str | None = None
+    aggregation: str | None = None
 
     model_config = ConfigDict(extra="forbid")
 
@@ -495,7 +472,7 @@ class PeriodConversionConfig(BaseModel):
             Quarterly to annual conversion config
 
         Examples:
-            >>> config = PeriodConversionConfig.quarterly_to_annual('sum')
+            >>> config = PeriodConversionConfig.quarterly_to_annual("sum")
             >>> config.conversion_type
             'quarterly_to_annual'
             >>> config.aggregation
@@ -517,7 +494,7 @@ class PeriodConversionConfig(BaseModel):
             Monthly to quarterly conversion config
 
         Examples:
-            >>> config = PeriodConversionConfig.monthly_to_quarterly('mean')
+            >>> config = PeriodConversionConfig.monthly_to_quarterly("mean")
             >>> config.conversion_type
             'monthly_to_quarterly'
             >>> config.aggregation
@@ -539,7 +516,7 @@ class PeriodConversionConfig(BaseModel):
             Monthly to annual conversion config
 
         Examples:
-            >>> config = PeriodConversionConfig.monthly_to_annual('last')
+            >>> config = PeriodConversionConfig.monthly_to_annual("last")
             >>> config.conversion_type
             'monthly_to_annual'
             >>> config.aggregation
@@ -564,9 +541,7 @@ class PeriodConversionConfig(BaseModel):
             >>> config.aggregation
             'sum'
         """
-        return cls(
-            conversion_type=ConversionType.QUARTERLY_TO_TTM.value, aggregation="sum"
-        )
+        return cls(conversion_type=ConversionType.QUARTERLY_TO_TTM.value, aggregation="sum")
 
 
 class StatementFormattingConfig(BaseModel):
@@ -593,9 +568,7 @@ class StatementFormattingConfig(BaseModel):
         Format a balance sheet with standard conventions:
 
         >>> config = StatementFormattingConfig(
-        ...     statement_type='balance_sheet',
-        ...     add_subtotals=True,
-        ...     apply_sign_convention=True
+        ...     statement_type="balance_sheet", add_subtotals=True, apply_sign_convention=True
         ... )
 
     Notes:
@@ -604,9 +577,9 @@ class StatementFormattingConfig(BaseModel):
         - When sign_convention=False, values are displayed as-is
     """
 
-    statement_type: Optional[str] = None
-    add_subtotals: Optional[bool] = None
-    apply_sign_convention: Optional[bool] = None
+    statement_type: str | None = None
+    add_subtotals: bool | None = None
+    apply_sign_convention: bool | None = None
 
     model_config = ConfigDict(extra="forbid")
 

@@ -12,14 +12,19 @@ Features:
     - Extensible: add custom methods at runtime
 
 Example:
-    >>> from fin_statement_model.forecasting.strategies import forecast_registry, get_forecast_method, register_forecast_method
+    >>> from fin_statement_model.forecasting.strategies import (
+    ...     forecast_registry,
+    ...     get_forecast_method,
+    ...     register_forecast_method,
+    ... )
     >>> from fin_statement_model.forecasting.methods.simple import SimpleForecastMethod
     >>> method = get_forecast_method("simple")
     >>> method.name
     'simple'
     >>> class MyMethod(SimpleForecastMethod):
     ...     @property
-    ...     def name(self): return "my_custom"
+    ...     def name(self):
+    ...         return "my_custom"
     >>> register_forecast_method(MyMethod())
     >>> forecast_registry.has_method("my_custom")
     True
@@ -29,12 +34,12 @@ import logging
 from typing import Any
 
 from .methods import (
-    ForecastMethod,
-    SimpleForecastMethod,
-    CurveForecastMethod,
-    StatisticalForecastMethod,
     AverageForecastMethod,
+    CurveForecastMethod,
+    ForecastMethod,
     HistoricalGrowthForecastMethod,
+    SimpleForecastMethod,
+    StatisticalForecastMethod,
 )
 
 logger = logging.getLogger(__name__)
@@ -48,7 +53,7 @@ class ForecastMethodRegistry:
 
     Example:
         >>> registry = ForecastMethodRegistry()
-        >>> method = registry.get_method('simple')
+        >>> method = registry.get_method("simple")
         >>> print(registry.list_methods())
         ['simple', 'curve', 'statistical', 'average', 'historical_growth']
     """
@@ -70,7 +75,7 @@ class ForecastMethodRegistry:
 
         for method in builtin_methods:
             self.register(method)
-            logger.debug(f"Registered built-in forecast method: {method.name}")
+            logger.debug("Registered built-in forecast method: %s", method.name)
 
     def register(self, method: ForecastMethod) -> None:
         """Register a new forecast method.
@@ -90,7 +95,7 @@ class ForecastMethodRegistry:
             raise ValueError(f"Forecast method '{method.name}' is already registered")
 
         self._methods[method.name] = method
-        logger.info(f"Registered forecast method: {method.name}")
+        logger.info("Registered forecast method: %s", method.name)
 
     def unregister(self, name: str) -> None:
         """Unregister a forecast method.
@@ -109,7 +114,7 @@ class ForecastMethodRegistry:
             raise KeyError(f"Forecast method '{name}' is not registered")
 
         del self._methods[name]
-        logger.info(f"Unregistered forecast method: {name}")
+        logger.info("Unregistered forecast method: %s", name)
 
     def get_method(self, name: str) -> ForecastMethod:
         """Get a forecast method by name.
@@ -131,9 +136,7 @@ class ForecastMethodRegistry:
         """
         if name not in self._methods:
             available = ", ".join(sorted(self._methods.keys()))
-            raise ValueError(
-                f"Unknown forecast method: '{name}'. Available methods: {available}"
-            )
+            raise ValueError(f"Unknown forecast method: '{name}'. Available methods: {available}")
 
         return self._methods[name]
 

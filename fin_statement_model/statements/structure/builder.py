@@ -8,34 +8,35 @@ statement.
 """
 
 import logging
-from typing import Union, Optional, Any, cast
+from typing import Any, cast
+
+from fin_statement_model.config.access import cfg
+
+# Import adjustment types for filter conversion
+from fin_statement_model.core.adjustments.models import AdjustmentFilter, AdjustmentType
+from fin_statement_model.core.nodes import standard_node_registry
+from fin_statement_model.statements.configs.models import (
+    AdjustmentFilterSpec,
+    BaseItemModel,
+    CalculatedItemModel,
+    LineItemModel,
+    MetricItemModel,
+    SectionModel,
+    StatementModel,
+    SubtotalModel,
+)
 
 # Assuming config and structure modules are accessible
 from fin_statement_model.statements.configs.validator import StatementConfig
-from fin_statement_model.statements.configs.models import (
-    SectionModel,
-    BaseItemModel,
-    LineItemModel,
-    CalculatedItemModel,
-    MetricItemModel,
-    SubtotalModel,
-    StatementModel,
-    AdjustmentFilterSpec,
-)
+from fin_statement_model.statements.errors import ConfigurationError
 from fin_statement_model.statements.structure import (
-    StatementStructure,
-    Section,
+    CalculatedLineItem,
     LineItem,
     MetricLineItem,
-    CalculatedLineItem,
+    Section,
+    StatementStructure,
     SubtotalLineItem,
 )
-from fin_statement_model.statements.errors import ConfigurationError
-
-# Import UnifiedNodeValidator for optional node validation during build
-from fin_statement_model.statements.validation import UnifiedNodeValidator
-from fin_statement_model.config.access import cfg
-from fin_statement_model.core.nodes import standard_node_registry
 
 # Import Result types for enhanced error handling
 from fin_statement_model.statements.utilities.result_types import (
@@ -43,8 +44,8 @@ from fin_statement_model.statements.utilities.result_types import (
     ErrorSeverity,
 )
 
-# Import adjustment types for filter conversion
-from fin_statement_model.core.adjustments.models import AdjustmentFilter, AdjustmentType
+# Import UnifiedNodeValidator for optional node validation during build
+from fin_statement_model.statements.validation import UnifiedNodeValidator
 
 logger = logging.getLogger(__name__)
 
@@ -62,13 +63,14 @@ class StatementStructureBuilder:
 
     def __init__(
         self,
-        enable_node_validation: Optional[bool] = None,
-        node_validation_strict: Optional[bool] = None,
-        node_validator: Optional[UnifiedNodeValidator] = None,
+        enable_node_validation: bool | None = None,
+        node_validation_strict: bool | None = None,
+        node_validator: UnifiedNodeValidator | None = None,
     ) -> None:
         """Initialize the StatementStructureBuilder.
 
         Defaults for validation flags come from the global statements config, but can be overridden locally.
+
         Args:
             enable_node_validation: If True, validates node IDs during build.
             node_validation_strict: If True, treats validation failures as errors.
@@ -83,7 +85,7 @@ class StatementStructureBuilder:
         self.node_validation_strict = node_validation_strict
 
         # Initialize node_validator
-        self.node_validator: Optional[UnifiedNodeValidator] = None
+        self.node_validator: UnifiedNodeValidator | None = None
         if self.enable_node_validation:
             if node_validator is not None:
                 self.node_validator = node_validator
@@ -99,9 +101,7 @@ class StatementStructureBuilder:
         else:
             self.node_validator = None
 
-    def _convert_adjustment_filter(
-        self, filter_input: Optional[Union[AdjustmentFilterSpec, list[str]]]
-    ) -> Optional[Any]:
+    def _convert_adjustment_filter(self, filter_input: AdjustmentFilterSpec | list[str] | None) -> Any | None:
         """Convert configuration adjustment filter to core AdjustmentFilter or tag set.
 
         Args:
@@ -139,19 +139,13 @@ class StatementStructureBuilder:
             # Convert string types to AdjustmentType enums
             if filter_input.include_types:
                 kwargs["include_types"] = cast(
-                    set[AdjustmentType],
-                    {
-                        AdjustmentType(type_str)
-                        for type_str in filter_input.include_types
-                    },
+                    "set[AdjustmentType]",
+                    {AdjustmentType(type_str) for type_str in filter_input.include_types},
                 )
             if filter_input.exclude_types:
                 kwargs["exclude_types"] = cast(
-                    set[AdjustmentType],
-                    {
-                        AdjustmentType(type_str)
-                        for type_str in filter_input.exclude_types
-                    },
+                    "set[AdjustmentType]",
+                    {AdjustmentType(type_str) for type_str in filter_input.exclude_types},
                 )
 
             # Pass through period
@@ -162,7 +156,7 @@ class StatementStructureBuilder:
             return AdjustmentFilter(**kwargs)
 
         # Unknown type - log warning and return None
-        logger.warning(f"Unknown adjustment filter type: {type(filter_input)}")
+        logger.warning("Unknown adjustment filter type: %s", type(filter_input))
         return None
 
     def build(self, config: StatementConfig) -> StatementStructure:
@@ -190,8 +184,7 @@ class StatementStructureBuilder:
         if config.model is None:
             # Ensure validation has run successfully before building
             raise ValueError(
-                "StatementConfig must be validated (config.model must be set) "
-                "before building the structure."
+                "StatementConfig must be validated (config.model must be set) before building the structure."
             )
 
         # Build from the validated Pydantic model stored in config.model
@@ -206,9 +199,7 @@ class StatementStructureBuilder:
                 # Handle validation results
                 if error_collector.has_errors() and self.node_validation_strict:
                     # Fail build on validation errors in strict mode
-                    error_messages = [
-                        str(error) for error in error_collector.get_errors()
-                    ]
+                    error_messages = [str(error) for error in error_collector.get_errors()]
                     raise ConfigurationError(
                         message=f"Node validation failed for statement '{stmt_model.id}'",
                         errors=error_messages,
@@ -216,15 +207,15 @@ class StatementStructureBuilder:
                 elif error_collector.has_warnings() or error_collector.has_errors():
                     # Log warnings and non-strict errors
                     for warning in error_collector.get_warnings():
-                        logger.warning(f"Build-time node validation: {warning}")
+                        logger.warning("Build-time node validation: %s", warning)
                     if not self.node_validation_strict:
                         for error in error_collector.get_errors():
-                            logger.warning(f"Build-time node validation: {error}")
+                            logger.warning("Build-time node validation: %s", error)
 
             statement = StatementStructure(
                 id=stmt_model.id,
                 name=stmt_model.name,
-                description=cast(str, stmt_model.description),
+                description=cast("str", stmt_model.description),
                 metadata=stmt_model.metadata,
                 units=stmt_model.units,
                 display_scale_factor=stmt_model.display_scale_factor,
@@ -232,23 +223,21 @@ class StatementStructureBuilder:
             for sec_model in stmt_model.sections:
                 section = self._build_section_model(sec_model)
                 statement.add_section(section)
-            logger.info(
-                f"Successfully built StatementStructure for ID '{statement.id}'"
-            )
-            return statement
+            logger.info("Successfully built StatementStructure for ID '%s'", statement.id)
         except Exception as e:
             # Catch potential errors during the building process itself
             logger.exception(
-                f"Error building statement structure from validated model for ID '{config.model.id}'"
+                "Error building statement structure from validated model for ID '%s'",
+                config.model.id,
             )
             raise ConfigurationError(
                 message=f"Failed to build statement structure from validated config: {e}",
                 errors=[str(e)],
             ) from e
+        else:
+            return statement
 
-    def _validate_structure_node_ids(
-        self, stmt_model: StatementModel, error_collector: ErrorCollector
-    ) -> None:
+    def _validate_structure_node_ids(self, stmt_model: StatementModel, error_collector: ErrorCollector) -> None:
         """Validate node IDs in the statement structure during build.
 
         This is a simpler validation focused on the final structure,
@@ -258,7 +247,7 @@ class StatementStructureBuilder:
             stmt_model: The StatementModel to validate.
             error_collector: ErrorCollector to accumulate validation issues.
         """
-        logger.debug(f"Build-time node validation for statement '{stmt_model.id}'")
+        logger.debug("Build-time node validation for statement '%s'", stmt_model.id)
 
         # Validate key node references that will be used in the built structure
         collected_node_refs = set()
@@ -268,40 +257,28 @@ class StatementStructureBuilder:
             for item in items:
                 if isinstance(item, LineItemModel):
                     if item.node_id:
-                        collected_node_refs.add(
-                            (item.node_id, "line_item_node", f"item.{item.id}.node_id")
-                        )
+                        collected_node_refs.add((item.node_id, "line_item_node", f"item.{item.id}.node_id"))
                     if item.standard_node_ref:
-                        collected_node_refs.add(
-                            (
-                                item.standard_node_ref,
-                                "standard_node",
-                                f"item.{item.id}.standard_node_ref",
-                            )
-                        )
+                        collected_node_refs.add((
+                            item.standard_node_ref,
+                            "standard_node",
+                            f"item.{item.id}.standard_node_ref",
+                        ))
                 elif isinstance(item, CalculatedItemModel):
-                    collected_node_refs.add(
-                        (item.id, "calculated_node", f"item.{item.id}.id")
-                    )
+                    collected_node_refs.add((item.id, "calculated_node", f"item.{item.id}.id"))
                 elif isinstance(item, MetricItemModel):
-                    collected_node_refs.add(
-                        (item.id, "metric_node", f"item.{item.id}.id")
-                    )
+                    collected_node_refs.add((item.id, "metric_node", f"item.{item.id}.id"))
                 elif isinstance(item, SubtotalModel):
-                    collected_node_refs.add(
-                        (item.id, "subtotal_node", f"item.{item.id}.id")
-                    )
+                    collected_node_refs.add((item.id, "subtotal_node", f"item.{item.id}.id"))
                 elif isinstance(item, SectionModel):
                     collect_node_refs(item.items)
                     collect_node_refs(item.subsections)
                     if item.subtotal:
-                        collected_node_refs.add(
-                            (
-                                item.subtotal.id,
-                                "subtotal_node",
-                                f"section.{item.id}.subtotal.id",
-                            )
-                        )
+                        collected_node_refs.add((
+                            item.subtotal.id,
+                            "subtotal_node",
+                            f"section.{item.id}.subtotal.id",
+                        ))
 
         # Collect all node references
         for section in stmt_model.sections:
@@ -309,9 +286,7 @@ class StatementStructureBuilder:
 
         # Validate collected references
         for node_id, node_type, context in collected_node_refs:
-            self._validate_single_build_node_id(
-                node_id, node_type, context, error_collector
-            )
+            self._validate_single_build_node_id(node_id, node_type, context, error_collector)
 
     def _validate_single_build_node_id(
         self,
@@ -340,11 +315,7 @@ class StatementStructureBuilder:
 
             # Only report significant issues during build
             if not validation_result.is_valid:
-                severity = (
-                    ErrorSeverity.ERROR
-                    if self.node_validation_strict
-                    else ErrorSeverity.WARNING
-                )
+                severity = ErrorSeverity.ERROR if self.node_validation_strict else ErrorSeverity.WARNING
                 message = f"Build validation: Invalid {node_type} '{node_id}': {validation_result.message}"
 
                 if severity == ErrorSeverity.ERROR:
@@ -363,9 +334,7 @@ class StatementStructureBuilder:
                     )
 
         except Exception as e:
-            logger.exception(
-                f"Error during build-time validation of node ID '{node_id}'"
-            )
+            logger.exception("Error during build-time validation of node ID '%s'", node_id)
             error_collector.add_warning(
                 code="build_node_validation_error",
                 message=f"Build validation error for {node_type} '{node_id}': {e}",
@@ -385,14 +354,12 @@ class StatementStructureBuilder:
             A `Section` instance corresponding to the model.
         """
         # Convert adjustment filter
-        adjustment_filter = self._convert_adjustment_filter(
-            section_model.default_adjustment_filter
-        )
+        adjustment_filter = self._convert_adjustment_filter(section_model.default_adjustment_filter)
 
         section = Section(
             id=section_model.id,
             name=section_model.name,
-            description=cast(str, section_model.description),
+            description=cast("str", section_model.description),
             metadata=section_model.metadata,
             default_adjustment_filter=adjustment_filter,
             display_format=section_model.display_format,
@@ -413,7 +380,7 @@ class StatementStructureBuilder:
 
     def _build_item_model(
         self, item_model: BaseItemModel
-    ) -> Union[LineItem, CalculatedLineItem, MetricLineItem, SubtotalLineItem, Section]:
+    ) -> LineItem | CalculatedLineItem | MetricLineItem | SubtotalLineItem | Section:
         """Build a statement item object from its corresponding Pydantic model.
 
         Dispatches the building process based on the specific type of the input
@@ -432,9 +399,7 @@ class StatementStructureBuilder:
             TypeError: If an unexpected model type is encountered.
         """
         # Convert adjustment filter for all item types
-        adjustment_filter = self._convert_adjustment_filter(
-            item_model.default_adjustment_filter
-        )
+        adjustment_filter = self._convert_adjustment_filter(item_model.default_adjustment_filter)
 
         # Dispatch by model instance type
         if isinstance(item_model, SectionModel):
@@ -446,7 +411,7 @@ class StatementStructureBuilder:
                 name=item_model.name,
                 node_id=item_model.node_id,
                 standard_node_ref=item_model.standard_node_ref,
-                description=cast(str, item_model.description),
+                description=cast("str", item_model.description),
                 sign_convention=item_model.sign_convention,
                 metadata=item_model.metadata,
                 default_adjustment_filter=adjustment_filter,
@@ -465,7 +430,7 @@ class StatementStructureBuilder:
                 name=item_model.name,
                 # Pass the nested Pydantic model if structure expects dict
                 calculation=item_model.calculation.model_dump(),
-                description=cast(str, item_model.description),
+                description=cast("str", item_model.description),
                 sign_convention=item_model.sign_convention,
                 metadata=item_model.metadata,
                 default_adjustment_filter=adjustment_filter,
@@ -483,7 +448,7 @@ class StatementStructureBuilder:
                 name=item_model.name,
                 metric_id=item_model.metric_id,
                 inputs=item_model.inputs,
-                description=cast(str, item_model.description),
+                description=cast("str", item_model.description),
                 sign_convention=item_model.sign_convention,
                 metadata=item_model.metadata,
                 default_adjustment_filter=adjustment_filter,
@@ -514,9 +479,7 @@ class StatementStructureBuilder:
             A `SubtotalLineItem` instance.
         """
         # Convert adjustment filter
-        adjustment_filter = self._convert_adjustment_filter(
-            subtotal_model.default_adjustment_filter
-        )
+        adjustment_filter = self._convert_adjustment_filter(subtotal_model.default_adjustment_filter)
 
         # Consolidate logic for getting item IDs
         item_ids = (
@@ -525,9 +488,7 @@ class StatementStructureBuilder:
             else subtotal_model.items_to_sum
         )
         if not item_ids:
-            logger.warning(
-                f"Subtotal '{subtotal_model.id}' has no items_to_sum or calculation inputs defined."
-            )
+            logger.warning("Subtotal '%s' has no items_to_sum or calculation inputs defined.", subtotal_model.id)
             # Decide handling: error or allow empty subtotal?
             # Allowing for now, may need adjustment based on desired behavior.
 
@@ -535,7 +496,7 @@ class StatementStructureBuilder:
             id=subtotal_model.id,
             name=subtotal_model.name,
             item_ids=item_ids or [],  # Ensure it's a list
-            description=cast(str, subtotal_model.description),
+            description=cast("str", subtotal_model.description),
             sign_convention=subtotal_model.sign_convention,
             metadata=subtotal_model.metadata,
             default_adjustment_filter=adjustment_filter,

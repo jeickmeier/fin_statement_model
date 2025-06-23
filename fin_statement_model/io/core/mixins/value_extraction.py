@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
-import logging
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+import logging
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from fin_statement_model.core.graph import Graph
 from fin_statement_model.io.core.base import DataWriter
+
+if TYPE_CHECKING:
+    from fin_statement_model.core.graph import Graph
 
 logger = logging.getLogger(__name__)
 
@@ -17,23 +19,20 @@ logger = logging.getLogger(__name__)
 class ValueExtractionMixin:
     """Shared helper to pull numeric values from graph nodes consistently."""
 
-    def extract_node_value(
-        self, node: Any, period: str, *, calculate: bool = True
-    ) -> Optional[float]:
+    def extract_node_value(self, node: Any, period: str, *, calculate: bool = True) -> float | None:
         """Extract a numeric value from a graph node for a specific period."""
         try:
             if hasattr(node, "values") and isinstance(node.values, dict):
                 val = node.values.get(period)
-                if isinstance(val, (int, float)):
+                if isinstance(val, int | float):
                     return float(val)
 
             # Fall back to expensive calculation only if requested
             if calculate and hasattr(node, "calculate") and callable(node.calculate):
                 val = node.calculate(period)
-                if isinstance(val, (int, float)):
+                if isinstance(val, int | float):
                     return float(val)
-            return None
-        except Exception as exc:  # noqa: BLE001
+        except (ValueError, ArithmeticError, AttributeError) as exc:
             logger.debug(
                 "Failed to extract value from node '%s' period '%s': %s",
                 getattr(node, "name", "?"),
@@ -41,6 +40,10 @@ class ValueExtractionMixin:
                 exc,
             )
             return None
+
+        # Explicitly return None when no exception occurred but value extraction
+        # was unsuccessful. Located outside the try/except to satisfy TRY300.
+        return None
 
 
 class DataFrameBasedWriter(ValueExtractionMixin, DataWriter, ABC):
@@ -50,7 +53,7 @@ class DataFrameBasedWriter(ValueExtractionMixin, DataWriter, ABC):
         self,
         graph: Graph,
         *,
-        include_nodes: Optional[list[str]] = None,
+        include_nodes: list[str] | None = None,
         calculate: bool = True,
     ) -> dict[str, dict[str, float]]:
         """Extract all node data from a graph into a nested dictionary."""

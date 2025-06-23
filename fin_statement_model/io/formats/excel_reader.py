@@ -9,13 +9,13 @@ load the data from the specified sheet.
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 import pandas as pd
 
-from fin_statement_model.io.core.registry import register_reader
-from fin_statement_model.io.core.dataframe_reader_base import DataFrameReaderBase
 from fin_statement_model.io.config.models import ExcelReaderConfig
+from fin_statement_model.io.core.dataframe_reader_base import DataFrameReaderBase
+from fin_statement_model.io.core.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
 
 logger = logging.getLogger(__name__)
@@ -57,8 +57,8 @@ class ExcelReader(DataFrameReaderBase):
         periods_row: int,
         items_col: int,
         header_row: int,
-        nrows: Optional[int],
-        skiprows: Optional[int],
+        nrows: int | None,
+        skiprows: int | None,
     ) -> tuple[pd.DataFrame, list[str]]:
         """Read core data and period headers from an Excel sheet.
 
@@ -97,15 +97,11 @@ class ExcelReader(DataFrameReaderBase):
         period_headers = raw_df.iloc[periods_row_idx].astype(str).tolist()
 
         # Rebuild DataFrame starting from header_row
-        df = raw_df.drop(index=list(range(0, header_row_idx + 1))).reset_index(
-            drop=True
-        )
-        df.columns = raw_df.iloc[header_row_idx]
+        df = raw_df.drop(index=list(range(header_row_idx + 1))).reset_index(drop=True)
+        df.columns = pd.Index(raw_df.iloc[header_row_idx])
 
         # Validate items column index
-        self.validate_column_bounds(
-            df, items_col - 1, file_path, f"items_col ({items_col})"
-        )
+        self.validate_column_bounds(df, items_col - 1, file_path, f"items_col ({items_col})")
 
         return df, period_headers
 
@@ -139,12 +135,8 @@ class ExcelReader(DataFrameReaderBase):
         items_col = self._param("items_col", kwargs, default=1)
         header_row = self._param("header_row", kwargs)
 
-        # XOR enforcement – raise early if both provided via kwargs (override) or cfg.
-        if (
-            header_row is not None
-            and "periods_row" in kwargs
-            and kwargs.get("periods_row") is not None
-        ):
+        # XOR enforcement - raise early if both provided via kwargs (override) or cfg.
+        if header_row is not None and "periods_row" in kwargs and kwargs.get("periods_row") is not None:
             raise ReadError(
                 "Provide either header_row or periods_row, not both.",
                 source=str(source),
@@ -177,8 +169,8 @@ class ExcelReader(DataFrameReaderBase):
                 # align index offset by items_col
                 if idx - items_col < len(period_headers):
                     new_cols[idx] = str(period_headers[idx])
-            df_raw.columns = new_cols
-        # No else branch needed – when header_row equals periods_row renaming is
+            df_raw.columns = pd.Index(new_cols)
+        # No else branch needed - when header_row equals periods_row renaming is
         # a no-op *by design* and no longer merits a warning.
 
         return df_raw

@@ -5,22 +5,22 @@ the statements package to handle transient failures gracefully. It supports
 configurable retry strategies, backoff algorithms, and error classification.
 """
 
-import logging
-import random
-import time
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
+import logging
+import secrets
+import time
 from typing import Generic, Optional, TypeVar, cast
-from collections.abc import Callable
 
-from fin_statement_model.statements.utilities.result_types import (
-    Result,
-    Failure,
-    ErrorDetail,
-    ErrorCollector,
-)
 from fin_statement_model.config.access import cfg_or_param
+from fin_statement_model.statements.utilities.result_types import (
+    ErrorCollector,
+    ErrorDetail,
+    Failure,
+    Result,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -63,10 +63,10 @@ class RetryConfig:
         collect_all_errors: Whether to collect errors from all attempts
     """
 
-    max_attempts: Optional[int] = None
+    max_attempts: int | None = None
     strategy: RetryStrategy = RetryStrategy.BACKOFF
     backoff: Optional["BackoffStrategy"] = None
-    retryable_errors: Optional[set[str]] = None
+    retryable_errors: set[str] | None = None
     log_retries: bool = True
     collect_all_errors: bool = False
 
@@ -135,13 +135,12 @@ class ExponentialBackoff(BackoffStrategy):
 
     def get_delay(self, attempt: int) -> float:
         """Calculate exponential backoff delay."""
-        delay = min(
-            self.base_delay * (self.multiplier ** (attempt - 1)), self.max_delay
-        )
+        delay = min(self.base_delay * (self.multiplier ** (attempt - 1)), self.max_delay)
 
         if self.jitter:
-            # Add up to 20% jitter
-            jitter_amount = delay * 0.2 * random.random()  # noqa: S311
+            # Add up to 20% jitter (non-crypto randomness acceptable)
+            jitter_factor = secrets.randbelow(10000) / 10000  # 0.0-0.9999
+            jitter_amount = delay * 0.2 * jitter_factor
             delay += jitter_amount
 
         return delay
@@ -178,6 +177,7 @@ class ConstantBackoff(BackoffStrategy):
 
     def get_delay(self, attempt: int) -> float:
         """Return constant delay."""
+        _ = attempt  # Parameter intentionally unused in constant backoff
         return self.delay
 
 
@@ -195,7 +195,7 @@ class RetryResult(Generic[T]):
     result: Result[T]
     attempts: int
     total_delay: float
-    all_errors: Optional[list[ErrorDetail]] = None
+    all_errors: list[ErrorDetail] | None = None
 
     @property
     def success(self) -> bool:
@@ -227,7 +227,7 @@ def is_retryable_error(error: ErrorDetail, retryable_codes: set[str]) -> bool:
 class RetryHandler:
     """Handles retry logic for operations that may fail transiently."""
 
-    def __init__(self, config: Optional[RetryConfig] = None):
+    def __init__(self, config: RetryConfig | None = None):
         """Initialize retry handler.
 
         Args:
@@ -238,7 +238,7 @@ class RetryHandler:
     def retry(
         self,
         operation: Callable[[], Result[T]],
-        operation_name: Optional[str] = None,
+        operation_name: str | None = None,
     ) -> RetryResult[T]:
         """Execute an operation with retry logic.
 
@@ -252,17 +252,17 @@ class RetryHandler:
         error_collector = ErrorCollector() if self.config.collect_all_errors else None
         total_delay = 0.0
         # Ensure max_attempts is int
-        max_attempts = cast(int, self.config.max_attempts)
+        max_attempts = cast("int", self.config.max_attempts)
         op_name = operation_name or operation.__name__
 
         for attempt in range(1, max_attempts + 1):
             if attempt > 1 and self.config.log_retries:
-                logger.info(f"Retrying {op_name} (attempt {attempt}/{max_attempts})")
+                logger.info("Retrying %s (attempt %s/%s)", op_name, attempt, max_attempts)
 
             # Execute the operation
             try:
                 result = operation()
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 - convert any exception into Failure for retry logic
                 # Convert exception to Result
                 result = Failure.from_exception(e)
 
@@ -293,23 +293,24 @@ class RetryHandler:
                 # No more retries
                 if self.config.log_retries:
                     logger.warning(
-                        f"{op_name} failed after {attempt} attempts. "
-                        f"Final error: {errors[0].message if errors else 'Unknown'}"
+                        "%s failed after %s attempts. Final error: %s",
+                        op_name,
+                        attempt,
+                        errors[0].message if errors else "Unknown",
                     )
                 break
 
             # Check if errors are retryable
             if self.config.strategy == RetryStrategy.CONDITIONAL:
                 # Safe cast retryable_errors to non-nullable set
-                retryable_errors = cast(set[str], self.config.retryable_errors)
-                retryable = any(
-                    is_retryable_error(error, retryable_errors) for error in errors
-                )
+                retryable_errors = cast("set[str]", self.config.retryable_errors)
+                retryable = any(is_retryable_error(error, retryable_errors) for error in errors)
                 if not retryable:
                     if self.config.log_retries:
                         logger.debug(
-                            f"{op_name} failed with non-retryable error: "
-                            f"{errors[0].code if errors else 'Unknown'}"
+                            "%s failed with non-retryable error: %s",
+                            op_name,
+                            errors[0].code if errors else "Unknown",
                         )
                     break
 
@@ -317,7 +318,7 @@ class RetryHandler:
             if self.config.strategy == RetryStrategy.BACKOFF and self.config.backoff:
                 delay = self.config.backoff.get_delay(attempt)
                 if self.config.log_retries:
-                    logger.debug(f"Waiting {delay:.2f}s before retry")
+                    logger.debug("Waiting %.2fs before retry", delay)
                 time.sleep(delay)
                 total_delay += delay
 
@@ -332,7 +333,7 @@ class RetryHandler:
     def retry_async(
         self,
         operation: Callable[[], Result[T]],
-        operation_name: Optional[str] = None,
+        operation_name: str | None = None,
     ) -> RetryResult[T]:
         """Execute an async operation with retry logic.
 
@@ -355,9 +356,9 @@ class RetryHandler:
 
 def retry_with_exponential_backoff(
     operation: Callable[[], Result[T]],
-    max_attempts: Optional[int] = None,
+    max_attempts: int | None = None,
     base_delay: float = 1.0,
-    operation_name: Optional[str] = None,
+    operation_name: str | None = None,
 ) -> RetryResult[T]:
     """Retry an operation with exponential backoff.
 
@@ -385,8 +386,8 @@ def retry_with_exponential_backoff(
 def retry_on_specific_errors(
     operation: Callable[[], Result[T]],
     retryable_errors: set[str],
-    max_attempts: Optional[int] = None,
-    operation_name: Optional[str] = None,
+    max_attempts: int | None = None,
+    operation_name: str | None = None,
 ) -> RetryResult[T]:
     """Retry an operation only for specific error codes.
 

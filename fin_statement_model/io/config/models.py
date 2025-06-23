@@ -14,37 +14,46 @@ and export operations.
 
 from __future__ import annotations
 
-from typing import Optional, Literal, Any, TYPE_CHECKING
-from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
+from typing import TYPE_CHECKING, Any, Literal
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from fin_statement_model.config.access import cfg
-from fin_statement_model.core.adjustments.models import (
-    AdjustmentFilterInput,
-)
 
-# Import central MappingConfig alias
-from fin_statement_model.io.core.types import MappingConfig
+# -----------------------------------------------------------------------------
+# Conditional imports for typing/runtime without reassigning the same identifiers
+# -----------------------------------------------------------------------------
 
-# Ensure pandas alias 'pd' is available at runtime for Pydantic forward refs.
-import importlib
+if TYPE_CHECKING:  # pragma: no cover - import solely for static type checking
+    import pandas as pd  # pylint: disable=import-error
 
-if TYPE_CHECKING:  # pragma: no cover – import solely for type checking
-    import pandas as pd  # noqa: F401  # pylint: disable=import-error
+    from fin_statement_model.core.adjustments.models import AdjustmentFilterInput
+    from fin_statement_model.io.core.types import MappingConfig
+else:  # Runtime fallbacks to avoid hard dependencies during import time
+    try:
+        from fin_statement_model.core.adjustments.models import AdjustmentFilterInput  # type: ignore
+    except ImportError:  # pragma: no cover
+        AdjustmentFilterInput = Any  # type: ignore[misc,assignment]
 
-try:
-    pd = importlib.import_module("pandas")
-except (
-    ModuleNotFoundError
-):  # pragma: no cover – pandas is a core dependency but guard anyway
-    pd = Any  # Fallback placeholder to keep type checkers happy
+    try:
+        from fin_statement_model.io.core.types import MappingConfig  # type: ignore
+    except ImportError:  # pragma: no cover
+        MappingConfig = Any  # type: ignore[misc,assignment]
+
+    import importlib
+
+    try:
+        pd = importlib.import_module("pandas")  # type: ignore
+    except ModuleNotFoundError:  # pragma: no cover
+        pd = Any  # type: ignore[misc]
+
+# -----------------------------------------------------------------------------
 
 
 class BaseReaderConfig(BaseModel):
     """Base configuration for IO readers."""
 
-    source: Any = Field(
-        ..., description="URI, path, or in-memory object representing the data source."
-    )
+    source: Any = Field(..., description="URI, path, or in-memory object representing the data source.")
     format_type: Literal[
         "csv",
         "excel",
@@ -65,41 +74,30 @@ class CsvReaderConfig(BaseReaderConfig):
         default_factory=lambda: cfg("io.default_csv_delimiter"),
         description="Field delimiter for CSV files.",
     )
-    header_row: int = Field(
-        1, description="Row number containing column names (1-indexed)."
-    )
-    index_col: Optional[int] = Field(
-        None, description="1-indexed column for row labels."
-    )
-    mapping_config: Optional[MappingConfig] = Field(
+    header_row: int = Field(1, description="Row number containing column names (1-indexed).")
+    index_col: int | None = Field(None, description="1-indexed column for row labels.")
+    mapping_config: MappingConfig | None = Field(
         None, description="Optional configuration for mapping source item names."
     )
 
     # Runtime override options: these will override config defaults when provided at read-time
-    statement_type: Optional[
-        Literal["income_statement", "balance_sheet", "cash_flow"]
-    ] = Field(
+    statement_type: Literal["income_statement", "balance_sheet", "cash_flow"] | None = Field(
         None,
         description="Type of statement ('income_statement', 'balance_sheet', 'cash_flow') to select mapping scope.",
     )
-    item_col: Optional[str] = Field(
-        None, description="Name of the column containing item identifiers."
-    )
-    period_col: Optional[str] = Field(
-        None, description="Name of the column containing period identifiers."
-    )
-    value_col: Optional[str] = Field(
-        None, description="Name of the column containing numeric values."
-    )
+    item_col: str | None = Field(None, description="Name of the column containing item identifiers.")
+    period_col: str | None = Field(None, description="Name of the column containing period identifiers.")
+    value_col: str | None = Field(None, description="Name of the column containing numeric values.")
     pandas_read_csv_kwargs: dict[str, Any] = Field(
         default_factory=dict,
         description="Additional kwargs for pandas.read_csv, overriding config defaults.",
     )
 
-    # Override with specific source type – file path
+    # Override with specific source type - file path
     source: str = Field(..., description="Path to the CSV file")
 
     @model_validator(mode="after")  # type: ignore[arg-type]
+    @classmethod
     def check_header_row(cls, cfg: CsvReaderConfig) -> CsvReaderConfig:
         """Ensure `header_row` is a positive integer."""
         if cfg.header_row < 1:
@@ -111,36 +109,29 @@ class ExcelReaderConfig(BaseReaderConfig):
     """Excel reader options."""
 
     # Uses cfg("io.default_excel_sheet") unless caller overrides
-    sheet_name: Optional[str] = Field(
+    sheet_name: str | None = Field(
         default_factory=lambda: cfg("io.default_excel_sheet"),
         description="Worksheet name or index.",
     )
     items_col: int = Field(1, description="1-indexed column where item names reside.")
     periods_row: int = Field(1, description="1-indexed row where periods reside.")
-    mapping_config: Optional[MappingConfig] = Field(
+    mapping_config: MappingConfig | None = Field(
         None, description="Optional configuration for mapping source item names."
     )
 
-    statement_type: Optional[
-        Literal["income_statement", "balance_sheet", "cash_flow"]
-    ] = Field(
+    statement_type: Literal["income_statement", "balance_sheet", "cash_flow"] | None = Field(
         None,
         description="Type of statement ('income_statement', 'balance_sheet', 'cash_flow'). Used to select a mapping scope.",
     )
-    header_row: Optional[int] = Field(
-        None, description="1-indexed row for pandas header reading."
-    )
-    nrows: Optional[int] = Field(
-        None, description="Number of rows to read from the sheet."
-    )
-    skiprows: Optional[int] = Field(
-        None, description="Number of rows to skip at the beginning."
-    )
+    header_row: int | None = Field(None, description="1-indexed row for pandas header reading.")
+    nrows: int | None = Field(None, description="Number of rows to read from the sheet.")
+    skiprows: int | None = Field(None, description="Number of rows to skip at the beginning.")
 
     # Explicit file-path source
     source: str = Field(..., description="Path to the Excel file")
 
     @model_validator(mode="after")  # type: ignore[arg-type]
+    @classmethod
     def check_indices(cls, cfg: ExcelReaderConfig) -> ExcelReaderConfig:
         """Ensure indices are valid and that `header_row` and `periods_row` are exclusive."""
         if cfg.items_col < 1 or cfg.periods_row < 1:
@@ -167,21 +158,20 @@ class FmpReaderConfig(BaseReaderConfig):
     statement_type: Literal["income_statement", "balance_sheet", "cash_flow"] = Field(
         ..., description="Type of financial statement to fetch."
     )
-    period_type: Literal["FY", "QTR"] = Field(
-        "FY", description="Period type: 'FY' or 'QTR'."
-    )
+    period_type: Literal["FY", "QTR"] = Field("FY", description="Period type: 'FY' or 'QTR'.")
     limit: int = Field(5, description="Number of periods to fetch.")
     # Caller value → env var → cfg("api.fmp_api_key")
-    api_key: Optional[str] = Field(
+    api_key: str | None = Field(
         default=None,
         description="Financial Modeling Prep API key.",
     )
-    mapping_config: Optional[MappingConfig] = Field(
+    mapping_config: MappingConfig | None = Field(
         None, description="Optional configuration for mapping source item names."
     )
 
     @field_validator("api_key", mode="before")
-    def load_api_key_env(cls, value: Optional[str]) -> Optional[str]:
+    @classmethod
+    def load_api_key_env(cls, value: str | None) -> str | None:
         """Load API key by cascading through explicit param, env var, and global config."""
         if value:
             return value
@@ -190,6 +180,7 @@ class FmpReaderConfig(BaseReaderConfig):
         return os.getenv("FMP_API_KEY") or cfg("api.fmp_api_key", None)
 
     @model_validator(mode="after")  # type: ignore[arg-type]
+    @classmethod
     def check_api_key(cls, cfg: FmpReaderConfig) -> FmpReaderConfig:
         """Ensure an API key is provided after attempting to load from all sources."""
         if not cfg.api_key:
@@ -213,11 +204,11 @@ class DataFrameReaderConfig(BaseReaderConfig):
     model_config = ConfigDict(extra="forbid", frozen=True, arbitrary_types_allowed=True)
 
     # Use forward reference to avoid hard dependency at import time
-    source: "pd.DataFrame" = Field(..., description="In-memory pandas DataFrame source")
+    source: pd.DataFrame = Field(..., description="In-memory pandas DataFrame source")
     format_type: Literal["dataframe"] = "dataframe"
 
     # Runtime override for read-time periods selection
-    periods: Optional[list[str]] = Field(
+    periods: list[str] | None = Field(
         None,
         description="Optional list of periods (columns) to include when reading a DataFrame.",
     )
@@ -230,15 +221,11 @@ class DictReaderConfig(BaseReaderConfig):
     placeholder keeps the IO registry symmetric and future-proof.
     """
 
-    source: dict[str, dict[str, float]] = Field(
-        ..., description="In-memory dictionary source"
-    )
+    source: dict[str, dict[str, float]] = Field(..., description="In-memory dictionary source")
     format_type: Literal["dict"] = "dict"
 
     # Runtime override for read-time periods selection
-    periods: Optional[list[str]] = Field(
-        None, description="Optional list of periods to include when reading a dict."
-    )
+    periods: list[str] | None = Field(None, description="Optional list of periods to include when reading a dict.")
 
 
 # --- Writer-side Pydantic configuration models ---
@@ -271,19 +258,15 @@ class ExcelWriterConfig(BaseWriterConfig):
 
     format_type: Literal["excel"] = "excel"
 
-    recalculate: bool = Field(
-        True, description="Whether to recalculate graph before export."
-    )
-    include_nodes: Optional[list[str]] = Field(
-        None, description="Optional list of node names to include in export."
-    )
+    recalculate: bool = Field(True, description="Whether to recalculate graph before export.")
+    include_nodes: list[str] | None = Field(None, description="Optional list of node names to include in export.")
     excel_writer_kwargs: dict[str, Any] = Field(
         default_factory=dict,
         description="Additional kwargs for pandas.DataFrame.to_excel.",
     )
 
     # Output file path (optional when provided at write-time)
-    target: Optional[str] = Field(
+    target: str | None = Field(
         None,
         description="Path to the output Excel file. If None, must be supplied when calling write().",
     )
@@ -294,21 +277,15 @@ class DataFrameWriterConfig(BaseWriterConfig):
 
     model_config = ConfigDict(extra="forbid", frozen=True, arbitrary_types_allowed=True)
 
-    target: Optional["pd.DataFrame"] = Field(
-        None, description="Optional DataFrame target override (rare)."
-    )
-    recalculate: bool = Field(
-        True, description="Whether to recalculate graph before export."
-    )
-    include_nodes: Optional[list[str]] = Field(
-        None, description="Optional list of node names to include in export."
-    )
+    target: pd.DataFrame | None = Field(None, description="Optional DataFrame target override (rare).")
+    recalculate: bool = Field(True, description="Whether to recalculate graph before export.")
+    include_nodes: list[str] | None = Field(None, description="Optional list of node names to include in export.")
 
 
 class DictWriterConfig(BaseWriterConfig):
     """Dict writer has no additional options."""
 
-    target: Optional[dict[str, dict[str, float]]] = Field(
+    target: dict[str, dict[str, float]] | None = Field(
         None, description="Optional dict target (ignored by DictWriter)."
     )
 
@@ -321,7 +298,7 @@ class MarkdownWriterConfig(BaseWriterConfig):
     """
 
     # In-memory configs only.
-    raw_configs: Optional[dict[str, dict[str, Any]]] = Field(
+    raw_configs: dict[str, dict[str, Any]] | None = Field(
         None,
         description=(
             "Mapping of statement IDs to configuration dictionaries.  This allows "
@@ -329,30 +306,22 @@ class MarkdownWriterConfig(BaseWriterConfig):
         ),
     )
 
-    historical_periods: Optional[list[str]] = Field(
-        None, description="List of historical period names."
-    )
-    forecast_periods: Optional[list[str]] = Field(
-        None, description="List of forecast period names."
-    )
-    adjustment_filter: Optional[AdjustmentFilterInput] = Field(
-        None, description="Adjustment filter to apply."
-    )
-    forecast_configs: Optional[dict[str, Any]] = Field(
+    historical_periods: list[str] | None = Field(None, description="List of historical period names.")
+    forecast_periods: list[str] | None = Field(None, description="List of forecast period names.")
+    adjustment_filter: AdjustmentFilterInput | None = Field(None, description="Adjustment filter to apply.")
+    forecast_configs: dict[str, Any] | None = Field(
         None,
         description="Dictionary mapping node IDs to forecast configurations for notes.",
     )
     indent_spaces: int = Field(4, description="Number of spaces per indentation level.")
-    target: Optional[str] = Field(
-        None, description="Optional target path (ignored by MarkdownWriter)."
-    )
+    target: str | None = Field(None, description="Optional target path (ignored by MarkdownWriter).")
 
     # Allow extra write() kwargs like 'statement_structure' to pass through without error
     model_config = ConfigDict(extra="ignore", frozen=True)
 
 
 # -----------------------------------------------------------------------------
-# Graph Definition (dict) Reader/Writer Configs – minimal requirements
+# Graph Definition (dict) Reader/Writer Configs - minimal requirements
 # -----------------------------------------------------------------------------
 
 
@@ -378,7 +347,7 @@ class GraphDefinitionWriterConfig(BaseWriterConfig):
     target: Any | None = Field(
         None,
         description=(
-            "Unused placeholder – GraphDefinitionWriter returns the definition "
+            "Unused placeholder - GraphDefinitionWriter returns the definition "
             "dict instead of writing to an external target."
         ),
     )

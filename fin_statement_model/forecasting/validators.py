@@ -12,22 +12,26 @@ Features:
 
 Example:
     >>> from fin_statement_model.forecasting.validators import ForecastValidator
-    >>> ForecastValidator.validate_forecast_inputs(["2022"], ["2023"], {"revenue": {"method": "simple", "config": 0.05}})
+    >>> ForecastValidator.validate_forecast_inputs(
+    ...     ["2022"], ["2023"], {"revenue": {"method": "simple", "config": 0.05}}
+    ... )
     # No exception means validation passed
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any
+
+from pydantic import ValidationError
 
 from fin_statement_model.core.nodes import Node
-from .types import ForecastMethodType, ForecastConfig
 from fin_statement_model.forecasting.errors import (
     ForecastConfigurationError,
     ForecastMethodError,
     ForecastNodeError,
     ForecastResultError,
 )
-from pydantic import ValidationError
+
+from .types import ForecastConfig, ForecastMethodType
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +48,7 @@ class ForecastValidator:
     def validate_forecast_inputs(
         historical_periods: list[str],
         forecast_periods: list[str],
-        node_configs: Optional[dict[str, dict[str, Any]]] = None,
+        node_configs: dict[str, dict[str, Any]] | None = None,
     ) -> None:
         """Validate forecast input periods and node configurations.
 
@@ -90,15 +94,11 @@ class ForecastValidator:
             TypeError: If configuration is of wrong type.
         """
         if not isinstance(config, dict):
-            raise TypeError(
-                f"Configuration for node '{node_name}' must be a dict, got {type(config)}"
-            )
+            raise TypeError(f"Configuration for node '{node_name}' must be a dict, got {type(config)}")
 
         # Validate method
         if "method" not in config:
-            raise ValueError(
-                f"Configuration for node '{node_name}' missing required 'method' key"
-            )
+            raise ValueError(f"Configuration for node '{node_name}' missing required 'method' key")
 
         method = config["method"]
         valid_methods: list[ForecastMethodType] = [
@@ -110,15 +110,12 @@ class ForecastValidator:
         ]
         if method not in valid_methods:
             raise ValueError(
-                f"Invalid forecast method '{method}' for node '{node_name}'. "
-                f"Valid methods: {valid_methods}"
+                f"Invalid forecast method '{method}' for node '{node_name}'. Valid methods: {valid_methods}"
             )
 
         # Validate config exists (can be None for some methods)
         if "config" not in config:
-            raise ValueError(
-                f"Configuration for node '{node_name}' missing required 'config' key"
-            )
+            raise ValueError(f"Configuration for node '{node_name}' missing required 'config' key")
 
     @staticmethod
     def validate_node_for_forecast(node: Node, method: str) -> None:
@@ -137,6 +134,13 @@ class ForecastValidator:
             >>> ForecastValidator.validate_node_for_forecast(DummyNode(), "simple")
             # No exception means validation passed
         """
+        # Reference the supplied `method` argument for transparency and to comply with linters.
+        logger.debug(
+            "Validating node '%s' for forecast method '%s'",
+            node.name,
+            method,
+        )
+
         if not hasattr(node, "values") or not isinstance(node.values, dict):
             raise ForecastNodeError(
                 f"Node {node.name} is not forecastable (missing 'values' dict)",
@@ -191,20 +195,18 @@ class ForecastValidator:
                 supported_methods=supported_methods,
             )
 
-        # Create and validate using dataclass – ValidationError is converted to
+        # Create and validate using dataclass - ValidationError is converted to
         # a ForecastConfigurationError for consistency with the public API.
         try:
             return ForecastConfig(method=method_name, config=config["config"])
-        except ValidationError as exc:  # noqa: F841
+        except ValidationError as exc:
             raise ForecastConfigurationError(
                 "Invalid forecast configuration",
                 config=config,
             ) from exc
 
     @staticmethod
-    def validate_base_period(
-        base_period: str, available_periods: list[str], node_name: str
-    ) -> None:
+    def validate_base_period(base_period: str, available_periods: list[str], node_name: str) -> None:
         """Validate that a base period is valid for forecasting.
 
         Args:
@@ -219,15 +221,13 @@ class ForecastValidator:
             raise ValueError(f"No base period determined for node '{node_name}'")
 
         if base_period not in available_periods:
-            raise ValueError(
-                f"Base period '{base_period}' for node '{node_name}' not found in available periods"
-            )
+            raise ValueError(f"Base period '{base_period}' for node '{node_name}' not found in available periods")
 
     @staticmethod
     def validate_forecast_result(
         results: dict[str, float],
         forecast_periods: list[str],
-        node_name: Optional[str] = None,
+        node_name: str | None = None,
     ) -> None:
         """Validate forecast result values for completeness and type.
 
@@ -252,7 +252,7 @@ class ForecastValidator:
                 node_id=node_name,
             )
         for period, value in results.items():
-            if not isinstance(value, (int, float)):
+            if not isinstance(value, int | float):
                 raise ForecastResultError(
                     f"Forecast value for period {period} is not a number",
                     period=period,

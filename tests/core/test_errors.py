@@ -34,7 +34,7 @@ def test_financial_model_error_alias() -> None:
 
 
 # -----------------------------------------------------------------------------
-# ConfigurationError – path + errors list concatenation
+# ConfigurationError - path + errors list concatenation
 # -----------------------------------------------------------------------------
 
 
@@ -49,7 +49,7 @@ def test_configuration_error_full_context() -> None:
 
 
 # -----------------------------------------------------------------------------
-# CalculationError – details + original_error propagation
+# CalculationError - details + original_error propagation
 # -----------------------------------------------------------------------------
 
 

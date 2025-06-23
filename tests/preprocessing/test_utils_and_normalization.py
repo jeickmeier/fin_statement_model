@@ -4,7 +4,7 @@ from __future__ import annotations
 
 Focus areas:
 1. ensure_dataframe happy path (DataFrame and Series) and error for wrong type.
-2. NormalizationTransformer – percent_of, scale_by, custom function and error paths.
+2. NormalizationTransformer - percent_of, scale_by, custom function and error paths.
 """
 
 
@@ -40,7 +40,7 @@ def test_ensure_dataframe_variants() -> None:
 
 
 # ----------------------------------------------------------------------------
-# NormalizationTransformer – percent_of, scale_by, custom, error handling
+# NormalizationTransformer - percent_of, scale_by, custom, error handling
 # ----------------------------------------------------------------------------
 
 

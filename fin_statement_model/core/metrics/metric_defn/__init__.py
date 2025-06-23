@@ -19,14 +19,13 @@ Auto-loading:
 
 import logging
 from pathlib import Path
-from typing import Optional
 
 from fin_statement_model.core.metrics.registry import metric_registry
 
 logger = logging.getLogger(__name__)
 
 
-def load_organized_metrics(base_path: Optional[Path] = None) -> int:
+def load_organized_metrics(base_path: Path | None = None) -> int:
     """Load all metrics from the organized structure of YAML files.
 
     This function loads metrics from a set of predefined YAML files organized by category.
@@ -107,7 +106,7 @@ def load_organized_metrics(base_path: Optional[Path] = None) -> int:
         if full_path.exists():
             unique_directories.add(full_path.parent)
         else:
-            logger.warning(f"Organized metric file not found: {full_path}")
+            logger.warning("Organized metric file not found: %s", full_path)
 
     # Load metrics from each unique directory
     for directory in unique_directories:
@@ -115,16 +114,16 @@ def load_organized_metrics(base_path: Optional[Path] = None) -> int:
             # load_metrics_from_directory returns the count of metrics loaded
             metrics_count = metric_registry.load_metrics_from_directory(directory)
             total_loaded += metrics_count
-            logger.debug(f"Loaded {metrics_count} metrics from {directory}")
-        except Exception:
-            logger.exception(f"Failed to load metrics from directory {directory}")
+            logger.debug("Loaded %s metrics from %s", metrics_count, directory)
+        except (OSError, ValueError):
+            logger.exception("Failed to load metrics from directory %s", directory)
 
-    logger.info(f"Loaded {total_loaded} total metrics from organized structure")
+    logger.info("Loaded %s total metrics from organized structure", total_loaded)
     return total_loaded
 
 
 # Auto-load on import
 try:
     load_organized_metrics()
-except Exception as e:
-    logger.warning(f"Failed to auto-load organized metrics: {e}")
+except (OSError, ValueError) as exc:
+    logger.warning("Failed to auto-load organized metrics: %s", exc)

@@ -17,7 +17,7 @@ class _SimpleNode(Node):
     # ------------------------------------------------------------------
     # Required abstract implementations
     # ------------------------------------------------------------------
-    def calculate(self, period: str) -> float:  # noqa: D401 – simple example
+    def calculate(self, period: str) -> float:  # noqa: D401 - simple example
         """Return the stored value for *period* (or ``nan`` if missing)."""
         return self.values.get(period, math.nan)
 
@@ -33,7 +33,7 @@ class _SimpleNode(Node):
 
 
 @pytest.fixture()
-def average_method() -> AverageForecastMethod:  # noqa: D401 – fixture
+def average_method() -> AverageForecastMethod:  # noqa: D401 - fixture
     """Return a fresh AverageForecastMethod instance."""
     return AverageForecastMethod()
 

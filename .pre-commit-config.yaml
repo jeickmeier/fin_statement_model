@@ -1,19 +1,19 @@
 # .pre-commit-config.yaml
 repos:
   # 1. Black – opinionated formatter
-  - repo: https://github.com/psf/black
-    rev: 25.1.0          
-    hooks:
-      - id: black
-        name: formatter
-        args: ["."]      # unnecessary but explicit
+  # - repo: https://github.com/psf/black
+  #   rev: 25.1.0          
+  #   hooks:
+  #     - id: black
+  #       name: formatter
+  #       args: ["."]      # unnecessary but explicit
 
   # 2. Ruff – linter / fixer (runs *after* Black)
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.11.13
     hooks:
       - id: ruff
-        name: linter
+        name: linter + formatter
         args: ["--fix"]
 
   # 3. Mypy – local, uses the active interpreter

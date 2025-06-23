@@ -14,13 +14,12 @@ The key features are:
   provided configuration against its schema, and return an initialized instance.
 """
 
-import logging
-from typing import TypeVar, Generic, Optional, Any, Union, cast, Type
 from collections.abc import Callable
 from enum import Enum
+import logging
+from typing import Any, Generic, TypeVar, cast
 
-from pydantic import ValidationError
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from fin_statement_model.io.core.base import DataReader, DataWriter
 from fin_statement_model.io.exceptions import (
@@ -60,9 +59,7 @@ class HandlerRegistry(Generic[T]):
         self._handler_type = handler_type
         self._schema_map: dict[str, type[BaseModel]] = {}
 
-    def register(
-        self, format_type: str, *, schema: type[BaseModel] | None = None
-    ) -> Callable[[type[T]], type[T]]:
+    def register(self, format_type: str, *, schema: type[BaseModel] | None = None) -> Callable[[type[T]], type[T]]:
         """Create a decorator to register a handler class for a format type.
 
         Args:
@@ -84,15 +81,9 @@ class HandlerRegistry(Generic[T]):
                         f"{self._handler_type.capitalize()} format type '{format_type}' "
                         f"already registered to {self._registry[format_type]}."
                     )
-                logger.debug(
-                    f"Re-registering {self._handler_type} format type '{format_type}' "
-                    f"to {cls.__name__}"
-                )
+                logger.debug("Re-registering %s format type '%s' to %s", self._handler_type, format_type, cls.__name__)
             else:
-                logger.debug(
-                    f"Registering {self._handler_type} format type '{format_type}' "
-                    f"to {cls.__name__}"
-                )
+                logger.debug("Registering %s format type '%s' to %s", self._handler_type, format_type, cls.__name__)
 
             self._registry[format_type] = cls
             if schema is not None:
@@ -114,9 +105,7 @@ class HandlerRegistry(Generic[T]):
             FormatNotSupportedError: If no handler is registered for the format.
         """
         if format_type not in self._registry:
-            raise FormatNotSupportedError(
-                format_type=format_type, operation=f"{self._handler_type} operations"
-            )
+            raise FormatNotSupportedError(format_type=format_type, operation=f"{self._handler_type} operations")
 
         return self._registry[format_type]
 
@@ -139,7 +128,7 @@ class HandlerRegistry(Generic[T]):
         """
         return format_type in self._registry
 
-    def unregister(self, format_type: str) -> Optional[type[T]]:
+    def unregister(self, format_type: str) -> type[T] | None:
         """Remove a format handler from the registry.
 
         This method is primarily useful for testing.
@@ -178,7 +167,7 @@ class HandlerRegistry(Generic[T]):
         """
         return len(self._registry)
 
-    def get_schema(self, format_type: str) -> Optional[type[BaseModel]]:
+    def get_schema(self, format_type: str) -> type[BaseModel] | None:
         """Return the Pydantic schema for a registered format type, if any."""
         return self._schema_map.get(format_type)
 
@@ -196,7 +185,7 @@ _writer_registry = HandlerRegistry[DataWriter]("writer")
 def register_reader(
     format_type: str,
     *,
-    schema: Type[BaseModel] | None = None,
+    schema: type[BaseModel] | None = None,
 ) -> Callable[[type[DataReader]], type[DataReader]]:
     """Decorator to register a DataReader class for a specific format type.
 
@@ -212,16 +201,14 @@ def register_reader(
     """
     # Require schema at registration time (legacy schema-less removed)
     if schema is None:
-        raise ValueError(
-            f"Schema required for reader '{format_type}'; legacy schema-less mode removed."
-        )
+        raise ValueError(f"Schema required for reader '{format_type}'; legacy schema-less mode removed.")
     return _reader_registry.register(format_type, schema=schema)
 
 
 def register_writer(
     format_type: str,
     *,
-    schema: Type[BaseModel] | None = None,
+    schema: type[BaseModel] | None = None,
 ) -> Callable[[type[DataWriter]], type[DataWriter]]:
     """Decorator to register a DataWriter class for a specific format type.
 
@@ -237,9 +224,7 @@ def register_writer(
     """
     # Require schema at registration time (legacy schema-less removed)
     if schema is None:
-        raise ValueError(
-            f"Schema required for writer '{format_type}'; legacy schema-less mode removed."
-        )
+        raise ValueError(f"Schema required for writer '{format_type}'; legacy schema-less mode removed.")
     return _writer_registry.register(format_type, schema=schema)
 
 
@@ -250,9 +235,9 @@ def _get_handler(
     format_type: str,
     registry: HandlerRegistry[Any],
     handler_type: str,
-    error_class: type[Union[ReadError, WriteError]],
+    error_class: type[ReadError | WriteError],
     **kwargs: Any,
-) -> Union[DataReader, DataWriter]:
+) -> DataReader | DataWriter:
     """Generic handler instantiation logic.
 
     This function encapsulates the common pattern for instantiating
@@ -306,12 +291,10 @@ def _get_handler(
 
     # Instantiate handler with validated config
     try:
-        return cast(Union[DataReader, DataWriter], handler_class(cfg))
+        return cast("DataReader | DataWriter", handler_class(cfg))
     except Exception as e:
-        logger.error(
-            f"Failed to instantiate {handler_type}er for format '{format_type}' "
-            f"({handler_class.__name__}): {e}",
-            exc_info=True,
+        logger.exception(
+            "Failed to instantiate %ser for format '%s' (%s)", handler_type, format_type, handler_class.__name__
         )
         raise error_class(
             message=f"Failed to initialize {handler_type}er",
@@ -338,7 +321,7 @@ def get_reader(format_type: str, **kwargs: Any) -> DataReader:
         ReadError: If validation fails for known reader types.
     """
     return cast(
-        DataReader,
+        "DataReader",
         _get_handler(
             format_type=format_type,
             registry=_reader_registry,
@@ -364,7 +347,7 @@ def get_writer(format_type: str, **kwargs: Any) -> DataWriter:
         WriteError: If validation fails for known writer types.
     """
     return cast(
-        DataWriter,
+        "DataWriter",
         _get_handler(
             format_type=format_type,
             registry=_writer_registry,
@@ -387,13 +370,13 @@ def list_writers() -> dict[str, type[DataWriter]]:
 
 __all__ = [
     "HandlerRegistry",
+    "IOFormat",
     "get_reader",
     "get_writer",
     "list_readers",
     "list_writers",
     "register_reader",
     "register_writer",
-    "IOFormat",
 ]
 
 # -----------------------------------------------------------------------------
@@ -401,18 +384,13 @@ __all__ = [
 # -----------------------------------------------------------------------------
 
 
-def _build_io_format_enum() -> "Enum":  # noqa: D401
+def _build_io_format_enum() -> "Enum":
     """Return an Enum mapping of currently registered reader/writer keys."""
-
     # Union of all known reader/writer keys (grabbed at import time after
     # all format modules executed their registration side-effects).
-    keys = sorted(
-        set(_reader_registry.list_formats().keys()).union(
-            _writer_registry.list_formats().keys()
-        )
-    )
+    keys = sorted(set(_reader_registry.list_formats().keys()).union(_writer_registry.list_formats().keys()))
 
-    # Enum member names must be valid identifiers – use upper-snake.
+    # Enum member names must be valid identifiers - use upper-snake.
     def _safe(name: str) -> str:
         return name.replace("-", "_").replace(" ", "_").upper()
 

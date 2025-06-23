@@ -8,32 +8,35 @@ objects, handling runtime overrides and env-var fallbacks.
 from __future__ import annotations
 
 import logging
-from typing import Any, Callable, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from fin_statement_model.io.exceptions import ReadError
 from fin_statement_model.config.access import parse_env_value
+from fin_statement_model.io.exceptions import ReadError
+
+from .validation import ValidationResultCollector
 
 logger = logging.getLogger(__name__)
 
-if TYPE_CHECKING:  # pragma: no cover – import solely for type checking
-    from .validation import ValidationResultCollector
+if TYPE_CHECKING:  # pragma: no cover - import solely for type checking
+    from collections.abc import Callable
 
 
 class ConfigurationMixin:  # pylint: disable=too-many-public-methods
     """Mixin that offers safe, validated access to reader/writer config objects."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D401
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialise mixin and set up internal override/context storage."""
         super().__init__(*args, **kwargs)
 
         # ------------------------------------------------------------------
         # Internal state
         # ------------------------------------------------------------------
-        # _config_context – free-form metadata that *callers* can attach to the
+        # _config_context - free-form metadata that *callers* can attach to the
         # mixin to improve log messages and error reporting (e.g. ticker="AAPL",
         # operation="api_read").  It **does not** influence behaviour besides
         # being emitted via :pymeth:`ValidationResultCollector` summaries.
         #
-        # _config_overrides – runtime key→value map injected via
+        # _config_overrides - runtime key→value map injected via
         # :pymeth:`set_config_override`.  When present, it *silently* overrides
         # the value returned by :pymeth:`get_config_value`.  This mechanism is
         # only required when the same reader/writer instance is reused with
@@ -79,12 +82,12 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
         default: Any = None,
         *,
         required: bool = False,
-        value_type: Optional[type] = None,
-        validator: Optional[Callable[[Any], bool]] = None,
+        value_type: type | None = None,
+        validator: Callable[[Any], bool] | None = None,
     ) -> Any:
         """Get a configuration value, with optional validation."""
         # ------------------------------------------------------------------
-        # Defensive guard – ensure internal attributes exist even if the
+        # Defensive guard - ensure internal attributes exist even if the
         # concrete reader/writer forgot to call ``ConfigurationMixin.__init__``
         # in its own ``__init__`` implementation.  This avoids cryptic
         # AttributeError crashes (see issue #csv_reader_init) and degrades
@@ -112,11 +115,7 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
             )
 
         # Type coercion
-        if (
-            value is not None
-            and value_type is not None
-            and not isinstance(value, value_type)
-        ):
+        if value is not None and value_type is not None and not isinstance(value, value_type):
             try:
                 value = value_type(value)
             except (ValueError, TypeError) as exc:
@@ -134,7 +133,7 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
                         f"Configuration value '{key}' failed validation",
                         reader_type=self.__class__.__name__,
                     )
-            except Exception as exc:
+            except ValueError as exc:
                 raise ReadError(
                     f"Configuration validation error for '{key}': {exc}",
                     reader_type=self.__class__.__name__,
@@ -147,13 +146,11 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
         self,
         key: str,
         *,
-        value_type: Optional[type] = None,
-        validator: Optional[Callable[[Any], bool]] = None,
+        value_type: type | None = None,
+        validator: Callable[[Any], bool] | None = None,
     ) -> Any:
         """Get a required configuration value."""
-        return self.get_config_value(
-            key, required=True, value_type=value_type, validator=validator
-        )
+        return self.get_config_value(key, required=True, value_type=value_type, validator=validator)
 
     # ------------------------------------------------------------------
     # Env var fallback helper
@@ -164,7 +161,7 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
         env_var: str,
         *,
         default: Any = None,
-        value_type: Optional[type] = None,
+        value_type: type | None = None,
     ) -> Any:
         """Get a configuration value, falling back to an environment variable."""
         import os
@@ -181,11 +178,7 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
         if value is None:
             value = default
 
-        if (
-            value is not None
-            and value_type is not None
-            and not isinstance(value, value_type)
-        ):
+        if value is not None and value_type is not None and not isinstance(value, value_type):
             try:
                 value = value_type(value)
             except (ValueError, TypeError):
@@ -200,19 +193,15 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
     # ------------------------------------------------------------------
     # Introspection helpers
     # ------------------------------------------------------------------
-    def validate_configuration(self) -> "ValidationResultCollector":
+    def validate_configuration(self) -> ValidationResultCollector:
         """Validate the handler's configuration object."""
         collector = ValidationResultCollector(context=self._config_context)
         if not hasattr(self, "cfg") or self.cfg is None:
-            collector.add_result(
-                "configuration", False, "Missing configuration object", "structure"
-            )
+            collector.add_result("configuration", False, "Missing configuration object", "structure")
             return collector
         try:
             if hasattr(self.cfg, "model_validate"):
-                collector.add_result(
-                    "configuration", True, "Configuration object is valid", "structure"
-                )
+                collector.add_result("configuration", True, "Configuration object is valid", "structure")
             else:
                 collector.add_result(
                     "configuration",
@@ -220,7 +209,7 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
                     "Configuration object exists (non-Pydantic)",
                     "structure",
                 )
-        except Exception as exc:  # noqa: BLE001
+        except (ValueError, AttributeError, TypeError) as exc:
             collector.add_result(
                 "configuration",
                 False,
@@ -255,7 +244,6 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
         Returns:
             A new dictionary representing the recursively merged configuration.
         """
-
         from fin_statement_model.utils.merge import (
             deep_merge,
         )  # Local import to avoid circular deps
@@ -276,9 +264,7 @@ class ConfigurationMixin:  # pylint: disable=too-many-public-methods
             elif hasattr(cfg, "__dict__"):
                 cfg_dict = vars(cfg)
             else:
-                logger.warning(
-                    "Unsupported configuration type for merge: %s", type(cfg)
-                )
+                logger.warning("Unsupported configuration type for merge: %s", type(cfg))
                 continue
 
             # ------------------------------------------------------------------

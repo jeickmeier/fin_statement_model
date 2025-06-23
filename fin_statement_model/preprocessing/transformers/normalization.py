@@ -1,23 +1,31 @@
 """Provide the NormalizationTransformer for normalizing financial data.
 
-This module defines the transformer to normalize data using percent_of, minmax,
-standard, or scale_by methods within the preprocessing layer.
+This module defines the transformer to normalize data using *percent_of*,
+*minmax*, *standard*, or *scale_by* methods within the preprocessing layer.
+
+# Postpone evaluation of type annotations (PEP 563/649) so that subscripted
+# generics like ``pd.Series[Any]`` do **not** raise ``TypeError`` on pandas
+# versions that lack support for them at runtime.
+
 """
 
-from typing import Optional, Union, ClassVar, Callable
+from __future__ import annotations
+
+from collections.abc import Callable
 import logging
+from typing import Any, ClassVar
 import warnings
 
 import numpy as np
 import pandas as pd
 
+from fin_statement_model.core.errors import DataValidationError
 from fin_statement_model.preprocessing.base_transformer import DataTransformer
 from fin_statement_model.preprocessing.config import (
     NormalizationConfig,
     NormalizationType,
 )
 from fin_statement_model.preprocessing.errors import NormalizationError
-from fin_statement_model.core.errors import DataValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -51,17 +59,13 @@ class NormalizationTransformer(DataTransformer):
         >>> from fin_statement_model.preprocessing.transformers import NormalizationTransformer
         >>>
         >>> # Sample income statement data
-        >>> data = pd.DataFrame({
-        ...     'revenue': [1000, 1100, 1200],
-        ...     'cogs': [600, 650, 700],
-        ...     'operating_expenses': [200, 220, 250]
-        ... }, index=['2021', '2022', '2023'])
+        >>> data = pd.DataFrame(
+        ...     {"revenue": [1000, 1100, 1200], "cogs": [600, 650, 700], "operating_expenses": [200, 220, 250]},
+        ...     index=["2021", "2022", "2023"],
+        ... )
         >>>
         >>> # Create transformer to express as % of revenue
-        >>> normalizer = NormalizationTransformer(
-        ...     normalization_type='percent_of',
-        ...     reference='revenue'
-        ... )
+        >>> normalizer = NormalizationTransformer(normalization_type="percent_of", reference="revenue")
         >>>
         >>> # Transform the data
         >>> normalized = normalizer.transform(data)
@@ -74,10 +78,7 @@ class NormalizationTransformer(DataTransformer):
         Scale financial data to millions:
 
         >>> # Scale values to millions (divide by 1,000,000)
-        >>> scaler = NormalizationTransformer(
-        ...     normalization_type='scale_by',
-        ...     scale_factor=0.000001
-        ... )
+        >>> scaler = NormalizationTransformer(normalization_type="scale_by", scale_factor=0.000001)
         >>> scaled = scaler.transform(data)
 
     Note:
@@ -96,9 +97,7 @@ class NormalizationTransformer(DataTransformer):
     # ------------------------------------------------------------------
 
     @classmethod
-    def register_custom_method(
-        cls, name: str, func: CustomNormFn, *, overwrite: bool = False
-    ) -> None:
+    def register_custom_method(cls, name: str, func: CustomNormFn, *, overwrite: bool = False) -> None:
         """Register a custom normalisation *func* under *name*.
 
         The callable **must** accept two arguments: the DataFrame to be
@@ -112,9 +111,7 @@ class NormalizationTransformer(DataTransformer):
             overwrite: Allow replacing an existing registration. Defaults to *False*.
         """
         if name in cls._CUSTOM_METHODS and not overwrite:
-            raise ValueError(
-                f"Custom normalization method '{name}' already registered."
-            )
+            raise ValueError(f"Custom normalization method '{name}' already registered.")
         cls._CUSTOM_METHODS[name] = func
         logger.info("Registered custom normalization method '%s'", name)
 
@@ -125,13 +122,11 @@ class NormalizationTransformer(DataTransformer):
 
     def __init__(
         self,
-        normalization_type: Union[
-            str, NormalizationType
-        ] = NormalizationType.PERCENT_OF,
-        reference: Optional[str] = None,
-        scale_factor: Optional[float] = None,
+        normalization_type: str | NormalizationType = NormalizationType.PERCENT_OF,
+        reference: str | None = None,
+        scale_factor: float | None = None,
         *,
-        config: Optional[NormalizationConfig] = None,
+        config: NormalizationConfig | None = None,
     ):
         """Initialize the normalizer with specified parameters.
 
@@ -161,9 +156,7 @@ class NormalizationTransformer(DataTransformer):
         # that users can clean up their call-sites.
         # ------------------------------------------------------------------
 
-        if config is not None and any(
-            param is not None for param in (reference, scale_factor)
-        ):
+        if config is not None and any(param is not None for param in (reference, scale_factor)):
             warnings.warn(
                 "Both 'config' and individual kwargs supplied to NormalizationTransformer; the Pydantic config takes precedence.",
                 UserWarning,
@@ -174,9 +167,7 @@ class NormalizationTransformer(DataTransformer):
         if config is not None:
             normalization_type = config.normalization_type or normalization_type
             reference = config.reference or reference
-            scale_factor = (
-                config.scale_factor if config.scale_factor is not None else scale_factor
-            )
+            scale_factor = config.scale_factor if config.scale_factor is not None else scale_factor
 
         # Save incoming config dict for logging/debug via base class
         super().__init__(config.model_dump() if config else None)
@@ -185,13 +176,9 @@ class NormalizationTransformer(DataTransformer):
             norm_type = normalization_type.value
         else:
             norm_type = normalization_type
-        if (
-            norm_type not in self.NORMALIZATION_TYPES
-            and norm_type not in self._CUSTOM_METHODS
-        ):
+        if norm_type not in self.NORMALIZATION_TYPES and norm_type not in self._CUSTOM_METHODS:
             raise NormalizationError(
-                f"Invalid normalization type: {norm_type}. "
-                f"Must be one of {self.NORMALIZATION_TYPES}",
+                f"Invalid normalization type: {norm_type}. Must be one of {self.NORMALIZATION_TYPES}",
                 method=norm_type,
             )
         self.normalization_type = norm_type
@@ -200,25 +187,19 @@ class NormalizationTransformer(DataTransformer):
         self.scale_factor = scale_factor
 
         # Validation
-        if (
-            self.normalization_type == NormalizationType.PERCENT_OF.value
-            and not reference
-        ):
+        if self.normalization_type == NormalizationType.PERCENT_OF.value and not reference:
             raise NormalizationError(
                 "Reference field must be provided for percent_of normalization",
                 method=self.normalization_type,
             )
 
-        if (
-            self.normalization_type == NormalizationType.SCALE_BY.value
-            and scale_factor is None
-        ):
+        if self.normalization_type == NormalizationType.SCALE_BY.value and scale_factor is None:
             raise NormalizationError(
                 "Scale factor must be provided for scale_by normalization",
                 method=self.normalization_type,
             )
 
-    def transform(self, data: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, data: pd.DataFrame | pd.Series[Any]) -> pd.DataFrame | pd.Series[Any]:
         """Normalize the data based on the configured normalization type.
 
         Args:
@@ -235,9 +216,9 @@ class NormalizationTransformer(DataTransformer):
             NormalizationError: If reference column is not found in DataFrame
                 (for 'percent_of' normalization).
         """
-        if not isinstance(data, pd.DataFrame):
+        if not isinstance(data, pd.DataFrame | pd.Series):
             raise DataValidationError(
-                f"Unsupported data type: {type(data)}. Expected pandas.DataFrame",
+                f"Unsupported data type: {type(data)}. Expected pandas.DataFrame or pandas.Series",
                 validation_errors=[f"Got type: {type(data).__name__}"],
             )
         return super().transform(data)
@@ -260,27 +241,19 @@ class NormalizationTransformer(DataTransformer):
                 method=self.normalization_type,
             )
 
-        if (
-            self.normalization_type == NormalizationType.PERCENT_OF.value
-            and not self.reference
-        ):
+        if self.normalization_type == NormalizationType.PERCENT_OF.value and not self.reference:
             raise NormalizationError(
                 "Reference field must be provided for percent_of normalization",
                 method=self.normalization_type,
             )
 
-        if (
-            self.normalization_type == NormalizationType.SCALE_BY.value
-            and self.scale_factor is None
-        ):
+        if self.normalization_type == NormalizationType.SCALE_BY.value and self.scale_factor is None:
             raise NormalizationError(
                 "Scale factor must be provided for scale_by normalization",
                 method=self.normalization_type,
             )
 
-    def _transform_impl(
-        self, data: Union[pd.DataFrame, pd.Series]
-    ) -> Union[pd.DataFrame, pd.Series]:
+    def _transform_impl(self, data: pd.DataFrame | pd.Series[Any]) -> pd.DataFrame | pd.Series[Any]:
         """Apply the normalization transformation.
 
         This is the core implementation method that handles both DataFrame
@@ -303,13 +276,10 @@ class NormalizationTransformer(DataTransformer):
                 such as missing reference columns or invalid values.
 
         Examples:
-            >>> transformer = NormalizationTransformer(
-            ...     normalization_type='scale_by',
-            ...     scale_factor=0.001
-            ... )
-            >>> df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+            >>> transformer = NormalizationTransformer(normalization_type="scale_by", scale_factor=0.001)
+            >>> df = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
             >>> result = transformer._transform_impl(df)
-            >>> series = pd.Series([1, 2, 3], name='values')
+            >>> series = pd.Series([1, 2, 3], name="values")
             >>> result_series = transformer._transform_impl(series)
         """
         if not isinstance(data, pd.DataFrame | pd.Series):
@@ -324,129 +294,80 @@ class NormalizationTransformer(DataTransformer):
             return result_df.iloc[:, 0]
         return result_df
 
-    def _normalize_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Apply normalization to a DataFrame.
+    def _apply_percent_of(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Return DataFrame expressed as percentage of the reference column."""
+        if self.reference not in df.columns:
+            raise NormalizationError(
+                f"Reference column '{self.reference}' not found in DataFrame",
+                method=self.normalization_type,
+                reference_field=self.reference,
+            )
 
-        This method implements the core normalization logic for each supported
-        method type. It handles special cases like:
-        - Division by zero in percent_of calculations
-        - Constant columns in minmax/standard normalization
-        - Custom normalization methods
-
-        Args:
-            df: DataFrame to normalize. For each normalization type:
-                - percent_of: Must contain the reference column
-                - minmax: Any numeric columns
-                - standard: Any numeric columns
-                - scale_by: Any numeric columns
-                - custom: Depends on the custom method
-
-        Returns:
-            Normalized DataFrame with the same column names and index.
-            The values are transformed according to the normalization type:
-            - percent_of: Values as percentages of reference (0-100 scale)
-            - minmax: Values scaled to [0,1] range
-            - standard: Values with mean=0, std=1
-            - scale_by: Values multiplied by scale_factor
-            - custom: Depends on the custom method
-
-        Raises:
-            NormalizationError: If:
-                - Reference column is not found (for percent_of)
-                - All reference values are 0 or NaN (for percent_of)
-                - Custom method fails
-
-        Examples:
-            >>> df = pd.DataFrame({
-            ...     'revenue': [1000, 1100, 1200],
-            ...     'costs': [600, 650, 700]
-            ... })
-            >>> transformer = NormalizationTransformer(
-            ...     normalization_type='percent_of',
-            ...     reference='revenue'
-            ... )
-            >>> result = transformer._normalize_dataframe(df)
-            >>> print(result)
-            #    revenue    costs
-            # 0   100.0     60.0
-            # 1   100.0     59.1
-            # 2   100.0     58.3
-
-        Notes:
-            - For percent_of: Reference column remains at 100%
-            - For minmax: Constant columns map to 0
-            - For standard: Constant columns map to 0
-            - For scale_by: Simple multiplication
-            - Custom methods: Must handle their own edge cases
-        """
         result = df.copy()
+        reference_series = df[self.reference].replace(0, np.nan)
 
-        if self.normalization_type == NormalizationType.PERCENT_OF.value:
-            if self.reference not in df.columns:
-                raise NormalizationError(
-                    f"Reference column '{self.reference}' not found in DataFrame",
-                    method=self.normalization_type,
-                    reference_field=self.reference,
+        for col in df.columns:
+            if col == self.reference:
+                continue
+            if reference_series.isnull().all():
+                result[col] = np.nan
+                logger.warning(
+                    "All reference values for '%s' are zero or NaN. '%s' will be NaN.",
+                    self.reference,
+                    col,
                 )
-
-            for col in df.columns:
-                if col != self.reference:
-                    # Replace 0 with NaN in the denominator to ensure division by zero results in NaN
-                    reference_series = df[self.reference].replace(0, np.nan)
-                    if (
-                        reference_series.isnull().all()
-                    ):  # If all reference values are NaN (or were 0)
-                        result[col] = np.nan
-                        logger.warning(
-                            f"All reference values for '{self.reference}' are zero or NaN. '{col}' will be NaN."
-                        )
-                    else:
-                        result[col] = (df[col] / reference_series) * 100
-
-        elif (
-            self.normalization_type == NormalizationType.MINMAX.value
-        ):  # pragma: no cover
-            for col in df.columns:
-                min_val = df[col].min()
-                max_val = df[col].max()
-
-                if max_val > min_val:
-                    result[col] = (df[col] - min_val) / (
-                        max_val - min_val
-                    )  # pragma: no cover
-                elif max_val == min_val:  # Handles constant columns
-                    result[col] = (
-                        0.0  # Or np.nan, depending on desired behavior for constant series
-                    )
-                # else: max_val < min_val (should not happen with .min()/.max())
-
-        elif self.normalization_type == NormalizationType.STANDARD.value:
-            for col in df.columns:
-                mean = df[col].mean()
-                std = df[col].std()
-
-                if std > 0:
-                    result[col] = (df[col] - mean) / std
-                elif std == 0:  # Handles constant columns
-                    result[col] = 0.0  # Or np.nan, depending on desired behavior
-                # else: std < 0 (not possible)
-
-        elif self.normalization_type == NormalizationType.SCALE_BY.value:
-            for col in df.columns:
-                result[col] = df[col] * self.scale_factor
-
-        else:
-            # Custom method
-            custom_func = self._CUSTOM_METHODS[self.normalization_type]
-            return custom_func(df, self)
-
+            else:
+                result[col] = (df[col] / reference_series) * 100
         return result
+
+    def _apply_minmax(self, df: pd.DataFrame) -> pd.DataFrame:  # pragma: no cover
+        """Scale values to [0,1] range using min-max normalisation."""
+        result = df.copy()
+        for col in df.columns:
+            min_val = df[col].min()
+            max_val = df[col].max()
+            if max_val > min_val:
+                result[col] = (df[col] - min_val) / (max_val - min_val)
+            else:  # constant column
+                result[col] = 0.0
+        return result
+
+    def _apply_standard(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Apply z-score standardisation (mean=0, std=1)."""
+        result = df.copy()
+        for col in df.columns:
+            mean = df[col].mean()
+            std = df[col].std()
+            if std > 0:
+                result[col] = (df[col] - mean) / std
+            else:
+                result[col] = 0.0
+        return result
+
+    def _apply_scale_by(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Multiply all numeric values by the configured scale factor."""
+        return df * self.scale_factor
+
+    def _normalize_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Apply normalization to a DataFrame (delegates to specific helpers)."""
+        if self.normalization_type == NormalizationType.PERCENT_OF.value:
+            return self._apply_percent_of(df)
+        if self.normalization_type == NormalizationType.MINMAX.value:  # pragma: no cover
+            return self._apply_minmax(df)
+        if self.normalization_type == NormalizationType.STANDARD.value:
+            return self._apply_standard(df)
+        if self.normalization_type == NormalizationType.SCALE_BY.value:
+            return self._apply_scale_by(df)
+
+        # Custom method --------------------------------------------------
+        custom_func = self._CUSTOM_METHODS[self.normalization_type]
+        return custom_func(df, self)
 
     # ------------------------------------------------------------------
     # Data validation
     # ------------------------------------------------------------------
 
-    def validate_input(self, data: object) -> bool:  # noqa: D401 – imperative mood
+    def validate_input(self, data: object) -> bool:
         """Return *True* when *data* is a DataFrame or Series.
 
         This method implements the DataTransformer contract by specifying
@@ -472,4 +393,4 @@ class NormalizationTransformer(DataTransformer):
             >>> transformer.validate_input([1, 2, 3])
             False
         """
-        return isinstance(data, (pd.DataFrame, pd.Series))
+        return isinstance(data, pd.DataFrame | pd.Series)

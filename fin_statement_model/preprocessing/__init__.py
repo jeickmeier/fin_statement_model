@@ -20,9 +20,9 @@ Examples:
 
     >>> import pandas as pd
     >>> from fin_statement_model.preprocessing import TransformationService
-    >>> df = pd.DataFrame({'revenue': [1000, 1100], 'cogs': [600, 650]}, index=['2022', '2023'])
+    >>> df = pd.DataFrame({"revenue": [1000, 1100], "cogs": [600, 650]}, index=["2022", "2023"])
     >>> service = TransformationService()
-    >>> normalized = service.normalize_data(df, normalization_type='percent_of', reference='revenue')
+    >>> normalized = service.normalize_data(df, normalization_type="percent_of", reference="revenue")
     >>> print(normalized)
 
     List available transformers:
@@ -37,10 +37,11 @@ Examples:
     >>> class MyCustomTransformer(DataTransformer):
     ...     def _transform_impl(self, data):
     ...         return data + 1
+    ...
     ...     def validate_input(self, data):
     ...         return True
-    >>> TransformerFactory.register_transformer('my_custom', MyCustomTransformer)
-    >>> t = TransformerFactory.create_transformer('my_custom')
+    >>> TransformerFactory.register_transformer("my_custom", MyCustomTransformer)
+    >>> t = TransformerFactory.create_transformer("my_custom")
     >>> t.execute(1)
     2
 
@@ -52,21 +53,19 @@ See Also:
     - fin_statement_model.preprocessing.transformers
 """
 
-from .base_transformer import DataTransformer, CompositeTransformer
-from .transformer_service import TransformerFactory, TransformationService
+from .base_transformer import CompositeTransformer, DataTransformer
 from .errors import (
-    PreprocessingError,
-    TransformerRegistrationError,
-    TransformerConfigurationError,
-    PeriodConversionError,
     NormalizationError,
+    PeriodConversionError,
+    PreprocessingError,
     TimeSeriesError,
+    TransformerConfigurationError,
+    TransformerRegistrationError,
 )
+from .transformer_service import TransformationService, TransformerFactory
 
 ## Trigger transformer discovery on package import
-TransformerFactory.discover_transformers(
-    "fin_statement_model.preprocessing.transformers"
-)
+TransformerFactory.discover_transformers("fin_statement_model.preprocessing.transformers")
 
 __all__ = [
     "CompositeTransformer",

@@ -5,9 +5,10 @@ including Excel and JSON. It provides both internal helper functions and
 public API functions for exporting statements.
 """
 
+from collections.abc import Callable
 import logging
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 import pandas as pd
 
@@ -59,7 +60,6 @@ def export_statements(
         WriteError: Propagated if the underlying *writer_func* fails for any
             individual statement.
     """
-
     if not isinstance(dfs, dict):
         raise TypeError(
             "'dfs' must be a mapping of statement_id to pandas DataFrame. "
@@ -70,7 +70,7 @@ def export_statements(
     output_path.mkdir(parents=True, exist_ok=True)
 
     if not dfs:
-        logger.warning("Received an empty mapping of DataFrames – nothing to export.")
+        logger.warning("Received an empty mapping of DataFrames - nothing to export.")
         return
 
     export_errors: list[tuple[str, str]] = []
@@ -82,34 +82,25 @@ def export_statements(
 
         try:
             writer_func(df, str(file_path), **writer_kwargs)
-            logger.info(
-                "Successfully exported statement '%s' to %s", stmt_id, file_path
-            )
+            logger.info("Successfully exported statement '%s' to %s", stmt_id, file_path)
         except WriteError as e:
-            logger.exception(
-                "Failed to write %s file for statement '%s'", file_suffix, stmt_id
-            )
+            logger.exception("Failed to write %s file for statement '%s'", file_suffix, stmt_id)
             export_errors.append((stmt_id, str(e)))
-        except Exception as e:  # noqa: BLE001 – re-wrap unknown exceptions
-            logger.exception(
-                "Unexpected error exporting statement '%s' to %s", stmt_id, file_path
-            )
+        except Exception as e:
+            logger.exception("Unexpected error exporting statement '%s' to %s", stmt_id, file_path)
             export_errors.append((stmt_id, f"Unexpected export error: {e!s}"))
 
     if export_errors:
         error_summary = "; ".join(f"{sid}: {err}" for sid, err in export_errors)
-        raise WriteError(
-            f"Encountered {len(export_errors)} errors during {file_suffix} export: "
-            f"{error_summary}"
-        )
+        raise WriteError(f"Encountered {len(export_errors)} errors during {file_suffix} export: {error_summary}")
 
 
 def export_statements_to_excel(
     graph: Graph,
     raw_configs: dict[str, dict[str, Any]],
     output_dir: str,
-    format_kwargs: Optional[dict[str, Any]] = None,
-    writer_kwargs: Optional[dict[str, Any]] = None,
+    format_kwargs: dict[str, Any] | None = None,
+    writer_kwargs: dict[str, Any] | None = None,
 ) -> None:
     """Generate statement DataFrames and export them to individual Excel files.
 
@@ -144,14 +135,14 @@ def export_statements_to_excel(
         ...     export_statements_to_excel(
         ...         graph=my_graph,
         ...         raw_configs=my_configs,
-        ...         output_dir='./output_excel/',
-        ...         writer_kwargs={'freeze_panes': (1, 1)} # Freeze header row/col
+        ...         output_dir="./output_excel/",
+        ...         writer_kwargs={"freeze_panes": (1, 1)},  # Freeze header row/col
         ...     )
         ...     # Use logger.info
         ...     logger.info("Statements exported to ./output_excel/")
         ... except (FileNotFoundError, ConfigurationError, StatementError, WriteError) as e:
         ...     # Use logger.error or logger.exception
-        ...     logger.error(f"Export failed: {e}")
+        ...     logger.error("Export failed: %s", e)
     """
     try:
         dfs = create_statement_dataframe(graph, raw_configs, format_kwargs or {})
@@ -172,8 +163,8 @@ def export_statements_to_json(
     graph: Graph,
     raw_configs: dict[str, dict[str, Any]],
     output_dir: str,
-    format_kwargs: Optional[dict[str, Any]] = None,
-    writer_kwargs: Optional[dict[str, Any]] = None,
+    format_kwargs: dict[str, Any] | None = None,
+    writer_kwargs: dict[str, Any] | None = None,
 ) -> None:
     """Generate statement DataFrames and export them to individual JSON files.
 
@@ -209,14 +200,14 @@ def export_statements_to_json(
         ...     export_statements_to_json(
         ...         graph=my_graph,
         ...         raw_configs=my_configs,
-        ...         output_dir='./output_json/',
-        ...         writer_kwargs={'orient': 'split', 'indent': 4}
+        ...         output_dir="./output_json/",
+        ...         writer_kwargs={"orient": "split", "indent": 4},
         ...     )
         ...     # Use logger.info
         ...     logger.info("Statements exported to ./output_json/")
         ... except (FileNotFoundError, ConfigurationError, StatementError, WriteError) as e:
         ...     # Use logger.error or logger.exception
-        ...     logger.error(f"Export failed: {e}")
+        ...     logger.error("Export failed: %s", e)
     """
     final_writer_kwargs = writer_kwargs or {}
     # Set JSON specific defaults if not provided

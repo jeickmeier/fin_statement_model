@@ -5,13 +5,15 @@ using a node-based graph structure.
 """
 
 # Import key components at package level for easier access
+# Import configuration management
+from fin_statement_model.config import get_config, update_config
 from fin_statement_model.core.errors import FinancialModelError
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.node_factory import NodeFactory
 from fin_statement_model.core.nodes import (
     CalculationNode,
-    CustomGrowthForecastNode,
     CurveGrowthForecastNode,
+    CustomGrowthForecastNode,
     FinancialStatementItemNode,
     FixedGrowthForecastNode,
     ForecastNode,
@@ -21,11 +23,8 @@ from fin_statement_model.core.nodes import (
     YoYGrowthNode,
 )
 
-# Import configuration management
-from fin_statement_model.config import get_config, update_config
-
 # ensure our library-wide logging policy is applied immediately
-from . import logging_config  # noqa: F401
+from . import logging_config
 
 __version__ = "0.2.0"
 
@@ -45,15 +44,8 @@ __all__ = [
     "YoYGrowthNode",
     "__version__",
     "get_config",
+    "logging_config",
     "update_config",
 ]
 
-# Core API Exports (ensure essential classes/functions are accessible)
-# Example:
-# from .core.graph import Graph
-# from .core.nodes import Node, FinancialStatementItemNode
-# from .core.calculation_engine import CalculationEngine
-# from .statements.manager import StatementManager
-
-# Placeholder: Explicitly list key public API components later.
-# For now, just rely on sub-package __init__ files if they exist.
+# Placeholder: explicit additional API re-exports can be added here later.

@@ -7,18 +7,21 @@ Example:
     >>> def my_formula(a, b):
     ...     return a + b
     >>> # Assume n1, n2 are Node instances
-    >>> node = _create_custom_node_from_callable(name='CustomSum', inputs=[n1, n2], formula=my_formula)
+    >>> node = _create_custom_node_from_callable(name="CustomSum", inputs=[n1, n2], formula=my_formula)
     >>> node.name
     'CustomSum'
 """
 
 from __future__ import annotations
 
-from typing import Callable, List
+from typing import TYPE_CHECKING
 
 from fin_statement_model.core.errors import CalculationError
-from fin_statement_model.core.nodes.calculation_nodes import CustomCalculationNode
 from fin_statement_model.core.nodes.base import Node
+from fin_statement_model.core.nodes.calculation_nodes import CustomCalculationNode
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 __all__: list[str] = ["_create_custom_node_from_callable"]
 
@@ -26,7 +29,7 @@ __all__: list[str] = ["_create_custom_node_from_callable"]
 def _create_custom_node_from_callable(
     *,
     name: str,
-    inputs: List[Node],
+    inputs: list[Node],
     formula: Callable[..., float],
     description: str | None = None,
 ) -> CustomCalculationNode:
@@ -50,20 +53,17 @@ def _create_custom_node_from_callable(
         >>> def my_formula(a, b):
         ...     return a + b
         >>> # Assume n1, n2 are Node instances
-        >>> node = _create_custom_node_from_callable(name='CustomSum', inputs=[n1, n2], formula=my_formula)
+        >>> node = _create_custom_node_from_callable(name="CustomSum", inputs=[n1, n2], formula=my_formula)
         >>> node.name
         'CustomSum'
     """
-
     # Basic validation ----------------------------------------------------
     if not callable(formula):
         raise TypeError("formula must be a callable object returning float")
 
     for n in inputs:
         if not isinstance(n, Node):
-            raise TypeError(
-                "All items in 'inputs' must be Node instances; got %r" % type(n)
-            )
+            raise TypeError(f"All items in 'inputs' must be Node instances; got {type(n)!r}")
 
     try:
         return CustomCalculationNode(

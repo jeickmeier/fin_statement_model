@@ -2,8 +2,8 @@ from __future__ import annotations
 
 """High-level tests for fin_statement_model.config.manager.ConfigManager.
 
-The aim is to exercise the majority of code paths – YAML/JSON loading, environment
-variable extraction, runtime overrides, and persistence – so that statement
+The aim is to exercise the majority of code paths - YAML/JSON loading, environment
+variable extraction, runtime overrides, and persistence - so that statement
 coverage of *config/manager.py* exceeds 80 %.
 """
 
@@ -17,7 +17,7 @@ from fin_statement_model.config.store import (
 )
 
 # -----------------------------------------------------------------------------
-# _load_file – YAML / JSON / unsupported extension
+# _load_file - YAML / JSON / unsupported extension
 # -----------------------------------------------------------------------------
 
 
@@ -85,7 +85,7 @@ def test_update_runtime_overrides_merges_deeply():
 
 
 # -----------------------------------------------------------------------------
-# save() – ensure persisted YAML contains expected changes
+# save() - ensure persisted YAML contains expected changes
 # -----------------------------------------------------------------------------
 
 

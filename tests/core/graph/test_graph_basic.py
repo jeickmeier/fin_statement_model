@@ -20,7 +20,7 @@ from fin_statement_model.core.adjustments.models import AdjustmentType
 
 
 def _make_simple_graph() -> Graph:
-    """Return a graph with two data nodes – Revenue and COGS – for 2023."""
+    """Return a graph with two data nodes - Revenue and COGS - for 2023."""
     g = Graph(periods=["2023"])
     g.add_financial_statement_item("Revenue", {"2023": 100.0})
     g.add_financial_statement_item("COGS", {"2023": 60.0})

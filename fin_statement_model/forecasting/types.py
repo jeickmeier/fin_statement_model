@@ -19,27 +19,27 @@ Example:
     ...     periods=["2024", "2025"],
     ...     values={"2024": 1050.0, "2025": 1102.5},
     ...     method="simple",
-    ...     base_period="2023"
+    ...     base_period="2023",
     ... )
     >>> result.get_value("2024")
     1050.0
 """
 
-from typing import Any, Union, Literal
 from collections.abc import Callable
-import numpy as np
+from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, model_validator, ValidationError
+import numpy as np
+from pydantic import BaseModel, ConfigDict, ValidationError, model_validator
 
 from fin_statement_model.forecasting.errors import (
-    ForecastMethodError,
     ForecastConfigurationError,
+    ForecastMethodError,
     ForecastResultError,
 )
 
 # Type aliases for clarity
-Numeric = Union[int, float, np.number[Any]]
-GrowthRate = Union[float, list[float], Callable[[], float]]
+Numeric = int | float | np.number[Any]
+GrowthRate = float | list[float] | Callable[[], float]
 PeriodValue = dict[str, float]
 
 # Forecast method types
@@ -68,40 +68,23 @@ class StatisticalConfig(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    @model_validator(mode="after")  # type: ignore[arg-type]
-    def _validate_distribution(cls, values: "StatisticalConfig") -> "StatisticalConfig":
-        """Validate distribution and parameters for statistical config.
+    @model_validator(mode="after")
+    def _validate_distribution(self) -> "StatisticalConfig":
+        """Validate that *self.params* contains the required keys for *self.distribution*.
 
-        Args:
-            values: The StatisticalConfig instance.
-
-        Returns:
-            The validated StatisticalConfig instance.
-
-        Raises:
-            ForecastConfigurationError: If required parameters are missing or distribution is unsupported.
+        Pydantic's **after** validators receive the fully-initialised *instance* so
+        we can reference ``self`` directly.  Using the two-parameter signature
+        that previous Pydantic <2 examples relied on now yields a
+        *ValidationInfo* object, which caused the attribute access errors
+        observed in the test-suite.
         """
-        distribution = values.distribution
-        params = values.params
+        distribution = self.distribution
+        params = self.params
 
         if distribution == "normal":
             required = {"mean", "std"}
-            missing = required - params.keys()
-            if missing:
-                raise ForecastConfigurationError(
-                    "Normal distribution requires 'mean' and 'std' parameters",
-                    config=params,
-                    missing_params=list(missing),
-                )
         elif distribution == "uniform":
             required = {"low", "high"}
-            missing = required - params.keys()
-            if missing:
-                raise ForecastConfigurationError(
-                    "Uniform distribution requires 'low' and 'high' parameters",
-                    config=params,
-                    missing_params=list(missing),
-                )
         else:
             raise ForecastConfigurationError(
                 f"Unsupported distribution: {distribution}",
@@ -109,7 +92,15 @@ class StatisticalConfig(BaseModel):
                 invalid_params={"distribution": f"'{distribution}' is not supported"},
             )
 
-        return values
+        missing = required - params.keys()
+        if missing:
+            raise ForecastConfigurationError(
+                f"{distribution.capitalize()} distribution requires {', '.join(sorted(required))} parameters",
+                config=params,
+                missing_params=list(missing),
+            )
+
+        return self
 
 
 class ForecastConfig(BaseModel):
@@ -128,22 +119,15 @@ class ForecastConfig(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    @model_validator(mode="after")  # type: ignore[arg-type]
-    def _validate_config(cls, values: "ForecastConfig") -> "ForecastConfig":
-        """Validate method and config for forecast operation.
+    @model_validator(mode="after")
+    def _validate_config(self) -> "ForecastConfig":
+        """Validate ``self.method`` and its accompanying ``self.config``.
 
-        Args:
-            values: The ForecastConfig instance.
-
-        Returns:
-            The validated ForecastConfig instance.
-
-        Raises:
-            ForecastMethodError: If method is invalid.
-            ForecastConfigurationError: If statistical config is invalid.
+        This replaces the outdated two-parameter validator signature to avoid
+        accidentally receiving a *ValidationInfo* object.
         """
-        method = values.method
-        cfg = values.config or {}
+        method = self.method
+        cfg = self.config or {}
 
         valid_methods = {
             "simple",
@@ -161,21 +145,19 @@ class ForecastConfig(BaseModel):
             )
 
         if method == "statistical":
-            # Delegate validation to StatisticalConfig for detailed checks
             try:
-                (
-                    StatisticalConfig(**cfg)
-                    if isinstance(cfg, dict)
-                    else StatisticalConfig.model_validate(cfg)
-                )
+                # Accept both raw dicts and already-validated StatisticalConfig instances
+                if isinstance(cfg, StatisticalConfig):
+                    pass  # Already validated
+                else:
+                    StatisticalConfig.model_validate(cfg)
             except (ForecastConfigurationError, ValidationError) as exc:
-                # Re-raise as ForecastConfigurationError for consistency
                 raise ForecastConfigurationError(
                     "Invalid statistical configuration",
                     config=cfg,
                 ) from exc
 
-        return values
+        return self
 
 
 class ForecastResult(BaseModel):
@@ -190,7 +172,7 @@ class ForecastResult(BaseModel):
         ...     periods=["2024", "2025"],
         ...     values={"2024": 1050.0, "2025": 1102.5},
         ...     method="simple",
-        ...     base_period="2023"
+        ...     base_period="2023",
         ... )
         >>> result.get_value("2024")
         1050.0
@@ -219,11 +201,7 @@ class ForecastResult(BaseModel):
         Example:
             >>> from fin_statement_model.forecasting.types import ForecastResult
             >>> result = ForecastResult(
-            ...     node_name="revenue",
-            ...     periods=["2024"],
-            ...     values={"2024": 1050.0},
-            ...     method="simple",
-            ...     base_period="2023"
+            ...     node_name="revenue", periods=["2024"], values={"2024": 1050.0}, method="simple", base_period="2023"
             ... )
             >>> result.get_value("2024")
             1050.0

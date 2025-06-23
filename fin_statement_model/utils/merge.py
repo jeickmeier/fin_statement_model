@@ -12,7 +12,7 @@ semantics.
 
 Key characteristics
 -------------------
-1.  The merge is **non-destructive** – the *base* mapping is **copied** before
+1.  The merge is **non-destructive** - the *base* mapping is **copied** before
     updates are applied.  Neither *base* nor *update* is modified in-place.
 2.  Values from *update* take precedence over those in *base*.
 3.  If the value under a given key is a mapping in **both** *base* and
@@ -31,7 +31,8 @@ advanced policies consider pulling-in a dedicated library such as
 
 from __future__ import annotations
 
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 __all__ = ["deep_merge"]
 
@@ -50,36 +51,26 @@ def deep_merge(base: Mapping[str, Any], update: Mapping[str, Any]) -> dict[str, 
     Returns:
         A **new** dictionary containing the merged result.
     """
-
     # Make a shallow copy so we never mutate the caller's object.
     result: dict[str, Any] = dict(base)
 
     for key, value in update.items():
-        # Case 1 – both values are dict-like → recurse
-        if (
-            key in result
-            and isinstance(result[key], Mapping)
-            and isinstance(value, Mapping)
-        ):
+        # Case 1 - both values are dict-like → recurse
+        if key in result and isinstance(result[key], Mapping) and isinstance(value, Mapping):
             result[key] = deep_merge(result[key], value)
 
-        # Case 2 – both values are lists → append unique items preserving order
-        elif (
-            key in result and isinstance(result[key], list) and isinstance(value, list)
-        ):
+        # Case 2 - both values are lists → append unique items preserving order
+        elif key in result and isinstance(result[key], list) and isinstance(value, list):
             existing_list: list[Any] = result[key]
-            combined = existing_list + [
-                item for item in value if item not in existing_list
-            ]
+            combined = existing_list + [item for item in value if item not in existing_list]
             result[key] = combined
 
-        # Fallback – scalar or mismatching types → overwrite
+        # Fallback - scalar or mismatching types → overwrite
+        # We copy *value* if it is a mutable mapping or list to guard against
+        # accidental shared-state when the caller later mutates it in-place.
+        elif isinstance(value, Mapping | list):
+            result[key] = value.copy() if hasattr(value, "copy") else list(value)
         else:
-            # We copy *value* if it is a mutable mapping or list to guard against
-            # accidental shared-state when the caller later mutates it in-place.
-            if isinstance(value, (Mapping, list)):
-                result[key] = value.copy() if hasattr(value, "copy") else list(value)
-            else:
-                result[key] = value
+            result[key] = value
 
     return result

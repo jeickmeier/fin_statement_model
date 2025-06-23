@@ -4,16 +4,23 @@ This module defines the transformer for computing growth rates, moving averages,
 compound annual growth rate (CAGR), year-over-year (YoY), and quarter-over-quarter (QoQ) changes.
 """
 
+from __future__ import annotations
+
+from collections.abc import Callable
 import logging
-import pandas as pd
-from typing import Union, Optional, ClassVar, Callable
+from typing import TYPE_CHECKING, Any, ClassVar
 import warnings
 
+import pandas as pd
+
+from fin_statement_model.preprocessing.base_transformer import DataTransformer
 from fin_statement_model.preprocessing.config import (
     TimeSeriesConfig,
     TransformationType,
 )
-from fin_statement_model.preprocessing.base_transformer import DataTransformer
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -53,18 +60,18 @@ class TimeSeriesTransformer(DataTransformer):
         >>> from fin_statement_model.preprocessing.transformers import TimeSeriesTransformer
         >>>
         >>> # Quarterly revenue data
-        >>> data = pd.DataFrame({
-        ...     'revenue': [100, 105, 110, 115, 120, 125, 130, 135],
-        ...     'costs': [60, 62, 65, 68, 70, 73, 75, 78]
-        ... }, index=pd.date_range('2022-Q1', periods=8, freq='Q'))
+        >>> data = pd.DataFrame(
+        ...     {"revenue": [100, 105, 110, 115, 120, 125, 130, 135], "costs": [60, 62, 65, 68, 70, 73, 75, 78]},
+        ...     index=pd.date_range("2022-Q1", periods=8, freq="Q"),
+        ... )
         >>>
         >>> # Calculate YoY growth (comparing to same quarter previous year)
         >>> yoy_transformer = TimeSeriesTransformer(
-        ...     transformation_type='yoy',
-        ...     periods=4  # 4 quarters back for quarterly data
+        ...     transformation_type="yoy",
+        ...     periods=4,  # 4 quarters back for quarterly data
         ... )
         >>> yoy_growth = yoy_transformer.transform(data)
-        >>> print(yoy_growth[['revenue_yoy', 'costs_yoy']].iloc[4:])  # First 4 periods will be NaN
+        >>> print(yoy_growth[["revenue_yoy", "costs_yoy"]].iloc[4:])  # First 4 periods will be NaN
         #             revenue_yoy  costs_yoy
         # 2023-Q1           20.0      16.67
         # 2023-Q2           19.05     17.74
@@ -74,17 +81,15 @@ class TimeSeriesTransformer(DataTransformer):
         Calculate 3-month moving average for monthly data:
 
         >>> # Monthly sales data
-        >>> monthly_data = pd.DataFrame({
-        ...     'sales': [100, 95, 105, 110, 108, 115, 120, 118, 125]
-        ... }, index=pd.date_range('2023-01', periods=9, freq='M'))
+        >>> monthly_data = pd.DataFrame(
+        ...     {"sales": [100, 95, 105, 110, 108, 115, 120, 118, 125]},
+        ...     index=pd.date_range("2023-01", periods=9, freq="M"),
+        ... )
         >>>
         >>> # Calculate 3-month moving average
-        >>> ma_transformer = TimeSeriesTransformer(
-        ...     transformation_type='moving_avg',
-        ...     window_size=3
-        ... )
+        >>> ma_transformer = TimeSeriesTransformer(transformation_type="moving_avg", window_size=3)
         >>> ma_result = ma_transformer.transform(monthly_data)
-        >>> print(ma_result['sales_ma3'].round(2))
+        >>> print(ma_result["sales_ma3"].round(2))
         # 2023-01-31       NaN
         # 2023-02-28       NaN
         # 2023-03-31    100.00
@@ -106,13 +111,11 @@ class TimeSeriesTransformer(DataTransformer):
 
     def __init__(
         self,
-        transformation_type: Union[
-            str, TransformationType
-        ] = TransformationType.GROWTH_RATE,
+        transformation_type: str | TransformationType = TransformationType.GROWTH_RATE,
         periods: int = 1,
         window_size: int = 3,
         *,
-        config: Optional[TimeSeriesConfig] = None,
+        config: TimeSeriesConfig | None = None,
     ):
         """Initialize the time series transformer.
 
@@ -140,17 +143,15 @@ class TimeSeriesTransformer(DataTransformer):
 
         Examples:
             >>> # YoY for quarterly data
-            >>> transformer = TimeSeriesTransformer('yoy', periods=4)
+            >>> transformer = TimeSeriesTransformer("yoy", periods=4)
             >>>
             >>> # 3-month moving average
-            >>> transformer = TimeSeriesTransformer('moving_avg', window_size=3)
+            >>> transformer = TimeSeriesTransformer("moving_avg", window_size=3)
             >>>
             >>> # Quarter-over-quarter for monthly data
-            >>> transformer = TimeSeriesTransformer('qoq', periods=3)
+            >>> transformer = TimeSeriesTransformer("qoq", periods=3)
         """
-        if config is not None and any(
-            param is not None for param in (periods, window_size)
-        ):
+        if config is not None and any(param is not None for param in (periods, window_size)):
             warnings.warn(
                 "Both 'config' and individual kwargs supplied to TimeSeriesTransformer; the Pydantic config takes precedence.",
                 UserWarning,
@@ -160,9 +161,7 @@ class TimeSeriesTransformer(DataTransformer):
         if config is not None:
             transformation_type = config.transformation_type or transformation_type
             periods = config.periods if config.periods is not None else periods
-            window_size = (
-                config.window_size if config.window_size is not None else window_size
-            )
+            window_size = config.window_size if config.window_size is not None else window_size
 
         super().__init__(config.model_dump() if config else None)
         # Normalize to string
@@ -171,15 +170,13 @@ class TimeSeriesTransformer(DataTransformer):
         else:
             ttype = transformation_type
         if ttype not in self.TRANSFORMATION_TYPES:
-            raise ValueError(
-                f"Invalid transformation type: {ttype}. Must be one of {self.TRANSFORMATION_TYPES}"
-            )
+            raise ValueError(f"Invalid transformation type: {ttype}. Must be one of {self.TRANSFORMATION_TYPES}")
         self.transformation_type = ttype
 
         self.periods = periods
         self.window_size = window_size
 
-    def transform(self, data: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, data: pd.DataFrame | pd.Series[Any]) -> pd.DataFrame | pd.Series[Any]:
         """Transform time series data based on the configured transformation type.
 
         Args:
@@ -198,11 +195,11 @@ class TimeSeriesTransformer(DataTransformer):
             Original columns are preserved in all cases.
 
         Raises:
-            TypeError: If data is not a pandas DataFrame.
+            TypeError: If data is not a pandas DataFrame or Series.
 
         Examples:
-            >>> df = pd.DataFrame({'revenue': [100, 110, 120, 130]})
-            >>> transformer = TimeSeriesTransformer('growth_rate')
+            >>> df = pd.DataFrame({"revenue": [100, 110, 120, 130]})
+            >>> transformer = TimeSeriesTransformer("growth_rate")
             >>> result = transformer.transform(df)
             >>> print(result)
             #    revenue  revenue_growth
@@ -211,15 +208,12 @@ class TimeSeriesTransformer(DataTransformer):
             # 2      120            9.09
             # 3      130            8.33
         """
-        if not isinstance(data, pd.DataFrame):
-            raise TypeError(
-                f"Unsupported data type: {type(data)}. Expected pandas.DataFrame"
-            )
+        # Accept both DataFrame and Series to honour the broader contract
+        if not isinstance(data, pd.DataFrame | pd.Series):
+            raise TypeError(f"Unsupported data type: {type(data)}. Expected pandas.DataFrame or pandas.Series")
         return super().transform(data)
 
-    def _transform_impl(
-        self, data: Union[pd.DataFrame, pd.Series]
-    ) -> Union[pd.DataFrame, pd.Series]:
+    def _transform_impl(self, data: pd.DataFrame | pd.Series[Any]) -> pd.DataFrame | pd.Series[Any]:
         """Transform time series data.
 
         This is the core implementation method that handles both DataFrame
@@ -236,13 +230,10 @@ class TimeSeriesTransformer(DataTransformer):
             (DataFrame → DataFrame, Series → Series).
 
         Examples:
-            >>> transformer = TimeSeriesTransformer('growth_rate')
-            >>> df = pd.DataFrame({
-            ...     'revenue': [100, 110, 120],
-            ...     'costs': [60, 65, 70]
-            ... })
+            >>> transformer = TimeSeriesTransformer("growth_rate")
+            >>> df = pd.DataFrame({"revenue": [100, 110, 120], "costs": [60, 65, 70]})
             >>> result = transformer._transform_impl(df)
-            >>> series = pd.Series([100, 110, 120], name='revenue')
+            >>> series = pd.Series([100, 110, 120], name="revenue")
             >>> result_series = transformer._transform_impl(series)
         """
         df, was_series = self._coerce_to_dataframe(data)
@@ -279,11 +270,8 @@ class TimeSeriesTransformer(DataTransformer):
                 supported (should never happen due to __init__ validation).
 
         Examples:
-            >>> df = pd.DataFrame({
-            ...     'revenue': [100, 110, 120, 130],
-            ...     'costs': [60, 65, 70, 75]
-            ... })
-            >>> transformer = TimeSeriesTransformer('growth_rate')
+            >>> df = pd.DataFrame({"revenue": [100, 110, 120, 130], "costs": [60, 65, 70, 75]})
+            >>> transformer = TimeSeriesTransformer("growth_rate")
             >>> result = transformer._transform_dataframe(df)
             >>> print(result)
             #    revenue  revenue_growth  costs  costs_growth
@@ -310,9 +298,7 @@ class TimeSeriesTransformer(DataTransformer):
             return dispatch[self.transformation_type](df)
         except KeyError as exc:
             # Should never happen thanks to validation in __init__, but fail loudly.
-            raise NotImplementedError(
-                f"Transformation type '{self.transformation_type}' is not implemented."
-            ) from exc
+            raise NotImplementedError(f"Transformation type '{self.transformation_type}' is not implemented.") from exc
 
     # ------------------------------------------------------------------
     # Private helpers (one per transformation type)
@@ -333,12 +319,10 @@ class TimeSeriesTransformer(DataTransformer):
             containing period-over-period percentage changes.
 
         Examples:
-            >>> df = pd.DataFrame({
-            ...     'revenue': [100, 110, 120, 130]
-            ... })
-            >>> transformer = TimeSeriesTransformer('growth_rate', periods=1)
+            >>> df = pd.DataFrame({"revenue": [100, 110, 120, 130]})
+            >>> transformer = TimeSeriesTransformer("growth_rate", periods=1)
             >>> result = transformer._apply_growth_rate(df)
-            >>> print(result['revenue_growth'].round(2))
+            >>> print(result["revenue_growth"].round(2))
             # 0     NaN
             # 1    10.00
             # 2     9.09
@@ -370,12 +354,10 @@ class TimeSeriesTransformer(DataTransformer):
             columns containing rolling means.
 
         Examples:
-            >>> df = pd.DataFrame({
-            ...     'sales': [100, 95, 105, 110, 108]
-            ... })
-            >>> transformer = TimeSeriesTransformer('moving_avg', window_size=3)
+            >>> df = pd.DataFrame({"sales": [100, 95, 105, 110, 108]})
+            >>> transformer = TimeSeriesTransformer("moving_avg", window_size=3)
             >>> result = transformer._apply_moving_avg(df)
-            >>> print(result['sales_ma3'].round(2))
+            >>> print(result["sales_ma3"].round(2))
             # 0     NaN
             # 1     NaN
             # 2    100.00
@@ -390,9 +372,7 @@ class TimeSeriesTransformer(DataTransformer):
         """
         res = df.copy()
         for col in df.columns:
-            res[f"{col}_ma{self.window_size}"] = (
-                df[col].rolling(window=self.window_size).mean()
-            )
+            res[f"{col}_ma{self.window_size}"] = df[col].rolling(window=self.window_size).mean()
         return res
 
     def _apply_cagr(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -416,11 +396,11 @@ class TimeSeriesTransformer(DataTransformer):
 
         Examples:
             >>> df = pd.DataFrame({
-            ...     'investment': [1000, 1100, 1210, 1331]  # 10% growth
+            ...     "investment": [1000, 1100, 1210, 1331]  # 10% growth
             ... })
-            >>> transformer = TimeSeriesTransformer('cagr')
+            >>> transformer = TimeSeriesTransformer("cagr")
             >>> result = transformer._apply_cagr(df)
-            >>> print(result['investment_cagr'].round(2))
+            >>> print(result["investment_cagr"].round(2))
             # 0    10.00
             # 1    10.00
             # 2    10.00
@@ -439,9 +419,7 @@ class TimeSeriesTransformer(DataTransformer):
         n_periods = len(df) - 1
 
         if n_periods < 1:
-            logger.warning(
-                "CAGR requires at least 2 periods. Returning NaN for all columns."
-            )
+            logger.warning("CAGR requires at least 2 periods. Returning NaN for all columns.")
             for col in df.columns:
                 res[f"{col}_cagr"] = pd.NA
             return res
@@ -455,13 +433,7 @@ class TimeSeriesTransformer(DataTransformer):
                 continue
 
             ratio = end_val / start_val
-            # Original implementation used compounding formula which differs
-            # from the library's current test expectations. The test suite
-            # treats "CAGR" as the *average* annual growth rate (AAGR) –
-            # a simple arithmetic mean of growth over equally spaced periods.
-            #
-            # AAGR = ((End / Start) - 1) / n_periods
-            # Expressed as percentage ⇒ * 100.
+            # Calculate arithmetic average growth rate (AAGR).
             try:
                 res[f"{col}_cagr"] = ((ratio - 1) / n_periods) * 100
             except (ValueError, TypeError, ZeroDivisionError):
@@ -487,12 +459,12 @@ class TimeSeriesTransformer(DataTransformer):
             containing year-over-year percentage changes.
 
         Examples:
-            >>> df = pd.DataFrame({
-            ...     'revenue': [100, 105, 110, 115, 120, 125]
-            ... }, index=pd.date_range('2022-Q1', periods=6, freq='Q'))
-            >>> transformer = TimeSeriesTransformer('yoy', periods=4)
+            >>> df = pd.DataFrame(
+            ...     {"revenue": [100, 105, 110, 115, 120, 125]}, index=pd.date_range("2022-Q1", periods=6, freq="Q")
+            ... )
+            >>> transformer = TimeSeriesTransformer("yoy", periods=4)
             >>> result = transformer._apply_yoy(df)
-            >>> print(result['revenue_yoy'].iloc[4:].round(2))
+            >>> print(result["revenue_yoy"].iloc[4:].round(2))
             # 2023-Q1    20.00
             # 2023-Q2    19.05
 
@@ -530,12 +502,12 @@ class TimeSeriesTransformer(DataTransformer):
             containing quarter-over-quarter percentage changes.
 
         Examples:
-            >>> df = pd.DataFrame({
-            ...     'revenue': [100, 110, 120, 130]
-            ... }, index=pd.date_range('2023-Q1', periods=4, freq='Q'))
-            >>> transformer = TimeSeriesTransformer('qoq', periods=1)
+            >>> df = pd.DataFrame(
+            ...     {"revenue": [100, 110, 120, 130]}, index=pd.date_range("2023-Q1", periods=4, freq="Q")
+            ... )
+            >>> transformer = TimeSeriesTransformer("qoq", periods=1)
             >>> result = transformer._apply_qoq(df)
-            >>> print(result['revenue_qoq'].round(2))
+            >>> print(result["revenue_qoq"].round(2))
             # 2023-Q1     NaN
             # 2023-Q2    10.00
             # 2023-Q3     9.09
@@ -588,4 +560,4 @@ class TimeSeriesTransformer(DataTransformer):
             >>> transformer.validate_input([1, 2, 3])
             False
         """
-        return isinstance(data, (pd.DataFrame, pd.Series))
+        return isinstance(data, pd.DataFrame | pd.Series)

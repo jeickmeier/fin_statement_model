@@ -11,6 +11,7 @@ Examples:
     >>> class UppercaseTransformer(DataTransformer):
     ...     def _transform_impl(self, data):
     ...         return data.str.upper()
+    ...
     ...     def validate_input(self, data):
     ...         return isinstance(data, (pd.Series, pd.DataFrame))
 
@@ -18,7 +19,7 @@ Examples:
 
     >>> uppercase = UppercaseTransformer()
     >>> pipeline = CompositeTransformer([uppercase])
-    >>> result = pipeline.execute(pd.Series(['a', 'b', 'c']))
+    >>> result = pipeline.execute(pd.Series(["a", "b", "c"]))
     >>> print(result)
     0    A
     1    B
@@ -26,17 +27,37 @@ Examples:
     dtype: object
 """
 
+# ---------------------------------------------------------------------------
+# Future imports - must appear immediately after the module docstring.
+# ---------------------------------------------------------------------------
+
+from __future__ import annotations
+
+# The *annotations* future postpones evaluation of type hints to runtime. This
+# prevents ``TypeError: 'Series' is not subscriptable`` errors on older pandas
+# versions that don't support subscripted generics while still letting static
+# type checkers see the full `pd.Series[Any]` information.
+# ---------------------------------------------------------------------------
+# Standard library & third-party imports
+# ---------------------------------------------------------------------------
 from abc import ABC, abstractmethod
-import pandas as pd
-from typing import Optional, Union, Tuple
 import logging
+from typing import TYPE_CHECKING, Any, cast
 
 from fin_statement_model.core.errors import TransformationError
 
 # Delegate Series/DataFrame coercion to shared utility
 from fin_statement_model.preprocessing.utils import ensure_dataframe
 
+if TYPE_CHECKING:
+    import pandas as pd
+
 logger = logging.getLogger(__name__)
+
+# PEP 563/PEP 649: Postpone evaluation of type annotations to **runtime** (they
+# remain as strings until explicitly evaluated). This prevents errors when
+# subscripted generics like ``pd.Series[Any]`` are used with pandas versions
+# that do not yet support them as proper generic aliases.
 
 
 class DataTransformer(ABC):
@@ -65,7 +86,7 @@ class DataTransformer(ABC):
 
         >>> class AddConstantTransformer(DataTransformer):
         ...     def __init__(self, constant=1):
-        ...         super().__init__({'constant': constant})
+        ...         super().__init__({"constant": constant})
         ...         self.constant = constant
         ...
         ...     def _transform_impl(self, data):
@@ -73,7 +94,6 @@ class DataTransformer(ABC):
         ...
         ...     def validate_input(self, data):
         ...         return isinstance(data, (pd.Series, pd.DataFrame))
-        ...
         >>> transformer = AddConstantTransformer(constant=5)
         >>> result = transformer.execute(pd.Series([1, 2, 3]))
         >>> print(result)
@@ -88,7 +108,7 @@ class DataTransformer(ABC):
         - Use pre/post hooks for setup/cleanup rather than overriding execute()
     """
 
-    def __init__(self, config: Optional[dict[str, object]] = None):
+    def __init__(self, config: dict[str, object] | None = None):
         """Initialize the transformer with optional configuration.
 
         The config dictionary can contain any parameters needed by the transformer.
@@ -102,18 +122,18 @@ class DataTransformer(ABC):
                    - 'parameters': Algorithm-specific parameters
 
         Examples:
-            >>> transformer = DataTransformer({'scale': 2.0, 'offset': 1.0})
+            >>> transformer = DataTransformer({"scale": 2.0, "offset": 1.0})
             >>> transformer.config
             {'scale': 2.0, 'offset': 1.0}
         """
         self.config = config or {}
         logger.debug(
-            f"Initialized {self.__class__.__name__} with config: {self.config}"
+            "Initialized %s with config: %s",
+            self.__class__.__name__,
+            self.config,
         )
 
-    def transform(
-        self, data: Union[pd.DataFrame, pd.Series]
-    ) -> Union[pd.DataFrame, pd.Series]:
+    def transform(self, data: pd.DataFrame | pd.Series[Any]) -> pd.DataFrame | pd.Series[Any]:
         """Transform the input data.
 
         This is the main public interface for transformation. It wraps the internal
@@ -136,7 +156,7 @@ class DataTransformer(ABC):
                 - Any relevant parameters
 
         Examples:
-            >>> df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+            >>> df = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
             >>> transformer = MyTransformer()
             >>> try:
             ...     result = transformer.transform(df)
@@ -144,19 +164,17 @@ class DataTransformer(ABC):
             ...     print(f"Transform failed: {e}")
         """
         try:
-            logger.debug(f"Transforming data with {self.__class__.__name__}")
+            logger.debug("Transforming data with %s", self.__class__.__name__)
             return self._transform_impl(data)
         except Exception as e:
-            logger.exception(f"Error transforming data with {self.__class__.__name__}")
+            logger.exception("Error transforming data with %s", self.__class__.__name__)
             raise TransformationError(
                 "Error transforming data",
                 transformer_type=self.__class__.__name__,
             ) from e
 
     @abstractmethod
-    def _transform_impl(
-        self, data: Union[pd.DataFrame, pd.Series]
-    ) -> Union[pd.DataFrame, pd.Series]:
+    def _transform_impl(self, data: pd.DataFrame | pd.Series[Any]) -> pd.DataFrame | pd.Series[Any]:
         """Apply the transformation logic.
 
         This is the core method that subclasses must implement to define their
@@ -177,7 +195,7 @@ class DataTransformer(ABC):
             Implementation for a scaling transformer:
 
             >>> def _transform_impl(self, data):
-            ...     scale = self.config.get('scale', 1.0)
+            ...     scale = self.config.get("scale", 1.0)
             ...     return data * scale
         """
 
@@ -205,7 +223,7 @@ class DataTransformer(ABC):
             >>> def validate_input(self, data):
             ...     if not isinstance(data, pd.DataFrame):
             ...         return False
-            ...     return data.select_dtypes(include=['number']).shape[1] > 0
+            ...     return data.select_dtypes(include=["number"]).shape[1] > 0
 
             Accept both Series and DataFrame:
 
@@ -286,9 +304,9 @@ class DataTransformer(ABC):
             ValueError: If the data is invalid or any step fails.
 
         Examples:
-            >>> transformer = MyTransformer({'scale': 2.0})
+            >>> transformer = MyTransformer({"scale": 2.0})
             >>> try:
-            ...     result = transformer.execute(pd.DataFrame({'A': [1, 2, 3]}))
+            ...     result = transformer.execute(pd.DataFrame({"A": [1, 2, 3]}))
             ... except ValueError as e:
             ...     print(f"Transformation failed: {e}")
         """
@@ -299,12 +317,10 @@ class DataTransformer(ABC):
             # Apply pre-transform hook
             processed_data = self._pre_transform_hook(data)
 
-            # Perform transformation
-            result = self.transform(processed_data)
-            result = self._post_transform_hook(result)
-            logger.debug(
-                f"Successfully transformed data with {self.__class__.__name__}"
-            )
+            # Perform transformation with explicit type cast for static type checker
+            result = self.transform(cast("pd.DataFrame | pd.Series[Any]", processed_data))
+            result = cast("pd.DataFrame | pd.Series[Any]", self._post_transform_hook(result))
+            logger.debug("Successfully transformed data with %s", self.__class__.__name__)
         except Exception as e:
             # Don't log here - transform() already logs exceptions
             raise ValueError("Error transforming data") from e
@@ -326,10 +342,9 @@ class DataTransformer(ABC):
 
             >>> def validate_config(self):
             ...     super().validate_config()  # Always call parent
-            ...     if 'scale_factor' not in self.config:
+            ...     if "scale_factor" not in self.config:
             ...         raise TransformationError(
-            ...             "Missing required config 'scale_factor'",
-            ...             transformer_type=self.__class__.__name__
+            ...             "Missing required config 'scale_factor'", transformer_type=self.__class__.__name__
             ...         )
         """
         if self.config is None:
@@ -344,14 +359,13 @@ class DataTransformer(ABC):
 
     @staticmethod
     def _coerce_to_dataframe(
-        data: Union[pd.DataFrame, pd.Series],
-    ) -> Tuple[pd.DataFrame, bool]:
+        data: pd.DataFrame | pd.Series[Any],
+    ) -> tuple[pd.DataFrame, bool]:
         """Return ``(df, was_series)`` ensuring *data* is a DataFrame.
 
         This method is **deprecated** and will be removed in a future release.
         It now simply delegates to :func:`fin_statement_model.preprocessing.utils.ensure_dataframe`.
         """
-
         # Delegation keeps backward-compatibility without duplicating logic.
         return ensure_dataframe(data)
 
@@ -373,7 +387,7 @@ class CompositeTransformer(DataTransformer):
         Create a pipeline that scales then normalizes:
 
         >>> scale = ScaleTransformer(scale_factor=0.001)  # Scale to thousands
-        >>> normalize = NormalizationTransformer(method='percent_of', ref='revenue')
+        >>> normalize = NormalizationTransformer(method="percent_of", ref="revenue")
         >>> pipeline = CompositeTransformer([scale, normalize])
         >>> result = pipeline.execute(df)
 
@@ -387,7 +401,7 @@ class CompositeTransformer(DataTransformer):
     def __init__(
         self,
         transformers: list[DataTransformer],
-        config: Optional[dict[str, object]] = None,
+        config: dict[str, object] | None = None,
     ):
         """Initialize with a list of transformers.
 
@@ -399,18 +413,13 @@ class CompositeTransformer(DataTransformer):
 
         Examples:
             >>> t1 = ScaleTransformer(scale_factor=0.001)
-            >>> t2 = NormalizationTransformer(method='percent_of', ref='revenue')
-            >>> pipeline = CompositeTransformer(
-            ...     transformers=[t1, t2],
-            ...     config={'name': 'scale_and_normalize'}
-            ... )
+            >>> t2 = NormalizationTransformer(method="percent_of", ref="revenue")
+            >>> pipeline = CompositeTransformer(transformers=[t1, t2], config={"name": "scale_and_normalize"})
         """
         super().__init__(config)
         self.transformers = transformers
 
-    def _transform_impl(
-        self, data: Union[pd.DataFrame, pd.Series]
-    ) -> Union[pd.DataFrame, pd.Series]:
+    def _transform_impl(self, data: pd.DataFrame | pd.Series[Any]) -> pd.DataFrame | pd.Series[Any]:
         """Apply each transformer in sequence.
 
         This implementation follows the Composite pattern, delegating to
@@ -426,13 +435,13 @@ class CompositeTransformer(DataTransformer):
         Examples:
             >>> pipeline = CompositeTransformer([
             ...     ScaleTransformer(scale_factor=0.001),
-            ...     NormalizationTransformer(method='percent_of', ref='revenue')
+            ...     NormalizationTransformer(method="percent_of", ref="revenue"),
             ... ])
             >>> result = pipeline._transform_impl(df)
         """
-        result = data
+        result: pd.DataFrame | pd.Series[Any] = data
         for transformer in self.transformers:
-            result = transformer.execute(result)
+            result = cast("pd.DataFrame | pd.Series[Any]", transformer.execute(result))
         return result
 
     def add_transformer(self, transformer: DataTransformer) -> None:
@@ -448,13 +457,11 @@ class CompositeTransformer(DataTransformer):
         Examples:
             >>> pipeline = CompositeTransformer([])
             >>> pipeline.add_transformer(ScaleTransformer(scale_factor=0.001))
-            >>> pipeline.add_transformer(
-            ...     NormalizationTransformer(method='percent_of', ref='revenue')
-            ... )
+            >>> pipeline.add_transformer(NormalizationTransformer(method="percent_of", ref="revenue"))
         """
         self.transformers.append(transformer)
 
-    def remove_transformer(self, index: int) -> Optional[DataTransformer]:
+    def remove_transformer(self, index: int) -> DataTransformer | None:
         """Remove a transformer from the pipeline.
 
         This method allows dynamic modification of the transformation pipeline
@@ -469,7 +476,7 @@ class CompositeTransformer(DataTransformer):
         Examples:
             >>> pipeline = CompositeTransformer([
             ...     ScaleTransformer(scale_factor=0.001),
-            ...     NormalizationTransformer(method='percent_of', ref='revenue')
+            ...     NormalizationTransformer(method="percent_of", ref="revenue"),
             ... ])
             >>> removed = pipeline.remove_transformer(0)  # Remove scaling
             >>> isinstance(removed, ScaleTransformer)
@@ -497,7 +504,7 @@ class CompositeTransformer(DataTransformer):
             >>> pipeline = CompositeTransformer([
             ...     ScaleTransformer(scale_factor=0.001)  # Accepts DataFrame only
             ... ])
-            >>> pipeline.validate_input(pd.DataFrame({'A': [1, 2, 3]}))
+            >>> pipeline.validate_input(pd.DataFrame({"A": [1, 2, 3]}))
             True
             >>> pipeline.validate_input(pd.Series([1, 2, 3]))
             False

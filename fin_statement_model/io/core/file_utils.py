@@ -1,4 +1,4 @@
-"""fin_statement_model.io.core.file_utils
+"""fin_statement_model.io.core.file_utils.
 
 Filesystem-related helper utilities shared across IO readers.
 
@@ -14,8 +14,7 @@ error messages.
 
 from __future__ import annotations
 
-import os
-from typing import Tuple
+from pathlib import Path
 
 from fin_statement_model.io.exceptions import ReadError
 
@@ -40,7 +39,7 @@ def validate_file_exists(path: str, *, reader_type: str | None = None) -> None:
     Raises:
         ReadError: If *path* does not exist on the filesystem.
     """
-    if not os.path.exists(path):
+    if not Path(path).exists():
         raise ReadError(
             f"File not found: {path}",
             source=path,
@@ -50,13 +49,13 @@ def validate_file_exists(path: str, *, reader_type: str | None = None) -> None:
 
 def validate_file_extension(
     path: str,
-    valid_extensions: Tuple[str, ...] | None,
+    valid_extensions: tuple[str, ...] | None,
     *,
     reader_type: str | None = None,
 ) -> None:
     """Validate that *path* ends with one of *valid_extensions*.
 
-    An empty or *None* *valid_extensions* tuple disables the check – this
+    An empty or *None* *valid_extensions* tuple disables the check - this
     supports readers that do not restrict extensions.
 
     Args:
@@ -73,10 +72,7 @@ def validate_file_extension(
 
     if not path.lower().endswith(valid_extensions):
         raise ReadError(
-            (
-                "Invalid file extension. Expected one of "
-                f"{valid_extensions}, got '{os.path.splitext(path)[1]}'"
-            ),
+            (f"Invalid file extension. Expected one of {valid_extensions}, got '{Path(path).suffix}'"),
             source=path,
             reader_type=_format_reader(reader_type),
         )

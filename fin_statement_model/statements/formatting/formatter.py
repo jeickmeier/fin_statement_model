@@ -5,34 +5,34 @@ for display or reporting, including applying formatting rules, adding subtotals,
 and applying sign conventions with enhanced display control.
 """
 
-import pandas as pd
-import numpy as np  # Added numpy for NaN handling
-from typing import Optional, Any, Union
 from collections.abc import Callable
+from dataclasses import dataclass, field
 import logging
 import re
-from dataclasses import dataclass, field
+from typing import Any
 
-from fin_statement_model.statements.structure import StatementStructure
-from fin_statement_model.statements.structure import (
-    Section,
-    CalculatedLineItem,
-    SubtotalLineItem,
-    StatementItem,
-)
-
-# Add core Graph and errors
-from fin_statement_model.core.graph import Graph
+import numpy as np  # Added numpy for NaN handling
+import pandas as pd
 
 # Import adjustment types for filtering
 from fin_statement_model.core.adjustments.models import AdjustmentFilterInput
 
-# Import the ID resolver
-from fin_statement_model.statements.population.id_resolver import IDResolver
+# Add core Graph and errors
+from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import standard_node_registry
 
 # Import the data fetcher
 from fin_statement_model.statements.formatting.data_fetcher import DataFetcher
+
+# Import the ID resolver
+from fin_statement_model.statements.population.id_resolver import IDResolver
+from fin_statement_model.statements.structure import (
+    CalculatedLineItem,
+    Section,
+    StatementItem,
+    StatementStructure,
+    SubtotalLineItem,
+)
 
 # Import formatting utilities
 from fin_statement_model.utils.formatting import render_values
@@ -53,11 +53,11 @@ class FormattingContext:
     # Core formatting options
     should_apply_signs: bool = True
     include_empty_items: bool = False
-    number_format: Optional[str] = None
+    number_format: str | None = None
     include_metadata_cols: bool = False
 
     # Adjustment options
-    adjustment_filter: Optional[AdjustmentFilterInput] = None
+    adjustment_filter: AdjustmentFilterInput | None = None
     add_is_adjusted_column: bool = False
 
     # Enhanced display options
@@ -66,10 +66,10 @@ class FormattingContext:
     include_notes_column: bool = False
     apply_item_scaling: bool = True
     apply_item_formatting: bool = True
-    respect_hide_flags: Optional[bool] = None
+    respect_hide_flags: bool | None = None
 
     # Contra item options
-    contra_display_style: Optional[str] = None
+    contra_display_style: str | None = None
     apply_contra_formatting: bool = True
     add_contra_indicator_column: bool = False
 
@@ -83,14 +83,12 @@ class FormattingContext:
 
     def __post_init__(self) -> None:
         """Compute derived flags after initialization."""
-        self.should_include_enhanced_metadata = any(
-            [
-                self.include_units_column,
-                self.include_css_classes,
-                self.include_notes_column,
-                self.add_contra_indicator_column,
-            ]
-        )
+        self.should_include_enhanced_metadata = any([
+            self.include_units_column,
+            self.include_css_classes,
+            self.include_notes_column,
+            self.add_contra_indicator_column,
+        ])
 
 
 class StatementFormatter:
@@ -135,11 +133,11 @@ class StatementFormatter:
 
     def _resolve_hierarchical_attribute(
         self,
-        item: Union[StatementItem, Section],
+        item: StatementItem | Section,
         attribute_name: str,
         default_value: Any = None,
-        config_path: Optional[str] = None,
-        skip_default_check: Optional[Callable[[Any], bool]] = None,
+        config_path: str | None = None,
+        skip_default_check: Callable[[Any], bool] | None = None,
     ) -> Any:
         """Resolve an attribute value using hierarchical lookup.
 
@@ -185,9 +183,7 @@ class StatementFormatter:
         # Return default value
         return default_value
 
-    def _resolve_display_scale_factor(
-        self, item: Union[StatementItem, Section]
-    ) -> float:
+    def _resolve_display_scale_factor(self, item: StatementItem | Section) -> float:
         """Resolve the display scale factor for an item, considering hierarchy.
 
         Precedence: Item > Section > Statement > Default (from config)
@@ -207,7 +203,7 @@ class StatementFormatter:
         )
         return float(result)
 
-    def _resolve_units(self, item: Union[StatementItem, Section]) -> Optional[str]:
+    def _resolve_units(self, item: StatementItem | Section) -> str | None:
         """Resolve the unit description for an item, considering hierarchy.
 
         Precedence: Item > Section > Statement > None
@@ -226,9 +222,7 @@ class StatementFormatter:
         )
         return result if result is not None else None
 
-    def _find_parent_section_for_item(
-        self, target_item: StatementItem
-    ) -> Optional[Section]:
+    def _find_parent_section_for_item(self, target_item: StatementItem) -> Section | None:
         """Find the parent section that contains the given item.
 
         Args:
@@ -238,13 +232,11 @@ class StatementFormatter:
             The parent Section object, or None if not found.
         """
 
-        def search_in_section(section: Section) -> Optional[Section]:
+        def search_in_section(section: Section) -> Section | None:
             # Check direct items
             for item in section.items:
                 if item is target_item or (
-                    hasattr(item, "id")
-                    and hasattr(target_item, "id")
-                    and item.id == target_item.id
+                    hasattr(item, "id") and hasattr(target_item, "id") and item.id == target_item.id
                 ):
                     return section
                 # Check nested sections
@@ -267,9 +259,7 @@ class StatementFormatter:
 
         return None
 
-    def _should_hide_item(
-        self, item: Union[StatementItem, Section], values: dict[str, float]
-    ) -> bool:
+    def _should_hide_item(self, item: StatementItem | Section, values: dict[str, float]) -> bool:
         """Check if an item should be hidden based on hide_if_all_zero setting.
 
         Args:
@@ -287,9 +277,7 @@ class StatementFormatter:
         # Check if all values are zero or NaN
         return all(not (pd.notna(value) and value != 0) for value in values.values())
 
-    def _apply_item_scaling(
-        self, values: dict[str, float], scale_factor: float
-    ) -> dict[str, float]:
+    def _apply_item_scaling(self, values: dict[str, float], scale_factor: float) -> dict[str, float]:
         """Apply scaling to item values.
 
         Args:
@@ -313,7 +301,7 @@ class StatementFormatter:
 
     def _format_item_values(
         self,
-        item: Union[StatementItem, Section],
+        item: StatementItem | Section,
         values: dict[str, float],
         period_columns: list[str],
     ) -> dict[str, str]:
@@ -341,23 +329,19 @@ class StatementFormatter:
                     except (ValueError, TypeError):
                         # Fall back to default if format is invalid
                         logger.warning(
-                            f"Invalid display format '{item_format}' for item '{getattr(item, 'id', 'unknown')}', using default"
+                            "Invalid display format '%s' for item '%s', using default",
+                            item_format,
+                            getattr(item, "id", "unknown"),
                         )
-                        formatted_values[period] = str(
-                            value
-                        )  # Convert to string for consistency
+                        formatted_values[period] = str(value)  # Convert to string for consistency
                 else:
-                    formatted_values[period] = str(
-                        value
-                    )  # Convert to string for consistency
+                    formatted_values[period] = str(value)  # Convert to string for consistency
             else:
                 formatted_values[period] = ""
 
         return formatted_values
 
-    def _format_contra_value(
-        self, value: float, display_style: str | None = None
-    ) -> str:
+    def _format_contra_value(self, value: float, display_style: str | None = None) -> str:
         """Format a contra item value according to the specified display style.
 
         Args:
@@ -392,7 +376,7 @@ class StatementFormatter:
 
     def _apply_contra_formatting(
         self,
-        item: Union[StatementItem, Section],
+        item: StatementItem | Section,
         values: dict[str, float],
         period_columns: list[str],
         display_style: str | None = None,
@@ -408,6 +392,7 @@ class StatementFormatter:
         Returns:
             Dictionary of formatted contra values
         """
+        _ = item  # Parameter intentionally unused in current implementation
         contra_formatted = {}
         for period in period_columns:
             value = values.get(period, np.nan)
@@ -430,40 +415,20 @@ class StatementFormatter:
 
         # Create context with provided kwargs
         context = FormattingContext(
-            should_apply_signs=kwargs.get(
-                "should_apply_signs", config.display.apply_sign_conventions
-            ),
-            include_empty_items=kwargs.get(
-                "include_empty_items", config.display.include_empty_items
-            ),
+            should_apply_signs=kwargs.get("should_apply_signs", config.display.apply_sign_conventions),
+            include_empty_items=kwargs.get("include_empty_items", config.display.include_empty_items),
             number_format=kwargs.get("number_format"),
-            include_metadata_cols=kwargs.get(
-                "include_metadata_cols", config.display.include_metadata_cols
-            ),
+            include_metadata_cols=kwargs.get("include_metadata_cols", config.display.include_metadata_cols),
             adjustment_filter=kwargs.get("adjustment_filter"),
-            add_is_adjusted_column=kwargs.get(
-                "add_is_adjusted_column", config.display.add_is_adjusted_column
-            ),
-            include_units_column=kwargs.get(
-                "include_units_column", config.display.include_units_column
-            ),
-            include_css_classes=kwargs.get(
-                "include_css_classes", config.display.include_css_classes
-            ),
-            include_notes_column=kwargs.get(
-                "include_notes_column", config.display.include_notes_column
-            ),
-            apply_item_scaling=kwargs.get(
-                "apply_item_scaling", config.display.apply_item_scaling
-            ),
-            apply_item_formatting=kwargs.get(
-                "apply_item_formatting", config.display.apply_item_formatting
-            ),
+            add_is_adjusted_column=kwargs.get("add_is_adjusted_column", config.display.add_is_adjusted_column),
+            include_units_column=kwargs.get("include_units_column", config.display.include_units_column),
+            include_css_classes=kwargs.get("include_css_classes", config.display.include_css_classes),
+            include_notes_column=kwargs.get("include_notes_column", config.display.include_notes_column),
+            apply_item_scaling=kwargs.get("apply_item_scaling", config.display.apply_item_scaling),
+            apply_item_formatting=kwargs.get("apply_item_formatting", config.display.apply_item_formatting),
             respect_hide_flags=kwargs.get("respect_hide_flags"),
             contra_display_style=kwargs.get("contra_display_style"),
-            apply_contra_formatting=kwargs.get(
-                "apply_contra_formatting", config.display.apply_contra_formatting
-            ),
+            apply_contra_formatting=kwargs.get("apply_contra_formatting", config.display.apply_contra_formatting),
             add_contra_indicator_column=kwargs.get(
                 "add_contra_indicator_column",
                 config.display.add_contra_indicator_column,
@@ -472,9 +437,7 @@ class StatementFormatter:
 
         # Apply config defaults for None values
         if context.should_apply_signs is None:
-            context.should_apply_signs = (
-                True  # This is a calculation default, not display
-            )
+            context.should_apply_signs = True  # This is a calculation default, not display
         if context.include_empty_items is None:
             context.include_empty_items = False  # Preserve historical default
         if context.respect_hide_flags is None:
@@ -509,9 +472,7 @@ class StatementFormatter:
 
         # Log any warnings/errors
         if fetch_result.errors.has_warnings() or fetch_result.errors.has_errors():
-            fetch_result.errors.log_all(
-                prefix=f"Statement '{self.statement.id}' data fetch: "
-            )
+            fetch_result.errors.log_all(prefix=f"Statement '{self.statement.id}' data fetch: ")
 
         # Update context with periods from graph
         context.all_periods = graph.periods
@@ -570,7 +531,7 @@ class StatementFormatter:
 
     def _process_items_recursive(
         self,
-        items: list[Union[Section, StatementItem]],
+        items: list[Section | StatementItem],
         depth: int,
         data: dict[str, dict[str, float]],
         rows: list[dict[str, Any]],
@@ -591,9 +552,7 @@ class StatementFormatter:
         """
         for item in items:
             if isinstance(item, Section):
-                self._process_section(
-                    item, depth, data, rows, context, id_resolver, graph
-                )
+                self._process_section(item, depth, data, rows, context, id_resolver, graph)
             elif isinstance(item, StatementItem):
                 self._process_item(item, depth, data, rows, context, id_resolver, graph)
 
@@ -619,15 +578,11 @@ class StatementFormatter:
             graph: Graph instance
         """
         # Process section items first to collect data for hide check
-        self._process_items_recursive(
-            section.items, depth + 1, data, rows, context, id_resolver, graph
-        )
+        self._process_items_recursive(section.items, depth + 1, data, rows, context, id_resolver, graph)
 
         # Process subtotal if it exists
         if hasattr(section, "subtotal") and section.subtotal:
-            self._process_items_recursive(
-                [section.subtotal], depth + 1, data, rows, context, id_resolver, graph
-            )
+            self._process_items_recursive([section.subtotal], depth + 1, data, rows, context, id_resolver, graph)
 
         # Check if section should be hidden
         if context.respect_hide_flags and getattr(section, "hide_if_all_zero", False):
@@ -670,9 +625,7 @@ class StatementFormatter:
             return
 
         item_data = data.get(node_id, {})
-        numeric_values: dict[str, float] = {
-            p: item_data.get(p, np.nan) for p in context.all_periods
-        }
+        numeric_values: dict[str, float] = {p: item_data.get(p, np.nan) for p in context.all_periods}
 
         # Apply item-specific scaling if enabled
         if context.apply_item_scaling:
@@ -684,19 +637,15 @@ class StatementFormatter:
             return
 
         # Start with numeric values and add formatted strings as needed
-        row_values: dict[str, Union[float, str]] = dict(numeric_values)
+        row_values: dict[str, float | str] = dict(numeric_values)
 
         # Apply item-specific formatting if enabled (but only if not using global format)
         if context.apply_item_formatting and not context.number_format:
-            formatted_values = self._format_item_values(
-                item, numeric_values, context.all_periods
-            )
+            formatted_values = self._format_item_values(item, numeric_values, context.all_periods)
             # Only apply if we got actual formatted strings
             if any(isinstance(v, str) for v in formatted_values.values()):
                 for period in context.all_periods:
-                    if period in formatted_values and isinstance(
-                        formatted_values[period], str
-                    ):
+                    if period in formatted_values and isinstance(formatted_values[period], str):
                         # Keep numeric value for calculations, store formatted for display
                         row_values[f"{period}_formatted"] = formatted_values[period]
 
@@ -718,7 +667,7 @@ class StatementFormatter:
         self,
         item: StatementItem,
         node_id: str,
-        row_values: dict[str, Union[float, str]],
+        row_values: dict[str, float | str],
         depth: int,
         context: FormattingContext,
     ) -> dict[str, Any]:
@@ -757,9 +706,7 @@ class StatementFormatter:
             # Get item's CSS class and add contra class if applicable
             item_css_class = getattr(item, "css_class", None)
             if getattr(item, "is_contra", False):
-                contra_css = context.default_formats.get(
-                    "contra_css_class", "contra-item"
-                )
+                contra_css = context.default_formats.get("contra_css_class", "contra-item")
                 if item_css_class:
                     row["css_class"] = f"{item_css_class} {contra_css}"
                 else:
@@ -792,9 +739,7 @@ class StatementFormatter:
         scale_factor = self._resolve_display_scale_factor(item)
         return self._apply_item_scaling(values, scale_factor)
 
-    def _organize_dataframe_columns(
-        self, df: pd.DataFrame, context: FormattingContext
-    ) -> pd.DataFrame:
+    def _organize_dataframe_columns(self, df: pd.DataFrame, context: FormattingContext) -> pd.DataFrame:
         """Organize DataFrame columns in the correct order.
 
         Args:
@@ -828,9 +773,7 @@ class StatementFormatter:
         # Add adjustment columns if they exist
         adjusted_flag_cols = []
         if context.add_is_adjusted_column:
-            adjusted_flag_cols = [
-                f"{period}_is_adjusted" for period in context.all_periods
-            ]
+            adjusted_flag_cols = [f"{period}_is_adjusted" for period in context.all_periods]
 
         final_cols = base_cols + context.all_periods
         if adjusted_flag_cols:
@@ -839,31 +782,21 @@ class StatementFormatter:
             final_cols += enhanced_cols
         if context.include_metadata_cols:
             # Add metadata cols (excluding adjustment flags if they are already added)
-            final_cols += [
-                m_col for m_col in metadata_cols if m_col not in adjusted_flag_cols
-            ]
+            final_cols += [m_col for m_col in metadata_cols if m_col not in adjusted_flag_cols]
 
         # Ensure contra formatting columns are available temporarily (will be removed later)
         all_available_cols = final_cols.copy()
         if context.apply_contra_formatting:
-            contra_formatted_cols = [
-                f"{period}_contra" for period in context.all_periods
-            ]
+            contra_formatted_cols = [f"{period}_contra" for period in context.all_periods]
             all_available_cols += contra_formatted_cols
 
         for col in all_available_cols:
             if col not in df.columns:
-                df[col] = (
-                    np.nan
-                    if col in context.all_periods
-                    else ("" if col == "Line Item" else None)
-                )
+                df[col] = np.nan if col in context.all_periods else ("" if col == "Line Item" else None)
 
         return df[all_available_cols]
 
-    def _add_adjustment_columns(
-        self, df: pd.DataFrame, graph: Graph, context: FormattingContext
-    ) -> pd.DataFrame:
+    def _add_adjustment_columns(self, df: pd.DataFrame, graph: Graph, context: FormattingContext) -> pd.DataFrame:
         """Add adjustment status columns to the DataFrame.
 
         Args:
@@ -881,9 +814,7 @@ class StatementFormatter:
         node_ids_to_check = []
         for _, row in df.iterrows():
             node_id = row.get("node_id")
-            is_calc_or_subtotal = row.get("is_calculated", False) or row.get(
-                "is_subtotal", False
-            )
+            is_calc_or_subtotal = row.get("is_calculated", False) or row.get("is_subtotal", False)
             if node_id and not is_calc_or_subtotal:
                 node_ids_to_check.append(node_id)
 
@@ -900,22 +831,16 @@ class StatementFormatter:
         is_adjusted_data = []
         for _, row in df.iterrows():
             node_id = row.get("node_id")
-            is_calc_or_subtotal = row.get("is_calculated", False) or row.get(
-                "is_subtotal", False
-            )
+            is_calc_or_subtotal = row.get("is_calculated", False) or row.get("is_subtotal", False)
 
             if node_id and not is_calc_or_subtotal and node_id in adjustment_status:
                 row_adj_flags = {
-                    f"{period}_is_adjusted": adjustment_status[node_id].get(
-                        period, False
-                    )
+                    f"{period}_is_adjusted": adjustment_status[node_id].get(period, False)
                     for period in context.all_periods
                 }
             else:
                 # For calculated/subtotal items or missing nodes, flags are False
-                row_adj_flags = {
-                    f"{period}_is_adjusted": False for period in context.all_periods
-                }
+                row_adj_flags = {f"{period}_is_adjusted": False for period in context.all_periods}
             is_adjusted_data.append(row_adj_flags)
 
         if is_adjusted_data:
@@ -924,9 +849,7 @@ class StatementFormatter:
 
         return df
 
-    def _cleanup_temporary_columns(
-        self, df: pd.DataFrame, context: FormattingContext
-    ) -> pd.DataFrame:
+    def _cleanup_temporary_columns(self, df: pd.DataFrame, context: FormattingContext) -> pd.DataFrame:
         """Clean up temporary columns from the dataframe.
 
         Args:
@@ -938,12 +861,8 @@ class StatementFormatter:
         """
         # Remove the contra formatting columns from the final output
         if context.apply_contra_formatting:
-            contra_cols_to_remove = [
-                f"{period}_contra" for period in context.all_periods
-            ]
-            df = df.drop(
-                columns=[col for col in contra_cols_to_remove if col in df.columns]
-            )
+            contra_cols_to_remove = [f"{period}_contra" for period in context.all_periods]
+            df = df.drop(columns=[col for col in contra_cols_to_remove if col in df.columns])
 
         # Build final column list
         base_cols = ["Line Item", "ID"]
@@ -968,9 +887,7 @@ class StatementFormatter:
 
         adjusted_flag_cols = []
         if context.add_is_adjusted_column:
-            adjusted_flag_cols = [
-                f"{period}_is_adjusted" for period in context.all_periods
-            ]
+            adjusted_flag_cols = [f"{period}_is_adjusted" for period in context.all_periods]
 
         final_cols = base_cols + context.all_periods
         if context.add_is_adjusted_column:
@@ -979,16 +896,12 @@ class StatementFormatter:
             final_cols += enhanced_cols
         if context.include_metadata_cols:
             # Add metadata cols (excluding adjustment flags if they are already added)
-            final_cols += [
-                m_col for m_col in metadata_cols if m_col not in adjusted_flag_cols
-            ]
+            final_cols += [m_col for m_col in metadata_cols if m_col not in adjusted_flag_cols]
 
         # Select only the final columns for output
         return df[final_cols]
 
-    def _apply_all_formatting(
-        self, df: pd.DataFrame, context: FormattingContext
-    ) -> pd.DataFrame:
+    def _apply_all_formatting(self, df: pd.DataFrame, context: FormattingContext) -> pd.DataFrame:
         """Apply consolidated formatting in a single vectorized pass."""
         # Combined sign, contra, and number formatting
         df = render_values(
@@ -1005,7 +918,7 @@ class StatementFormatter:
     def generate_dataframe(
         self,
         graph: Graph,
-        context: Optional[FormattingContext] = None,
+        context: FormattingContext | None = None,
     ) -> pd.DataFrame:
         """Generate a formatted DataFrame for the statement.
 
@@ -1067,10 +980,10 @@ class StatementFormatter:
     def format_html(
         self,
         graph: Graph,
-        should_apply_signs: Optional[bool] = None,
-        include_empty_items: Optional[bool] = None,
-        css_styles: Optional[dict[str, str]] = None,
-        use_item_css_classes: Optional[bool] = None,
+        should_apply_signs: bool | None = None,
+        include_empty_items: bool | None = None,
+        css_styles: dict[str, str] | None = None,
+        use_item_css_classes: bool | None = None,
         **kwargs: Any,
     ) -> str:
         """Format the statement data as HTML with enhanced styling support.
@@ -1092,19 +1005,13 @@ class StatementFormatter:
         cfg = get_config()
 
         should_apply_signs = (
-            should_apply_signs
-            if should_apply_signs is not None
-            else cfg.display.apply_sign_conventions
+            should_apply_signs if should_apply_signs is not None else cfg.display.apply_sign_conventions
         )
         include_empty_items = (
-            include_empty_items
-            if include_empty_items is not None
-            else cfg.display.include_empty_items
+            include_empty_items if include_empty_items is not None else cfg.display.include_empty_items
         )
         use_item_css_classes = (
-            use_item_css_classes
-            if use_item_css_classes is not None
-            else cfg.display.include_css_classes
+            use_item_css_classes if use_item_css_classes is not None else cfg.display.include_css_classes
         )
 
         # Ensure the correct flag for CSS class inclusion is propagated
@@ -1121,9 +1028,7 @@ class StatementFormatter:
 
         df = self.generate_dataframe(graph=graph, context=context)
 
-        html: str = df.to_html(
-            index=False, classes="statement-table", table_id="financial-statement"
-        )
+        html: str = df.to_html(index=False, classes="statement-table", table_id="financial-statement")
 
         if css_styles or use_item_css_classes:
             style_str = "<style>\n"

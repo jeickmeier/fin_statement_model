@@ -14,7 +14,7 @@ The tests rely on small stub objects so they are fully isolated from the
 larger graph implementation.
 """
 
-# ruff: noqa: PLR2004, S101 – allow hard-coded values & assert-style tests
+# ruff: noqa: PLR2004, S101 - allow hard-coded values & assert-style tests
 from __future__ import annotations
 
 from typing import Any
@@ -42,7 +42,7 @@ class DummyGraph:
         self._added: list[str] = []
 
     # Mimic the graph API used by PeriodManager
-    def add_periods(self, periods: list[str]) -> None:  # noqa: D401 – simple verb
+    def add_periods(self, periods: list[str]) -> None:  # noqa: D401 - simple verb
         self.periods.extend(periods)
         self._added.extend(periods)
 
@@ -57,7 +57,7 @@ class DummyNode(Node):
     def calculate(self, period: str) -> float:  # noqa: D401
         return self.values[period]
 
-    def to_dict(self) -> dict[str, Any]:  # noqa: D401 – trivial
+    def to_dict(self) -> dict[str, Any]:  # noqa: D401 - trivial
         return {"type": "dummy", "name": self.name}
 
     @classmethod
@@ -104,7 +104,7 @@ def test_ensure_periods_exist_adds_missing() -> None:  # noqa: D401
 )
 def test_validate_period_sequence(
     periods: list[str], expect_error: bool
-) -> None:  # noqa: D401 – paramized
+) -> None:  # noqa: D401 - paramized
     if expect_error:
         with pytest.raises(ValueError):
             PeriodManager.validate_period_sequence(periods)
@@ -144,14 +144,14 @@ def test_determine_base_period_strategy_variants() -> None:  # noqa: D401
 
 
 def test_validate_forecast_inputs_and_node_config() -> None:  # noqa: D401
-    # Basic happy-path call – should not raise
+    # Basic happy-path call - should not raise
     ForecastValidator.validate_forecast_inputs(["2021"], ["2022"])
 
     # Invalid node_configs type
     with pytest.raises(ForecastConfigurationError):
         ForecastValidator.validate_forecast_inputs(["2021"], ["2022"], node_configs=["bad"])  # type: ignore[arg-type]
 
-    # Node-config validation – missing keys
+    # Node-config validation - missing keys
     with pytest.raises(ValueError):
         ForecastValidator.validate_node_config("revenue", {})
 

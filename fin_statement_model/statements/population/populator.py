@@ -17,21 +17,19 @@ Key Concepts:
 import logging
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.statements.structure import StatementStructure
-from fin_statement_model.statements.population.id_resolver import IDResolver
 from fin_statement_model.core.nodes import standard_node_registry
+from fin_statement_model.statements.population.id_resolver import IDResolver
 from fin_statement_model.statements.population.item_processors import (
     ItemProcessorManager,
 )
+from fin_statement_model.statements.structure import StatementStructure
 
 logger = logging.getLogger(__name__)
 
 __all__ = ["populate_graph_from_statement"]
 
 
-def populate_graph_from_statement(
-    statement: StatementStructure, graph: Graph
-) -> list[tuple[str, str]]:
+def populate_graph_from_statement(statement: StatementStructure, graph: Graph) -> list[tuple[str, str]]:
     """Add calculation nodes defined in a StatementStructure to a Graph.
 
     This function bridges the gap between static statement definitions and the
@@ -79,19 +77,19 @@ def populate_graph_from_statement(
         >>>
         >>> # Create graph with data nodes
         >>> graph = Graph()
-        >>> graph.add_financial_statement_item('revenue_node', {'2023': 1000})
-        >>> graph.add_financial_statement_item('cogs_node', {'2023': 600})
+        >>> graph.add_financial_statement_item("revenue_node", {"2023": 1000})
+        >>> graph.add_financial_statement_item("cogs_node", {"2023": 600})
         >>>
         >>> # Create statement with calculations
         >>> statement = StatementStructure(id="IS", name="Income Statement")
         >>> # Add a LineItem that maps to 'revenue_node'
-        >>> revenue_item = LineItem(id='revenue', name='Revenue', node_id='revenue_node')
+        >>> revenue_item = LineItem(id="revenue", name="Revenue", node_id="revenue_node")
         >>> # Add a CalculatedLineItem that references the LineItem
         >>> gross_profit = CalculatedLineItem(
-        ...     id='gross_profit',
-        ...     name='Gross Profit',
-        ...     calculation_type='subtraction',
-        ...     input_ids=['revenue', 'cogs']  # Uses LineItem IDs
+        ...     id="gross_profit",
+        ...     name="Gross Profit",
+        ...     calculation_type="subtraction",
+        ...     input_ids=["revenue", "cogs"],  # Uses LineItem IDs
         ... )
         >>>
         >>> errors = populate_graph_from_statement(statement, graph)
@@ -120,8 +118,9 @@ def populate_graph_from_statement(
     nodes_added_count = 0
 
     logger.info(
-        f"Starting graph population for statement '{statement.id}'. "
-        f"Processing {len(all_items_to_process)} calculation/metric items."
+        "Starting graph population for statement '%s'. Processing %s calculation/metric items.",
+        statement.id,
+        len(all_items_to_process),
     )
 
     # Process items with retry mechanism
@@ -132,7 +131,7 @@ def populate_graph_from_statement(
         items_failed_this_pass = []
         processed_in_pass = 0
 
-        logger.debug(f"Population loop: Processing {len(items_to_process)} items...")
+        logger.debug("Population loop: Processing %s items...", len(items_to_process))
 
         for item in items_to_process:
             # Determine if this is a retry (not the first overall pass)
@@ -157,32 +156,33 @@ def populate_graph_from_statement(
         # Check for stalled progress
         if processed_in_pass == 0 and items_to_process:
             logger.warning(
-                f"Population loop stalled. {len(items_to_process)} items could not be processed: "
-                f"{[item.id for item in items_to_process]}"
+                "Population loop stalled. %s items could not be processed: %s",
+                len(items_to_process),
+                [item.id for item in items_to_process],
             )
             # Add errors for items that couldn't be processed
             for item in items_to_process:
                 if not any(err[0] == item.id for err in errors_encountered):
-                    errors_encountered.append(
-                        (
-                            item.id,
-                            "Failed to process due to unresolved dependencies or circular reference.",
-                        )
-                    )
+                    errors_encountered.append((
+                        item.id,
+                        "Failed to process due to unresolved dependencies or circular reference.",
+                    ))
             break
 
     # Log results
     if errors_encountered:
         logger.warning(
-            f"Graph population for statement '{statement.id}' completed with "
-            f"{len(errors_encountered)} persistent errors."
+            "Graph population for statement '%s' completed with %s persistent errors.",
+            statement.id,
+            len(errors_encountered),
         )
     else:
         log_level = logging.INFO if nodes_added_count > 0 else logging.DEBUG
         logger.log(
             log_level,
-            f"Graph population for statement '{statement.id}' completed. "
-            f"Added {nodes_added_count} new nodes.",
+            "Graph population for statement '%s' completed. Added %s new nodes.",
+            statement.id,
+            nodes_added_count,
         )
 
     return errors_encountered

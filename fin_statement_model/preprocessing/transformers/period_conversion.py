@@ -5,18 +5,25 @@ and calculating trailing metrics such as trailing twelve months (TTM). Supported
 quarterly_to_annual, monthly_to_quarterly, monthly_to_annual, and quarterly_to_ttm.
 """
 
+from __future__ import annotations
+
+from collections.abc import Callable
 import logging
-import pandas as pd
-from typing import Optional, Union, ClassVar, Callable
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 import warnings
 
+import pandas as pd
+
+from fin_statement_model.core.errors import DataValidationError
 from fin_statement_model.preprocessing.base_transformer import DataTransformer
 from fin_statement_model.preprocessing.config import (
     ConversionType,
     PeriodConversionConfig,
 )
-from fin_statement_model.core.errors import DataValidationError
 from fin_statement_model.preprocessing.periods import Period, resample_to_period
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -55,16 +62,13 @@ class PeriodConversionTransformer(DataTransformer):
         >>> from fin_statement_model.preprocessing.transformers import PeriodConversionTransformer
         >>>
         >>> # Quarterly revenue and expense data
-        >>> quarterly_data = pd.DataFrame({
-        ...     'revenue': [100, 110, 120, 130, 140, 150, 160, 170],
-        ...     'expenses': [80, 85, 90, 95, 100, 105, 110, 115]
-        ... }, index=pd.date_range('2022-03-31', periods=8, freq='Q'))
+        >>> quarterly_data = pd.DataFrame(
+        ...     {"revenue": [100, 110, 120, 130, 140, 150, 160, 170], "expenses": [80, 85, 90, 95, 100, 105, 110, 115]},
+        ...     index=pd.date_range("2022-03-31", periods=8, freq="Q"),
+        ... )
         >>>
         >>> # Convert to annual data (sum 4 quarters)
-        >>> annual_converter = PeriodConversionTransformer(
-        ...     conversion_type='quarterly_to_annual',
-        ...     aggregation='sum'
-        ... )
+        >>> annual_converter = PeriodConversionTransformer(conversion_type="quarterly_to_annual", aggregation="sum")
         >>> annual_data = annual_converter.transform(quarterly_data)
         >>> print(annual_data)
         #       revenue  expenses
@@ -74,15 +78,14 @@ class PeriodConversionTransformer(DataTransformer):
         Convert monthly balance sheet to quarterly (taking last value):
 
         >>> # Monthly balance sheet data
-        >>> monthly_bs = pd.DataFrame({
-        ...     'total_assets': [1000, 1020, 1050, 1080, 1100, 1150],
-        ...     'total_equity': [600, 610, 620, 630, 640, 650]
-        ... }, index=pd.date_range('2023-01-31', periods=6, freq='M'))
+        >>> monthly_bs = pd.DataFrame(
+        ...     {"total_assets": [1000, 1020, 1050, 1080, 1100, 1150], "total_equity": [600, 610, 620, 630, 640, 650]},
+        ...     index=pd.date_range("2023-01-31", periods=6, freq="M"),
+        ... )
         >>>
         >>> # Convert to quarterly, taking last month's value
         >>> quarterly_converter = PeriodConversionTransformer(
-        ...     conversion_type='monthly_to_quarterly',
-        ...     aggregation='last'
+        ...     conversion_type="monthly_to_quarterly", aggregation="last"
         ... )
         >>> quarterly_bs = quarterly_converter.transform(monthly_bs)
         >>> print(quarterly_bs)
@@ -93,15 +96,12 @@ class PeriodConversionTransformer(DataTransformer):
         Calculate trailing twelve months (TTM) from quarterly data:
 
         >>> # Quarterly earnings data
-        >>> quarterly_earnings = pd.DataFrame({
-        ...     'net_income': [25, 30, 35, 40, 45, 50, 55, 60]
-        ... }, index=pd.date_range('2022-03-31', periods=8, freq='Q'))
+        >>> quarterly_earnings = pd.DataFrame(
+        ...     {"net_income": [25, 30, 35, 40, 45, 50, 55, 60]}, index=pd.date_range("2022-03-31", periods=8, freq="Q")
+        ... )
         >>>
         >>> # Calculate TTM (rolling 4-quarter sum)
-        >>> ttm_converter = PeriodConversionTransformer(
-        ...     conversion_type='quarterly_to_ttm',
-        ...     aggregation='sum'
-        ... )
+        >>> ttm_converter = PeriodConversionTransformer(conversion_type="quarterly_to_ttm", aggregation="sum")
         >>> ttm_data = ttm_converter.transform(quarterly_earnings)
         >>> print(ttm_data.iloc[3:])  # First 3 periods will be NaN
         #             net_income
@@ -124,12 +124,10 @@ class PeriodConversionTransformer(DataTransformer):
 
     def __init__(
         self,
-        conversion_type: Union[
-            str, ConversionType
-        ] = ConversionType.QUARTERLY_TO_ANNUAL,
+        conversion_type: str | ConversionType = ConversionType.QUARTERLY_TO_ANNUAL,
         aggregation: str = "sum",
         *,
-        config: Optional[PeriodConversionConfig] = None,
+        config: PeriodConversionConfig | None = None,
     ):
         """Initialize the period conversion transformer.
 
@@ -157,13 +155,13 @@ class PeriodConversionTransformer(DataTransformer):
 
         Examples:
             >>> # Annual totals from quarterly data
-            >>> converter = PeriodConversionTransformer('quarterly_to_annual', 'sum')
+            >>> converter = PeriodConversionTransformer("quarterly_to_annual", "sum")
             >>>
             >>> # Quarter-end balances from monthly data
-            >>> converter = PeriodConversionTransformer('monthly_to_quarterly', 'last')
+            >>> converter = PeriodConversionTransformer("monthly_to_quarterly", "last")
             >>>
             >>> # TTM revenue from quarterly data
-            >>> converter = PeriodConversionTransformer('quarterly_to_ttm', 'sum')
+            >>> converter = PeriodConversionTransformer("quarterly_to_ttm", "sum")
         """
         if config is not None and aggregation != "sum":
             warnings.warn(
@@ -177,20 +175,15 @@ class PeriodConversionTransformer(DataTransformer):
             aggregation = config.aggregation or aggregation
 
         # Normalize enum to string
-        if isinstance(conversion_type, ConversionType):
-            ctype = conversion_type.value
-        else:
-            ctype = conversion_type
+        ctype = conversion_type.value if isinstance(conversion_type, ConversionType) else conversion_type
         if ctype not in self.CONVERSION_TYPES:
-            raise ValueError(
-                f"Invalid conversion type: {ctype}. Must be one of {self.CONVERSION_TYPES}"
-            )
+            raise ValueError(f"Invalid conversion type: {ctype}. Must be one of {self.CONVERSION_TYPES}")
         self.conversion_type = ctype
         self.aggregation = aggregation
 
         super().__init__(config.model_dump() if config else None)
 
-    def transform(self, data: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, data: pd.DataFrame | pd.Series[Any]) -> pd.DataFrame | pd.Series[Any]:
         """Transform data by converting between period types.
 
         Args:
@@ -211,33 +204,30 @@ class PeriodConversionTransformer(DataTransformer):
             All columns are aggregated according to the specified method.
 
         Raises:
-            TypeError: If data is not a pandas DataFrame.
+            TypeError: If data is not a pandas DataFrame or Series.
             ValueError: If index cannot be converted to datetime or if
                 aggregation='sum' is used with 'quarterly_to_ttm' and a
                 different aggregation method is specified.
 
         Examples:
             >>> # Convert quarterly data to annual
-            >>> df = pd.DataFrame({
-            ...     'revenue': [100, 110, 120, 130],
-            ...     'costs': [60, 65, 70, 75]
-            ... }, index=['2023-Q1', '2023-Q2', '2023-Q3', '2023-Q4'])
+            >>> df = pd.DataFrame(
+            ...     {"revenue": [100, 110, 120, 130], "costs": [60, 65, 70, 75]},
+            ...     index=["2023-Q1", "2023-Q2", "2023-Q3", "2023-Q4"],
+            ... )
             >>>
-            >>> converter = PeriodConversionTransformer('quarterly_to_annual')
+            >>> converter = PeriodConversionTransformer("quarterly_to_annual")
             >>> annual = converter.transform(df)
             >>> print(annual)
             #       revenue  costs
             # 2023      460    270
         """
-        # Ensure we have a DataFrame
-        if not isinstance(data, pd.DataFrame):
-            raise TypeError("Period conversion requires a pandas DataFrame")
+        if not isinstance(data, pd.DataFrame | pd.Series):
+            raise TypeError("Period conversion requires a pandas DataFrame or Series")
 
         return super().transform(data)
 
-    def _transform_impl(
-        self, data: Union[pd.DataFrame, pd.Series]
-    ) -> Union[pd.DataFrame, pd.Series]:
+    def _transform_impl(self, data: pd.DataFrame | pd.Series[Any]) -> pd.DataFrame | pd.Series[Any]:
         """Apply the period conversion transformation.
 
         This is the core implementation method that handles both DataFrame
@@ -261,18 +251,15 @@ class PeriodConversionTransformer(DataTransformer):
                 - Other conversion-specific issues
 
         Examples:
-            >>> transformer = PeriodConversionTransformer(
-            ...     conversion_type='quarterly_to_annual',
-            ...     aggregation='sum'
+            >>> transformer = PeriodConversionTransformer(conversion_type="quarterly_to_annual", aggregation="sum")
+            >>> df = pd.DataFrame(
+            ...     {"revenue": [100, 110, 120, 130], "costs": [60, 65, 70, 75]},
+            ...     index=pd.date_range("2023-01-01", periods=4, freq="Q"),
             ... )
-            >>> df = pd.DataFrame({
-            ...     'revenue': [100, 110, 120, 130],
-            ...     'costs': [60, 65, 70, 75]
-            ... }, index=pd.date_range('2023-01-01', periods=4, freq='Q'))
             >>> result = transformer._transform_impl(df)
-            >>> series = pd.Series([100, 110, 120, 130],
-            ...                   index=pd.date_range('2023-01-01', periods=4, freq='Q'),
-            ...                   name='revenue')
+            >>> series = pd.Series(
+            ...     [100, 110, 120, 130], index=pd.date_range("2023-01-01", periods=4, freq="Q"), name="revenue"
+            ... )
             >>> result_series = transformer._transform_impl(series)
         """
         if not isinstance(data, pd.DataFrame | pd.Series):
@@ -314,11 +301,11 @@ class PeriodConversionTransformer(DataTransformer):
             NotImplementedError: If conversion_type is not supported
 
         Examples:
-            >>> df = pd.DataFrame({
-            ...     'revenue': [100, 110, 120, 130],
-            ...     'costs': [60, 65, 70, 75]
-            ... }, index=['2023-Q1', '2023-Q2', '2023-Q3', '2023-Q4'])
-            >>> transformer = PeriodConversionTransformer('quarterly_to_annual')
+            >>> df = pd.DataFrame(
+            ...     {"revenue": [100, 110, 120, 130], "costs": [60, 65, 70, 75]},
+            ...     index=["2023-Q1", "2023-Q2", "2023-Q3", "2023-Q4"],
+            ... )
+            >>> transformer = PeriodConversionTransformer("quarterly_to_annual")
             >>> result = transformer._convert_periods(df)
             >>> print(result)
             #       revenue  costs
@@ -346,9 +333,7 @@ class PeriodConversionTransformer(DataTransformer):
         try:
             return dispatch[self.conversion_type](df_copy)
         except KeyError as exc:
-            raise NotImplementedError(
-                f"Conversion type '{self.conversion_type}' is not implemented."
-            ) from exc
+            raise NotImplementedError(f"Conversion type '{self.conversion_type}' is not implemented.") from exc
 
     def _ensure_datetime_index(self, df: pd.DataFrame) -> pd.DataFrame:
         """Return *df* with a DatetimeIndex, converting if required.
@@ -371,7 +356,7 @@ class PeriodConversionTransformer(DataTransformer):
             ValueError: If the index cannot be converted to datetime format
 
         Examples:
-            >>> df = pd.DataFrame({'value': [1, 2]}, index=['2023-01', '2023-02'])
+            >>> df = pd.DataFrame({"value": [1, 2]}, index=["2023-01", "2023-02"])
             >>> transformer = PeriodConversionTransformer()
             >>> result = transformer._ensure_datetime_index(df)
             >>> isinstance(result.index, pd.DatetimeIndex)
@@ -390,14 +375,13 @@ class PeriodConversionTransformer(DataTransformer):
         try:
             df_conv.index = pd.to_datetime(df_conv.index)
             logger.debug("Successfully converted DataFrame index to DatetimeIndex.")
-            return df_conv
         except Exception as exc:
             logger.exception(
                 "Failed to convert DataFrame index to DatetimeIndex. Ensure index contains standard date/time strings or is already a DatetimeIndex."
             )
-            raise ValueError(
-                "Index must be convertible to datetime for period conversion"
-            ) from exc
+            raise ValueError("Index must be convertible to datetime for period conversion") from exc
+        else:
+            return df_conv
 
     def _quarterly_to_annual(self, df: pd.DataFrame) -> pd.DataFrame:
         """Aggregate 4 quarters into annual periods using configured aggregation.
@@ -414,16 +398,16 @@ class PeriodConversionTransformer(DataTransformer):
             DataFrame with annual data and integer year index
 
         Examples:
-            >>> df = pd.DataFrame({
-            ...     'revenue': [100, 110, 120, 130]
-            ... }, index=pd.date_range('2023-01-01', periods=4, freq='Q'))
-            >>> transformer = PeriodConversionTransformer('quarterly_to_annual')
+            >>> df = pd.DataFrame(
+            ...     {"revenue": [100, 110, 120, 130]}, index=pd.date_range("2023-01-01", periods=4, freq="Q")
+            ... )
+            >>> transformer = PeriodConversionTransformer("quarterly_to_annual")
             >>> result = transformer._quarterly_to_annual(df)
             >>> print(result)
             #       revenue
             # 2023      460
         """
-        return resample_to_period(df, Period.YEAR, aggregation=self.aggregation)
+        return cast("pd.DataFrame", resample_to_period(df, Period.YEAR, aggregation=self.aggregation))
 
     def _monthly_to_quarterly(self, df: pd.DataFrame) -> pd.DataFrame:
         """Aggregate 3 months into quarterly periods.
@@ -440,19 +424,19 @@ class PeriodConversionTransformer(DataTransformer):
             DataFrame with quarterly data and (year, quarter) tuple index
 
         Examples:
-            >>> df = pd.DataFrame({
-            ...     'value': [10, 20, 30, 40, 50, 60]
-            ... }, index=pd.date_range('2023-01-31', periods=6, freq='M'))
-            >>> transformer = PeriodConversionTransformer('monthly_to_quarterly')
+            >>> df = pd.DataFrame(
+            ...     {"value": [10, 20, 30, 40, 50, 60]}, index=pd.date_range("2023-01-31", periods=6, freq="M")
+            ... )
+            >>> transformer = PeriodConversionTransformer("monthly_to_quarterly")
             >>> result = transformer._monthly_to_quarterly(df)
             >>> print(result)
             #              value
             # (2023, 1)      60
             # (2023, 2)     150
         """
-        resampled = resample_to_period(df, Period.QUARTER, aggregation=self.aggregation)
+        resampled = cast("pd.DataFrame", resample_to_period(df, Period.QUARTER, aggregation=self.aggregation))
         # Convert DatetimeIndex to (year, quarter) tuples for backward-compatibility.
-        resampled.index = [(ts.year, ts.quarter) for ts in resampled.index]
+        resampled.index = pd.Index([(ts.year, ts.quarter) for ts in resampled.index])
         return resampled
 
     def _monthly_to_annual(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -470,16 +454,16 @@ class PeriodConversionTransformer(DataTransformer):
             DataFrame with annual data and integer year index
 
         Examples:
-            >>> df = pd.DataFrame({
-            ...     'value': [10, 20, 30, 40, 50, 60]
-            ... }, index=pd.date_range('2023-01-31', periods=6, freq='M'))
-            >>> transformer = PeriodConversionTransformer('monthly_to_annual')
+            >>> df = pd.DataFrame(
+            ...     {"value": [10, 20, 30, 40, 50, 60]}, index=pd.date_range("2023-01-31", periods=6, freq="M")
+            ... )
+            >>> transformer = PeriodConversionTransformer("monthly_to_annual")
             >>> result = transformer._monthly_to_annual(df)
             >>> print(result)
             #       value
             # 2023    210
         """
-        return resample_to_period(df, Period.YEAR, aggregation=self.aggregation)
+        return cast("pd.DataFrame", resample_to_period(df, Period.YEAR, aggregation=self.aggregation))
 
     def _quarterly_to_ttm(self, df: pd.DataFrame) -> pd.DataFrame:
         """Compute trailing-twelve-months (rolling 4-quarter sum).
@@ -501,10 +485,10 @@ class PeriodConversionTransformer(DataTransformer):
                 (TTM requires summing quarters)
 
         Examples:
-            >>> df = pd.DataFrame({
-            ...     'revenue': [100, 110, 120, 130, 140, 150]
-            ... }, index=pd.date_range('2023-01-01', periods=6, freq='Q'))
-            >>> transformer = PeriodConversionTransformer('quarterly_to_ttm')
+            >>> df = pd.DataFrame(
+            ...     {"revenue": [100, 110, 120, 130, 140, 150]}, index=pd.date_range("2023-01-01", periods=6, freq="Q")
+            ... )
+            >>> transformer = PeriodConversionTransformer("quarterly_to_ttm")
             >>> result = transformer._quarterly_to_ttm(df)
             >>> print(result.iloc[3:])  # Skip first 3 NaN periods
             #             revenue
@@ -518,12 +502,10 @@ class PeriodConversionTransformer(DataTransformer):
             - Original datetime index is preserved
         """
         if self.aggregation != "sum":
-            raise ValueError(
-                "QUARTERLY_TO_TTM currently supports only 'sum' aggregation."
-            )
+            raise ValueError("QUARTERLY_TO_TTM currently supports only 'sum' aggregation.")
         return df.rolling(window=4, min_periods=4).sum()
 
-    def validate_input(self, data: object) -> bool:  # noqa: D401
+    def validate_input(self, data: object) -> bool:
         """Accept pandas DataFrame or Series.
 
         This method implements the DataTransformer contract by specifying
@@ -549,4 +531,4 @@ class PeriodConversionTransformer(DataTransformer):
             >>> transformer.validate_input([1, 2, 3])
             False
         """
-        return isinstance(data, (pd.DataFrame, pd.Series))
+        return isinstance(data, pd.DataFrame | pd.Series)

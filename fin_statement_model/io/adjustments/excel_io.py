@@ -25,10 +25,11 @@ The primary functions are:
   to an Excel file.
 """
 
-import logging
-from typing import Any, cast, Iterable
-from pathlib import Path
 from collections import defaultdict
+from collections.abc import Iterable
+import logging
+from pathlib import Path
+from typing import Any, cast
 
 import pandas as pd
 from pydantic import ValidationError
@@ -38,13 +39,13 @@ from fin_statement_model.core.adjustments.models import (
     AdjustmentType,
 )
 from fin_statement_model.core.graph import Graph  # Needed for Graph convenience methods
-from fin_statement_model.io.exceptions import ReadError, WriteError
-from fin_statement_model.io.core.mixins.error_handlers import handle_read_errors
 from fin_statement_model.io.adjustments.row_models import AdjustmentRowModel
 from fin_statement_model.io.core.file_utils import (
     validate_file_exists as _validate_file_exists,
     validate_file_extension as _validate_file_extension,
 )
+from fin_statement_model.io.core.mixins.error_handlers import handle_read_errors
+from fin_statement_model.io.exceptions import ReadError, WriteError
 
 logger = logging.getLogger(__name__)
 
@@ -93,12 +94,10 @@ def _validate_required_columns(columns: Iterable[str]) -> None:
         )
 
 
-def _build_error_row(
-    raw: dict[str, Any], ve: ValidationError, idx: int
-) -> dict[str, Any]:
+def _build_error_row(raw: dict[str, Any], ve: ValidationError, idx: int) -> dict[str, Any]:
     error_detail = "; ".join(f"{err['loc'][0]}: {err['msg']}" for err in ve.errors())
     row = {**raw, "error": error_detail}
-    logger.debug(f"Row {idx}: Validation failed - {error_detail}")
+    logger.debug("Row %s: Validation failed - %s", idx, error_detail)
     return row
 
 
@@ -117,9 +116,7 @@ class _FileValidationMixin:
         """Delegate existence check to shared helper."""
         _validate_file_exists(path, reader_type=self.__class__.__name__)
 
-    def validate_file_extension(
-        self, path: str, valid_extensions: tuple[str, ...] | None = None
-    ) -> None:
+    def validate_file_extension(self, path: str, valid_extensions: tuple[str, ...] | None = None) -> None:
         """Check if a file's extension is in a list of valid extensions.
 
         This method checks if the file at `path` has an extension that is present
@@ -157,9 +154,7 @@ class AdjustmentsExcelReader(_FileValidationMixin):
     file_extensions = (".xls", ".xlsx")
 
     @handle_read_errors()
-    def read(
-        self, source: str | Path, **_kw: Any
-    ) -> tuple[list[Adjustment], pd.DataFrame]:
+    def read(self, source: str | Path, **_kw: Any) -> tuple[list[Adjustment], pd.DataFrame]:
         """Read and parse adjustments from an Excel file.
 
         This method validates the file's existence and extension, then reads the
@@ -183,7 +178,6 @@ class AdjustmentsExcelReader(_FileValidationMixin):
         Raises:
             ReadError: If the file cannot be found, read, or is missing required columns.
         """
-
         path_str = str(source)
 
         # Basic file checks ---------------------------------------------------
@@ -198,11 +192,12 @@ class AdjustmentsExcelReader(_FileValidationMixin):
         # ------------------------------------------------------------------
         try:
             df = pd.read_excel(file_path, sheet_name=0)
-        except FileNotFoundError:
+        except FileNotFoundError as err:
             raise ReadError(
-                f"Adjustment Excel file not found: {file_path}", source=str(file_path)
-            )
-        except Exception as e:  # noqa: BLE001
+                f"Adjustment Excel file not found: {file_path}",
+                source=str(file_path),
+            ) from err
+        except Exception as e:
             raise ReadError(
                 f"Failed to read Excel file {file_path}: {e}",
                 source=str(file_path),
@@ -212,10 +207,10 @@ class AdjustmentsExcelReader(_FileValidationMixin):
         # ------------------------------------------------------------------
         # Normalise + validate columns
         # ------------------------------------------------------------------
-        df.columns = [str(col).lower().strip() for col in df.columns]
+        df.columns = pd.Index([str(col).lower().strip() for col in df.columns])
         _validate_required_columns(df.columns)
 
-        records = df.to_dict(orient="records")
+        records = cast("list[dict[str, Any]]", df.to_dict(orient="records"))
         valid_adjustments: list[Adjustment] = []
         error_rows: list[dict[str, Any]] = []
 
@@ -281,7 +276,7 @@ def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:
             permission errors or issues with the underlying Excel engine.
     """
     file_path = Path(path)
-    logger.info(f"Writing {len(adjustments)} adjustments to Excel file: {file_path}")
+    logger.info("Writing %s adjustments to Excel file: %s", len(adjustments), file_path)
 
     # Group adjustments by scenario
     grouped_by_scenario: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -292,7 +287,7 @@ def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:
         adj_dict["id"] = str(adj_dict.get("id"))
         raw_type = adj_dict.get("type")
         # Cast to AdjustmentType to access .value safely if present
-        adj_dict["type"] = cast(AdjustmentType, raw_type).value if raw_type else None
+        adj_dict["type"] = cast("AdjustmentType", raw_type).value if raw_type else None
         adj_dict["tags"] = ",".join(sorted(adj_dict.get("tags", set())))
         grouped_by_scenario[adj.scenario].append(adj_dict)
 
@@ -306,7 +301,7 @@ def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:
                 f"Failed to write empty Excel file {file_path}: {e}",
                 target=str(file_path),
                 original_error=e,
-            )
+            ) from e
         return
 
     try:
@@ -318,20 +313,16 @@ def write_excel(adjustments: list[Adjustment], path: str | Path) -> None:
                 cols_ordered += [c for c in df.columns if c not in cols_ordered]
                 df = df[cols_ordered]
                 # Sheet names must be valid
-                safe_scenario_name = (
-                    scenario.replace(":", "-").replace("/", "-").replace("\\", "-")[:31]
-                )
+                safe_scenario_name = scenario.replace(":", "-").replace("/", "-").replace("\\", "-")[:31]
                 df.to_excel(writer, sheet_name=safe_scenario_name, index=False)
-        logger.info(f"Successfully wrote adjustments to {file_path}")
+        logger.info("Successfully wrote adjustments to %s", file_path)
     except Exception as e:
-        logger.error(
-            f"Failed to write adjustments to Excel file {file_path}: {e}", exc_info=True
-        )
+        logger.exception("Failed to write adjustments to Excel file %s", file_path)
         raise WriteError(
             f"Failed to write adjustments to Excel: {e}",
             target=str(file_path),
             original_error=e,
-        )
+        ) from e
 
 
 # --- Graph Convenience Methods ---
@@ -360,9 +351,7 @@ def load_adjustments_from_excel(
             - A pandas DataFrame containing rows from the Excel file that
               failed initial validation.
     """
-    logger.info(
-        f"Loading adjustments from Excel ({path}) into graph. Replace={replace}"
-    )
+    logger.info("Loading adjustments from Excel (%s) into graph. Replace=%s", path, replace)
     valid_adjustments, error_report_df = read_excel(path)
 
     if replace:
@@ -375,20 +364,16 @@ def load_adjustments_from_excel(
             graph.adjustment_manager.add_adjustment(adj)
             added_count += 1
         except Exception as e:
-            logger.error(
-                f"Failed to add valid adjustment {adj.id} to graph: {e}", exc_info=True
-            )
+            logger.exception("Failed to add valid adjustment %s to graph", adj.id)
             # Optionally add this failure to the error report?
             error_row = adj.model_dump(mode="json")
             error_row["error"] = f"Failed to add to graph: {e}"
             # Need to handle DataFrame append carefully if modifying during iteration
             # Simplest is to report read errors, log add errors.
 
-    logger.info(f"Added {added_count} adjustments to the graph from {path}.")
+    logger.info("Added %s adjustments to the graph from %s.", added_count, path)
     if not error_report_df.empty:
-        logger.warning(
-            f"Encountered {len(error_report_df)} errors during Excel read process."
-        )
+        logger.warning("Encountered %s errors during Excel read process.", len(error_report_df))
 
     return valid_adjustments, error_report_df
 
@@ -403,13 +388,6 @@ def export_adjustments_to_excel(graph: Graph, path: str | Path) -> None:
         graph: The `Graph` instance containing the adjustments to export.
         path: Path for the output Excel file.
     """
-    logger.info(f"Exporting all adjustments from graph to Excel ({path}).")
+    logger.info("Exporting all adjustments from graph to Excel (%s).", path)
     all_adjustments = graph.list_all_adjustments()
     write_excel(all_adjustments, path)
-
-
-# Note: These helpers were previously monkey-patched onto Graph for convenience.  The
-# project now avoids such runtime patching; call the functions explicitly, e.g.::
-#
-#     from fin_statement_model.io.adjustments.excel_io import load_adjustments_from_excel
-#     load_adjustments_from_excel(graph, "adjustments.xlsx", replace=True)

@@ -27,7 +27,7 @@ def test_validate_config_errors(method: StatisticalForecastMethod):
     with pytest.raises(ValueError):
         method.validate_config({"distribution": "normal"})
 
-    # Invalid params structure – any exception acceptable
+    # Invalid params structure - any exception acceptable
     with pytest.raises(Exception):
         method.validate_config({"distribution": "uniform", "params": {"foo": 1}})
 

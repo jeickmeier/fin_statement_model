@@ -9,31 +9,28 @@ Examples:
     >>> from fin_statement_model.core.adjustments.models import Adjustment
     >>> from fin_statement_model.core.adjustments.manager import AdjustmentManager
     >>> mgr = AdjustmentManager()
-    >>> adj = Adjustment(node_name='A', period='2023', value=10.0, reason='Manual')
+    >>> adj = Adjustment(node_name="A", period="2023", value=10.0, reason="Manual")
     >>> mgr.add_adjustment(adj)
-    >>> mgr.get_adjustments('A', '2023')[0].value == 10.0
-    True
-    >>> base = 100.0
-    >>> new_value, applied = mgr.apply_adjustments(base, mgr.get_adjustments('A', '2023'))
-    >>> new_value == 110.0
+    >>> mgr.get_adjustments("A", "2023")[0].value == 10.0
 """
 
 from __future__ import annotations
 
-import logging
-import inspect
 from collections import defaultdict
-from typing import Optional
-from uuid import UUID
+import inspect
+import logging
+from typing import TYPE_CHECKING
 
 from .models import (
+    DEFAULT_SCENARIO,
     Adjustment,
     AdjustmentFilter,
     AdjustmentFilterInput,
     AdjustmentType,
-    DEFAULT_SCENARIO,
 )
 
+if TYPE_CHECKING:
+    from uuid import UUID
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +45,7 @@ class AdjustmentManager:
     Examples:
         >>> from fin_statement_model.core.adjustments.models import Adjustment
         >>> mgr = AdjustmentManager()
-        >>> adj = Adjustment(node_name='A', period='2023', value=5.0, reason='r')
+        >>> adj = Adjustment(node_name="A", period="2023", value=5.0, reason="r")
         >>> mgr.add_adjustment(adj)
         >>> len(mgr.get_all_adjustments())
         1
@@ -67,9 +64,7 @@ class AdjustmentManager:
             0
         """
         # Primary index: (scenario, node_name, period) -> list[Adjustment]
-        self._by_location: dict[tuple[str, str, str], list[Adjustment]] = defaultdict(
-            list
-        )
+        self._by_location: dict[tuple[str, str, str], list[Adjustment]] = defaultdict(list)
         # Secondary index for quick lookup and removal by ID
         self._by_id: dict[UUID, Adjustment] = {}
 
@@ -87,9 +82,9 @@ class AdjustmentManager:
         Examples:
             >>> from fin_statement_model.core.adjustments.models import Adjustment
             >>> mgr = AdjustmentManager()
-            >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r')
+            >>> adj = Adjustment(node_name="A", period="2023", value=1.0, reason="r")
             >>> mgr.add_adjustment(adj)
-            >>> mgr.get_adjustments('A', '2023')[0].value == 1.0
+            >>> mgr.get_adjustments("A", "2023")[0].value == 1.0
             True
         """
         # If an adjustment with the same ID already exists, remove it first
@@ -114,7 +109,7 @@ class AdjustmentManager:
         Examples:
             >>> from fin_statement_model.core.adjustments.models import Adjustment
             >>> mgr = AdjustmentManager()
-            >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r')
+            >>> adj = Adjustment(node_name="A", period="2023", value=1.0, reason="r")
             >>> mgr.add_adjustment(adj)
             >>> mgr.remove_adjustment(adj.id)
             True
@@ -127,9 +122,7 @@ class AdjustmentManager:
 
         if key in self._by_location:
             # Filter out the specific adjustment object instance
-            self._by_location[key] = [
-                a for a in self._by_location[key] if a.id != adj_id
-            ]
+            self._by_location[key] = [a for a in self._by_location[key] if a.id != adj_id]
             # If the list becomes empty, remove the key
             if not self._by_location[key]:
                 del self._by_location[key]
@@ -148,7 +141,9 @@ class AdjustmentManager:
         Examples:
             >>> from fin_statement_model.core.adjustments.models import Adjustment, AdjustmentType
             >>> mgr = AdjustmentManager()
-            >>> adj = Adjustment(node_name='A', period='2023', value=2.0, type=AdjustmentType.MULTIPLICATIVE, reason='r')
+            >>> adj = Adjustment(
+            ...     node_name="A", period="2023", value=2.0, type=AdjustmentType.MULTIPLICATIVE, reason="r"
+            ... )
             >>> mgr._apply_one(10.0, adj)
             20.0
         """
@@ -175,9 +170,7 @@ class AdjustmentManager:
             # Should not happen with Enum, but defensively return base value
             return base_value  # pragma: no cover
 
-    def apply_adjustments(
-        self, base_value: float, adjustments: list[Adjustment]
-    ) -> tuple[float, bool]:
+    def apply_adjustments(self, base_value: float, adjustments: list[Adjustment]) -> tuple[float, bool]:
         """Apply a list of adjustments sequentially to a base value.
 
         Adjustments are applied in order of priority (lower first), then timestamp.
@@ -192,7 +185,7 @@ class AdjustmentManager:
         Examples:
             >>> from fin_statement_model.core.adjustments.models import Adjustment
             >>> mgr = AdjustmentManager()
-            >>> adj = Adjustment(node_name='A', period='2023', value=5.0, reason='r')
+            >>> adj = Adjustment(node_name="A", period="2023", value=5.0, reason="r")
             >>> mgr.apply_adjustments(100.0, [adj])
             (105.0, True)
         """
@@ -205,9 +198,7 @@ class AdjustmentManager:
         # Sort by priority (ascending), then timestamp (ascending) as per spec
         # Note: add_adjustment already sorts the list in _by_location, but
         # this ensures correctness if an unsorted list is passed directly.
-        sorted_adjustments = sorted(
-            adjustments, key=lambda x: (x.priority, x.timestamp)
-        )
+        sorted_adjustments = sorted(adjustments, key=lambda x: (x.priority, x.timestamp))
 
         for adj in sorted_adjustments:
             current_value = self._apply_one(current_value, adj)
@@ -215,9 +206,7 @@ class AdjustmentManager:
 
         return current_value, applied_flag
 
-    def get_adjustments(
-        self, node_name: str, period: str, *, scenario: str = DEFAULT_SCENARIO
-    ) -> list[Adjustment]:
+    def get_adjustments(self, node_name: str, period: str, *, scenario: str = DEFAULT_SCENARIO) -> list[Adjustment]:
         """Retrieve all adjustments for a specific node, period, and scenario.
 
         Args:
@@ -231,18 +220,16 @@ class AdjustmentManager:
         Examples:
             >>> from fin_statement_model.core.adjustments.models import Adjustment
             >>> mgr = AdjustmentManager()
-            >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r')
+            >>> adj = Adjustment(node_name="A", period="2023", value=1.0, reason="r")
             >>> mgr.add_adjustment(adj)
-            >>> len(mgr.get_adjustments('A', '2023'))
+            >>> len(mgr.get_adjustments("A", "2023"))
             1
         """
         key = (scenario, node_name, period)
         # Return a copy to prevent external modification of the internal list
         return list(self._by_location.get(key, []))
 
-    def _normalize_filter(
-        self, filter_input: AdjustmentFilterInput, period: Optional[str] = None
-    ) -> AdjustmentFilter:
+    def _normalize_filter(self, filter_input: AdjustmentFilterInput, period: str | None = None) -> AdjustmentFilter:
         """Convert flexible filter input into a baseline AdjustmentFilter instance.
 
         Args:
@@ -260,7 +247,7 @@ class AdjustmentManager:
         Examples:
             >>> from fin_statement_model.core.adjustments.models import AdjustmentFilter
             >>> mgr = AdjustmentManager()
-            >>> f = mgr._normalize_filter(AdjustmentFilter(include_tags={'X'}), '2023')
+            >>> f = mgr._normalize_filter(AdjustmentFilter(include_tags={"X"}), "2023")
             >>> isinstance(f, AdjustmentFilter)
             True
         """
@@ -285,7 +272,7 @@ class AdjustmentManager:
             # For callable predicates we still construct a baseline AdjustmentFilter so
             # that core scenario / period checks remain in place. The callable itself
             # will be evaluated later in `get_filtered_adjustments`. We purposefully do
-            # not restrict `include_scenarios` here – the caller can implement any
+            # not restrict `include_scenarios` here - the caller can implement any
             # scenario logic inside the predicate if desired.
             return AdjustmentFilter(period=period)
         else:
@@ -313,10 +300,10 @@ class AdjustmentManager:
         Examples:
             >>> from fin_statement_model.core.adjustments.models import Adjustment
             >>> mgr = AdjustmentManager()
-            >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r', tags={'X'})
+            >>> adj = Adjustment(node_name="A", period="2023", value=1.0, reason="r", tags={"X"})
             >>> mgr.add_adjustment(adj)
-            >>> result = mgr.get_filtered_adjustments('A', '2023', {'X'})
-            >>> result[0].node_name == 'A'
+            >>> result = mgr.get_filtered_adjustments("A", "2023", {"X"})
+            >>> result[0].node_name == "A"
             True
         """
         normalized_filter = self._normalize_filter(filter_input, period)
@@ -326,25 +313,17 @@ class AdjustmentManager:
         # Determine which scenarios to check based on the filter
         scenarios_to_check: set[str]
         if normalized_filter.include_scenarios is not None:
-            scenarios_to_check = (
-                normalized_filter.include_scenarios.copy()
-            )  # Work on a copy
+            scenarios_to_check = normalized_filter.include_scenarios.copy()  # Work on a copy
             if normalized_filter.exclude_scenarios is not None:
                 scenarios_to_check -= normalized_filter.exclude_scenarios
         elif normalized_filter.exclude_scenarios is not None:
             # Get all scenarios currently known to the manager
             all_known_scenarios = {adj.scenario for adj in self._by_id.values()}
-            scenarios_to_check = (
-                all_known_scenarios - normalized_filter.exclude_scenarios
-            )
+            scenarios_to_check = all_known_scenarios - normalized_filter.exclude_scenarios
         else:
             # No include/exclude specified: check all scenarios relevant for this node/period
             # This requires checking keys in _by_location
-            scenarios_to_check = {
-                key[0]
-                for key in self._by_location
-                if key[1] == node_name and key[2] == period
-            }
+            scenarios_to_check = {key[0] for key in self._by_location if key[1] == node_name and key[2] == period}
             # If no specific adjustments exist for this node/period, we might check default?
             # Let's assume we only check scenarios that *have* adjustments for this location.
             if not scenarios_to_check:
@@ -372,25 +351,17 @@ class AdjustmentManager:
 
             if param_count == 1:
                 matching_adjustments = [
-                    adj
-                    for adj in candidate_adjustments
-                    if filter_input(adj) and normalized_filter.matches(adj)
+                    adj for adj in candidate_adjustments if filter_input(adj) and normalized_filter.matches(adj)
                 ]
-            elif param_count == 2:
+            elif param_count == 2:  # noqa: PLR2004
                 matching_adjustments = [
-                    adj
-                    for adj in candidate_adjustments
-                    if filter_input(adj, period) and normalized_filter.matches(adj)
+                    adj for adj in candidate_adjustments if filter_input(adj, period) and normalized_filter.matches(adj)
                 ]
             else:
-                raise TypeError(
-                    "Callable adjustment filter must accept one or two positional arguments"
-                )
+                raise TypeError("Callable adjustment filter must accept one or two positional arguments")
         else:
             # Apply the normalized AdjustmentFilter's matches method
-            matching_adjustments = [
-                adj for adj in candidate_adjustments if normalized_filter.matches(adj)
-            ]
+            matching_adjustments = [adj for adj in candidate_adjustments if normalized_filter.matches(adj)]
 
         # Return sorted list (sorting might be redundant if fetched lists are pre-sorted
         # and filtering maintains order, but ensures correctness)
@@ -439,7 +410,7 @@ class AdjustmentManager:
         Examples:
             >>> from fin_statement_model.core.adjustments.models import Adjustment
             >>> mgr = AdjustmentManager()
-            >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r')
+            >>> adj = Adjustment(node_name="A", period="2023", value=1.0, reason="r")
             >>> mgr.load_adjustments([adj])
             >>> len(mgr.get_all_adjustments())
             1

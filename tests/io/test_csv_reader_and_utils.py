@@ -59,7 +59,7 @@ def test_csv_reader_basic(tmp_path: Path) -> None:
 
 
 # -----------------------------------------------------------------------------
-# CsvReader – invalid extension triggers ReadError via validate_file_extension
+# CsvReader - invalid extension triggers ReadError via validate_file_extension
 # -----------------------------------------------------------------------------
 
 
@@ -82,7 +82,7 @@ def test_csv_reader_invalid_extension(tmp_path: Path) -> None:
 
 
 # -----------------------------------------------------------------------------
-# file_utils helpers – direct unit tests (no Graph involvement)
+# file_utils helpers - direct unit tests (no Graph involvement)
 # -----------------------------------------------------------------------------
 
 

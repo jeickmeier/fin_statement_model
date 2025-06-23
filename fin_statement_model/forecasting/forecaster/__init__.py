@@ -8,4 +8,9 @@ end-users can continue importing it from
 
 from __future__ import annotations
 
-from .controller import StatementForecaster  # noqa: F401
+from .controller import StatementForecaster
+
+# Re-export for public API
+__all__: list[str] = [
+    "StatementForecaster",
+]

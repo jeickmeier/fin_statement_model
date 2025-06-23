@@ -11,13 +11,13 @@ from typing import Any
 import pandas as pd
 
 from fin_statement_model.core.graph import Graph
+from fin_statement_model.io.config.models import DataFrameWriterConfig
+from fin_statement_model.io.core.base_table_writer import BaseTableWriter
 from fin_statement_model.io.core.mixins import (
     ConfigurationMixin,
     handle_write_errors,
 )
-from fin_statement_model.io.core.base_table_writer import BaseTableWriter
 from fin_statement_model.io.core.registry import register_writer
-from fin_statement_model.io.config.models import DataFrameWriterConfig
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +62,7 @@ class DataFrameWriter(BaseTableWriter, ConfigurationMixin):
         Returns:
             A pandas DataFrame representing the graph's data.
         """
+        _ = target  # Parameter intentionally unused
         recalculate = self._param("recalculate", kwargs, self.cfg, default=True)
         include_nodes = self._param("include_nodes", kwargs, self.cfg)
 

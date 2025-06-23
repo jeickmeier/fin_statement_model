@@ -15,7 +15,7 @@ all public paths of the simple, curve, average, historical-growth and
 statistical forecast methods.
 """
 
-# ruff: noqa: PLR2004, S101 – allow hard-coded values & assert-style tests
+# ruff: noqa: PLR2004, S101 - allow hard-coded values & assert-style tests
 from __future__ import annotations
 
 from typing import Any, Callable
@@ -46,18 +46,18 @@ class DummyNode(Node):
     # ------------------------------------------------------------------
     # Abstract API implementations
 
-    def calculate(self, period: str) -> float:  # noqa: D401 – simple verb okay
+    def calculate(self, period: str) -> float:  # noqa: D401 - simple verb okay
         """Return the stored value for *period* (mimics a data node)."""
         return self.values[period]
 
-    def to_dict(self) -> dict[str, Any]:  # noqa: D401 – simple verb okay
-        """Serialize to bare-minimum dict – not used in tests."""
+    def to_dict(self) -> dict[str, Any]:  # noqa: D401 - simple verb okay
+        """Serialize to bare-minimum dict - not used in tests."""
         return {"type": "dummy", "name": self.name}
 
     @classmethod
     def from_dict(
         cls, data: dict[str, Any], context: dict[str, Node] | None = None
-    ) -> "DummyNode":  # noqa: D401 – concise
+    ) -> "DummyNode":  # noqa: D401 - concise
         return cls(data["name"], {})
 
 
@@ -74,7 +74,7 @@ def test_simple_method_validation_and_normalisation() -> None:  # noqa: D401
     params = method.get_forecast_params(0.05, ["2024", "2025"])
     assert params == {"forecast_type": "simple", "growth_params": 0.05}
 
-    # List with one numeric value – first element is taken
+    # List with one numeric value - first element is taken
     params_list = method.get_forecast_params([0.07], ["2024"])
     assert params_list == {"forecast_type": "simple", "growth_params": 0.07}
 
@@ -85,7 +85,7 @@ def test_simple_method_validation_and_normalisation() -> None:  # noqa: D401
 )
 def test_simple_method_invalid_configs(
     bad_config: Any, exc_type: type[Exception]
-) -> None:  # noqa: D401 – concise
+) -> None:  # noqa: D401 - concise
     """Invalid configs raise the correct exception type."""
     method = SimpleForecastMethod()
     with pytest.raises(exc_type):
@@ -104,7 +104,7 @@ def test_curve_method_single_value_expansion() -> None:  # noqa: D401
     assert params["growth_params"] == [0.03, 0.03, 0.03]
 
 
-def test_curve_method_list_handling() -> None:  # noqa: D401 – concise
+def test_curve_method_list_handling() -> None:  # noqa: D401 - concise
     """A list config must match the forecast-period length exactly."""
     method = CurveForecastMethod()
     out = method.normalize_params([0.05, 0.04], ["2024", "2025"])
@@ -118,7 +118,7 @@ def test_curve_method_list_handling() -> None:  # noqa: D401 – concise
 
 
 # ----------------------------------------------------------------------
-# AverageForecastMethod – historical-data preparation
+# AverageForecastMethod - historical-data preparation
 # ----------------------------------------------------------------------
 
 
@@ -141,7 +141,7 @@ def test_average_method_prepare_historical_data_failure() -> None:  # noqa: D401
 
 
 # ----------------------------------------------------------------------
-# HistoricalGrowthForecastMethod – growth-rate calculation helper
+# HistoricalGrowthForecastMethod - growth-rate calculation helper
 # ----------------------------------------------------------------------
 
 
@@ -159,12 +159,12 @@ def test_historical_growth_average_rate_mean_and_median() -> None:  # noqa: D401
     median_rate = method.calculate_average_growth_rate(hist_vals)
     assert median_rate == 0.15  # median of [0.1, 0.2] is 0.15
 
-    # Clean-up – restore default aggregation to avoid side-effects
+    # Clean-up - restore default aggregation to avoid side-effects
     update_config({"forecasting": {"historical_growth_aggregation": "mean"}})
 
 
 # ----------------------------------------------------------------------
-# StatisticalForecastMethod – generator behaviour
+# StatisticalForecastMethod - generator behaviour
 # ----------------------------------------------------------------------
 
 
@@ -176,11 +176,11 @@ def test_statistical_method_generator_properties() -> None:  # noqa: D401
     params = method.normalize_params(config, ["2024", "2025", "2026"])
     generator: Callable[[], float] = params["growth_params"]
 
-    # Draw many samples – the sample mean should converge towards 0
+    # Draw many samples - the sample mean should converge towards 0
     samples = np.array([generator() for _ in range(2_000)])
     assert (
         abs(samples.mean()) < 0.1
-    )  # loose bound – deterministic due to default seed=None
+    )  # loose bound - deterministic due to default seed=None
 
     # Ensure each call returns a *float*
     assert isinstance(generator(), float)

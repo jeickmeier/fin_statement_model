@@ -3,35 +3,36 @@
 This module unifies the two historical reader bases (*long*-layout and
 *wide*-layout) into a single implementation.  Concrete subclasses only need
 
-1. to declare a class-level ``layout`` attribute – either ``"long"`` or
+1. to declare a class-level ``layout`` attribute - either ``"long"`` or
    ``"wide"``; and
 2. implement ``_load_dataframe(self, source, **kwargs)`` which returns the raw
    :class:`pandas.DataFrame` loaded from *source* (file path, in-memory frame,
    etc.).
 
-Everything else – mapping, validation and Graph construction – is handled by
+Everything else - mapping, validation and Graph construction - is handled by
 this base class.
 """
 
 from __future__ import annotations
 
-import logging
 from abc import ABC, abstractmethod
-from typing import Any, cast
-
-import pandas as pd
+import logging
+from typing import TYPE_CHECKING, Any, cast
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
 from fin_statement_model.io.core.mixins import (
     ConfigurationMixin,
+    FileBasedReader,
     MappingAwareMixin,
     ValidationMixin,
     ValidationResultCollector,
-    FileBasedReader,
     handle_read_errors,
 )
 from fin_statement_model.io.exceptions import ReadError
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +50,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
 ):
     """Common reader for *DataFrame* sources supporting *long* + *wide* layouts."""
 
-    #: expected subclass override – either ``"long"`` or ``"wide"``
+    #: expected subclass override - either ``"long"`` or ``"wide"``
     layout: str = "long"
 
     # Whether to coerce non-numeric strings to floats during value validation
@@ -59,7 +60,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
     # Sub-class contract
     # ------------------------------------------------------------------
     @abstractmethod
-    def _load_dataframe(self, source: Any, **kwargs: Any) -> pd.DataFrame:  # noqa: D401
+    def _load_dataframe(self, source: Any, **kwargs: Any) -> pd.DataFrame:
         """Return the pandas.DataFrame loaded from *source*.
 
         Sub-classes implement actual IO (reading CSV, Excel, DataFrame copy, …).
@@ -75,29 +76,25 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
     def _resolve_long_columns(self, kwargs: dict[str, Any]) -> tuple[str, str, str]:
         """Resolve the names of the item, period, and value columns."""
         item_col = cast(
-            str,
+            "str",
             kwargs.get("item_col") or self.get_config_value("item_col", required=True),
         )
         period_col = cast(
-            str,
-            kwargs.get("period_col")
-            or self.get_config_value("period_col", required=True),
+            "str",
+            kwargs.get("period_col") or self.get_config_value("period_col", required=True),
         )
         value_col = cast(
-            str,
-            kwargs.get("value_col")
-            or self.get_config_value("value_col", required=True),
+            "str",
+            kwargs.get("value_col") or self.get_config_value("value_col", required=True),
         )
         return item_col, period_col, value_col
 
     def _resolve_wide_items_col(self, kwargs: dict[str, Any]) -> int:
         """Resolve the 0-indexed column number for item names in wide format."""
         items_col_idx_1 = cast(
-            int,
+            "int",
             kwargs.get(self.WIDE_REQUIRED_ATTR)
-            or self.get_config_value(
-                self.WIDE_REQUIRED_ATTR, default=1, value_type=int
-            ),
+            or self.get_config_value(self.WIDE_REQUIRED_ATTR, default=1, value_type=int),
         )
         if items_col_idx_1 < 1:
             raise ReadError(
@@ -114,7 +111,13 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
     # ------------------------------------------------------------------
     # Lifecycle
     # ------------------------------------------------------------------
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D401
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialise the base reader, propagating to all mix-in constructors.
+
+        Sub-classes usually call ``super().__init__`` with any custom keyword
+        arguments they need.  The *allow_conversion* flag can be overridden at
+        instance construction time to control numeric coercion behaviour.
+        """
         # Forward to mixin initialisers (super() resolves MRO)
         super().__init__(*args, **kwargs)
         # Allow individual readers to override via subclass attribute or ctor kwarg
@@ -124,9 +127,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
     # ------------------------------------------------------------------
     # Parameter helper to DRY cfg/kwargs merging
     # ------------------------------------------------------------------
-    def _param(
-        self, name: str, overrides: dict[str, Any], *, default: Any = None
-    ) -> Any:  # noqa: D401
+    def _param(self, name: str, overrides: dict[str, Any], *, default: Any = None) -> Any:
         """Return effective value for *name* with precedence: overrides → cfg → default."""
         if name in overrides:
             return overrides[name]
@@ -139,6 +140,26 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
     # ------------------------------------------------------------------
     @handle_read_errors()
     def read(self, source: Any, **kwargs: Any) -> Graph:
+        """Read *source* and return a populated Graph instance.
+
+        This is the main public entry point for all concrete *DataFrame* readers
+        (CSV, Excel, in-memory DataFrames, …).  The heavy lifting is delegated
+        to :py:meth:`_load_dataframe` and the internal ``_parse_long`` /
+        ``_parse_wide`` helpers after the input layout has been detected.
+
+        Args:
+            source: File path, buffer or in-memory *pandas* object accepted by
+                the concrete reader implementation.
+            **kwargs: Reader-specific keyword arguments (e.g. column mappings).
+
+        Returns:
+            A :class:`fin_statement_model.core.graph.Graph` instance containing
+            the nodes and periods parsed from *source*.
+
+        Raises:
+            ReadError: If *source* is empty/invalid or any validation step
+                fails.
+        """
         # 1. Load the dataframe ---------------------------------------------------
         df = self._load_dataframe(source, **kwargs)
         if df.empty:
@@ -152,7 +173,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
         layout = getattr(self, "layout", "long")
         if layout not in ("long", "wide"):
             raise ReadError(
-                f"Invalid layout '{layout}' – expected 'long' or 'wide'",
+                f"Invalid layout '{layout}' - expected 'long' or 'wide'",
                 source=str(source),
                 reader_type=self.__class__.__name__,
             )
@@ -176,9 +197,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
         """Parse a long-format DataFrame and populate a Graph."""
         item_col, period_col, value_col = self._resolve_long_columns(kwargs)
 
-        self.validate_required_columns(
-            df, [item_col, period_col, value_col], str(source_identifier)
-        )
+        self.validate_required_columns(df, [item_col, period_col, value_col], str(source_identifier))
 
         df[period_col] = df[period_col].astype(str)
         periods = sorted(df[period_col].unique().tolist())
@@ -206,9 +225,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
                 if ok_val and num is not None:
                     period_values[str(per)] = float(num)
             if period_values:
-                graph.add_node(
-                    FinancialStatementItemNode(name=node_name, values=period_values)
-                )
+                graph.add_node(FinancialStatementItemNode(name=node_name, values=period_values))
 
         if validator.has_errors():
             raise ReadError(
@@ -240,9 +257,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
     ) -> Graph:
         """Parse a wide-format DataFrame and populate a Graph."""
         items_col_idx0 = self._resolve_wide_items_col(kwargs)
-        self.validate_column_bounds(
-            df, items_col_idx0, str(source_identifier), "items_col"
-        )
+        self.validate_column_bounds(df, items_col_idx0, str(source_identifier), "items_col")
 
         periods = self._extract_periods(df, items_col_idx0)
         self.validate_periods_exist(periods, str(source_identifier))
@@ -271,9 +286,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
                 if ok_val and num is not None:
                     period_values[str(period)] = float(num)
             if period_values:
-                graph.add_node(
-                    FinancialStatementItemNode(name=node_name, values=period_values)
-                )
+                graph.add_node(FinancialStatementItemNode(name=node_name, values=period_values))
                 nodes_added += 1
 
         if validator.has_errors():
@@ -282,9 +295,7 @@ class DataFrameReaderBase(  # pylint: disable=too-many-public-methods
                 source=str(source_identifier),
                 reader_type=self.__class__.__name__,
             )
-        logger.info(
-            "Loaded %s nodes from wide table (%s)", nodes_added, source_identifier
-        )
+        logger.info("Loaded %s nodes from wide table (%s)", nodes_added, source_identifier)
         return graph
 
 

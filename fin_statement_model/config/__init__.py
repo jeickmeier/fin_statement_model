@@ -10,28 +10,27 @@ Examples:
     >>> cfg_obj = get_config()
     >>> cfg_obj.logging.level
     'WARNING'
-    >>> update_config({'logging': {'level': 'DEBUG'}})
+    >>> update_config({"logging": {"level": "DEBUG"}})
     >>> get_config().logging.level
     'DEBUG'
     >>> from fin_statement_model.config import cfg
-    >>> cfg('logging.level')
+    >>> cfg("logging.level")
     'DEBUG'
 """
 
-from .access import cfg, cfg_or_param, ConfigurationAccessError
+from .access import ConfigurationAccessError, cfg, cfg_or_param
 
 # Importing helpers first ensures that "cfg" is available early, avoiding
 # circular import issues when other modules import fin_statement_model.config
 # during the initialization of sub-packages (e.g., io.formats.api.fmp).
-
 from .models import Config
 from .store import get_config, update_config
 
 __all__ = [
     "Config",
+    "ConfigurationAccessError",
     "cfg",
     "cfg_or_param",
-    "ConfigurationAccessError",
     "get_config",
     "update_config",
 ]

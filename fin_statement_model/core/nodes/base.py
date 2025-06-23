@@ -13,23 +13,23 @@ Features:
 Example:
     >>> from fin_statement_model.core.nodes.base import Node
     >>> class DummyNode(Node):
-    ...     def calculate(self, period): return 42.0
-    ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
-    >>> node = DummyNode('test')
-    >>> node.calculate('2023')
+    ...     def calculate(self, period):
+    ...         return 42.0
+    ...
+    ...     def to_dict(self):
+    ...         return {"type": "dummy", "name": self.name}
+    >>> node = DummyNode("test")
+    >>> node.calculate("2023")
     42.0
     >>> d = node.to_dict()
-    >>> d['type']
+    >>> d["type"]
     'dummy'
     >>> # Round-trip serialization (subclasses must implement from_dict)
-    >>> DummyNode.from_dict({'type': 'dummy', 'name': 'test'})  # doctest: +SKIP
+    >>> DummyNode.from_dict({"type": "dummy", "name": "test"})  # doctest: +SKIP
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    pass
+from typing import Any
 
 
 class Node(ABC):
@@ -52,11 +52,16 @@ class Node(ABC):
 
     Example:
         >>> class DummyNode(Node):
-        ...     def calculate(self, period): return 1.0
-        ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
+        ...     def calculate(self, period):
+        ...         return 1.0
+        ...
+        ...     def to_dict(self):
+        ...         return {"type": "dummy", "name": self.name}
+        ...
         ...     @classmethod
-        ...     def from_dict(cls, data, context=None): return cls(data['name'])
-        >>> node = DummyNode('Revenue')
+        ...     def from_dict(cls, data, context=None):
+        ...         return cls(data["name"])
+        >>> node = DummyNode("Revenue")
         >>> d = node.to_dict()
         >>> DummyNode.from_dict(d).name
         'Revenue'
@@ -75,7 +80,7 @@ class Node(ABC):
             ValueError: If `name` is empty, not a string, or contains invalid characters.
 
         Example:
-            >>> Node('Revenue')  # doctest: +ELLIPSIS
+            >>> Node("Revenue")  # doctest: +ELLIPSIS
             Traceback (most recent call last):
             ...
             TypeError: Can't instantiate abstract class Node...
@@ -85,14 +90,10 @@ class Node(ABC):
             raise ValueError("Node name must be a non-empty string.")
         # Check for invalid characters (including newline, tab)
         if "\n" in name or "\t" in name:
-            raise ValueError(
-                f"Invalid node name: '{name}'. Contains invalid characters."
-            )
+            raise ValueError(f"Invalid node name: '{name}'. Contains invalid characters.")
         # Check for leading/trailing whitespace
         if name != name.strip():
-            raise ValueError(
-                f"Invalid node name: '{name}'. Cannot have leading/trailing whitespace."
-            )
+            raise ValueError(f"Invalid node name: '{name}'. Cannot have leading/trailing whitespace.")
         self.name = name
 
     @abstractmethod
@@ -109,9 +110,12 @@ class Node(ABC):
 
         Example:
             >>> class Dummy(Node):
-            ...     def calculate(self, period): return 2.0
-            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
-            >>> Dummy('Test').calculate('2023')
+            ...     def calculate(self, period):
+            ...         return 2.0
+            ...
+            ...     def to_dict(self):
+            ...         return {"type": "dummy", "name": self.name}
+            >>> Dummy("Test").calculate("2023")
             2.0
         """
 
@@ -125,14 +129,20 @@ class Node(ABC):
 
         Example:
             >>> class Dummy(Node):
-            ...     def calculate(self, period): return 1.0
-            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
-            ...     def clear_cache(self): print('Cache cleared!')
-            >>> node = Dummy('Test')
+            ...     def calculate(self, period):
+            ...         return 1.0
+            ...
+            ...     def to_dict(self):
+            ...         return {"type": "dummy", "name": self.name}
+            ...
+            ...     def clear_cache(self):
+            ...         print("Cache cleared!")
+            >>> node = Dummy("Test")
             >>> node.clear_cache()
             Cache cleared!
         """
         # Default: no cache to clear
+        return None
 
     def has_attribute(self, attr_name: str) -> bool:
         """Check if the node has a specific attribute.
@@ -145,10 +155,13 @@ class Node(ABC):
 
         Example:
             >>> class Dummy(Node):
-            ...     def calculate(self, period): return 1.0
-            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
-            >>> node = Dummy('Test')
-            >>> node.has_attribute('name')
+            ...     def calculate(self, period):
+            ...         return 1.0
+            ...
+            ...     def to_dict(self):
+            ...         return {"type": "dummy", "name": self.name}
+            >>> node = Dummy("Test")
+            >>> node.has_attribute("name")
             True
         """
         return hasattr(self, attr_name)
@@ -167,18 +180,19 @@ class Node(ABC):
 
         Example:
             >>> class Dummy(Node):
-            ...     def calculate(self, period): return 1.0
-            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
-            >>> node = Dummy('Test')
-            >>> node.get_attribute('name')
+            ...     def calculate(self, period):
+            ...         return 1.0
+            ...
+            ...     def to_dict(self):
+            ...         return {"type": "dummy", "name": self.name}
+            >>> node = Dummy("Test")
+            >>> node.get_attribute("name")
             'Test'
         """
         try:
             return getattr(self, attribute_name)
-        except AttributeError:
-            raise AttributeError(
-                f"Node '{self.name}' has no attribute '{attribute_name}'"
-            )
+        except AttributeError as err:
+            raise AttributeError(f"Node '{self.name}' has no attribute '{attribute_name}'") from err
 
     def set_value(self, period: str, value: float) -> None:
         """Set a value for a specific period on data-bearing nodes.
@@ -194,11 +208,16 @@ class Node(ABC):
 
         Example:
             >>> class Dummy(Node):
-            ...     def calculate(self, period): return 1.0
-            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
-            ...     def set_value(self, period, value): print(f"Set {period} to {value}")
-            >>> node = Dummy('Test')
-            >>> node.set_value('2023', 100)
+            ...     def calculate(self, period):
+            ...         return 1.0
+            ...
+            ...     def to_dict(self):
+            ...         return {"type": "dummy", "name": self.name}
+            ...
+            ...     def set_value(self, period, value):
+            ...         print(f"Set {period} to {value}")
+            >>> node = Dummy("Test")
+            >>> node.set_value("2023", 100)
             Set 2023 to 100
         """
         raise NotImplementedError(f"Node '{self.name}' does not support set_value")
@@ -220,10 +239,13 @@ class Node(ABC):
 
         Example:
             >>> class Dummy(Node):
-            ...     def calculate(self, period): return 1.0
-            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
-            >>> node = Dummy('Test')
-            >>> node.to_dict()['type']
+            ...     def calculate(self, period):
+            ...         return 1.0
+            ...
+            ...     def to_dict(self):
+            ...         return {"type": "dummy", "name": self.name}
+            >>> node = Dummy("Test")
+            >>> node.to_dict()["type"]
             'dummy'
         """
 
@@ -237,10 +259,15 @@ class Node(ABC):
 
         Example:
             >>> class Dummy(Node):
-            ...     def calculate(self, period): return 1.0
-            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
-            ...     def get_dependencies(self): return ['dep1', 'dep2']
-            >>> node = Dummy('Test')
+            ...     def calculate(self, period):
+            ...         return 1.0
+            ...
+            ...     def to_dict(self):
+            ...         return {"type": "dummy", "name": self.name}
+            ...
+            ...     def get_dependencies(self):
+            ...         return ["dep1", "dep2"]
+            >>> node = Dummy("Test")
             >>> node.get_dependencies()
             ['dep1', 'dep2']
         """
@@ -271,11 +298,16 @@ class Node(ABC):
 
         Example:
             >>> class DummyNode(Node):
-            ...     def calculate(self, period): return 1.0
-            ...     def to_dict(self): return {'type': 'dummy', 'name': self.name}
+            ...     def calculate(self, period):
+            ...         return 1.0
+            ...
+            ...     def to_dict(self):
+            ...         return {"type": "dummy", "name": self.name}
+            ...
             ...     @classmethod
-            ...     def from_dict(cls, data, context=None): return cls(data['name'])
-            >>> node = DummyNode('Revenue')
+            ...     def from_dict(cls, data, context=None):
+            ...         return cls(data["name"])
+            >>> node = DummyNode("Revenue")
             >>> d = node.to_dict()
             >>> DummyNode.from_dict(d).name
             'Revenue'

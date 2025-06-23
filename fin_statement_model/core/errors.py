@@ -4,7 +4,7 @@ This module defines exception classes for specific error cases,
 allowing for more precise error handling and better error messages.
 """
 
-from typing import Optional, Any
+from typing import Any
 
 
 class FinancialModelError(Exception):
@@ -35,17 +35,15 @@ class ConfigurationError(FinancialModelError):
     Examples:
         >>> raise ConfigurationError("Invalid syntax", config_path="config.yaml")
         >>> raise ConfigurationError(
-        ...     "Missing required fields",
-        ...     config_path="metrics.yaml",
-        ...     errors=["Missing 'formula' for 'revenue'"]
+        ...     "Missing required fields", config_path="metrics.yaml", errors=["Missing 'formula' for 'revenue'"]
         ... )
     """
 
     def __init__(
         self,
         message: str,
-        config_path: Optional[str] = None,
-        errors: Optional[list[Any]] = None,
+        config_path: str | None = None,
+        errors: list[Any] | None = None,
     ):
         """Initialize the ConfigurationError.
 
@@ -58,9 +56,7 @@ class ConfigurationError(FinancialModelError):
         self.errors = errors or []
 
         if config_path and self.errors:
-            full_message = (
-                f"{message} in {config_path}: {' ; '.join(str(e) for e in self.errors)}"
-            )
+            full_message = f"{message} in {config_path}: {' ; '.join(str(e) for e in self.errors)}"
         elif config_path:
             full_message = f"{message} in {config_path}"
         elif self.errors:
@@ -82,16 +78,16 @@ class CalculationError(FinancialModelError):
         >>> raise CalculationError(
         ...     "Incompatible input types",
         ...     node_id="total_assets",
-        ...     details={"input_a_type": "str", "input_b_type": "int"}
+        ...     details={"input_a_type": "str", "input_b_type": "int"},
         ... )
     """
 
     def __init__(
         self,
         message: str,
-        node_id: Optional[str] = None,
-        period: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        node_id: str | None = None,
+        period: str | None = None,
+        details: dict[str, Any] | None = None,
     ):
         """Initialize the CalculationError.
 
@@ -137,7 +133,7 @@ class NodeError(FinancialModelError):
         >>> raise NodeError("Invalid node type for operation", node_id="revenue")
     """
 
-    def __init__(self, message: str, node_id: Optional[str] = None):
+    def __init__(self, message: str, node_id: str | None = None):
         """Initialize the NodeError.
 
         Args:
@@ -159,19 +155,16 @@ class MissingInputError(FinancialModelError):
 
     Examples:
         >>> raise MissingInputError(
-        ...     "Required input data unavailable",
-        ...     node_id="cogs",
-        ...     input_name="inventory",
-        ...     period="2023-12-31"
+        ...     "Required input data unavailable", node_id="cogs", input_name="inventory", period="2023-12-31"
         ... )
     """
 
     def __init__(
         self,
         message: str,
-        node_id: Optional[str] = None,
-        input_name: Optional[str] = None,
-        period: Optional[str] = None,
+        node_id: str | None = None,
+        input_name: str | None = None,
+        period: str | None = None,
     ):
         """Initialize the MissingInputError.
 
@@ -209,7 +202,7 @@ class GraphError(FinancialModelError):
         >>> raise GraphError("Failed to add edge due to type mismatch")
     """
 
-    def __init__(self, message: str, nodes: Optional[list[str]] = None):
+    def __init__(self, message: str, nodes: list[str] | None = None):
         """Initialize the GraphError.
 
         Args:
@@ -218,9 +211,7 @@ class GraphError(FinancialModelError):
         """
         self.nodes = nodes or []
 
-        full_message = (
-            f"{message} involving nodes: {', '.join(nodes)}" if nodes else message
-        )
+        full_message = f"{message} involving nodes: {', '.join(nodes)}" if nodes else message
 
         super().__init__(full_message)
 
@@ -234,14 +225,11 @@ class DataValidationError(FinancialModelError):
     Examples:
         >>> raise DataValidationError(
         ...     "Input data failed validation",
-        ...     validation_errors=[
-        ...         "Column 'Date' has invalid format",
-        ...         "Value '-100' is not allowed for 'Revenue'"
-        ...     ]
+        ...     validation_errors=["Column 'Date' has invalid format", "Value '-100' is not allowed for 'Revenue'"],
         ... )
     """
 
-    def __init__(self, message: str, validation_errors: Optional[list[str]] = None):
+    def __init__(self, message: str, validation_errors: list[str] | None = None):
         """Initialize the DataValidationError.
 
         Args:
@@ -250,10 +238,7 @@ class DataValidationError(FinancialModelError):
         """
         self.validation_errors = validation_errors or []
 
-        if validation_errors:
-            full_message = f"{message}: {'; '.join(validation_errors)}"
-        else:
-            full_message = message
+        full_message = f"{message}: {'; '.join(validation_errors)}" if validation_errors else message
 
         super().__init__(full_message)
 
@@ -271,7 +256,7 @@ class CircularDependencyError(FinancialModelError):
     def __init__(
         self,
         message: str = "Circular dependency detected",
-        cycle: Optional[list[str]] = None,
+        cycle: list[str] | None = None,
     ):
         """Initialize the CircularDependencyError.
 
@@ -304,8 +289,8 @@ class PeriodError(FinancialModelError):
     def __init__(
         self,
         message: str,
-        period: Optional[str] = None,
-        available_periods: Optional[list[str]] = None,
+        period: str | None = None,
+        available_periods: list[str] | None = None,
     ):
         """Initialize the PeriodError.
 
@@ -338,7 +323,7 @@ class StatementError(FinancialModelError):
         >>> raise StatementError("Required account missing from P&L", statement_id="PnL_Q1")
     """
 
-    def __init__(self, message: str, statement_id: Optional[str] = None):
+    def __init__(self, message: str, statement_id: str | None = None):
         """Initialize the StatementError.
 
         Args:
@@ -347,9 +332,7 @@ class StatementError(FinancialModelError):
         """
         self.statement_id = statement_id
 
-        full_message = (
-            f"{message} for statement '{statement_id}'" if statement_id else message
-        )
+        full_message = f"{message} for statement '{statement_id}'" if statement_id else message
 
         super().__init__(full_message)
 
@@ -361,15 +344,19 @@ class StrategyError(FinancialModelError):
     specific calculation strategy (e.g., Summation, GrowthRate).
 
     Examples:
-        >>> raise StrategyError("Invalid parameter for GrowthRate strategy", strategy_type="GrowthRate", node_id="revenue_forecast")
-        >>> raise StrategyError("Strategy not applicable to node type", strategy_type="Summation", node_id="text_description")
+        >>> raise StrategyError(
+        ...     "Invalid parameter for GrowthRate strategy", strategy_type="GrowthRate", node_id="revenue_forecast"
+        ... )
+        >>> raise StrategyError(
+        ...     "Strategy not applicable to node type", strategy_type="Summation", node_id="text_description"
+        ... )
     """
 
     def __init__(
         self,
         message: str,
-        strategy_type: Optional[str] = None,
-        node_id: Optional[str] = None,
+        strategy_type: str | None = None,
+        node_id: str | None = None,
     ):
         """Initialize the StrategyError.
 
@@ -403,15 +390,15 @@ class TransformationError(FinancialModelError):
         >>> raise TransformationError(
         ...     "Incompatible data type for scaling",
         ...     transformer_type="MinMaxScaler",
-        ...     parameters={"feature_range": (0, 1)}
+        ...     parameters={"feature_range": (0, 1)},
         ... )
     """
 
     def __init__(
         self,
         message: str,
-        transformer_type: Optional[str] = None,
-        parameters: Optional[dict[str, Any]] = None,
+        transformer_type: str | None = None,
+        parameters: dict[str, Any] | None = None,
     ):
         """Initialize the TransformationError.
 
@@ -445,15 +432,15 @@ class MetricError(FinancialModelError):
         >>> raise MetricError(
         ...     "Invalid formula syntax in metric definition",
         ...     metric_name="profitability_index",
-        ...     details={"formula": "NPV / Initial Investment)"}  # Missing parenthesis
+        ...     details={"formula": "NPV / Initial Investment)"},  # Missing parenthesis
         ... )
     """
 
     def __init__(
         self,
         message: str,
-        metric_name: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        metric_name: str | None = None,
+        details: dict[str, Any] | None = None,
     ):
         """Initialize the MetricError.
 
@@ -465,9 +452,7 @@ class MetricError(FinancialModelError):
         self.metric_name = metric_name
         self.details = details or {}
 
-        full_message = (
-            f"{message} related to metric '{metric_name}'" if metric_name else message
-        )
+        full_message = f"{message} related to metric '{metric_name}'" if metric_name else message
 
         super().__init__(full_message)
 

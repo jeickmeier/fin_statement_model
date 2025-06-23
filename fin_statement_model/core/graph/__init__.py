@@ -6,10 +6,10 @@ into the sub-package layout.
 
 Specifically, it makes the following symbols directly available:
 
-* `Graph` – central orchestrator that builds and evaluates calculation graphs.
-* `GraphManipulator` – helper for structural mutations (add/remove/replace
+* `Graph` - central orchestrator that builds and evaluates calculation graphs.
+* `GraphManipulator` - helper for structural mutations (add/remove/replace
   nodes, set values, etc.).
-* `GraphTraverser` – read-only utilities for traversal, validation, and cycle
+* `GraphTraverser` - read-only utilities for traversal, validation, and cycle
   detection.
 
 Examples:

@@ -7,17 +7,21 @@ This module provides:
 
 Example:
     >>> from fin_statement_model.core.metrics import metric_registry, interpret_metric
-    >>> metric_def = metric_registry.get('current_ratio')
+    >>> metric_def = metric_registry.get("current_ratio")
     >>> result = interpret_metric(metric_def, 1.8)
-    >>> result['rating']
+    >>> result["rating"]
     'good'
 """
 
 from enum import Enum
 from typing import Any
+
 from fin_statement_model.core.metrics.models import (
     MetricDefinition,
 )
+
+# Expected length of a two-bound good_range tuple
+GOOD_RANGE_LENGTH: int = 2
 
 
 class MetricRating(Enum):
@@ -78,7 +82,7 @@ class MetricInterpreter:
             MetricRating: The quality of the value.
 
         Example:
-            >>> interpreter = MetricInterpreter(metric_registry.get('current_ratio'))
+            >>> interpreter = MetricInterpreter(metric_registry.get("current_ratio"))
             >>> interpreter.rate_value(1.8)
             <MetricRating.GOOD: 'good'>
         """
@@ -86,41 +90,26 @@ class MetricInterpreter:
             return MetricRating.UNKNOWN
 
         # Check for excellent rating
-        if (
-            self.interpretation.excellent_above is not None
-            and value >= self.interpretation.excellent_above
-        ):
+        if self.interpretation.excellent_above is not None and value >= self.interpretation.excellent_above:
             return MetricRating.EXCELLENT
 
         # Check for poor rating
-        if (
-            self.interpretation.poor_below is not None
-            and value < self.interpretation.poor_below
-        ):
+        if self.interpretation.poor_below is not None and value < self.interpretation.poor_below:
             return MetricRating.POOR
 
         # Check for warning conditions
         warning_conditions = []
-        if (
-            self.interpretation.warning_below is not None
-            and value < self.interpretation.warning_below
-        ):
+        if self.interpretation.warning_below is not None and value < self.interpretation.warning_below:
             warning_conditions.append("below_threshold")
 
-        if (
-            self.interpretation.warning_above is not None
-            and value > self.interpretation.warning_above
-        ):
+        if self.interpretation.warning_above is not None and value > self.interpretation.warning_above:
             warning_conditions.append("above_threshold")
 
         if warning_conditions:
             return MetricRating.WARNING
 
         # Check if in good range
-        if (
-            self.interpretation.good_range is not None
-            and len(self.interpretation.good_range) == 2
-        ):
+        if self.interpretation.good_range is not None and len(self.interpretation.good_range) == GOOD_RANGE_LENGTH:
             min_good, max_good = self.interpretation.good_range
             if min_good <= value <= max_good:
                 return MetricRating.GOOD
@@ -138,7 +127,7 @@ class MetricInterpreter:
             str: A descriptive message about the metric value.
 
         Example:
-            >>> interpreter = MetricInterpreter(metric_registry.get('current_ratio'))
+            >>> interpreter = MetricInterpreter(metric_registry.get("current_ratio"))
             >>> interpreter.get_interpretation_message(1.8)
             'Good performance: 1.80'
         """
@@ -166,9 +155,9 @@ class MetricInterpreter:
             dict[str, Any]: Dictionary containing detailed analysis information.
 
         Example:
-            >>> interpreter = MetricInterpreter(metric_registry.get('current_ratio'))
+            >>> interpreter = MetricInterpreter(metric_registry.get("current_ratio"))
             >>> analysis = interpreter.get_detailed_analysis(1.8)
-            >>> analysis['rating']
+            >>> analysis["rating"]
             'good'
         """
         rating = self.rate_value(value)
@@ -202,9 +191,7 @@ class MetricInterpreter:
         return analysis
 
 
-def interpret_metric(
-    metric_definition: MetricDefinition, value: float
-) -> dict[str, Any]:
+def interpret_metric(metric_definition: MetricDefinition, value: float) -> dict[str, Any]:
     """Interpret a metric value using the MetricInterpreter.
 
     Args:
@@ -218,7 +205,7 @@ def interpret_metric(
         >>> from fin_statement_model.core.metrics import metric_registry, interpret_metric
         >>> metric_def = metric_registry.get("current_ratio")
         >>> result = interpret_metric(metric_def, 1.8)
-        >>> result['rating']
+        >>> result["rating"]
         'good'
     """
     interpreter = MetricInterpreter(metric_definition)

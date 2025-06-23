@@ -6,34 +6,34 @@ graph nodes. Each processor encapsulates the logic for its specific item type,
 reducing complexity and improving testability.
 """
 
-import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, Any
+import logging
+from typing import Any
 
-from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.errors import (
-    NodeError,
-    CircularDependencyError,
     CalculationError,
+    CircularDependencyError,
     ConfigurationError,
     MetricError,
+    NodeError,
 )
+from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.metrics import metric_registry
+from fin_statement_model.statements.population.id_resolver import IDResolver
 from fin_statement_model.statements.structure import (
-    StatementStructure,
-    StatementItem,
-    MetricLineItem,
     CalculatedLineItem,
+    MetricLineItem,
+    StatementItem,
+    StatementStructure,
     SubtotalLineItem,
 )
-from fin_statement_model.statements.population.id_resolver import IDResolver
 from fin_statement_model.statements.utilities.result_types import (
-    Result,
-    Success,
-    Failure,
     ErrorDetail,
     ErrorSeverity,
+    Failure,
+    Result,
+    Success,
 )
 
 logger = logging.getLogger(__name__)
@@ -61,8 +61,8 @@ class ProcessorResult:
 
     success: bool
     node_added: bool = False
-    error_message: Optional[str] = None
-    missing_inputs: Optional[list[tuple[str, Optional[str]]]] = None
+    error_message: str | None = None
+    missing_inputs: list[tuple[str, str | None]] | None = None
 
     def to_result(self) -> Result[bool]:
         """Convert to the new Result type."""
@@ -105,9 +105,7 @@ class ItemProcessor(ABC):
     and handling missing inputs across different item types.
     """
 
-    def __init__(
-        self, id_resolver: IDResolver, graph: Graph, statement: StatementStructure
-    ):
+    def __init__(self, id_resolver: IDResolver, graph: Graph, statement: StatementStructure):
         """Initialize the processor.
 
         Args:
@@ -142,9 +140,7 @@ class ItemProcessor(ABC):
             ProcessorResult indicating success/failure and details.
         """
 
-    def resolve_inputs(
-        self, input_ids: list[str]
-    ) -> tuple[list[str], list[tuple[str, Optional[str]]]]:
+    def resolve_inputs(self, input_ids: list[str]) -> tuple[list[str], list[tuple[str, str | None]]]:
         """Resolve input IDs to graph node IDs.
 
         Args:
@@ -169,7 +165,7 @@ class ItemProcessor(ABC):
     def _handle_missing_inputs(
         self,
         item: StatementItem,
-        missing: list[tuple[str, Optional[str]]],
+        missing: list[tuple[str, str | None]],
         is_retry: bool,
     ) -> ProcessorResult:
         """Handle missing input nodes consistently across processors.
@@ -183,18 +179,17 @@ class ItemProcessor(ABC):
             ProcessorResult with appropriate error details.
         """
         missing_summary = [
-            (
-                f"item '{i_id}' needs node '{n_id}'"
-                if n_id
-                else f"item '{i_id}' not found/mappable"
-            )
+            (f"item '{i_id}' needs node '{n_id}'" if n_id else f"item '{i_id}' not found/mappable")
             for i_id, n_id in missing
         ]
 
         if is_retry:
             logger.error(
-                f"Retry failed for {type(item).__name__} '{item.id}' in statement '{self.statement.id}': "
-                f"missing required inputs: {'; '.join(missing_summary)}"
+                "Retry failed for %s '%s' in statement '%s': missing required inputs: %s",
+                type(item).__name__,
+                item.id,
+                self.statement.id,
+                "; ".join(missing_summary),
             )
             return ProcessorResult(
                 success=False,
@@ -238,9 +233,7 @@ class MetricItemProcessor(ItemProcessor):
         try:
             metric = metric_registry.get(item.metric_id)
         except MetricError as e:
-            logger.exception(
-                f"Cannot populate item '{item.id}': Metric '{item.metric_id}' not found in registry"
-            )
+            logger.exception("Cannot populate item '%s': Metric '%s' not found in registry", item.id, item.metric_id)
             error_message = f"Metric '{item.metric_id}' not found: {e}"
 
         # Validate input mappings if no error yet
@@ -262,7 +255,7 @@ class MetricItemProcessor(ItemProcessor):
                 )
                 node_added = True
             except Exception as e:
-                logger.exception(f"Failed to add metric node '{item.id}'")
+                logger.exception("Failed to add metric node '%s'", item.id)
                 error_message = f"Failed to add metric node: {e}"
 
         # Single exit point
@@ -270,9 +263,7 @@ class MetricItemProcessor(ItemProcessor):
             return ProcessorResult(success=False, error_message=error_message)
         return ProcessorResult(success=True, node_added=node_added)
 
-    def _validate_metric_inputs(
-        self, metric: Any, item: MetricLineItem
-    ) -> Optional[str]:
+    def _validate_metric_inputs(self, metric: Any, item: MetricLineItem) -> str | None:
         """Validate that the item provides all required metric inputs."""
         provided_inputs = set(item.inputs.keys())
         required_inputs = set(metric.inputs)
@@ -294,7 +285,7 @@ class MetricItemProcessor(ItemProcessor):
 
     def _resolve_metric_inputs(
         self, metric: Any, item: MetricLineItem
-    ) -> tuple[dict[str, str], list[tuple[str, Optional[str]]]]:
+    ) -> tuple[dict[str, str], list[tuple[str, str | None]]]:
         """Resolve metric input mappings to graph node IDs."""
         resolved_map = {}
         missing = []
@@ -376,9 +367,7 @@ class CalculatedItemProcessor(ItemProcessor):
             return ProcessorResult(success=False, error_message=error_message)
         return ProcessorResult(success=True, node_added=True)
 
-    def _resolve_inputs(
-        self, item: CalculatedLineItem
-    ) -> tuple[list[str], list[tuple[str, Optional[str]]]]:
+    def _resolve_inputs(self, item: CalculatedLineItem) -> tuple[list[str], list[tuple[str, str | None]]]:
         """Resolve input IDs to graph node or signed-node IDs without side effects.
 
         Args:
@@ -388,7 +377,7 @@ class CalculatedItemProcessor(ItemProcessor):
             Tuple of (resolved_node_ids, missing_details).
         """
         resolved: list[str] = []
-        missing: list[tuple[str, Optional[str]]] = []
+        missing: list[tuple[str, str | None]] = []
 
         for input_id in item.input_ids:
             node_id = self.id_resolver.resolve(input_id, self.graph)
@@ -434,7 +423,7 @@ class SubtotalItemProcessor(ItemProcessor):
 
         # Handle empty subtotals
         if not item.item_ids:
-            logger.debug(f"Subtotal item '{item.id}' has no input items")
+            logger.debug("Subtotal item '%s' has no input items", item.id)
             return ProcessorResult(success=True, node_added=False)
 
         # Resolve inputs
@@ -445,9 +434,7 @@ class SubtotalItemProcessor(ItemProcessor):
         # Add subtotal as addition calculation
         error_message = None
         try:
-            self.graph.add_calculation(
-                name=item.id, input_names=resolved, operation_type="addition"
-            )
+            self.graph.add_calculation(name=item.id, input_names=resolved, operation_type="addition")
         except (
             NodeError,
             CircularDependencyError,
@@ -474,9 +461,7 @@ class ItemProcessorManager:
     by delegating to the appropriate processor based on the item type.
     """
 
-    def __init__(
-        self, id_resolver: IDResolver, graph: Graph, statement: StatementStructure
-    ):
+    def __init__(self, id_resolver: IDResolver, graph: Graph, statement: StatementStructure):
         """Initialize the processor manager with all available processors.
 
         Args:
@@ -490,9 +475,7 @@ class ItemProcessorManager:
             SubtotalItemProcessor(id_resolver, graph, statement),
         ]
 
-    def process_item(
-        self, item: StatementItem, is_retry: bool = False
-    ) -> ProcessorResult:
+    def process_item(self, item: StatementItem, is_retry: bool = False) -> ProcessorResult:
         """Process a statement item using the appropriate processor.
 
         Args:
@@ -509,7 +492,8 @@ class ItemProcessorManager:
 
         # No processor found - this is OK for non-calculation items like LineItem
         logger.debug(
-            f"No processor for item type {type(item).__name__} with ID '{item.id}'. "
-            "This is expected for non-calculation items."
+            "No processor for item type %s with ID '%s'. This is expected for non-calculation items.",
+            type(item).__name__,
+            item.id,
         )
         return ProcessorResult(success=True, node_added=False)

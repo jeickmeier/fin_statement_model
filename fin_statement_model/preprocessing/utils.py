@@ -8,14 +8,14 @@ information (Series vs. DataFrame).
 The function is deliberately kept *very* lightweight because it sits on the
 hot-path for many transformer implementations.  In particular it contains a
 fast-path that simply returns the original object **unmodified** when it is
-already a ``pandas.DataFrame`` – avoiding an unnecessary and potentially
+already a ``pandas.DataFrame`` - avoiding an unnecessary and potentially
 expensive copy.
 """
 
 # PEP 563/PEP 649: Keep future imports directly below the module docstring.
 from __future__ import annotations
 
-from typing import Tuple, Union
+from typing import Any
 
 import pandas as pd
 
@@ -24,7 +24,7 @@ __all__: list[str] = [
 ]
 
 
-def ensure_dataframe(data: Union[pd.DataFrame, pd.Series]) -> Tuple[pd.DataFrame, bool]:
+def ensure_dataframe(data: pd.DataFrame | pd.Series[Any]) -> tuple[pd.DataFrame, bool]:
     """Return ``(df, was_series)`` ensuring *data* is a DataFrame.
 
     Args:
@@ -40,8 +40,7 @@ def ensure_dataframe(data: Union[pd.DataFrame, pd.Series]) -> Tuple[pd.DataFrame
     Raises:
         TypeError: If *data* is neither a ``DataFrame`` nor a ``Series``.
     """
-
-    # Fast-path: already a DataFrame – *do not* create a copy
+    # Fast-path: already a DataFrame - *do not* create a copy
     if isinstance(data, pd.DataFrame):
         return data, False
 

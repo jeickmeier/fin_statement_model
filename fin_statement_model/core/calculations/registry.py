@@ -21,8 +21,8 @@ Examples:
 """
 
 # Use lowercase built-in types
-from typing import ClassVar  # Keep Type for now
 import logging
+from typing import ClassVar  # Keep Type for now
 
 from .calculation import Calculation
 
@@ -57,11 +57,9 @@ class Registry:
                          The class's __name__ attribute will be used as the key.
         """
         if not issubclass(calculation, Calculation):
-            raise TypeError(
-                f"Can only register subclasses of Calculation, not {calculation}"
-            )
+            raise TypeError(f"Can only register subclasses of Calculation, not {calculation}")
         cls._strategies[calculation.__name__] = calculation
-        logger.debug(f"Registered calculation: {calculation.__name__}")
+        logger.debug("Registered calculation: %s", calculation.__name__)
 
     @classmethod
     def get(cls, name: str) -> type[Calculation]:
@@ -79,7 +77,7 @@ class Registry:
         """
         # Debug print including id of the dictionary
         if name not in cls._strategies:
-            logger.error(f"Attempted to access unregistered calculation: {name}")
+            logger.error("Attempted to access unregistered calculation: %s", name)
             raise KeyError(f"Calculation '{name}' not found in registry.")
         return cls._strategies[name]
 

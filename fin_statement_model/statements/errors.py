@@ -5,10 +5,9 @@ definition, configuration, building, and processing, inheriting from the base
 `FinancialModelError` defined in `fin_statement_model.core.errors`.
 """
 
-from typing import Optional
 from fin_statement_model.core.errors import (
-    StatementError,
     ConfigurationError,
+    StatementError,
 )
 
 __all__ = [
@@ -29,8 +28,8 @@ class StatementBuilderError(StatementError):
     def __init__(
         self,
         message: str,
-        item_id: Optional[str] = None,
-        statement_type: Optional[str] = None,
+        item_id: str | None = None,
+        statement_type: str | None = None,
     ):
         """Initialize a StatementBuilderError.
 
@@ -65,8 +64,8 @@ class StatementValidationError(StatementError):
     def __init__(
         self,
         message: str,
-        validation_errors: Optional[list[str]] = None,
-        statement_id: Optional[str] = None,
+        validation_errors: list[str] | None = None,
+        statement_id: str | None = None,
     ):
         """Initialize a StatementValidationError.
 
@@ -81,8 +80,6 @@ class StatementValidationError(StatementError):
         if statement_id:
             full_message = f"{message} for statement '{statement_id}'"
         if validation_errors:
-            full_message = f"{full_message}:\n" + "\n".join(
-                f"  - {error}" for error in validation_errors
-            )
+            full_message = f"{full_message}:\n" + "\n".join(f"  - {error}" for error in validation_errors)
 
         super().__init__(full_message, statement_id=statement_id)

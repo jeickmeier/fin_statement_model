@@ -9,12 +9,13 @@ The reader is built on top of `DataFrameReaderBase`.
 """
 
 import logging
-import pandas as pd
-from typing import Optional, Any
+from typing import Any
 
-from fin_statement_model.io.core.registry import register_reader
-from fin_statement_model.io.core.dataframe_reader_base import DataFrameReaderBase
+import pandas as pd
+
 from fin_statement_model.io.config.models import DataFrameReaderConfig
+from fin_statement_model.io.core.dataframe_reader_base import DataFrameReaderBase
+from fin_statement_model.io.core.registry import register_reader
 from fin_statement_model.io.exceptions import ReadError
 
 logger = logging.getLogger(__name__)
@@ -36,7 +37,7 @@ class DataFrameReader(DataFrameReaderBase):
 
     layout = "wide"
 
-    def __init__(self, cfg: Optional[DataFrameReaderConfig] = None) -> None:
+    def __init__(self, cfg: DataFrameReaderConfig | None = None) -> None:
         """Initialize the DataFrameReader.
 
         Args:

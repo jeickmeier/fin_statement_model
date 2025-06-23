@@ -13,7 +13,14 @@ The subpackages are organized as follows:
 """
 
 import logging
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
+from . import formats
+from .adjustments import (
+    export_adjustments_to_excel,
+    load_adjustments_from_excel,
+)
 from .core import (
     DataReader,
     DataWriter,
@@ -24,37 +31,28 @@ from .core import (
     read_data,
     write_data,
 )
-from .exceptions import IOError, ReadError, WriteError, FormatNotSupportedError
-from . import formats  # noqa: F401
+from .exceptions import FormatNotSupportedError, IOError, ReadError, WriteError
 
 # Import convenient helpers from new sub-packages (adjustments, graph, statements)
 # Avoid importing fin_statement_model.statements at module import time to
 # prevent circular dependencies.  Provide lightweight *wrapper* functions
 # that import the heavy implementation lazily on first use.
+from .graph import import_from_cells
 
-from .graph import import_from_cells  # noqa: F401
-from .adjustments import (
-    load_adjustments_from_excel,
-    export_adjustments_to_excel,
-)
-
-from pathlib import Path
-from typing import Any, Union
-
-import pandas as pd
+if TYPE_CHECKING:
+    import pandas as pd
 
 
-def list_available_builtin_configs() -> list[str]:  # noqa: D401
+def list_available_builtin_configs() -> list[str]:
     """Return the IDs of statement configs bundled with the library."""
-
     from fin_statement_model.statements import list_available_builtin_configs as _impl
 
     return _impl()
 
 
 def write_statement_to_excel(
-    df: "pd.DataFrame",  # noqa: D401
-    target: Union[str, Path],
+    df: "pd.DataFrame",
+    target: str | Path,
     **kwargs: Any,
 ) -> None:
     """Persist a single statement DataFrame to an Excel file.
@@ -70,7 +68,6 @@ def write_statement_to_excel(
         **kwargs: Additional keyword arguments forwarded verbatim to
             ``DataFrame.to_excel`` (e.g., ``sheet_name``, ``engine``).
     """
-
     output_path = Path(target)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -78,8 +75,8 @@ def write_statement_to_excel(
 
 
 def write_statement_to_json(
-    df: "pd.DataFrame",  # noqa: D401
-    target: Union[str, Path],
+    df: "pd.DataFrame",
+    target: str | Path,
     *,
     orient: str = "records",
     indent: int = 2,
@@ -95,11 +92,18 @@ def write_statement_to_json(
         **kwargs: Additional keyword arguments forwarded to
             ``DataFrame.to_json``.
     """
-
     output_path = Path(target)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    df.to_json(output_path, orient=orient, indent=indent, **kwargs)
+    if orient == "records":
+        df.to_json(  # type: ignore[call-overload]
+            output_path, orient=orient, indent=indent, **kwargs
+        )
+    else:
+        # pandas stubs only accept 'indent' for orient='records'
+        df.to_json(  # type: ignore[call-overload]
+            output_path, orient=orient, **kwargs
+        )
 
 
 # Configure logging for the io package
@@ -108,27 +112,23 @@ logger = logging.getLogger(__name__)
 # --- Public API ---
 
 __all__ = [
-    # Base classes
     "DataReader",
     "DataWriter",
-    # Exceptions
     "FormatNotSupportedError",
     "IOError",
     "ReadError",
     "WriteError",
-    # Specialized functions
     "export_adjustments_to_excel",
-    "import_from_cells",
-    "list_available_builtin_configs",
-    "load_adjustments_from_excel",
-    "write_statement_to_excel",
-    "write_statement_to_json",
-    # Registry functions
+    "formats",
     "get_reader",
     "get_writer",
+    "import_from_cells",
+    "list_available_builtin_configs",
     "list_readers",
     "list_writers",
-    # Facade functions
+    "load_adjustments_from_excel",
     "read_data",
     "write_data",
+    "write_statement_to_excel",
+    "write_statement_to_json",
 ]

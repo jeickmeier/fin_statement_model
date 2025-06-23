@@ -15,7 +15,7 @@ class DummyNode:  # Minimal stand-in for Node API
     def __init__(self, value: float):
         self._value = value
 
-    def calculate(self, period: str) -> float:  # noqa: D401 – imperative style
+    def calculate(self, period: str) -> float:  # noqa: D401 - imperative style
         return self._value
 
 
@@ -31,7 +31,7 @@ def test_addition() -> None:
 def test_subtraction() -> None:
     calc = SubtractionCalculation()
     nodes = [DummyNode(10), DummyNode(3), DummyNode(2)]
-    assert calc.calculate(nodes, PERIOD) == 5  # 10 – (3+2)
+    assert calc.calculate(nodes, PERIOD) == 5  # 10 - (3+2)
 
 
 def test_multiplication() -> None:

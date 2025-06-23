@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""
-Complete example demonstrating the preprocessing module functionality.
+"""Complete example demonstrating the preprocessing module functionality.
 
 This script shows all major features of the preprocessing module including:
 - Normalization methods
@@ -22,7 +21,7 @@ from fin_statement_model import logging_config
 warnings.filterwarnings("ignore")
 logging_config.setup_logging(level="WARNING")
 
-from fin_statement_model.preprocessing import (  # noqa: E402
+from fin_statement_model.preprocessing import (
     DataTransformer,
     TransformationService,
     TransformerFactory,
@@ -36,21 +35,14 @@ def safe_register_transformer(name: str, transformer_class: type[DataTransformer
         if name in TransformerFactory.list_transformers():
             existing_class = TransformerFactory.get_transformer_class(name)
             if existing_class.__name__ == transformer_class.__name__:
-                print(
-                    f"Transformer '{name}' already registered with same class name. Skipping."
-                )
                 return
         TransformerFactory.register_transformer(name, transformer_class)
-        print(f"Successfully registered '{name}' transformer.")
-    except TransformerRegistrationError as e:
-        print(f"Registration warning: {e}")
-        print("Using existing registration.")
+    except TransformerRegistrationError:
+        pass
 
 
 def main():
     """Run complete preprocessing examples."""
-    print("=== Preprocessing Module Demo ===\n")
-
     # Create sample data
     quarterly_data = pd.DataFrame(
         {
@@ -63,76 +55,42 @@ def main():
         index=pd.date_range("2022-03-31", periods=8, freq="QE"),
     )
 
-    print("Sample Quarterly Data:")
-    print(quarterly_data.head())
-    print()
-
     # Initialize service
     service = TransformationService()
 
     # 1. Normalization Examples
-    print("1. NORMALIZATION EXAMPLES")
-    print("-" * 50)
 
     # Percent of revenue
-    percent_of_revenue = service.normalize_data(
+    service.normalize_data(
         quarterly_data, normalization_type="percent_of", reference="revenue"
     )
-    print("Income Statement as % of Revenue:")
-    print(percent_of_revenue.head())
-    print()
 
     # Scale to thousands
-    scaled = service.normalize_data(
+    service.normalize_data(
         quarterly_data, normalization_type="scale_by", scale_factor=0.001
     )
-    print("Values in thousands:")
-    print(scaled.head())
-    print()
 
     # 2. Time Series Transformations
-    print("2. TIME SERIES TRANSFORMATIONS")
-    print("-" * 50)
 
     # Quarter-over-quarter growth
-    qoq = service.transform_time_series(
-        quarterly_data, transformation_type="qoq", periods=1
-    )
-    print("Quarter-over-Quarter Growth (%):")
-    print(qoq[["revenue_qoq", "cogs_qoq"]].dropna())
-    print()
+    service.transform_time_series(quarterly_data, transformation_type="qoq", periods=1)
 
     # Year-over-year growth
-    yoy = service.transform_time_series(
-        quarterly_data, transformation_type="yoy", periods=4
-    )
-    print("Year-over-Year Growth (%):")
-    print(yoy[["revenue_yoy", "cogs_yoy"]].iloc[4:])
-    print()
+    service.transform_time_series(quarterly_data, transformation_type="yoy", periods=4)
 
     # 3. Period Conversions
-    print("3. PERIOD CONVERSIONS")
-    print("-" * 50)
 
     # Quarterly to annual
-    annual = service.convert_periods(
+    service.convert_periods(
         quarterly_data, conversion_type="quarterly_to_annual", aggregation="sum"
     )
-    print("Annual Totals:")
-    print(annual)
-    print()
 
     # TTM calculation
-    ttm = service.convert_periods(
+    service.convert_periods(
         quarterly_data, conversion_type="quarterly_to_ttm", aggregation="sum"
     )
-    print("Trailing Twelve Months (from Q4):")
-    print(ttm.iloc[3:])
-    print()
 
     # 4. Custom Transformer with Safe Registration
-    print("4. CUSTOM TRANSFORMER EXAMPLE")
-    print("-" * 50)
 
     class RatioTransformer(DataTransformer):
         """Calculate financial ratios between columns."""
@@ -159,7 +117,7 @@ def main():
             return result
 
         def validate_input(self, data):
-            return isinstance(data, (pd.DataFrame, pd.Series))
+            return isinstance(data, pd.DataFrame | pd.Series)
 
     # Safe registration
     safe_register_transformer("ratio", RatioTransformer)
@@ -169,14 +127,9 @@ def main():
         numerator="revenue", denominator="cogs", ratio_name="gross_margin_ratio"
     )
 
-    ratio_result = ratio_calc.execute(quarterly_data)
-    print("Gross Margin Ratio (Revenue/COGS):")
-    print(ratio_result[["revenue", "cogs", "gross_margin_ratio"]].head())
-    print()
+    ratio_calc.execute(quarterly_data)
 
     # 5. Transformation Pipeline
-    print("5. TRANSFORMATION PIPELINE")
-    print("-" * 50)
 
     pipeline_config = [
         {
@@ -188,18 +141,7 @@ def main():
         {"name": "time_series", "transformation_type": "qoq", "periods": 1},
     ]
 
-    pipeline_result = service.apply_transformation_pipeline(
-        quarterly_data, pipeline_config
-    )
-    print("Pipeline Result - Gross Margin Ratio with QoQ Growth:")
-    print(
-        pipeline_result[
-            ["revenue", "cogs", "gross_margin_ratio", "gross_margin_ratio_qoq"]
-        ].dropna()
-    )
-    print()
-
-    print("\n=== Demo Complete ===")
+    service.apply_transformation_pipeline(quarterly_data, pipeline_config)
 
 
 if __name__ == "__main__":

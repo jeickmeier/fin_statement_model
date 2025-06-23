@@ -8,20 +8,21 @@ This module hosts :class:`MappingAwareMixin`, extracted from the original
 2. Runtime merging of default ↔ user-supplied mappings.
 3. Helper to convert source column names to canonical node names.
 
-The mixin delegates configuration access to :class:`ConfigurationMixin` – the
+The mixin delegates configuration access to :class:`ConfigurationMixin` - the
 class must therefore appear *before* ConfigurationMixin in the MRO of concrete
 readers (as already done throughout the codebase).
 """
 
 from __future__ import annotations
 
-from typing import ClassVar, Optional, cast
 import importlib.resources
 import logging
+from typing import TYPE_CHECKING, ClassVar, cast
 
 import yaml
 
-from fin_statement_model.io.core.types import MappingConfig
+if TYPE_CHECKING:
+    from fin_statement_model.io.core.types import MappingConfig
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ class MappingAwareMixin:  # pylint: disable=too-many-public-methods
     # Methods intended for subclass override
     # ---------------------------------------------------------------------
     @classmethod
-    def _get_default_mapping_path(cls) -> Optional[str]:
+    def _get_default_mapping_path(cls) -> str | None:
         """Return relative YAML path of default mappings or *None* if absent."""
         return None
 
@@ -44,7 +45,7 @@ class MappingAwareMixin:  # pylint: disable=too-many-public-methods
     # Public helpers
     # ---------------------------------------------------------------------
     @classmethod
-    def _load_default_mappings(cls) -> MappingConfig:  # noqa: D401
+    def _load_default_mappings(cls) -> MappingConfig:
         """Load (and cache) mapping definitions shipped with the reader.
 
         Returns the parsed YAML structure (scoped or flat).  On failure an
@@ -66,20 +67,19 @@ class MappingAwareMixin:  # pylint: disable=too-many-public-methods
                 .read_text(encoding="utf-8")
             )
             parsed = yaml.safe_load(yaml_text) or {}
-            cls._default_mappings_cache[cache_key] = parsed
-            logger.debug("Loaded default mappings for %s", cls.__name__)
-            return parsed
-        except Exception:  # noqa: BLE001 – catch all file/YAML errors
+        except Exception:
             logger.exception("Failed to load default mappings for %s", cls.__name__)
             cls._default_mappings_cache[cache_key] = {}
             return {}
+        else:
+            cls._default_mappings_cache[cache_key] = parsed
+            logger.debug("Loaded default mappings for %s", cls.__name__)
+            return parsed
 
     # ------------------------------------------------------------------
     # Instance-level helpers (require ConfigurationMixin in MRO)
     # ------------------------------------------------------------------
-    def _get_mapping(
-        self, context_key: Optional[str] = None
-    ) -> dict[str, str]:  # noqa: D401
+    def _get_mapping(self, context_key: str | None = None) -> dict[str, str]:
         """Return *flat* mapping dict after merging defaults + user config."""
         default_map = self._load_default_mappings()
         user_cfg: MappingConfig = self.get_config_value("mapping_config")  # type: ignore[attr-defined]
@@ -90,7 +90,7 @@ class MappingAwareMixin:  # pylint: disable=too-many-public-methods
         return mapping
 
     @staticmethod
-    def _apply_mapping(source_name: str, mapping: dict[str, str]) -> str:  # noqa: D401
+    def _apply_mapping(source_name: str, mapping: dict[str, str]) -> str:
         """Translate *source_name* into canonical form using *mapping*."""
         return mapping.get(source_name, source_name)
 
@@ -110,20 +110,14 @@ class MappingAwareMixin:  # pylint: disable=too-many-public-methods
 
         scoped = mapping_config  # mapping is *scoped*: {None: {..}, "ctx": {..}}
 
-        scoped_any = cast(dict[object, object], scoped)
+        scoped_any = cast("dict[object, object]", scoped)
         default_raw = scoped_any.get(None)
-        default: dict[str, str]
-        if isinstance(default_raw, dict):
-            default = {str(k): str(v) for k, v in default_raw.items()}
-        else:
-            default = {}
+        default: dict[str, str] = (
+            {str(k): str(v) for k, v in default_raw.items()} if isinstance(default_raw, dict) else {}
+        )
 
-        if (
-            context_key
-            and context_key in scoped
-            and isinstance(scoped_any.get(context_key), dict)
-        ):
-            ctx_dict = cast(dict[str, str], scoped_any[context_key])
+        if context_key and context_key in scoped and isinstance(scoped_any.get(context_key), dict):
+            ctx_dict = cast("dict[str, str]", scoped_any[context_key])
             merged = {**default, **{str(k): str(v) for k, v in ctx_dict.items()}}
             return merged
         return default

@@ -11,10 +11,16 @@ Example:
     >>> from fin_statement_model.forecasting.methods.base import BaseForecastMethod
     >>> class MyMethod(BaseForecastMethod):
     ...     @property
-    ...     def name(self): return "my_method"
+    ...     def name(self):
+    ...         return "my_method"
+    ...
     ...     @property
-    ...     def internal_type(self): return "my_type"
-    ...     def validate_config(self, config): pass
+    ...     def internal_type(self):
+    ...         return "my_type"
+    ...
+    ...     def validate_config(self, config):
+    ...         pass
+    ...
     ...     def normalize_params(self, config, forecast_periods):
     ...         return {"forecast_type": self.internal_type, "growth_params": config}
     >>> m = MyMethod()
@@ -22,8 +28,8 @@ Example:
     {'forecast_type': 'my_type', 'growth_params': 0.1}
 """
 
-from typing import Protocol, Any, Optional, runtime_checkable
 from abc import ABC, abstractmethod
+from typing import Any, Protocol, runtime_checkable
 
 from fin_statement_model.core.nodes import Node
 
@@ -38,11 +44,17 @@ class ForecastMethod(Protocol):
     Example:
         >>> class Dummy:
         ...     @property
-        ...     def name(self): return "dummy"
-        ...     def validate_config(self, config): pass
+        ...     def name(self):
+        ...         return "dummy"
+        ...
+        ...     def validate_config(self, config):
+        ...         pass
+        ...
         ...     def normalize_params(self, config, forecast_periods):
         ...         return {"forecast_type": "dummy", "growth_params": config}
-        ...     def prepare_historical_data(self, node, historical_periods): return None
+        ...
+        ...     def prepare_historical_data(self, node, historical_periods):
+        ...         return None
         >>> isinstance(Dummy(), ForecastMethod)
         True
     """
@@ -67,9 +79,7 @@ class ForecastMethod(Protocol):
         """
         ...
 
-    def normalize_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory.
 
         Args:
@@ -81,19 +91,22 @@ class ForecastMethod(Protocol):
         """
         ...
 
-    def prepare_historical_data(
-        self, node: Node, historical_periods: list[str]
-    ) -> Optional[list[float]]:
+    def prepare_historical_data(self, node: Node, historical_periods: list[str]) -> list[float] | None:
         """Prepare historical data for methods that need it.
+
+        Default implementation returns ``None`` (not needed). Override this
+        method in subclasses that require historical data.
 
         Args:
             node: The node to extract historical data from.
             historical_periods: List of historical periods.
 
         Returns:
-            List of historical values or None if not needed.
+            List of historical values or ``None`` if no historical data is
+            required.
         """
-        ...
+        _ = (node, historical_periods)  # Parameters intentionally unused in the base implementation
+        return None
 
 
 class BaseForecastMethod(ABC):
@@ -105,10 +118,16 @@ class BaseForecastMethod(ABC):
     Example:
         >>> class Dummy(BaseForecastMethod):
         ...     @property
-        ...     def name(self): return "dummy"
+        ...     def name(self):
+        ...         return "dummy"
+        ...
         ...     @property
-        ...     def internal_type(self): return "dummy_type"
-        ...     def validate_config(self, config): pass
+        ...     def internal_type(self):
+        ...         return "dummy_type"
+        ...
+        ...     def validate_config(self, config):
+        ...         pass
+        ...
         ...     def normalize_params(self, config, forecast_periods):
         ...         return {"forecast_type": self.internal_type, "growth_params": config}
         >>> d = Dummy()
@@ -146,9 +165,7 @@ class BaseForecastMethod(ABC):
         """
 
     @abstractmethod
-    def normalize_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory.
 
         Args:
@@ -159,26 +176,24 @@ class BaseForecastMethod(ABC):
             Dict with 'forecast_type' and 'growth_params' keys.
         """
 
-    def prepare_historical_data(
-        self, node: Node, historical_periods: list[str]
-    ) -> Optional[list[float]]:
+    def prepare_historical_data(self, node: Node, historical_periods: list[str]) -> list[float] | None:
         """Prepare historical data for methods that need it.
 
-        Default implementation returns None (not needed).
-        Override in methods that require historical data.
+        Default implementation returns ``None`` (not needed). Override this
+        method in subclasses that require historical data.
 
         Args:
             node: The node to extract historical data from.
             historical_periods: List of historical periods.
 
         Returns:
-            List of historical values or None if not needed.
+            List of historical values or ``None`` if no historical data is
+            required.
         """
+        _ = (node, historical_periods)  # Parameters intentionally unused in the base implementation
         return None
 
-    def get_forecast_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def get_forecast_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Get complete forecast parameters.
 
         This is a convenience method that validates and normalizes in one call.
@@ -196,10 +211,16 @@ class BaseForecastMethod(ABC):
         Example:
             >>> class Dummy(BaseForecastMethod):
             ...     @property
-            ...     def name(self): return "dummy"
+            ...     def name(self):
+            ...         return "dummy"
+            ...
             ...     @property
-            ...     def internal_type(self): return "dummy_type"
-            ...     def validate_config(self, config): pass
+            ...     def internal_type(self):
+            ...         return "dummy_type"
+            ...
+            ...     def validate_config(self, config):
+            ...         pass
+            ...
             ...     def normalize_params(self, config, forecast_periods):
             ...         return {"forecast_type": self.internal_type, "growth_params": config}
             >>> d = Dummy()

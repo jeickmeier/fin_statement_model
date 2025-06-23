@@ -1,4 +1,5 @@
-"""csv_basic_usage.py
+"""csv_basic_usage.py.
+
 Example demonstrating how to use the I/O facade helpers to read data from a CSV
 file into a ``Graph`` object and then export the data back to a pandas
 ``DataFrame`` (via the ``dataframe`` writer).
@@ -23,7 +24,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pandas as pd
 
 from fin_statement_model.io import read_data, write_data
 from fin_statement_model.core.graph import Graph
@@ -50,8 +50,6 @@ def read_csv_to_graph(csv_path: str | Path) -> Graph:
             f"Sample CSV not found at {SAMPLE_CSV_PATH}. Ensure the file exists."
         )
 
-    print(f"Using sample CSV located at: {SAMPLE_CSV_PATH}\n")
-
     graph = read_data(
         format_type="csv",
         source=str(csv_path),
@@ -70,28 +68,24 @@ def read_csv_to_graph(csv_path: str | Path) -> Graph:
 # -----------------------------------------------------------------------------
 
 
-def main(_: list[str] | None = None) -> None:  # noqa: D401 – CLI helper signature
+def main(_: list[str] | None = None) -> None:
     """Run the CSV I/O example end-to-end."""
     # ------------------------------------------------------------------
     # 1) Read CSV → Graph
     # ------------------------------------------------------------------
     graph = read_csv_to_graph(SAMPLE_CSV_PATH)
-    print("Graph periods:", graph.periods)
-    print("Graph nodes:")
     for node_name in sorted(graph.nodes):
-        node = graph.nodes[node_name]
-        print(f"  - {node.name}: {node.values}")
+        graph.nodes[node_name]
 
     # ------------------------------------------------------------------
     # 2) Write Graph → pandas.DataFrame (in-memory)
     # ------------------------------------------------------------------
-    df_out: pd.DataFrame = write_data(
+    write_data(
         format_type="dataframe", graph=graph, target=None
     )  # type: ignore[assignment]
-    print("\nExported DataFrame:\n", df_out)
 
 
-if __name__ == "__main__":  # pragma: no cover – script entry point
+if __name__ == "__main__":  # pragma: no cover - script entry point
     import sys
 
     main(sys.argv[1:])

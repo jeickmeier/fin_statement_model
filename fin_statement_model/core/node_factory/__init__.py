@@ -1,5 +1,4 @@
-"""
-NodeFactory façade for fin_statement_model.core.
+"""NodeFactory façade for fin_statement_model.core.
 
 This module provides the public entry-point for node creation, deserialization, and custom node helpers.
 It re-exports the NodeFactory class, which statically aggregates builder, deserializer, and helper functions
@@ -8,7 +7,7 @@ fin_statement_model.core directly.
 
 Example:
     >>> from fin_statement_model.core.node_factory import NodeFactory
-    >>> node = NodeFactory.create_financial_statement_item('Revenue', {'2022': 100.0, '2023': 120.0})
+    >>> node = NodeFactory.create_financial_statement_item("Revenue", {"2022": 100.0, "2023": 120.0})
     >>> node
     <FinancialStatementItemNode name='Revenue'>
 """
@@ -16,23 +15,26 @@ Example:
 from __future__ import annotations
 
 import logging
+from typing import ClassVar
 
-from fin_statement_model.core.node_factory import builders as _builders
-from fin_statement_model.core.node_factory import deserialisers as _deser
-from fin_statement_model.core.node_factory import custom_helpers as _custom
+from fin_statement_model.core.node_factory import (
+    builders as _builders,
+    custom_helpers as _custom,
+    deserialisers as _deser,
+)
 from fin_statement_model.core.node_factory.registries import (
     CalculationAliasRegistry,
-    NodeTypeRegistry,
     ForecastTypeRegistry,
+    NodeTypeRegistry,
 )
 
 logger = logging.getLogger(__name__)
 
 __all__: list[str] = [
-    "NodeFactory",
     "CalculationAliasRegistry",
-    "NodeTypeRegistry",
     "ForecastTypeRegistry",
+    "NodeFactory",
+    "NodeTypeRegistry",
 ]
 
 
@@ -48,7 +50,7 @@ class NodeFactory:  # pylint: disable=too-few-public-methods
 
     Example:
         >>> from fin_statement_model.core.node_factory import NodeFactory
-        >>> node = NodeFactory.create_financial_statement_item('COGS', {'2022': 50.0})
+        >>> node = NodeFactory.create_financial_statement_item("COGS", {"2022": 50.0})
         >>> node
         <FinancialStatementItemNode name='COGS'>
     """
@@ -56,9 +58,7 @@ class NodeFactory:  # pylint: disable=too-few-public-methods
     # ------------------------------------------------------------------
     # Builders
     # ------------------------------------------------------------------
-    create_financial_statement_item = staticmethod(
-        _builders.create_financial_statement_item
-    )
+    create_financial_statement_item = staticmethod(_builders.create_financial_statement_item)
     create_calculation_node = staticmethod(_builders.create_calculation_node)
     create_forecast_node = staticmethod(_builders.create_forecast_node)
 
@@ -77,7 +77,7 @@ class NodeFactory:  # pylint: disable=too-few-public-methods
     # ------------------------------------------------------------------
     # Legacy attribute mapping used by existing code
     # ------------------------------------------------------------------
-    _calculation_methods: dict[str, str] = {
+    _calculation_methods: ClassVar[dict[str, str]] = {
         alias: cls.__name__ for alias, cls in CalculationAliasRegistry.items()
     }
 

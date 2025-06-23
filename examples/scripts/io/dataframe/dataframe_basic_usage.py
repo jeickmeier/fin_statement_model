@@ -1,9 +1,10 @@
-"""dataframe_basic_usage.py
+"""dataframe_basic_usage.py.
+
 Example demonstrating how to ingest data from an in-memory ``pandas.DataFrame``
 using the *dataframe* IO format and then export the resulting graph back to an
 Excel file (via the *excel* writer).
 
-Unlike the CSV examples, no external files are required – the DataFrame is
+Unlike the CSV examples, no external files are required - the DataFrame is
 created directly in the script.
 
 Steps:
@@ -35,7 +36,7 @@ from fin_statement_model.core.graph import Graph
 # -----------------------------------------------------------------------------
 
 
-def create_sample_dataframe() -> pd.DataFrame:  # noqa: D401
+def create_sample_dataframe() -> pd.DataFrame:
     """Return a simple wide-format DataFrame for demonstration."""
     df = pd.DataFrame(
         {
@@ -52,7 +53,7 @@ def create_sample_dataframe() -> pd.DataFrame:  # noqa: D401
 # -----------------------------------------------------------------------------
 
 
-def dataframe_to_graph(df: pd.DataFrame) -> Graph:  # noqa: D401
+def dataframe_to_graph(df: pd.DataFrame) -> Graph:
     """Convert DataFrame to Graph via IO facade."""
     graph = read_data(format_type="dataframe", source=df)
     return graph
@@ -63,17 +64,14 @@ def dataframe_to_graph(df: pd.DataFrame) -> Graph:  # noqa: D401
 # -----------------------------------------------------------------------------
 
 
-def main(_: list[str] | None = None) -> None:  # noqa: D401
+def main(_: list[str] | None = None) -> None:
     """End-to-end example using DataFrame reader & Excel writer."""
     df = create_sample_dataframe()
-    print("Input DataFrame:\n", df, "\n")
 
     graph = dataframe_to_graph(df)
 
-    print("Graph periods:", graph.periods)
     for node_name in sorted(graph.nodes):
-        node = graph.nodes[node_name]
-        print(f"  - {node.name}: {node.values}")
+        graph.nodes[node_name]
 
     # Export to Excel in a temp file just to demonstrate writer usage
     with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
@@ -85,7 +83,6 @@ def main(_: list[str] | None = None) -> None:  # noqa: D401
         target=str(tmp_path),
         config={"sheet_name": "DemoExport"},
     )
-    print(f"\nGraph exported to Excel file: {tmp_path}")
 
 
 if __name__ == "__main__":  # pragma: no cover

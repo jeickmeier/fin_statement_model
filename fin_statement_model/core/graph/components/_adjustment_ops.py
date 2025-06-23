@@ -14,21 +14,23 @@ Examples:
     >>> g = Graph(periods=["2023"])
     >>> _ = g.add_financial_statement_item("Revenue", {"2023": 100.0})
     >>> g.add_adjustment("Revenue", "2023", 10.0, reason="Scenario boost")
-    ... #doctest: +SKIP
+    ... # doctest: +SKIP
     >>> g.get_adjusted_value("Revenue", "2023")
-    ... #doctest: +SKIP
+    ... # doctest: +SKIP
 """
 
 from __future__ import annotations
 
-from typing import Any, Optional
-from uuid import UUID
+from typing import TYPE_CHECKING, Any
 
 from fin_statement_model.core.adjustments.models import (
     AdjustmentFilterInput,
     AdjustmentTag,
     AdjustmentType,
 )
+
+if TYPE_CHECKING:
+    from uuid import UUID
 
 __all__: list[str] = ["AdjustmentMixin"]
 
@@ -67,11 +69,11 @@ class AdjustmentMixin:
         adj_type: AdjustmentType = AdjustmentType.ADDITIVE,
         scale: float = 1.0,
         priority: int = 0,
-        tags: Optional[set[AdjustmentTag]] = None,
-        scenario: Optional[str] = None,
-        user: Optional[str] = None,
+        tags: set[AdjustmentTag] | None = None,
+        scenario: str | None = None,
+        user: str | None = None,
         *,
-        adj_id: Optional[UUID] = None,
+        adj_id: UUID | None = None,
     ) -> Any:
         return self._adjustment_service.add_adjustment(  # type: ignore[attr-defined]
             node_name,
@@ -95,7 +97,7 @@ class AdjustmentMixin:
         node_name: str,
         period: str,
         *,
-        scenario: Optional[str] = None,
+        scenario: str | None = None,
     ) -> Any:
         return self._adjustment_service.get_adjustments(  # type: ignore[attr-defined]
             node_name,

@@ -12,7 +12,8 @@ Example:
     fin_statement_model.forecasting.errors.ForecastMethodError: Unknown method: 'foo'. Supported methods: simple
 """
 
-from typing import Optional, Any
+from typing import Any
+
 from fin_statement_model.core.errors import FinancialModelError
 
 __all__ = [
@@ -22,6 +23,9 @@ __all__ = [
     "ForecastResultError",
     "ForecastingError",
 ]
+
+# Maximum items to preview in error lists
+MAX_PREVIEW_ITEMS: int = 10
 
 
 class ForecastingError(FinancialModelError):
@@ -48,9 +52,9 @@ class ForecastMethodError(ForecastingError):
     def __init__(
         self,
         message: str,
-        method: Optional[str] = None,
-        supported_methods: Optional[list[str]] = None,
-        node_id: Optional[str] = None,
+        method: str | None = None,
+        supported_methods: list[str] | None = None,
+        node_id: str | None = None,
     ):
         """Initialize a ForecastMethodError.
 
@@ -70,9 +74,7 @@ class ForecastMethodError(ForecastingError):
         if node_id:
             full_message = f"{full_message} for node '{node_id}'"
         if supported_methods:
-            full_message = (
-                f"{full_message}. Supported methods: {', '.join(supported_methods)}"
-            )
+            full_message = f"{full_message}. Supported methods: {', '.join(supported_methods)}"
 
         super().__init__(full_message)
 
@@ -94,9 +96,9 @@ class ForecastConfigurationError(ForecastingError):
     def __init__(
         self,
         message: str,
-        config: Optional[dict[str, Any]] = None,
-        missing_params: Optional[list[str]] = None,
-        invalid_params: Optional[dict[str, str]] = None,
+        config: dict[str, Any] | None = None,
+        missing_params: list[str] | None = None,
+        invalid_params: dict[str, str] | None = None,
     ):
         """Initialize a ForecastConfigurationError.
 
@@ -141,9 +143,9 @@ class ForecastNodeError(ForecastingError):
     def __init__(
         self,
         message: str,
-        node_id: Optional[str],
-        available_nodes: Optional[list[str]] = None,
-        reason: Optional[str] = None,
+        node_id: str | None,
+        available_nodes: list[str] | None = None,
+        reason: str | None = None,
     ):
         """Initialize a ForecastNodeError.
 
@@ -160,10 +162,8 @@ class ForecastNodeError(ForecastingError):
         full_message = f"{message} for node '{node_id}'"
         if reason:
             full_message = f"{full_message}: {reason}"
-        if available_nodes and len(available_nodes) < 10:  # Only show if list is small
-            full_message = (
-                f"{full_message}. Available nodes: {', '.join(available_nodes)}"
-            )
+        if available_nodes and len(available_nodes) < MAX_PREVIEW_ITEMS:  # Only show if list is small
+            full_message = f"{full_message}. Available nodes: {', '.join(available_nodes)}"
 
         super().__init__(full_message)
 
@@ -185,9 +185,9 @@ class ForecastResultError(ForecastingError):
     def __init__(
         self,
         message: str,
-        period: Optional[str] = None,
-        available_periods: Optional[list[str]] = None,
-        node_id: Optional[str] = None,
+        period: str | None = None,
+        available_periods: list[str] | None = None,
+        node_id: str | None = None,
     ):
         """Initialize a ForecastResultError.
 
@@ -210,9 +210,7 @@ class ForecastResultError(ForecastingError):
         full_message = message
         if context:
             full_message = f"{message} for {' and '.join(context)}"
-        if available_periods and len(available_periods) < 10:
-            full_message = (
-                f"{full_message}. Available periods: {', '.join(available_periods)}"
-            )
+        if available_periods and len(available_periods) < MAX_PREVIEW_ITEMS:
+            full_message = f"{full_message}. Available periods: {', '.join(available_periods)}"
 
         super().__init__(full_message)

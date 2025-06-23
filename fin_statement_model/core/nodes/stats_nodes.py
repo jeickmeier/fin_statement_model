@@ -23,7 +23,9 @@ Example:
     >>> data2 = {"Q1": 10, "Q2": 12, "Q3": 11, "Q4": 13}
     >>> sales = FinancialStatementItemNode("sales", data2)
     >>> import statistics
-    >>> avg = MultiPeriodStatNode("avg_sales", input_node=sales, periods=["Q1","Q2","Q3","Q4"], stat_func=statistics.mean)
+    >>> avg = MultiPeriodStatNode(
+    ...     "avg_sales", input_node=sales, periods=["Q1", "Q2", "Q3", "Q4"], stat_func=statistics.mean
+    ... )
     >>> avg.calculate()
     11.5
     >>> avg2 = TwoPeriodAverageNode("avg2", input_node=sales, period1="Q1", period2="Q2")
@@ -31,26 +33,25 @@ Example:
     11.0
 """
 
+from collections.abc import Callable
 import logging
 import math
 import statistics
 
 # Use lowercase built-in types for annotations
-from typing import Optional, Union, Any
-from typing import Callable
+from typing import Any
+
+from fin_statement_model.core.errors import CalculationError
+from fin_statement_model.core.node_factory.registries import node_type
 
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node
-from fin_statement_model.core.errors import CalculationError
-from fin_statement_model.core.node_factory.registries import node_type
 
 # Added logger instance
 logger = logging.getLogger(__name__)
 
-Numeric = Union[int, float]
-StatFunc = Callable[
-    ..., Any
-]  # Widen callable type to accept any callable returning Numeric
+Numeric = int | float
+StatFunc = Callable[..., Any]  # Widen callable type to accept any callable returning Numeric
 
 
 @node_type("yoy_growth")
@@ -81,9 +82,7 @@ class YoYGrowthNode(Node):
         0.2
     """
 
-    def __init__(
-        self, name: str, input_node: Node, prior_period: str, current_period: str
-    ):
+    def __init__(self, name: str, input_node: Node, prior_period: str, current_period: str):
         """Create a YoYGrowthNode.
 
         Args:
@@ -99,15 +98,13 @@ class YoYGrowthNode(Node):
         if not isinstance(input_node, Node):
             raise TypeError("YoYGrowthNode input_node must be a Node instance.")
         if not isinstance(prior_period, str) or not isinstance(current_period, str):
-            raise TypeError(
-                "YoYGrowthNode prior_period and current_period must be strings."
-            )
+            raise TypeError("YoYGrowthNode prior_period and current_period must be strings.")
 
         self.input_node = input_node
         self.prior_period = prior_period
         self.current_period = current_period
 
-    def calculate(self, period: Optional[str] = None) -> float:
+    def calculate(self, period: str | None = None) -> float:
         """Compute the YoY growth rate.
 
         Ignore the `period` parameter; use configured periods.
@@ -121,31 +118,29 @@ class YoYGrowthNode(Node):
         Raises:
             CalculationError: On errors retrieving or validating input values.
         """
+        _ = period  # Parameter intentionally unused
         try:
             prior_value = self.input_node.calculate(self.prior_period)
             current_value = self.input_node.calculate(self.current_period)
 
             # Validate input types
             if not isinstance(prior_value, int | float):
-                raise TypeError(
-                    f"Prior period ('{self.prior_period}') value is non-numeric."
-                )
+                raise TypeError(f"Prior period ('{self.prior_period}') value is non-numeric.")
             if not isinstance(current_value, int | float):
-                raise TypeError(
-                    f"Current period ('{self.current_period}') value is non-numeric."
-                )
+                raise TypeError(f"Current period ('{self.current_period}') value is non-numeric.")
 
             # Handle division by zero or non-finite prior value
             if prior_value == 0 or not math.isfinite(prior_value):
                 logger.warning(
-                    f"YoYGrowthNode '{self.name}': Prior period '{self.prior_period}' value is zero or non-finite ({prior_value}). Returning NaN."
+                    "YoYGrowthNode '%s': Prior period '%s' value is zero or non-finite (%s). Returning NaN.",
+                    self.name,
+                    self.prior_period,
+                    prior_value,
                 )
                 return float("nan")
 
             # Calculate growth
             growth = (float(current_value) - float(prior_value)) / float(prior_value)
-            return growth
-
         except Exception as e:
             # Wrap any exception during calculation
             raise CalculationError(
@@ -159,6 +154,8 @@ class YoYGrowthNode(Node):
                     "original_error": str(e),
                 },
             ) from e
+        else:
+            return growth
 
     def get_dependencies(self) -> list[str]:
         """Get names of nodes this node depends on."""
@@ -248,7 +245,9 @@ class MultiPeriodStatNode(Node):
         >>> data = {"Q1": 10, "Q2": 12, "Q3": 11, "Q4": 13}
         >>> sales = FinancialStatementItemNode("sales", data)
         >>> import statistics
-        >>> avg = MultiPeriodStatNode("avg_sales", input_node=sales, periods=["Q1","Q2","Q3","Q4"], stat_func=statistics.mean)
+        >>> avg = MultiPeriodStatNode(
+        ...     "avg_sales", input_node=sales, periods=["Q1", "Q2", "Q3", "Q4"], stat_func=statistics.mean
+        ... )
         >>> d = avg.to_dict()
         >>> avg2 = MultiPeriodStatNode.from_dict(d, {"sales": sales})
         >>> avg2.calculate()
@@ -282,15 +281,13 @@ class MultiPeriodStatNode(Node):
         if not all(isinstance(p, str) for p in periods):
             raise TypeError("MultiPeriodStatNode periods must contain only strings.")
         if not callable(stat_func):
-            raise TypeError(
-                "MultiPeriodStatNode stat_func must be a callable function."
-            )
+            raise TypeError("MultiPeriodStatNode stat_func must be a callable function.")
 
         self.input_node = input_node
         self.periods = periods
         self.stat_func = stat_func
 
-    def calculate(self, period: Optional[str] = None) -> float:
+    def calculate(self, period: str | None = None) -> float:
         """Compute the statistical measure across specified periods.
 
         Args:
@@ -302,6 +299,7 @@ class MultiPeriodStatNode(Node):
         Raises:
             CalculationError: If input retrieval fails or unexpected errors occur.
         """
+        _ = period  # Parameter intentionally unused
         values: list[Numeric] = []
         retrieval_errors = []
         try:
@@ -313,20 +311,28 @@ class MultiPeriodStatNode(Node):
                     else:
                         # Log non-numeric/non-finite values but continue if possible
                         logger.warning(
-                            f"MultiPeriodStatNode '{self.name}': Input '{self.input_node.name}' gave non-numeric/non-finite value ({value}) for period '{p}'. Skipping."
+                            "MultiPeriodStatNode '%s': Input '%s' gave non-numeric/non-finite value (%s) for period '%s'. Skipping.",
+                            self.name,
+                            self.input_node.name,
+                            value,
+                            p,
                         )
-                except Exception as node_err:
+                except Exception:
                     # Log error fetching data for a specific period but continue
-                    logger.error(
-                        f"MultiPeriodStatNode '{self.name}': Error getting value for period '{p}' from '{self.input_node.name}': {node_err}",
-                        exc_info=True,
+                    logger.exception(
+                        "MultiPeriodStatNode '%s': Error getting value for period '%s' from '%s'",
+                        self.name,
+                        p,
+                        self.input_node.name,
                     )
                     retrieval_errors.append(p)
 
             # If no valid numeric values were collected
             if not values:
                 logger.warning(
-                    f"MultiPeriodStatNode '{self.name}': No valid numeric data points found across periods {self.periods}. Returning NaN."
+                    "MultiPeriodStatNode '%s': No valid numeric data points found across periods %s. Returning NaN.",
+                    self.name,
+                    self.periods,
                 )
                 return float("nan")
 
@@ -338,7 +344,11 @@ class MultiPeriodStatNode(Node):
             except (statistics.StatisticsError, ValueError, TypeError) as stat_err:
                 # Handle errors specific to statistical functions (e.g., stdev needs >= 2 points)
                 logger.warning(
-                    f"MultiPeriodStatNode '{self.name}': Stat function '{self.stat_func.__name__}' failed ({stat_err}). Values: {values}. Returning NaN."
+                    "MultiPeriodStatNode '%s': Stat function '%s' failed (%s). Values: %s. Returning NaN.",
+                    self.name,
+                    self.stat_func.__name__,
+                    stat_err,
+                    values,
                 )
                 return float("nan")
 
@@ -402,9 +412,7 @@ class MultiPeriodStatNode(Node):
             ValueError: If required fields are missing or invalid.
         """
         if data.get("type") != "multi_period_stat":
-            raise ValueError(
-                f"Invalid type for MultiPeriodStatNode: {data.get('type')}"
-            )
+            raise ValueError(f"Invalid type for MultiPeriodStatNode: {data.get('type')}")
 
         name = data.get("name")
         if not name:
@@ -412,14 +420,10 @@ class MultiPeriodStatNode(Node):
 
         input_node_name = data.get("input_node_name")
         if not input_node_name:
-            raise ValueError(
-                "Missing 'input_node_name' field in MultiPeriodStatNode data"
-            )
+            raise ValueError("Missing 'input_node_name' field in MultiPeriodStatNode data")
 
         if context is None:
-            raise ValueError(
-                "'context' must be provided to deserialize MultiPeriodStatNode"
-            )
+            raise ValueError("'context' must be provided to deserialize MultiPeriodStatNode")
         if input_node_name not in context:
             raise ValueError(f"Input node '{input_node_name}' not found in context")
 
@@ -428,9 +432,7 @@ class MultiPeriodStatNode(Node):
         stat_func_name = data.get("stat_func_name", "stdev")
 
         if not periods:
-            raise ValueError(
-                "Missing or empty 'periods' field in MultiPeriodStatNode data"
-            )
+            raise ValueError("Missing or empty 'periods' field in MultiPeriodStatNode data")
 
         # Map common statistical function names to their implementations
         stat_func_map: dict[str, StatFunc] = {
@@ -445,8 +447,9 @@ class MultiPeriodStatNode(Node):
         stat_func = stat_func_map.get(stat_func_name, statistics.stdev)
         if stat_func_name not in stat_func_map:
             logger.warning(
-                f"Unknown stat_func_name '{stat_func_name}' for MultiPeriodStatNode '{name}'. "
-                f"Using default statistics.stdev."
+                "Unknown stat_func_name '%s' for MultiPeriodStatNode '%s'. Using default statistics.stdev.",
+                stat_func_name,
+                name,
             )
 
         return cls(
@@ -496,9 +499,7 @@ class TwoPeriodAverageNode(Node):
         """
         super().__init__(name)
         if not isinstance(input_node, Node):
-            raise TypeError(
-                f"TwoPeriodAverageNode input_node must be a Node instance, got {type(input_node).__name__}"
-            )
+            raise TypeError(f"TwoPeriodAverageNode input_node must be a Node instance, got {type(input_node).__name__}")
         if not isinstance(period1, str) or not isinstance(period2, str):
             raise TypeError("TwoPeriodAverageNode period1 and period2 must be strings.")
 
@@ -506,7 +507,7 @@ class TwoPeriodAverageNode(Node):
         self.period1 = period1
         self.period2 = period2
 
-    def calculate(self, period: Optional[str] = None) -> float:
+    def calculate(self, period: str | None = None) -> float:
         """Compute the average value for the two configured periods.
 
         Args:
@@ -518,6 +519,7 @@ class TwoPeriodAverageNode(Node):
         Raises:
             CalculationError: On errors retrieving input node values.
         """
+        _ = period  # Parameter intentionally unused
         try:
             val1 = self.input_node.calculate(self.period1)
             val2 = self.input_node.calculate(self.period2)
@@ -525,12 +527,18 @@ class TwoPeriodAverageNode(Node):
             # Ensure values are numeric and finite
             if not isinstance(val1, int | float) or not math.isfinite(val1):
                 logger.warning(
-                    f"TwoPeriodAverageNode '{self.name}': Value for period '{self.period1}' is non-numeric/non-finite ({val1}). Returning NaN."
+                    "TwoPeriodAverageNode '%s': Value for period '%s' is non-numeric/non-finite (%s). Returning NaN.",
+                    self.name,
+                    self.period1,
+                    val1,
                 )
                 return float("nan")
             if not isinstance(val2, int | float) or not math.isfinite(val2):
                 logger.warning(
-                    f"TwoPeriodAverageNode '{self.name}': Value for period '{self.period2}' is non-numeric/non-finite ({val2}). Returning NaN."
+                    "TwoPeriodAverageNode '%s': Value for period '%s' is non-numeric/non-finite (%s). Returning NaN.",
+                    self.name,
+                    self.period2,
+                    val2,
                 )
                 return float("nan")
 
@@ -588,9 +596,7 @@ class TwoPeriodAverageNode(Node):
             ValueError: If required fields are missing or invalid.
         """
         if data.get("type") != "two_period_average":
-            raise ValueError(
-                f"Invalid type for TwoPeriodAverageNode: {data.get('type')}"
-            )
+            raise ValueError(f"Invalid type for TwoPeriodAverageNode: {data.get('type')}")
 
         name = data.get("name")
         if not name:
@@ -598,14 +604,10 @@ class TwoPeriodAverageNode(Node):
 
         input_node_name = data.get("input_node_name")
         if not input_node_name:
-            raise ValueError(
-                "Missing 'input_node_name' field in TwoPeriodAverageNode data"
-            )
+            raise ValueError("Missing 'input_node_name' field in TwoPeriodAverageNode data")
 
         if context is None:
-            raise ValueError(
-                "'context' must be provided to deserialize TwoPeriodAverageNode"
-            )
+            raise ValueError("'context' must be provided to deserialize TwoPeriodAverageNode")
         if input_node_name not in context:
             raise ValueError(f"Input node '{input_node_name}' not found in context")
 

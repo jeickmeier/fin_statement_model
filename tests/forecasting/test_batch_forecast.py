@@ -13,12 +13,12 @@ class _StubGraph:
     def __init__(self, periods: list[str]):
         self.periods = periods
 
-    def get_node(self, name: str):  # noqa: D401 – simple stub
+    def get_node(self, name: str):  # noqa: D401 - simple stub
         return SimpleNamespace(name=name, values={})
 
-    # ``nodes`` mapping used only in ForecastNodeError when a node is missing – keep minimal
+    # ``nodes`` mapping used only in ForecastNodeError when a node is missing - keep minimal
     @property
-    def nodes(self):  # noqa: D401 – property stub
+    def nodes(self):  # noqa: D401 - property stub
         return {"dummy": None}
 
 
@@ -88,7 +88,7 @@ def test_batch_forecast_continue_on_error(_patch_internals):  # noqa: D401
     """If an exception occurs and *continue_on_error* is True, processing should continue."""
 
     # Replace stub to raise for a specific node
-    def _raiser(*args, **kwargs):  # noqa: D401 – raise for COGS
+    def _raiser(*args, **kwargs):  # noqa: D401 - raise for COGS
         node_name = kwargs.get("node_name")
         if node_name == "COGS":
             raise RuntimeError("boom")

@@ -6,32 +6,34 @@ This module provides utilities for parsing and validating statement configuratio
 
 # Removed json, yaml, Path imports as file loading moved to IO
 import logging
-from typing import Any, Optional
+from typing import Any
+
+from pydantic import ValidationError  # Import directly
+
+from fin_statement_model.core.nodes import standard_node_registry
 
 # Use absolute imports
 # Import Pydantic models for building from validated configuration
 from fin_statement_model.statements.configs.models import (
-    StatementModel,
     BaseItemModel,
-    LineItemModel,
     CalculatedItemModel,
-    MetricItemModel,
-    SubtotalModel,
-    SectionModel,
     CalculationSpec,
+    LineItemModel,
+    MetricItemModel,
+    SectionModel,
+    StatementModel,
+    SubtotalModel,
 )
-from pydantic import ValidationError  # Import directly
-
-# Import UnifiedNodeValidator for node ID validation
-from fin_statement_model.statements.validation import UnifiedNodeValidator
-from fin_statement_model.core.nodes import standard_node_registry
 
 # Import Result types for enhanced error handling
 from fin_statement_model.statements.utilities.result_types import (
     ErrorCollector,
-    ErrorSeverity,
     ErrorDetail,
+    ErrorSeverity,
 )
+
+# Import UnifiedNodeValidator for node ID validation
+from fin_statement_model.statements.validation import UnifiedNodeValidator
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -50,7 +52,7 @@ class StatementConfig:
         config_data: dict[str, Any],
         enable_node_validation: bool = False,
         node_validation_strict: bool = False,
-        node_validator: Optional[UnifiedNodeValidator] = None,
+        node_validator: UnifiedNodeValidator | None = None,
     ):
         """Initialize a statement configuration processor.
 
@@ -69,14 +71,14 @@ class StatementConfig:
             raise ValueError("config_data must be a non-empty dictionary.")
 
         self.config_data = config_data
-        self.model: Optional[StatementModel] = None  # Store validated model
+        self.model: StatementModel | None = None  # Store validated model
 
         # Node validation configuration
         self.enable_node_validation = enable_node_validation
         self.node_validation_strict = node_validation_strict
 
         # Initialize node_validator attribute
-        self.node_validator: Optional[UnifiedNodeValidator] = None
+        self.node_validator: UnifiedNodeValidator | None = None
         if enable_node_validation:
             if node_validator is not None:
                 self.node_validator = node_validator
@@ -110,12 +112,14 @@ class StatementConfig:
             # Collect structured errors (always include errors)
             errors: list[ErrorDetail] = error_collector.get_errors()
             warnings: list[ErrorDetail] = error_collector.get_warnings()
+
             if self.node_validation_strict:
-                return errors + warnings
-            # Log warnings but exclude from returned errors
-            for warning in warnings:
-                logger.warning(f"Node validation warning: {warning}")
-            return errors
+                result: list[ErrorDetail] = errors + warnings
+            else:
+                # Log warnings but exclude from returned errors
+                for warning in warnings:
+                    logger.warning("Node validation warning: %s", warning)
+                result = errors
 
         except ValidationError as ve:
             # Convert Pydantic errors to structured ErrorDetail list
@@ -144,28 +148,24 @@ class StatementConfig:
                     severity=ErrorSeverity.ERROR,
                 )
             ]
+        else:
+            return result
 
-    def _validate_node_ids(
-        self, model: StatementModel, error_collector: ErrorCollector
-    ) -> None:
+    def _validate_node_ids(self, model: StatementModel, error_collector: ErrorCollector) -> None:
         """Validate all node IDs in the statement model using UnifiedNodeValidator.
 
         Args:
             model: The validated StatementModel to check.
             error_collector: ErrorCollector to accumulate validation issues.
         """
-        logger.debug(f"Starting node ID validation for statement '{model.id}'")
+        logger.debug("Starting node ID validation for statement '%s'", model.id)
 
         # Validate statement ID itself
-        self._validate_single_node_id(
-            model.id, "statement", "statement.id", error_collector
-        )
+        self._validate_single_node_id(model.id, "statement", "statement.id", error_collector)
 
         # Validate all sections recursively
         for section in model.sections:
-            self._validate_section_node_ids(
-                section, error_collector, f"statement.{model.id}"
-            )
+            self._validate_section_node_ids(section, error_collector, f"statement.{model.id}")
 
     def _validate_section_node_ids(
         self,
@@ -183,9 +183,7 @@ class StatementConfig:
         section_context = f"{parent_context}.section.{section.id}"
 
         # Validate section ID
-        self._validate_single_node_id(
-            section.id, "section", f"{section_context}.id", error_collector
-        )
+        self._validate_single_node_id(section.id, "section", f"{section_context}.id", error_collector)
 
         # Validate all items in the section
         for item in section.items:
@@ -193,15 +191,11 @@ class StatementConfig:
 
         # Validate subsections recursively
         for subsection in section.subsections:
-            self._validate_section_node_ids(
-                subsection, error_collector, section_context
-            )
+            self._validate_section_node_ids(subsection, error_collector, section_context)
 
         # Validate section subtotal if present
         if section.subtotal:
-            self._validate_item_node_ids(
-                section.subtotal, error_collector, section_context
-            )
+            self._validate_item_node_ids(section.subtotal, error_collector, section_context)
 
     def _validate_item_node_ids(
         self, item: BaseItemModel, error_collector: ErrorCollector, parent_context: str
@@ -216,17 +210,13 @@ class StatementConfig:
         item_context = f"{parent_context}.item.{item.id}"
 
         # Validate the item ID itself
-        self._validate_single_node_id(
-            item.id, "item", f"{item_context}.id", error_collector
-        )
+        self._validate_single_node_id(item.id, "item", f"{item_context}.id", error_collector)
 
         # Type-specific validation
         if isinstance(item, LineItemModel):
             # Validate node_id if present
             if item.node_id:
-                self._validate_single_node_id(
-                    item.node_id, "node", f"{item_context}.node_id", error_collector
-                )
+                self._validate_single_node_id(item.node_id, "node", f"{item_context}.node_id", error_collector)
 
             # Validate standard_node_ref if present
             if item.standard_node_ref:
@@ -239,9 +229,7 @@ class StatementConfig:
 
         elif isinstance(item, CalculatedItemModel):
             # Validate calculation inputs
-            self._validate_calculation_inputs(
-                item.calculation, error_collector, item_context
-            )
+            self._validate_calculation_inputs(item.calculation, error_collector, item_context)
 
         elif isinstance(item, MetricItemModel):
             # Validate metric inputs (the values, not the keys)
@@ -266,9 +254,7 @@ class StatementConfig:
 
             # Validate calculation inputs if present
             if item.calculation:
-                self._validate_calculation_inputs(
-                    item.calculation, error_collector, item_context
-                )
+                self._validate_calculation_inputs(item.calculation, error_collector, item_context)
 
         elif isinstance(item, SectionModel):
             # Recursive validation for nested sections
@@ -323,14 +309,8 @@ class StatementConfig:
 
             # Determine severity based on validation result and configuration
             if not validation_result.is_valid:
-                severity = (
-                    ErrorSeverity.ERROR
-                    if self.node_validation_strict
-                    else ErrorSeverity.WARNING
-                )
-                message = (
-                    f"Invalid {node_type} ID '{node_id}': {validation_result.message}"
-                )
+                severity = ErrorSeverity.ERROR if self.node_validation_strict else ErrorSeverity.WARNING
+                message = f"Invalid {node_type} ID '{node_id}': {validation_result.message}"
                 if severity == ErrorSeverity.ERROR:
                     error_collector.add_error(
                         code="invalid_node_id",
@@ -361,7 +341,9 @@ class StatementConfig:
 
             # Add suggestions if available
             if validation_result.suggestions:
-                suggestion_msg = f"Suggestions for {node_type} ID '{node_id}': {'; '.join(validation_result.suggestions)}"
+                suggestion_msg = (
+                    f"Suggestions for {node_type} ID '{node_id}': {'; '.join(validation_result.suggestions)}"
+                )
                 error_collector.add_warning(
                     code="node_id_suggestions",
                     message=suggestion_msg,
@@ -370,9 +352,7 @@ class StatementConfig:
                 )
 
         except Exception as e:
-            logger.exception(
-                f"Error validating node ID '{node_id}' in context '{context}'"
-            )
+            logger.exception("Error validating node ID '%s' in context '%s'", node_id, context)
             error_collector.add_warning(
                 code="node_validation_error",
                 message=f"Failed to validate {node_type} ID '{node_id}': {e}",

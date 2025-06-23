@@ -61,7 +61,7 @@ class TestMetricInterpreter:
             (0.8, MetricRating.WARNING),  # below warning_below but above poor_below
             (2.3, MetricRating.WARNING),  # above warning_above but below excellent
             (0.4, MetricRating.POOR),  # below poor_below
-            (2.1, MetricRating.ADEQUATE),  # none of the other rules – adequate
+            (2.1, MetricRating.ADEQUATE),  # none of the other rules - adequate
         ],
     )
     def test_rate_value(self, metric_def: MetricDefinition, value, expected_rating):
@@ -106,7 +106,7 @@ class TestMetricRegistry:
 
     def test_load_metrics_from_directory(self, tmp_path: Path):
         """Registry should discover, parse, and register YAML metrics."""
-        # Arrange – create two YAML files
+        # Arrange - create two YAML files
         single_metric_file = tmp_path / "single.yaml"
         multi_metric_file = tmp_path / "multi.yaml"
 
@@ -123,7 +123,7 @@ class TestMetricRegistry:
         # Act
         loaded = registry.load_metrics_from_directory(tmp_path)
 
-        # Assert – all three metrics should be present
+        # Assert - all three metrics should be present
         assert loaded == 3
         assert set(registry.list_metrics()) == {"single_metric", "m1", "m2"}
         for metric_id in registry.list_metrics():

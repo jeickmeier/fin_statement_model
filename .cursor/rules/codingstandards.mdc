@@ -11,7 +11,7 @@ end_of_line = lf
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
-max_line_length = 100
+max_line_length = 120
 
 # Documentation requirements
 [docstrings]
@@ -50,15 +50,14 @@ trim_trailing_whitespace = true
 # See [tool.mypy] in pyproject.toml for configuration
 python_version = 3.12
 strict = true
-warn_unused_ignores = true
-warn_redundant_casts = true
 
 # Tool configurations
 [tools]
-# See [tool.black], [tool.ruff] in pyproject.toml for configuration
-formatter = black
+# See [tool.ruff] in pyproject.toml for configuration
+formatter = ruff
 linter = ruff
 type_checker = mypy
+tests = pytest
 package_manager = uv
 
 # Package dependencies
@@ -71,4 +70,4 @@ dev_packages = ruff, pytest, pytest-cov, pytest-asyncio
 # Pre-commit configuration
 [pre-commit]
 config_file = .pre-commit-config.yaml
-hooks = black, ruff, mypy, ruff-format
+hooks = ruff, mypy, pytest

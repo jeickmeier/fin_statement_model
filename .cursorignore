@@ -12,10 +12,7 @@
 dist/
 __pycache__/
 .gitignore
-concatenated_script.py 
 concatenated_code.txt
-pyproject.toml
 requirements.txt
 contra_items_demo.html
-concatenate_script.py
 .python-version

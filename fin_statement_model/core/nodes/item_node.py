@@ -18,7 +18,7 @@ Example:
     >>> node.calculate("2024")
     1500.0
     >>> d = node.to_dict()
-    >>> d['type']
+    >>> d["type"]
     'financial_statement_item'
     >>> # Round-trip serialization
     >>> node2 = FinancialStatementItemNode.from_dict(d)
@@ -29,9 +29,10 @@ Example:
 import logging
 from typing import Any
 
+from fin_statement_model.core.node_factory.registries import node_type
+
 # Use absolute imports
 from fin_statement_model.core.nodes.base import Node
-from fin_statement_model.core.node_factory.registries import node_type
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +124,7 @@ class FinancialStatementItemNode(Node):
         Example:
             >>> node = FinancialStatementItemNode("Revenue", {"2023": 1000.0})
             >>> data = node.to_dict()
-            >>> data['type']
+            >>> data["type"]
             'financial_statement_item'
         """
         return {
@@ -152,17 +153,15 @@ class FinancialStatementItemNode(Node):
             TypeError: If 'values' is not a dict.
 
         Example:
-            >>> d = {'type': 'financial_statement_item', 'name': 'Revenue', 'values': {'2023': 1000.0}}
+            >>> d = {"type": "financial_statement_item", "name": "Revenue", "values": {"2023": 1000.0}}
             >>> node = FinancialStatementItemNode.from_dict(d)
             >>> node.name
             'Revenue'
-            >>> node.calculate('2023')
+            >>> node.calculate("2023")
             1000.0
         """
         if data.get("type") != "financial_statement_item":
-            raise ValueError(
-                f"Invalid type for FinancialStatementItemNode: {data.get('type')}"
-            )
+            raise ValueError(f"Invalid type for FinancialStatementItemNode: {data.get('type')}")
 
         name = data.get("name")
         if not name:
@@ -171,5 +170,13 @@ class FinancialStatementItemNode(Node):
         values = data.get("values", {})
         if not isinstance(values, dict):
             raise TypeError("'values' field must be a dict[str, float]")
+
+        # Context is intentionally ignored for simple data nodes but referenced to avoid
+        # unused-argument linter violations and to aid future debugging.
+        if context is not None:
+            logger.debug(
+                "FinancialStatementItemNode.from_dict received a non-null 'context' argument, which is currently ignored. Node: %s",
+                name,
+            )
 
         return cls(name, values)

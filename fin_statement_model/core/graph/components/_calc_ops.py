@@ -1,4 +1,4 @@
-"""Calculation‐related public helpers (metrics, custom calculations, etc.).
+"""Calculation-related public helpers (metrics, custom calculations, etc.).
 
 CalcOpsMixin provides methods for adding calculation nodes, registering metrics, executing calculations,
 and inspecting available metrics. It delegates to the CalculationEngine service for all calculation logic.
@@ -19,7 +19,7 @@ Examples:
     ...     input_names=["Revenue", "COGS"],
     ...     operation_type="formula",
     ...     formula="input_0 - input_1",
-    ...     formula_variable_names=["input_0", "input_1"]
+    ...     formula_variable_names=["input_0", "input_1"],
     ... )
     >>> g.calculate("GrossProfit", "2023")
     40.0
@@ -27,7 +27,10 @@ Examples:
 
 from __future__ import annotations
 
-from typing import Any, Callable, Optional
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 __all__: list[str] = ["CalcOpsMixin"]
 
@@ -43,7 +46,7 @@ class CalcOpsMixin:
         name: str,
         input_names: list[str],
         operation_type: str,
-        formula_variable_names: Optional[list[str]] = None,
+        formula_variable_names: list[str] | None = None,
         **calculation_kwargs: Any,
     ) -> Any:
         return self._calc_engine.add_calculation(  # type: ignore[attr-defined]
@@ -57,9 +60,9 @@ class CalcOpsMixin:
     def add_metric(
         self,
         metric_name: str,
-        node_name: Optional[str] = None,
+        node_name: str | None = None,
         *,
-        input_node_map: Optional[dict[str, str]] = None,
+        input_node_map: dict[str, str] | None = None,
     ) -> Any:
         return self._calc_engine.add_metric(  # type: ignore[attr-defined]
             metric_name,
@@ -71,7 +74,7 @@ class CalcOpsMixin:
         self,
         name: str,
         calculation_func: Callable[..., float],
-        inputs: Optional[list[str]] = None,
+        inputs: list[str] | None = None,
         description: str = "",
     ) -> Any:
         return self._calc_engine.add_custom_calculation(  # type: ignore[attr-defined]
@@ -81,9 +84,7 @@ class CalcOpsMixin:
             description,
         )
 
-    def ensure_signed_nodes(
-        self, base_node_ids: list[str], *, suffix: str = "_signed"
-    ) -> Any:
+    def ensure_signed_nodes(self, base_node_ids: list[str], *, suffix: str = "_signed") -> Any:
         return self._calc_engine.ensure_signed_nodes(  # type: ignore[attr-defined]
             base_node_ids, suffix=suffix
         )
@@ -106,7 +107,7 @@ class CalcOpsMixin:
     def calculate(self, node_name: str, period: str) -> Any:
         return self._calc_engine.calculate(node_name, period)  # type: ignore[attr-defined]
 
-    def recalculate_all(self, periods: Optional[list[str]] = None) -> None:
+    def recalculate_all(self, periods: list[str] | None = None) -> None:
         self._calc_engine.recalc_all(periods)  # type: ignore[attr-defined]
 
     # ------------------------------------------------------------------

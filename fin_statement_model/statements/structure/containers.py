@@ -5,16 +5,20 @@ LineItem and CalculatedLineItem objects into nested groups.
 """
 
 from __future__ import annotations
-from typing import Any, Optional, Union, Sequence
+
+from typing import TYPE_CHECKING, Any
 
 from fin_statement_model.core.errors import StatementError
 from fin_statement_model.statements.structure.items import (
-    StatementItem,
-    StatementItemType,
     CalculatedLineItem,
     MetricLineItem,
+    StatementItem,
+    StatementItemType,
     SubtotalLineItem,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 """Configuration helper will be imported inside methods to avoid circular imports."""
 
@@ -33,14 +37,14 @@ class Section:
         id: str,
         name: str,
         description: str = "",
-        metadata: Optional[dict[str, Any]] = None,
-        default_adjustment_filter: Optional[Any] = None,
-        display_format: Optional[str] = None,
+        metadata: dict[str, Any] | None = None,
+        default_adjustment_filter: Any | None = None,
+        display_format: str | None = None,
         hide_if_all_zero: bool = False,
-        css_class: Optional[str] = None,
-        notes_references: Optional[list[str]] = None,
-        units: Optional[str] = None,
-        display_scale_factor: Optional[float] = None,
+        css_class: str | None = None,
+        notes_references: list[str] | None = None,
+        units: str | None = None,
+        display_scale_factor: float | None = None,
     ):
         """Initialize a section.
 
@@ -69,14 +73,10 @@ class Section:
         # Use config default if not provided (import only when needed)
         from fin_statement_model.config.access import cfg_or_param
 
-        display_scale_factor = cfg_or_param(
-            "display.scale_factor", display_scale_factor
-        )
+        display_scale_factor = cfg_or_param("display.scale_factor", display_scale_factor)
 
         if display_scale_factor is None or display_scale_factor <= 0:
-            raise StatementError(
-                f"display_scale_factor must be positive for section: {id}"
-            )
+            raise StatementError(f"display_scale_factor must be positive for section: {id}")
 
         self._id = id
         self._name = name
@@ -89,9 +89,9 @@ class Section:
         self._notes_references = notes_references or []
         self._units = units
         self._display_scale_factor = display_scale_factor
-        self._items: list[Union[Section, StatementItem]] = []
+        self._items: list[Section | StatementItem] = []
         # Optional subtotal for this section (may be set by builder)
-        self.subtotal: Optional[StatementItem] = None
+        self.subtotal: StatementItem | None = None
 
     @property
     def id(self) -> str:
@@ -114,12 +114,12 @@ class Section:
         return self._metadata
 
     @property
-    def default_adjustment_filter(self) -> Optional[Any]:
+    def default_adjustment_filter(self) -> Any | None:
         """Get the default adjustment filter for this section."""
         return self._default_adjustment_filter
 
     @property
-    def display_format(self) -> Optional[str]:
+    def display_format(self) -> str | None:
         """Get the display format string for this section."""
         return self._display_format
 
@@ -129,7 +129,7 @@ class Section:
         return self._hide_if_all_zero
 
     @property
-    def css_class(self) -> Optional[str]:
+    def css_class(self) -> str | None:
         """Get the CSS class for this section."""
         return self._css_class
 
@@ -139,7 +139,7 @@ class Section:
         return list(self._notes_references)
 
     @property
-    def units(self) -> Optional[str]:
+    def units(self) -> str | None:
         """Get the unit description for this section."""
         return self._units
 
@@ -149,7 +149,7 @@ class Section:
         return self._display_scale_factor
 
     @property
-    def items(self) -> list[Union["Section", StatementItem]]:
+    def items(self) -> list[Section | StatementItem]:
         """Get the child items and subsections."""
         return list(self._items)
 
@@ -158,7 +158,7 @@ class Section:
         """Get the item type (SECTION)."""
         return StatementItemType.SECTION
 
-    def add_item(self, item: Union["Section", StatementItem]) -> None:
+    def add_item(self, item: Section | StatementItem) -> None:
         """Add a child item or subsection to this section.
 
         Args:
@@ -171,9 +171,7 @@ class Section:
             raise StatementError(f"Duplicate item ID: {item.id} in section: {self.id}")
         self._items.append(item)
 
-    def find_item_by_id(
-        self, item_id: str
-    ) -> Optional[Union["Section", StatementItem]]:
+    def find_item_by_id(self, item_id: str) -> Section | StatementItem | None:
         """Recursively find an item by its identifier within this section.
 
         Args:
@@ -208,9 +206,9 @@ class StatementStructure:
         id: str,
         name: str,
         description: str = "",
-        metadata: Optional[dict[str, Any]] = None,
-        units: Optional[str] = None,
-        display_scale_factor: Optional[float] = None,
+        metadata: dict[str, Any] | None = None,
+        units: str | None = None,
+        display_scale_factor: float | None = None,
     ):
         """Initialize a statement structure.
 
@@ -234,14 +232,10 @@ class StatementStructure:
         # Use config default if not provided (import only when needed)
         from fin_statement_model.config.access import cfg_or_param
 
-        display_scale_factor = cfg_or_param(
-            "display.scale_factor", display_scale_factor
-        )
+        display_scale_factor = cfg_or_param("display.scale_factor", display_scale_factor)
 
         if display_scale_factor is None or display_scale_factor <= 0:
-            raise StatementError(
-                f"display_scale_factor must be positive for statement: {id}"
-            )
+            raise StatementError(f"display_scale_factor must be positive for statement: {id}")
 
         self._id = id
         self._name = name
@@ -272,7 +266,7 @@ class StatementStructure:
         return self._metadata
 
     @property
-    def units(self) -> Optional[str]:
+    def units(self) -> str | None:
         """Get the default unit description for the statement."""
         return self._units
 
@@ -301,12 +295,10 @@ class StatementStructure:
             StatementError: If a section with the same id already exists.
         """
         if any(s.id == section.id for s in self._sections):
-            raise StatementError(
-                f"Duplicate section ID: {section.id} in statement: {self.id}"
-            )
+            raise StatementError(f"Duplicate section ID: {section.id} in statement: {self.id}")
         self._sections.append(section)
 
-    def find_item_by_id(self, item_id: str) -> Optional[Union[Section, StatementItem]]:
+    def find_item_by_id(self, item_id: str) -> Section | StatementItem | None:
         """Find an item by its ID in the statement structure.
 
         Args:
@@ -323,7 +315,7 @@ class StatementStructure:
 
     def get_calculation_items(
         self,
-    ) -> list[Union[CalculatedLineItem, SubtotalLineItem]]:
+    ) -> list[CalculatedLineItem | SubtotalLineItem]:
         """Get all calculation items from the statement structure.
 
         Returns:
@@ -332,7 +324,7 @@ class StatementStructure:
         calculation_items = []
 
         def collect_calculation_items(
-            items: Sequence[Union[Section, StatementItem]],
+            items: Sequence[Section | StatementItem],
         ) -> None:
             for item in items:
                 if isinstance(item, CalculatedLineItem | SubtotalLineItem):
@@ -357,7 +349,7 @@ class StatementStructure:
         metric_items = []
 
         def collect_metric_items(
-            items: Sequence[Union[Section, StatementItem]],
+            items: Sequence[Section | StatementItem],
         ) -> None:
             for item in items:
                 if isinstance(item, MetricLineItem):
@@ -382,15 +374,13 @@ class StatementStructure:
         all_statement_items: list[StatementItem] = []
 
         def _collect_items_recursive(
-            items_or_sections: Sequence[Union[Section, StatementItem]],
+            items_or_sections: Sequence[Section | StatementItem],
         ) -> None:
             for item in items_or_sections:
                 if isinstance(item, Section):
                     _collect_items_recursive(item.items)
                     # Also collect the section's subtotal if it exists and is a StatementItem
-                    if hasattr(item, "subtotal") and isinstance(
-                        item.subtotal, StatementItem
-                    ):
+                    if hasattr(item, "subtotal") and isinstance(item.subtotal, StatementItem):
                         all_statement_items.append(item.subtotal)
                 elif isinstance(item, StatementItem):
                     all_statement_items.append(item)

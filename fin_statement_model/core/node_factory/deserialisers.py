@@ -14,14 +14,18 @@ Example:
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, Mapping, cast, Type
+from typing import TYPE_CHECKING, Any, cast
 
 from fin_statement_model.core.errors import ConfigurationError
 from fin_statement_model.core.node_factory.registries import (
     ForecastTypeRegistry,
     NodeTypeRegistry,
 )
-from fin_statement_model.core.nodes.base import Node
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from fin_statement_model.core.nodes.base import Node
 
 logger = logging.getLogger(__name__)
 
@@ -33,16 +37,13 @@ __all__: list[str] = ["create_from_dict"]
 # ---------------------------------------------------------------------------
 
 
-def _get_forecast_node_cls(serialised: Mapping[str, Any]) -> type[Node]:  # noqa: D401
+def _get_forecast_node_cls(serialised: Mapping[str, Any]) -> type[Node]:
     """Return forecast node class based on *forecast_type* in the dict."""
-
     f_type = serialised.get("forecast_type") or serialised.get("growth_type")
     if f_type is None:
-        raise ConfigurationError(
-            "Serialised forecast node missing 'forecast_type' key."
-        )
+        raise ConfigurationError("Serialised forecast node missing 'forecast_type' key.")
     try:
-        return cast(Type[Node], ForecastTypeRegistry.get(f_type))
+        return cast("type[Node]", ForecastTypeRegistry.get(f_type))
     except KeyError as exc:
         raise ConfigurationError(
             f"Unknown forecast_type '{f_type}'. Registered: {ForecastTypeRegistry.list()}"
@@ -55,10 +56,10 @@ def _get_forecast_node_cls(serialised: Mapping[str, Any]) -> type[Node]:  # noqa
 
 
 def create_from_dict(
-    data: Dict[str, Any],
-    ctx: Dict[str, Node] | None = None,
+    data: dict[str, Any],
+    ctx: dict[str, Node] | None = None,
     *,
-    context: Dict[str, Node] | None = None,
+    context: dict[str, Node] | None = None,
 ) -> Node:
     """Rebuild a Node from its serialised data.
 
@@ -81,7 +82,6 @@ def create_from_dict(
         >>> node.name
         dct['name']
     """
-
     # Support alternative keyword ``context`` for backward-compat
     if ctx is None and context is not None:
         ctx = context
@@ -95,7 +95,7 @@ def create_from_dict(
     if not node_type_key or not isinstance(node_type_key, str):
         raise ConfigurationError("Serialised node missing 'type' field.")
 
-    # Special dispatch for forecasts – their *sub*-type is stored separately
+    # Special dispatch for forecasts - their *sub*-type is stored separately
     if node_type_key == "forecast":
         node_cls = _get_forecast_node_cls(data)
     else:
@@ -112,6 +112,4 @@ def create_from_dict(
         return node_cls.from_dict(data, ctx)
 
     # If we get here the node class does not support deserialisation via factory
-    raise ConfigurationError(
-        f"Node class {node_cls.__name__} does not expose from_dict method."
-    )
+    raise ConfigurationError(f"Node class {node_cls.__name__} does not expose from_dict method.")

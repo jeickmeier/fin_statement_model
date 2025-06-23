@@ -1,7 +1,7 @@
 """Utility sub-package for generic helper functions that can be shared across layers.
 
 Currently exposes:
-    • formatting – helpers for number & value formatting.
+    * formatting - helpers for number & value formatting.
 """
 
 from __future__ import annotations

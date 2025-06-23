@@ -15,7 +15,7 @@ Examples:
     'WARNING'
     >>> config.display.flags.include_notes_column
     False
-    >>> config.to_dict()['logging']['level']
+    >>> config.to_dict()["logging"]["level"]
     'WARNING'
     >>> yaml_str = config.to_yaml()
     >>> isinstance(yaml_str, str)
@@ -25,14 +25,16 @@ Examples:
     True
 """
 
-from typing import Optional, Literal, Any, Union
 from pathlib import Path
-from pydantic import BaseModel, Field, field_validator, ConfigDict
-from fin_statement_model.statements.configs.models import AdjustmentFilterSpec
+from typing import Any, Literal
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
 from fin_statement_model.preprocessing.config import (
     StatementFormattingConfig,
     TransformationType,
 )
+from fin_statement_model.statements.configs.models import AdjustmentFilterSpec
 
 
 class LoggingConfig(BaseModel):
@@ -45,7 +47,7 @@ class LoggingConfig(BaseModel):
         log_file_path (Optional[Path]): Path for rotating log files; None disables file logging.
 
     Example:
-        >>> LoggingConfig(level='DEBUG').level
+        >>> LoggingConfig(level="DEBUG").level
         'DEBUG'
     """
 
@@ -56,14 +58,11 @@ class LoggingConfig(BaseModel):
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         description="Log message format string",
     )
-    detailed: bool = Field(
-        False, description="Enable detailed logging with file and line numbers"
-    )
-    log_file_path: Optional[Path] = Field(
+    detailed: bool = Field(False, description="Enable detailed logging with file and line numbers")
+    log_file_path: Path | None = Field(
         None,
         description=(
-            "If provided, logs are written to this path (rotating handler). "
-            "If None, file logging is disabled."
+            "If provided, logs are written to this path (rotating handler). If None, file logging is disabled."
         ),
     )
 
@@ -84,32 +83,22 @@ class IOConfig(BaseModel):
         strict_validation (bool): Enforce strict data validation on read.
 
     Example:
-        >>> IOConfig(default_csv_delimiter=';').default_csv_delimiter
+        >>> IOConfig(default_csv_delimiter=";").default_csv_delimiter
         ';'
     """
 
-    default_excel_sheet: str = Field(
-        "Sheet1", description="Default sheet name for Excel operations"
-    )
-    default_csv_delimiter: str = Field(
-        ",", description="Default delimiter for CSV files"
-    )
+    default_excel_sheet: str = Field("Sheet1", description="Default sheet name for Excel operations")
+    default_csv_delimiter: str = Field(",", description="Default delimiter for CSV files")
     auto_create_output_dirs: bool = Field(
         True, description="Automatically create output directories if they don't exist"
     )
     validate_on_read: bool = Field(True, description="Validate data on read operations")
-    default_mapping_configs_dir: Optional[Path] = Field(
+    default_mapping_configs_dir: Path | None = Field(
         None, description="Directory containing custom mapping configuration files"
     )
-    auto_standardize_columns: bool = Field(
-        True, description="Automatically standardize column names when reading data"
-    )
-    skip_invalid_rows: bool = Field(
-        False, description="Skip rows with invalid data instead of raising errors"
-    )
-    strict_validation: bool = Field(
-        False, description="Use strict validation when reading data"
-    )
+    auto_standardize_columns: bool = Field(True, description="Automatically standardize column names when reading data")
+    skip_invalid_rows: bool = Field(False, description="Skip rows with invalid data instead of raising errors")
+    strict_validation: bool = Field(False, description="Use strict validation when reading data")
 
     model_config = ConfigDict(extra="forbid")
 
@@ -136,25 +125,15 @@ class ForecastingConfig(BaseModel):
         10
     """
 
-    default_method: Literal[
-        "simple", "average_growth", "curve", "statistical", "ml"
-    ] = Field("simple", description="Default forecasting method")
+    default_method: Literal["simple", "average_growth", "curve", "statistical", "ml"] = Field(
+        "simple", description="Default forecasting method"
+    )
     default_periods: int = Field(5, description="Default number of periods to forecast")
-    default_growth_rate: float = Field(
-        0.0, description="Default growth rate for simple forecasting"
-    )
-    min_historical_periods: int = Field(
-        3, description="Minimum historical periods required for forecasting"
-    )
-    allow_negative_forecasts: bool = Field(
-        True, description="Allow negative values in forecasts"
-    )
-    add_missing_periods: bool = Field(
-        True, description="Whether to add missing forecast periods to the graph"
-    )
-    default_bad_forecast_value: float = Field(
-        0.0, description="Default value to use for NaN, Inf, or error forecasts"
-    )
+    default_growth_rate: float = Field(0.0, description="Default growth rate for simple forecasting")
+    min_historical_periods: int = Field(3, description="Minimum historical periods required for forecasting")
+    allow_negative_forecasts: bool = Field(True, description="Allow negative values in forecasts")
+    add_missing_periods: bool = Field(True, description="Whether to add missing forecast periods to the graph")
+    default_bad_forecast_value: float = Field(0.0, description="Default value to use for NaN, Inf, or error forecasts")
     continue_on_error: bool = Field(
         True,
         description="Whether to continue forecasting other nodes if one node fails",
@@ -163,13 +142,11 @@ class ForecastingConfig(BaseModel):
         "mean",
         description="Aggregation method for historical growth rate: 'mean' or 'median'",
     )
-    random_seed: Optional[int] = Field(
+    random_seed: int | None = Field(
         None,
         description="Random seed for statistical forecasting to ensure reproducible results",
     )
-    base_period_strategy: Literal[
-        "preferred_then_most_recent", "most_recent", "last_historical"
-    ] = Field(
+    base_period_strategy: Literal["preferred_then_most_recent", "most_recent", "last_historical"] = Field(
         "preferred_then_most_recent",
         description=(
             "Strategy for selecting base period: 'preferred_then_most_recent' (default), "
@@ -179,6 +156,7 @@ class ForecastingConfig(BaseModel):
     )
 
     @field_validator("default_periods")
+    @classmethod
     def validate_periods(cls, v: int) -> int:
         """Validate that `default_periods` is positive.
 
@@ -222,34 +200,20 @@ class PreprocessingConfig(BaseModel):
         False
     """
 
-    auto_clean_data: bool = Field(
-        True, description="Automatically clean data on import"
+    auto_clean_data: bool = Field(True, description="Automatically clean data on import")
+    fill_missing_with_zero: bool = Field(False, description="Fill missing values with zero instead of None")
+    remove_empty_periods: bool = Field(True, description="Remove periods with all empty values")
+    standardize_period_format: bool = Field(True, description="Standardize period names to consistent format")
+    default_normalization_type: Literal["percent_of", "minmax", "standard", "scale_by"] | None = Field(
+        None, description="Default normalization method"
     )
-    fill_missing_with_zero: bool = Field(
-        False, description="Fill missing values with zero instead of None"
-    )
-    remove_empty_periods: bool = Field(
-        True, description="Remove periods with all empty values"
-    )
-    standardize_period_format: bool = Field(
-        True, description="Standardize period names to consistent format"
-    )
-    default_normalization_type: Optional[
-        Literal["percent_of", "minmax", "standard", "scale_by"]
-    ] = Field(None, description="Default normalization method")
     default_transformation_type: TransformationType = Field(
         TransformationType.GROWTH_RATE,
         description="Default time series transformation type",
     )
-    default_time_series_periods: int = Field(
-        1, description="Default number of periods for time series transformations"
-    )
-    default_time_series_window_size: int = Field(
-        3, description="Default window size for time series transformations"
-    )
-    default_conversion_aggregation: str = Field(
-        "sum", description="Default aggregation method for period conversion"
-    )
+    default_time_series_periods: int = Field(1, description="Default number of periods for time series transformations")
+    default_time_series_window_size: int = Field(3, description="Default window size for time series transformations")
+    default_conversion_aggregation: str = Field("sum", description="Default aggregation method for period conversion")
     statement_formatting: StatementFormattingConfig = Field(
         default=StatementFormattingConfig.model_validate({}),
         description="Default statement formatting configuration for preprocessing",
@@ -274,39 +238,17 @@ class DisplayFlags(BaseModel):
         True
     """
 
-    apply_sign_conventions: bool = Field(
-        True, description="Whether to apply sign conventions by default"
-    )
-    include_empty_items: bool = Field(
-        False, description="Whether to include items with no data by default"
-    )
-    include_metadata_cols: bool = Field(
-        False, description="Whether to include metadata columns by default"
-    )
-    add_is_adjusted_column: bool = Field(
-        False, description="Whether to add an 'is_adjusted' column by default"
-    )
-    include_units_column: bool = Field(
-        False, description="Whether to include units column by default"
-    )
-    include_css_classes: bool = Field(
-        False, description="Whether to include CSS class column by default"
-    )
-    include_notes_column: bool = Field(
-        False, description="Whether to include notes column by default"
-    )
-    apply_item_scaling: bool = Field(
-        True, description="Whether to apply item-specific scaling by default"
-    )
-    apply_item_formatting: bool = Field(
-        True, description="Whether to apply item-specific formatting by default"
-    )
-    apply_contra_formatting: bool = Field(
-        True, description="Whether to apply contra-specific formatting by default"
-    )
-    add_contra_indicator_column: bool = Field(
-        False, description="Whether to add a contra indicator column by default"
-    )
+    apply_sign_conventions: bool = Field(True, description="Whether to apply sign conventions by default")
+    include_empty_items: bool = Field(False, description="Whether to include items with no data by default")
+    include_metadata_cols: bool = Field(False, description="Whether to include metadata columns by default")
+    add_is_adjusted_column: bool = Field(False, description="Whether to add an 'is_adjusted' column by default")
+    include_units_column: bool = Field(False, description="Whether to include units column by default")
+    include_css_classes: bool = Field(False, description="Whether to include CSS class column by default")
+    include_notes_column: bool = Field(False, description="Whether to include notes column by default")
+    apply_item_scaling: bool = Field(True, description="Whether to apply item-specific scaling by default")
+    apply_item_formatting: bool = Field(True, description="Whether to apply item-specific formatting by default")
+    apply_contra_formatting: bool = Field(True, description="Whether to apply contra-specific formatting by default")
+    add_contra_indicator_column: bool = Field(False, description="Whether to add a contra indicator column by default")
 
     model_config = ConfigDict(extra="forbid")
 
@@ -334,46 +276,26 @@ class DisplayConfig(BaseModel):
         flags (DisplayFlags): Grouped boolean feature flags.
 
     Example:
-        >>> DisplayConfig(default_number_format='.1%').default_number_format
+        >>> DisplayConfig(default_number_format=".1%").default_number_format
         '.1%'
     """
 
-    default_number_format: str = Field(
-        ",.2f", description="Default number format string"
-    )
-    default_currency_format: str = Field(
-        ",.2f", description="Default currency format string"
-    )
-    default_percentage_format: str = Field(
-        ".1%", description="Default percentage format string"
-    )
-    hide_zero_rows: bool = Field(
-        False, description="Hide rows where all values are zero"
-    )
+    default_number_format: str = Field(",.2f", description="Default number format string")
+    default_currency_format: str = Field(",.2f", description="Default currency format string")
+    default_percentage_format: str = Field(".1%", description="Default percentage format string")
+    hide_zero_rows: bool = Field(False, description="Hide rows where all values are zero")
     contra_display_style: Literal["parentheses", "brackets", "negative"] = Field(
         "parentheses", description="How to display contra items"
     )
     thousands_separator: str = Field(",", description="Thousands separator character")
     decimal_separator: str = Field(".", description="Decimal separator character")
     default_units: str = Field("USD", description="Default currency/units for display")
-    scale_factor: float = Field(
-        1.0, description="Default scale factor for display (e.g., 0.001 for thousands)"
-    )
-    indent_character: str = Field(
-        "  ", description="Indentation characters used for nested line items"
-    )
-    subtotal_style: str = Field(
-        "bold", description="CSS/markup style keyword for subtotal rows"
-    )
-    total_style: str = Field(
-        "bold", description="CSS/markup style keyword for total rows"
-    )
-    header_style: str = Field(
-        "bold", description="CSS/markup style keyword for header cells"
-    )
-    contra_css_class: str = Field(
-        "contra-item", description="Default CSS class name for contra items"
-    )
+    scale_factor: float = Field(1.0, description="Default scale factor for display (e.g., 0.001 for thousands)")
+    indent_character: str = Field("  ", description="Indentation characters used for nested line items")
+    subtotal_style: str = Field("bold", description="CSS/markup style keyword for subtotal rows")
+    total_style: str = Field("bold", description="CSS/markup style keyword for total rows")
+    header_style: str = Field("bold", description="CSS/markup style keyword for header cells")
+    contra_css_class: str = Field("contra-item", description="Default CSS class name for contra items")
     show_negative_sign: bool = Field(
         True,
         description="Whether to prefix negative numbers with a minus sign when not using parentheses",
@@ -384,15 +306,19 @@ class DisplayConfig(BaseModel):
     )
 
     @field_validator("scale_factor")
+    @classmethod
     def validate_scale_factor(cls, v: float) -> float:
         """Ensure scale factor is positive.
 
         Args:
             v: The scale factor.
+
         Returns:
             The validated scale factor.
+
         Raises:
             ValueError: If scale factor is not positive.
+
         Example:
             >>> DisplayConfig.validate_scale_factor(1.0)
             1.0
@@ -412,10 +338,13 @@ class DisplayConfig(BaseModel):
 
         Args:
             item: The attribute name.
+
         Returns:
             The value from flags if present.
+
         Raises:
             AttributeError: If the attribute is not found.
+
         Example:
             >>> dc = DisplayConfig()
             >>> dc.include_empty_items == dc.flags.include_empty_items
@@ -442,31 +371,27 @@ class APIConfig(BaseModel):
         60
     """
 
-    fmp_api_key: Optional[str] = Field(
-        None, description="Financial Modeling Prep API key"
-    )
-    fmp_base_url: str = Field(
-        "https://financialmodelingprep.com/api/v3", description="FMP API base URL"
-    )
+    fmp_api_key: str | None = Field(None, description="Financial Modeling Prep API key")
+    fmp_base_url: str = Field("https://financialmodelingprep.com/api/v3", description="FMP API base URL")
     api_timeout: int = Field(30, description="API request timeout in seconds")
-    api_retry_count: int = Field(
-        3, description="Number of retries for failed API requests"
-    )
-    cache_api_responses: bool = Field(
-        True, description="Cache API responses to reduce API calls"
-    )
+    api_retry_count: int = Field(3, description="Number of retries for failed API requests")
+    cache_api_responses: bool = Field(True, description="Cache API responses to reduce API calls")
     cache_ttl_hours: int = Field(24, description="Cache time-to-live in hours")
 
     @field_validator("api_timeout", "api_retry_count", "cache_ttl_hours")
+    @classmethod
     def validate_positive(cls, v: int) -> int:
         """Ensure values are positive.
 
         Args:
             v: The value to check.
+
         Returns:
             The validated value.
+
         Raises:
             ValueError: If value is not positive.
+
         Example:
             >>> APIConfig.validate_positive(10)
             10
@@ -491,15 +416,9 @@ class MetricsConfig(BaseModel):
         False
     """
 
-    custom_metrics_dir: Optional[Path] = Field(
-        None, description="Directory containing custom metric definitions"
-    )
-    validate_metric_inputs: bool = Field(
-        True, description="Validate metric inputs exist in graph"
-    )
-    auto_register_metrics: bool = Field(
-        True, description="Automatically register metrics from definition files"
-    )
+    custom_metrics_dir: Path | None = Field(None, description="Directory containing custom metric definitions")
+    validate_metric_inputs: bool = Field(True, description="Validate metric inputs exist in graph")
+    auto_register_metrics: bool = Field(True, description="Automatically register metrics from definition files")
 
     model_config = ConfigDict(extra="forbid")
 
@@ -522,35 +441,27 @@ class ValidationConfig(BaseModel):
     """
 
     strict_mode: bool = Field(False, description="Enable strict validation mode")
-    auto_standardize_names: bool = Field(
-        True, description="Automatically standardize node names to canonical form"
-    )
-    warn_on_non_standard: bool = Field(
-        True, description="Warn when using non-standard node names"
-    )
-    check_balance_sheet_balance: bool = Field(
-        True, description="Validate that Assets = Liabilities + Equity"
-    )
-    balance_tolerance: float = Field(
-        1.0, description="Maximum acceptable difference for balance sheet validation"
-    )
-    warn_on_negative_assets: bool = Field(
-        True, description="Warn when asset values are negative"
-    )
-    validate_sign_conventions: bool = Field(
-        True, description="Validate that items follow expected sign conventions"
-    )
+    auto_standardize_names: bool = Field(True, description="Automatically standardize node names to canonical form")
+    warn_on_non_standard: bool = Field(True, description="Warn when using non-standard node names")
+    check_balance_sheet_balance: bool = Field(True, description="Validate that Assets = Liabilities + Equity")
+    balance_tolerance: float = Field(1.0, description="Maximum acceptable difference for balance sheet validation")
+    warn_on_negative_assets: bool = Field(True, description="Warn when asset values are negative")
+    validate_sign_conventions: bool = Field(True, description="Validate that items follow expected sign conventions")
 
     @field_validator("balance_tolerance")
+    @classmethod
     def validate_tolerance(cls, v: float) -> float:
         """Ensure tolerance is non-negative.
 
         Args:
             v: The tolerance value.
+
         Returns:
             The validated tolerance.
+
         Raises:
             ValueError: If tolerance is negative.
+
         Example:
             >>> ValidationConfig.validate_tolerance(1.0)
             1.0
@@ -575,7 +486,7 @@ class StatementsConfig(BaseModel):
         True
     """
 
-    default_adjustment_filter: Optional[Union[AdjustmentFilterSpec, list[str]]] = Field(
+    default_adjustment_filter: AdjustmentFilterSpec | list[str] | None = Field(
         None,
         description="Default adjustment filter spec or list of tags to apply when building statements",
     )
@@ -616,12 +527,8 @@ class Config(BaseModel):
     """
 
     # Sub-configurations
-    logging: LoggingConfig = Field(
-        default=LoggingConfig.model_validate({}), description="Logging configuration"
-    )
-    io: IOConfig = Field(
-        default=IOConfig.model_validate({}), description="Input/Output configuration"
-    )
+    logging: LoggingConfig = Field(default=LoggingConfig.model_validate({}), description="Logging configuration")
+    io: IOConfig = Field(default=IOConfig.model_validate({}), description="Input/Output configuration")
     forecasting: ForecastingConfig = Field(
         default=ForecastingConfig.model_validate({}),
         description="Forecasting configuration",
@@ -638,9 +545,7 @@ class Config(BaseModel):
         default=APIConfig.model_validate({}),
         description="API and external service configuration",
     )
-    metrics: MetricsConfig = Field(
-        default=MetricsConfig.model_validate({}), description="Metrics configuration"
-    )
+    metrics: MetricsConfig = Field(default=MetricsConfig.model_validate({}), description="Metrics configuration")
     validation: ValidationConfig = Field(
         default=ValidationConfig.model_validate({}),
         description="Data validation configuration",
@@ -651,15 +556,9 @@ class Config(BaseModel):
     )
 
     # Global settings
-    project_name: str = Field(
-        "fin_statement_model", description="Project name for identification"
-    )
-    config_file_path: Optional[Path] = Field(
-        None, description="Path to user configuration file"
-    )
-    auto_save_config: bool = Field(
-        False, description="Automatically save configuration changes to file"
-    )
+    project_name: str = Field("fin_statement_model", description="Project name for identification")
+    config_file_path: Path | None = Field(None, description="Path to user configuration file")
+    auto_save_config: bool = Field(False, description="Automatically save configuration changes to file")
 
     model_config = ConfigDict(extra="forbid", validate_assignment=True)
 
@@ -686,7 +585,7 @@ class Config(BaseModel):
 
         Example:
             >>> yaml_str = Config().to_yaml()
-            >>> 'logging' in yaml_str
+            >>> "logging" in yaml_str
             True
         """
         import yaml
@@ -704,7 +603,7 @@ class Config(BaseModel):
             A validated Config instance.
 
         Example:
-            >>> data = {'project_name': 'test'}
+            >>> data = {"project_name": "test"}
             >>> isinstance(Config.from_dict(data), Config)
             True
         """
@@ -745,7 +644,7 @@ class Config(BaseModel):
 
         Example:
             >>> from pathlib import Path
-            >>> config = Config.from_file(Path('config.yaml'))
+            >>> config = Config.from_file(Path("config.yaml"))
             >>> isinstance(config, Config)
             True
         """

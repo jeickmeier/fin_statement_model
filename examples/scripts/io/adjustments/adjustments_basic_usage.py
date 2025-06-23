@@ -1,4 +1,5 @@
-"""adjustments_basic_usage.py
+"""adjustments_basic_usage.py.
+
 Demonstration of the specialised *adjustments* I/O helpers.
 
 This example shows how to:
@@ -8,7 +9,7 @@ This example shows how to:
 3. Clear the graph's adjustments and re-import them from the workbook using
    `load_adjustments_from_excel`.
 
-No sample file is required – the script writes to a temporary ``.xlsx`` file so
+No sample file is required - the script writes to a temporary ``.xlsx`` file so
 it can run anywhere without touching the repository.
 
 Run with::
@@ -42,11 +43,11 @@ EXPORT_XLSX = BASE_DIR / "exported_adjustments.xlsx"
 # -----------------------------------------------------------------------------
 
 
-def build_graph_with_adjustments() -> Graph:  # noqa: D401
+def build_graph_with_adjustments() -> Graph:
     """Return a Graph pre-populated with sample adjustments."""
     graph = Graph(periods=["2023", "2024"])
 
-    # Add a simple data node – required because adjustments reference node names
+    # Add a simple data node - required because adjustments reference node names
     graph.add_node(FinancialStatementItemNode(name="revenue", values={}))
 
     # Create two adjustments
@@ -74,28 +75,23 @@ def build_graph_with_adjustments() -> Graph:  # noqa: D401
 # -----------------------------------------------------------------------------
 
 
-def main(_: list[str] | None = None) -> None:  # noqa: D401
+def main(_: list[str] | None = None) -> None:
     """Show export + import cycle for adjustments Excel helpers."""
     graph = build_graph_with_adjustments()
 
-    print("Initial adjustments in graph:")
     for adj in graph.list_all_adjustments():
-        print(f"  • {adj.id} – {adj.period}: {adj.value} ({adj.reason})")
+        pass
 
     # Export to workbook in the same directory as this script
     export_adjustments_to_excel(graph, EXPORT_XLSX)
-    print(f"\nAdjustments exported to: {EXPORT_XLSX}")
 
     # Clear adjustments then reload from the Excel file
     graph.adjustment_manager.clear_all()
-    print("\nCleared adjustments – count now:", len(graph.list_all_adjustments()))
 
     load_adjustments_from_excel(graph, EXPORT_XLSX)
-    print("Reloaded adjustments from Excel. Count:", len(graph.list_all_adjustments()))
 
-    print("\nAdjustments after re-import:")
     for adj in graph.list_all_adjustments():
-        print(f"  • {adj.id} – {adj.period}: {adj.value} ({adj.reason})")
+        pass
 
 
 if __name__ == "__main__":  # pragma: no cover

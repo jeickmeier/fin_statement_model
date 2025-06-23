@@ -7,7 +7,6 @@ methods for retrieving registered statements.
 """
 
 import logging
-from typing import Optional
 
 # Assuming StatementStructure is defined here or imported appropriately
 # We might need to adjust this import based on the actual location
@@ -63,24 +62,17 @@ class StatementRegistry:
 
         statement_id = statement.id
         if not statement_id:
-            raise ValueError(
-                "StatementStructure must have a valid non-empty id to be registered."
-            )
+            raise ValueError("StatementStructure must have a valid non-empty id to be registered.")
 
         if statement_id in self._statements:
             # Policy: Raise error on conflict
-            logger.error(
-                f"Attempted to register duplicate statement ID: '{statement_id}'"
-            )
-            raise StatementError(
-                message=f"Statement with ID '{statement_id}' is already registered.",
-                # statement_id=statement_id # Add if StatementError accepts this arg
-            )
+            logger.error("Attempted to register duplicate statement ID: '%s'", statement_id)
+            raise StatementError(message=f"Statement with ID '{statement_id}' is already registered.")
 
         self._statements[statement_id] = statement
-        logger.info(f"Registered statement '{statement.name}' with ID '{statement_id}'")
+        logger.info("Registered statement '%s' with ID '%s'", statement.name, statement_id)
 
-    def get(self, statement_id: str) -> Optional[StatementStructure]:
+    def get(self, statement_id: str) -> StatementStructure | None:
         """Get a registered statement by its ID.
 
         Returns:
@@ -93,7 +85,7 @@ class StatementRegistry:
             >>> # registry.register(income_statement)
             >>> retrieved_statement = registry.get("income_statement_id")
             >>> if retrieved_statement:
-            ...     logger.info(f"Found: {retrieved_statement.name}")
+            ...     logger.info("Found: %s", retrieved_statement.name)
             ... else:
             ...     logger.info("Statement not found.")
         """

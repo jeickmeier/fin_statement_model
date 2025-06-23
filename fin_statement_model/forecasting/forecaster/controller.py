@@ -22,22 +22,23 @@ Example:
 
 from __future__ import annotations
 
-from typing import Any, Optional
 import logging
-
+from typing import TYPE_CHECKING, Any
 
 from fin_statement_model.config import cfg
-from fin_statement_model.core.nodes import Node
 from fin_statement_model.forecasting.errors import ForecastNodeError
 from fin_statement_model.forecasting.period_manager import PeriodManager
 from fin_statement_model.forecasting.validators import ForecastValidator
-from fin_statement_model.forecasting.types import ForecastResult
 
+from .batch import batch_forecast_values
 from .node_forecast import (
     _forecast_node_mutating,  # internal helper
     forecast_node_non_mutating,
 )
-from .batch import batch_forecast_values
+
+if TYPE_CHECKING:
+    from fin_statement_model.core.nodes import Node
+    from fin_statement_model.forecasting.types import ForecastResult
 
 logger = logging.getLogger(__name__)
 
@@ -47,9 +48,9 @@ class StatementForecaster:
 
     This controller provides three high-level entry points:
 
-    1. ``create_forecast`` – Mutates the graph and adds forecast values.
-    2. ``forecast_value`` – Returns forecast values for a node without mutating the graph.
-    3. ``forecast_multiple`` – Returns forecast results for multiple nodes in a batch.
+    1. ``create_forecast`` - Mutates the graph and adds forecast values.
+    2. ``forecast_value`` - Returns forecast values for a node without mutating the graph.
+    3. ``forecast_multiple`` - Returns forecast results for multiple nodes in a batch.
 
     Args:
         fsg: The FinancialStatementGraph instance to operate on.
@@ -59,8 +60,7 @@ class StatementForecaster:
         >>> forecaster = StatementForecaster(graph)
         >>> # Mutating forecast
         >>> forecaster.create_forecast(
-        ...     forecast_periods=["2024", "2025"],
-        ...     node_configs={"revenue": {"method": "simple", "config": 0.05}}
+        ...     forecast_periods=["2024", "2025"], node_configs={"revenue": {"method": "simple", "config": 0.05}}
         ... )
         >>> # Non-mutating forecast
         >>> values = forecaster.forecast_value("revenue", ["2024", "2025"])
@@ -78,8 +78,8 @@ class StatementForecaster:
     def create_forecast(
         self,
         forecast_periods: list[str],
-        node_configs: Optional[dict[str, dict[str, Any]]] = None,
-        historical_periods: Optional[list[str]] = None,
+        node_configs: dict[str, dict[str, Any]] | None = None,
+        historical_periods: list[str] | None = None,
         **kwargs: Any,
     ) -> None:
         """Add forecast data to the underlying graph (in-place).
@@ -106,23 +106,14 @@ class StatementForecaster:
             >>> from fin_statement_model.forecasting import StatementForecaster
             >>> forecaster = StatementForecaster(graph)
             >>> forecaster.create_forecast(
-            ...     forecast_periods=["2024"],
-            ...     node_configs={"revenue": {"method": "simple", "config": 0.05}}
+            ...     forecast_periods=["2024"], node_configs={"revenue": {"method": "simple", "config": 0.05}}
             ... )
         """
         logger.info("Creating forecast for periods %s", forecast_periods)
-        historical_periods = PeriodManager.infer_historical_periods(
-            self.fsg, forecast_periods, historical_periods
-        )
-        ForecastValidator.validate_forecast_inputs(
-            historical_periods, forecast_periods, node_configs
-        )
-        add_missing = kwargs.get(
-            "add_missing_periods", cfg("forecasting.add_missing_periods")
-        )
-        PeriodManager.ensure_periods_exist(
-            self.fsg, forecast_periods, add_missing=add_missing
-        )
+        historical_periods = PeriodManager.infer_historical_periods(self.fsg, forecast_periods, historical_periods)
+        ForecastValidator.validate_forecast_inputs(historical_periods, forecast_periods, node_configs)
+        add_missing = kwargs.get("add_missing_periods", cfg("forecasting.add_missing_periods"))
+        PeriodManager.ensure_periods_exist(self.fsg, forecast_periods, add_missing=add_missing)
         node_configs = node_configs or {}
         for node_name, raw_config in node_configs.items():
             node: Node | None = self.fsg.get_node(node_name)
@@ -146,8 +137,8 @@ class StatementForecaster:
         self,
         node_name: str,
         forecast_periods: list[str],
-        base_period: Optional[str] = None,
-        forecast_config: Optional[dict[str, Any]] = None,
+        base_period: str | None = None,
+        forecast_config: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> dict[str, float]:
         """Return forecast values for a single node without mutating the graph.
@@ -188,8 +179,8 @@ class StatementForecaster:
         self,
         node_names: list[str],
         forecast_periods: list[str],
-        forecast_configs: Optional[dict[str, dict[str, Any]]] = None,
-        base_period: Optional[str] = None,
+        forecast_configs: dict[str, dict[str, Any]] | None = None,
+        base_period: str | None = None,
         **kwargs: Any,
     ) -> dict[str, ForecastResult]:
         """Return forecast results for multiple nodes without mutating the graph.

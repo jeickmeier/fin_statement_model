@@ -14,24 +14,29 @@ Features:
 Example:
     >>> from fin_statement_model.core.calculations import AdditionCalculation
     >>> class MockNode:
-    ...     def __init__(self, value): self._value = value
-    ...     def calculate(self, period): return self._value
+    ...     def __init__(self, value):
+    ...         self._value = value
+    ...
+    ...     def calculate(self, period):
+    ...         return self._value
     >>> nodes = [MockNode(10), MockNode(20)]
     >>> calc = AdditionCalculation()
-    >>> calc.calculate(nodes, '2023Q4')
+    >>> calc.calculate(nodes, "2023Q4")
     30.0
 """
 
 from abc import ABC, abstractmethod
-import logging
-from typing import Optional
 from collections.abc import Callable
+import logging
 
-from fin_statement_model.core.nodes.base import Node  # Absolute
 from fin_statement_model.core.errors import CalculationError, StrategyError
+from fin_statement_model.core.nodes.base import Node  # Absolute
 
 # Configure logging
 logger = logging.getLogger(__name__)
+
+# Minimum number of input nodes required for division calculations
+MIN_REQUIRED_INPUTS: int = 2
 
 
 class Calculation(ABC):
@@ -107,8 +112,11 @@ class AdditionCalculation(Calculation):
 
         Examples:
             >>> class MockNode:
-            ...     def __init__(self, value): self._value = value
-            ...     def calculate(self, period): return self._value
+            ...     def __init__(self, value):
+            ...         self._value = value
+            ...
+            ...     def calculate(self, period):
+            ...         return self._value
             >>> strategy = AdditionCalculation()
             >>> nodes = [MockNode(10), MockNode(20), MockNode(5)]
             >>> strategy.calculate(nodes, "2023")
@@ -116,7 +124,7 @@ class AdditionCalculation(Calculation):
             >>> strategy.calculate([], "2023")
             0.0
         """
-        logger.debug(f"Applying addition calculation for period {period}")
+        logger.debug("Applying addition calculation for period %s", period)
         # Using a generator expression for potentially better memory efficiency
         return sum(input_node.calculate(period) for input_node in inputs)
 
@@ -150,8 +158,11 @@ class SubtractionCalculation(Calculation):
 
         Examples:
             >>> class MockNode:
-            ...     def __init__(self, value): self._value = value
-            ...     def calculate(self, period): return self._value
+            ...     def __init__(self, value):
+            ...         self._value = value
+            ...
+            ...     def calculate(self, period):
+            ...         return self._value
             >>> strategy = SubtractionCalculation()
             >>> nodes = [MockNode(100), MockNode(20), MockNode(30)]
             >>> strategy.calculate(nodes, "2023")
@@ -166,7 +177,7 @@ class SubtractionCalculation(Calculation):
                 details={"strategy": "SubtractionCalculation"},
             )
 
-        logger.debug(f"Applying subtraction calculation for period {period}")
+        logger.debug("Applying subtraction calculation for period %s", period)
         # Calculate values first to avoid multiple calls if nodes are complex
         values = [node.calculate(period) for node in inputs]
         return values[0] - sum(values[1:])
@@ -197,8 +208,11 @@ class MultiplicationCalculation(Calculation):
 
         Examples:
             >>> class MockNode:
-            ...     def __init__(self, value): self._value = value
-            ...     def calculate(self, period): return self._value
+            ...     def __init__(self, value):
+            ...         self._value = value
+            ...
+            ...     def calculate(self, period):
+            ...         return self._value
             >>> strategy = MultiplicationCalculation()
             >>> nodes = [MockNode(2), MockNode(3), MockNode(4)]
             >>> strategy.calculate(nodes, "2023")
@@ -209,12 +223,10 @@ class MultiplicationCalculation(Calculation):
         # Multiplication calculation should ideally return 1.0 for empty inputs.
         # Raising error if empty seems less conventional for multiplication.
         if not inputs:
-            logger.warning(
-                "Multiplication calculation called with empty inputs, returning 1.0"
-            )
+            logger.warning("Multiplication calculation called with empty inputs, returning 1.0")
             return 1.0
 
-        logger.debug(f"Applying multiplication calculation for period {period}")
+        logger.debug("Applying multiplication calculation for period %s", period)
         result = 1.0
         for input_node in inputs:
             result *= input_node.calculate(period)
@@ -249,8 +261,11 @@ class DivisionCalculation(Calculation):
 
         Examples:
             >>> class MockNode:
-            ...     def __init__(self, value): self._value = value
-            ...     def calculate(self, period): return self._value
+            ...     def __init__(self, value):
+            ...         self._value = value
+            ...
+            ...     def calculate(self, period):
+            ...         return self._value
             >>> strategy = DivisionCalculation()
             >>> nodes = [MockNode(100), MockNode(5), MockNode(2)]
             >>> strategy.calculate(nodes, "2023")
@@ -263,13 +278,13 @@ class DivisionCalculation(Calculation):
             ...     logger.error(e)
             Division by zero: Denominator product is zero
         """
-        if len(inputs) < 2:
+        if len(inputs) < MIN_REQUIRED_INPUTS:
             raise CalculationError(
                 "Division calculation requires at least two input nodes",
                 details={"strategy": "DivisionCalculation", "input_count": len(inputs)},
             )
 
-        logger.debug(f"Applying division calculation for period {period}")
+        logger.debug("Applying division calculation for period %s", period)
 
         values = [node.calculate(period) for node in inputs]
         numerator = values[0]
@@ -301,7 +316,7 @@ class WeightedAverageCalculation(Calculation):
     initialization, it defaults to an equal weighting (simple average).
     """
 
-    def __init__(self, weights: Optional[list[float]] = None):
+    def __init__(self, weights: list[float] | None = None):
         """Initializes the WeightedAverageCalculation.
 
         Args:
@@ -313,7 +328,7 @@ class WeightedAverageCalculation(Calculation):
         # Validate weights if provided immediately? No, validation happens in calculate
         # as the number of inputs isn't known here.
         self.weights = weights
-        logger.info(f"Initialized WeightedAverageCalculation with weights: {weights}")
+        logger.info("Initialized WeightedAverageCalculation with weights: %s", weights)
 
     def calculate(self, inputs: list[Node], period: str) -> float:
         """Computes the weighted average of the input node values for the period.
@@ -331,8 +346,11 @@ class WeightedAverageCalculation(Calculation):
 
         Examples:
             >>> class MockNode:
-            ...     def __init__(self, value): self._value = value
-            ...     def calculate(self, period): return self._value
+            ...     def __init__(self, value):
+            ...         self._value = value
+            ...
+            ...     def calculate(self, period):
+            ...         return self._value
             >>> # Equal weights (simple average)
             >>> strategy_equal = WeightedAverageCalculation()
             >>> nodes = [MockNode(10), MockNode(20), MockNode(30)]
@@ -369,15 +387,14 @@ class WeightedAverageCalculation(Calculation):
             logger.debug("Using equal weights for weighted average.")
         elif len(self.weights) == num_inputs:
             effective_weights = self.weights
-            logger.debug(f"Using provided weights: {effective_weights}")
+            logger.debug("Using provided weights: %s", effective_weights)
         else:
             raise StrategyError(
-                f"Number of weights ({len(self.weights)}) must match "
-                f"number of inputs ({num_inputs})",
+                f"Number of weights ({len(self.weights)}) must match number of inputs ({num_inputs})",
                 strategy_type="WeightedAverageCalculation",
             )
 
-        logger.debug(f"Applying weighted average calculation for period {period}")
+        logger.debug("Applying weighted average calculation for period %s", period)
         weighted_sum = 0.0
         total_weight = sum(effective_weights)
         input_values = [node.calculate(period) for node in inputs]
@@ -392,7 +409,7 @@ class WeightedAverageCalculation(Calculation):
                 details={"weights": effective_weights},
             )
 
-        for value, weight in zip(input_values, effective_weights):
+        for value, weight in zip(input_values, effective_weights, strict=False):
             weighted_sum += value * weight
 
         # If weights don't sum to 1, this isn't a standard weighted average.
@@ -440,9 +457,7 @@ class CustomFormulaCalculation(Calculation):
                 strategy_type="CustomFormulaCalculation",
             )
         self.formula_function = formula_function
-        logger.info(
-            f"Initialized CustomFormulaCalculation with function: {formula_function.__name__}"
-        )
+        logger.info("Initialized CustomFormulaCalculation with function: %s", formula_function.__name__)
 
     def calculate(self, inputs: list[Node], period: str) -> float:
         """Applies the custom formula function to the calculated input values.
@@ -460,20 +475,24 @@ class CustomFormulaCalculation(Calculation):
 
         Examples:
             >>> class MockNode:
-            ...     def __init__(self, name, value): self.name = name; self._value = value
-            ...     def calculate(self, period): return self._value
+            ...     def __init__(self, name, value):
+            ...         self.name = name
+            ...         self._value = value
+            ...
+            ...     def calculate(self, period):
+            ...         return self._value
             >>> def my_formula(data):
             ...     # Example: Gross Profit Margin
-            ...     return (data['revenue'] - data['cogs']) / data['revenue'] * 100
+            ...     return (data["revenue"] - data["cogs"]) / data["revenue"] * 100
             >>> strategy = CustomFormulaCalculation(my_formula)
-            >>> nodes = [MockNode('revenue', 1000), MockNode('cogs', 600)]
+            >>> nodes = [MockNode("revenue", 1000), MockNode("cogs", 600)]
             >>> strategy.calculate(nodes, "2023")
             40.0
             >>> # Example with unnamed nodes
             >>> def simple_sum(data):
-            ...     return data['input_0'] + data['input_1']
+            ...     return data["input_0"] + data["input_1"]
             >>> strategy_unnamed = CustomFormulaCalculation(simple_sum)
-            >>> nodes_unnamed = [MockNode(None, 10), MockNode(None, 20)] # No names
+            >>> nodes_unnamed = [MockNode(None, 10), MockNode(None, 20)]  # No names
             >>> strategy_unnamed.calculate(nodes_unnamed, "2023")
             30.0
         """
@@ -486,16 +505,15 @@ class CustomFormulaCalculation(Calculation):
                 key = f"input_{i}"
             input_values[key] = node.calculate(period)
 
-        logger.debug(
-            f"Applying custom formula calculation for period {period} with inputs: {input_values}"
-        )
+        logger.debug("Applying custom formula calculation for period %s with inputs: %s", period, input_values)
         try:
             # Execute the user-provided function
             result = self.formula_function(input_values)
             if not isinstance(result, int | float):
                 logger.warning(
-                    f"Custom formula function {self.formula_function.__name__} "
-                    f"returned non-numeric type: {type(result)}. Attempting cast."
+                    "Custom formula function %s returned non-numeric type: %s. Attempting cast.",
+                    self.formula_function.__name__,
+                    type(result),
                 )
                 # Attempt conversion, but be aware this might fail or be lossy
                 try:
@@ -513,9 +531,9 @@ class CustomFormulaCalculation(Calculation):
             return float(result)  # Ensure result is float
         except Exception as e:
             # Catch any exception from the custom function and wrap it
-            logger.error(
-                f"Error executing custom formula '{self.formula_function.__name__}': {e}",
-                exc_info=True,
+            logger.exception(
+                "Error executing custom formula '%s'",
+                self.formula_function.__name__,
             )
             raise CalculationError(
                 f"Error in custom formula '{self.formula_function.__name__}': {e}",
@@ -545,7 +563,7 @@ class FormulaCalculation(Calculation):
             the order of *inputs* passed to :py:meth:`calculate`.
     """
 
-    def __init__(self, formula: str, input_variable_names: list[str]):  # noqa: D401
+    def __init__(self, formula: str, input_variable_names: list[str]):
         """Initialise the :class:`FormulaCalculation`.
 
         Args:
@@ -560,19 +578,16 @@ class FormulaCalculation(Calculation):
             from asteval import (
                 Interpreter,
             )  # local import to avoid hard dep at import time
-        except ImportError as exc:  # pragma: no cover – caught by tests if missing
+        except ImportError as exc:  # pragma: no cover - caught by tests if missing
             raise StrategyError(
-                "Package 'asteval' is required for FormulaCalculation. Install it via 'pip "
-                "install asteval'.",
+                "Package 'asteval' is required for FormulaCalculation. Install it via 'pip install asteval'.",
                 strategy_type="FormulaCalculation",
             ) from exc
 
         self.formula = formula
         self.input_variable_names = input_variable_names
         # Prepare a locked-down interpreter: minimal built-ins, no numpy, no print
-        self._interpreter_cls = (
-            Interpreter  # store class; instance created per calculation
-        )
+        self._interpreter_cls = Interpreter  # store class; instance created per calculation
         logger.info(
             "Initialised FormulaCalculation using asteval with formula '%s' and variables %s",
             formula,
@@ -582,7 +597,7 @@ class FormulaCalculation(Calculation):
     # ---------------------------------------------------------------------
     # Public API
     # ---------------------------------------------------------------------
-    def calculate(self, inputs: list[Node], period: str) -> float:  # noqa: D401
+    def calculate(self, inputs: list[Node], period: str) -> float:
         """Evaluate *formula* for *period* using values from *inputs*.
 
         Args:
@@ -607,8 +622,7 @@ class FormulaCalculation(Calculation):
 
         # Map variable names -> calculated values for the given period
         local_vars: dict[str, float] = {
-            name: node.calculate(period)
-            for name, node in zip(self.input_variable_names, inputs)
+            name: node.calculate(period) for name, node in zip(self.input_variable_names, inputs, strict=False)
         }
 
         # Create a fresh interpreter each call to avoid symbol leakage between periods
@@ -625,9 +639,10 @@ class FormulaCalculation(Calculation):
         )
         try:
             result = ae(self.formula)
-        except Exception as exc:  # pragma: no cover – generic catch to wrap
-            logger.error(
-                "Error evaluating formula '%s': %s", self.formula, exc, exc_info=True
+        except Exception as exc:  # pragma: no cover - generic catch to wrap
+            logger.exception(
+                "Error evaluating formula '%s'",
+                self.formula,
             )
             raise CalculationError(
                 f"Error evaluating formula: {self.formula}. Error: {exc}",
@@ -635,7 +650,7 @@ class FormulaCalculation(Calculation):
                 details={"formula": self.formula, "original_error": str(exc)},
             ) from exc
 
-        if not isinstance(result, (int, float)):
+        if not isinstance(result, int | float):
             raise CalculationError(
                 "Formula result is not numeric.",
                 period=period,
@@ -648,6 +663,6 @@ class FormulaCalculation(Calculation):
     # Misc
     # ------------------------------------------------------------------
     @property
-    def description(self) -> str:  # noqa: D401
+    def description(self) -> str:
         """Return a human-readable description of the calculation."""
         return f"Formula (evaluated via asteval): {self.formula}"

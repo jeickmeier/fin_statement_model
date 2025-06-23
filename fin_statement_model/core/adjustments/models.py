@@ -6,21 +6,21 @@ adjustments in financial statement models.
 
 Examples:
     >>> from fin_statement_model.core.adjustments.models import Adjustment, AdjustmentType
-    >>> adj = Adjustment(node_name='Revenue', period='2023-01', value=100.0, reason='Manual update')
+    >>> adj = Adjustment(node_name="Revenue", period="2023-01", value=100.0, reason="Manual update")
     >>> adj.type == AdjustmentType.ADDITIVE
     True
 """
 
 from __future__ import annotations
 
-import uuid
+from collections.abc import Callable
 from datetime import datetime
 from enum import Enum
-from typing import Final, Optional
-from collections.abc import Callable
+import logging
+from typing import Final
+import uuid
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
-import logging
 
 from .helpers import tag_matches
 
@@ -79,7 +79,7 @@ class Adjustment(BaseModel):
 
     Examples:
         >>> from fin_statement_model.core.adjustments.models import Adjustment, AdjustmentType
-        >>> adj = Adjustment(node_name='Revenue', period='2023-01', value=100.0, reason='Manual update')
+        >>> adj = Adjustment(node_name="Revenue", period="2023-01", value=100.0, reason="Manual update")
         >>> adj.type == AdjustmentType.ADDITIVE
         True
     """
@@ -88,8 +88,8 @@ class Adjustment(BaseModel):
     id: uuid.UUID = Field(default_factory=uuid.uuid4)
     node_name: str
     period: str  # Primary target period
-    start_period: Optional[str] = None  # Phase 2 - effective range start (inclusive)
-    end_period: Optional[str] = None  # Phase 2 - effective range end (inclusive)
+    start_period: str | None = None  # Phase 2 - effective range start (inclusive)
+    end_period: str | None = None  # Phase 2 - effective range end (inclusive)
 
     # Behaviour
     value: float
@@ -103,7 +103,7 @@ class Adjustment(BaseModel):
 
     # Metadata
     reason: str
-    user: Optional[str] = None
+    user: str | None = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
     model_config = ConfigDict(frozen=True)
@@ -123,7 +123,7 @@ class Adjustment(BaseModel):
             ValueError: If the scale is not between 0.0 and 1.0.
 
         Examples:
-            >>> Adjustment(node_name='A', period='2023', value=1.0, reason='r', scale=0.5).scale
+            >>> Adjustment(node_name="A", period="2023", value=1.0, reason="r", scale=0.5).scale
             0.5
         """
         if not 0.0 <= v <= 1.0:
@@ -157,23 +157,23 @@ class AdjustmentFilter(BaseModel):
     """
 
     # Scenario Filtering
-    include_scenarios: Optional[set[str]] = None
-    exclude_scenarios: Optional[set[str]] = None
+    include_scenarios: set[str] | None = None
+    exclude_scenarios: set[str] | None = None
 
     # Tag Filtering (supports hierarchical matching via helpers.tag_matches)
     # Need to import the helper function first.
     # Let's assume it will be imported at the top level of the module later.
 
-    include_tags: Optional[set[AdjustmentTag]] = None
-    exclude_tags: Optional[set[AdjustmentTag]] = None
-    require_all_tags: Optional[set[AdjustmentTag]] = None  # Exact match required
+    include_tags: set[AdjustmentTag] | None = None
+    exclude_tags: set[AdjustmentTag] | None = None
+    require_all_tags: set[AdjustmentTag] | None = None  # Exact match required
 
     # Type Filtering
-    include_types: Optional[set[AdjustmentType]] = None
-    exclude_types: Optional[set[AdjustmentType]] = None
+    include_types: set[AdjustmentType] | None = None
+    exclude_types: set[AdjustmentType] | None = None
 
     # Context for Effective Window Checks (Phase 2)
-    period: Optional[str] = None  # The current period being calculated/viewed
+    period: str | None = None  # The current period being calculated/viewed
 
     def matches(self, adj: Adjustment) -> bool:
         """Check whether a given adjustment meets the filter criteria.
@@ -186,7 +186,7 @@ class AdjustmentFilter(BaseModel):
 
         Examples:
             >>> from fin_statement_model.core.adjustments.models import Adjustment, AdjustmentFilter, AdjustmentType
-            >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r', type=AdjustmentType.ADDITIVE)
+            >>> adj = Adjustment(node_name="A", period="2023", value=1.0, reason="r", type=AdjustmentType.ADDITIVE)
             >>> filt = AdjustmentFilter(include_types={AdjustmentType.ADDITIVE})
             >>> filt.matches(adj)
             True
@@ -197,30 +197,17 @@ class AdjustmentFilter(BaseModel):
         is_match = True
 
         # --- Scenario Checks ---
-        if (
-            self.include_scenarios is not None
-            and adj.scenario not in self.include_scenarios
-        ) or (
-            self.exclude_scenarios is not None
-            and adj.scenario in self.exclude_scenarios
+        if (self.include_scenarios is not None and adj.scenario not in self.include_scenarios) or (
+            self.exclude_scenarios is not None and adj.scenario in self.exclude_scenarios
         ):
             is_match = False
 
         # --- Tag Checks ---
         # Only check if still potentially a match
         if is_match and (
-            (
-                self.include_tags is not None
-                and not tag_matches(adj.tags, self.include_tags)
-            )
-            or (
-                self.exclude_tags is not None
-                and tag_matches(adj.tags, self.exclude_tags)
-            )
-            or (
-                self.require_all_tags is not None
-                and not self.require_all_tags.issubset(adj.tags)
-            )
+            (self.include_tags is not None and not tag_matches(adj.tags, self.include_tags))
+            or (self.exclude_tags is not None and tag_matches(adj.tags, self.exclude_tags))
+            or (self.require_all_tags is not None and not self.require_all_tags.issubset(adj.tags))
         ):
             is_match = False
 
@@ -234,22 +221,19 @@ class AdjustmentFilter(BaseModel):
 
         # --- Effective Window Check (Phase 2) ---
         # Assumes periods are sortable strings (e.g., 'YYYY-MM' or 'Q1-2023')
-        if (
-            is_match and self.period is not None
-        ):  # Only check if still potentially a match
+        if is_match and self.period is not None:  # Only check if still potentially a match
             logger.debug(
-                f"Period check: FilterPeriod={self.period}, AdjStart={adj.start_period}, AdjEnd={adj.end_period}"
+                "Period check: FilterPeriod=%s, AdjStart=%s, AdjEnd=%s",
+                self.period,
+                adj.start_period,
+                adj.end_period,
             )
             period_match = True  # Assume period is ok unless proven otherwise
             if adj.start_period is not None and self.period < adj.start_period:
                 logger.debug("Period check failed: FilterPeriod < AdjStart")
                 period_match = False
             # Use 'if period_match' to avoid unnecessary log if start check already failed
-            if (
-                period_match
-                and adj.end_period is not None
-                and self.period > adj.end_period
-            ):
+            if period_match and adj.end_period is not None and self.period > adj.end_period:
                 logger.debug("Period check failed: FilterPeriod > AdjEnd")
                 period_match = False
 
@@ -257,17 +241,10 @@ class AdjustmentFilter(BaseModel):
                 logger.debug("Period check passed.")
             else:
                 is_match = False  # Period check failed
-        # else: # Optional log if period check was skipped
-        #     if self.period is not None:
-        #         logger.debug("Period check skipped because is_match was already False")
-        #     else:
-        #         logger.debug("Period check skipped: Filter has no period context.")
 
         return is_match
 
 
 # Accept callables that take one or two positional arguments. Using Callable[..., bool]
 # allows flexible predicates while keeping type safety at a reasonable level.
-AdjustmentFilterInput = Optional[
-    AdjustmentFilter | set[AdjustmentTag] | Callable[..., bool]
-]
+AdjustmentFilterInput = AdjustmentFilter | set[AdjustmentTag] | Callable[..., bool] | None

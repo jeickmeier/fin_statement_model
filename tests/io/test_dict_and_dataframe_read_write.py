@@ -51,7 +51,7 @@ def test_dict_reader_writer_roundtrip(sample_graph: Graph) -> None:
         format_type="dict", graph=sample_graph, target=None  # type: ignore[arg-type]
     )
 
-    # Basic sanity – writer should return a nested dict structure
+    # Basic sanity - writer should return a nested dict structure
     assert isinstance(exported, dict)
     assert exported["Revenue"]["2023"] == 100.0
 

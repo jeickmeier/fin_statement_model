@@ -9,9 +9,8 @@ from fin_statement_model.preprocessing import (
     TransformerFactory,
     DataTransformer,
 )
+import contextlib
 
-print("✅ Imports successful!")
-print(f"📋 Available transformers: {TransformerFactory.list_transformers()}")
 
 # Create sample data
 quarterly_data = pd.DataFrame(
@@ -23,37 +22,36 @@ quarterly_data = pd.DataFrame(
     index=pd.date_range("2022-03-31", periods=8, freq="QE"),
 )
 
-print("\n📊 Quarterly data created:", quarterly_data.shape)
 
 # Initialize service
 service = TransformationService()
-print("✅ TransformationService initialized")
 
 # Test 1: Normalization
 percent_of_revenue = service.normalize_data(
     quarterly_data, normalization_type="percent_of", reference="revenue"
 )
-print("\n✅ Test 1 - Percent of revenue normalization completed")
-print(percent_of_revenue[["revenue", "cogs"]].head(3))
 
 # Test 2: Time Series
 yoy_growth = service.transform_time_series(
     quarterly_data, transformation_type="yoy", periods=4
 )
-print("\n✅ Test 2 - YoY growth calculation completed")
-print(yoy_growth[["revenue_yoy"]].iloc[4:6])
 
 # Test 3: Period Conversion
 annual_data = service.convert_periods(
     quarterly_data, conversion_type="quarterly_to_annual", aggregation="sum"
 )
-print("\n✅ Test 3 - Period conversion completed")
-print(annual_data[["revenue", "cogs"]])
 
 
 # Test 4: Custom Transformer
 class SimpleScalerTransformer(DataTransformer):
+    """A simple transformer that scales numeric values by a constant factor."""
+
     def __init__(self, scale=1.0):
+        """Create a new scaler.
+
+        Args:
+            scale: Multiplicative factor applied to each numeric value.
+        """
         super().__init__({"scale": scale})
         self.scale = scale
 
@@ -65,15 +63,13 @@ class SimpleScalerTransformer(DataTransformer):
         return result
 
     def validate_input(self, data):
-        return isinstance(data, (pd.DataFrame, pd.Series))
+        """Return True if *data* is a DataFrame or Series."""
+        return isinstance(data, pd.DataFrame | pd.Series)
 
 
 # Safe registration
-try:
+with contextlib.suppress(Exception):
     TransformerFactory.register_transformer("simple_scaler", SimpleScalerTransformer)
-    print("\n✅ Test 4 - Custom transformer registered")
-except Exception as e:
-    print(f"\n⚠️ Custom transformer already registered: {e}")
 
 # Test pipeline
 pipeline_config = [
@@ -84,7 +80,3 @@ pipeline_config = [
 pipeline_result = service.apply_transformation_pipeline(
     quarterly_data[["revenue"]], pipeline_config
 )
-print("\n✅ Test 5 - Pipeline execution completed")
-print(pipeline_result.head())
-
-print("\n🎉 All tests passed successfully!")

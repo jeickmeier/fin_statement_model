@@ -1,4 +1,4 @@
-"""Simple PeriodService stub – manages the list of unique, sorted periods.
+"""Simple PeriodService stub - manages the list of unique, sorted periods.
 
 PeriodService is responsible for managing the list of unique, sorted period identifiers used in the graph.
 It provides methods for adding, validating, and clearing periods, ensuring that all period operations are
@@ -22,8 +22,6 @@ Examples:
 
 from __future__ import annotations
 
-from typing import List
-
 __all__: list[str] = ["PeriodService"]
 
 
@@ -31,11 +29,12 @@ class PeriodService:  # pylint: disable=too-few-public-methods
     """Encapsulate period management helpers.
 
     The service now owns its internal list of period identifiers.  Call-sites
-    should interact exclusively via the public API – direct mutation of the
+    should interact exclusively via the public API - direct mutation of the
     underlying list is no longer supported (removed legacy shim).
     """
 
     def __init__(self) -> None:
+        """Create an empty PeriodService with no registered periods."""
         # Internal, sorted list of unique period identifiers.
         self._periods: list[str] = []
 
@@ -43,14 +42,14 @@ class PeriodService:  # pylint: disable=too-few-public-methods
     # Public API --------------------------------------------------------
     # ------------------------------------------------------------------
     @property
-    def periods(self) -> List[str]:
+    def periods(self) -> list[str]:
         """Return an immutable **sorted** list of period identifiers."""
         # Return a shallow copy to prevent accidental mutation
         return list(self._periods)
 
     def add_periods(self, periods: list[str]) -> None:
         """Add *periods* ensuring uniqueness & sorted order."""
-        if not isinstance(periods, list):  # defensive – mirroring existing Graph.guards
+        if not isinstance(periods, list):  # defensive - mirroring existing Graph.guards
             raise TypeError("Periods must be provided as a list of strings.")
         combined = set(self._periods).union(periods)
         sorted_periods = sorted(combined)

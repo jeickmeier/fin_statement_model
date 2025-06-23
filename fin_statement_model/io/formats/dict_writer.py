@@ -9,10 +9,10 @@ import logging
 from typing import Any
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.io.core.mixins import ConfigurationMixin
-from fin_statement_model.io.core.base_table_writer import BaseTableWriter
-from fin_statement_model.io.core.registry import register_writer
 from fin_statement_model.io.config.models import DictWriterConfig
+from fin_statement_model.io.core.base_table_writer import BaseTableWriter
+from fin_statement_model.io.core.mixins import ConfigurationMixin
+from fin_statement_model.io.core.registry import register_writer
 
 logger = logging.getLogger(__name__)
 
@@ -38,9 +38,7 @@ class DictWriter(BaseTableWriter, ConfigurationMixin):
         super().__init__()
         self.cfg = cfg
 
-    def write(
-        self, graph: Graph, target: Any = None, **kwargs: Any
-    ) -> dict[str, dict[str, float]]:
+    def write(self, graph: Graph, target: Any = None, **kwargs: Any) -> dict[str, dict[str, float]]:
         """Convert a `Graph` object into a nested dictionary.
 
         This method orchestrates the conversion of the graph data into a dictionary.
@@ -58,6 +56,7 @@ class DictWriter(BaseTableWriter, ConfigurationMixin):
         Returns:
             A nested dictionary representing the graph's data.
         """
+        _ = target  # Parameter intentionally unused
         recalc = kwargs.get("recalculate", True)
         include_nodes = kwargs.get("include_nodes")
         logger.info("Exporting graph to dict format.")

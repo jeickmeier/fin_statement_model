@@ -6,14 +6,13 @@ All definitions are automatically loaded into the standard_node_registry.
 
 import logging
 from pathlib import Path
-from typing import Optional
 
 from fin_statement_model.core.nodes.standard_registry import standard_node_registry
 
 logger = logging.getLogger(__name__)
 
 
-def load_all_standard_nodes(base_path: Optional[Path] = None) -> int:
+def load_all_standard_nodes(base_path: Path | None = None) -> int:
     """Load all standard node definitions from organized YAML files.
 
     Args:
@@ -67,18 +66,18 @@ def load_all_standard_nodes(base_path: Optional[Path] = None) -> int:
             try:
                 count = standard_node_registry.load_from_yaml_file(full_path)
                 total_loaded += count
-                logger.debug(f"Loaded {count} nodes from {file_path}")
-            except Exception:
-                logger.exception(f"Failed to load {file_path}")
+                logger.debug("Loaded %s nodes from %s", count, file_path)
+            except (OSError, ValueError):
+                logger.exception("Failed to load %s", file_path)
         else:
-            logger.warning(f"Organized node file not found: {full_path}")
+            logger.warning("Organized node file not found: %s", full_path)
 
-    logger.info(f"Loaded {total_loaded} total standard nodes from organized structure")
+    logger.info("Loaded %s total standard nodes from organized structure", total_loaded)
     return total_loaded
 
 
 # Auto-load on import
 try:
     load_all_standard_nodes()
-except Exception as e:
-    logger.warning(f"Failed to auto-load standard nodes: {e}")
+except (OSError, ValueError) as exc:
+    logger.warning("Failed to auto-load standard nodes: %s", exc)

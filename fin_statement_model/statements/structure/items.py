@@ -2,11 +2,11 @@
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Optional, cast
+from typing import Any, cast
 
+from fin_statement_model.config.access import cfg_or_param
 from fin_statement_model.core.errors import StatementError
 from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
-from fin_statement_model.config.access import cfg_or_param
 
 __all__ = [
     "CalculatedLineItem",
@@ -60,12 +60,12 @@ class StatementItem(ABC):
 
     @property
     @abstractmethod
-    def default_adjustment_filter(self) -> Optional[Any]:
+    def default_adjustment_filter(self) -> Any | None:
         """Get the default adjustment filter for this item."""
 
     @property
     @abstractmethod
-    def display_format(self) -> Optional[str]:
+    def display_format(self) -> str | None:
         """Get the display format string for this item."""
 
     @property
@@ -75,7 +75,7 @@ class StatementItem(ABC):
 
     @property
     @abstractmethod
-    def css_class(self) -> Optional[str]:
+    def css_class(self) -> str | None:
         """Get the CSS class for this item."""
 
     @property
@@ -85,7 +85,7 @@ class StatementItem(ABC):
 
     @property
     @abstractmethod
-    def units(self) -> Optional[str]:
+    def units(self) -> str | None:
         """Get the unit description for this item."""
 
     @property
@@ -127,18 +127,18 @@ class LineItem(StatementItem):
         self,
         id: str,
         name: str,
-        node_id: Optional[str] = None,
-        standard_node_ref: Optional[str] = None,
+        node_id: str | None = None,
+        standard_node_ref: str | None = None,
         description: str = "",
         sign_convention: int = 1,
-        metadata: Optional[dict[str, Any]] = None,
-        default_adjustment_filter: Optional[Any] = None,
-        display_format: Optional[str] = None,
+        metadata: dict[str, Any] | None = None,
+        default_adjustment_filter: Any | None = None,
+        display_format: str | None = None,
         hide_if_all_zero: bool = False,
-        css_class: Optional[str] = None,
-        notes_references: Optional[list[str]] = None,
-        units: Optional[str] = None,
-        display_scale_factor: Optional[float] = None,
+        css_class: str | None = None,
+        notes_references: list[str] | None = None,
+        units: str | None = None,
+        display_scale_factor: float | None = None,
         is_contra: bool = False,
     ):
         """Initialize a basic LineItem.
@@ -171,28 +171,18 @@ class LineItem(StatementItem):
 
         # Validate that exactly one of node_id or standard_node_ref is provided
         if not node_id and not standard_node_ref:
-            raise StatementError(
-                f"Must provide either 'node_id' or 'standard_node_ref' for line item: {id}"
-            )
+            raise StatementError(f"Must provide either 'node_id' or 'standard_node_ref' for line item: {id}")
         if node_id and standard_node_ref:
-            raise StatementError(
-                f"Cannot provide both 'node_id' and 'standard_node_ref' for line item: {id}"
-            )
+            raise StatementError(f"Cannot provide both 'node_id' and 'standard_node_ref' for line item: {id}")
 
         if sign_convention not in (1, -1):
-            raise StatementError(
-                f"Invalid sign convention {sign_convention} for item: {id}"
-            )
+            raise StatementError(f"Invalid sign convention {sign_convention} for item: {id}")
 
         # Use config default if not provided (import only when needed)
-        display_scale_factor = cfg_or_param(
-            "display.scale_factor", display_scale_factor
-        )
+        display_scale_factor = cfg_or_param("display.scale_factor", display_scale_factor)
 
         if display_scale_factor is None or display_scale_factor <= 0:
-            raise StatementError(
-                f"display_scale_factor must be positive for item: {id}"
-            )
+            raise StatementError(f"display_scale_factor must be positive for item: {id}")
 
         self._id = id
         self._name = name
@@ -221,12 +211,12 @@ class LineItem(StatementItem):
         return self._name
 
     @property
-    def node_id(self) -> Optional[str]:
+    def node_id(self) -> str | None:
         """Get the core graph node ID for this line item (if provided directly)."""
         return self._node_id
 
     @property
-    def standard_node_ref(self) -> Optional[str]:
+    def standard_node_ref(self) -> str | None:
         """Get the standard node reference for this line item (if provided)."""
         return self._standard_node_ref
 
@@ -246,12 +236,12 @@ class LineItem(StatementItem):
         return self._metadata
 
     @property
-    def default_adjustment_filter(self) -> Optional[Any]:
+    def default_adjustment_filter(self) -> Any | None:
         """Get the default adjustment filter for this item."""
         return self._default_adjustment_filter
 
     @property
-    def display_format(self) -> Optional[str]:
+    def display_format(self) -> str | None:
         """Get the display format string for this item."""
         return self._display_format
 
@@ -261,7 +251,7 @@ class LineItem(StatementItem):
         return self._hide_if_all_zero
 
     @property
-    def css_class(self) -> Optional[str]:
+    def css_class(self) -> str | None:
         """Get the CSS class for this item."""
         return self._css_class
 
@@ -271,7 +261,7 @@ class LineItem(StatementItem):
         return list(self._notes_references)
 
     @property
-    def units(self) -> Optional[str]:
+    def units(self) -> str | None:
         """Get the unit description for this item."""
         return self._units
 
@@ -290,7 +280,7 @@ class LineItem(StatementItem):
         """Get the type of this item (LINE_ITEM)."""
         return StatementItemType.LINE_ITEM
 
-    def get_resolved_node_id(self, registry: StandardNodeRegistry) -> Optional[str]:
+    def get_resolved_node_id(self, registry: StandardNodeRegistry) -> str | None:
         """Get the resolved node ID, handling both direct node_id and standard_node_ref.
 
         Args:
@@ -341,14 +331,14 @@ class MetricLineItem(LineItem):
         inputs: dict[str, str],
         description: str = "",
         sign_convention: int = 1,
-        metadata: Optional[dict[str, Any]] = None,
-        default_adjustment_filter: Optional[Any] = None,
-        display_format: Optional[str] = None,
+        metadata: dict[str, Any] | None = None,
+        default_adjustment_filter: Any | None = None,
+        display_format: str | None = None,
         hide_if_all_zero: bool = False,
-        css_class: Optional[str] = None,
-        notes_references: Optional[list[str]] = None,
-        units: Optional[str] = None,
-        display_scale_factor: Optional[float] = None,
+        css_class: str | None = None,
+        notes_references: list[str] | None = None,
+        units: str | None = None,
+        display_scale_factor: float | None = None,
         is_contra: bool = False,
     ):
         """Initialize a MetricLineItem referencing a registered metric.
@@ -393,15 +383,9 @@ class MetricLineItem(LineItem):
         if not metric_id or not isinstance(metric_id, str):
             raise StatementError(f"Invalid metric_id '{metric_id}' for item: {id}")
         if not isinstance(inputs, dict) or not inputs:
-            raise StatementError(
-                f"Metric inputs must be a non-empty dictionary for item: {id}"
-            )
-        if not all(
-            isinstance(k, str) and isinstance(v, str) for k, v in inputs.items()
-        ):
-            raise StatementError(
-                f"Metric input keys and values must be strings for item: {id}"
-            )
+            raise StatementError(f"Metric inputs must be a non-empty dictionary for item: {id}")
+        if not all(isinstance(k, str) and isinstance(v, str) for k, v in inputs.items()):
+            raise StatementError(f"Metric input keys and values must be strings for item: {id}")
 
         self._metric_id = metric_id
         self._inputs = inputs
@@ -452,14 +436,14 @@ class CalculatedLineItem(LineItem):
         calculation: dict[str, Any],
         description: str = "",
         sign_convention: int = 1,
-        metadata: Optional[dict[str, Any]] = None,
-        default_adjustment_filter: Optional[Any] = None,
-        display_format: Optional[str] = None,
+        metadata: dict[str, Any] | None = None,
+        default_adjustment_filter: Any | None = None,
+        display_format: str | None = None,
         hide_if_all_zero: bool = False,
-        css_class: Optional[str] = None,
-        notes_references: Optional[list[str]] = None,
-        units: Optional[str] = None,
-        display_scale_factor: Optional[float] = None,
+        css_class: str | None = None,
+        notes_references: list[str] | None = None,
+        units: str | None = None,
+        display_scale_factor: float | None = None,
         is_contra: bool = False,
     ):
         """Initialize a CalculatedLineItem based on calculation specification.
@@ -506,25 +490,23 @@ class CalculatedLineItem(LineItem):
             raise StatementError(f"Missing calculation type for item: {id}")
         inputs = calculation.get("inputs")
         if not isinstance(inputs, list) or not inputs:
-            raise StatementError(
-                f"Calculation inputs must be a non-empty list for item: {id}"
-            )
+            raise StatementError(f"Calculation inputs must be a non-empty list for item: {id}")
         self._calculation = calculation
 
     @property
     def calculation_type(self) -> str:
         """Get the calculation operation type (e.g., 'addition')."""
-        return cast(str, self._calculation["type"])
+        return cast("str", self._calculation["type"])
 
     @property
     def input_ids(self) -> list[str]:
         """Get the list of input item IDs for this calculation."""
-        return cast(list[str], self._calculation["inputs"])
+        return cast("list[str]", self._calculation["inputs"])
 
     @property
     def parameters(self) -> dict[str, Any]:
         """Get optional parameters for the calculation."""
-        return cast(dict[str, Any], self._calculation.get("parameters", {}))
+        return cast("dict[str, Any]", self._calculation.get("parameters", {}))
 
     @property
     def item_type(self) -> StatementItemType:
@@ -561,14 +543,14 @@ class SubtotalLineItem(CalculatedLineItem):
         item_ids: list[str],
         description: str = "",
         sign_convention: int = 1,
-        metadata: Optional[dict[str, Any]] = None,
-        default_adjustment_filter: Optional[Any] = None,
-        display_format: Optional[str] = None,
+        metadata: dict[str, Any] | None = None,
+        default_adjustment_filter: Any | None = None,
+        display_format: str | None = None,
         hide_if_all_zero: bool = False,
-        css_class: Optional[str] = None,
-        notes_references: Optional[list[str]] = None,
-        units: Optional[str] = None,
-        display_scale_factor: Optional[float] = None,
+        css_class: str | None = None,
+        notes_references: list[str] | None = None,
+        units: str | None = None,
+        display_scale_factor: float | None = None,
         is_contra: bool = False,
     ):
         """Initialize a SubtotalLineItem summing multiple items.

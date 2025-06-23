@@ -1,15 +1,23 @@
+"""Utility helpers for consistent numeric formatting across the library.
+
+The module groups small, reusable functions that handle common string / number
+formatting tasks shared by CLI reporters, statement formatters and higher-level
+analysis helpers.  Keeping them here avoids duplicating logic (and associated
+edge-cases) in multiple call-sites.
+"""
+
 from __future__ import annotations
+
+from typing import Any
 
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
-from typing import Any, Optional
 
 __all__ = [
     "apply_sign_convention",
     "format_numbers",
     "render_values",
 ]
-
 
 # ---------------------------------------------------------------------------
 # Generic helpers
@@ -19,7 +27,7 @@ __all__ = [
 def apply_sign_convention(df: pd.DataFrame, period_columns: list[str]) -> pd.DataFrame:
     """Apply *sign_convention* column values (+1 or -1) to numeric period columns.
 
-    This helper is agnostic of financial-statement specifics – it simply multiplies
+    This helper is agnostic of financial-statement specifics - it simply multiplies
     each numeric cell in *period_columns* by the corresponding row's
     ``sign_convention`` (if present).  Missing conventions default to ``1`` (no
     change).
@@ -39,9 +47,7 @@ def apply_sign_convention(df: pd.DataFrame, period_columns: list[str]) -> pd.Dat
         if col in result.columns and is_numeric_dtype(result[col]):
             mask = result[col].notna()
             # Convert sign column to numeric to guard against accidental strings.
-            sign_col = pd.to_numeric(
-                result.loc[mask, "sign_convention"], errors="coerce"
-            ).fillna(1)
+            sign_col = pd.to_numeric(result.loc[mask, "sign_convention"], errors="coerce").fillna(1)
             result.loc[mask, col] = result.loc[mask, col] * sign_col
     return result
 
@@ -50,16 +56,16 @@ def format_numbers(
     df: pd.DataFrame,
     default_formats: dict[str, Any],
     *,
-    number_format: Optional[str] = None,
-    period_columns: Optional[list[str]] = None,
+    number_format: str | None = None,
+    period_columns: list[str] | None = None,
 ) -> pd.DataFrame:
     """Format numeric values as strings according to *number_format* or defaults.
 
     If *number_format* is omitted, the helper falls back to values contained in
     *default_formats* (typically provided by config):
 
-    • ``precision`` – number of decimal places (int, default ``2``)
-    • ``use_thousands_separator`` – comma-separate thousands if *True*
+    * ``precision`` - number of decimal places (int, default ``2``)
+    * ``use_thousands_separator`` - comma-separate thousands if *True*
 
     Non-numeric columns are left untouched, as are DataFrame-level metadata
     columns such as ``sign_convention`` or ``depth``.
@@ -80,11 +86,7 @@ def format_numbers(
 
     # Determine columns that should be formatted.
     if period_columns is not None:
-        numeric_cols = [
-            col
-            for col in period_columns
-            if col in result.columns and is_numeric_dtype(result[col])
-        ]
+        numeric_cols = [col for col in period_columns if col in result.columns and is_numeric_dtype(result[col])]
     else:
         # Fallback: any numeric column except explicit metadata helpers.
         numeric_cols = [
@@ -107,17 +109,13 @@ def format_numbers(
         # Apply explicit Python format specifier.
         for col in numeric_cols:
             if col in result.columns:
-                result[col] = result[col].apply(
-                    lambda x: f"{x:{number_format}}" if pd.notna(x) else ""
-                )
+                result[col] = result[col].apply(lambda x: f"{x:{number_format}}" if pd.notna(x) else "")
     else:
         # Derive basic format string from defaults.
         fmt = f",.{precision}f" if use_thousands else f".{precision}f"
         for col in numeric_cols:
             if col in result.columns:
-                result[col] = result[col].apply(
-                    lambda x: f"{x:{fmt}}" if pd.notna(x) else ""
-                )
+                result[col] = result[col].apply(lambda x: f"{x:{fmt}}" if pd.notna(x) else "")
 
     return result
 
@@ -127,7 +125,7 @@ def render_values(
     period_columns: list[str],
     default_formats: dict[str, Any],
     *,
-    number_format: Optional[str] = None,
+    number_format: str | None = None,
     contra_display_style: str | None = "parentheses",
 ) -> pd.DataFrame:
     """High-level helper that combines *sign*, *number*, and contra formatting.
@@ -148,7 +146,6 @@ def render_values(
     Returns:
         A *new* DataFrame object with formatted string values.
     """
-
     # 1) Apply sign conventions.
     signed_df = apply_sign_convention(df, period_columns)
 

@@ -31,7 +31,7 @@ Examples:
     ...     input_names=["Revenue", "COGS"],
     ...     operation_type="formula",
     ...     formula="input_0 - input_1",
-    ...     formula_variable_names=["input_0", "input_1"]
+    ...     formula_variable_names=["input_0", "input_1"],
     ... )
     >>> g.calculate("GrossProfit", "2023")
     50.0
@@ -80,4 +80,3 @@ class Graph(
     """
 
     # All functionality is provided by the mix-ins.
-    pass

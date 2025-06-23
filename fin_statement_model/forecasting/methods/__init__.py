@@ -20,12 +20,12 @@ Example:
     {'forecast_type': 'curve', 'growth_params': [0.05, 0.04]}
 """
 
-from .base import ForecastMethod, BaseForecastMethod
-from .simple import SimpleForecastMethod
-from .curve import CurveForecastMethod
-from .statistical import StatisticalForecastMethod
 from .average import AverageForecastMethod
+from .base import BaseForecastMethod, ForecastMethod
+from .curve import CurveForecastMethod
 from .historical_growth import HistoricalGrowthForecastMethod
+from .simple import SimpleForecastMethod
+from .statistical import StatisticalForecastMethod
 
 __all__ = [
     "AverageForecastMethod",

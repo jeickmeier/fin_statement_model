@@ -15,28 +15,25 @@ Examples:
     >>> print(len(adj_list))
 """
 
-import logging
-from typing import Optional, Union
 from collections.abc import Callable
+import logging
 
 import pandas as pd
 
+from fin_statement_model.core.adjustments.helpers import tag_matches
 from fin_statement_model.core.adjustments.manager import AdjustmentManager
 from fin_statement_model.core.adjustments.models import (
     Adjustment,
     AdjustmentFilter,
     AdjustmentTag,
 )
-from fin_statement_model.core.adjustments.helpers import tag_matches
 
 logger = logging.getLogger(__name__)
 
 
 def _filter_adjustments_static(
     all_adjustments: list[Adjustment],
-    filter_input: Optional[
-        Union[AdjustmentFilter, set[AdjustmentTag], Callable[[Adjustment], bool]]
-    ],
+    filter_input: (AdjustmentFilter | set[AdjustmentTag] | Callable[[Adjustment], bool] | None),
 ) -> list[Adjustment]:
     """Filter adjustments based on static (non-period) criteria.
 
@@ -49,7 +46,7 @@ def _filter_adjustments_static(
 
     Examples:
         >>> from fin_statement_model.core.adjustments.models import Adjustment, AdjustmentType
-        >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r')
+        >>> adj = Adjustment(node_name="A", period="2023", value=1.0, reason="r")
         >>> _filter_adjustments_static([adj], None)
         [adj]
     """
@@ -62,17 +59,13 @@ def _filter_adjustments_static(
         # Apply filter, ignoring its period attribute
         temp_filter = filter_input.model_copy(update={"period": None})
         filtered = [adj for adj in all_adjustments if temp_filter.matches(adj)]
-        logger.debug(
-            f"Applied AdjustmentFilter (ignoring period). Filter: {temp_filter}"
-        )
+        logger.debug("Applied AdjustmentFilter (ignoring period). Filter: %s", temp_filter)
         return filtered
 
     elif isinstance(filter_input, set):
         # Shorthand for include_tags
-        filtered = [
-            adj for adj in all_adjustments if tag_matches(adj.tags, filter_input)
-        ]
-        logger.debug(f"Applied tag filter. Tags: {filter_input}")
+        filtered = [adj for adj in all_adjustments if tag_matches(adj.tags, filter_input)]
+        logger.debug("Applied tag filter. Tags: %s", filter_input)
         return filtered
 
     elif callable(filter_input):
@@ -82,18 +75,14 @@ def _filter_adjustments_static(
 
     else:
         # Should not happen due to type hint, but defensive
-        logger.warning(
-            f"Invalid filter_input type: {type(filter_input)}. No filtering applied."
-        )
+        logger.warning("Invalid filter_input type: %s. No filtering applied.", type(filter_input))
         return all_adjustments
 
 
 def summary(
     manager: AdjustmentManager,
-    filter_input: Optional[
-        Union[AdjustmentFilter, set[AdjustmentTag], Callable[[Adjustment], bool]]
-    ] = None,
-    group_by: list[str] = ["period", "node_name"],
+    filter_input: (AdjustmentFilter | set[AdjustmentTag] | Callable[[Adjustment], bool] | None) = None,
+    group_by: list[str] | None = None,
 ) -> pd.DataFrame:
     """Generate a summary DataFrame of adjustments, optionally filtered and grouped.
 
@@ -115,13 +104,15 @@ def summary(
         >>> from fin_statement_model.core.adjustments.manager import AdjustmentManager
         >>> from fin_statement_model.core.adjustments.models import Adjustment
         >>> mgr = AdjustmentManager()
-        >>> adj = Adjustment(node_name='A', period='2023', value=2.0, reason='r')
+        >>> adj = Adjustment(node_name="A", period="2023", value=2.0, reason="r")
         >>> mgr.add_adjustment(adj)
         >>> df = summary(mgr)
-        >>> df.loc[('2023', 'A'), 'sum_value'] == 2.0
+        >>> df.loc[("2023", "A"), "sum_value"] == 2.0
         True
     """
-    logger.debug(f"Generating adjustment summary, grouping by: {group_by}")
+    if group_by is None:
+        group_by = ["period", "node_name"]
+    logger.debug("Generating adjustment summary, grouping by: %s", group_by)
 
     # Get all adjustments first
     # TODO: Optimization - If filtering is very restrictive, could filter first.
@@ -141,9 +132,7 @@ def summary(
 
     # Convert to DataFrame for easier aggregation
     adj_data = [
-        adj.model_dump(
-            include=set([*group_by, "value"])
-        )  # Include value for aggregation
+        adj.model_dump(include={*group_by, "value"})  # Include value for aggregation
         for adj in filtered_adjustments
     ]
     df = pd.DataFrame(adj_data)
@@ -162,16 +151,14 @@ def summary(
         mean_abs_value=("abs_value", "mean"),
     )
 
-    logger.info(f"Generated adjustment summary with {len(summary_df)} groups.")
+    logger.info("Generated adjustment summary with %s groups.", len(summary_df))
     return summary_df
 
 
 def list_by_tag(
     manager: AdjustmentManager,
     tag_prefix: str,
-    filter_input: Optional[
-        Union[AdjustmentFilter, set[AdjustmentTag], Callable[[Adjustment], bool]]
-    ] = None,
+    filter_input: (AdjustmentFilter | set[AdjustmentTag] | Callable[[Adjustment], bool] | None) = None,
 ) -> list[Adjustment]:
     """List all adjustments matching a tag prefix, optionally applying further filters.
 
@@ -189,13 +176,13 @@ def list_by_tag(
         >>> from fin_statement_model.core.adjustments.manager import AdjustmentManager
         >>> from fin_statement_model.core.adjustments.models import Adjustment
         >>> mgr = AdjustmentManager()
-        >>> adj = Adjustment(node_name='A', period='2023', value=1.0, reason='r', tags={'X'})
+        >>> adj = Adjustment(node_name="A", period="2023", value=1.0, reason="r", tags={"X"})
         >>> mgr.add_adjustment(adj)
-        >>> result = list_by_tag(mgr, 'X')
-        >>> result[0].node_name == 'A'
+        >>> result = list_by_tag(mgr, "X")
+        >>> result[0].node_name == "A"
         True
     """
-    logger.debug(f"Listing adjustments by tag prefix: '{tag_prefix}'")
+    logger.debug("Listing adjustments by tag prefix: '%s'", tag_prefix)
 
     # Get all adjustments and apply filters using the helper function
     all_adjustments = manager.get_all_adjustments()
@@ -203,12 +190,8 @@ def list_by_tag(
 
     # Apply the primary tag prefix filter
     prefix_set = {tag_prefix}
-    final_list = [
-        adj for adj in filtered_adjustments if tag_matches(adj.tags, prefix_set)
-    ]
+    final_list = [adj for adj in filtered_adjustments if tag_matches(adj.tags, prefix_set)]
 
-    logger.info(
-        f"Found {len(final_list)} adjustments matching prefix '{tag_prefix}' and other filters."
-    )
+    logger.info("Found %s adjustments matching prefix '%s' and other filters.", len(final_list), tag_prefix)
     # Sort by priority/timestamp for consistent output
     return sorted(final_list, key=lambda x: (x.priority, x.timestamp))

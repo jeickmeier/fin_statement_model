@@ -21,7 +21,7 @@ Examples:
     ...     input_names=["Revenue", "COGS"],
     ...     operation_type="formula",
     ...     formula="input_0 - input_1",
-    ...     formula_variable_names=["input_0", "input_1"]
+    ...     formula_variable_names=["input_0", "input_1"],
     ... )
     >>> g.traverser.get_dependencies("GrossProfit")
     ['Revenue', 'COGS']
@@ -36,15 +36,12 @@ As with the manipulator, end-users reach the traverser via `graph.traverser` rat
 instantiating it directly.
 """
 
-import logging
-from typing import Optional, Any, TYPE_CHECKING, cast
 from collections import deque
+import logging
+from typing import Any, cast
 
 from fin_statement_model.core.errors import NodeError
 from fin_statement_model.core.nodes import Node, is_calculation_node
-
-if TYPE_CHECKING:
-    from fin_statement_model.core.nodes.base import Node
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +65,7 @@ class GraphTraverser:
         ...     input_names=["Revenue", "COGS"],
         ...     operation_type="formula",
         ...     formula="input_0 - input_1",
-        ...     formula_variable_names=["input_0", "input_1"]
+        ...     formula_variable_names=["input_0", "input_1"],
         ... )
         >>> g.traverser.get_dependencies("GrossProfit")
         ['Revenue', 'COGS']
@@ -88,7 +85,7 @@ class GraphTraverser:
         """
         self.graph = graph
 
-    def get_node(self, name: str) -> Optional[Node]:
+    def get_node(self, name: str) -> Node | None:
         """Retrieve a node from the graph by its name.
 
         Args:
@@ -100,7 +97,7 @@ class GraphTraverser:
         Examples:
             >>> traverser.get_node("Revenue")
         """
-        return cast(Optional[Node], self.graph.manipulator.get_node(name))
+        return cast("Node | None", self.graph.manipulator.get_node(name))
 
     def has_node(self, node_id: str) -> bool:
         """Check if a node exists in the graph.
@@ -114,7 +111,7 @@ class GraphTraverser:
         Examples:
             >>> traverser.has_node("Revenue")
         """
-        return cast(bool, self.graph.manipulator.has_node(node_id))
+        return cast("bool", self.graph.manipulator.has_node(node_id))
 
     @property
     def nodes(self) -> dict[str, Node]:
@@ -126,7 +123,7 @@ class GraphTraverser:
         Examples:
             >>> list(traverser.nodes.keys())
         """
-        return cast(dict[str, Node], self.graph.nodes)
+        return cast("dict[str, Node]", self.graph.nodes)
 
     def get_direct_successors(self, node_id: str) -> list[str]:
         """Get immediate successor node IDs for a given node.
@@ -149,9 +146,7 @@ class GraphTraverser:
                 elif isinstance(node.inputs, dict):
                     input_nodes = list(node.inputs.values())
 
-                if any(
-                    inp.name == node_id for inp in input_nodes if hasattr(inp, "name")
-                ):
+                if any(inp.name == node_id for inp in input_nodes if hasattr(inp, "name")):
                     successors.append(other_id)
         return successors
 
@@ -189,7 +184,7 @@ class GraphTraverser:
         Examples:
             >>> traverser.topological_sort()
         """
-        in_degree: dict[str, int] = {n: 0 for n in self.nodes}
+        in_degree: dict[str, int] = dict.fromkeys(self.nodes, 0)
         adjacency: dict[str, list[str]] = {n: [] for n in self.nodes}
         for name, node in self.nodes.items():
             if hasattr(node, "inputs"):
@@ -206,9 +201,7 @@ class GraphTraverser:
                 if in_degree[nbr] == 0:
                     queue.append(nbr)
         if len(topo_order) != len(self.nodes):
-            raise ValueError(
-                "Cycle detected in graph, can't do a valid topological sort."
-            )
+            raise ValueError("Cycle detected in graph, can't do a valid topological sort.")
         return topo_order
 
     def get_calculation_nodes(self) -> list[str]:
@@ -220,9 +213,7 @@ class GraphTraverser:
         Examples:
             >>> traverser.get_calculation_nodes()
         """
-        return [
-            node_id for node_id, node in self.nodes.items() if is_calculation_node(node)
-        ]
+        return [node_id for node_id, node in self.nodes.items() if is_calculation_node(node)]
 
     def get_dependencies(self, node_id: str) -> list[str]:
         """Retrieve the direct dependencies (inputs) of a specific node.
@@ -280,7 +271,7 @@ class GraphTraverser:
         rec_stack: set[str] = set()
         cycles: list[list[str]] = []
 
-        def dfs_detect_cycles(n_id: str, path: Optional[list[str]] = None) -> None:
+        def dfs_detect_cycles(n_id: str, path: list[str] | None = None) -> None:
             if path is None:
                 path = []
             if n_id in rec_stack:
@@ -312,10 +303,7 @@ class GraphTraverser:
         Examples:
             >>> traverser.validate()
         """
-        errors: list[str] = [
-            f"Circular dependency detected: {' -> '.join(cycle)}"
-            for cycle in self.detect_cycles()
-        ]
+        errors: list[str] = [f"Circular dependency detected: {' -> '.join(cycle)}" for cycle in self.detect_cycles()]
         errors.extend(
             f"Node '{node_id}' depends on non-existent node '{inp.name}'"
             for node_id, node in self.nodes.items()
@@ -325,9 +313,7 @@ class GraphTraverser:
         )
         return errors
 
-    def breadth_first_search(
-        self, start_node: str, direction: str = "successors"
-    ) -> list[list[str]]:
+    def breadth_first_search(self, start_node: str, direction: str = "successors") -> list[list[str]]:
         """Perform a breadth-first search (BFS) traversal of the graph.
 
         Args:
@@ -388,9 +374,7 @@ class GraphTraverser:
 
         # For each input, check if new_node is reachable from it
         for input_node in new_node.inputs:
-            if hasattr(input_node, "name") and self._is_reachable(
-                input_node.name, new_node.name
-            ):
+            if hasattr(input_node, "name") and self._is_reachable(input_node.name, new_node.name):
                 return True
         return False
 
@@ -413,16 +397,15 @@ class GraphTraverser:
             return False
 
         try:
-            bfs_levels = self.breadth_first_search(
-                start_node=from_node, direction="successors"
-            )
+            bfs_levels = self.breadth_first_search(start_node=from_node, direction="successors")
             reachable_nodes = {n for level in bfs_levels for n in level}
-            return to_node in reachable_nodes
         except (ValueError, KeyError):
             # Handle cases where BFS fails (e.g., invalid node)
             return False
+        else:
+            return to_node in reachable_nodes
 
-    def find_cycle_path(self, from_node: str, to_node: str) -> Optional[list[str]]:
+    def find_cycle_path(self, from_node: str, to_node: str) -> list[str] | None:
         """Find the actual cycle path if one exists.
 
         Args:

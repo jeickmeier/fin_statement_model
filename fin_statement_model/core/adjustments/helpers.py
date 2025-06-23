@@ -4,9 +4,9 @@ This module provides utility functions for tag-based filtering and matching
 used throughout the adjustments system.
 
 Examples:
-    >>> tag_matches({'A/B/C', 'X'}, {'A/B'})
+    >>> tag_matches({"A/B/C", "X"}, {"A/B"})
     True
-    >>> tag_matches({'A/B/C'}, {'D'})
+    >>> tag_matches({"A/B/C"}, {"D"})
     False
 """
 
@@ -26,9 +26,9 @@ def tag_matches(target_tags: set[str], prefixes: set[str]) -> bool:
         prefix in prefixes, False otherwise.
 
     Examples:
-        >>> tag_matches({'A/B/C', 'X'}, {'A/B'})
+        >>> tag_matches({"A/B/C", "X"}, {"A/B"})
         True
-        >>> tag_matches({'A/B/C'}, {'D'})
+        >>> tag_matches({"A/B/C"}, {"D"})
         False
     """
     if not prefixes:  # Optimization: if no prefixes specified, it can't match

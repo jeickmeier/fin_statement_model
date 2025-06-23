@@ -13,7 +13,9 @@ Example:
     >>> from fin_statement_model.forecasting.period_manager import PeriodManager
     >>> class DummyGraph:
     ...     periods = ["2022", "2023", "2024"]
-    ...     def add_periods(self, periods): self.periods.extend(periods)
+    ...
+    ...     def add_periods(self, periods):
+    ...         self.periods.extend(periods)
     >>> graph = DummyGraph()
     >>> PeriodManager.infer_historical_periods(graph, ["2024"])
     ['2022', '2023']
@@ -22,10 +24,10 @@ Example:
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any, cast
 
-from fin_statement_model.core.nodes import Node
 from fin_statement_model.config.access import cfg
+from fin_statement_model.core.nodes import Node
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +43,7 @@ class PeriodManager:
     def infer_historical_periods(
         graph: Any,
         forecast_periods: list[str],
-        provided_periods: Optional[list[str]] = None,
+        provided_periods: list[str] | None = None,
     ) -> list[str]:
         """Infer historical periods from graph state.
 
@@ -65,44 +67,40 @@ class PeriodManager:
         # If explicitly provided, use them
         if provided_periods is not None:
             logger.debug(
-                f"Using explicitly provided historical periods: {provided_periods}"
+                "Using explicitly provided historical periods: %s",
+                provided_periods,
             )
             return provided_periods
 
         # Infer from graph periods and forecast periods
         if not hasattr(graph, "periods") or not graph.periods:
-            raise ValueError(
-                "Cannot infer historical periods: graph has no periods attribute"
-            )
+            raise ValueError("Cannot infer historical periods: graph has no periods attribute")
 
         if not forecast_periods:
-            raise ValueError(
-                "Cannot infer historical periods: no forecast periods provided"
-            )
+            raise ValueError("Cannot infer historical periods: no forecast periods provided")
 
         # Try to find where forecast periods start
         first_forecast = forecast_periods[0]
         try:
             idx = graph.periods.index(first_forecast)
-            historical_periods = graph.periods[:idx]
+            historical_periods = cast("list[str]", graph.periods[:idx])
             logger.debug(
-                f"Inferred historical periods by splitting at {first_forecast}: "
-                f"{historical_periods}"
+                "Inferred historical periods by splitting at %s: %s",
+                first_forecast,
+                historical_periods,
             )
         except ValueError:
             # First forecast period not in graph periods
             # Assume all current periods are historical
-            historical_periods = list(graph.periods)
+            historical_periods = cast("list[str]", list(graph.periods))
             logger.warning(
-                f"First forecast period {first_forecast} not found in graph periods. "
-                f"Using all existing periods as historical: {historical_periods}"
+                "First forecast period %s not found in graph periods. Using all existing periods as historical: %s",
+                first_forecast,
+                historical_periods,
             )
 
         if not historical_periods:
-            raise ValueError(
-                "No historical periods found. Ensure graph has periods before "
-                "the first forecast period."
-            )
+            raise ValueError("No historical periods found. Ensure graph has periods before the first forecast period.")
 
         return historical_periods
 
@@ -110,7 +108,7 @@ class PeriodManager:
     def determine_base_period(
         node: Node,
         historical_periods: list[str],
-        preferred_period: Optional[str] = None,
+        preferred_period: str | None = None,
     ) -> str:
         """Determine the base period for forecasting a node.
 
@@ -146,26 +144,32 @@ class PeriodManager:
         }
         if strategy not in valid_strategies:
             logger.warning(
-                f"Unknown base period strategy '{strategy}', falling back to 'preferred_then_most_recent'"
+                "Unknown base period strategy '%s', falling back to 'preferred_then_most_recent'",
+                strategy,
             )
             strategy = "preferred_then_most_recent"
 
         # 1. preferred_then_most_recent: check preferred first
-        if strategy == "preferred_then_most_recent" and preferred_period:
-            if preferred_period in historical_periods and hasattr(node, "values"):
-                values = getattr(node, "values", {})
-                if isinstance(values, dict) and preferred_period in values:
-                    return preferred_period
+        if (
+            strategy == "preferred_then_most_recent"
+            and preferred_period
+            and preferred_period in historical_periods
+            and hasattr(node, "values")
+            and isinstance(getattr(node, "values", {}), dict)
+            and preferred_period in getattr(node, "values", {})
+        ):
+            return preferred_period
 
         # 2. most_recent: pick most recent available data
-        if strategy in ("preferred_then_most_recent", "most_recent"):
-            if hasattr(node, "values") and isinstance(
-                getattr(node, "values", None), dict
-            ):
-                values_dict = node.values
-                available_periods = [p for p in historical_periods if p in values_dict]
-                if available_periods:
-                    return available_periods[-1]
+        if (
+            strategy in ("preferred_then_most_recent", "most_recent")
+            and hasattr(node, "values")
+            and isinstance(getattr(node, "values", None), dict)
+        ):
+            values_dict = node.values
+            available_periods = [p for p in historical_periods if p in values_dict]
+            if available_periods:
+                return available_periods[-1]
 
         # 3. last_historical: always use last in historical_periods
         if strategy == "last_historical":
@@ -174,8 +178,9 @@ class PeriodManager:
         # Final fallback: use last historical period
         base_period = historical_periods[-1]
         logger.info(
-            f"Using last historical period as base for {node.name}: {base_period} "
-            "(node may lack values)"
+            "Using last historical period as base for %s: %s (node may lack values)",
+            node.name,
+            base_period,
         )
         return base_period
 
@@ -227,9 +232,7 @@ class PeriodManager:
             raise ValueError(f"Period '{period}' not found in period list") from None
 
     @staticmethod
-    def ensure_periods_exist(
-        graph: Any, periods: list[str], add_missing: bool = True
-    ) -> list[str]:
+    def ensure_periods_exist(graph: Any, periods: list[str], add_missing: bool = True) -> list[str]:
         """Ensure periods exist in the graph.
 
         Args:
@@ -246,7 +249,9 @@ class PeriodManager:
         Example:
             >>> class DummyGraph:
             ...     periods = ["2022", "2023"]
-            ...     def add_periods(self, periods): self.periods.extend(periods)
+            ...
+            ...     def add_periods(self, periods):
+            ...         self.periods.extend(periods)
             >>> graph = DummyGraph()
             >>> PeriodManager.ensure_periods_exist(graph, ["2024"], add_missing=True)
             ['2024']
@@ -262,14 +267,10 @@ class PeriodManager:
                 # Add missing periods to graph
                 if hasattr(graph, "add_periods") and callable(graph.add_periods):
                     graph.add_periods(missing_periods)
-                    logger.info(f"Added missing periods to graph: {missing_periods}")
+                    logger.info("Added missing periods to graph: %s", missing_periods)
                 else:
-                    raise ValueError(
-                        f"Graph is missing periods {missing_periods} but has no add_periods method"
-                    )
+                    raise ValueError(f"Graph is missing periods {missing_periods} but has no add_periods method")
             else:
-                raise ValueError(
-                    f"The following periods do not exist in the graph: {missing_periods}"
-                )
+                raise ValueError(f"The following periods do not exist in the graph: {missing_periods}")
 
         return missing_periods

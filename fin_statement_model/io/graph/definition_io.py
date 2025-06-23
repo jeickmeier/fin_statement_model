@@ -6,14 +6,19 @@ JSON-compatible dictionary, making it easy to store and transfer model states.
 """
 
 import logging
-from typing import Any, Optional, cast
+from pathlib import Path
+from typing import Any, cast
 
-from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.adjustments.models import Adjustment
+from fin_statement_model.core.graph import Graph
+from fin_statement_model.core.node_factory import NodeFactory
 from fin_statement_model.core.nodes import (
     Node,
 )
-from fin_statement_model.core.node_factory import NodeFactory
+from fin_statement_model.io.config.models import (
+    GraphDefinitionReaderConfig,
+    GraphDefinitionWriterConfig,
+)
 from fin_statement_model.io.core import (
     DataReader,
     DataWriter,
@@ -21,10 +26,6 @@ from fin_statement_model.io.core import (
     register_writer,
 )
 from fin_statement_model.io.exceptions import ReadError, WriteError
-from fin_statement_model.io.config.models import (
-    GraphDefinitionReaderConfig,
-    GraphDefinitionWriterConfig,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +44,7 @@ class GraphDefinitionReader(DataReader):
     and loads adjustments.
     """
 
-    def __init__(self, cfg: Optional[GraphDefinitionReaderConfig] = None) -> None:
+    def __init__(self, cfg: GraphDefinitionReaderConfig | None = None) -> None:
         """Initialize the GraphDefinitionReader. Config currently unused."""
         self.cfg = cfg
 
@@ -51,17 +52,18 @@ class GraphDefinitionReader(DataReader):
     class _TempNode(Node):
         """Lightweight stand-in used only for dependency analysis during deserialization."""
 
-        def __init__(self, name: str) -> None:  # noqa: D401
+        def __init__(self, name: str) -> None:
             super().__init__(name)
             # GraphTraverser expects a list[Node] attribute named ``inputs``
             self.inputs: list[Node] = []
 
         # Stub implementations required by the Node ABC ---------------------------------
-        def calculate(self, period: str) -> float:  # noqa: D401
+        def calculate(self, period: str) -> float:
+            _ = period  # Parameter intentionally unused
             return 0.0
 
-        def to_dict(self) -> dict[str, Any]:  # noqa: D401
-            # Serialization is irrelevant for the temp node – return minimal payload.
+        def to_dict(self) -> dict[str, Any]:
+            # Serialization is irrelevant for the temp node - return minimal payload.
             return {}
 
         @classmethod
@@ -75,9 +77,7 @@ class GraphDefinitionReader(DataReader):
             serialized form, so the method raises *NotImplementedError* at
             runtime.
             """
-            raise NotImplementedError(
-                "_TempNode is an internal stub; it cannot be deserialized."
-            )
+            raise NotImplementedError("_TempNode is an internal stub; it cannot be deserialized.")
 
     def _get_node_dependencies(self, node_def: dict[str, Any]) -> list[str]:
         """Extract dependency names from a node definition.
@@ -93,15 +93,59 @@ class GraphDefinitionReader(DataReader):
         if node_type == "financial_statement_item":
             return []  # No dependencies
         elif node_type in ["calculation", "formula_calculation"]:
-            return cast(list[str], node_def.get("inputs", []))
+            return cast("list[str]", node_def.get("inputs", []))
         elif node_type == "forecast":
-            base_node_name = cast(Optional[str], node_def.get("base_node_name"))
+            base_node_name = cast("str | None", node_def.get("base_node_name"))
             return [base_node_name] if base_node_name is not None else []
         elif node_type == "custom_calculation":
-            return cast(list[str], node_def.get("inputs", []))
+            return cast("list[str]", node_def.get("inputs", []))
         else:
             # Default: inputs should be list[str]
-            return cast(list[str], node_def.get("inputs", []))
+            return cast("list[str]", node_def.get("inputs", []))
+
+    # --- Private helpers -------------------------------------------------------------
+    def _load_adjustments(
+        self,
+        graph: Graph,
+        adjustments_list: Any,
+    ) -> None:
+        """Validate, deserialize, and load adjustments onto *graph*.
+
+        Args:
+            graph: The target ``Graph`` instance.
+            adjustments_list: Raw adjustments payload extracted from the source
+                definition. *None* indicates that the key was absent.
+
+        Raises:
+            ReadError: If *adjustments_list* is not ``None`` or ``list``.
+        """
+        if adjustments_list is None:
+            # Nothing to do - early exit to avoid counting extra statements in the
+            # caller and keep ``read`` lean.
+            return
+
+        if not isinstance(adjustments_list, list):
+            raise ReadError("Invalid format: 'adjustments' must be a list if present.")
+
+        deserialized_adjustments: list[Adjustment] = []
+        for i, adj_dict in enumerate(adjustments_list):
+            try:
+                # Use model_validate for Pydantic V2
+                deserialized_adjustments.append(Adjustment.model_validate(adj_dict))
+            except Exception:
+                # Log error but continue processing remaining adjustments
+                logger.exception(
+                    "Failed to deserialize adjustment at index %s: %s. Skipping.",
+                    i,
+                    adj_dict,
+                )
+
+        if deserialized_adjustments:
+            graph.adjustment_manager.load_adjustments(deserialized_adjustments)
+            logger.info(
+                "Loaded %s adjustments into the graph.",
+                len(deserialized_adjustments),
+            )
 
     def read(self, source: dict[str, Any], **kwargs: Any) -> Graph:
         """Reconstruct a Graph instance from its definition dictionary.
@@ -116,13 +160,10 @@ class GraphDefinitionReader(DataReader):
         Raises:
             ReadError: If the source format is invalid or graph reconstruction fails.
         """
+        _ = kwargs  # Parameters intentionally unused
         logger.info("Starting graph reconstruction from definition dictionary.")
 
-        if (
-            not isinstance(source, dict)
-            or "periods" not in source
-            or "nodes" not in source
-        ):
+        if not isinstance(source, dict) or "periods" not in source or "nodes" not in source:
             raise ReadError(
                 message="Invalid source format for GraphDefinitionReader. Expected dict with 'periods' and 'nodes' keys.",
                 source="graph_definition_dict",
@@ -147,13 +188,13 @@ class GraphDefinitionReader(DataReader):
             from_nodes: dict[str, GraphDefinitionReader._TempNode] = {}
             temp_graph = Graph(periods=[])  # periods are irrelevant for dependency sort
 
-            # First pass – create all stub nodes so dependencies can be resolved regardless of order
+            # First pass - create all stub nodes so dependencies can be resolved regardless of order
             for node_name in nodes_dict:
                 temp_node = GraphDefinitionReader._TempNode(node_name)
                 temp_graph.add_node(temp_node)
                 from_nodes[node_name] = temp_node
 
-            # Second pass – wire up the inputs attribute based on serialized dependencies
+            # Second pass - wire up the inputs attribute based on serialized dependencies
             for node_name, node_def in nodes_dict.items():
                 dep_names = self._get_node_dependencies(node_def)
                 try:
@@ -181,49 +222,21 @@ class GraphDefinitionReader(DataReader):
                 graph.add_node(node)
 
             # 3. Load Adjustments --------------------------------------------------------
-            adjustments_list = source.get("adjustments")  # Optional
-            if adjustments_list is not None:
-                if not isinstance(adjustments_list, list):
-                    raise ReadError(
-                        "Invalid format: 'adjustments' must be a list if present."
-                    )
+            self._load_adjustments(graph, source.get("adjustments"))
 
-                deserialized_adjustments = []
-                for i, adj_dict in enumerate(adjustments_list):
-                    try:
-                        # Use model_validate for Pydantic V2
-                        adj = Adjustment.model_validate(adj_dict)
-                        deserialized_adjustments.append(adj)
-                    except Exception:
-                        # Log error but try to continue with other nodes
-                        logger.exception(
-                            f"Failed to deserialize adjustment at index {i}: {adj_dict}. Skipping."
-                        )
-                        # Optionally raise ReadError here to fail fast
-
-                if deserialized_adjustments:
-                    graph.adjustment_manager.load_adjustments(deserialized_adjustments)
-                    logger.info(
-                        f"Loaded {len(deserialized_adjustments)} adjustments into the graph."
-                    )
-
-            logger.info(
-                f"Successfully reconstructed graph with {len(graph.nodes)} nodes."
-            )
-            return graph
-
+            logger.info("Successfully reconstructed graph with %s nodes.", len(graph.nodes))
         except ReadError:  # Re-raise ReadErrors directly
             raise
         except Exception as e:
-            logger.error(
-                f"Failed to reconstruct graph from definition: {e}", exc_info=True
-            )
+            logger.exception("Failed to reconstruct graph from definition")
             raise ReadError(
                 message=f"Failed to reconstruct graph from definition: {e}",
                 source="graph_definition_dict",
                 reader_type="GraphDefinitionReader",
                 original_error=e,
             ) from e
+        else:
+            return graph
 
 
 # ===== Writer Implementation =====
@@ -237,11 +250,11 @@ class GraphDefinitionWriter(DataWriter):
     for saving and reloading the entire model state.
     """
 
-    def __init__(self, cfg: Optional[GraphDefinitionWriterConfig] = None) -> None:
+    def __init__(self, cfg: GraphDefinitionWriterConfig | None = None) -> None:
         """Initialize the GraphDefinitionWriter."""
         self.cfg = cfg
 
-    def _serialize_node(self, node: Node) -> Optional[SerializedNode]:
+    def _serialize_node(self, node: Node) -> SerializedNode | None:
         """Serialize a single node using its to_dict() method.
 
         Args:
@@ -253,28 +266,27 @@ class GraphDefinitionWriter(DataWriter):
         try:
             return node.to_dict()
         except Exception:
-            logger.exception(f"Failed to serialize node '{node.name}'")
-            logger.warning(f"Skipping node '{node.name}' due to serialization error.")
+            logger.exception("Failed to serialize node '%s'", node.name)
+            logger.warning("Skipping node '%s' due to serialization error.", node.name)
             return None
 
-    def write(
-        self, graph: Graph, target: Any = None, **kwargs: dict[str, Any]
-    ) -> dict[str, Any]:
+    def write(self, graph: Graph, target: Any = None, **kwargs: dict[str, Any]) -> dict[str, Any]:
         """Export the full graph definition to a dictionary.
 
         Args:
-            graph (Graph): The Graph instance to serialize.
-            target (Any): Ignored by this writer; the dictionary is returned directly.
+            graph: The Graph instance to serialize.
+            target: Ignored by this writer; the dictionary is returned directly.
             **kwargs: Currently unused.
 
         Returns:
-            Dict[str, Any]: Dictionary representing the graph definition, including
-                            periods, node definitions, and adjustments.
+            Dictionary representing the graph definition, including periods,
+            node definitions, and adjustments.
 
         Raises:
             WriteError: If an unexpected error occurs during export.
         """
-        logger.info(f"Starting export of graph definition for: {graph!r}")
+        _ = (target, kwargs)  # Parameters intentionally unused
+        logger.info("Starting export of graph definition for: %r", graph)
         graph_definition: dict[str, Any] = {
             "periods": [],
             "nodes": {},
@@ -320,27 +332,29 @@ class GraphDefinitionWriter(DataWriter):
                 try:
                     # Use model_dump for Pydantic V2, ensure mode='json' for types like UUID/datetime
                     serialized_adjustments.append(adj.model_dump(mode="json"))
-                except Exception as e:
+                except (ValueError, TypeError) as exc:
                     logger.warning(
-                        f"Failed to serialize adjustment {adj.id}: {e}. Skipping."
+                        "Failed to serialize adjustment %s: %s. Skipping.",
+                        adj.id,
+                        exc,
                     )
             graph_definition["adjustments"] = serialized_adjustments
 
             logger.info(
-                f"Successfully created graph definition dictionary with {len(serialized_nodes)} nodes and {len(serialized_adjustments)} adjustments."
+                "Successfully created graph definition dictionary with %s nodes and %s adjustments.",
+                len(serialized_nodes),
+                len(serialized_adjustments),
             )
-            return graph_definition
-
         except Exception as e:
-            logger.error(
-                f"Failed to create graph definition dictionary: {e}", exc_info=True
-            )
+            logger.exception("Failed to create graph definition dictionary")
             raise WriteError(
                 message=f"Failed to create graph definition dictionary: {e}",
                 target="graph_definition_dict",
                 writer_type="GraphDefinitionWriter",
                 original_error=e,
             ) from e
+        else:
+            return graph_definition
 
 
 # ===== Convenience Functions =====
@@ -358,10 +372,11 @@ def save_graph_definition(graph: Graph, filepath: str) -> None:
     writer = GraphDefinitionWriter()
     definition = writer.write(graph)
 
-    with open(filepath, "w") as f:
+    path = Path(filepath)
+    with path.open("w", encoding="utf-8") as f:
         json.dump(definition, f, indent=2)
 
-    logger.info(f"Saved graph definition to {filepath}")
+    logger.info("Saved graph definition to %s", filepath)
 
 
 def load_graph_definition(filepath: str) -> Graph:
@@ -375,13 +390,14 @@ def load_graph_definition(filepath: str) -> Graph:
     """
     import json
 
-    with open(filepath) as f:
+    path = Path(filepath)
+    with path.open(encoding="utf-8") as f:
         definition = json.load(f)
 
     reader = GraphDefinitionReader()
     graph = reader.read(definition)
 
-    logger.info(f"Loaded graph definition from {filepath}")
+    logger.info("Loaded graph definition from %s", filepath)
     return graph
 
 

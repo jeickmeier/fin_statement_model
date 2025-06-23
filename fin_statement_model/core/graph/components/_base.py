@@ -28,8 +28,7 @@ Examples:
 from __future__ import annotations
 
 import logging
-from collections.abc import Callable
-from typing import Optional, cast
+from typing import TYPE_CHECKING, cast
 
 from fin_statement_model.core.adjustments.manager import AdjustmentManager
 from fin_statement_model.core.errors import CircularDependencyError, NodeError
@@ -41,7 +40,11 @@ from fin_statement_model.core.graph.services import (
 )
 from fin_statement_model.core.graph.traverser import GraphTraverser
 from fin_statement_model.core.node_factory import NodeFactory
-from fin_statement_model.core.nodes import Node
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from fin_statement_model.core.nodes import Node
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +59,7 @@ class GraphBaseMixin:
     # ---------------------------------------------------------------------
     def __init__(
         self,
-        periods: Optional[list[str]] = None,
+        periods: list[str] | None = None,
         *,
         calc_engine_cls: type[CalculationEngine] = CalculationEngine,
         period_service_cls: type[PeriodService] = PeriodService,
@@ -74,7 +77,7 @@ class GraphBaseMixin:
         self._period_service = period_service_cls()
 
         self._calc_engine = calc_engine_cls(
-            node_resolver=cast(Callable[[str], Node], self.get_node),
+            node_resolver=cast("Callable[[str], Node]", self.get_node),
             period_provider=lambda: self._period_service.periods,
             node_names_provider=lambda: list(self._nodes.keys()),
             cache=self._cache,
@@ -86,9 +89,7 @@ class GraphBaseMixin:
         )
 
         self.adjustment_manager = AdjustmentManager()
-        self._adjustment_service = adjustment_service_cls(
-            manager=self.adjustment_manager
-        )
+        self._adjustment_service = adjustment_service_cls(manager=self.adjustment_manager)
 
         if periods:
             if not isinstance(periods, list):
@@ -131,7 +132,12 @@ class GraphBaseMixin:
             if hasattr(node, "clear_cache"):
                 try:
                     node.clear_cache()
-                except Exception:  # pragma: no cover – non-fatal best-effort
+                except NodeError as exc:  # pragma: no cover - non-fatal best-effort
+                    logger.debug(
+                        'Failed to clear cache for node "%s": %s',
+                        getattr(node, "name", "?"),
+                        exc,
+                    )
                     continue
         self.clear_calculation_cache()
 
@@ -162,12 +168,7 @@ class GraphBaseMixin:
         if validate_inputs and hasattr(node, "inputs") and node.inputs:
             self._validate_node_inputs(node)
 
-        if (
-            check_cycles
-            and hasattr(node, "inputs")
-            and node.inputs
-            and self.traverser.would_create_cycle(node)
-        ):
+        if check_cycles and hasattr(node, "inputs") and node.inputs and self.traverser.would_create_cycle(node):
             cycle_path = None
             for input_node in node.inputs:
                 if hasattr(input_node, "name"):
@@ -189,17 +190,18 @@ class GraphBaseMixin:
         return node
 
     def _validate_node_inputs(self, node: Node) -> None:
-        missing_inputs: list[str] = []
-        if hasattr(node, "inputs") and node.inputs:
-            for input_node in node.inputs:
-                if hasattr(input_node, "name") and input_node.name not in self._nodes:
-                    missing_inputs.append(input_node.name)
+        missing_inputs: list[str] = (
+            [
+                input_node.name
+                for input_node in node.inputs
+                if hasattr(input_node, "name") and input_node.name not in self._nodes
+            ]
+            if hasattr(node, "inputs") and node.inputs
+            else []
+        )
         if missing_inputs:
             raise NodeError(
-                (
-                    f"Cannot add node '{node.name}': missing required input nodes "
-                    f"{missing_inputs}"
-                ),
+                (f"Cannot add node '{node.name}': missing required input nodes {missing_inputs}"),
                 node_id=node.name,
             )
 
@@ -219,6 +221,6 @@ class GraphBaseMixin:
     # ------------------------------------------------------------------
     # Minimal query required by CalculationEngine during construction
     # ------------------------------------------------------------------
-    def get_node(self, name: str) -> Optional[Node]:
+    def get_node(self, name: str) -> Node | None:
         """Lightweight resolver used by :pyclass:`CalculationEngine`."""
         return self._nodes.get(name)

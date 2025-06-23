@@ -16,27 +16,31 @@ modify the global configuration.
 Example:
     >>> from fin_statement_model.config import get_config, update_config
     >>> original_level = get_config().logging.level
-    >>> update_config({'logging': {'level': 'DEBUG'}})
+    >>> update_config({"logging": {"level": "DEBUG"}})
     >>> get_config().logging.level
     'DEBUG'
     >>> # Restore original config for subsequent tests
-    >>> update_config({'logging': {'level': original_level}})
+    >>> update_config({"logging": {"level": original_level}})
 """
 
 from __future__ import annotations
 
 import logging
-import tempfile
 from pathlib import Path
+import tempfile
 from threading import RLock
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from fin_statement_model.utils.merge import deep_merge
 
-from .loader import ConfigLoader
-from .models import Config
-from .loader import ConfigurationError  # re-export for convenience
+from .loader import (
+    ConfigLoader,
+    ConfigurationError,  # re-export for convenience
+)
 from .logging_hook import apply_logging_config
+
+if TYPE_CHECKING:
+    from .models import Config
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +55,7 @@ __all__ = [
 class ConfigStore:
     """Manage the *current* configuration plus runtime overrides.
 
-    The store is intentionally lightweight – it defers all loading and merging
+    The store is intentionally lightweight - it defers all loading and merging
     logic to :class:`~fin_statement_model.config.loader.ConfigLoader`, adding
     only thread-safety and a cache layer.
 
@@ -60,11 +64,18 @@ class ConfigStore:
     `update_config` helpers.
     """
 
-    def __init__(self, *, config_file: Optional[Path] = None):
+    def __init__(self, *, config_file: Path | None = None):
+        """Create a new ConfigStore instance.
+
+        Args:
+            config_file: Optional path to an explicit configuration file that
+                should be used as the primary source.  When *None*, the loader
+                follows its default lookup strategy (cwd, env var, etc.).
+        """
         self._lock: RLock = RLock()
         self._loader = ConfigLoader(config_file=config_file)
         self._runtime_overrides: dict[str, Any] = {}
-        self._config: Optional[Config] = None
+        self._config: Config | None = None
 
     # ------------------------------------------------------------------
     # Public helpers
@@ -83,9 +94,7 @@ class ConfigStore:
         """
         with self._lock:
             if self._config is None:
-                self._config = self._loader.load(
-                    runtime_overrides=self._runtime_overrides
-                )
+                self._config = self._loader.load(runtime_overrides=self._runtime_overrides)
                 # Apply logging setup whenever we (re)load configuration
                 apply_logging_config(self._config)
             return self._config
@@ -118,7 +127,7 @@ class ConfigStore:
     # Persistence helpers (identical semantics to original manager)
     # ------------------------------------------------------------------
 
-    def save(self, to: Optional[Path] = None) -> None:
+    def save(self, to: Path | None = None) -> None:
         """Persist the *current* configuration to a YAML file atomically.
 
         This method writes the state of the *currently active* configuration
@@ -136,9 +145,7 @@ class ConfigStore:
         cfg = self.get()
         target_path = to or cfg.config_file_path
         if target_path is None:
-            raise ConfigurationError(
-                "No target path specified for saving configuration"
-            )
+            raise ConfigurationError("No target path specified for saving configuration")
 
         try:
             tmp_fd, tmp_path_str = tempfile.mkstemp(dir=str(Path(target_path).parent))
@@ -149,10 +156,11 @@ class ConfigStore:
             import os
 
             os.close(tmp_fd)
-            os.replace(tmp_path, target_path)
+            tmp_path.replace(target_path)
             logger.debug("Configuration saved to %s", target_path)
-        except Exception as exc:  # noqa: BLE001
-            logger.error("Failed to save configuration to %s: %s", target_path, exc)
+        except Exception:
+            # logger.exception already logs the stack trace; include path context only
+            logger.exception("Failed to save configuration to %s", target_path)
             raise
 
     # ------------------------------------------------------------------
@@ -161,12 +169,10 @@ class ConfigStore:
 
     def _extract_env_overrides(self) -> dict[str, Any]:
         """Expose the loader's private env parsing helper for tests."""
-
         return self._loader._extract_env_overrides()
 
     def _load_file(self, path: Path) -> dict[str, Any]:
         """Forward to ConfigLoader._load_file for tests convenience."""
-
         return self._loader._load_file(path)
 
 

@@ -1,4 +1,5 @@
-"""excel_basic_usage.py
+"""excel_basic_usage.py.
+
 Example demonstrating how to import data from an Excel worksheet using the
 *excel* IO format.
 
@@ -27,7 +28,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pandas as pd
 
 from fin_statement_model.io import read_data, write_data
 from fin_statement_model.core.graph import Graph
@@ -46,7 +46,7 @@ SHEET_NAME = "Sheet1"
 # -----------------------------------------------------------------------------
 
 
-def excel_to_graph(xlsx_path: Path) -> Graph:  # noqa: D401
+def excel_to_graph(xlsx_path: Path) -> Graph:
     """Import Excel into Graph using the IO facade."""
     graph = read_data(
         format_type="excel",
@@ -64,7 +64,7 @@ def excel_to_graph(xlsx_path: Path) -> Graph:  # noqa: D401
 # -----------------------------------------------------------------------------
 
 
-def main(_: list[str] | None = None) -> None:  # noqa: D401
+def main(_: list[str] | None = None) -> None:
     """End-to-end import example for Excel reader."""
     if not SAMPLE_XLSX.exists():
         raise FileNotFoundError(
@@ -72,21 +72,15 @@ def main(_: list[str] | None = None) -> None:  # noqa: D401
             "Please ensure 'sample_data.xlsx' is present in the same directory."
         )
 
-    print(f"Using sample workbook: {SAMPLE_XLSX}\n")
-
     graph = excel_to_graph(SAMPLE_XLSX)
 
-    print("Graph periods:", graph.periods)
-    print("Graph nodes and values:")
     for name, node in graph.nodes.items():
-        print(f"  - {name}: {node.values}")
+        pass
 
     # Demonstrate round-trip by exporting to DataFrame
-    df_out: pd.DataFrame = write_data(
+    write_data(
         format_type="dataframe", graph=graph, target=None
     )  # type: ignore[assignment]
-
-    print("\nExported DataFrame representation:\n", df_out)
 
 
 if __name__ == "__main__":

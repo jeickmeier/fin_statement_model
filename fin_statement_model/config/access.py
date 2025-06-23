@@ -18,17 +18,19 @@ import at any time, as they contain no complex or slow top-level imports.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Any, List, TypeVar, overload
+from typing import TYPE_CHECKING, Any, TypeVar, overload
 
 from fin_statement_model.core.errors import FinStatementModelError
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
 __all__ = [
+    "ConfigurationAccessError",
     "cfg",
     "cfg_or_param",
     "parse_env_value",
     "parse_env_var",
-    "ConfigurationAccessError",
 ]
 
 
@@ -42,7 +44,7 @@ class ConfigurationAccessError(FinStatementModelError):
 
 
 # ---------------------------------------------------------------------------
-# cfg helpers – formerly config.helpers
+# cfg helpers - formerly config.helpers
 # ---------------------------------------------------------------------------
 
 T = TypeVar("T")
@@ -80,14 +82,13 @@ def cfg(
         Assuming a default configuration where `logging.level` is 'WARNING':
 
         >>> from fin_statement_model.config import cfg
-        >>> cfg('logging.level')
+        >>> cfg("logging.level")
         'WARNING'
-        >>> cfg('api.timeout', default=30)
+        >>> cfg("api.timeout", default=30)
         30
-        >>> cfg(['display', 'flags', 'include_notes_column'])
+        >>> cfg(["display", "flags", "include_notes_column"])
         False
     """
-
     from .store import get_config  # local import to avoid cycles
 
     # Convert string path → list of segments
@@ -107,9 +108,7 @@ def cfg(
         if not hasattr(obj, part):
             if default is not None and not strict:
                 return default
-            raise ConfigurationAccessError(
-                f"Configuration key '{full_path}' does not exist"
-            )
+            raise ConfigurationAccessError(f"Configuration key '{full_path}' does not exist")
         obj = getattr(obj, part)
     return obj if obj is not None else default
 
@@ -123,17 +122,17 @@ def cfg_or_param(config_path: str, param_value: Any) -> Any:
     Examples:
         >>> from fin_statement_model.config import cfg_or_param
         >>> # param_value is used if not None
-        >>> cfg_or_param('logging.level', 'DEBUG')
+        >>> cfg_or_param("logging.level", "DEBUG")
         'DEBUG'
         >>> # Falls back to config if param_value is None
-        >>> cfg_or_param('logging.level', None)
+        >>> cfg_or_param("logging.level", None)
         'WARNING'
     """
     return param_value if param_value is not None else cfg(config_path)
 
 
 # ---------------------------------------------------------------------------
-# Environment value & variable parsing – formerly helpers/utils
+# Environment value & variable parsing - formerly helpers/utils
 # ---------------------------------------------------------------------------
 
 
@@ -182,9 +181,10 @@ def parse_env_value(value: str) -> Any:
     try:
         import json
 
+        # Only catch JSON decoding errors; other issues should propagate.
         return json.loads(val)
-    except Exception:  # noqa: BLE001
-        # Fallback to raw string
+    except json.JSONDecodeError:
+        # Fallback to raw string when the value is not valid JSON.
         return val
 
 
@@ -193,7 +193,7 @@ def parse_env_value(value: str) -> Any:
 # ---------------------------------------------------------------------------
 
 
-def parse_env_var(key: str, *, prefix: str = "FSM_") -> List[str]:
+def parse_env_var(key: str, *, prefix: str = "FSM_") -> list[str]:
     """Split an env-var `key` into lower-case config path segments.
 
     It strips the given `prefix` and splits the remainder by `__` (preferred)
@@ -209,10 +209,7 @@ def parse_env_var(key: str, *, prefix: str = "FSM_") -> List[str]:
         ['setting']
     """
     # Remove prefix if present
-    if key.startswith(prefix):
-        key_body = key[len(prefix) :]
-    else:
-        key_body = key
+    key_body = key[len(prefix) :] if key.startswith(prefix) else key
 
     # Prefer double underscore separator, fallback to single underscore
     parts = key_body.split("__") if "__" in key_body else key_body.split("_")

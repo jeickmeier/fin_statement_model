@@ -9,20 +9,20 @@ less duplicated code.
 from __future__ import annotations
 
 import logging
-from typing import Optional, Any
+from typing import Any
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import FinancialStatementItemNode
-from fin_statement_model.io.core.base import DataReader
-from fin_statement_model.io.core.registry import register_reader
-from fin_statement_model.io.exceptions import ReadError
 from fin_statement_model.io.config.models import DictReaderConfig
+from fin_statement_model.io.core.base import DataReader
 from fin_statement_model.io.core.mixins import (
+    ConfigurationMixin,
     ValidationMixin,
     ValidationResultCollector,
-    ConfigurationMixin,
     handle_read_errors,
 )
+from fin_statement_model.io.core.registry import register_reader
+from fin_statement_model.io.exceptions import ReadError
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class DictReader(DataReader, ValidationMixin, ConfigurationMixin):
         `periods` keyword argument.
     """
 
-    def __init__(self, cfg: Optional[DictReaderConfig] = None) -> None:
+    def __init__(self, cfg: DictReaderConfig | None = None) -> None:
         """Initialize the DictReader.
 
         Args:
@@ -76,7 +76,6 @@ class DictReader(DataReader, ValidationMixin, ConfigurationMixin):
             ReadError: If the source dictionary has an invalid format or contains
                 non-numeric values.
         """
-
         # 1. Basic structure validation ------------------------------------------------
         if not isinstance(source, dict):
             raise ReadError(
@@ -109,7 +108,7 @@ class DictReader(DataReader, ValidationMixin, ConfigurationMixin):
                     collector.add_result(
                         node_name,
                         False,
-                        f"Invalid period key '{period_raw}' – expected str.",
+                        f"Invalid period key '{period_raw}' - expected str.",
                     )
                     continue
 
@@ -127,29 +126,18 @@ class DictReader(DataReader, ValidationMixin, ConfigurationMixin):
             )
 
         # 3. Graph creation ------------------------------------------------------------
-        graph_periods = kwargs.get(
-            "periods", self.cfg.periods if self.cfg else None
-        ) or sorted(all_periods)
+        graph_periods = kwargs.get("periods", self.cfg.periods if self.cfg else None) or sorted(all_periods)
 
         graph = Graph(periods=graph_periods)
 
         for node_name, period_values in source.items():
             # Skip nodes that failed validation earlier
-            if (
-                collector.get_items_with_errors()
-                and node_name in collector.get_items_with_errors()
-            ):
+            if collector.get_items_with_errors() and node_name in collector.get_items_with_errors():
                 continue
 
-            filtered_values = {
-                p: v for p, v in period_values.items() if p in graph_periods
-            }
+            filtered_values = {p: v for p, v in period_values.items() if p in graph_periods}
             if filtered_values:
-                graph.add_node(
-                    FinancialStatementItemNode(
-                        name=node_name, values=filtered_values.copy()
-                    )
-                )
+                graph.add_node(FinancialStatementItemNode(name=node_name, values=filtered_values.copy()))
 
         logger.info("Created graph with %s nodes from dictionary.", len(graph.nodes))
         return graph

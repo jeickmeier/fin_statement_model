@@ -31,7 +31,7 @@ class _SimpleNode(Node):
 
 
 @pytest.fixture()
-def method() -> HistoricalGrowthForecastMethod:  # noqa: D401 – fixture
+def method() -> HistoricalGrowthForecastMethod:  # noqa: D401 - fixture
     return HistoricalGrowthForecastMethod()
 
 

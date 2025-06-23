@@ -12,24 +12,25 @@ Features:
 
 Example:
     >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
-    >>> standard_node_registry.is_standard_name('revenue')
+    >>> standard_node_registry.is_standard_name("revenue")
     True
-    >>> standard_node_registry.get_standard_name('sales')
+    >>> standard_node_registry.get_standard_name("sales")
     'revenue'
-    >>> defn = standard_node_registry.get_definition('revenue')
+    >>> defn = standard_node_registry.get_definition("revenue")
     >>> defn.category
     'income_statement'
-    >>> standard_node_registry.list_standard_names('balance_sheet_assets')[:3]
+    >>> standard_node_registry.list_standard_names("balance_sheet_assets")[:3]
     ['accounts_receivable', 'cash_and_equivalents', 'current_assets']
-    >>> standard_node_registry.get_sign_convention('treasury_stock')
+    >>> standard_node_registry.get_sign_convention("treasury_stock")
     'negative'
 """
 
 import logging
 from pathlib import Path
-from typing import Any, Optional
-import yaml
+from typing import Any
+
 from pydantic import BaseModel, ConfigDict
+import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -47,11 +48,11 @@ class StandardNodeDefinition(BaseModel):
     Example:
         >>> from fin_statement_model.core.nodes.standard_registry import StandardNodeDefinition
         >>> defn = StandardNodeDefinition(
-        ...     category='income_statement',
-        ...     subcategory='top_line',
-        ...     description='Total revenue/sales',
-        ...     alternate_names=['sales', 'total_revenue'],
-        ...     sign_convention='positive',
+        ...     category="income_statement",
+        ...     subcategory="top_line",
+        ...     description="Total revenue/sales",
+        ...     alternate_names=["sales", "total_revenue"],
+        ...     sign_convention="positive",
         ... )
         >>> defn.category
         'income_statement'
@@ -83,11 +84,22 @@ class StandardNodeRegistry:
     Example:
         >>> from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
         >>> reg = StandardNodeRegistry()
-        >>> reg._load_nodes_from_data({'revenue': {'category': 'income_statement', 'subcategory': 'top_line', 'description': 'Total revenue', 'alternate_names': ['sales'], 'sign_convention': 'positive'}}, 'test')
+        >>> reg._load_nodes_from_data(
+        ...     {
+        ...         "revenue": {
+        ...             "category": "income_statement",
+        ...             "subcategory": "top_line",
+        ...             "description": "Total revenue",
+        ...             "alternate_names": ["sales"],
+        ...             "sign_convention": "positive",
+        ...         }
+        ...     },
+        ...     "test",
+        ... )
         1
-        >>> reg.is_standard_name('revenue')
+        >>> reg.is_standard_name("revenue")
         True
-        >>> reg.get_standard_name('sales')
+        >>> reg.get_standard_name("sales")
         'revenue'
     """
 
@@ -97,7 +109,7 @@ class StandardNodeRegistry:
         self._alternate_to_standard: dict[str, str] = {}
         self._categories: set[str] = set()
         self._initialized: bool = False  # Track initialization state
-        self._loaded_from: Optional[str] = None  # Track source
+        self._loaded_from: str | None = None  # Track source
 
     def _load_nodes_from_data(
         self,
@@ -120,19 +132,14 @@ class StandardNodeRegistry:
             ValueError: If definitions are invalid or duplicates are detected.
         """
         if not isinstance(data, dict):
-            raise TypeError(
-                f"Expected dict at root of {source_description}, got {type(data)}"
-            )
+            raise TypeError(f"Expected dict at root of {source_description}, got {type(data)}")
 
         nodes_loaded = 0
 
         # Load each node definition
         for node_name, node_data in data.items():
             if not isinstance(node_data, dict):
-                logger.warning(
-                    f"Skipping invalid node definition '{node_name}' "
-                    f"in {source_description}: not a dict"
-                )
+                logger.warning("Skipping invalid node definition '%s' in %s: not a dict", node_name, source_description)
                 continue
 
             try:
@@ -143,10 +150,7 @@ class StandardNodeRegistry:
                     if not overwrite_existing:
                         raise ValueError(f"Duplicate standard node name: {node_name}")
                     else:
-                        logger.debug(
-                            f"Overwriting existing standard node: {node_name} "
-                            f"from {source_description}"
-                        )
+                        logger.debug("Overwriting existing standard node: %s from %s", node_name, source_description)
 
                 # Add to main registry
                 self._standard_nodes[node_name] = definition
@@ -163,20 +167,18 @@ class StandardNodeRegistry:
                             )
                         elif overwrite_existing and existing_standard != node_name:
                             logger.debug(
-                                f"Alternate name '{alt_name}' already maps to "
-                                f"'{existing_standard}', now mapping to '{node_name}'"
+                                "Alternate name '%s' already maps to '%s', now mapping to '%s'",
+                                alt_name,
+                                existing_standard,
+                                node_name,
                             )
                     self._alternate_to_standard[alt_name] = node_name
 
                 nodes_loaded += 1
 
             except Exception as e:
-                logger.exception(
-                    f"Error loading node '{node_name}' from {source_description}"
-                )
-                raise ValueError(
-                    f"Invalid node definition for '{node_name}': {e}"
-                ) from e
+                logger.exception("Error loading node '%s' from %s", node_name, source_description)
+                raise ValueError(f"Invalid node definition for '{node_name}': {e}") from e
 
         return nodes_loaded
 
@@ -195,7 +197,7 @@ class StandardNodeRegistry:
 
         Example:
             >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
-            >>> standard_node_registry.get_standard_name('sales')
+            >>> standard_node_registry.get_standard_name("sales")
             'revenue'
         """
         # Check if it's already a standard name
@@ -220,7 +222,7 @@ class StandardNodeRegistry:
 
         Example:
             >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
-            >>> standard_node_registry.is_standard_name('revenue')
+            >>> standard_node_registry.is_standard_name("revenue")
             True
         """
         return name in self._standard_nodes
@@ -236,7 +238,7 @@ class StandardNodeRegistry:
 
         Example:
             >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
-            >>> standard_node_registry.is_alternate_name('sales')
+            >>> standard_node_registry.is_alternate_name("sales")
             True
         """
         return name in self._alternate_to_standard
@@ -252,16 +254,16 @@ class StandardNodeRegistry:
 
         Example:
             >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
-            >>> standard_node_registry.is_recognized_name('revenue')
+            >>> standard_node_registry.is_recognized_name("revenue")
             True
-            >>> standard_node_registry.is_recognized_name('sales')
+            >>> standard_node_registry.is_recognized_name("sales")
             True
-            >>> standard_node_registry.is_recognized_name('not_a_node')
+            >>> standard_node_registry.is_recognized_name("not_a_node")
             False
         """
         return self.is_standard_name(name) or self.is_alternate_name(name)
 
-    def get_definition(self, name: str) -> Optional[StandardNodeDefinition]:
+    def get_definition(self, name: str) -> StandardNodeDefinition | None:
         """Get the definition for a node name.
 
         Works with both standard and alternate names.
@@ -274,14 +276,14 @@ class StandardNodeRegistry:
 
         Example:
             >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
-            >>> defn = standard_node_registry.get_definition('revenue')
+            >>> defn = standard_node_registry.get_definition("revenue")
             >>> defn.category
             'income_statement'
         """
         standard_name = self.get_standard_name(name)
         return self._standard_nodes.get(standard_name)
 
-    def list_standard_names(self, category: Optional[str] = None) -> list[str]:
+    def list_standard_names(self, category: str | None = None) -> list[str]:
         """List all standard node names, optionally filtered by category.
 
         Args:
@@ -292,15 +294,11 @@ class StandardNodeRegistry:
 
         Example:
             >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
-            >>> standard_node_registry.list_standard_names('balance_sheet_assets')[:3]
+            >>> standard_node_registry.list_standard_names("balance_sheet_assets")[:3]
             ['accounts_receivable', 'cash_and_equivalents', 'current_assets']
         """
         if category:
-            names = [
-                name
-                for name, defn in self._standard_nodes.items()
-                if defn.category == category
-            ]
+            names = [name for name, defn in self._standard_nodes.items() if defn.category == category]
         else:
             names = list(self._standard_nodes.keys())
 
@@ -314,7 +312,7 @@ class StandardNodeRegistry:
 
         Example:
             >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
-            >>> 'income_statement' in standard_node_registry.list_categories()
+            >>> "income_statement" in standard_node_registry.list_categories()
             True
         """
         return sorted(self._categories)
@@ -331,11 +329,11 @@ class StandardNodeRegistry:
 
         Example:
             >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
-            >>> standard_node_registry.validate_node_name('revenue')
+            >>> standard_node_registry.validate_node_name("revenue")
             (True, "'revenue' is a standard node name")
-            >>> standard_node_registry.validate_node_name('sales')
+            >>> standard_node_registry.validate_node_name("sales")
             (True, "'sales' is valid (alternate for 'revenue')")
-            >>> standard_node_registry.validate_node_name('not_a_node')
+            >>> standard_node_registry.validate_node_name("not_a_node")
             (False, "'not_a_node' is not a recognized node name")
         """
         if strict:
@@ -358,7 +356,7 @@ class StandardNodeRegistry:
         else:
             return False, f"'{name}' is not a recognized node name"
 
-    def get_sign_convention(self, name: str) -> Optional[str]:
+    def get_sign_convention(self, name: str) -> str | None:
         """Get the sign convention for a node.
 
         Args:
@@ -369,7 +367,7 @@ class StandardNodeRegistry:
 
         Example:
             >>> from fin_statement_model.core.nodes.standard_registry import standard_node_registry
-            >>> standard_node_registry.get_sign_convention('treasury_stock')
+            >>> standard_node_registry.get_sign_convention("treasury_stock")
             'negative'
         """
         definition = self.get_definition(name)
@@ -377,7 +375,7 @@ class StandardNodeRegistry:
 
     def initialize_default_nodes(
         self,
-        organized_path: Optional[Path] = None,
+        organized_path: Path | None = None,
         force_reload: bool = False,
     ) -> int:
         """Load default standard nodes from organized directory.
@@ -396,9 +394,7 @@ class StandardNodeRegistry:
             True
         """
         if self._initialized and not force_reload:
-            logger.debug(
-                f"Standard nodes already initialized from {self._loaded_from}, skipping reload."
-            )
+            logger.debug("Standard nodes already initialized from %s, skipping reload.", self._loaded_from)
             return len(self._standard_nodes)
 
         if organized_path is None:
@@ -407,9 +403,7 @@ class StandardNodeRegistry:
         count = self._load_from_organized_structure(organized_path)
         self._initialized = True
         self._loaded_from = f"organized structure at {organized_path}"
-        logger.info(
-            f"Successfully loaded {count} standard nodes from organized structure"
-        )
+        logger.info("Successfully loaded %s standard nodes from organized structure", count)
         return count
 
     def _load_from_organized_structure(self, base_path: Path) -> int:
@@ -432,9 +426,7 @@ class StandardNodeRegistry:
         # Check if it has the expected structure (contains __init__.py)
         init_file = base_path / "__init__.py"
         if not init_file.exists():
-            raise ValueError(
-                f"Invalid organized structure: missing __init__.py in {base_path}"
-            )
+            raise ValueError(f"Invalid organized structure: missing __init__.py in {base_path}")
 
         # Import and use the load_all_standard_nodes function
         import importlib.util
@@ -456,15 +448,13 @@ class StandardNodeRegistry:
             loaded_count = module.load_all_standard_nodes(base_path)
             return int(loaded_count)
         else:
-            raise AttributeError(
-                f"Module at {init_file} missing load_all_standard_nodes function"
-            )
+            raise AttributeError(f"Module at {init_file} missing load_all_standard_nodes function")
 
     def is_initialized(self) -> bool:
         """Check if the registry has been initialized with default nodes."""
         return self._initialized
 
-    def get_load_source(self) -> Optional[str]:
+    def get_load_source(self) -> str | None:
         """Get the source from which nodes were loaded."""
         return self._loaded_from
 
@@ -497,19 +487,16 @@ class StandardNodeRegistry:
             raise FileNotFoundError(f"Standard nodes file not found: {yaml_path}")
 
         try:
-            with open(yaml_path, encoding="utf-8") as f:
-                data = yaml.safe_load(f)
+            data = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
         except yaml.YAMLError as e:
             raise ValueError(f"Invalid YAML in {yaml_path}: {e}") from e
 
         # Process the data without clearing existing
-        nodes_loaded = self._load_nodes_from_data(
-            data, str(yaml_path), overwrite_existing=True
-        )
+        nodes_loaded = self._load_nodes_from_data(data, str(yaml_path), overwrite_existing=True)
         if nodes_loaded:
             self._initialized = True
             self._loaded_from = str(yaml_path)
-        logger.debug(f"Loaded {nodes_loaded} nodes from {yaml_path}")
+        logger.debug("Loaded %s nodes from %s", nodes_loaded, yaml_path)
         return nodes_loaded
 
 

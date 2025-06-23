@@ -7,8 +7,8 @@ Its primary responsibilities are:
   common file formats like Excel and JSON.
 """
 
-import logging
 import importlib.resources
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -19,7 +19,7 @@ from fin_statement_model.io.exceptions import WriteError
 logger = logging.getLogger(__name__)
 
 # Built-in config package path constant (directory containing YAML/JSON configs)
-# Default base path is "fin_statement_model.statements.configs" – end-users can
+# Default base path is "fin_statement_model.statements.configs" - end-users can
 # drop YAML or JSON files in that package (or a sub-package added to
 # ``__init__.py``) and they will be discovered automatically.
 
@@ -33,27 +33,25 @@ def list_available_builtin_configs() -> list[str]:
         resource_path = importlib.resources.files(package_path)
         if not resource_path.is_dir():
             logger.warning(
-                f"Built-in config package path is not a directory: {package_path}"
+                "Built-in config package path is not a directory: %s",
+                package_path,
             )
             return []
         names = [
             Path(res.name).stem
             for res in resource_path.iterdir()
-            if res.is_file()
-            and Path(res.name).suffix.lower() in (".yaml", ".yml", ".json")
+            if res.is_file() and Path(res.name).suffix.lower() in (".yaml", ".yml", ".json")
         ]
         return sorted(names)
     except (ModuleNotFoundError, FileNotFoundError):
-        logger.error(f"Built-in statement config path not found: {package_path}")
+        logger.exception("Built-in statement config path not found: %s", package_path)
         return []
 
 
 # ===== Statement Writing =====
 
 
-def write_statement_to_excel(
-    statement_df: pd.DataFrame, file_path: str, **kwargs: Any
-) -> None:
+def write_statement_to_excel(statement_df: pd.DataFrame, file_path: str, **kwargs: Any) -> None:
     """Write a statement DataFrame to an Excel file."""
     try:
         kwargs.setdefault("index", False)
@@ -71,11 +69,27 @@ def write_statement_to_json(
     statement_df: pd.DataFrame,
     file_path: str,
     orient: str = "columns",
+    indent: int | None = None,
     **kwargs: Any,
 ) -> None:
-    """Write a statement DataFrame to a JSON file."""
+    """Write a statement DataFrame to a JSON file.
+
+    The `pandas` typing stubs restrict the accepted keyword arguments
+    based on the selected *orient*.  In particular the *indent* argument
+    is only valid for the "records" orient.  Passing it for other
+    orientations triggers a static type error under ``--strict`` mode.
+    The helper therefore forwards *indent* **only** when the chosen
+    *orient* supports it.
+    """
     try:
-        statement_df.to_json(file_path, orient=orient, **kwargs)
+        if orient == "records" and indent is not None:
+            statement_df.to_json(  # type: ignore[call-overload]
+                file_path, orient=orient, indent=indent, **kwargs
+            )
+        else:
+            statement_df.to_json(  # type: ignore[call-overload]
+                file_path, orient=orient, **kwargs
+            )
     except Exception as e:
         raise WriteError(
             message="Failed to export statement DataFrame to JSON",

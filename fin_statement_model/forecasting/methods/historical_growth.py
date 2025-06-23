@@ -19,14 +19,19 @@ Example:
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any
+
 import numpy as np
 
-from fin_statement_model.core.nodes import Node
-from .base import BaseForecastMethod
 from fin_statement_model.config.access import cfg
+from fin_statement_model.core.nodes import Node
+
+from .base import BaseForecastMethod
 
 logger = logging.getLogger(__name__)
+
+# Minimum historical points required for growth calculation
+MIN_HISTORY_POINTS: int = 2
 
 
 class HistoricalGrowthForecastMethod(BaseForecastMethod):
@@ -63,8 +68,8 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
     def internal_type(self) -> str:
         """Return the internal forecast type used by ``NodeFactory``.
 
-        The historical–growth calculation re-uses the *Average-Growth* forecast
-        node implementation, so we have to return ``"average_growth"`` – that is
+        The historical-growth calculation re-uses the *Average-Growth* forecast
+        node implementation, so we have to return ``"average_growth"`` - that is
         the key registered in ``ForecastTypeRegistry``.  Mapping the public
         method name (``historical_growth``) to this internal type allows the
         validator/registry look-up to succeed.
@@ -84,9 +89,7 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
         # Historical growth method doesn't need specific configuration
         # Accept None, 0, or any placeholder value
 
-    def normalize_params(
-        self, config: Any, forecast_periods: list[str]
-    ) -> dict[str, Any]:
+    def normalize_params(self, config: Any, forecast_periods: list[str]) -> dict[str, Any]:
         """Normalize parameters for the NodeFactory.
 
         Args:
@@ -103,14 +106,13 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
             >>> method.normalize_params(None, ["2024", "2025"])
             {'forecast_type': 'historical_growth', 'growth_params': None}
         """
+        _ = (config, forecast_periods)  # Parameters intentionally unused
         return {
             "forecast_type": self.internal_type,
             "growth_params": None,  # Historical growth method calculates internally
         }
 
-    def prepare_historical_data(
-        self, node: Node, historical_periods: list[str]
-    ) -> Optional[list[float]]:
+    def prepare_historical_data(self, node: Node, historical_periods: list[str]) -> list[float] | None:
         """Prepare historical data for growth calculation.
 
         Args:
@@ -127,14 +129,10 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
             >>> # This method is called internally by the forecasting engine.
         """
         if not hasattr(node, "calculate") or not callable(node.calculate):
-            raise ValueError(
-                f"Node {node.name} cannot be calculated for historical growth method"
-            )
+            raise ValueError(f"Node {node.name} cannot be calculated for historical growth method")
 
         if not hasattr(node, "values") or not isinstance(node.values, dict):
-            raise ValueError(
-                f"Node {node.name} does not have values dictionary for historical growth method"
-            )
+            raise ValueError(f"Node {node.name} does not have values dictionary for historical growth method")
 
         # Extract historical values in chronological order
         historical_values = []
@@ -142,16 +140,12 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
             if period in node.values:
                 try:
                     value = node.calculate(period)
-                    if (
-                        value is not None
-                        and not np.isnan(value)
-                        and not np.isinf(value)
-                    ):
+                    if value is not None and not np.isnan(value) and not np.isinf(value):
                         historical_values.append(float(value))
-                except Exception as e:
+                except (ValueError, TypeError, ArithmeticError) as e:
                     # Log the exception and skip this period
                     logger.debug(
-                        f"Skipping period {period} for node {node.name} in historical growth calculation: {e}"
+                        "Skipping period %s for node %s in historical growth calculation: %s", period, node.name, e
                     )
                     continue
 
@@ -181,16 +175,14 @@ class HistoricalGrowthForecastMethod(BaseForecastMethod):
             >>> # This method is called internally by the forecasting engine.
         """
         # Calculate period-over-period growth rates
-        if len(historical_values) < 2:
+        if len(historical_values) < MIN_HISTORY_POINTS:
             return 0.0
 
         growth_rates: list[float] = []
         for i in range(1, len(historical_values)):
             previous_value = historical_values[i - 1]
             if previous_value != 0:
-                growth_rates.append(
-                    (historical_values[i] - previous_value) / previous_value
-                )
+                growth_rates.append((historical_values[i] - previous_value) / previous_value)
 
         if not growth_rates:
             return 0.0

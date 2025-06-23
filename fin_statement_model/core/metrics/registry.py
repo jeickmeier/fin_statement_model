@@ -7,18 +7,18 @@ This module defines:
 Example:
     >>> from fin_statement_model.core.metrics.registry import MetricRegistry
     >>> registry = MetricRegistry()
-    >>> count = registry.load_metrics_from_directory('./metrics')
+    >>> count = registry.load_metrics_from_directory("./metrics")
     >>> print(f"Loaded {count} metrics.")
     >>> registry.list_metrics()
     ['current_ratio', 'debt_equity_ratio']
-    >>> definition = registry.get('current_ratio')
+    >>> definition = registry.get("current_ratio")
     >>> definition.name
     'Current Ratio'
 """
 
 import logging
 from pathlib import Path
-from typing import ClassVar, Union
+from typing import ClassVar
 
 # Use a try-except block for the YAML import
 try:
@@ -44,11 +44,11 @@ class MetricRegistry:
     Example:
         >>> from fin_statement_model.core.metrics.registry import MetricRegistry
         >>> registry = MetricRegistry()
-        >>> count = registry.load_metrics_from_directory('./metrics')
+        >>> count = registry.load_metrics_from_directory("./metrics")
         >>> print(f"Loaded {count} metrics.")
         >>> registry.list_metrics()
         ['current_ratio', 'debt_equity_ratio']
-        >>> definition = registry.get('current_ratio')
+        >>> definition = registry.get("current_ratio")
         >>> definition.name
         'Current Ratio'
     """
@@ -66,7 +66,7 @@ class MetricRegistry:
         self._metrics: dict[str, MetricDefinition] = {}
         logger.info("MetricRegistry initialized.")
 
-    def load_metrics_from_directory(self, directory_path: Union[str, Path]) -> int:
+    def load_metrics_from_directory(self, directory_path: str | Path) -> int:
         """Load all metric definitions from a directory of YAML files.
 
         This method searches for '*.yaml' files, validates their content,
@@ -86,38 +86,35 @@ class MetricRegistry:
 
         Example:
             >>> registry = MetricRegistry()
-            >>> count = registry.load_metrics_from_directory('./metrics')
+            >>> count = registry.load_metrics_from_directory("./metrics")
             >>> print(f"Loaded {count} metrics.")
         """
         if not HAS_YAML:
-            logger.error(
-                "PyYAML is required to load metrics from YAML files. Please install it."
-            )
+            logger.error("PyYAML is required to load metrics from YAML files. Please install it.")
             raise ImportError("PyYAML is required to load metrics from YAML files.")
 
         dir_path = Path(directory_path)
         if not dir_path.is_dir():
-            logger.error(f"Metric directory not found: {dir_path}")
+            logger.error("Metric directory not found: %s", dir_path)
             raise FileNotFoundError(f"Metric directory not found: {dir_path}")
 
-        logger.info(f"Loading metrics from directory: {dir_path}")
+        logger.info("Loading metrics from directory: %s", dir_path)
         loaded_count = 0
 
         for filepath in dir_path.glob("*.yaml"):
-            logger.debug(f"Processing file: {filepath}")
+            logger.debug("Processing file: %s", filepath)
             try:
-                with open(filepath, encoding="utf-8") as f:
-                    content = f.read()
+                content = filepath.read_text(encoding="utf-8")
 
                 # Use standard YAML parsing
                 try:
                     data = yaml.safe_load(content)
                 except yaml.YAMLError as e:
-                    logger.warning(f"Failed to parse YAML file {filepath}: {e}")
+                    logger.warning("Failed to parse YAML file %s: %s", filepath, e)
                     continue
 
                 if not data:
-                    logger.debug(f"Empty or null content in {filepath}, skipping")
+                    logger.debug("Empty or null content in %s, skipping", filepath)
                     continue
 
                 # Handle both single metric and list of metrics
@@ -131,8 +128,9 @@ class MetricRegistry:
                     metrics_to_process = data
                 else:
                     logger.warning(
-                        f"Invalid YAML structure in {filepath}: "
-                        f"expected dict or list, got {type(data).__name__}"
+                        "Invalid YAML structure in %s: expected dict or list, got %s",
+                        filepath,
+                        type(data).__name__,
                     )
                     continue
 
@@ -140,8 +138,10 @@ class MetricRegistry:
                 for i, metric_data in enumerate(metrics_to_process):
                     if not isinstance(metric_data, dict):
                         logger.warning(
-                            f"Invalid metric definition at index {i} in {filepath}: "
-                            f"expected dict, got {type(metric_data).__name__}"
+                            "Invalid metric definition at index %s in %s: expected dict, got %s",
+                            i,
+                            filepath,
+                            type(metric_data).__name__,
                         )
                         continue
 
@@ -150,21 +150,17 @@ class MetricRegistry:
                         model = MetricDefinition.model_validate(metric_data)
                         self.register_definition(model)
                         loaded_count += 1
-                        logger.debug(
-                            f"Successfully loaded metric '{model.name}' from {filepath}"
-                        )
+                        logger.debug("Successfully loaded metric '%s' from %s", model.name, filepath)
 
                     except ValidationError as ve:
-                        logger.warning(
-                            f"Invalid metric definition at index {i} in {filepath}: {ve}"
-                        )
+                        logger.warning("Invalid metric definition at index %s in %s: %s", i, filepath, ve)
                         continue
 
             except Exception:
-                logger.exception(f"Failed to process file {filepath}")
+                logger.exception("Failed to process file %s", filepath)
                 continue
 
-        logger.info(f"Successfully loaded {loaded_count} metrics from {dir_path}.")
+        logger.info("Successfully loaded %s metrics from %s.", loaded_count, dir_path)
         return loaded_count
 
     def get(self, metric_id: str) -> MetricDefinition:
@@ -187,10 +183,8 @@ class MetricRegistry:
         try:
             return self._metrics[metric_id]
         except KeyError:
-            logger.warning(f"Metric ID '{metric_id}' not found in registry.")
-            raise KeyError(
-                f"Metric ID '{metric_id}' not found. Available: {self.list_metrics()}"
-            )
+            logger.warning("Metric ID '%s' not found in registry.", metric_id)
+            raise KeyError(f"Metric ID '{metric_id}' not found. Available: {self.list_metrics()}") from None
 
     def list_metrics(self) -> list[str]:
         """Get a sorted list of all loaded metric IDs.
@@ -229,7 +223,7 @@ class MetricRegistry:
 
         Example:
             >>> registry = MetricRegistry()
-            >>> 'current_ratio' in registry
+            >>> "current_ratio" in registry
         """
         return metric_id in self._metrics
 
@@ -243,16 +237,16 @@ class MetricRegistry:
             >>> from fin_statement_model.core.metrics.registry import MetricRegistry
             >>> from fin_statement_model.core.metrics.models import MetricDefinition
             >>> registry = MetricRegistry()
-            >>> model = MetricDefinition(name='test', description='desc', inputs=['a'], formula='a', tags=[])
+            >>> model = MetricDefinition(name="test", description="desc", inputs=["a"], formula="a", tags=[])
             >>> registry.register_definition(model)
-            >>> 'test' in registry
+            >>> "test" in registry
             True
         """
         metric_id = definition.name.lower().replace(" ", "_").replace("-", "_")
         if metric_id in self._metrics:
-            logger.debug(f"Overwriting existing metric definition for '{metric_id}'")
+            logger.debug("Overwriting existing metric definition for '%s'", metric_id)
         self._metrics[metric_id] = definition
-        logger.debug(f"Registered metric definition: {metric_id}")
+        logger.debug("Registered metric definition: %s", metric_id)
 
 
 # Create the singleton instance (without auto-loading to prevent duplicates)
