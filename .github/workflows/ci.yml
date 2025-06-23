@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-test-lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "${{ matrix.python-version }}"
+
+      - name: Install project and dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+          # Development and tooling dependencies
+          pip install ruff mypy pytest pytest-cov pytest-asyncio
+
+      - name: Ruff – static analysis (lint)
+        run: ruff check .
+
+      - name: Ruff – formatting check (no changes allowed)
+        run: ruff format --check .
+
+      - name: Mypy – static type checking
+        run: mypy fin_statement_model --strict
+
+      - name: Pytest – unit tests with coverage
+        run: pytest -q --cov=fin_statement_model --cov-fail-under=80 
