@@ -1,5 +1,5 @@
 # Fin Statement Model
-[![CI](https://github.com/USERNAME/fin-statement-model/actions/workflows/ci.yml/badge.svg)](https://github.com/USERNAME/fin-statement-model/actions/workflows/ci.yml)
+[![CI](https://github.com/jeickmeier/fin_statement_model/actions/workflows/ci.yml/badge.svg)](https://github.com/jeickmeier/fin_statement_model/actions/workflows/ci.yml)
 
 A pre-alpha library for building and analyzing financial statement models using a node-based graph structure.
 
