@@ -21,21 +21,10 @@ jobs:
         with:
           python-version: "${{ matrix.python-version }}"
 
-      - name: Install project and dependencies
+      - name: Install Nox
         run: |
           python -m pip install --upgrade pip
-          pip install .
-          # Development and tooling dependencies
-          pip install ruff mypy pytest pytest-cov pytest-asyncio
+          pip install nox
 
-      - name: Ruff – static analysis (lint)
-        run: ruff check .
-
-      - name: Ruff – formatting check (no changes allowed)
-        run: ruff format --check .
-
-      - name: Mypy – static type checking
-        run: mypy fin_statement_model --strict
-
-      - name: Pytest – unit tests with coverage
-        run: pytest -q --cov=fin_statement_model --cov-fail-under=80 
+      - name: Run Nox "lint" session (ruff, mypy, pytest)
+        run: nox -s lint 

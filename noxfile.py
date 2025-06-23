@@ -103,6 +103,9 @@ def lint(session: nox.Session) -> None:
         "mypy",
         "pydantic>=2",
         "types-PyYAML",
+        "types-requests",
+        "pandas-stubs",
+        "pytest",
         "pytest-asyncio",
         "pytest-cov",
         # Runtime deps that tests rely on
@@ -126,8 +129,19 @@ def lint(session: nox.Session) -> None:
     # ---------------------------------------------------------------------
     session.log("Running Ruff...")
     session.run(
-        "ruff", "check", "fin_statement_model", "--line-length", "120", external=True
+        "ruff",
+        "check",
+        "fin_statement_model",
+        "--line-length",
+        "120",
+        external=True,
     )
+
+    # ---------------------------------------------------------------------
+    # Ruff - Formatting (ensure code is already formatted)
+    # ---------------------------------------------------------------------
+    session.log("Running Ruff format --check ...")
+    session.run("ruff", "format", "--check", ".", external=True)
 
     # ---------------------------------------------------------------------
     # MyPy - Static type checking (strict mode configured in `mypy.ini`)
@@ -138,9 +152,16 @@ def lint(session: nox.Session) -> None:
     # ---------------------------------------------------------------------
     # Pytest - Unit tests (tests live under the top-level ``tests`` package)
     # ---------------------------------------------------------------------
-    session.log("Running Pytest...")
-    # The default invocation respects options from `pytest.ini` (including coverage)
-    session.run("pytest", external=True)
+    session.log("Running Pytest with coverage...")
+    session.run(
+        "pytest",
+        "-q",
+        "--cov=fin_statement_model",
+        "--cov-report=term-missing",
+        "--cov-config=pyproject.toml",
+        "--cov-fail-under=80",
+        external=True,
+    )
 
     # ---------------------------------------------------------------------
     # Custom guard - Limit the number of `# type: ignore` usages.
