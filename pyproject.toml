@@ -12,19 +12,13 @@ dependencies = [
     "pandas>=2.1.4",
     "matplotlib>=3.8.2",
     "requests>=2.31.0",
-    "nbformat>=5.10.4",
-    "playwright>=1.49.1",
     "openai>=1.61.0",
-    "backoff>=2.2.1",
     "openpyxl>=3.1.5",
     "ipykernel>=6.29.5",
     "pyyaml>=6.0.2",
     "python-dotenv>=0.21.0",
     "pydantic>=2.11.3",
-    "simpleeval>=1.0.3",
     "deepmerge>=2.0",
-    "typer>=0.16.0",
-    "rich>=14.0.0",
     "asteval>=1.0.6",
 ]
 
@@ -41,8 +35,8 @@ dev = [
     "vulture>=2.14",
     "types-pyyaml>=6.0.12.20250516",
     "pdoc3>=0.11.6",
-    "pre-commit>=4.2.0",
     "nox>=2025.5.1",
+    "pre-commit>=4.2.0",
     "pandas-stubs>=2.2.3.250527",
     "types-requests>=2.32.4.20250611",
 ]
@@ -75,14 +69,6 @@ source = ["fin_statement_model"]
 omit = [
     "tests/*",
     "fin_statement_model/statements/*",
-    "fin_statement_model/io/adjustments/*",
-    "fin_statement_model/io/formats/excel_reader.py",
-    "fin_statement_model/io/formats/excel_writer.py",
-    "fin_statement_model/io/formats/fmp_reader.py",
-    "fin_statement_model/io/graph/*",
-    "fin_statement_model/io/statements/*",
-    "fin_statement_model/io/core/mixins/*.py",
-    "*/test_*.py",
 ]
 
 [tool.coverage.report]
