@@ -276,7 +276,7 @@ class GraphTraverser:
                 path = []
             if n_id in rec_stack:
                 cycle_start = path.index(n_id)
-                cycle = path[cycle_start:] + [n_id]
+                cycle = [*path[cycle_start:], n_id]
                 if cycle not in cycles:
                     cycles.append(cycle)
                 return

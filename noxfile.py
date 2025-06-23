@@ -116,8 +116,6 @@ def lint(session: nox.Session) -> None:
         "ruff",
         "check",
         "fin_statement_model",
-        "--line-length",
-        "120",
         external=True,
     )
 
