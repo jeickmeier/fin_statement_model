@@ -214,3 +214,22 @@ ignore_missing_imports = true
 
 [tool.ruff.lint.mccabe]
 max-complexity = 15
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.11.2",
+    "pytest>=8.3.5",
+    "pytest-cov>=6.0.0",
+    "pytest-asyncio>=0.25.3",
+    "pytest-mock>=3.14.0",
+    "pytest-doctestplus>=1.4.0",
+    "mypy>=1.15.0",
+    "isort>=6.0.1",
+    "vulture>=2.14",
+    "types-pyyaml>=6.0.12.20250516",
+    "pdoc3>=0.11.6",
+    "pre-commit>=4.2.0",
+    "nox>=2025.5.1",
+    "pandas-stubs>=2.2.3.250527",
+    "types-requests>=2.32.4.20250611",
+]
