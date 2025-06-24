@@ -4,10 +4,11 @@ The `fin_statement_model.config` subpackage provides centralized, extensible con
 
 ## File Structure
 
-The package is organized into five focused modules:
+The package is organised into five *core* modules plus a dedicated **`subconfigs/`** package:
 
-- **`models.py`**: Contains all Pydantic schemas for validation and type-checking. This is the single source of truth for all available configuration options.
-- **`access.py`**: Provides the primary user-facing helpers for *reading* configuration (`cfg`, `cfg_or_param`) and parsing environment variables. These helpers can be imported early without causing circular dependencies.
+- **`models.py`**: A lightweight aggregator that imports and re-exports all sub-config models from `subconfigs` and defines the root `Config` container.
+- **`subconfigs/`**: Contains one Pydantic module per logical configuration section (`APIConfig`, `DisplayConfig`, `ForecastingConfig`, `IOConfig`, `LoggingConfig`, `MetricsConfig`, `PreprocessingConfig`, `StatementsConfig`, `ValidationConfig`). Add or modify options here.
+- **`access.py`**: Provides the primary user-facing helpers for *reading* configuration (`cfg`, `cfg_or_param`) and parsing environment variables.
 - **`loader.py`**: Implements the pure, stateless logic for discovering and merging configuration from all sources (defaults, files, environment).
 - **`store.py`**: Manages the thread-safe, in-memory singleton that holds the live configuration. It provides the `get_config()` and `update_config()` helpers for mutation.
 - **`logging_hook.py`**: A small utility to re-apply logging settings whenever the configuration is changed.
@@ -66,7 +67,7 @@ print(get_config().forecasting.default_method)  # 'historical_growth'
 
 Configuration is loaded in a layered hierarchy, where each subsequent layer can override the previous ones. The order of precedence is:
 
-1.  **Defaults**: Hardcoded defaults defined in the Pydantic models in `models.py`.
+1.  **Defaults**: Hardcoded defaults defined in the Pydantic models under `config/subconfigs` (and re-exported via `models.py`).
 2.  **Project Config File**: From `.fsm_config.yaml` found in the current working directory or any parent directory.
 3.  **User Config File**: From `fsm_config.yaml` found in the current working directory or `~/.fsm_config.yaml`.
 4.  **.env File**: Environment variables loaded from the first `.env` file found in the current directory or parents.
@@ -97,13 +98,13 @@ include_notes_legacy = cfg('display.include_notes_column')
 assert include_notes == include_notes_legacy
 ```
 
-A full list of flags can be found in the `DisplayFlags` model in `fin_statement_model/config/models.py`.
+A full list of flags can be found in the `DisplayFlags` model located in `fin_statement_model/config/subconfigs/display_config.py`.
 
 ## Customization & Extending Configuration
 
 ### Adding a New Config Option
 
-1.  **Define the field**: Open `fin_statement_model/config/models.py` and add the new field to the relevant Pydantic model (e.g., `APIConfig`). Provide a type, a `Field` with a default value, and a description.
+1.  **Define the field**: Open the appropriate sub-config module inside `fin_statement_model/config/subconfigs/` (e.g., `api_config.py`) and add the field to the relevant Pydantic model. Provide a type, a `Field` with a default value, and a description.
 2.  **(Optional) Add validation**: Use Pydantic's `@field_validator` decorator within the model to add custom validation logic.
 3.  **Update documentation**: Add a row to the relevant table in this README and update the model's docstring.
 4.  **Access the new option**: Use `cfg('section.new_option_name')`.
@@ -124,4 +125,4 @@ A: Yes, `.json` files are supported alongside `.yaml` and `.yml`.
 **Q: How do I access deeply nested config values?**
 A: Use dotted-path strings: `cfg('section.subsection.option')`.
 
-For more details, see the docstrings in the respective modules (`models.py`, `access.py`, etc.). 
+For more details, see the docstrings in the respective modules (`models.py`, the files under `subconfigs/`, `access.py`, etc.). 
