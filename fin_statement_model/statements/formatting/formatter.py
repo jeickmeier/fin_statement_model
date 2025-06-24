@@ -27,9 +27,17 @@ from fin_statement_model.statements.formatting.data_fetcher import DataFetcher
 # Import the ID resolver
 from fin_statement_model.statements.population.id_resolver import IDResolver
 from fin_statement_model.statements.structure import (
-    Section,  # Needed for hierarchical resolution helpers
-    StatementItem,
-    StatementStructure,
+    Section as _LegacySection,
+    StatementItem as _LegacyStatementItem,
+    StatementStructure as _LegacyStatementStructure,
+)
+from fin_statement_model.statements.structure.models_v2 import (
+    CalculatedLineItem as _V2CalculatedLineItem,
+    LineItem as _V2LineItem,  # for StatementItem aliasing
+    MetricLineItem as _V2MetricLineItem,
+    Section as _V2Section,
+    StatementStructure as _V2StatementStructure,
+    SubtotalLineItem as _V2SubtotalLineItem,
 )
 
 # Import formatting utilities
@@ -37,6 +45,24 @@ from fin_statement_model.utils.formatting import render_values
 
 # Configure logging
 logger = logging.getLogger(__name__)
+
+# Type aliases for typing only—do NOT override runtime classes used in isinstance
+type SectionT = _LegacySection | _V2Section
+type StatementItemT = (
+    _LegacyStatementItem | _V2LineItem | _V2CalculatedLineItem | _V2MetricLineItem | _V2SubtotalLineItem
+)
+
+type StatementStructureLike = _LegacyStatementStructure | _V2StatementStructure
+
+_SECTION_CLASSES = (_LegacySection, _V2Section)
+_ITEM_CLASSES = (
+    _LegacySection,
+    _LegacyStatementItem,
+    _V2LineItem,
+    _V2CalculatedLineItem,
+    _V2MetricLineItem,
+    _V2SubtotalLineItem,
+)
 
 
 @dataclass
@@ -97,7 +123,7 @@ class StatementFormatter:
     subtotals, sign conventions, and enhanced display control.
     """
 
-    def __init__(self, statement: StatementStructure):
+    def __init__(self, statement: StatementStructureLike):
         """Initialize a statement formatter.
 
         Args:
@@ -131,7 +157,7 @@ class StatementFormatter:
 
     def _resolve_hierarchical_attribute(
         self,
-        item: StatementItem | Section,
+        item: StatementItemT | SectionT,
         attribute_name: str,
         default_value: Any = None,
         config_path: str | None = None,
@@ -159,7 +185,7 @@ class StatementFormatter:
                 return item_value
 
         # Check if item is part of a section with the attribute
-        if isinstance(item, StatementItem):
+        if isinstance(item, _ITEM_CLASSES):
             parent_section = self._find_parent_section_for_item(item)
             if parent_section and hasattr(parent_section, attribute_name):
                 section_value = getattr(parent_section, attribute_name)
@@ -181,7 +207,7 @@ class StatementFormatter:
         # Return default value
         return default_value
 
-    def _resolve_display_scale_factor(self, item: StatementItem | Section) -> float:
+    def _resolve_display_scale_factor(self, item: StatementItemT | SectionT) -> float:
         """Resolve the display scale factor for an item, considering hierarchy.
 
         Precedence: Item > Section > Statement > Default (from config)
@@ -201,7 +227,7 @@ class StatementFormatter:
         )
         return float(result)
 
-    def _resolve_units(self, item: StatementItem | Section) -> str | None:
+    def _resolve_units(self, item: StatementItemT | SectionT) -> str | None:
         """Resolve the unit description for an item, considering hierarchy.
 
         Precedence: Item > Section > Statement > None
@@ -220,7 +246,7 @@ class StatementFormatter:
         )
         return result if result is not None else None
 
-    def _find_parent_section_for_item(self, target_item: StatementItem) -> object | None:
+    def _find_parent_section_for_item(self, target_item: StatementItemT | SectionT) -> object | None:
         """Find the parent section that contains the given item.
 
         Args:
@@ -231,7 +257,7 @@ class StatementFormatter:
         """
 
         def _is_section(obj: Any) -> bool:
-            return isinstance(obj, Section) or getattr(obj, "item_type", None) == "section"
+            return isinstance(obj, _SECTION_CLASSES) or getattr(obj, "item_type", None) == "section"
 
         def search_in_section(section: Any) -> Any | None:
             # Check direct items
@@ -256,11 +282,11 @@ class StatementFormatter:
         for sec in self.statement.sections:
             result = search_in_section(sec)
             if result is not None:
-                return cast("Section | object", result)
+                return cast("SectionT | object", result)
 
         return None
 
-    def _should_hide_item(self, item: StatementItem | Section, values: dict[str, float]) -> bool:
+    def _should_hide_item(self, item: StatementItemT | SectionT, values: dict[str, float]) -> bool:
         """Check if an item should be hidden based on hide_if_all_zero setting.
 
         Args:
@@ -302,7 +328,7 @@ class StatementFormatter:
 
     def _format_item_values(
         self,
-        item: StatementItem | Section,
+        item: StatementItemT | SectionT,
         values: dict[str, float],
         period_columns: list[str],
     ) -> dict[str, str]:
@@ -377,7 +403,7 @@ class StatementFormatter:
 
     def _apply_contra_formatting(
         self,
-        item: StatementItem | Section,
+        item: StatementItemT | SectionT,
         values: dict[str, float],
         period_columns: list[str],
         display_style: str | None = None,
@@ -532,7 +558,7 @@ class StatementFormatter:
 
     def _process_items_recursive(
         self,
-        items: list[Section | StatementItem],
+        items: list[SectionT | StatementItemT],
         depth: int,
         data: dict[str, dict[str, float]],
         rows: list[dict[str, Any]],
@@ -552,7 +578,7 @@ class StatementFormatter:
             graph: Graph instance
         """
         for item in items:
-            if isinstance(item, Section) or getattr(item, "item_type", None) == "section":
+            if isinstance(item, _SECTION_CLASSES) or getattr(item, "item_type", None) == "section":
                 self._process_section(item, depth, data, rows, context, id_resolver, graph)
             elif getattr(item, "item_type", None) != "section":
                 self._process_item(item, depth, data, rows, context, id_resolver, graph)
@@ -601,7 +627,7 @@ class StatementFormatter:
 
     def _process_item(
         self,
-        item: StatementItem,
+        item: StatementItemT,
         depth: int,
         data: dict[str, dict[str, float]],
         rows: list[dict[str, Any]],
@@ -666,7 +692,7 @@ class StatementFormatter:
 
     def _create_row_dict(
         self,
-        item: StatementItem,
+        item: StatementItemT,
         node_id: str,
         row_values: dict[str, float | str],
         depth: int,
@@ -722,7 +748,7 @@ class StatementFormatter:
         return row
 
     def _apply_scaling(
-        self, values: dict[str, float], context: FormattingContext, item: StatementItem
+        self, values: dict[str, float], context: FormattingContext, item: StatementItemT
     ) -> dict[str, float]:
         """Apply item-specific scaling if enabled.
 
@@ -960,7 +986,7 @@ class StatementFormatter:
 
         return df
 
-    def _get_item_type(self, item: StatementItem) -> str:
+    def _get_item_type(self, item: StatementItemT) -> str:
         """Get the type of a statement item.
 
         Args:
@@ -971,7 +997,7 @@ class StatementFormatter:
         """
         # Legacy *Section* objects are not derived from StatementItem and need
         # an explicit check.
-        if isinstance(item, Section) or getattr(item, "item_type", None) == "section":
+        if isinstance(item, _SECTION_CLASSES) or getattr(item, "item_type", None) == "section":
             return "section"
 
         itype = getattr(item, "item_type", None)

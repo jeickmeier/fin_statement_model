@@ -8,9 +8,8 @@ import logging
 from typing import Any
 
 from fin_statement_model.core.errors import ConfigurationError, StatementError
-from fin_statement_model.statements.configs.validator import StatementConfig
 from fin_statement_model.statements.registry import StatementRegistry
-from fin_statement_model.statements.structure.builder import StatementStructureBuilder
+from fin_statement_model.statements.structure.models_v2 import load_structure
 from fin_statement_model.statements.validation import UnifiedNodeValidator
 
 logger = logging.getLogger(__name__)
@@ -21,7 +20,6 @@ __all__ = ["load_build_register_statements"]
 def load_build_register_statements(
     raw_configs: dict[str, dict[str, Any]],
     registry: StatementRegistry,
-    builder: StatementStructureBuilder | None = None,
     enable_node_validation: bool = False,
     node_validation_strict: bool = False,
     node_validator: UnifiedNodeValidator | None = None,
@@ -31,7 +29,6 @@ def load_build_register_statements(
     Args:
         raw_configs: Mapping of statement IDs to configuration dicts.
         registry: StatementRegistry instance to register loaded statements.
-        builder: Optional StatementStructureBuilder instance.
         enable_node_validation: If True, validate node IDs during config and build.
         node_validation_strict: If True, treat validation failures as errors.
         node_validator: Optional pre-configured UnifiedNodeValidator.
@@ -43,6 +40,12 @@ def load_build_register_statements(
         ConfigurationError: If config validation fails.
         StatementError: If registration fails.
     """
+    _ = (
+        enable_node_validation,
+        node_validation_strict,
+        node_validator,
+    )
+
     loaded_statement_ids: list[str] = []
     errors: list[tuple[str, str]] = []
 
@@ -55,32 +58,14 @@ def load_build_register_statements(
             "and pass the resulting mapping instead."
         )
 
-    if builder is None:
-        builder = StatementStructureBuilder(
-            enable_node_validation=enable_node_validation,
-            node_validation_strict=node_validation_strict,
-            node_validator=node_validator,
-        )
-
     if not raw_configs:
         logger.warning("No statement configurations provided.")
         return []
 
     for stmt_id, raw_data in raw_configs.items():
         try:
-            config = StatementConfig(
-                config_data=raw_data,
-                enable_node_validation=enable_node_validation,
-                node_validation_strict=node_validation_strict,
-                node_validator=node_validator,
-            )
-            validation_errors = config.validate_config()
-            if validation_errors:
-                raise ConfigurationError(
-                    f"Invalid configuration for statement '{stmt_id}'",
-                    errors=validation_errors,
-                )
-            statement = builder.build(config)
+            # Directly load structure via Pydantic models
+            statement = load_structure(raw_data)
             registry.register(statement)
             loaded_statement_ids.append(statement.id)
         except (ConfigurationError, StatementError, ValueError) as e:

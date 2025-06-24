@@ -18,9 +18,17 @@ from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import standard_node_registry
 from fin_statement_model.statements.population.id_resolver import IDResolver
 from fin_statement_model.statements.structure import (
-    Section,
-    StatementItem,
-    StatementStructure,
+    Section as _LegacySection,
+    StatementItem as _LegacyStatementItem,
+    StatementStructure as _LegacyStatementStructure,
+)
+from fin_statement_model.statements.structure.models_v2 import (
+    CalculatedLineItem as _V2CalculatedLineItem,
+    LineItem as _V2LineItem,
+    MetricLineItem as _V2MetricLineItem,
+    Section as _V2Section,
+    StatementStructure as _V2StatementStructure,
+    SubtotalLineItem as _V2SubtotalLineItem,
 )
 from fin_statement_model.statements.utilities.result_types import (
     ErrorCollector,
@@ -34,6 +42,15 @@ from fin_statement_model.statements.utilities.result_types import (
 logger = logging.getLogger(__name__)
 
 __all__ = ["DataFetcher", "FetchResult", "NodeData"]
+
+type SectionT = _LegacySection | _V2Section
+type StatementItemT = (
+    _LegacyStatementItem | _V2LineItem | _V2CalculatedLineItem | _V2MetricLineItem | _V2SubtotalLineItem
+)
+
+type StatementStructureLike = _LegacyStatementStructure | _V2StatementStructure
+
+_SECTION_CLASSES = (_LegacySection, _V2Section)
 
 
 @dataclass
@@ -91,7 +108,7 @@ class DataFetcher:
     - Collecting errors and warnings during the process
     """
 
-    def __init__(self, statement: StatementStructure, graph: Graph):
+    def __init__(self, statement: StatementStructureLike, graph: Graph):
         """Initialize the data fetcher.
 
         Args:
@@ -104,7 +121,7 @@ class DataFetcher:
 
     def _resolve_adjustment_filter(
         self,
-        item: StatementItem,
+        item: StatementItemT,
         global_filter: AdjustmentFilterInput | None = None,
     ) -> AdjustmentFilterInput | None:
         """Resolve which adjustment filter to use for an item.
@@ -143,7 +160,7 @@ class DataFetcher:
         # No filter
         return None
 
-    def _find_parent_section(self, target_item: StatementItem) -> Section | None:
+    def _find_parent_section(self, target_item: StatementItemT) -> SectionT | None:
         """Find the parent section that contains the given item.
 
         Args:
@@ -153,7 +170,7 @@ class DataFetcher:
             The parent Section object, or None if not found.
         """
 
-        def search_in_section(section: Section) -> Section | None:
+        def search_in_section(section: SectionT) -> SectionT | None:
             # Check direct items
             for item in section.items:
                 if item is target_item or (
@@ -161,7 +178,7 @@ class DataFetcher:
                 ):
                     return section
                 # Check nested sections
-                if isinstance(item, Section):
+                if isinstance(item, _SECTION_CLASSES):
                     result = search_in_section(item)
                     if result:
                         return result

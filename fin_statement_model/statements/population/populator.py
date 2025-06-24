@@ -15,6 +15,7 @@ Key Concepts:
 """
 
 import logging
+from typing import Any, cast
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes import standard_node_registry
@@ -22,14 +23,21 @@ from fin_statement_model.statements.population.id_resolver import IDResolver
 from fin_statement_model.statements.population.item_processors import (
     ItemProcessorManager,
 )
-from fin_statement_model.statements.structure import StatementStructure
+from fin_statement_model.statements.structure.containers import (
+    StatementStructure as _LegacyStatementStructure,
+)
+from fin_statement_model.statements.structure.models_v2 import (
+    StatementStructure as _V2StatementStructure,
+)
 
 logger = logging.getLogger(__name__)
+
+type StatementStructureLike = _LegacyStatementStructure | _V2StatementStructure
 
 __all__ = ["populate_graph_from_statement"]
 
 
-def populate_graph_from_statement(statement: StatementStructure, graph: Graph) -> list[tuple[str, str]]:
+def populate_graph_from_statement(statement: StatementStructureLike, graph: Graph) -> list[tuple[str, str]]:
     """Add calculation nodes defined in a StatementStructure to a Graph.
 
     This function bridges the gap between static statement definitions and the
@@ -99,14 +107,15 @@ def populate_graph_from_statement(statement: StatementStructure, graph: Graph) -
         >>> # 3. Create a calculation node 'gross_profit' with the resolved inputs
     """
     # Validate inputs
-    if not isinstance(statement, StatementStructure):
+    if not isinstance(statement, _LegacyStatementStructure | _V2StatementStructure):
         raise TypeError("statement must be a StatementStructure instance")
     if not isinstance(graph, Graph):
         raise TypeError("graph must be a Graph instance")
 
     # Initialize components
     id_resolver = IDResolver(statement, standard_node_registry)
-    processor_manager = ItemProcessorManager(id_resolver, graph, statement)
+    # Cast to `Any` to satisfy type checking until ItemProcessorManager is updated
+    processor_manager = ItemProcessorManager(id_resolver, graph, cast("Any", statement))
 
     # Get all items to process
     calculation_items = statement.get_calculation_items()
@@ -138,7 +147,7 @@ def populate_graph_from_statement(statement: StatementStructure, graph: Graph) -
             is_retry = len(items_to_process) < len(all_items_to_process)
 
             # Process the item
-            result = processor_manager.process_item(item, is_retry)
+            result = processor_manager.process_item(cast("Any", item), is_retry)
 
             if result.success:
                 processed_in_pass += 1

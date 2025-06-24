@@ -19,7 +19,6 @@ from fin_statement_model.statements.population.populator import (
     populate_graph_from_statement,
 )
 from fin_statement_model.statements.registry import StatementRegistry
-from fin_statement_model.statements.structure.builder import StatementStructureBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -69,17 +68,13 @@ def create_statement_dataframe(
     registry = StatementRegistry()
     enable_node_validation = enable_node_validation if enable_node_validation is not None else False
     node_validation_strict = node_validation_strict if node_validation_strict is not None else False
-    builder = StatementStructureBuilder(
-        enable_node_validation=enable_node_validation,
-        node_validation_strict=node_validation_strict,
-    )
+
     format_kwargs = format_kwargs or {}
 
-    # Step 1: Load, build, register
+    # Step 1: Load, build, register (builder removed)
     loaded_ids = load_build_register_statements(
         raw_configs,
         registry,
-        builder,
         enable_node_validation=enable_node_validation,
         node_validation_strict=node_validation_strict,
     )

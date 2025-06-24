@@ -8,16 +8,17 @@ methods for retrieving registered statements.
 
 import logging
 
-# Assuming StatementStructure is defined here or imported appropriately
-# We might need to adjust this import based on the actual location
-try:
-    from .structure import StatementStructure
-except ImportError:
-    # Handle cases where structure might be in a different sub-package later if needed
-    # For now, assume it's available via relative import
-    from fin_statement_model.statements.structure import StatementStructure
+# Support both legacy runtime structures and new immutable v2 models
+from fin_statement_model.statements.structure.containers import (
+    StatementStructure as _LegacyStatementStructure,
+)
+from fin_statement_model.statements.structure.models_v2 import (
+    StatementStructure as _V2StatementStructure,
+)
 
 from .errors import StatementError  # Assuming StatementError is in statements/errors.py
+
+type StatementStructureLike = _LegacyStatementStructure | _V2StatementStructure
 
 logger = logging.getLogger(__name__)
 
@@ -38,10 +39,10 @@ class StatementRegistry:
 
     def __init__(self) -> None:
         """Initialize an empty statement registry."""
-        self._statements: dict[str, StatementStructure] = {}
+        self._statements: dict[str, StatementStructureLike] = {}
         logger.debug("StatementRegistry initialized.")
 
-    def register(self, statement: StatementStructure) -> None:
+    def register(self, statement: StatementStructureLike) -> None:
         """Register a statement structure with the registry.
 
         Ensures the provided object is a `StatementStructure` with a valid ID
@@ -57,7 +58,7 @@ class StatementRegistry:
             StatementError: If a statement with the same ID (`statement.id`) is
                 already registered.
         """
-        if not isinstance(statement, StatementStructure):
+        if not isinstance(statement, _LegacyStatementStructure | _V2StatementStructure):
             raise TypeError("Only StatementStructure objects can be registered.")
 
         statement_id = statement.id
@@ -72,7 +73,7 @@ class StatementRegistry:
         self._statements[statement_id] = statement
         logger.info("Registered statement '%s' with ID '%s'", statement.name, statement_id)
 
-    def get(self, statement_id: str) -> StatementStructure | None:
+    def get(self, statement_id: str) -> StatementStructureLike | None:
         """Get a registered statement by its ID.
 
         Returns:
@@ -100,7 +101,7 @@ class StatementRegistry:
         """
         return list(self._statements.keys())
 
-    def get_all_statements(self) -> list[StatementStructure]:
+    def get_all_statements(self) -> list[StatementStructureLike]:
         """Get all registered statement structure objects.
 
         Returns:

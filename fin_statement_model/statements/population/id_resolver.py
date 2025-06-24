@@ -9,11 +9,18 @@ import logging
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
-from fin_statement_model.statements.structure import StatementStructure
+from fin_statement_model.statements.structure.containers import (
+    StatementStructure as _LegacyStatementStructure,
+)
+from fin_statement_model.statements.structure.models_v2 import (
+    StatementStructure as _V2StatementStructure,
+)
 
 logger = logging.getLogger(__name__)
 
 __all__ = ["IDResolver"]
+
+type StatementStructureLike = _LegacyStatementStructure | _V2StatementStructure
 
 
 class IDResolver:
@@ -32,7 +39,7 @@ class IDResolver:
     build time for optimal performance.
     """
 
-    def __init__(self, statement: StatementStructure, registry: StandardNodeRegistry):
+    def __init__(self, statement: StatementStructureLike, registry: StandardNodeRegistry):
         """Initialize the resolver with a statement structure and a registry.
 
         Args:
