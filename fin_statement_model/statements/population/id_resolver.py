@@ -9,10 +9,7 @@ import logging
 
 from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.nodes.standard_registry import StandardNodeRegistry
-from fin_statement_model.statements.structure import (
-    LineItem,
-    StatementStructure,
-)
+from fin_statement_model.statements.structure import StatementStructure
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +50,10 @@ class IDResolver:
         logger.debug("Building ID cache for statement '%s'", self.statement.id)
 
         for item in self.statement.get_all_items():
-            if isinstance(item, LineItem):
+            # Duck-type check: both legacy **and** v2 `LineItem` classes expose
+            # the helper method ``get_resolved_node_id`` that returns the
+            # concrete graph node identifier.
+            if hasattr(item, "get_resolved_node_id"):
                 # Get the resolved node ID (handles both direct node_id and standard_node_ref)
                 resolved_node_id = item.get_resolved_node_id(self._registry)
                 if resolved_node_id:
@@ -62,10 +62,10 @@ class IDResolver:
                     self._node_to_items_cache.setdefault(resolved_node_id, []).append(item.id)
 
                     # Log if using standard node reference for debugging
-                    if item.standard_node_ref:
+                    if getattr(item, "standard_node_ref", None):
                         logger.debug(
                             "Resolved standard node reference '%s' to '%s' for item '%s'",
-                            item.standard_node_ref,
+                            getattr(item, "standard_node_ref", None),
                             resolved_node_id,
                             item.id,
                         )
@@ -73,8 +73,8 @@ class IDResolver:
                     logger.warning(
                         "Could not resolve node reference for LineItem '%s'. node_id: %s, standard_node_ref: %s",
                         item.id,
-                        item.node_id,
-                        item.standard_node_ref,
+                        getattr(item, "node_id", None),
+                        getattr(item, "standard_node_ref", None),
                     )
             else:
                 # Other items use their ID directly as the node ID

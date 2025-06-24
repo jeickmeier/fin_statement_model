@@ -35,8 +35,11 @@ Key implementation details:
 
 from __future__ import annotations
 
+# The *Sequence* ABC is required at runtime for tree traversal helpers.  While
+# we keep the TYPE_CHECKING import for static analysers, an unconditional
+# import avoids `NameError` exceptions when these helpers execute.
 from pathlib import Path
-from typing import TYPE_CHECKING, Annotated, Any, Literal, overload
+from typing import TYPE_CHECKING, Annotated, Any, Literal, cast, overload
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, computed_field
 import yaml
@@ -142,6 +145,38 @@ class LineItem(_BaseItem):
         description="Optional reference to a standard node in the registry (used instead of *node_id*).",
     )
 
+    # -----------------------------------------------------------------
+    # Legacy-compatibility helpers
+    # -----------------------------------------------------------------
+
+    def get_resolved_node_id(self, registry: Any) -> str | None:
+        """Return the concrete graph node ID for this line item.
+
+        This mirrors the behaviour of the legacy ``LineItem.get_resolved_node_id``
+        method so that existing population utilities (e.g. ``IDResolver``)
+        continue to operate unchanged.
+
+        Args:
+            registry: The standard-node registry providing canonical node names.
+
+        Returns:
+            The resolved node identifier or ``None`` when the item cannot be
+            mapped to a concrete node.
+        """
+        # Resolve via explicit node_id first.
+        if self.node_id is not None:
+            return self.node_id
+
+        if self.standard_node_ref is not None:
+            try:
+                return cast("str", registry.get_standard_name(self.standard_node_ref))
+            except (LookupError, AttributeError, ValueError):
+                # A wide but *not* blanket set of errors expected when the registry
+                # cannot resolve the supplied reference.
+                return None
+
+        return None
+
 
 class MetricLineItem(_BaseItem):
     """A line item whose value comes from the *metrics* subsystem."""
@@ -161,6 +196,34 @@ class CalculatedLineItem(_BaseItem):
 
     calculation: CalculationSpec = Field(..., description="Calculation specification.")
 
+    # -----------------------------------------------------------------
+    # Legacy-compatibility helpers
+    # -----------------------------------------------------------------
+
+    @property
+    def input_ids(self) -> list[str]:
+        """Return the identifiers of the calculation inputs.
+
+        Provided for backwards-compatibility with the legacy runtime which
+        expected a dedicated ``input_ids`` attribute.
+        """
+        return self.calculation.inputs
+
+    @property
+    def calculation_type(self) -> str:
+        """Return the operation identifier (e.g. ``'addition'``)."""
+        return self.calculation.type
+
+    @property
+    def parameters(self) -> dict[str, Any]:
+        """Return optional calculation parameters.
+
+        The minimal v2 grammar currently does not expose additional
+        parameters, but the attribute is kept for interface parity with the
+        legacy implementation.
+        """
+        return {}
+
 
 class SubtotalLineItem(_BaseItem):
     """A subtotal of a list of sibling items or an ad-hoc calculation."""
@@ -176,6 +239,19 @@ class SubtotalLineItem(_BaseItem):
         None,
         description="IDs of items to sum (ignored when *calculation* is set).",
     )
+
+    # -----------------------------------------------------------------
+    # Legacy-compatibility helpers
+    # -----------------------------------------------------------------
+
+    @property
+    def item_ids(self) -> list[str]:
+        """Return the list of item identifiers contributing to this subtotal."""
+        if self.items_to_sum is not None:
+            return self.items_to_sum
+        if self.calculation is not None:
+            return self.calculation.inputs
+        return []
 
     # ---------------------------------------------------------------------
     # Validators
@@ -256,6 +332,77 @@ class StatementStructure(BaseModel):
 
         _collect(self.sections)
         return ids
+
+    # -----------------------------------------------------------------
+    # Legacy-compatibility helpers - traversal utilities
+    # -----------------------------------------------------------------
+
+    def find_item_by_id(self, item_id: str) -> Section | StatementItem | None:
+        """Recursively search for an item (or section) with *item_id*."""
+
+        def _search(items: Sequence[Section | StatementItem]) -> Section | StatementItem | None:
+            for itm in items:
+                if itm.id == item_id:
+                    return itm
+                if isinstance(itm, Section):
+                    found = _search(itm.items)
+                    if found is not None:
+                        return found
+                    if itm.subtotal is not None and itm.subtotal.id == item_id:
+                        return itm.subtotal
+            return None
+
+        return _search(self.sections)
+
+    # The following helper collections reproduce the legacy public API so that
+    # downstream utilities (population, formatting, etc.) can operate on either
+    # v1 *or* v2 structures transparently.
+
+    def get_all_items(self) -> list[StatementItem]:
+        """Return *all* concrete items (excluding sections) in a flat list."""
+        collected: list[StatementItem] = []
+
+        def _collect(items: Sequence[Section | StatementItem]) -> None:
+            for itm in items:
+                if isinstance(itm, Section):
+                    _collect(itm.items)
+                    if itm.subtotal is not None:
+                        collected.append(itm.subtotal)
+                else:
+                    collected.append(itm)
+
+        _collect(self.sections)
+        return collected
+
+    def get_calculation_items(self) -> list[CalculatedLineItem | SubtotalLineItem]:
+        """Return calculation and subtotal items (excluding metrics)."""
+        items: list[CalculatedLineItem | SubtotalLineItem] = []
+
+        def _collect(children: Sequence[Section | StatementItem]) -> None:
+            for itm in children:
+                if isinstance(itm, CalculatedLineItem | SubtotalLineItem):
+                    items.append(itm)
+                elif isinstance(itm, Section):
+                    _collect(itm.items)
+                    if itm.subtotal is not None:
+                        items.append(itm.subtotal)
+
+        _collect(self.sections)
+        return items
+
+    def get_metric_items(self) -> list[MetricLineItem]:
+        """Return all metric items within the structure."""
+        metrics: list[MetricLineItem] = []
+
+        def _collect(children: Sequence[Section | StatementItem]) -> None:
+            for itm in children:
+                if isinstance(itm, MetricLineItem):
+                    metrics.append(itm)
+                elif isinstance(itm, Section):
+                    _collect(itm.items)
+
+        _collect(self.sections)
+        return metrics
 
 
 # ---------------------------------------------------------------------------

@@ -6,10 +6,12 @@ graph nodes. Each processor encapsulates the logic for its specific item type,
 reducing complexity and improving testability.
 """
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any, cast
 
 from fin_statement_model.core.errors import (
     CalculationError,
@@ -18,16 +20,21 @@ from fin_statement_model.core.errors import (
     MetricError,
     NodeError,
 )
-from fin_statement_model.core.graph import Graph
 from fin_statement_model.core.metrics import metric_registry
-from fin_statement_model.statements.population.id_resolver import IDResolver
-from fin_statement_model.statements.structure import (
-    CalculatedLineItem,
-    MetricLineItem,
-    StatementItem,
-    StatementStructure,
-    SubtotalLineItem,
-)
+
+# These imports are *only* needed for static type-checking (they are not
+# referenced at runtime thanks to duck-typing in the processor
+# implementations).  Placing them behind a `TYPE_CHECKING` guard avoids Ruf
+# unused-import lint warnings.
+if TYPE_CHECKING:  # pragma: no cover - typings only
+    from fin_statement_model.core.graph import Graph
+    from fin_statement_model.statements.population.id_resolver import IDResolver
+    from fin_statement_model.statements.structure import (
+        StatementItem,
+        StatementStructure,
+        SubtotalLineItem,  # noqa: F401 - used for type hints
+    )
+
 from fin_statement_model.statements.utilities.result_types import (
     ErrorDetail,
     ErrorSeverity,
@@ -212,17 +219,24 @@ class MetricItemProcessor(ItemProcessor):
     """
 
     def can_process(self, item: StatementItem) -> bool:
-        """Check if item is a MetricLineItem."""
-        return isinstance(item, MetricLineItem)
+        """Return *True* when *item* represents a metric line.
+
+        The check is performed using the discriminating ``item_type`` attribute
+        so that both legacy *and* v2 Pydantic models are recognised without
+        coupling to a concrete class.
+        """
+        return getattr(item, "item_type", None) == "metric"
 
     def process(self, item: StatementItem, is_retry: bool = False) -> ProcessorResult:
         """Process a MetricLineItem and add it to the graph."""
-        # Early validation
-        if not isinstance(item, MetricLineItem):
+        # Early validation - duck-typed via the discriminator
+        if getattr(item, "item_type", None) != "metric":
             return ProcessorResult(success=False, error_message="Invalid item type")
 
+        metric_item = cast("Any", item)
+
         # Check if node already exists
-        if self.graph.has_node(item.id):
+        if self.graph.has_node(metric_item.id):
             return ProcessorResult(success=True, node_added=False)
 
         # Initialize result variables
@@ -231,31 +245,33 @@ class MetricItemProcessor(ItemProcessor):
 
         # Get metric from registry
         try:
-            metric = metric_registry.get(item.metric_id)
+            metric = metric_registry.get(metric_item.metric_id)
         except MetricError as e:
-            logger.exception("Cannot populate item '%s': Metric '%s' not found in registry", item.id, item.metric_id)
-            error_message = f"Metric '{item.metric_id}' not found: {e}"
+            logger.exception(
+                "Cannot populate item '%s': Metric '%s' not found in registry", metric_item.id, metric_item.metric_id
+            )
+            error_message = f"Metric '{metric_item.metric_id}' not found: {e}"
 
         # Validate input mappings if no error yet
         if not error_message:
-            error_message = self._validate_metric_inputs(metric, item)
+            error_message = self._validate_metric_inputs(metric, metric_item)
 
         # Resolve metric inputs if no error yet
         if not error_message:
-            resolved_map, missing = self._resolve_metric_inputs(metric, item)
+            resolved_map, missing = self._resolve_metric_inputs(metric, metric_item)
             if missing:
                 return self._handle_missing_inputs(item, missing, is_retry)
 
             # Add to graph
             try:
                 self.graph.add_metric(
-                    metric_name=item.metric_id,
-                    node_name=item.id,
+                    metric_name=metric_item.metric_id,
+                    node_name=metric_item.id,
                     input_node_map=resolved_map,
                 )
                 node_added = True
             except Exception as e:
-                logger.exception("Failed to add metric node '%s'", item.id)
+                logger.exception("Failed to add metric node '%s'", metric_item.id)
                 error_message = f"Failed to add metric node: {e}"
 
         # Single exit point
@@ -263,10 +279,10 @@ class MetricItemProcessor(ItemProcessor):
             return ProcessorResult(success=False, error_message=error_message)
         return ProcessorResult(success=True, node_added=node_added)
 
-    def _validate_metric_inputs(self, metric: Any, item: MetricLineItem) -> str | None:
+    def _validate_metric_inputs(self, metric: Any, item: Any) -> str | None:
         """Validate that the item provides all required metric inputs."""
-        provided_inputs = set(item.inputs.keys())
-        required_inputs = set(metric.inputs)
+        provided_inputs = set(cast("dict[str, str]", item.inputs).keys())
+        required_inputs = set(cast("Any", metric).inputs)
 
         if provided_inputs != required_inputs:
             missing_req = required_inputs - provided_inputs
@@ -283,15 +299,13 @@ class MetricItemProcessor(ItemProcessor):
 
         return None
 
-    def _resolve_metric_inputs(
-        self, metric: Any, item: MetricLineItem
-    ) -> tuple[dict[str, str], list[tuple[str, str | None]]]:
+    def _resolve_metric_inputs(self, metric: Any, item: Any) -> tuple[dict[str, str], list[tuple[str, str | None]]]:
         """Resolve metric input mappings to graph node IDs."""
         resolved_map = {}
         missing = []
 
-        for metric_input_name in metric.inputs:
-            input_item_id = item.inputs[metric_input_name]
+        for metric_input_name in cast("Any", metric).inputs:
+            input_item_id = cast("dict[str, str]", item.inputs)[metric_input_name]
             node_id = self.id_resolver.resolve(input_item_id, self.graph)
 
             if node_id and self.graph.has_node(node_id):
@@ -312,21 +326,23 @@ class CalculatedItemProcessor(ItemProcessor):
     """
 
     def can_process(self, item: StatementItem) -> bool:
-        """Check if item is a CalculatedLineItem."""
-        return isinstance(item, CalculatedLineItem)
+        """Identify calculated line items via the ``item_type`` discriminator."""
+        return getattr(item, "item_type", None) == "calculated"
 
     def process(self, item: StatementItem, is_retry: bool = False) -> ProcessorResult:
         """Process a CalculatedLineItem and add it to the graph."""
-        if not isinstance(item, CalculatedLineItem):
+        if getattr(item, "item_type", None) != "calculated":
             return ProcessorResult(success=False, error_message="Invalid item type")
 
+        calc_item = cast("Any", item)
+
         # Check if node already exists
-        if self.graph.has_node(item.id):
+        if self.graph.has_node(calc_item.id):
             return ProcessorResult(success=True, node_added=False)
 
         # Command: create any needed signed nodes
         neg_base_ids: list[str] = []
-        for input_id in item.input_ids:
+        for input_id in cast("list[str]", calc_item.input_ids):
             input_item = self.statement.find_item_by_id(input_id)
             if input_item and getattr(input_item, "sign_convention", 1) == -1:
                 node_id = self.id_resolver.resolve(input_id, self.graph)
@@ -336,7 +352,7 @@ class CalculatedItemProcessor(ItemProcessor):
             self.graph.ensure_signed_nodes(neg_base_ids)
 
         # Query: resolve inputs without mutating graph
-        resolved_inputs, missing = self._resolve_inputs(item)
+        resolved_inputs, missing = self._resolve_inputs(calc_item)
         if missing:
             return self._handle_missing_inputs(item, missing, is_retry)
 
@@ -344,10 +360,10 @@ class CalculatedItemProcessor(ItemProcessor):
         error_message = None
         try:
             self.graph.add_calculation(
-                name=item.id,
+                name=calc_item.id,
                 input_names=resolved_inputs,
-                operation_type=item.calculation_type,
-                **item.parameters,
+                operation_type=calc_item.calculation_type,
+                **calc_item.parameters,
             )
         except (
             NodeError,
@@ -355,11 +371,11 @@ class CalculatedItemProcessor(ItemProcessor):
             CalculationError,
             ConfigurationError,
         ) as e:
-            error_msg = f"Failed to add calculation node '{item.id}': {e}"
+            error_msg = f"Failed to add calculation node '{calc_item.id}': {e}"
             logger.exception(error_msg)
             error_message = str(e)
         except Exception as e:
-            error_msg = f"Unexpected error adding calculation node '{item.id}': {e}"
+            error_msg = f"Unexpected error adding calculation node '{calc_item.id}': {e}"
             logger.exception(error_msg)
             error_message = f"Unexpected error: {e}"
 
@@ -367,7 +383,7 @@ class CalculatedItemProcessor(ItemProcessor):
             return ProcessorResult(success=False, error_message=error_message)
         return ProcessorResult(success=True, node_added=True)
 
-    def _resolve_inputs(self, item: CalculatedLineItem) -> tuple[list[str], list[tuple[str, str | None]]]:
+    def _resolve_inputs(self, item: Any) -> tuple[list[str], list[tuple[str, str | None]]]:
         """Resolve input IDs to graph node or signed-node IDs without side effects.
 
         Args:
@@ -379,7 +395,7 @@ class CalculatedItemProcessor(ItemProcessor):
         resolved: list[str] = []
         missing: list[tuple[str, str | None]] = []
 
-        for input_id in item.input_ids:
+        for input_id in cast("list[str]", getattr(item, "input_ids", [])):
             node_id = self.id_resolver.resolve(input_id, self.graph)
             # Missing base node
             if not node_id or not self.graph.has_node(node_id):
@@ -409,43 +425,45 @@ class SubtotalItemProcessor(ItemProcessor):
     """
 
     def can_process(self, item: StatementItem) -> bool:
-        """Check if item is a SubtotalLineItem."""
-        return isinstance(item, SubtotalLineItem)
+        """Identify subtotal items via the ``item_type`` discriminator."""
+        return getattr(item, "item_type", None) == "subtotal"
 
     def process(self, item: StatementItem, is_retry: bool = False) -> ProcessorResult:
         """Process a SubtotalLineItem and add it to the graph."""
-        if not isinstance(item, SubtotalLineItem):
+        if getattr(item, "item_type", None) != "subtotal":
             return ProcessorResult(success=False, error_message="Invalid item type")
 
+        sub_item = cast("Any", item)
+
         # Check if node already exists
-        if self.graph.has_node(item.id):
+        if self.graph.has_node(sub_item.id):
             return ProcessorResult(success=True, node_added=False)
 
         # Handle empty subtotals
-        if not item.item_ids:
-            logger.debug("Subtotal item '%s' has no input items", item.id)
+        if not getattr(sub_item, "item_ids", []):
+            logger.debug("Subtotal item '%s' has no input items", sub_item.id)
             return ProcessorResult(success=True, node_added=False)
 
         # Resolve inputs
-        resolved, missing = self.resolve_inputs(item.item_ids)
+        resolved, missing = self.resolve_inputs(list(getattr(sub_item, "item_ids", [])))
         if missing:
             return self._handle_missing_inputs(item, missing, is_retry)
 
         # Add subtotal as addition calculation
         error_message = None
         try:
-            self.graph.add_calculation(name=item.id, input_names=resolved, operation_type="addition")
+            self.graph.add_calculation(name=sub_item.id, input_names=resolved, operation_type="addition")
         except (
             NodeError,
             CircularDependencyError,
             CalculationError,
             ConfigurationError,
         ) as e:
-            error_msg = f"Failed to add subtotal node '{item.id}': {e}"
+            error_msg = f"Failed to add subtotal node '{sub_item.id}': {e}"
             logger.exception(error_msg)
             error_message = str(e)
         except Exception as e:
-            error_msg = f"Unexpected error adding subtotal node '{item.id}': {e}"
+            error_msg = f"Unexpected error adding subtotal node '{sub_item.id}': {e}"
             logger.exception(error_msg)
             error_message = f"Unexpected error: {e}"
 

@@ -9,7 +9,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 import logging
 import re
-from typing import Any
+from typing import Any, cast
 
 import numpy as np  # Added numpy for NaN handling
 import pandas as pd
@@ -27,11 +27,9 @@ from fin_statement_model.statements.formatting.data_fetcher import DataFetcher
 # Import the ID resolver
 from fin_statement_model.statements.population.id_resolver import IDResolver
 from fin_statement_model.statements.structure import (
-    CalculatedLineItem,
-    Section,
+    Section,  # Needed for hierarchical resolution helpers
     StatementItem,
     StatementStructure,
-    SubtotalLineItem,
 )
 
 # Import formatting utilities
@@ -222,7 +220,7 @@ class StatementFormatter:
         )
         return result if result is not None else None
 
-    def _find_parent_section_for_item(self, target_item: StatementItem) -> Section | None:
+    def _find_parent_section_for_item(self, target_item: StatementItem) -> object | None:
         """Find the parent section that contains the given item.
 
         Args:
@@ -232,7 +230,10 @@ class StatementFormatter:
             The parent Section object, or None if not found.
         """
 
-        def search_in_section(section: Section) -> Section | None:
+        def _is_section(obj: Any) -> bool:
+            return isinstance(obj, Section) or getattr(obj, "item_type", None) == "section"
+
+        def search_in_section(section: Any) -> Any | None:
             # Check direct items
             for item in section.items:
                 if item is target_item or (
@@ -240,22 +241,22 @@ class StatementFormatter:
                 ):
                     return section
                 # Check nested sections
-                if isinstance(item, Section):
+                if _is_section(item):
                     result = search_in_section(item)
                     if result:
                         return result
 
             # Check subtotal
-            if hasattr(section, "subtotal") and section.subtotal is target_item:
+            if getattr(section, "subtotal", None) is target_item:
                 return section
 
             return None
 
         # Search through all top-level sections
-        for section in self.statement.sections:
-            result = search_in_section(section)
-            if result:
-                return result
+        for sec in self.statement.sections:
+            result = search_in_section(sec)
+            if result is not None:
+                return cast("Section | object", result)
 
         return None
 
@@ -551,14 +552,14 @@ class StatementFormatter:
             graph: Graph instance
         """
         for item in items:
-            if isinstance(item, Section):
+            if isinstance(item, Section) or getattr(item, "item_type", None) == "section":
                 self._process_section(item, depth, data, rows, context, id_resolver, graph)
-            elif isinstance(item, StatementItem):
+            elif getattr(item, "item_type", None) != "section":
                 self._process_item(item, depth, data, rows, context, id_resolver, graph)
 
     def _process_section(
         self,
-        section: Section,
+        section: Any,
         depth: int,
         data: dict[str, dict[str, float]],
         rows: list[dict[str, Any]],
@@ -566,7 +567,7 @@ class StatementFormatter:
         id_resolver: IDResolver,
         graph: Graph,
     ) -> None:
-        """Process a section and its items.
+        """Process a section (or section-like object) and its items.
 
         Args:
             section: Section to process
@@ -577,11 +578,11 @@ class StatementFormatter:
             id_resolver: ID resolver instance
             graph: Graph instance
         """
-        # Process section items first to collect data for hide check
+        # Process nested items first to collect data for hide check
         self._process_items_recursive(section.items, depth + 1, data, rows, context, id_resolver, graph)
 
         # Process subtotal if it exists
-        if hasattr(section, "subtotal") and section.subtotal:
+        if getattr(section, "subtotal", None):
             self._process_items_recursive([section.subtotal], depth + 1, data, rows, context, id_resolver, graph)
 
         # Check if section should be hidden
@@ -693,8 +694,8 @@ class StatementFormatter:
             "line_type": self._get_item_type(item),
             "node_id": node_id,
             "sign_convention": getattr(item, "sign_convention", 1),
-            "is_subtotal": isinstance(item, SubtotalLineItem),
-            "is_calculated": isinstance(item, CalculatedLineItem),
+            "is_subtotal": getattr(item, "item_type", None) == "subtotal",
+            "is_calculated": getattr(item, "item_type", None) == "calculated",
             "is_contra": getattr(item, "is_contra", False),
         }
 
@@ -968,14 +969,20 @@ class StatementFormatter:
         Returns:
             str: Item type identifier
         """
-        if isinstance(item, Section):
+        # Legacy *Section* objects are not derived from StatementItem and need
+        # an explicit check.
+        if isinstance(item, Section) or getattr(item, "item_type", None) == "section":
             return "section"
-        elif isinstance(item, SubtotalLineItem):
-            return "subtotal"
-        elif isinstance(item, CalculatedLineItem):
-            return "calculated"
-        else:
-            return "item"
+
+        itype = getattr(item, "item_type", None)
+
+        from enum import Enum
+
+        # Handle Enum values from the legacy model safely.
+        if isinstance(itype, Enum):
+            return str(itype.value)
+
+        return str(itype) if itype is not None else "item"
 
     def format_html(
         self,
