@@ -20,6 +20,7 @@ dependencies = [
     "pydantic>=2.11.3",
     "deepmerge>=2.0",
     "asteval>=1.0.6",
+    "click>=8.1.7",
 ]
 
 [dependency-groups]

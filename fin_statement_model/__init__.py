@@ -22,6 +22,7 @@ from fin_statement_model.core.nodes import (
     StatisticalGrowthForecastNode,
     YoYGrowthNode,
 )
+from fin_statement_model.templates.registry import TemplateRegistry
 
 # ensure our library-wide logging policy is applied immediately
 from . import logging_config
@@ -41,6 +42,7 @@ __all__ = [
     "Node",
     "NodeFactory",
     "StatisticalGrowthForecastNode",
+    "TemplateRegistry",
     "YoYGrowthNode",
     "__version__",
     "get_config",
