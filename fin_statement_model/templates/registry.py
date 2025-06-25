@@ -121,6 +121,33 @@ class TemplateRegistry:
         cls._atomic_write(cls._index_path(), payload)
 
     # ------------------------------------------------------------------
+    # Path validation helpers
+    # ------------------------------------------------------------------
+    @classmethod
+    def _resolve_bundle_path(cls, rel: str | Path) -> Path:
+        """Return absolute *bundle* path ensuring it remains within registry root.
+
+        The function defends against malicious index entries that attempt to
+        traverse outside the registry directory or use absolute paths.  Any
+        violation raises ``ValueError``.
+        """
+        rel_path = Path(rel)
+        # Reject absolute paths outright
+        if rel_path.is_absolute():
+            raise ValueError("Registry index contains absolute bundle path - potential security risk.")
+        # Reject parent directory traversal ("..") components
+        if any(part == ".." for part in rel_path.parts):
+            raise ValueError("Registry index contains path traversal components (..).")
+
+        root = cls._registry_root().resolve()
+        abs_path = (root / rel_path).resolve()
+        try:
+            abs_path.relative_to(root)
+        except ValueError as exc:  # pragma: no cover - defensive
+            raise ValueError("Resolved bundle path escapes registry root.") from exc
+        return abs_path
+
+    # ------------------------------------------------------------------
     # Public API - foundational subset (list / register / get)
     # ------------------------------------------------------------------
     @classmethod
@@ -224,7 +251,7 @@ class TemplateRegistry:
             rel = index[template_id]
         except KeyError as exc:  # pragma: no cover - explicit failure expected in tests
             raise KeyError(f"Template '{template_id}' not found in registry.") from exc
-        bundle_path = cls._registry_root() / rel
+        bundle_path = cls._resolve_bundle_path(rel)
         with bundle_path.open(encoding="utf-8") as fh:
             data = json.load(fh)
         return TemplateBundle.model_validate(data)

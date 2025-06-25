@@ -97,6 +97,12 @@ python_classes = ["Test*"]
 # Pytest general options (migrated from pytest.ini)
 addopts = "-q --cov=fin_statement_model --cov-report=term-missing --cov-config=pyproject.toml"
 
+# Custom markers used across the test-suite
+markers = [
+    "perf: performance benchmark suite",
+    "security: security and hardening tests",
+]
+
 # Match asyncio plugin behaviour from pytest.ini
 asyncio_default_fixture_loop_scope = "module"
 
