@@ -74,7 +74,6 @@ dev = [
 source = ["fin_statement_model"]
 omit = [
     "tests/*",
-    "fin_statement_model/statements/*",
 ]
 
 [tool.coverage.report]

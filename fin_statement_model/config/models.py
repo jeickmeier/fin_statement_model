@@ -41,10 +41,8 @@ from fin_statement_model.config.subconfigs import (
     LoggingConfig,
     MetricsConfig,
     PreprocessingConfig,
-    StatementsConfig,
     ValidationConfig,
 )
-from fin_statement_model.statements.configs.models import AdjustmentFilterSpec  # noqa: F401
 
 # Ensure sub-config models are fully initialized before we create default
 # instances below; Pydantic may require an explicit rebuild when models are
@@ -59,7 +57,6 @@ for _model in (
     APIConfig,
     MetricsConfig,
     ValidationConfig,
-    StatementsConfig,
 ):
     _model.model_rebuild()
 
@@ -76,7 +73,6 @@ class Config(BaseModel):
         api (APIConfig): API integration settings.
         metrics (MetricsConfig): Metrics registry settings.
         validation (ValidationConfig): Data validation settings.
-        statements (StatementsConfig): Statement building settings.
         project_name (str): Identifier for the project.
         config_file_path (Optional[Path]): Path to the loaded config file.
         auto_save_config (bool): Auto-save overrides to file.
@@ -111,10 +107,6 @@ class Config(BaseModel):
     validation: ValidationConfig = Field(
         default=ValidationConfig.model_validate({}),
         description="Data validation configuration",
-    )
-    statements: StatementsConfig = Field(
-        default=StatementsConfig.model_validate({}),
-        description="Statement structure and formatting configuration",
     )
 
     # Global settings

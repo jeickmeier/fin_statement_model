@@ -21,7 +21,6 @@ from .io_config import IOConfig
 from .logging_config import LoggingConfig
 from .metrics_config import MetricsConfig
 from .preprocessing_config import PreprocessingConfig
-from .statements_config import StatementsConfig
 from .validation_config import ValidationConfig
 
 # Re-export into module namespace.
@@ -35,7 +34,6 @@ globals().update({
     "LoggingConfig": LoggingConfig,
     "MetricsConfig": MetricsConfig,
     "PreprocessingConfig": PreprocessingConfig,
-    "StatementsConfig": StatementsConfig,
     "ValidationConfig": ValidationConfig,
 })
 
@@ -48,6 +46,5 @@ __all__: list[str] = [
     "LoggingConfig",
     "MetricsConfig",
     "PreprocessingConfig",
-    "StatementsConfig",
     "ValidationConfig",
 ]

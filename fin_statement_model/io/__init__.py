@@ -39,15 +39,24 @@ from .exceptions import FormatNotSupportedError, IOError, ReadError, WriteError
 # that import the heavy implementation lazily on first use.
 from .graph import import_from_cells
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover - typing-only imports
     import pandas as pd
 
 
 def list_available_builtin_configs() -> list[str]:
-    """Return the IDs of statement configs bundled with the library."""
-    from fin_statement_model.statements import list_available_builtin_configs as _impl
+    """Return IDs of built-in statement configs (always empty for now).
 
-    return _impl()
+    The Financial Statement Model library used to ship a collection of YAML/JSON
+    templates describing common financial statements.  These were accessed via
+    this helper, which delegated to ``fin_statement_model.statements``.
+
+    As the *statements* package has been removed pending a redesign, this
+    function now returns an empty list.  The stub remains to avoid breaking
+    existing user code that still calls the helper.
+    """
+    # NOTE: Once the new statements implementation lands, this function can be
+    # updated to forward the call to the appropriate helper again.
+    return []
 
 
 def write_statement_to_excel(
