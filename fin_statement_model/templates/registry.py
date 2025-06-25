@@ -10,6 +10,8 @@ It purposefully **does not** implement cloning, diffing or remote storage - thes
 features will be introduced in later roadmap PRs.
 """
 
+from __future__ import annotations
+
 from collections.abc import Mapping, MutableMapping
 import json
 import logging
@@ -17,9 +19,14 @@ import os
 from pathlib import Path
 import tempfile
 import threading  # thread-safety
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
-from fin_statement_model.core.graph import Graph
+if TYPE_CHECKING:  # pragma: no cover
+    import builtins
+
+    from fin_statement_model.core.graph import Graph
+
+
 from fin_statement_model.io import write_data
 from fin_statement_model.templates.models import (
     TemplateBundle,
@@ -34,6 +41,7 @@ __all__: list[str] = [
 ]
 
 _INDEX_LOCK = threading.Lock()  # process-level lock safeguarding index writes
+
 
 class TemplateRegistry:
     """Local filesystem-backed template registry (singleton-style class)."""
@@ -189,7 +197,9 @@ class TemplateRegistry:
             if meta:
                 meta_payload.update(meta)
 
-            bundle = TemplateBundle(meta=TemplateMeta.model_validate(meta_payload), graph_dict=graph_dict, checksum=checksum)
+            bundle = TemplateBundle(
+                meta=TemplateMeta.model_validate(meta_payload), graph_dict=graph_dict, checksum=checksum
+            )
             payload = json.dumps(bundle.model_dump(mode="json"), indent=2)
 
             # Atomic write of bundle then update index
@@ -217,3 +227,94 @@ class TemplateRegistry:
         with bundle_path.open(encoding="utf-8") as fh:
             data = json.load(fh)
         return TemplateBundle.model_validate(data)
+
+    # ------------------------------------------------------------------
+    # Public API - instantiation (clone + optional transforms)
+    # ------------------------------------------------------------------
+    @classmethod
+    def instantiate(
+        cls,
+        template_id: str,
+        *,
+        periods: builtins.list[str] | None = None,
+        rename_map: Mapping[str, str] | None = None,
+    ) -> Graph:
+        """Instantiate a :class:`~fin_statement_model.core.graph.Graph` from *template_id*.
+
+        The helper first loads the stored :class:`TemplateBundle`, reconstructs
+        the original graph via the IO facade and finally performs a deep clone
+        to ensure the returned graph is **independent** from the internal cache
+        of the registry.  Optional extra periods and node-renaming are applied
+        on the cloned instance.
+
+        Args:
+            template_id: Canonical identifier, e.g. ``"lbo.standard_v1"``.
+            periods: Optional list of additional periods to append. Existing
+                periods are preserved - duplicates are ignored.
+            rename_map: Optional mapping ``old_node_name → new_node_name``.
+
+        Returns:
+            A ready-to-use :class:`Graph` instance.
+        """
+        # ------------------------------------------------------------------
+        # 1. Load bundle & re-construct Graph via IO facade
+        # ------------------------------------------------------------------
+        bundle = cls.get(template_id)
+
+        from fin_statement_model.io import read_data
+
+        graph = read_data("graph_definition_dict", bundle.graph_dict)
+
+        # ------------------------------------------------------------------
+        # 2. Deep-clone to decouple from in-memory caches (safety & perf)
+        # ------------------------------------------------------------------
+        graph = graph.clone(deep=True)
+
+        # ------------------------------------------------------------------
+        # 3. Extend periods if requested
+        # ------------------------------------------------------------------
+        if periods:
+            if not isinstance(periods, list):
+                raise TypeError("'periods' must be a list of strings if provided.")
+            graph.add_periods([p for p in periods if p not in graph.periods])
+
+        # ------------------------------------------------------------------
+        # 4. Apply node renames - maintain edge wiring
+        # ------------------------------------------------------------------
+        if rename_map:
+            if not isinstance(rename_map, Mapping):
+                raise TypeError("'rename_map' must be a mapping of old→new node IDs.")
+
+            # Basic validations -------------------------------------------------
+            for old_name, new_name in rename_map.items():
+                if old_name not in graph.nodes:
+                    raise KeyError(f"Node '{old_name}' not found in graph - cannot rename.")
+                if new_name in graph.nodes:
+                    raise ValueError(f"Target node name '{new_name}' already exists in graph.")
+
+            # Perform the rename ------------------------------------------------
+            for old_name, new_name in rename_map.items():
+                node = graph.nodes.pop(old_name)
+                node.name = new_name
+                graph.nodes[new_name] = node
+
+            # Refresh calculation nodes' input references ----------------------
+            try:
+                graph.manipulator._update_calculation_nodes()  # pylint: disable=protected-access
+            except AttributeError:
+                # Fallback - update input_names manually where present
+                for nd in graph.nodes.values():
+                    if hasattr(nd, "input_names") and isinstance(nd.input_names, list):
+                        nd.input_names = [rename_map.get(n, n) for n in nd.input_names]
+
+        # Clear caches to avoid stale values after structural changes ----------
+        graph.clear_all_caches()
+
+        logger.info(
+            "Instantiated template '%s' as graph - periods=%s, rename_map=%s",
+            template_id,
+            periods,
+            rename_map,
+        )
+
+        return graph

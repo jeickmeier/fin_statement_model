@@ -80,3 +80,42 @@ class Graph(
     """
 
     # All functionality is provided by the mix-ins.
+
+    def clone(self, *, deep: bool = True) -> Graph:
+        """Return a cloned copy of the current graph.
+
+        Args:
+            deep: If ``True`` (default) a *deep* copy containing **new** node
+                instances and adjustment objects is returned. When ``False`` a
+                shallow copy is produced which **shares** node objects with the
+                original graph.  The shallow variant is primarily useful for
+                quick read-only snapshots.
+
+        Returns:
+            Graph: A new :class:`Graph` instance replicating the structure and
+            state of *self*.
+        """
+        # Lazy imports (avoid heavy IO modules during Graph import)
+        import copy
+
+        if not deep:
+            return copy.copy(self)
+
+        # ------------------------------------------------------------------
+        # Deep clone via IO round-trip ensures a clean Graph reconstructor and
+        # avoids the complexities of manually copying nested node references.
+        # ------------------------------------------------------------------
+        from fin_statement_model.io import read_data, write_data
+
+        # Serialise to an in-memory graph-definition dictionary
+        graph_def = write_data("graph_definition_dict", self, target=None)
+
+        # Deserialise back into a *new* Graph instance
+        cloned_graph = read_data("graph_definition_dict", graph_def)
+
+        # Copy all adjustments (if any) - these are *not* included in the
+        # serialized graph definition because they are stored separately on the
+        # adjustment manager.  We simply deep-copy to preserve immutability.
+        cloned_graph.adjustment_manager.load_adjustments([copy.deepcopy(a) for a in self.list_all_adjustments()])
+
+        return cloned_graph
