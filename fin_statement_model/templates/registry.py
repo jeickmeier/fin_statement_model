@@ -29,6 +29,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 from fin_statement_model.io import write_data
 from fin_statement_model.templates.models import (
+    DiffResult,
     TemplateBundle,
     TemplateMeta,
     _calculate_sha256_checksum,
@@ -318,3 +319,68 @@ class TemplateRegistry:
         )
 
         return graph
+
+    # ------------------------------------------------------------------
+    # Public API - diffing
+    # ------------------------------------------------------------------
+    @classmethod
+    def diff(
+        cls,
+        template_id_a: str,
+        template_id_b: str,
+        *,
+        include_values: bool = True,
+        periods: builtins.list[str] | None = None,
+        atol: float = 1e-9,
+    ) -> DiffResult:
+        """Return structural / value diff between two registered templates.
+
+        Args:
+            template_id_a: Identifier for *base* template (left-hand side).
+            template_id_b: Identifier for *comparison* template (right-hand side).
+            include_values: When *True* (default) numerical deltas are computed in addition to topology.
+            periods: Optional subset of periods to compare.  When *None* the intersection of periods is used.
+            atol: Absolute tolerance used by value comparison (`compare_values`).
+
+        Returns:
+            DiffResult: Frozen Pydantic model capturing structure and, optionally, value differences.
+        """
+        # Lazy import to avoid heavyweight dependencies on registry import
+        from fin_statement_model.io import read_data
+        from fin_statement_model.templates import diff as _diff_helpers
+
+        # ------------------------------------------------------------------
+        # Re-hydrate both graphs via IO facade (no mutation - read-only path)
+        # ------------------------------------------------------------------
+        bundle_a = cls.get(template_id_a)
+        bundle_b = cls.get(template_id_b)
+
+        graph_a = read_data("graph_definition_dict", bundle_a.graph_dict)
+        graph_b = read_data("graph_definition_dict", bundle_b.graph_dict)
+
+        # Deep clone to avoid accidental shared caches / state
+        graph_a = graph_a.clone(deep=True)
+        graph_b = graph_b.clone(deep=True)
+
+        # ------------------------------------------------------------------
+        # Delegate to diff helpers
+        # ------------------------------------------------------------------
+        result = _diff_helpers.diff(
+            graph_a,
+            graph_b,
+            include_values=include_values,
+            periods=periods,
+            atol=atol,
+        )
+
+        logger.info(
+            "Diff between '%s' and '%s' - added=%d removed=%d changed=%d value_cells=%d",
+            template_id_a,
+            template_id_b,
+            len(result.structure.added_nodes),
+            len(result.structure.removed_nodes),
+            len(result.structure.changed_nodes),
+            0 if result.values is None else len(result.values.changed_cells),
+        )
+
+        return result
