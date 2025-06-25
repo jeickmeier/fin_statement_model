@@ -229,3 +229,6 @@ ignore_missing_imports = true
 [tool.ruff.lint.mccabe]
 max-complexity = 15
 
+[project.scripts]
+fsm = "fin_statement_model.cli:fsm"
+
