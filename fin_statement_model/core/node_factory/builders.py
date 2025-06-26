@@ -143,10 +143,20 @@ def create_calculation_node(
         calculation_kwargs.setdefault("input_variable_names", formula_variable_names)
 
     # Split kwargs between calculation-init and node extra attributes
+    # Remove metric_description for 'metric' calculation to avoid unexpected parameter
+    if calculation_type == "metric" and "metric_description" in calculation_kwargs:
+        calculation_kwargs.pop("metric_description")
+
+    # Persist metric_name on the node object so it survives serialization
     node_extra_kwargs = {}
-    for key in ("metric_name", "metric_description"):
-        if key in calculation_kwargs:
-            node_extra_kwargs[key] = calculation_kwargs.pop(key)
+    if calculation_type == "metric" and "metric_name" in calculation_kwargs:
+        node_extra_kwargs["metric_name"] = calculation_kwargs["metric_name"]
+
+    if calculation_type != "metric":
+        # For standard calculations pull metric-specific metadata into node attrs
+        for key in ("metric_name", "metric_description"):
+            if key in calculation_kwargs:
+                node_extra_kwargs[key] = calculation_kwargs.pop(key)
 
     calculation_instance = calc_cls(**calculation_kwargs)
 

@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from fin_statement_model.core.errors import CalculationError, FinancialModelError
 from fin_statement_model.io.core.base import DataWriter
 
 if TYPE_CHECKING:
@@ -32,7 +33,7 @@ class ValueExtractionMixin:
                 val = node.calculate(period)
                 if isinstance(val, int | float):
                     return float(val)
-        except (ValueError, ArithmeticError, AttributeError) as exc:
+        except (ValueError, ArithmeticError, AttributeError, CalculationError, FinancialModelError) as exc:
             logger.debug(
                 "Failed to extract value from node '%s' period '%s': %s",
                 getattr(node, "name", "?"),

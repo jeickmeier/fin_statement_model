@@ -17,6 +17,7 @@ plugins:
 nav:
   - Home: index.md
   - Tutorials: tutorials.md
+  - Statement Templates: registry_templates.md
   - API Reference: api_reference.md
   - Changelog: CHANGELOG.md
 

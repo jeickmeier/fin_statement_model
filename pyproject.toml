@@ -142,6 +142,7 @@ exclude = [
     "requirements.txt",
     "pyproject.toml",
     "examples/scripts/**",
+    "fin_statement_model/templates/builtin/data/**",
 ]
 
 [tool.ruff.lint]

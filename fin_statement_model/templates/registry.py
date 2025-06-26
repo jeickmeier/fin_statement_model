@@ -30,6 +30,7 @@ if TYPE_CHECKING:  # pragma: no cover
 from fin_statement_model.io import write_data
 from fin_statement_model.templates.models import (
     DiffResult,
+    ForecastSpec,
     TemplateBundle,
     TemplateMeta,
     _calculate_sha256_checksum,
@@ -121,6 +122,44 @@ class TemplateRegistry:
         cls._atomic_write(cls._index_path(), payload)
 
     # ------------------------------------------------------------------
+    # Public helper - deletion (used by install_builtin_templates overwrite)
+    # ------------------------------------------------------------------
+    @classmethod
+    def delete(cls, template_id: str) -> None:
+        """Remove *template_id* from the registry (bundle & index).
+
+        Silently ignores unknown *template_id* so callers may blindly attempt
+        deletion.  The operation is **destructive** - the bundle file is
+        unlinked.  Errors are logged but not raised to avoid cascading
+        failures during best-effort clean-up scenarios (e.g. reinstall).
+        """
+        with _INDEX_LOCK:
+            index = cls._load_index()
+            rel_path = index.pop(template_id, None)
+            if rel_path is None:
+                logger.debug("Template '%s' not found - nothing to delete.", template_id)
+                cls._save_index(index)
+                return
+
+            # Delete bundle JSON (ignore if already gone)
+            try:
+                abs_path = cls._resolve_bundle_path(rel_path)
+                if abs_path.exists():
+                    abs_path.unlink()
+                    # Remove now-empty parent directories up to registry root
+                    for parent in abs_path.parent.parents:
+                        try:
+                            parent.rmdir()
+                        except OSError:
+                            break  # not empty - stop ascent
+                        if parent == cls._registry_root():
+                            break
+            except Exception:  # pragma: no cover - cautious cleanup
+                logger.exception("Failed to remove bundle for '%s'", template_id)
+            finally:
+                cls._save_index(index)
+
+    # ------------------------------------------------------------------
     # Path validation helpers
     # ------------------------------------------------------------------
     @classmethod
@@ -177,6 +216,7 @@ class TemplateRegistry:
         name: str,
         version: str | None = None,
         meta: Mapping[str, Any] | None = None,
+        forecast: ForecastSpec | None = None,
     ) -> str:
         """Register *graph* under *name* returning the full template identifier.
 
@@ -188,6 +228,7 @@ class TemplateRegistry:
             meta: Optional additional metadata fields. Keys ``name``,
                 ``version`` and ``category`` are filled in automatically and override
                 duplicates.
+            forecast: Optional forecast specification for the template.
 
         Returns:
             The canonical template identifier (e.g. ``"lbo.standard_v1"``).
@@ -226,7 +267,10 @@ class TemplateRegistry:
                 meta_payload.update(meta)
 
             bundle = TemplateBundle(
-                meta=TemplateMeta.model_validate(meta_payload), graph_dict=graph_dict, checksum=checksum
+                meta=TemplateMeta.model_validate(meta_payload),
+                graph_dict=graph_dict,
+                checksum=checksum,
+                forecast=forecast,
             )
             payload = json.dumps(bundle.model_dump(mode="json"), indent=2)
 
@@ -292,6 +336,22 @@ class TemplateRegistry:
         from fin_statement_model.io import read_data
 
         graph = read_data("graph_definition_dict", bundle.graph_dict)
+
+        # ------------------------------------------------------------------
+        # 1b. Apply forecast recipe if present
+        # ------------------------------------------------------------------
+        if bundle.forecast is not None:
+            try:
+                from fin_statement_model.forecasting import StatementForecaster
+
+                fc = StatementForecaster(graph)
+                fc.create_forecast(
+                    forecast_periods=bundle.forecast.periods,
+                    node_configs=bundle.forecast.node_configs,
+                )
+            except Exception:
+                logger.exception("Failed to apply forecast for template '%s'", template_id)
+                raise
 
         # ------------------------------------------------------------------
         # 2. Deep-clone to decouple from in-memory caches (safety & perf)
@@ -384,6 +444,23 @@ class TemplateRegistry:
 
         graph_a = read_data("graph_definition_dict", bundle_a.graph_dict)
         graph_b = read_data("graph_definition_dict", bundle_b.graph_dict)
+
+        # Apply forecast recipes when present so diff works on fully realised graphs
+        from fin_statement_model.forecasting import StatementForecaster
+
+        for graph, bundle in ((graph_a, bundle_a), (graph_b, bundle_b)):
+            if bundle.forecast is not None:
+                try:
+                    fc = StatementForecaster(graph)
+                    fc.create_forecast(
+                        forecast_periods=bundle.forecast.periods,
+                        node_configs=bundle.forecast.node_configs,
+                    )
+                except Exception:  # pragma: no cover
+                    logger.exception(
+                        "Failed to apply forecast while diffing templates '%s' and '%s'", template_id_a, template_id_b
+                    )
+                    raise
 
         # Deep clone to avoid accidental shared caches / state
         graph_a = graph_a.clone(deep=True)

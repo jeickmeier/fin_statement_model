@@ -1,0 +1,48 @@
+{
+    "meta": {
+        "name": "real_estate_lending",
+        "version": "v3",
+        "category": "real_estate",
+        "description": "Minimal construction-loan waterfall",
+        "created_at": "2024-01-01T00:00:00",
+        "tags": {}
+    },
+    "graph_dict": {
+        "periods": ["2024", "2025", "2026", "2027"],
+        "nodes": {
+            "LoanDraw": {
+                "type": "financial_statement_item",
+                "name": "LoanDraw",
+                "values": {"2024": 50, "2025": 30, "2026": 0}
+            },
+            "InterestRate": {
+                "type": "financial_statement_item",
+                "name": "InterestRate",
+                "values": {"2024": 0.08, "2025": 0.08, "2026": 0.08}
+            },
+            "InterestExpense": {
+                "type": "formula_calculation",
+                "name": "InterestExpense",
+                "inputs": ["LoanDraw", "InterestRate"],
+                "formula_variable_names": ["input_0", "input_1"],
+                "formula": "input_0 * input_1",
+                "calculation_type": "formula",
+                "metric_name": null,
+                "metric_description": null
+            },
+            "InterestExpenseRate": {
+                "type": "formula_calculation",
+                "name": "InterestExpenseRate",
+                "inputs": ["InterestExpense", "LoanDraw"],
+                "formula_variable_names": ["ie", "ld"],
+                "formula": "ie / ld",
+                "calculation_type": "formula",
+                "metric_name": null,
+                "metric_description": null
+            }
+        },
+        "adjustments": []
+    },
+    "forecast": {"periods": ["2027"], "node_configs": {"LoanDraw": {"method": "simple", "config": 0.0}}},
+    "checksum": "d7591f2f62c6200311b97e8059f93b5c56caa04e702860107b19b044dc5890fd"
+}

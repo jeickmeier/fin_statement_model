@@ -125,6 +125,11 @@ class ForecastNode(Node):
         Returns:
             list[str]: Single-element list of the input node's name.
         """
+        # For *self-forecast* nodes (the forecast overwrites its own base item and
+        # therefore shares the same name), we must not expose a self-dependency.
+        # This avoids artificial cycles in graph traversals.
+        if self.input_node.name == self.name:
+            return []
         return [self.input_node.name]
 
     def _calculate_value(self, period: str) -> float:

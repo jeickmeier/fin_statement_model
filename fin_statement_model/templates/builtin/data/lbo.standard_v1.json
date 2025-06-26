@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "name": "lbo.standard",
+    "version": "v1",
+    "category": "lbo",
+    "description": "Minimal 3-node LBO example",
+    "created_at": "2024-01-01T00:00:00",
+    "tags": {}
+  },
+  "graph_dict": {
+    "periods": [
+      "2024",
+      "2025",
+      "2026",
+      "2027"
+    ],
+    "nodes": {
+      "Revenue": {
+        "type": "financial_statement_item",
+        "name": "Revenue",
+        "values": {
+          "2024": 1000,
+          "2025": 1100,
+          "2026": 1210
+        }
+      },
+      "COGS": {
+        "type": "financial_statement_item",
+        "name": "COGS",
+        "values": {
+          "2024": 400,
+          "2025": 440,
+          "2026": 484
+        }
+      },
+      "GrossProfit": {
+        "type": "formula_calculation",
+        "name": "GrossProfit",
+        "inputs": [
+          "Revenue",
+          "COGS"
+        ],
+        "formula_variable_names": [
+          "input_0",
+          "input_1"
+        ],
+        "formula": "input_0 - input_1",
+        "calculation_type": "formula",
+        "metric_name": null,
+        "metric_description": null
+      },
+      "GrossProfitMargin": {
+        "type": "calculation",
+        "name": "GrossProfitMargin",
+        "inputs": [
+          "GrossProfit",
+          "Revenue"
+        ],
+        "calculation_type": "metric",
+        "metric_name": "gross_profit_margin"
+      }
+    },
+    "adjustments": []
+  },
+  "forecast": {
+    "periods": [
+      "2027"
+    ],
+    "node_configs": {
+      "Revenue": {
+        "method": "simple",
+        "config": 0.1
+      },
+      "COGS": {
+        "method": "historical_growth",
+        "config": {"aggregation": "mean"}
+      }
+    }
+  },
+  "checksum": "8f5a7dd5101479ba7b3ce27d7c0f10ac133199f64e986653b62813ea85c7ce33"
+}

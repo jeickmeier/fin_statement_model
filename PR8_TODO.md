@@ -1,0 +1,9 @@
+- [x] Create docs/registry_templates.md user guide
+- [x] Add builtin_templates helper with install_builtin_templates
+- [x] Provide built-in template graphs programmatically
+- [ ] Create example notebook templates_basics.ipynb (optional)
+- [x] Create script templates_end_to_end.py
+- [x] Update mkdocs.yml navigation to include new guide
+- [x] Update fin_statement_model/templates/__init__.py docstring link
+- [x] Ensure docs build without warnings
+- [x] Run full test suite and fix any errors 

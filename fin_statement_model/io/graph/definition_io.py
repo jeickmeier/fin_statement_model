@@ -79,10 +79,11 @@ class GraphDefinitionReader(DataReader):
             """
             raise NotImplementedError("_TempNode is an internal stub; it cannot be deserialized.")
 
-    def _get_node_dependencies(self, node_def: dict[str, Any]) -> list[str]:
+    def _get_node_dependencies(self, _node_name_key: str, node_def: dict[str, Any]) -> list[str]:
         """Extract dependency names from a node definition.
 
         Args:
+            _node_name_key: The key of the node being processed.
             node_def: Dictionary containing node definition.
 
         Returns:
@@ -92,16 +93,22 @@ class GraphDefinitionReader(DataReader):
 
         if node_type == "financial_statement_item":
             return []  # No dependencies
-        elif node_type in ["calculation", "formula_calculation"]:
+
+        if node_type in ["calculation", "formula_calculation"]:
             return cast("list[str]", node_def.get("inputs", []))
-        elif node_type == "forecast":
-            base_node_name = cast("str | None", node_def.get("base_node_name"))
-            return [base_node_name] if base_node_name is not None else []
-        elif node_type == "custom_calculation":
+
+        if node_type == "forecast":
+            raise ReadError(
+                message="Forecast nodes are deprecated in template graph definitions. Use 'forecast' section instead.",
+                source="graph_definition_dict",
+                reader_type="GraphDefinitionReader",
+            )
+
+        if node_type == "custom_calculation":
             return cast("list[str]", node_def.get("inputs", []))
-        else:
-            # Default: inputs should be list[str]
-            return cast("list[str]", node_def.get("inputs", []))
+
+        # Fallback - treat 'inputs' as dependency list when present
+        return cast("list[str]", node_def.get("inputs", []))
 
     # --- Private helpers -------------------------------------------------------------
     def _load_adjustments(
@@ -196,7 +203,7 @@ class GraphDefinitionReader(DataReader):
 
             # Second pass - wire up the inputs attribute based on serialized dependencies
             for node_name, node_def in nodes_dict.items():
-                dep_names = self._get_node_dependencies(node_def)
+                dep_names = self._get_node_dependencies(node_name, node_def)
                 try:
                     from_nodes[node_name].inputs = [from_nodes[d] for d in dep_names]
                 except KeyError as missing:

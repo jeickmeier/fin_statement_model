@@ -666,3 +666,53 @@ class FormulaCalculation(Calculation):
     def description(self) -> str:
         """Return a human-readable description of the calculation."""
         return f"Formula (evaluated via asteval): {self.formula}"
+
+
+class MetricCalculation(Calculation):
+    """Calculation strategy that defers to a formula from metric_registry.
+
+    The constructor accepts *metric_name* (snake_case).  On first use it looks
+    up the corresponding :class:`MetricDefinition` from the global
+    ``metric_registry`` and internally compiles a :class:`FormulaCalculation`.
+    Subsequent calls delegate directly for speed.
+    """
+
+    def __init__(self, metric_name: str):
+        """Create a MetricCalculation for *metric_name*.
+
+        The metric definition is fetched from the global ``metric_registry`` and
+        translated into an internal :class:`FormulaCalculation` so that further
+        calls are as fast as any regular formula node.
+
+        Args:
+            metric_name: Registry key (snake_case) of the metric to evaluate.
+        """
+        # Runtime import to avoid heavy dependency when module is first imported.
+        from fin_statement_model.core.calculations.calculation import FormulaCalculation
+        from fin_statement_model.core.metrics.registry import metric_registry
+
+        self._metric_name = metric_name
+        try:
+            metric_def = metric_registry.get(metric_name)
+        except KeyError as exc:  # pragma: no cover - surfaced at builder time in tests
+            raise ValueError(f"Unknown metric '{metric_name}' - ensure metric_registry is loaded.") from exc
+
+        # Build internal FormulaCalculation using metric formula & variable names
+        self._formula_calc = FormulaCalculation(metric_def.formula, metric_def.inputs)
+
+    def calculate(self, inputs: list[Node], period: str) -> float:
+        """Delegate to internal FormulaCalculation instance."""
+        return self._formula_calc.calculate(inputs, period)
+
+    @property
+    def description(self) -> str:
+        """Short human-readable description used by to_dict()."""
+        return f"Metric calculation for '{self._metric_name}'"
+
+
+# ---------------------------------------------------------------------
+# Register aliases with CalculationAliasRegistry (done at import time)
+# ---------------------------------------------------------------------
+from fin_statement_model.core.node_factory.registries import CalculationAliasRegistry  # noqa: E402  import at end
+
+CalculationAliasRegistry.register("metric", MetricCalculation, overwrite=True)

@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 __all__ = [
     "DiffResult",
+    "ForecastSpec",
     "StructureDiff",
     "TemplateBundle",
     "TemplateMeta",
@@ -50,6 +51,27 @@ def _calculate_sha256_checksum(obj: Mapping[str, Any]) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Forecast specification
+# ---------------------------------------------------------------------------
+
+
+class ForecastSpec(BaseModel):
+    """Declarative forecasting recipe attached to a template.
+
+    Mirrors the parameters accepted by :class:`fin_statement_model.forecasting.StatementForecaster` so a
+    template can declare how its forward-looking periods should be generated at instantiation time.
+    """
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    periods: list[str] = Field(..., description="Future periods to generate via forecasting.")
+    node_configs: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Mapping node-name ➜ forecast configuration (method & config) exactly as expected by StatementForecaster.",
+    )
+
+
+# ---------------------------------------------------------------------------
 # Core models
 # ---------------------------------------------------------------------------
 
@@ -75,6 +97,12 @@ class TemplateBundle(BaseModel):
     meta: TemplateMeta = Field(..., description="Immutable template metadata.")
     graph_dict: dict[str, Any] = Field(..., description="Graph definition exported via IO facade.")
     checksum: str = Field(..., description="SHA-256 checksum of *graph_dict* JSON.")
+
+    # New in v0.2 - declarative forecast specification (optional)
+    forecast: ForecastSpec | None = Field(
+        default=None,
+        description="Optional forecast recipe applied on instantiation.",
+    )
 
     # ---------------------------------------------------------------------
     # Validation helpers
