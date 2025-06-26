@@ -115,6 +115,7 @@ class TimeSeriesTransformer(DataTransformer):
         periods: int = 1,
         window_size: int = 3,
         *,
+        as_percent: bool = True,
         config: TimeSeriesConfig | None = None,
     ):
         """Initialize the time series transformer.
@@ -135,6 +136,7 @@ class TimeSeriesTransformer(DataTransformer):
                 - For growth_rate: use periods=1 for consecutive period growth
             window_size: Size of the moving average window (only used for 'moving_avg').
                 Default is 3.
+            as_percent: Flag to indicate whether the result should be expressed as a percentage.
             config: Optional TimeSeriesConfig object containing configuration.
                 If provided, overrides other parameters.
 
@@ -175,6 +177,7 @@ class TimeSeriesTransformer(DataTransformer):
 
         self.periods = periods
         self.window_size = window_size
+        self.as_percent = as_percent
 
     def transform(self, data: pd.DataFrame | pd.Series[Any]) -> pd.DataFrame | pd.Series[Any]:
         """Transform time series data based on the configured transformation type.
@@ -336,7 +339,10 @@ class TimeSeriesTransformer(DataTransformer):
         """
         res = df.copy()
         for col in df.columns:
-            res[f"{col}_growth"] = df[col].pct_change(periods=self.periods) * 100
+            if self.as_percent:
+                res[f"{col}_growth"] = df[col].pct_change(periods=self.periods) * 100
+            else:
+                res[f"{col}_growth"] = df[col].diff(periods=self.periods)
         return res
 
     def _apply_moving_avg(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -482,7 +488,10 @@ class TimeSeriesTransformer(DataTransformer):
             )
         res = df.copy()
         for col in df.columns:
-            res[f"{col}_yoy"] = df[col].pct_change(periods=self.periods) * 100
+            if self.as_percent:
+                res[f"{col}_yoy"] = df[col].pct_change(periods=self.periods) * 100
+            else:
+                res[f"{col}_yoy"] = df[col].diff(periods=self.periods)
         return res
 
     def _apply_qoq(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -527,7 +536,10 @@ class TimeSeriesTransformer(DataTransformer):
             )
         res = df.copy()
         for col in df.columns:
-            res[f"{col}_qoq"] = df[col].pct_change(periods=self.periods) * 100
+            if self.as_percent:
+                res[f"{col}_qoq"] = df[col].pct_change(periods=self.periods) * 100
+            else:
+                res[f"{col}_qoq"] = df[col].diff(periods=self.periods)
         return res
 
     # ------------------------------------------------------------------

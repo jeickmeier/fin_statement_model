@@ -1,0 +1,7 @@
+- [x] Add PreprocessingStep & PreprocessingSpec models plus optional field in TemplateBundle
+- [x] Extend TemplateRegistry.register_graph to accept & persist `preprocessing`
+- [x] Integrate preprocessing pipeline execution in TemplateRegistry.instantiate
+- [x] Add Graph support & helper (`apply_pipeline_to_graph`) in preprocessing utils
+- [ ] Update docs & built-in JSON templates to include preprocessing section
+- [ ] Add new tests for template preprocessing
+- [ ] Run ruff, format, mypy, pytest and fix any errors 

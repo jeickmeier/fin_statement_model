@@ -113,6 +113,7 @@ def install_builtin_templates(*, force: bool = False) -> None:
                 version=bundle.meta.version,
                 meta=bundle.meta.model_dump(exclude={"name", "version"}),
                 forecast=bundle.forecast,
+                preprocessing=bundle.preprocessing,
             )
         except ValueError as exc:
             # Duplicate template_id - possible race condition; skip in force mode

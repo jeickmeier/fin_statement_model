@@ -12,7 +12,8 @@
       "2024",
       "2025",
       "2026",
-      "2027"
+      "2027",
+      "2028"
     ],
     "nodes": {
       "Revenue": {
@@ -95,7 +96,8 @@
   },
   "forecast": {
     "periods": [
-      "2027"
+      "2027",
+      "2028"
     ],
     "node_configs": {
       "Revenue": {
@@ -108,5 +110,17 @@
       }
     }
   },
-  "checksum": "abb514b6e0b5e792f0e4d585f18108c8a1b20b574aa6a3237c58702baf932dfd"
+  "preprocessing": {
+    "pipeline": [
+      {
+        "name": "time_series",
+        "params": {
+          "transformation_type": "yoy",
+          "periods": 1,
+          "as_percent": true
+        }
+      }
+    ]
+  },
+  "checksum": "bd12931b5e7c03b7f3779b5defa52edbca13ef0da15131ab342ba6e0e5a5b5ef"
 }

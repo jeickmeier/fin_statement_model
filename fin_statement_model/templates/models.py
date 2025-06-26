@@ -21,6 +21,8 @@ if TYPE_CHECKING:
 __all__ = [
     "DiffResult",
     "ForecastSpec",
+    "PreprocessingSpec",
+    "PreprocessingStep",
     "StructureDiff",
     "TemplateBundle",
     "TemplateMeta",
@@ -72,6 +74,33 @@ class ForecastSpec(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Preprocessing specification
+# ---------------------------------------------------------------------------
+
+
+class PreprocessingStep(BaseModel):
+    """Single transformer invocation inside a preprocessing pipeline."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    name: str = Field(..., description="Registered transformer name to execute.")
+    params: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Keyword arguments forwarded to the transformer constructor/executor.",
+    )
+
+
+class PreprocessingSpec(BaseModel):
+    """Ordered preprocessing pipeline attached to a template."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    pipeline: list[PreprocessingStep] = Field(
+        ..., description="Ordered list of preprocessing steps to run at instantiation time."
+    )
+
+
+# ---------------------------------------------------------------------------
 # Core models
 # ---------------------------------------------------------------------------
 
@@ -98,10 +127,16 @@ class TemplateBundle(BaseModel):
     graph_dict: dict[str, Any] = Field(..., description="Graph definition exported via IO facade.")
     checksum: str = Field(..., description="SHA-256 checksum of *graph_dict* JSON.")
 
-    # New in v0.2 - declarative forecast specification (optional)
+    # Optional declarative forecast specification
     forecast: ForecastSpec | None = Field(
         default=None,
         description="Optional forecast recipe applied on instantiation.",
+    )
+
+    # Optional preprocessing pipeline specification
+    preprocessing: PreprocessingSpec | None = Field(
+        default=None,
+        description="Optional preprocessing pipeline applied on instantiation.",
     )
 
     # ---------------------------------------------------------------------

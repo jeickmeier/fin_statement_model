@@ -31,6 +31,7 @@ from fin_statement_model.io import write_data
 from fin_statement_model.templates.models import (
     DiffResult,
     ForecastSpec,
+    PreprocessingSpec,
     TemplateBundle,
     TemplateMeta,
     _calculate_sha256_checksum,
@@ -217,6 +218,7 @@ class TemplateRegistry:
         version: str | None = None,
         meta: Mapping[str, Any] | None = None,
         forecast: ForecastSpec | None = None,
+        preprocessing: PreprocessingSpec | None = None,
     ) -> str:
         """Register *graph* under *name* returning the full template identifier.
 
@@ -229,6 +231,7 @@ class TemplateRegistry:
                 ``version`` and ``category`` are filled in automatically and override
                 duplicates.
             forecast: Optional forecast specification for the template.
+            preprocessing: Optional preprocessing configuration for the template.
 
         Returns:
             The canonical template identifier (e.g. ``"lbo.standard_v1"``).
@@ -271,6 +274,7 @@ class TemplateRegistry:
                 graph_dict=graph_dict,
                 checksum=checksum,
                 forecast=forecast,
+                preprocessing=preprocessing,
             )
             payload = json.dumps(bundle.model_dump(mode="json"), indent=2)
 
@@ -304,7 +308,7 @@ class TemplateRegistry:
     # Public API - instantiation (clone + optional transforms)
     # ------------------------------------------------------------------
     @classmethod
-    def instantiate(
+    def instantiate(  # noqa: C901
         cls,
         template_id: str,
         *,
@@ -395,7 +399,19 @@ class TemplateRegistry:
                     if hasattr(nd, "input_names") and isinstance(nd.input_names, list):
                         nd.input_names = [rename_map.get(n, n) for n in nd.input_names]
 
-        # Clear caches to avoid stale values after structural changes ----------
+        # ------------------------------------------------------------------
+        # 5. Apply preprocessing pipeline if declared
+        # ------------------------------------------------------------------
+        if bundle.preprocessing is not None:
+            try:
+                from fin_statement_model.preprocessing.utils import apply_pipeline_to_graph
+
+                apply_pipeline_to_graph(graph, bundle.preprocessing, in_place=True)
+            except Exception:
+                logger.exception("Failed to apply preprocessing for template '%s'", template_id)
+                raise
+
+        # Clear caches again to ensure a clean state after preprocessing
         graph.clear_all_caches()
 
         logger.info(
