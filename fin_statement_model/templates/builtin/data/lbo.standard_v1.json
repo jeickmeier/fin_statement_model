@@ -60,7 +60,38 @@
         "metric_name": "gross_profit_margin"
       }
     },
-    "adjustments": []
+    "adjustments": [
+      {
+        "node_name": "Revenue",
+        "period": "2026",
+        "value": 1.15,
+        "type": "multiplicative",
+        "scale": 1.0,
+        "priority": 0,
+        "tags": [
+          "Scenario/Bullish",
+          "Revenue",
+          "Growth"
+        ],
+        "scenario": "bullish",
+        "reason": "Bullish scenario - strong market expansion"
+      },
+      {
+        "node_name": "COGS",
+        "period": "2026",
+        "value": 0.92,
+        "type": "multiplicative",
+        "scale": 1.0,
+        "priority": 0,
+        "tags": [
+          "Scenario/Bullish",
+          "CostReduction",
+          "Efficiency"
+        ],
+        "scenario": "bullish",
+        "reason": "Operational efficiency improvements"
+      }
+    ]
   },
   "forecast": {
     "periods": [
@@ -77,5 +108,5 @@
       }
     }
   },
-  "checksum": "8f5a7dd5101479ba7b3ce27d7c0f10ac133199f64e986653b62813ea85c7ce33"
+  "checksum": "abb514b6e0b5e792f0e4d585f18108c8a1b20b574aa6a3237c58702baf932dfd"
 }

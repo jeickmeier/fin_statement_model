@@ -59,8 +59,11 @@ def install_builtin_templates(*, force: bool = False) -> None:
     """Install built-in templates into the local registry.
 
     The function is *idempotent*; calling it multiple times does not create
-    duplicates. Pass ``force=True`` to re-install templates that are already
-    present.
+    duplicates. When a template with the same ``name`` and ``version`` is
+    already registered, its stored checksum is compared against the packaged
+    bundle - if different, the registry entry is transparently updated so that
+    edits to the JSON files are picked-up automatically.  Pass ``force=True``
+    to re-install **unconditionally**.
     """
     bundle_paths = _iter_bundle_files()
     if not bundle_paths:
@@ -80,12 +83,25 @@ def install_builtin_templates(*, force: bool = False) -> None:
 
         template_id = f"{bundle.meta.name}_{bundle.meta.version}"
         if template_id in existing:
-            if force:
-                TemplateRegistry.delete(template_id)
-                existing.remove(template_id)
-            else:
-                logger.debug("Template '%s' already registered - skipping.", template_id)
-                continue
+            # ------------------------------------------------------------------
+            # Detect changes in the packaged bundle (via checksum) and decide
+            # whether the existing registry entry must be replaced.  This makes
+            # the loader workflow smoother for analysts who tweak JSON files -
+            # their edits will be picked-up automatically on the next run.
+            # ------------------------------------------------------------------
+            if not force:
+                try:
+                    current_bundle = TemplateRegistry.get(template_id)
+                except KeyError:
+                    # Index is out-of-sync - fall back to re-install logic below.
+                    pass
+                else:
+                    if current_bundle.checksum == bundle.checksum:
+                        logger.debug("Template '%s' already registered and up-to-date - skipping.", template_id)
+                        continue  # No changes - keep as-is
+            # Either *force* is True OR checksum differs - replace existing
+            TemplateRegistry.delete(template_id)
+            existing.discard(template_id)
 
         # Re-hydrate Graph and register ------------------------------------------------
         graph = read_data("graph_definition_dict", bundle.graph_dict)

@@ -48,6 +48,27 @@ def main() -> None:
     g = TemplateRegistry.instantiate("lbo.standard_v1", periods=["2027"])
     logger.info("Instantiated graph with %d nodes and periods %s", len(g.nodes), g.periods)
 
+    # --------------------------------------------------------------------
+    # Log discretionary adjustments present in the instantiated graph
+    # --------------------------------------------------------------------
+    adjustments = g.list_all_adjustments()
+    if adjustments:
+        logger.info("Graph contains %d discretionary adjustments:", len(adjustments))
+        # Log each adjustment with pertinent details for transparency
+        for adj in adjustments:
+            logger.info(
+                "  • Node='%s', Period='%s', Value=%s, Type=%s, Reason='%s', Tags=%s, Scenario='%s'",
+                adj.node_name,
+                adj.period,
+                adj.value,
+                getattr(adj.type, "value", adj.type),
+                adj.reason,
+                sorted(adj.tags) if adj.tags else set(),
+                adj.scenario,
+            )
+    else:
+        logger.info("No discretionary adjustments present in the graph.")
+
     # Validate that the template instantiated into a proper Graph object ------
     if not isinstance(g, Graph):
         raise TypeError(f"TemplateRegistry.instantiate returned {type(g)}, expected Graph")
