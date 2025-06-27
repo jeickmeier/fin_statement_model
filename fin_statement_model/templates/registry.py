@@ -20,6 +20,7 @@ from pathlib import Path
 import tempfile
 import threading  # thread-safety
 from typing import TYPE_CHECKING, Any, cast
+from importlib import import_module
 
 if TYPE_CHECKING:  # pragma: no cover
     import builtins
@@ -36,6 +37,7 @@ from fin_statement_model.templates.models import (
     TemplateMeta,
     _calculate_sha256_checksum,
 )
+from fin_statement_model.templates.backends import FileSystemStorageBackend, StorageBackend
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +47,36 @@ __all__: list[str] = [
 
 _INDEX_LOCK = threading.Lock()  # process-level lock safeguarding index writes
 
+# ---------------------------------------------------------------------------
+# Backend resolution helpers (defined *before* TemplateRegistry so it can be
+# referenced by class-level attributes).
+# ---------------------------------------------------------------------------
+
+def _resolve_backend_from_env() -> StorageBackend:
+    """Return backend instance implied by *FSM_TEMPLATES_BACKEND* env-var.
+
+    Falls back to :class:`FileSystemStorageBackend` if the variable is unset or
+    cannot be resolved.
+    """
+    path = os.getenv("FSM_TEMPLATES_BACKEND")
+    if not path:
+        return FileSystemStorageBackend()
+
+    try:
+        module_path, cls_name = path.rsplit(".", 1)
+        module = import_module(module_path)
+        backend_cls = getattr(module, cls_name)
+        if not isinstance(backend_cls, type) or not issubclass(backend_cls, StorageBackend):  # type: ignore[arg-type]
+            raise TypeError
+    except Exception as exc:  # pragma: no cover – fallback on any error
+        logger.exception(
+            "Failed to import storage backend '%s': %s – falling back to file-system backend.",
+            path,
+            exc,
+        )
+        return FileSystemStorageBackend()
+    else:
+        return backend_cls()
 
 class TemplateRegistry:
     """Local filesystem-backed template registry (singleton-style class)."""
@@ -126,8 +158,8 @@ class TemplateRegistry:
     # Public helper - deletion (used by install_builtin_templates overwrite)
     # ------------------------------------------------------------------
     @classmethod
-    def delete(cls, template_id: str) -> None:
-        """Remove *template_id* from the registry (bundle & index).
+    def _legacy_delete(cls, template_id: str) -> None:  # noqa: D401 – retained for backward-compat private use
+        """Legacy file-system specific delete implementation (unused after refactor).
 
         Silently ignores unknown *template_id* so callers may blindly attempt
         deletion.  The operation is **destructive** - the bundle file is
@@ -188,12 +220,25 @@ class TemplateRegistry:
         return abs_path
 
     # ------------------------------------------------------------------
-    # Public API - foundational subset (list / register / get)
+    # Backend configuration
+    # ------------------------------------------------------------------
+    _backend: StorageBackend = _resolve_backend_from_env()
+
+    @classmethod
+    def configure_backend(cls, backend: StorageBackend) -> None:
+        """Override the singleton backend implementation used for persistence."""
+        if not isinstance(backend, StorageBackend):
+            raise TypeError("backend must implement the StorageBackend protocol")
+        cls._backend = backend
+        logger.info("TemplateRegistry backend configured to %s", backend.__class__.__name__)
+
+    # ------------------------------------------------------------------
+    # Public API - foundational subset (list / register / get / delete)
     # ------------------------------------------------------------------
     @classmethod
     def list(cls) -> list[str]:
         """Return sorted list of registered template identifiers."""
-        return sorted(cls._load_index())
+        return cls._backend.list()
 
     @classmethod
     def _resolve_next_version(cls, name: str, existing_index: Mapping[str, str]) -> str:
@@ -212,7 +257,7 @@ class TemplateRegistry:
     @classmethod
     def register_graph(
         cls,
-        graph: Graph,
+        graph: "Graph",
         *,
         name: str,
         version: str | None = None,
@@ -239,54 +284,37 @@ class TemplateRegistry:
         if not name or not isinstance(name, str):
             raise TypeError("Template name must be a non-empty string.")
 
-        with _INDEX_LOCK:
-            index = cls._load_index()
-            if version is None:
-                version = cls._resolve_next_version(name, index)
+        existing_ids = cls._backend.list()
+        if version is None:
+            version = cls._resolve_next_version(name, {tid: "" for tid in existing_ids})
 
-            template_id = f"{name}_{version}"
-            if template_id in index:
-                raise ValueError(f"Template '{template_id}' already exists.")
+        template_id = f"{name}_{version}"
+        if template_id in existing_ids:
+            raise ValueError(f"Template '{template_id}' already exists.")
 
-            # ------------------------------------------------------------------
-            # Build filesystem path (store/<name>/<version>/bundle.json)
-            # ------------------------------------------------------------------
-            rel_path = Path(cls._STORE_DIR) / Path(*name.split(".")) / version / "bundle.json"
-            bundle_path = cls._registry_root() / rel_path
-            bundle_path.parent.mkdir(parents=True, exist_ok=True)
+        # ------------------------------------------------------------------
+        # Serialize graph ➜ dict ➜ TemplateBundle
+        # ------------------------------------------------------------------
+        graph_dict = cast("dict[str, Any]", write_data("graph_definition_dict", graph, target=None))
+        checksum = _calculate_sha256_checksum(graph_dict)
 
-            # ------------------------------------------------------------------
-            # Serialize graph ➜ dict ➜ TemplateBundle ➜ JSON
-            # ------------------------------------------------------------------
-            graph_dict = cast("dict[str, Any]", write_data("graph_definition_dict", graph, target=None))
-            checksum = _calculate_sha256_checksum(graph_dict)
+        meta_payload: dict[str, Any] = {
+            "name": name,
+            "version": version,
+            "category": meta.get("category") if meta else name.split(".")[0],
+        }
+        if meta:
+            meta_payload.update(meta)
 
-            meta_payload: dict[str, Any] = {
-                "name": name,
-                "version": version,
-                "category": meta.get("category") if meta else name.split(".")[0],
-            }
-            if meta:
-                meta_payload.update(meta)
+        bundle = TemplateBundle(
+            meta=TemplateMeta.model_validate(meta_payload),
+            graph_dict=graph_dict,
+            checksum=checksum,
+            forecast=forecast,
+            preprocessing=preprocessing,
+        )
 
-            bundle = TemplateBundle(
-                meta=TemplateMeta.model_validate(meta_payload),
-                graph_dict=graph_dict,
-                checksum=checksum,
-                forecast=forecast,
-                preprocessing=preprocessing,
-            )
-            payload = json.dumps(bundle.model_dump(mode="json"), indent=2)
-
-            # Atomic write of bundle then update index
-            cls._atomic_write(bundle_path, payload)
-
-            # Update index in-memory and persist
-            index[template_id] = rel_path.as_posix()
-            cls._save_index(index)
-
-            logger.info("Registered template '%s' (path=%s)", template_id, bundle_path)
-            return template_id
+        return cls._backend.save(bundle)
 
     @classmethod
     def get(cls, template_id: str) -> TemplateBundle:
@@ -294,15 +322,12 @@ class TemplateRegistry:
 
         Raises ``KeyError`` if *template_id* is unknown.
         """
-        index = cls._load_index()
-        try:
-            rel = index[template_id]
-        except KeyError as exc:  # pragma: no cover - explicit failure expected in tests
-            raise KeyError(f"Template '{template_id}' not found in registry.") from exc
-        bundle_path = cls._resolve_bundle_path(rel)
-        with bundle_path.open(encoding="utf-8") as fh:
-            data = json.load(fh)
-        return TemplateBundle.model_validate(data)
+        return cls._backend.load(template_id)
+
+    @classmethod
+    def delete(cls, template_id: str) -> None:
+        """Remove *template_id* from the registry (bundle & metadata)."""
+        cls._backend.delete(template_id)
 
     # ------------------------------------------------------------------
     # Public API - instantiation (clone + optional transforms)
