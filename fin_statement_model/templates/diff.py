@@ -1,9 +1,34 @@
-"""Diff helpers for Template Registry & Engine (TRE).
+"""Template comparison utilities for the Template Registry & Engine (TRE).
 
-This module provides lightweight comparison utilities for assessing structural
-and value-level differences between two **Graph** instances.
-The functions are intentionally stateless and side-effect-free so they can be
-re-used by higher-level APIs (e.g. `TemplateRegistry.diff`).
+This module provides stateless, side-effect-free comparison functions for
+analyzing differences between financial statement template graphs. The utilities
+support both structural analysis (node topology changes) and value-level 
+comparison (numerical deltas).
+
+The functions are designed to be composable and reusable across different
+parts of the system, including the TemplateRegistry.diff() API and standalone
+template analysis workflows.
+
+Key Functions:
+    - **compare_structure()**: Analyze topology differences (added/removed/changed nodes)
+    - **compare_values()**: Calculate numerical deltas between corresponding cells
+    - **diff()**: Comprehensive comparison combining structure and values
+
+Example:
+    >>> from fin_statement_model.templates.diff import diff
+    >>> from fin_statement_model.templates import TemplateRegistry
+    >>> 
+    >>> # Get two template graphs
+    >>> graph_a = TemplateRegistry.instantiate('lbo.standard_v1')
+    >>> graph_b = graph_a.clone()
+    >>> 
+    >>> # Make some changes to graph_b
+    >>> graph_b.add_periods(['2029'])
+    >>> 
+    >>> # Compare the graphs
+    >>> result = diff(graph_a, graph_b, include_values=True)
+    >>> print(f"Structure changes: {len(result.structure.added_nodes)} added")
+    >>> print(f"Value changes: {len(result.values.changed_cells)} cells")
 """
 
 from __future__ import annotations
@@ -38,11 +63,24 @@ __all__: list[str] = [
 
 
 def _node_signature(node: Any) -> Any:
-    """Return a *stable* signature representing *node* configuration.
+    """Generate a stable signature for node configuration comparison.
 
-    We rely on each node implementing ``to_dict`` which is already a contract
-    of the core node hierarchy.  The returned mapping is used for equality
-    comparison only - no attempt is made to hash or serialise it.
+    Creates a hashable representation of a node's configuration by extracting
+    its dictionary representation and removing volatile fields like time-series
+    values that shouldn't trigger structural diffs.
+
+    Args:
+        node: Graph node implementing the to_dict() method
+
+    Returns:
+        Stable configuration signature suitable for equality comparison
+
+    Example:
+        >>> # Assuming node implements to_dict()
+        >>> sig1 = _node_signature(revenue_node)
+        >>> sig2 = _node_signature(revenue_node_copy)
+        >>> sig1 == sig2  # True if configurations match
+        True
     """
     try:
         sig = node.to_dict()
@@ -59,16 +97,38 @@ def _node_signature(node: Any) -> Any:
 
 
 def compare_structure(graph_a: Graph, graph_b: Graph) -> StructureDiff:
-    """Return topological differences between *graph_a* and *graph_b*.
+    """Analyze topological differences between two financial statement graphs.
 
-    The algorithm is intentionally simple:
-    1. Added / removed nodes are determined via set diffs on ``graph.nodes`` keys.
-    2. Nodes present in both graphs are compared via their ``to_dict``
-       representations - any inequality marks the node as *changed*.
-       A short description string is stored but the exact change is not diffed
-       (future improvements could add granular field-level analysis).
+    Performs a comprehensive structural comparison identifying added nodes,
+    removed nodes, and nodes with changed configurations. The algorithm
+    focuses on graph topology and node configuration while ignoring
+    time-series values.
 
-    Complexity: :math:`O(N)` where ``N`` is the number of nodes.
+    Args:
+        graph_a: Base graph for comparison (left-hand side)
+        graph_b: Target graph to compare against graph_a (right-hand side)
+
+    Returns:
+        StructureDiff containing categorized structural changes:
+            - added_nodes: Nodes present only in graph_b
+            - removed_nodes: Nodes present only in graph_a  
+            - changed_nodes: Nodes in both graphs with different configurations
+
+    Example:
+        >>> from fin_statement_model.templates.diff import compare_structure
+        >>> 
+        >>> # Create two graphs with different structures
+        >>> structure_diff = compare_structure(base_graph, modified_graph)
+        >>> 
+        >>> print(f"Added: {structure_diff.added_nodes}")
+        >>> print(f"Removed: {structure_diff.removed_nodes}")
+        >>> print(f"Changed: {list(structure_diff.changed_nodes.keys())}")
+
+    Note:
+        The comparison uses each node's to_dict() representation for
+        configuration analysis. Time-series values are excluded to focus
+        on structural rather than data changes. Complexity is O(N) where
+        N is the number of nodes.
     """
     nodes_a = graph_a.nodes
     nodes_b = graph_b.nodes
@@ -104,15 +164,50 @@ def compare_values(
     periods: Sequence[str] | None = None,
     atol: float = 1e-9,
 ) -> ValuesDiff:
-    """Return period-by-period numerical deltas between two graphs.
+    """Calculate period-by-period numerical differences between two graphs.
+
+    Compares calculated values for corresponding nodes and periods between
+    two graphs, identifying cells where numerical values differ beyond the
+    specified tolerance threshold.
 
     Args:
-        graph_a: Base graph (left-hand side).
-        graph_b: Graph to compare against ``graph_a`` (right-hand side).
-        periods: Optional explicit period list. When *None* the intersection
-            of ``graph_a.periods`` and ``graph_b.periods`` is used.
-        atol: Absolute tolerance below which a delta is considered *equal* and
-            therefore suppressed in the returned diff.
+        graph_a: Base graph for comparison (left-hand side)
+        graph_b: Target graph to compare against graph_a (right-hand side)
+        periods: Explicit list of periods to compare. If None, uses the
+            intersection of periods from both graphs
+        atol: Absolute tolerance threshold. Differences smaller than this
+            value are considered equal and excluded from results
+
+    Returns:
+        ValuesDiff containing:
+            - changed_cells: Mapping of "node|period" to numerical delta (B - A)
+            - max_delta: Largest absolute difference found (useful for summaries)
+
+    Raises:
+        ValueError: If no common periods exist and periods parameter is None
+
+    Example:
+        >>> from fin_statement_model.templates.diff import compare_values
+        >>> 
+        >>> # Compare values between base and modified graphs
+        >>> values_diff = compare_values(
+        ...     base_graph, 
+        ...     modified_graph,
+        ...     periods=["2024", "2025"],
+        ...     atol=0.01  # Ignore differences < 1 cent
+        ... )
+        >>> 
+        >>> # Show significant changes
+        >>> for cell, delta in values_diff.changed_cells.items():
+        ...     node, period = cell.split("|")
+        ...     print(f"{node} {period}: ${delta:,.2f} change")
+        >>> 
+        >>> print(f"Largest change: ${values_diff.max_delta:,.2f}")
+
+    Note:
+        Only compares nodes that exist in both graphs. Calculation errors
+        for individual cells are logged but don't stop the overall comparison.
+        The function calls graph.calculate() for each node/period combination.
     """
     # Determine periods to iterate ----------------------------------------------
     period_list = list(periods) if periods is not None else [p for p in graph_a.periods if p in graph_b.periods]
@@ -161,7 +256,61 @@ def diff(
     periods: Sequence[str] | None = None,
     atol: float = 1e-9,
 ) -> DiffResult:
-    """Return combined structure and (optionally) value diff result."""
+    """Perform comprehensive comparison between two financial statement graphs.
+
+    Combines structural and optional value-level analysis into a single
+    comprehensive diff result. This is the primary entry point for template
+    comparison workflows.
+
+    Args:
+        graph_a: Base graph for comparison (left-hand side)
+        graph_b: Target graph to compare against graph_a (right-hand side)
+        include_values: Whether to include numerical value comparison in addition
+            to structural analysis. Set to False for faster topology-only diffs
+        periods: Explicit list of periods for value comparison. If None, uses
+            intersection of periods from both graphs
+        atol: Absolute tolerance for value comparison. Differences below this
+            threshold are considered equal
+
+    Returns:
+        DiffResult containing:
+            - structure: Structural differences (always included)
+            - values: Value differences (only if include_values=True)
+
+    Example:
+        >>> from fin_statement_model.templates.diff import diff
+        >>> 
+        >>> # Full comparison with values
+        >>> full_diff = diff(graph_a, graph_b, include_values=True)
+        >>> 
+        >>> # Structure-only comparison (faster)
+        >>> structure_diff = diff(graph_a, graph_b, include_values=False)
+        >>> 
+        >>> # Custom period subset and tolerance
+        >>> custom_diff = diff(
+        ...     graph_a, 
+        ...     graph_b,
+        ...     periods=["2024", "2025"],
+        ...     atol=1.0  # Ignore sub-dollar differences
+        ... )
+        >>> 
+        >>> # Check for any changes
+        >>> has_structural_changes = (
+        ...     len(full_diff.structure.added_nodes) > 0 or
+        ...     len(full_diff.structure.removed_nodes) > 0 or 
+        ...     len(full_diff.structure.changed_nodes) > 0
+        ... )
+        >>> 
+        >>> has_value_changes = (
+        ...     full_diff.values is not None and 
+        ...     len(full_diff.values.changed_cells) > 0
+        ... )
+
+    Note:
+        The function always performs structural comparison as it's fast and
+        essential for understanding template differences. Value comparison
+        can be disabled via include_values=False when only topology matters.
+    """
     structure = compare_structure(graph_a, graph_b)
     values = None
     if include_values:
