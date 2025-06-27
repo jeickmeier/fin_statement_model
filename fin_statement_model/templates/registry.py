@@ -37,7 +37,7 @@ from fin_statement_model.templates.models import (
     TemplateMeta,
     _calculate_sha256_checksum,
 )
-from fin_statement_model.templates.backends import FileSystemStorageBackend, StorageBackend
+from fin_statement_model.templates.backends import JsonFileStorageBackend, StorageBackend
 
 logger = logging.getLogger(__name__)
 
@@ -65,11 +65,17 @@ def _resolve_backend_from_env() -> StorageBackend:
 
     # Always use legacy file-system backend when experimental flag is *off*.
     if not experimental_flag:
-        return FileSystemStorageBackend()
+        # Fallback: use simple JSON file backend pointing to default path in
+        # the user's home directory.
+        default_path = Path.home() / ".fin_statement_model" / "templates.json"
+        return JsonFileStorageBackend(default_path)
 
     path = os.getenv("FSM_TEMPLATES_BACKEND")
     if not path:
-        return FileSystemStorageBackend()
+        # If experimental flag is on but no backend specified, default to JSON
+        # file backend at default location.
+        default_path = Path.home() / ".fin_statement_model" / "templates.json"
+        return JsonFileStorageBackend(default_path)
 
     try:
         module_path, cls_name = path.rsplit(".", 1)
@@ -83,7 +89,8 @@ def _resolve_backend_from_env() -> StorageBackend:
             path,
             exc,
         )
-        return FileSystemStorageBackend()
+        default_path = Path.home() / ".fin_statement_model" / "templates.json"
+        return JsonFileStorageBackend(default_path)
     else:
         return backend_cls()
 

@@ -18,13 +18,11 @@ Available built-in backends
 """
 
 from .base import StorageBackend  # noqa: F401 – re-export public ABC
-from .filesystem import FileSystemStorageBackend  # noqa: F401
-from .memory import InMemoryStorageBackend  # noqa: F401
+from .json_file import JsonFileStorageBackend  # noqa: F401
 from .s3 import S3StorageBackend  # noqa: F401 – optional dependency
 
 __all__: list[str] = [
     "StorageBackend",
-    "FileSystemStorageBackend",
-    "InMemoryStorageBackend",
+    "JsonFileStorageBackend",
     "S3StorageBackend",
 ]

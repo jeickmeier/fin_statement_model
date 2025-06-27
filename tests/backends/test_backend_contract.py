@@ -1,17 +1,41 @@
 # noqa: test file
-import tempfile
+import uuid
 
 import pytest
+import importlib
 
 from fin_statement_model.core.graph import Graph
-from fin_statement_model.templates.backends import FileSystemStorageBackend, InMemoryStorageBackend
+from fin_statement_model.templates.backends import JsonFileStorageBackend
 from fin_statement_model.templates.registry import TemplateRegistry
 
 # Backends under test -------------------------------------------------------------------------
-BACKENDS_UNDER_TEST = [
-    InMemoryStorageBackend(),
-    FileSystemStorageBackend(),
-]
+
+def _json_file_backend(tmp_path_factory):
+    temp_file = tmp_path_factory.mktemp("fsm") / "templates.json"
+    return JsonFileStorageBackend(temp_file)
+
+
+# Only include S3 backend when boto3 + moto available
+def _s3_backend():
+    try:
+        importlib.import_module("boto3")
+        importlib.import_module("moto")
+    except ModuleNotFoundError:
+        return None
+    from fin_statement_model.templates.backends import S3StorageBackend  # local import to avoid linter
+
+    # Use random bucket name – the moto context will create it on demand
+    return S3StorageBackend(bucket=f"fsm-test-{uuid.uuid4()}")
+
+
+def pytest_generate_tests(metafunc):
+    if "backend" in metafunc.fixturenames:
+        tmp_path_factory = metafunc.config._tmp_path_factory  # noqa: SLF001 – pytest internals
+        cases = [_json_file_backend(tmp_path_factory)]
+        s3 = _s3_backend()
+        if s3 is not None:  # type: ignore[arg-type]
+            cases.append(s3)  # type: ignore[arg-type]
+        metafunc.parametrize("backend", cases)
 
 
 def _build_sample_graph() -> Graph:
