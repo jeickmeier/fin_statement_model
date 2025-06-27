@@ -54,14 +54,8 @@ def _build_sample_graph() -> Graph:
 
 
 @pytest.mark.BACKEND_TEST_MATRIX
-@pytest.mark.parametrize("backend", BACKENDS_UNDER_TEST)
 def test_register_get_list_delete_cycle(monkeypatch, backend):
     """Core CRUD behaviour must be consistent across all backends."""
-    # Isolate filesystem backend to a temp directory to avoid side-effects
-    if isinstance(backend, FileSystemStorageBackend):
-        tmpdir = tempfile.mkdtemp()
-        monkeypatch.setenv("FSM_TEMPLATES_PATH", tmpdir)
-
     # Configure backend
     TemplateRegistry.configure_backend(backend)
 
