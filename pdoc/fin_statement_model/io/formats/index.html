@@ -1,0 +1,2350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.io.formats API documentation</title>
+<meta name="description" content="Format-specific IO implementations …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.io.formats</code></h1>
+</header>
+<section id="section-intro">
+<p>Format-specific IO implementations.</p>
+<p>This module contains readers and writers for various data formats.
+Each format is organized in its own submodule.</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.io.formats.csv_reader" href="csv_reader.html">fin_statement_model.io.formats.csv_reader</a></code></dt>
+<dd>
+<div class="desc"><p>Data reader for comma-separated value (CSV) files …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats.dataframe_reader" href="dataframe_reader.html">fin_statement_model.io.formats.dataframe_reader</a></code></dt>
+<dd>
+<div class="desc"><p>Data reader for in-memory pandas DataFrames …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats.dataframe_writer" href="dataframe_writer.html">fin_statement_model.io.formats.dataframe_writer</a></code></dt>
+<dd>
+<div class="desc"><p>Data writer for exporting graph data to a pandas DataFrame …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats.dict_reader" href="dict_reader.html">fin_statement_model.io.formats.dict_reader</a></code></dt>
+<dd>
+<div class="desc"><p>Data reader for Python dictionaries …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats.dict_writer" href="dict_writer.html">fin_statement_model.io.formats.dict_writer</a></code></dt>
+<dd>
+<div class="desc"><p>Data writer for exporting graph data to a Python dictionary …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats.excel_reader" href="excel_reader.html">fin_statement_model.io.formats.excel_reader</a></code></dt>
+<dd>
+<div class="desc"><p>Data reader for Microsoft Excel files …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats.excel_writer" href="excel_writer.html">fin_statement_model.io.formats.excel_writer</a></code></dt>
+<dd>
+<div class="desc"><p>Data writer for exporting graph data to Microsoft Excel files …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats.fmp_reader" href="fmp_reader.html">fin_statement_model.io.formats.fmp_reader</a></code></dt>
+<dd>
+<div class="desc"><p>Data reader for the Financial Modeling Prep (FMP) API …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats.markdown_writer" href="markdown_writer.html">fin_statement_model.io.formats.markdown_writer</a></code></dt>
+<dd>
+<div class="desc"><p>Data writer for exporting financial statements to Markdown format …</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.io.formats.CsvReader"><code class="flex name class">
+<span>class <span class="ident">CsvReader</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.CsvReaderConfig" href="../config/models.html#fin_statement_model.io.config.models.CsvReaderConfig">CsvReaderConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_reader(&#34;csv&#34;, schema=CsvReaderConfig)
+class CsvReader(DataFrameReaderBase):
+    &#34;&#34;&#34;Reads financial data from long-format CSV files into a Graph.
+
+    This reader is configured to handle CSV files where each row contains data
+    for a single item in a single period. It requires the configuration to specify
+    which columns correspond to the item name, period, and value.
+
+    Configuration is provided via a `CsvReaderConfig` object.
+
+    Attributes:
+        layout (str): Specifies the expected data layout, hardcoded to &#34;long&#34;.
+        file_extensions (tuple[str, ...]): A tuple of valid file extensions (&#39;.csv&#39;, &#39;.txt&#39;).
+    &#34;&#34;&#34;
+
+    # Specify long layout (rows = observations)
+    layout = &#34;long&#34;
+
+    # Valid file extensions handled by this reader
+    file_extensions = (&#34;.csv&#34;, &#34;.txt&#34;)
+
+    def __init__(self, cfg: CsvReaderConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the CsvReader.
+
+        Args:
+            cfg: A validated `CsvReaderConfig` instance.
+        &#34;&#34;&#34;
+        self.cfg = cfg
+
+    # ------------------------------------------------------------------
+    # DataFrameReaderBase hook implementation
+    # ------------------------------------------------------------------
+    def _load_dataframe(self, source: Any, **kwargs: Any) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Load data from a CSV file into a pandas DataFrame.
+
+        This method implements the `_load_dataframe` hook from `DataFrameReaderBase`.
+        It validates the file&#39;s existence and extension, then uses `pandas.read_csv`
+        to load the data. Configuration options like the delimiter and header row
+        are retrieved from the `CsvReaderConfig` object.
+
+        Args:
+            source (Any): The file path to the CSV file.
+            **kwargs (Any): Additional keyword arguments, including pandas-specific options.
+
+        Returns:
+            A pandas DataFrame containing the data from the CSV file.
+        &#34;&#34;&#34;
+        self.validate_file_exists(source)
+        self.validate_file_extension(source)
+
+        delimiter = self.get_config_value(&#34;delimiter&#34;, default=&#34;,&#34;, value_type=str)
+        header_row = self.get_config_value(&#34;header_row&#34;, default=1, value_type=int)
+        index_col = self.get_config_value(&#34;index_col&#34;)
+        user_opts = kwargs.get(&#34;pandas_read_csv_kwargs&#34;) or self.cfg.pandas_read_csv_kwargs or {}
+
+        read_opts: dict[str, Any] = {
+            &#34;delimiter&#34;: delimiter,
+            &#34;header&#34;: header_row - 1,
+        }
+        if index_col is not None:
+            read_opts[&#34;index_col&#34;] = cast(&#34;int&#34;, index_col) - 1
+        read_opts.update(user_opts)
+        return cast(&#34;pd.DataFrame&#34;, pd.read_csv(source, **read_opts))</code></pre>
+</details>
+<div class="desc"><p>Reads financial data from long-format CSV files into a Graph.</p>
+<p>This reader is configured to handle CSV files where each row contains data
+for a single item in a single period. It requires the configuration to specify
+which columns correspond to the item name, period, and value.</p>
+<p>Configuration is provided via a <code>CsvReaderConfig</code> object.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>layout</code></strong> :&ensp;<code>str</code></dt>
+<dd>Specifies the expected data layout, hardcoded to "long".</dd>
+<dt><strong><code>file_extensions</code></strong> :&ensp;<code>tuple[str, &hellip;]</code></dt>
+<dd>A tuple of valid file extensions ('.csv', '.txt').</dd>
+</dl>
+<p>Initialize the CsvReader.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>A validated <code>CsvReaderConfig</code> instance.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase">DataFrameReaderBase</a></li>
+<li><a title="fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader" href="../core/mixins/file_based_reader.html#fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader">FileBasedReader</a></li>
+<li><a title="fin_statement_model.io.core.base.DataReader" href="../core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li><a title="fin_statement_model.io.core.mixins.mapping.MappingAwareMixin" href="../core/mixins/mapping.html#fin_statement_model.io.core.mixins.mapping.MappingAwareMixin">MappingAwareMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin">ValidationMixin</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.CsvReader.file_extensions"><code class="name">var <span class="ident">file_extensions</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase">DataFrameReaderBase</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.clear_config_overrides" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.create_validation_summary" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.create_validation_summary">create_validation_summary</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_config_with_env_fallback" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_effective_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_validation_context" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.get_validation_context">get_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.layout" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.layout">layout</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.merge_configurations" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.read" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.read">read</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.require_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.set_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.set_config_override" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.set_validation_context" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.set_validation_context">set_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_column_bounds" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_column_bounds">validate_column_bounds</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_file_exists" href="../core/mixins/file_based_reader.html#fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader.validate_file_exists">validate_file_exists</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_file_extension" href="../core/mixins/file_based_reader.html#fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader.validate_file_extension">validate_file_extension</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_node_name" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_node_name">validate_node_name</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_numeric_value" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_numeric_value">validate_numeric_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_periods_exist" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_periods_exist">validate_periods_exist</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_required_columns" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_required_columns">validate_required_columns</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.DataFrameReader"><code class="flex name class">
+<span>class <span class="ident">DataFrameReader</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.DataFrameReaderConfig" href="../config/models.html#fin_statement_model.io.config.models.DataFrameReaderConfig">DataFrameReaderConfig</a> | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_reader(&#34;dataframe&#34;, schema=DataFrameReaderConfig)
+class DataFrameReader(DataFrameReaderBase):
+    &#34;&#34;&#34;Reads financial data from a wide-format pandas DataFrame into a Graph.
+
+    This reader is designed to ingest data from a DataFrame where the index
+    contains the financial item names and the columns represent different periods.
+    It can also handle a specified subset of period columns.
+
+    Configuration is provided via a `DataFrameReaderConfig` object.
+
+    Attributes:
+        layout (str): Specifies the expected data layout, hardcoded to &#34;wide&#34;.
+    &#34;&#34;&#34;
+
+    layout = &#34;wide&#34;
+
+    def __init__(self, cfg: DataFrameReaderConfig | None = None) -&gt; None:
+        &#34;&#34;&#34;Initialize the DataFrameReader.
+
+        Args:
+            cfg: An optional, validated `DataFrameReaderConfig` instance.
+        &#34;&#34;&#34;
+        self.cfg = cfg
+
+    # ------------------------------------------------------------------
+    # WideTableReader hook implementation
+    # ------------------------------------------------------------------
+    def _load_dataframe(self, source: Any, **kwargs: Any) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Prepare the source DataFrame for parsing.
+
+        This method implements the `_load_dataframe` hook from `DataFrameReaderBase`.
+        It validates that the source is a pandas DataFrame, creates a copy, and
+        optionally filters it to include only a specified subset of period columns.
+
+        It also resets the DataFrame&#39;s index to ensure the item names are in a
+        column named &#39;item&#39;, which is the format expected by the base parser.
+
+        Args:
+            source (Any): The input pandas DataFrame.
+            **kwargs (Any): Additional keyword arguments, including &#39;periods&#39; to
+                specify a subset of columns to read.
+
+        Returns:
+            A pandas DataFrame ready for parsing by `DataFrameReaderBase`.
+
+        Raises:
+            ReadError: If the source is not a DataFrame or if specified periods
+                are not found in the columns.
+        &#34;&#34;&#34;
+        if not isinstance(source, pd.DataFrame):
+            raise ReadError(
+                &#34;Source is not a pandas DataFrame.&#34;,
+                source=&#34;DataFrame&#34;,
+                reader_type=&#34;DataFrameReader&#34;,
+            )
+
+        df = source.copy()
+
+        # Determine periods subset (kwargs override cfg)
+        periods_subset = kwargs.get(&#34;periods&#34;, self.cfg.periods if self.cfg else None)
+        if periods_subset:
+            missing = [p for p in periods_subset if p not in df.columns]
+            if missing:
+                raise ReadError(
+                    f&#34;Specified periods not found in DataFrame: {missing}&#34;,
+                    source=&#34;DataFrame&#34;,
+                    reader_type=&#34;DataFrameReader&#34;,
+                )
+            df = df[periods_subset]
+
+        # Reset index and rename the first column to &#39;item&#39; consistently
+        df_reset = df.reset_index()
+        first_col = df_reset.columns[0]
+        if first_col != &#34;item&#34;:
+            df_reset.rename(columns={first_col: &#34;item&#34;}, inplace=True)
+
+        return df_reset</code></pre>
+</details>
+<div class="desc"><p>Reads financial data from a wide-format pandas DataFrame into a Graph.</p>
+<p>This reader is designed to ingest data from a DataFrame where the index
+contains the financial item names and the columns represent different periods.
+It can also handle a specified subset of period columns.</p>
+<p>Configuration is provided via a <code>DataFrameReaderConfig</code> object.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>layout</code></strong> :&ensp;<code>str</code></dt>
+<dd>Specifies the expected data layout, hardcoded to "wide".</dd>
+</dl>
+<p>Initialize the DataFrameReader.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>An optional, validated <code>DataFrameReaderConfig</code> instance.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase">DataFrameReaderBase</a></li>
+<li><a title="fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader" href="../core/mixins/file_based_reader.html#fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader">FileBasedReader</a></li>
+<li><a title="fin_statement_model.io.core.base.DataReader" href="../core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li><a title="fin_statement_model.io.core.mixins.mapping.MappingAwareMixin" href="../core/mixins/mapping.html#fin_statement_model.io.core.mixins.mapping.MappingAwareMixin">MappingAwareMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin">ValidationMixin</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase">DataFrameReaderBase</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.clear_config_overrides" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.create_validation_summary" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.create_validation_summary">create_validation_summary</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_config_with_env_fallback" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_effective_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_validation_context" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.get_validation_context">get_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.layout" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.layout">layout</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.merge_configurations" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.read" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.read">read</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.require_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.set_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.set_config_override" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.set_validation_context" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.set_validation_context">set_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_column_bounds" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_column_bounds">validate_column_bounds</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_file_exists" href="../core/mixins/file_based_reader.html#fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader.validate_file_exists">validate_file_exists</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_file_extension" href="../core/mixins/file_based_reader.html#fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader.validate_file_extension">validate_file_extension</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_node_name" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_node_name">validate_node_name</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_numeric_value" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_numeric_value">validate_numeric_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_periods_exist" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_periods_exist">validate_periods_exist</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_required_columns" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_required_columns">validate_required_columns</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.DataFrameWriter"><code class="flex name class">
+<span>class <span class="ident">DataFrameWriter</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.DataFrameWriterConfig" href="../config/models.html#fin_statement_model.io.config.models.DataFrameWriterConfig">DataFrameWriterConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_writer(&#34;dataframe&#34;, schema=DataFrameWriterConfig)
+class DataFrameWriter(BaseTableWriter, ConfigurationMixin):
+    &#34;&#34;&#34;Writes graph data to a pandas DataFrame.
+
+    This writer converts a `Graph` object into a `pandas.DataFrame`, which is a
+    common format for data analysis in Python. The resulting DataFrame has node
+    names as its index and periods as its columns.
+
+    The writer&#39;s behavior, such as whether to recalculate the graph before export,
+    can be controlled via a `DataFrameWriterConfig` object.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: DataFrameWriterConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the DataFrameWriter.
+
+        Args:
+            cfg: A validated `DataFrameWriterConfig` instance.
+        &#34;&#34;&#34;
+        super().__init__()
+        self.cfg = cfg
+
+    @handle_write_errors()
+    def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Convert a `Graph` object into a pandas DataFrame.
+
+        This method orchestrates the conversion of the graph data into a DataFrame.
+        It relies on the `to_dataframe` method inherited from `BaseTableWriter` to
+        perform the actual data extraction and DataFrame creation.
+
+        Runtime options like `recalculate` and `include_nodes` can be passed as
+        keyword arguments to override the writer&#39;s initial configuration.
+
+        Args:
+            graph: The `Graph` object to be written.
+            target: This argument is ignored by the `DataFrameWriter`.
+            **kwargs: Optional runtime overrides for configuration settings.
+
+        Returns:
+            A pandas DataFrame representing the graph&#39;s data.
+        &#34;&#34;&#34;
+        _ = target  # Parameter intentionally unused
+        recalculate = self._param(&#34;recalculate&#34;, kwargs, self.cfg, default=True)
+        include_nodes = self._param(&#34;include_nodes&#34;, kwargs, self.cfg)
+
+        logger.info(&#34;Exporting graph to DataFrame format.&#34;)
+
+        df = self.to_dataframe(
+            graph,
+            include_nodes=include_nodes,
+            recalc=recalculate,
+        )
+
+        logger.info(&#34;Successfully exported %s nodes to DataFrame.&#34;, len(df))
+        return df</code></pre>
+</details>
+<div class="desc"><p>Writes graph data to a pandas DataFrame.</p>
+<p>This writer converts a <code>Graph</code> object into a <code>pandas.DataFrame</code>, which is a
+common format for data analysis in Python. The resulting DataFrame has node
+names as its index and periods as its columns.</p>
+<p>The writer's behavior, such as whether to recalculate the graph before export,
+can be controlled via a <code>DataFrameWriterConfig</code> object.</p>
+<p>Initialize the DataFrameWriter.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>A validated <code>DataFrameWriterConfig</code> instance.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter">BaseTableWriter</a></li>
+<li><a title="fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter">DataFrameBasedWriter</a></li>
+<li><a title="fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin">ValueExtractionMixin</a></li>
+<li><a title="fin_statement_model.io.core.base.DataWriter" href="../core/base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a></li>
+<li>abc.ABC</li>
+<li><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.DataFrameWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: Any = None,<br>**kwargs: Any) ‑> pandas.core.frame.DataFrame</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@handle_write_errors()
+def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; pd.DataFrame:
+    &#34;&#34;&#34;Convert a `Graph` object into a pandas DataFrame.
+
+    This method orchestrates the conversion of the graph data into a DataFrame.
+    It relies on the `to_dataframe` method inherited from `BaseTableWriter` to
+    perform the actual data extraction and DataFrame creation.
+
+    Runtime options like `recalculate` and `include_nodes` can be passed as
+    keyword arguments to override the writer&#39;s initial configuration.
+
+    Args:
+        graph: The `Graph` object to be written.
+        target: This argument is ignored by the `DataFrameWriter`.
+        **kwargs: Optional runtime overrides for configuration settings.
+
+    Returns:
+        A pandas DataFrame representing the graph&#39;s data.
+    &#34;&#34;&#34;
+    _ = target  # Parameter intentionally unused
+    recalculate = self._param(&#34;recalculate&#34;, kwargs, self.cfg, default=True)
+    include_nodes = self._param(&#34;include_nodes&#34;, kwargs, self.cfg)
+
+    logger.info(&#34;Exporting graph to DataFrame format.&#34;)
+
+    df = self.to_dataframe(
+        graph,
+        include_nodes=include_nodes,
+        recalc=recalculate,
+    )
+
+    logger.info(&#34;Successfully exported %s nodes to DataFrame.&#34;, len(df))
+    return df</code></pre>
+</details>
+<div class="desc"><p>Convert a <code>Graph</code> object into a pandas DataFrame.</p>
+<p>This method orchestrates the conversion of the graph data into a DataFrame.
+It relies on the <code>to_dataframe</code> method inherited from <code>BaseTableWriter</code> to
+perform the actual data extraction and DataFrame creation.</p>
+<p>Runtime options like <code>recalculate</code> and <code>include_nodes</code> can be passed as
+keyword arguments to override the writer's initial configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The <code>Graph</code> object to be written.</dd>
+<dt><strong><code>target</code></strong></dt>
+<dd>This argument is ignored by the <code><a title="fin_statement_model.io.formats.DataFrameWriter" href="#fin_statement_model.io.formats.DataFrameWriter">DataFrameWriter</a></code>.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Optional runtime overrides for configuration settings.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A pandas DataFrame representing the graph's data.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter">BaseTableWriter</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.extract_graph_data" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter.extract_graph_data">extract_graph_data</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.extract_node_value" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin.extract_node_value">extract_node_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dataframe" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dataframe">to_dataframe</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dict" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dict">to_dict</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.DictReader"><code class="flex name class">
+<span>class <span class="ident">DictReader</span></span>
+<span>(</span><span>cfg: DictReaderConfig | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_reader(&#34;dict&#34;, schema=DictReaderConfig)
+class DictReader(DataReader, ValidationMixin, ConfigurationMixin):
+    &#34;&#34;&#34;Reads data from a Python dictionary to create a new Graph.
+
+    Expects a dictionary format: {node_name: {period: value, ...}, ...}
+    Creates FinancialStatementItemNode instances for each entry.
+
+    Note:
+        Configuration is handled via `DictReaderConfig` during initialization.
+        The `read()` method takes the source dictionary directly and an optional
+        `periods` keyword argument.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: DictReaderConfig | None = None) -&gt; None:
+        &#34;&#34;&#34;Initialize the DictReader.
+
+        Args:
+            cfg: Optional validated `DictReaderConfig` instance.
+                 Currently unused but kept for registry symmetry and future options.
+        &#34;&#34;&#34;
+        self.cfg = cfg
+
+    @handle_read_errors()
+    def read(self, source: dict[str, dict[str, float]], **kwargs: Any) -&gt; Graph:
+        &#34;&#34;&#34;Read data from a dictionary and create a new Graph.
+
+        This method expects the source dictionary to have a specific structure:
+        `{node_name: {period: value, ...}, ...}`.
+
+        It validates the structure of the input dictionary and the types of its
+        keys and values. If any validation errors are found, it raises a `ReadError`
+        with a detailed summary.
+
+        If the data is valid, it constructs a new `Graph` object, populates it with
+        `FinancialStatementItemNode` instances created from the dictionary data,
+        and returns it.
+
+        Args:
+            source: A dictionary containing the graph data.
+            **kwargs: Optional runtime arguments, such as `periods` to specify
+                which periods to include in the resulting graph.
+
+        Returns:
+            A new `Graph` object populated with the data from the source dictionary.
+
+        Raises:
+            ReadError: If the source dictionary has an invalid format or contains
+                non-numeric values.
+        &#34;&#34;&#34;
+        # 1. Basic structure validation ------------------------------------------------
+        if not isinstance(source, dict):
+            raise ReadError(
+                message=&#34;DictReader expects `source` to be a dict[str, dict[str, float]]&#34;,
+                source=&#34;dict_input&#34;,
+                reader_type=&#34;DictReader&#34;,
+            )
+
+        collector = ValidationResultCollector()
+        all_periods: set[str] = set()
+
+        # 2. Per-node validation --------------------------------------------------------
+        for raw_name, period_values in source.items():
+            ok_name, node_name = self.validate_node_name(raw_name)
+            if not ok_name or node_name is None:
+                collector.add_result(str(raw_name), False, &#34;Invalid or empty node name&#34;)
+                continue
+
+            if not isinstance(period_values, dict):
+                collector.add_result(
+                    node_name,
+                    False,
+                    f&#34;Expected dict for period values, got {type(period_values).__name__}&#34;,
+                )
+                continue
+
+            for period_raw, value_raw in period_values.items():
+                # period must be str
+                if not isinstance(period_raw, str):
+                    collector.add_result(
+                        node_name,
+                        False,
+                        f&#34;Invalid period key &#39;{period_raw}&#39; - expected str.&#34;,
+                    )
+                    continue
+
+                ok_val, _ = self.validate_numeric_value(
+                    value_raw, node_name, period_raw, collector, allow_conversion=False
+                )
+                if ok_val:
+                    all_periods.add(period_raw)
+
+        if collector.has_errors():
+            raise ReadError(
+                self.create_validation_summary(collector, &#34;dict_input&#34;),
+                source=&#34;dict_input&#34;,
+                reader_type=&#34;DictReader&#34;,
+            )
+
+        # 3. Graph creation ------------------------------------------------------------
+        graph_periods = kwargs.get(&#34;periods&#34;, self.cfg.periods if self.cfg else None) or sorted(all_periods)
+
+        graph = Graph(periods=graph_periods)
+
+        for node_name, period_values in source.items():
+            # Skip nodes that failed validation earlier
+            if collector.get_items_with_errors() and node_name in collector.get_items_with_errors():
+                continue
+
+            filtered_values = {p: v for p, v in period_values.items() if p in graph_periods}
+            if filtered_values:
+                graph.add_node(FinancialStatementItemNode(name=node_name, values=filtered_values.copy()))
+
+        logger.info(&#34;Created graph with %s nodes from dictionary.&#34;, len(graph.nodes))
+        return graph</code></pre>
+</details>
+<div class="desc"><p>Reads data from a Python dictionary to create a new Graph.</p>
+<p>Expects a dictionary format: {node_name: {period: value, &hellip;}, &hellip;}
+Creates FinancialStatementItemNode instances for each entry.</p>
+<h2 id="note">Note</h2>
+<p>Configuration is handled via <code>DictReaderConfig</code> during initialization.
+The <code>read()</code> method takes the source dictionary directly and an optional
+<code>periods</code> keyword argument.</p>
+<p>Initialize the DictReader.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>Optional validated <code>DictReaderConfig</code> instance.
+Currently unused but kept for registry symmetry and future options.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base.DataReader" href="../core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li>abc.ABC</li>
+<li><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin">ValidationMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.DictReader.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self, source: dict[str, dict[str, float]], **kwargs: Any) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@handle_read_errors()
+def read(self, source: dict[str, dict[str, float]], **kwargs: Any) -&gt; Graph:
+    &#34;&#34;&#34;Read data from a dictionary and create a new Graph.
+
+    This method expects the source dictionary to have a specific structure:
+    `{node_name: {period: value, ...}, ...}`.
+
+    It validates the structure of the input dictionary and the types of its
+    keys and values. If any validation errors are found, it raises a `ReadError`
+    with a detailed summary.
+
+    If the data is valid, it constructs a new `Graph` object, populates it with
+    `FinancialStatementItemNode` instances created from the dictionary data,
+    and returns it.
+
+    Args:
+        source: A dictionary containing the graph data.
+        **kwargs: Optional runtime arguments, such as `periods` to specify
+            which periods to include in the resulting graph.
+
+    Returns:
+        A new `Graph` object populated with the data from the source dictionary.
+
+    Raises:
+        ReadError: If the source dictionary has an invalid format or contains
+            non-numeric values.
+    &#34;&#34;&#34;
+    # 1. Basic structure validation ------------------------------------------------
+    if not isinstance(source, dict):
+        raise ReadError(
+            message=&#34;DictReader expects `source` to be a dict[str, dict[str, float]]&#34;,
+            source=&#34;dict_input&#34;,
+            reader_type=&#34;DictReader&#34;,
+        )
+
+    collector = ValidationResultCollector()
+    all_periods: set[str] = set()
+
+    # 2. Per-node validation --------------------------------------------------------
+    for raw_name, period_values in source.items():
+        ok_name, node_name = self.validate_node_name(raw_name)
+        if not ok_name or node_name is None:
+            collector.add_result(str(raw_name), False, &#34;Invalid or empty node name&#34;)
+            continue
+
+        if not isinstance(period_values, dict):
+            collector.add_result(
+                node_name,
+                False,
+                f&#34;Expected dict for period values, got {type(period_values).__name__}&#34;,
+            )
+            continue
+
+        for period_raw, value_raw in period_values.items():
+            # period must be str
+            if not isinstance(period_raw, str):
+                collector.add_result(
+                    node_name,
+                    False,
+                    f&#34;Invalid period key &#39;{period_raw}&#39; - expected str.&#34;,
+                )
+                continue
+
+            ok_val, _ = self.validate_numeric_value(
+                value_raw, node_name, period_raw, collector, allow_conversion=False
+            )
+            if ok_val:
+                all_periods.add(period_raw)
+
+    if collector.has_errors():
+        raise ReadError(
+            self.create_validation_summary(collector, &#34;dict_input&#34;),
+            source=&#34;dict_input&#34;,
+            reader_type=&#34;DictReader&#34;,
+        )
+
+    # 3. Graph creation ------------------------------------------------------------
+    graph_periods = kwargs.get(&#34;periods&#34;, self.cfg.periods if self.cfg else None) or sorted(all_periods)
+
+    graph = Graph(periods=graph_periods)
+
+    for node_name, period_values in source.items():
+        # Skip nodes that failed validation earlier
+        if collector.get_items_with_errors() and node_name in collector.get_items_with_errors():
+            continue
+
+        filtered_values = {p: v for p, v in period_values.items() if p in graph_periods}
+        if filtered_values:
+            graph.add_node(FinancialStatementItemNode(name=node_name, values=filtered_values.copy()))
+
+    logger.info(&#34;Created graph with %s nodes from dictionary.&#34;, len(graph.nodes))
+    return graph</code></pre>
+</details>
+<div class="desc"><p>Read data from a dictionary and create a new Graph.</p>
+<p>This method expects the source dictionary to have a specific structure:
+<code>{node_name: {period: value, ...}, ...}</code>.</p>
+<p>It validates the structure of the input dictionary and the types of its
+keys and values. If any validation errors are found, it raises a <code>ReadError</code>
+with a detailed summary.</p>
+<p>If the data is valid, it constructs a new <code>Graph</code> object, populates it with
+<code>FinancialStatementItemNode</code> instances created from the dictionary data,
+and returns it.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source</code></strong></dt>
+<dd>A dictionary containing the graph data.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Optional runtime arguments, such as <code>periods</code> to specify
+which periods to include in the resulting graph.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A new <code>Graph</code> object populated with the data from the source dictionary.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If the source dictionary has an invalid format or contains
+non-numeric values.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin">ValidationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.create_validation_summary" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.create_validation_summary">create_validation_summary</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.get_validation_context" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.get_validation_context">get_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.set_validation_context" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.set_validation_context">set_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_column_bounds" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_column_bounds">validate_column_bounds</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_node_name" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_node_name">validate_node_name</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_numeric_value" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_numeric_value">validate_numeric_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_periods_exist" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_periods_exist">validate_periods_exist</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_required_columns" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_required_columns">validate_required_columns</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.DictWriter"><code class="flex name class">
+<span>class <span class="ident">DictWriter</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.DictWriterConfig" href="../config/models.html#fin_statement_model.io.config.models.DictWriterConfig">DictWriterConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_writer(&#34;dict&#34;, schema=DictWriterConfig)
+class DictWriter(BaseTableWriter, ConfigurationMixin):
+    &#34;&#34;&#34;Writes graph data to a Python dictionary.
+
+    This writer converts a `Graph` object into a nested Python dictionary.
+    The top-level keys are the node names, and the values are dictionaries
+    mapping period names to numeric values.
+
+    This format is useful for simple, in-memory serialization of the graph&#39;s data.
+    The writer&#39;s behavior can be influenced by a `DictWriterConfig` object.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: DictWriterConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the DictWriter.
+
+        Args:
+            cfg: Validated `DictWriterConfig` instance.
+        &#34;&#34;&#34;
+        super().__init__()
+        self.cfg = cfg
+
+    def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; dict[str, dict[str, float]]:
+        &#34;&#34;&#34;Convert a `Graph` object into a nested dictionary.
+
+        This method orchestrates the conversion of the graph data into a dictionary.
+        It uses the `to_dict` method inherited from `BaseTableWriter` to perform
+        the data extraction.
+
+        Runtime options like `recalculate` and `include_nodes` can be passed as
+        keyword arguments to override the writer&#39;s initial configuration.
+
+        Args:
+            graph: The `Graph` object to be written.
+            target: This argument is ignored by the `DictWriter`.
+            **kwargs: Optional runtime overrides for configuration settings.
+
+        Returns:
+            A nested dictionary representing the graph&#39;s data.
+        &#34;&#34;&#34;
+        _ = target  # Parameter intentionally unused
+        recalc = kwargs.get(&#34;recalculate&#34;, True)
+        include_nodes = kwargs.get(&#34;include_nodes&#34;)
+        logger.info(&#34;Exporting graph to dict format.&#34;)
+        return self.to_dict(graph, include_nodes=include_nodes, recalc=recalc)</code></pre>
+</details>
+<div class="desc"><p>Writes graph data to a Python dictionary.</p>
+<p>This writer converts a <code>Graph</code> object into a nested Python dictionary.
+The top-level keys are the node names, and the values are dictionaries
+mapping period names to numeric values.</p>
+<p>This format is useful for simple, in-memory serialization of the graph's data.
+The writer's behavior can be influenced by a <code>DictWriterConfig</code> object.</p>
+<p>Initialize the DictWriter.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>Validated <code>DictWriterConfig</code> instance.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter">BaseTableWriter</a></li>
+<li><a title="fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter">DataFrameBasedWriter</a></li>
+<li><a title="fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin">ValueExtractionMixin</a></li>
+<li><a title="fin_statement_model.io.core.base.DataWriter" href="../core/base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a></li>
+<li>abc.ABC</li>
+<li><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.DictWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: Any = None,<br>**kwargs: Any) ‑> dict[str, dict[str, float]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; dict[str, dict[str, float]]:
+    &#34;&#34;&#34;Convert a `Graph` object into a nested dictionary.
+
+    This method orchestrates the conversion of the graph data into a dictionary.
+    It uses the `to_dict` method inherited from `BaseTableWriter` to perform
+    the data extraction.
+
+    Runtime options like `recalculate` and `include_nodes` can be passed as
+    keyword arguments to override the writer&#39;s initial configuration.
+
+    Args:
+        graph: The `Graph` object to be written.
+        target: This argument is ignored by the `DictWriter`.
+        **kwargs: Optional runtime overrides for configuration settings.
+
+    Returns:
+        A nested dictionary representing the graph&#39;s data.
+    &#34;&#34;&#34;
+    _ = target  # Parameter intentionally unused
+    recalc = kwargs.get(&#34;recalculate&#34;, True)
+    include_nodes = kwargs.get(&#34;include_nodes&#34;)
+    logger.info(&#34;Exporting graph to dict format.&#34;)
+    return self.to_dict(graph, include_nodes=include_nodes, recalc=recalc)</code></pre>
+</details>
+<div class="desc"><p>Convert a <code>Graph</code> object into a nested dictionary.</p>
+<p>This method orchestrates the conversion of the graph data into a dictionary.
+It uses the <code>to_dict</code> method inherited from <code>BaseTableWriter</code> to perform
+the data extraction.</p>
+<p>Runtime options like <code>recalculate</code> and <code>include_nodes</code> can be passed as
+keyword arguments to override the writer's initial configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The <code>Graph</code> object to be written.</dd>
+<dt><strong><code>target</code></strong></dt>
+<dd>This argument is ignored by the <code><a title="fin_statement_model.io.formats.DictWriter" href="#fin_statement_model.io.formats.DictWriter">DictWriter</a></code>.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Optional runtime overrides for configuration settings.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A nested dictionary representing the graph's data.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter">BaseTableWriter</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.extract_graph_data" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter.extract_graph_data">extract_graph_data</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.extract_node_value" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin.extract_node_value">extract_node_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dataframe" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dataframe">to_dataframe</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dict" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dict">to_dict</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.ExcelReader"><code class="flex name class">
+<span>class <span class="ident">ExcelReader</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.ExcelReaderConfig" href="../config/models.html#fin_statement_model.io.config.models.ExcelReaderConfig">ExcelReaderConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_reader(&#34;excel&#34;, schema=ExcelReaderConfig)
+class ExcelReader(DataFrameReaderBase):
+    &#34;&#34;&#34;Reads financial statement data from an Excel file into a Graph.
+
+    This reader is designed to handle &#34;wide&#34; format data from an Excel sheet,
+    where rows typically represent financial items and columns represent periods.
+    It is highly configurable, allowing the user to specify the sheet name,
+    the location of item names, and the location of period headers.
+
+    Configuration is provided via an `ExcelReaderConfig` object. Runtime overrides
+    for certain options can be passed as keyword arguments to the `read` method.
+
+    Attributes:
+        layout (str): Specifies the expected data layout, hardcoded to &#34;wide&#34;.
+        file_extensions (tuple[str, ...]): A tuple of valid file extensions.
+    &#34;&#34;&#34;
+
+    layout = &#34;wide&#34;
+
+    file_extensions = (&#34;.xls&#34;, &#34;.xlsx&#34;, &#34;.xlsm&#34;)
+
+    def __init__(self, cfg: ExcelReaderConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the ExcelReader.
+
+        Args:
+            cfg: A validated `ExcelReaderConfig` instance.
+        &#34;&#34;&#34;
+        self.cfg = cfg
+
+    def _read_excel_data(
+        self,
+        file_path: str,
+        sheet_name: str,
+        periods_row: int,
+        items_col: int,
+        header_row: int,
+        nrows: int | None,
+        skiprows: int | None,
+    ) -&gt; tuple[pd.DataFrame, list[str]]:
+        &#34;&#34;&#34;Read core data and period headers from an Excel sheet.
+
+        This helper method reads a specified sheet from an Excel file into a raw
+        pandas DataFrame without a header. It then extracts the period labels from
+        the `periods_row` and reconstructs the main DataFrame using the `header_row`.
+        This approach provides flexibility in handling various Excel layouts.
+
+        Args:
+            file_path: The path to the Excel file.
+            sheet_name: The name or index of the sheet to read.
+            periods_row: The 1-indexed row number containing the period labels.
+            items_col: The 1-indexed column number containing the item names.
+            header_row: The 1-indexed row number to use for the DataFrame header.
+            nrows: The optional number of rows to read.
+            skiprows: The optional number of rows to skip at the beginning.
+
+        Returns:
+            A tuple containing:
+                - The main pandas DataFrame with the correct header.
+                - A list of period header strings.
+        &#34;&#34;&#34;
+        # Read sheet without assigning header so we can slice any row later
+        raw_df = pd.read_excel(
+            file_path,
+            sheet_name=sheet_name,
+            header=None,
+            skiprows=skiprows,
+            nrows=nrows,
+        )
+
+        periods_row_idx = periods_row - 1
+        header_row_idx = header_row - 1
+
+        # Extract period headers from requested row
+        period_headers = raw_df.iloc[periods_row_idx].astype(str).tolist()
+
+        # Rebuild DataFrame starting from header_row
+        df = raw_df.drop(index=list(range(header_row_idx + 1))).reset_index(drop=True)
+        df.columns = pd.Index(raw_df.iloc[header_row_idx])
+
+        # Validate items column index
+        self.validate_column_bounds(df, items_col - 1, file_path, f&#34;items_col ({items_col})&#34;)
+
+        return df, period_headers
+
+    # ------------------------------------------------------------------
+    # WideTableReader hook implementation
+    # ------------------------------------------------------------------
+    def _load_dataframe(self, source: Any, **kwargs: Any) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Load data from an Excel file into a pandas DataFrame.
+
+        This method implements the `_load_dataframe` hook from `DataFrameReaderBase`.
+        It validates the file, resolves configuration options for the sheet name,
+        row/column locations, and other parameters. It then calls `_read_excel_data`
+        to perform the read operation and prepares the resulting DataFrame by ensuring
+        its column names are set correctly based on the extracted period headers.
+
+        Args:
+            source (Any): The file path to the Excel file.
+            **kwargs (Any): Optional runtime overrides for configuration.
+
+        Returns:
+            A pandas DataFrame ready for parsing by `DataFrameReaderBase`.
+        &#34;&#34;&#34;
+        file_path = source
+        # Basic file validation
+        self.validate_file_exists(file_path)
+        self.validate_file_extension(file_path)
+
+        # Resolve configuration values using DataFrameReaderBase helper
+        sheet_name = self._param(&#34;sheet_name&#34;, kwargs, default=&#34;Sheet1&#34;)
+        periods_row = self._param(&#34;periods_row&#34;, kwargs, default=1)
+        items_col = self._param(&#34;items_col&#34;, kwargs, default=1)
+        header_row = self._param(&#34;header_row&#34;, kwargs)
+
+        # XOR enforcement - raise early if both provided via kwargs (override) or cfg.
+        if header_row is not None and &#34;periods_row&#34; in kwargs and kwargs.get(&#34;periods_row&#34;) is not None:
+            raise ReadError(
+                &#34;Provide either header_row or periods_row, not both.&#34;,
+                source=str(source),
+                reader_type=&#34;ExcelReader&#34;,
+            )
+
+        if header_row is None:
+            # Fallback to periods_row if caller omitted header_row
+            header_row = periods_row
+
+        nrows = self._param(&#34;nrows&#34;, kwargs)
+        skiprows = self._param(&#34;skiprows&#34;, kwargs)
+
+        # Read underlying sheet to DataFrame (may include header row)
+        df_raw, period_headers = self._read_excel_data(
+            file_path,
+            sheet_name,
+            periods_row,
+            items_col,
+            header_row,
+            nrows,
+            skiprows,
+        )
+
+        # Use extracted period headers to rename DataFrame columns if needed.
+        if header_row - 1 != periods_row - 1:
+            # DataFrame columns are from header_row, replace period part
+            new_cols = list(df_raw.columns)
+            for idx in range(items_col, len(new_cols)):
+                # align index offset by items_col
+                if idx - items_col &lt; len(period_headers):
+                    new_cols[idx] = str(period_headers[idx])
+            df_raw.columns = pd.Index(new_cols)
+        # No else branch needed - when header_row equals periods_row renaming is
+        # a no-op *by design* and no longer merits a warning.
+
+        return df_raw</code></pre>
+</details>
+<div class="desc"><p>Reads financial statement data from an Excel file into a Graph.</p>
+<p>This reader is designed to handle "wide" format data from an Excel sheet,
+where rows typically represent financial items and columns represent periods.
+It is highly configurable, allowing the user to specify the sheet name,
+the location of item names, and the location of period headers.</p>
+<p>Configuration is provided via an <code>ExcelReaderConfig</code> object. Runtime overrides
+for certain options can be passed as keyword arguments to the <code>read</code> method.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>layout</code></strong> :&ensp;<code>str</code></dt>
+<dd>Specifies the expected data layout, hardcoded to "wide".</dd>
+<dt><strong><code>file_extensions</code></strong> :&ensp;<code>tuple[str, &hellip;]</code></dt>
+<dd>A tuple of valid file extensions.</dd>
+</dl>
+<p>Initialize the ExcelReader.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>A validated <code>ExcelReaderConfig</code> instance.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase">DataFrameReaderBase</a></li>
+<li><a title="fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader" href="../core/mixins/file_based_reader.html#fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader">FileBasedReader</a></li>
+<li><a title="fin_statement_model.io.core.base.DataReader" href="../core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li><a title="fin_statement_model.io.core.mixins.mapping.MappingAwareMixin" href="../core/mixins/mapping.html#fin_statement_model.io.core.mixins.mapping.MappingAwareMixin">MappingAwareMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.validation.ValidationMixin" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin">ValidationMixin</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.ExcelReader.file_extensions"><code class="name">var <span class="ident">file_extensions</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase">DataFrameReaderBase</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.clear_config_overrides" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.create_validation_summary" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.create_validation_summary">create_validation_summary</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_config_with_env_fallback" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_effective_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.get_validation_context" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.get_validation_context">get_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.layout" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.layout">layout</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.merge_configurations" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.read" href="../core/dataframe_reader_base.html#fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.read">read</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.require_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.set_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.set_config_override" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.set_validation_context" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.set_validation_context">set_validation_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_column_bounds" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_column_bounds">validate_column_bounds</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_file_exists" href="../core/mixins/file_based_reader.html#fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader.validate_file_exists">validate_file_exists</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_file_extension" href="../core/mixins/file_based_reader.html#fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader.validate_file_extension">validate_file_extension</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_node_name" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_node_name">validate_node_name</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_numeric_value" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_numeric_value">validate_numeric_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_periods_exist" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_periods_exist">validate_periods_exist</a></code></li>
+<li><code><a title="fin_statement_model.io.core.dataframe_reader_base.DataFrameReaderBase.validate_required_columns" href="../core/mixins/validation.html#fin_statement_model.io.core.mixins.validation.ValidationMixin.validate_required_columns">validate_required_columns</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.ExcelWriter"><code class="flex name class">
+<span>class <span class="ident">ExcelWriter</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.ExcelWriterConfig" href="../config/models.html#fin_statement_model.io.config.models.ExcelWriterConfig">ExcelWriterConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_writer(&#34;excel&#34;, schema=ExcelWriterConfig)
+class ExcelWriter(BaseTableWriter, ConfigurationMixin):
+    &#34;&#34;&#34;Writes graph data to an Excel file.
+
+    This writer serializes a `Graph` object to a Microsoft Excel file. The process
+    involves an intermediate step of converting the graph data into a pandas
+    DataFrame, with node names as the index and periods as columns.
+
+    The behavior of the writer, such as the output sheet name and whether to
+    recalculate the graph, is controlled by an `ExcelWriterConfig` object.
+    Additional pandas-specific options can also be passed.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: ExcelWriterConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the ExcelWriter.
+
+        Args:
+            cfg: Non-optional validated `ExcelWriterConfig` instance.
+        &#34;&#34;&#34;
+        super().__init__()
+        self.cfg = cfg
+
+    @handle_write_errors()
+    def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; None:
+        &#34;&#34;&#34;Write graph data to an Excel file, converting via DataFrame first.
+
+        Args:
+            graph (Graph): The Graph object containing the data to write.
+            target (Any): Path to the target Excel file.
+            **kwargs: Optional runtime overrides of configured defaults:
+                sheet_name (str): Excel sheet name.
+                recalculate (bool): Whether to recalculate graph before export.
+                include_nodes (list[str]): List of node names to include in export.
+                excel_writer_kwargs (dict): Additional kwargs for pandas.DataFrame.to_excel.
+
+        Raises:
+            WriteError: If an error occurs during the writing process.
+        &#34;&#34;&#34;
+        file_path = str(target)
+
+        # Runtime overrides: kwargs override configured defaults
+        sheet_name = self._param(&#34;sheet_name&#34;, kwargs, self.cfg, default=&#34;Sheet1&#34;)
+        recalculate = self._param(&#34;recalculate&#34;, kwargs, self.cfg, default=True)
+        include_nodes = self._param(&#34;include_nodes&#34;, kwargs, self.cfg)
+        excel_writer_options = self._param(&#34;excel_writer_kwargs&#34;, kwargs, self.cfg, default={})
+
+        logger.info(&#34;Exporting graph to Excel file: %s, sheet: %s&#34;, file_path, sheet_name)
+
+        # Convert graph to DataFrame
+        df = self.to_dataframe(graph, include_nodes=include_nodes, recalc=recalculate)
+
+        # Write DataFrame to Excel
+        self._write_to_excel(df, file_path, sheet_name, excel_writer_options)
+
+        logger.info(&#34;Successfully exported graph to %s, sheet &#39;%s&#39;&#34;, file_path, sheet_name)
+
+    def _write_to_excel(
+        self,
+        df: Any,
+        file_path: str,
+        sheet_name: str,
+        excel_writer_options: dict[str, Any],
+    ) -&gt; None:
+        &#34;&#34;&#34;Write DataFrame to Excel file.
+
+        Args:
+            df: The pandas DataFrame to write.
+            file_path: Path to the output file.
+            sheet_name: Name of the Excel sheet.
+            excel_writer_options: Additional options for pandas.to_excel().
+        &#34;&#34;&#34;
+        output_path = Path(file_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        df.to_excel(
+            output_path,
+            sheet_name=sheet_name,
+            index=True,  # Keep node names as index column
+            **excel_writer_options,
+        )</code></pre>
+</details>
+<div class="desc"><p>Writes graph data to an Excel file.</p>
+<p>This writer serializes a <code>Graph</code> object to a Microsoft Excel file. The process
+involves an intermediate step of converting the graph data into a pandas
+DataFrame, with node names as the index and periods as columns.</p>
+<p>The behavior of the writer, such as the output sheet name and whether to
+recalculate the graph, is controlled by an <code>ExcelWriterConfig</code> object.
+Additional pandas-specific options can also be passed.</p>
+<p>Initialize the ExcelWriter.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>Non-optional validated <code>ExcelWriterConfig</code> instance.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter">BaseTableWriter</a></li>
+<li><a title="fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter">DataFrameBasedWriter</a></li>
+<li><a title="fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin">ValueExtractionMixin</a></li>
+<li><a title="fin_statement_model.io.core.base.DataWriter" href="../core/base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a></li>
+<li>abc.ABC</li>
+<li><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.ExcelWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: Any = None,<br>**kwargs: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@handle_write_errors()
+def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; None:
+    &#34;&#34;&#34;Write graph data to an Excel file, converting via DataFrame first.
+
+    Args:
+        graph (Graph): The Graph object containing the data to write.
+        target (Any): Path to the target Excel file.
+        **kwargs: Optional runtime overrides of configured defaults:
+            sheet_name (str): Excel sheet name.
+            recalculate (bool): Whether to recalculate graph before export.
+            include_nodes (list[str]): List of node names to include in export.
+            excel_writer_kwargs (dict): Additional kwargs for pandas.DataFrame.to_excel.
+
+    Raises:
+        WriteError: If an error occurs during the writing process.
+    &#34;&#34;&#34;
+    file_path = str(target)
+
+    # Runtime overrides: kwargs override configured defaults
+    sheet_name = self._param(&#34;sheet_name&#34;, kwargs, self.cfg, default=&#34;Sheet1&#34;)
+    recalculate = self._param(&#34;recalculate&#34;, kwargs, self.cfg, default=True)
+    include_nodes = self._param(&#34;include_nodes&#34;, kwargs, self.cfg)
+    excel_writer_options = self._param(&#34;excel_writer_kwargs&#34;, kwargs, self.cfg, default={})
+
+    logger.info(&#34;Exporting graph to Excel file: %s, sheet: %s&#34;, file_path, sheet_name)
+
+    # Convert graph to DataFrame
+    df = self.to_dataframe(graph, include_nodes=include_nodes, recalc=recalculate)
+
+    # Write DataFrame to Excel
+    self._write_to_excel(df, file_path, sheet_name, excel_writer_options)
+
+    logger.info(&#34;Successfully exported graph to %s, sheet &#39;%s&#39;&#34;, file_path, sheet_name)</code></pre>
+</details>
+<div class="desc"><p>Write graph data to an Excel file, converting via DataFrame first.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong> :&ensp;<code>Graph</code></dt>
+<dd>The Graph object containing the data to write.</dd>
+<dt><strong><code>target</code></strong> :&ensp;<code>Any</code></dt>
+<dd>Path to the target Excel file.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Optional runtime overrides of configured defaults:
+sheet_name (str): Excel sheet name.
+recalculate (bool): Whether to recalculate graph before export.
+include_nodes (list[str]): List of node names to include in export.
+excel_writer_kwargs (dict): Additional kwargs for pandas.DataFrame.to_excel.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>WriteError</code></dt>
+<dd>If an error occurs during the writing process.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter">BaseTableWriter</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.extract_graph_data" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter.extract_graph_data">extract_graph_data</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.extract_node_value" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin.extract_node_value">extract_node_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dataframe" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dataframe">to_dataframe</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dict" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dict">to_dict</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.FmpReader"><code class="flex name class">
+<span>class <span class="ident">FmpReader</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.FmpReaderConfig" href="../config/models.html#fin_statement_model.io.config.models.FmpReaderConfig">FmpReaderConfig</a>)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_reader(&#34;fmp&#34;, schema=FmpReaderConfig)
+# pylint: disable=too-many-statements,too-many-branches
+class FmpReader(DataReader, ConfigurationMixin, MappingAwareMixin):
+    &#34;&#34;&#34;Reads financial statement data from the FMP API into a Graph.
+
+    Fetches data for a specific ticker and statement type (income statement,
+    balance sheet, or cash flow). Requires a valid FMP API key, which can be
+    provided via configuration, an environment variable (`FMP_API_KEY`), or
+    at runtime.
+
+    This reader supports mapping of FMP&#39;s API field names to the library&#39;s
+    canonical node names. A default mapping is provided, but it can be
+    customized via the `mapping_config` parameter in the `FmpReaderConfig`.
+    It also provides a fallback mechanism to convert unmapped `camelCase` API
+    fields to `snake_case`.
+
+    Configuration is provided via an `FmpReaderConfig` object.
+
+    For advanced use cases involving repeated API calls, a single `FmpReader`
+    instance can be reused to leverage caching of API key validation.
+
+    Example:
+        ```python
+        # from fin_statement_model.io import read_data
+        # # Fetch Apple&#39;s annual income statement
+        # config = {
+        #     &#34;statement_type&#34;: &#34;income_statement&#34;,
+        #     &#34;period_type&#34;: &#34;FY&#34;,
+        #     &#34;limit&#34;: 5,
+        #     &#34;api_key&#34;: &#34;YOUR_FMP_API_KEY&#34;,
+        # }
+        # graph = read_data(format_type=&#34;fmp&#34;, source=&#34;AAPL&#34;, config=config)
+        ```
+    &#34;&#34;&#34;
+
+    # Base URL components - keeping version separate for easier future upgrade.
+    _API_HOST = &#34;https://financialmodelingprep.com/api&#34;
+    _API_VERSION = &#34;v3&#34;
+    BASE_URL = f&#34;{_API_HOST}/{_API_VERSION}&#34;
+
+    # Pre-compiled regex used for camelCase→snake_case fallback when no explicit
+    # mapping entry exists.  Compiling once avoids repeated re-parsing in the
+    # innermost loop of the API-response processing.
+    _CAMEL_TO_SNAKE_RE = re.compile(r&#34;(?&lt;!^)(?=[A-Z])&#34;)
+
+    @classmethod
+    def _get_default_mapping_path(cls) -&gt; str | None:
+        &#34;&#34;&#34;Specify the default mapping file for FMP.&#34;&#34;&#34;
+        return &#34;fmp_default_mappings.yaml&#34;
+
+    def __init__(self, cfg: FmpReaderConfig) -&gt; None:
+        &#34;&#34;&#34;Initialize the FmpReader with validated configuration.
+
+        Args:
+            cfg: A validated `FmpReaderConfig` instance containing parameters like
+                 `source` (ticker), `api_key`, `statement_type`, `period_type`,
+                 `limit`, and `mapping_config`.
+        &#34;&#34;&#34;
+        # Initialise mixins to set up configuration context and mapping caches.
+        ConfigurationMixin.__init__(self)
+        MappingAwareMixin.__init__(self)  # currently a no-op but future-proof
+
+        self.cfg = cfg
+
+    @classmethod
+    @lru_cache(maxsize=8)
+    def _cached_validate_key(cls, api_key: str) -&gt; None:
+        &#34;&#34;&#34;Cached helper that actually calls the FMP API once per key.&#34;&#34;&#34;
+        if not api_key:
+            raise ValueError(&#34;Missing API key&#34;)
+        from fin_statement_model.config import cfg
+
+        test_url = f&#34;{cls.BASE_URL}/profile/AAPL?apikey={api_key}&#34;
+        response = requests.get(test_url, timeout=cfg(&#34;api.api_timeout&#34;))
+        response.raise_for_status()
+        if not response.json():
+            raise ValueError(&#34;Validation endpoint returned empty JSON&#34;)
+
+    def _validate_api_key(self, api_key: str) -&gt; None:
+        &#34;&#34;&#34;Wrapper that converts cached validation errors to ReadError.&#34;&#34;&#34;
+        if not api_key:
+            raise ReadError(
+                &#34;FMP API key is required for reading.&#34;,
+                source=&#34;FMP API&#34;,
+                reader_type=&#34;FmpReader&#34;,
+            )
+        try:
+            self._cached_validate_key(api_key)
+        except Exception as e:
+            logger.exception(&#34;FMP API key validation failed&#34;)
+            raise ReadError(
+                f&#34;FMP API key validation failed: {e}&#34;,
+                source=&#34;FMP API&#34;,
+                reader_type=&#34;FmpReader&#34;,
+                original_error=e,
+            ) from e
+
+    def read(self, source: str, **kwargs: Any) -&gt; Graph:
+        &#34;&#34;&#34;Fetch data from the FMP API and return a populated Graph.
+
+        This high-level method now orchestrates four dedicated helpers to keep
+        each concern isolated:
+
+        1. _build_api_url            → Constructs the REST endpoint &amp; query params
+        2. _fetch_data               → Performs the HTTP request and returns JSON
+        3. _parse_fmp_response       → Transforms raw JSON into tabular dict form
+        4. _populate_graph           → Builds and returns the final Graph object
+
+        The public behaviour (signature, raised exceptions, logging side-effects)
+        remains unchanged.
+        &#34;&#34;&#34;
+        ticker = source
+        self.set_config_context(ticker=ticker, operation=&#34;api_read&#34;)
+
+        # ------------------------------------------------------------------
+        # Resolve runtime overrides vs. config defaults
+        # ------------------------------------------------------------------
+        statement_type = kwargs.get(&#34;statement_type&#34;, self.cfg.statement_type)
+        period_type_arg = kwargs.get(&#34;period_type&#34;, self.cfg.period_type)
+        limit = kwargs.get(&#34;limit&#34;, self.cfg.limit)
+        api_key = kwargs.get(&#34;api_key&#34;, self.cfg.api_key)
+
+        # ------------------------------------------------------------------
+        # Validate inputs &amp; API key
+        # ------------------------------------------------------------------
+        if not ticker or not isinstance(ticker, str):
+            raise ReadError(
+                &#34;Invalid source (ticker) provided. Expected a non-empty string.&#34;,
+                source=str(ticker),
+                reader_type=&#34;FmpReader&#34;,
+            )
+
+        self._validate_api_key(cast(&#34;str&#34;, api_key))
+
+        # Prepare field-name mapping for this request
+        try:
+            mapping = self._get_mapping(statement_type)
+        except TypeError as te:
+            raise ReadError(
+                &#34;Invalid mapping_config provided.&#34;,
+                source=ticker,
+                reader_type=&#34;FmpReader&#34;,
+                original_error=te,
+            ) from te
+
+        # ------------------------------------------------------------------
+        # 1. Build URL &amp; params  -------------------------------------------------
+        endpoint, params = self._build_api_request(
+            ticker=ticker,
+            statement_type=statement_type,
+            period_type=period_type_arg,
+            limit=limit,
+            api_key=cast(&#34;str&#34;, api_key),
+        )
+
+        # ------------------------------------------------------------------
+        # 2. Fetch JSON payload -------------------------------------------------
+        api_data = self._fetch_data(endpoint, params, ticker, statement_type)
+
+        # Shortcut: empty payload → empty graph
+        if not api_data:
+            logger.warning(&#34;FMP API returned empty list for %s %s.&#34;, ticker, statement_type)
+            return Graph(periods=[])
+
+        # ------------------------------------------------------------------
+        # 3. Parse response → structured dict ----------------------------------
+        periods, item_matrix = self._parse_fmp_response(api_data, mapping)
+
+        # ------------------------------------------------------------------
+        # 4. Transform to Graph -------------------------------------------------
+        graph = self._populate_graph(periods, item_matrix)
+
+        logger.info(
+            &#34;Successfully created graph with %s nodes from FMP API for %s %s.&#34;,
+            len(graph.nodes),
+            ticker,
+            statement_type,
+        )
+        return graph
+
+    # ------------------------------------------------------------------
+    # Private helpers - extracted from the monolithic read() implementation
+    # ------------------------------------------------------------------
+
+    def _build_api_request(
+        self,
+        *,
+        ticker: str,
+        statement_type: str,
+        period_type: str,
+        limit: int,
+        api_key: str,
+    ) -&gt; tuple[str, dict[str, Any]]:
+        &#34;&#34;&#34;Return endpoint URL and query-parameter dict for an FMP request.&#34;&#34;&#34;
+        endpoint_path = statement_type.replace(&#34;_&#34;, &#34;-&#34;)
+        url = f&#34;{self.BASE_URL}/{endpoint_path}/{ticker}&#34;
+        params: dict[str, Any] = {&#34;apikey&#34;: api_key, &#34;limit&#34;: limit}
+        if period_type == &#34;QTR&#34;:
+            params[&#34;period&#34;] = &#34;quarter&#34;
+        return url, params
+
+    def _fetch_data(
+        self,
+        url: str,
+        params: dict[str, Any],
+        ticker: str,
+        statement_type: str,
+    ) -&gt; list[dict[str, Any]]:
+        &#34;&#34;&#34;Perform the HTTP request and return the decoded JSON list.
+
+        The method separates the network call (inside the ``try`` block) from the
+        normal, exception-free return path (in the ``else`` block) to appease
+        Ruff&#39;s TRY300 rule while keeping the logic clear and unchanged.
+        &#34;&#34;&#34;
+        try:
+            logger.info(
+                &#34;Fetching %s for %s from FMP API (%s periods)…&#34;,
+                statement_type,
+                ticker,
+                params.get(&#34;limit&#34;),
+            )
+
+            response = requests.get(url, params=params, timeout=cfg(&#34;api.api_timeout&#34;))
+            response.raise_for_status()
+
+            payload = response.json()
+
+            if not isinstance(payload, list):
+                raise ReadError(
+                    (f&#34;Unexpected API response format. Expected list, got {type(payload).__name__}.&#34;),
+                    source=f&#34;FMP API ({ticker})&#34;,
+                    reader_type=&#34;FmpReader&#34;,
+                )
+
+        except requests.exceptions.RequestException as rex:
+            # Convert low-level network issues to domain-specific ReadError.
+            raise ReadError(
+                f&#34;FMP API request failed: {rex}&#34;,
+                source=f&#34;FMP API ({ticker})&#34;,
+                reader_type=&#34;FmpReader&#34;,
+                original_error=rex,
+            ) from rex
+        else:
+            # Only executed if no exception was raised in the ``try`` block.
+            return payload
+
+    def _parse_fmp_response(
+        self,
+        api_data: list[dict[str, Any]],
+        mapping: dict[str, str],
+    ) -&gt; tuple[list[str], dict[str, dict[str, float]]]:
+        &#34;&#34;&#34;Convert raw FMP JSON payload to a period-indexed value matrix.&#34;&#34;&#34;
+        # FMP returns newest-first; reverse to chronological order
+        api_data.reverse()
+
+        # Extract period strings safely, ensuring correct type for static checker
+        periods: list[str] = []
+        for record in api_data:
+            date_val = record.get(&#34;date&#34;)
+            if isinstance(date_val, str) and date_val:
+                periods.append(date_val)
+
+        if not periods:
+            raise ReadError(
+                &#34;Could not extract periods (&#39;date&#39; field) from FMP API response.&#34;,
+                source=&#34;FMP API&#34;,
+                reader_type=&#34;FmpReader&#34;,
+            )
+
+        # Pre-initialise matrix with NaN placeholders
+        item_matrix: dict[str, dict[str, float]] = {}
+        for record in api_data:
+            period = record.get(&#34;date&#34;)
+            if not period:
+                continue
+            for api_field, value in record.items():
+                node_name = self._apply_mapping(api_field, mapping)
+                if node_name == api_field:  # unmapped → try camel→snake fallback
+                    node_name = self._camel_to_snake(api_field)
+
+                if node_name not in item_matrix:
+                    item_matrix[node_name] = dict.fromkeys(periods, np.nan)
+
+                if isinstance(value, int | float):
+                    item_matrix[node_name][period] = float(value)
+
+        return periods, item_matrix
+
+    def _populate_graph(
+        self,
+        periods: list[str],
+        item_matrix: dict[str, dict[str, float]],
+    ) -&gt; Graph:
+        &#34;&#34;&#34;Create a Graph instance from the period/value matrix.&#34;&#34;&#34;
+        graph = Graph(periods=periods)
+        import numpy as np
+
+        for node_name, period_values in item_matrix.items():
+            valid_values = {p: v for p, v in period_values.items() if not np.isnan(v)}
+            if valid_values:
+                graph.add_node(FinancialStatementItemNode(name=node_name, values=valid_values))
+        return graph
+
+    # ------------------------------------------------------------------
+    # Static helpers
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def _camel_to_snake(cls, name: str) -&gt; str:
+        &#34;&#34;&#34;Convert *CamelCase* or *camelCase* to *snake_case* quickly.&#34;&#34;&#34;
+        return cls._CAMEL_TO_SNAKE_RE.sub(&#34;_&#34;, name).lower()</code></pre>
+</details>
+<div class="desc"><p>Reads financial statement data from the FMP API into a Graph.</p>
+<p>Fetches data for a specific ticker and statement type (income statement,
+balance sheet, or cash flow). Requires a valid FMP API key, which can be
+provided via configuration, an environment variable (<code>FMP_API_KEY</code>), or
+at runtime.</p>
+<p>This reader supports mapping of FMP's API field names to the library's
+canonical node names. A default mapping is provided, but it can be
+customized via the <code>mapping_config</code> parameter in the <code>FmpReaderConfig</code>.
+It also provides a fallback mechanism to convert unmapped <code>camelCase</code> API
+fields to <code>snake_case</code>.</p>
+<p>Configuration is provided via an <code>FmpReaderConfig</code> object.</p>
+<p>For advanced use cases involving repeated API calls, a single <code><a title="fin_statement_model.io.formats.FmpReader" href="#fin_statement_model.io.formats.FmpReader">FmpReader</a></code>
+instance can be reused to leverage caching of API key validation.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python"># from fin_statement_model.io import read_data
+# # Fetch Apple's annual income statement
+# config = {
+#     &quot;statement_type&quot;: &quot;income_statement&quot;,
+#     &quot;period_type&quot;: &quot;FY&quot;,
+#     &quot;limit&quot;: 5,
+#     &quot;api_key&quot;: &quot;YOUR_FMP_API_KEY&quot;,
+# }
+# graph = read_data(format_type=&quot;fmp&quot;, source=&quot;AAPL&quot;, config=config)
+</code></pre>
+<p>Initialize the FmpReader with validated configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>A validated <code>FmpReaderConfig</code> instance containing parameters like
+<code>source</code> (ticker), <code>api_key</code>, <code>statement_type</code>, <code>period_type</code>,
+<code>limit</code>, and <code>mapping_config</code>.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base.DataReader" href="../core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li>abc.ABC</li>
+<li><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></li>
+<li><a title="fin_statement_model.io.core.mixins.mapping.MappingAwareMixin" href="../core/mixins/mapping.html#fin_statement_model.io.core.mixins.mapping.MappingAwareMixin">MappingAwareMixin</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.FmpReader.BASE_URL"><code class="name">var <span class="ident">BASE_URL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.FmpReader.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self, source: str, **kwargs: Any) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read(self, source: str, **kwargs: Any) -&gt; Graph:
+    &#34;&#34;&#34;Fetch data from the FMP API and return a populated Graph.
+
+    This high-level method now orchestrates four dedicated helpers to keep
+    each concern isolated:
+
+    1. _build_api_url            → Constructs the REST endpoint &amp; query params
+    2. _fetch_data               → Performs the HTTP request and returns JSON
+    3. _parse_fmp_response       → Transforms raw JSON into tabular dict form
+    4. _populate_graph           → Builds and returns the final Graph object
+
+    The public behaviour (signature, raised exceptions, logging side-effects)
+    remains unchanged.
+    &#34;&#34;&#34;
+    ticker = source
+    self.set_config_context(ticker=ticker, operation=&#34;api_read&#34;)
+
+    # ------------------------------------------------------------------
+    # Resolve runtime overrides vs. config defaults
+    # ------------------------------------------------------------------
+    statement_type = kwargs.get(&#34;statement_type&#34;, self.cfg.statement_type)
+    period_type_arg = kwargs.get(&#34;period_type&#34;, self.cfg.period_type)
+    limit = kwargs.get(&#34;limit&#34;, self.cfg.limit)
+    api_key = kwargs.get(&#34;api_key&#34;, self.cfg.api_key)
+
+    # ------------------------------------------------------------------
+    # Validate inputs &amp; API key
+    # ------------------------------------------------------------------
+    if not ticker or not isinstance(ticker, str):
+        raise ReadError(
+            &#34;Invalid source (ticker) provided. Expected a non-empty string.&#34;,
+            source=str(ticker),
+            reader_type=&#34;FmpReader&#34;,
+        )
+
+    self._validate_api_key(cast(&#34;str&#34;, api_key))
+
+    # Prepare field-name mapping for this request
+    try:
+        mapping = self._get_mapping(statement_type)
+    except TypeError as te:
+        raise ReadError(
+            &#34;Invalid mapping_config provided.&#34;,
+            source=ticker,
+            reader_type=&#34;FmpReader&#34;,
+            original_error=te,
+        ) from te
+
+    # ------------------------------------------------------------------
+    # 1. Build URL &amp; params  -------------------------------------------------
+    endpoint, params = self._build_api_request(
+        ticker=ticker,
+        statement_type=statement_type,
+        period_type=period_type_arg,
+        limit=limit,
+        api_key=cast(&#34;str&#34;, api_key),
+    )
+
+    # ------------------------------------------------------------------
+    # 2. Fetch JSON payload -------------------------------------------------
+    api_data = self._fetch_data(endpoint, params, ticker, statement_type)
+
+    # Shortcut: empty payload → empty graph
+    if not api_data:
+        logger.warning(&#34;FMP API returned empty list for %s %s.&#34;, ticker, statement_type)
+        return Graph(periods=[])
+
+    # ------------------------------------------------------------------
+    # 3. Parse response → structured dict ----------------------------------
+    periods, item_matrix = self._parse_fmp_response(api_data, mapping)
+
+    # ------------------------------------------------------------------
+    # 4. Transform to Graph -------------------------------------------------
+    graph = self._populate_graph(periods, item_matrix)
+
+    logger.info(
+        &#34;Successfully created graph with %s nodes from FMP API for %s %s.&#34;,
+        len(graph.nodes),
+        ticker,
+        statement_type,
+    )
+    return graph</code></pre>
+</details>
+<div class="desc"><p>Fetch data from the FMP API and return a populated Graph.</p>
+<p>This high-level method now orchestrates four dedicated helpers to keep
+each concern isolated:</p>
+<ol>
+<li>_build_api_url
+→ Constructs the REST endpoint &amp; query params</li>
+<li>_fetch_data
+→ Performs the HTTP request and returns JSON</li>
+<li>_parse_fmp_response
+→ Transforms raw JSON into tabular dict form</li>
+<li>_populate_graph
+→ Builds and returns the final Graph object</li>
+</ol>
+<p>The public behaviour (signature, raised exceptions, logging side-effects)
+remains unchanged.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.formats.MarkdownWriter"><code class="flex name class">
+<span>class <span class="ident">MarkdownWriter</span></span>
+<span>(</span><span>cfg: MarkdownWriterConfig | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_writer(&#34;markdown&#34;, schema=MarkdownWriterConfig)
+class MarkdownWriter(BaseTableWriter, ConfigurationMixin):
+    &#34;&#34;&#34;Export a graph as a formatted markdown financial statement.
+
+    The writer converts the graph into a tabular statement (markdown table)
+    resembling a standard financial statement layout.  Optionally, a bullet-
+    list of adjustments applied to the graph can be appended.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: MarkdownWriterConfig | None = None) -&gt; None:
+        &#34;&#34;&#34;Create a new MarkdownWriter instance.
+
+        Args:
+            cfg: Optional validated configuration model. When *None*, default
+                values defined in :class:`MarkdownWriterConfig` are used.
+        &#34;&#34;&#34;
+        super().__init__()
+        # When the registry instantiates the class it passes the validated cfg
+        self.cfg = cfg or MarkdownWriterConfig(format_type=&#34;markdown&#34;)
+
+    # ------------------------------------------------------------------
+    # Core public API
+    # ------------------------------------------------------------------
+    @handle_write_errors()
+    def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; str | None:
+        &#34;&#34;&#34;Render *graph* to markdown and optionally write it to *target*.
+
+        Positional parameters mirror the :py:meth:`DataWriter.write` contract.
+
+        Runtime overrides (highest precedence) can be supplied via *kwargs*:
+
+        * ``recalculate`` - bool, trigger graph recalculation
+        * ``include_nodes`` - list[str], subset of nodes to include
+        * ``include_adjustments`` - bool, append adjustments section (default True)
+        * ``filter_input`` - optional adjustment filter passed to the helper
+        * ``hist_periods`` - list[str], explicit ordered list of historical periods
+        * ``forecast_periods`` - list[str], explicit ordered list of forecast periods
+        * ``adjustment_filter`` - AdjustmentFilterInput, overrides config value
+        * ``include_forecasts`` - bool, append forecast nodes summary (default True)
+
+        Returns:
+            The rendered markdown string when *target* is None, otherwise None.
+        &#34;&#34;&#34;
+        # ------------------------------------------------------------------
+        # Resolve effective parameters (runtime overrides → config → defaults)
+        # ------------------------------------------------------------------
+        recalc: bool = self._param(&#34;recalculate&#34;, kwargs, self.cfg, default=True)
+        include_nodes: list[str] | None = self._param(&#34;include_nodes&#34;, kwargs, self.cfg)
+        include_adjustments: bool = self._param(&#34;include_adjustments&#34;, kwargs, self.cfg, default=True)
+        hist_periods: list[str] | None = self._param(&#34;historical_periods&#34;, kwargs, self.cfg)
+        forecast_periods: list[str] | None = self._param(&#34;forecast_periods&#34;, kwargs, self.cfg)
+        adjustment_filter = self._param(&#34;adjustment_filter&#34;, kwargs, self.cfg)
+        include_forecasts: bool = self._param(&#34;include_forecasts&#34;, kwargs, self.cfg, default=True)
+
+        # ------------------------------------------------------------------
+        # Build the markdown table from the graph data
+        # ------------------------------------------------------------------
+        import pandas as pd  # Local import to avoid mandatory dependency at import time
+
+        df = self.to_dataframe(graph, include_nodes=include_nodes, recalc=recalc)
+
+        def _reorder(_df: pd.DataFrame, periods: list[str] | None) -&gt; pd.DataFrame:
+            &#34;&#34;&#34;Return DataFrame with columns reordered to *periods* if provided.&#34;&#34;&#34;
+            if periods is None:
+                return _df
+            cols = [p for p in periods if p in _df.columns]
+            missing = [p for p in periods if p not in _df.columns]
+            if missing:
+                logger.debug(&#34;Periods not found in DataFrame, ignoring: %s&#34;, missing)
+            return _df[cols]
+
+        df_hist = _reorder(df, hist_periods)
+        df_forecast = _reorder(df, forecast_periods)
+
+        if hist_periods and forecast_periods:
+            separator = pd.DataFrame({&#34; &#34;: [&#34; &#34;] * len(df)})
+            df_combined = pd.concat([df_hist, separator, df_forecast], axis=1)
+        else:
+            df_combined = df_hist if hist_periods else df_forecast if forecast_periods else df
+
+        md_lines: list[str] = [df_combined.to_markdown(tablefmt=&#34;github&#34;, floatfmt=&#34;,.2f&#34;, index=True)]
+
+        if include_adjustments:
+            adj_section = _render_adjustments(graph, filter_input=adjustment_filter)
+            if adj_section:
+                md_lines.append(adj_section)
+
+        # ------------------------------------------------------------------
+        # Forecast nodes summary bullets
+        # ------------------------------------------------------------------
+        if include_forecasts:
+            forecast_section = self._render_forecast_summary(graph)
+            if forecast_section:
+                md_lines.append(forecast_section)
+
+        markdown_output = &#34;\n&#34;.join(md_lines)
+
+        # ------------------------------------------------------------------
+        # Write to *target* if provided
+        # ------------------------------------------------------------------
+        effective_target = target or getattr(self.cfg, &#34;target&#34;, None)
+        if effective_target is not None:
+            if isinstance(effective_target, str | Path):
+                Path(effective_target).write_text(markdown_output, encoding=&#34;utf-8&#34;)
+            elif hasattr(effective_target, &#34;write&#34;) and callable(effective_target.write):
+                effective_target.write(markdown_output)
+            else:
+                raise TypeError(
+                    &#34;target must be a str, pathlib.Path, or file-like object with a write() method&#34;,
+                )
+            return None
+
+        return markdown_output
+
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _render_forecast_summary(graph: Graph) -&gt; str:
+        &#34;&#34;&#34;Return markdown bullet list summarising forecast nodes in *graph*.&#34;&#34;&#34;
+        bullets: list[str] = []
+
+        for node in graph.nodes.values():
+            fc_periods: list[str] | None = None
+            fc_type: str | None = None
+            params = None
+
+            if isinstance(node, ForecastNode):
+                fc_periods = getattr(node, &#34;forecast_periods&#34;, None)
+                fc_type = getattr(node, &#34;forecast_type&#34;, None)
+                params = getattr(node, &#34;growth_params&#34;, None)
+            else:
+                # Look for metadata injected by StatementForecaster
+                fc_periods = getattr(node, &#34;forecast_periods&#34;, None)
+                fc_type = getattr(node, &#34;forecast_type&#34;, None)
+                params = getattr(node, &#34;growth_params&#34;, None)
+
+            if fc_periods is None:
+                continue
+
+            periods_str = &#34;, &#34;.join(fc_periods) if fc_periods else &#34;&lt;unknown&gt;&#34;
+
+            if fc_type is None:
+                fc_type = &#34;forecast&#34;
+
+            params_part = &#34;&#34; if params is None else f&#34;, params: {params}&#34;
+
+            bullets.append(f&#34;* **{node.name}** ({fc_type}) forecast periods: {periods_str}{params_part}&#34;)
+
+        if not bullets:
+            return &#34;&#34;
+
+        return &#34;\n\n### Forecasts\n&#34; + &#34;\n&#34;.join(bullets) + &#34;\n&#34;</code></pre>
+</details>
+<div class="desc"><p>Export a graph as a formatted markdown financial statement.</p>
+<p>The writer converts the graph into a tabular statement (markdown table)
+resembling a standard financial statement layout.
+Optionally, a bullet-
+list of adjustments applied to the graph can be appended.</p>
+<p>Create a new MarkdownWriter instance.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>Optional validated configuration model. When <em>None</em>, default
+values defined in :class:<code>MarkdownWriterConfig</code> are used.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter">BaseTableWriter</a></li>
+<li><a title="fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter">DataFrameBasedWriter</a></li>
+<li><a title="fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin">ValueExtractionMixin</a></li>
+<li><a title="fin_statement_model.io.core.base.DataWriter" href="../core/base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a></li>
+<li>abc.ABC</li>
+<li><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.formats.MarkdownWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self, graph: Graph, target: Any = None, **kwargs: Any) ‑> str | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@handle_write_errors()
+def write(self, graph: Graph, target: Any = None, **kwargs: Any) -&gt; str | None:
+    &#34;&#34;&#34;Render *graph* to markdown and optionally write it to *target*.
+
+    Positional parameters mirror the :py:meth:`DataWriter.write` contract.
+
+    Runtime overrides (highest precedence) can be supplied via *kwargs*:
+
+    * ``recalculate`` - bool, trigger graph recalculation
+    * ``include_nodes`` - list[str], subset of nodes to include
+    * ``include_adjustments`` - bool, append adjustments section (default True)
+    * ``filter_input`` - optional adjustment filter passed to the helper
+    * ``hist_periods`` - list[str], explicit ordered list of historical periods
+    * ``forecast_periods`` - list[str], explicit ordered list of forecast periods
+    * ``adjustment_filter`` - AdjustmentFilterInput, overrides config value
+    * ``include_forecasts`` - bool, append forecast nodes summary (default True)
+
+    Returns:
+        The rendered markdown string when *target* is None, otherwise None.
+    &#34;&#34;&#34;
+    # ------------------------------------------------------------------
+    # Resolve effective parameters (runtime overrides → config → defaults)
+    # ------------------------------------------------------------------
+    recalc: bool = self._param(&#34;recalculate&#34;, kwargs, self.cfg, default=True)
+    include_nodes: list[str] | None = self._param(&#34;include_nodes&#34;, kwargs, self.cfg)
+    include_adjustments: bool = self._param(&#34;include_adjustments&#34;, kwargs, self.cfg, default=True)
+    hist_periods: list[str] | None = self._param(&#34;historical_periods&#34;, kwargs, self.cfg)
+    forecast_periods: list[str] | None = self._param(&#34;forecast_periods&#34;, kwargs, self.cfg)
+    adjustment_filter = self._param(&#34;adjustment_filter&#34;, kwargs, self.cfg)
+    include_forecasts: bool = self._param(&#34;include_forecasts&#34;, kwargs, self.cfg, default=True)
+
+    # ------------------------------------------------------------------
+    # Build the markdown table from the graph data
+    # ------------------------------------------------------------------
+    import pandas as pd  # Local import to avoid mandatory dependency at import time
+
+    df = self.to_dataframe(graph, include_nodes=include_nodes, recalc=recalc)
+
+    def _reorder(_df: pd.DataFrame, periods: list[str] | None) -&gt; pd.DataFrame:
+        &#34;&#34;&#34;Return DataFrame with columns reordered to *periods* if provided.&#34;&#34;&#34;
+        if periods is None:
+            return _df
+        cols = [p for p in periods if p in _df.columns]
+        missing = [p for p in periods if p not in _df.columns]
+        if missing:
+            logger.debug(&#34;Periods not found in DataFrame, ignoring: %s&#34;, missing)
+        return _df[cols]
+
+    df_hist = _reorder(df, hist_periods)
+    df_forecast = _reorder(df, forecast_periods)
+
+    if hist_periods and forecast_periods:
+        separator = pd.DataFrame({&#34; &#34;: [&#34; &#34;] * len(df)})
+        df_combined = pd.concat([df_hist, separator, df_forecast], axis=1)
+    else:
+        df_combined = df_hist if hist_periods else df_forecast if forecast_periods else df
+
+    md_lines: list[str] = [df_combined.to_markdown(tablefmt=&#34;github&#34;, floatfmt=&#34;,.2f&#34;, index=True)]
+
+    if include_adjustments:
+        adj_section = _render_adjustments(graph, filter_input=adjustment_filter)
+        if adj_section:
+            md_lines.append(adj_section)
+
+    # ------------------------------------------------------------------
+    # Forecast nodes summary bullets
+    # ------------------------------------------------------------------
+    if include_forecasts:
+        forecast_section = self._render_forecast_summary(graph)
+        if forecast_section:
+            md_lines.append(forecast_section)
+
+    markdown_output = &#34;\n&#34;.join(md_lines)
+
+    # ------------------------------------------------------------------
+    # Write to *target* if provided
+    # ------------------------------------------------------------------
+    effective_target = target or getattr(self.cfg, &#34;target&#34;, None)
+    if effective_target is not None:
+        if isinstance(effective_target, str | Path):
+            Path(effective_target).write_text(markdown_output, encoding=&#34;utf-8&#34;)
+        elif hasattr(effective_target, &#34;write&#34;) and callable(effective_target.write):
+            effective_target.write(markdown_output)
+        else:
+            raise TypeError(
+                &#34;target must be a str, pathlib.Path, or file-like object with a write() method&#34;,
+            )
+        return None
+
+    return markdown_output</code></pre>
+</details>
+<div class="desc"><p>Render <em>graph</em> to markdown and optionally write it to <em>target</em>.</p>
+<p>Positional parameters mirror the :py:meth:<code>DataWriter.write</code> contract.</p>
+<p>Runtime overrides (highest precedence) can be supplied via <em>kwargs</em>:</p>
+<ul>
+<li><code>recalculate</code> - bool, trigger graph recalculation</li>
+<li><code>include_nodes</code> - list[str], subset of nodes to include</li>
+<li><code>include_adjustments</code> - bool, append adjustments section (default True)</li>
+<li><code>filter_input</code> - optional adjustment filter passed to the helper</li>
+<li><code>hist_periods</code> - list[str], explicit ordered list of historical periods</li>
+<li><code>forecast_periods</code> - list[str], explicit ordered list of forecast periods</li>
+<li><code>adjustment_filter</code> - AdjustmentFilterInput, overrides config value</li>
+<li><code>include_forecasts</code> - bool, append forecast nodes summary (default True)</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<p>The rendered markdown string when <em>target</em> is None, otherwise None.</p></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter">BaseTableWriter</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.extract_graph_data" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter.extract_graph_data">extract_graph_data</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.extract_node_value" href="../core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.ValueExtractionMixin.extract_node_value">extract_node_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dataframe" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dataframe">to_dataframe</a></code></li>
+<li><code><a title="fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dict" href="../core/base_table_writer.html#fin_statement_model.io.core.base_table_writer.BaseTableWriter.to_dict">to_dict</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin">ConfigurationMixin</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.clear_config_overrides">clear_config_overrides</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_context">get_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_value">get_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_config_with_env_fallback">get_config_with_env_fallback</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.get_effective_configuration">get_effective_configuration</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.merge_configurations">merge_configurations</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.require_config_value">require_config_value</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_context">set_config_context</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.set_config_override">set_config_override</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration" href="../core/mixins/configuration.html#fin_statement_model.io.core.mixins.configuration.ConfigurationMixin.validate_configuration">validate_configuration</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.io" href="../index.html">fin_statement_model.io</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.io.formats.csv_reader" href="csv_reader.html">fin_statement_model.io.formats.csv_reader</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.dataframe_reader" href="dataframe_reader.html">fin_statement_model.io.formats.dataframe_reader</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.dataframe_writer" href="dataframe_writer.html">fin_statement_model.io.formats.dataframe_writer</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.dict_reader" href="dict_reader.html">fin_statement_model.io.formats.dict_reader</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.dict_writer" href="dict_writer.html">fin_statement_model.io.formats.dict_writer</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.excel_reader" href="excel_reader.html">fin_statement_model.io.formats.excel_reader</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.excel_writer" href="excel_writer.html">fin_statement_model.io.formats.excel_writer</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.fmp_reader" href="fmp_reader.html">fin_statement_model.io.formats.fmp_reader</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.markdown_writer" href="markdown_writer.html">fin_statement_model.io.formats.markdown_writer</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.CsvReader" href="#fin_statement_model.io.formats.CsvReader">CsvReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.CsvReader.file_extensions" href="#fin_statement_model.io.formats.CsvReader.file_extensions">file_extensions</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.DataFrameReader" href="#fin_statement_model.io.formats.DataFrameReader">DataFrameReader</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.DataFrameWriter" href="#fin_statement_model.io.formats.DataFrameWriter">DataFrameWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.DataFrameWriter.write" href="#fin_statement_model.io.formats.DataFrameWriter.write">write</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.DictReader" href="#fin_statement_model.io.formats.DictReader">DictReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.DictReader.read" href="#fin_statement_model.io.formats.DictReader.read">read</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.DictWriter" href="#fin_statement_model.io.formats.DictWriter">DictWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.DictWriter.write" href="#fin_statement_model.io.formats.DictWriter.write">write</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.ExcelReader" href="#fin_statement_model.io.formats.ExcelReader">ExcelReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.ExcelReader.file_extensions" href="#fin_statement_model.io.formats.ExcelReader.file_extensions">file_extensions</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.ExcelWriter" href="#fin_statement_model.io.formats.ExcelWriter">ExcelWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.ExcelWriter.write" href="#fin_statement_model.io.formats.ExcelWriter.write">write</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.FmpReader" href="#fin_statement_model.io.formats.FmpReader">FmpReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.FmpReader.BASE_URL" href="#fin_statement_model.io.formats.FmpReader.BASE_URL">BASE_URL</a></code></li>
+<li><code><a title="fin_statement_model.io.formats.FmpReader.read" href="#fin_statement_model.io.formats.FmpReader.read">read</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.formats.MarkdownWriter" href="#fin_statement_model.io.formats.MarkdownWriter">MarkdownWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.formats.MarkdownWriter.write" href="#fin_statement_model.io.formats.MarkdownWriter.write">write</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.core.metrics.metric_defn API documentation</title>
+<meta name="description" content="Organized Built-in Metrics Package …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.core.metrics.metric_defn</code></h1>
+</header>
+<section id="section-intro">
+<p>Organized Built-in Metrics Package.</p>
+<p>This package contains financial metrics organized by analytical category for easier
+maintenance and understanding. All metrics are automatically loaded into the
+metric_registry when this package is imported.</p>
+<p>The main entry point is load_organized_metrics(), which loads all metrics from the
+subdirectories and registers them with the global metric_registry.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.metrics.metric_defn import load_organized_metrics
+&gt;&gt;&gt; count = load_organized_metrics()
+&gt;&gt;&gt; print(f&quot;Loaded {count} metrics from organized structure&quot;)
+</code></pre>
+<p>Auto-loading:
+When this package is imported, load_organized_metrics() is called automatically.
+Any errors during loading are logged as warnings.</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.core.metrics.metric_defn.advanced" href="advanced/index.html">fin_statement_model.core.metrics.metric_defn.advanced</a></code></dt>
+<dd>
+<div class="desc"><p>Advanced Metrics.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.metrics.metric_defn.banking" href="banking/index.html">fin_statement_model.core.metrics.metric_defn.banking</a></code></dt>
+<dd>
+<div class="desc"><p>Banking Metrics.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.metrics.metric_defn.cash_flow" href="cash_flow/index.html">fin_statement_model.core.metrics.metric_defn.cash_flow</a></code></dt>
+<dd>
+<div class="desc"><p>Cash_Flow Metrics.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.metrics.metric_defn.coverage" href="coverage/index.html">fin_statement_model.core.metrics.metric_defn.coverage</a></code></dt>
+<dd>
+<div class="desc"><p>Coverage Metrics.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.metrics.metric_defn.credit_risk" href="credit_risk/index.html">fin_statement_model.core.metrics.metric_defn.credit_risk</a></code></dt>
+<dd>
+<div class="desc"><p>Credit_Risk Metrics.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.metrics.metric_defn.efficiency" href="efficiency/index.html">fin_statement_model.core.metrics.metric_defn.efficiency</a></code></dt>
+<dd>
+<div class="desc"><p>Efficiency Metrics.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.metrics.metric_defn.growth" href="growth/index.html">fin_statement_model.core.metrics.metric_defn.growth</a></code></dt>
+<dd>
+<div class="desc"><p>Growth Metrics.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.metrics.metric_defn.leverage" href="leverage/index.html">fin_statement_model.core.metrics.metric_defn.leverage</a></code></dt>
+<dd>
+<div class="desc"><p>Leverage Metrics.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.metrics.metric_defn.liquidity" href="liquidity/index.html">fin_statement_model.core.metrics.metric_defn.liquidity</a></code></dt>
+<dd>
+<div class="desc"><p>Liquidity Metrics.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.metrics.metric_defn.per_share" href="per_share/index.html">fin_statement_model.core.metrics.metric_defn.per_share</a></code></dt>
+<dd>
+<div class="desc"><p>Per_Share Metrics.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.metrics.metric_defn.profitability" href="profitability/index.html">fin_statement_model.core.metrics.metric_defn.profitability</a></code></dt>
+<dd>
+<div class="desc"><p>Profitability Metrics.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.metrics.metric_defn.real_estate" href="real_estate/index.html">fin_statement_model.core.metrics.metric_defn.real_estate</a></code></dt>
+<dd>
+<div class="desc"><p>Real Estate Metrics.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.core.metrics.metric_defn.valuation" href="valuation/index.html">fin_statement_model.core.metrics.metric_defn.valuation</a></code></dt>
+<dd>
+<div class="desc"><p>Valuation Metrics.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.core.metrics.metric_defn.load_organized_metrics"><code class="name flex">
+<span>def <span class="ident">load_organized_metrics</span></span>(<span>base_path: pathlib.Path | None = None) ‑> int</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_organized_metrics(base_path: Path | None = None) -&gt; int:
+    &#34;&#34;&#34;Load all metrics from the organized structure of YAML files.
+
+    This function loads metrics from a set of predefined YAML files organized by category.
+    It registers all found metrics with the global metric_registry.
+
+    Args:
+        base_path: Optional[Path]. Base path to the metric_defn directory. If None, uses default.
+
+    Returns:
+        int: Total number of metrics loaded.
+
+    Raises:
+        Exception: If loading a directory fails, logs the error and continues.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.core.metrics.metric_defn import load_organized_metrics
+        &gt;&gt;&gt; count = load_organized_metrics()
+        &gt;&gt;&gt; print(f&#34;Loaded {count} metrics from organized structure&#34;)
+    &#34;&#34;&#34;
+    if base_path is None:
+        base_path = Path(__file__).parent
+
+    total_loaded = 0
+
+    # Define the organized metric files to load
+    metric_files = [
+        # Liquidity metrics
+        &#34;liquidity/ratios.yaml&#34;,
+        &#34;liquidity/working_capital.yaml&#34;,
+        # Leverage metrics
+        &#34;leverage/debt_ratios.yaml&#34;,
+        &#34;leverage/net_leverage.yaml&#34;,
+        # Coverage metrics
+        &#34;coverage/interest_coverage.yaml&#34;,
+        &#34;coverage/debt_service.yaml&#34;,
+        # Profitability metrics
+        &#34;profitability/margins.yaml&#34;,
+        &#34;profitability/returns.yaml&#34;,
+        # Efficiency metrics
+        &#34;efficiency/asset_turnover.yaml&#34;,
+        &#34;efficiency/component_turnover.yaml&#34;,
+        # Valuation metrics
+        &#34;valuation/price_multiples.yaml&#34;,
+        &#34;valuation/enterprise_multiples.yaml&#34;,
+        &#34;valuation/yields.yaml&#34;,
+        # Cash flow metrics
+        &#34;cash_flow/generation.yaml&#34;,
+        &#34;cash_flow/returns.yaml&#34;,
+        # Growth metrics
+        &#34;growth/growth_rates.yaml&#34;,
+        # Per share metrics
+        &#34;per_share/per_share_metrics.yaml&#34;,
+        # Credit risk metrics
+        &#34;credit_risk/altman_scores.yaml&#34;,
+        &#34;credit_risk/warning_flags.yaml&#34;,
+        # Advanced metrics
+        &#34;advanced/dupont_analysis.yaml&#34;,
+        # Special calculated items
+        &#34;special/gross_profit.yaml&#34;,
+        &#34;special/net_income.yaml&#34;,
+        &#34;special/retained_earnings.yaml&#34;,
+        # Real estate metrics
+        &#34;real_estate/operational_metrics.yaml&#34;,
+        &#34;real_estate/valuation_metrics.yaml&#34;,
+        &#34;real_estate/per_share_metrics.yaml&#34;,
+        &#34;real_estate/debt_metrics.yaml&#34;,
+        # Banking metrics
+        &#34;banking/asset_quality.yaml&#34;,
+        &#34;banking/capital_adequacy.yaml&#34;,
+        &#34;banking/profitability.yaml&#34;,
+        &#34;banking/liquidity.yaml&#34;,
+    ]
+
+    # Collect unique parent directories from the metric files
+    unique_directories = set()
+    for file_path in metric_files:
+        full_path = base_path / file_path
+        if full_path.exists():
+            unique_directories.add(full_path.parent)
+        else:
+            logger.warning(&#34;Organized metric file not found: %s&#34;, full_path)
+
+    # Load metrics from each unique directory
+    for directory in unique_directories:
+        try:
+            # load_metrics_from_directory returns the count of metrics loaded
+            metrics_count = metric_registry.load_metrics_from_directory(directory)
+            total_loaded += metrics_count
+            logger.debug(&#34;Loaded %s metrics from %s&#34;, metrics_count, directory)
+        except (OSError, ValueError):
+            logger.exception(&#34;Failed to load metrics from directory %s&#34;, directory)
+
+    logger.info(&#34;Loaded %s total metrics from organized structure&#34;, total_loaded)
+    return total_loaded</code></pre>
+</details>
+<div class="desc"><p>Load all metrics from the organized structure of YAML files.</p>
+<p>This function loads metrics from a set of predefined YAML files organized by category.
+It registers all found metrics with the global metric_registry.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>base_path</code></strong></dt>
+<dd>Optional[Path]. Base path to the metric_defn directory. If None, uses default.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Total number of metrics loaded.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>Exception</code></dt>
+<dd>If loading a directory fails, logs the error and continues.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.metrics.metric_defn import load_organized_metrics
+&gt;&gt;&gt; count = load_organized_metrics()
+&gt;&gt;&gt; print(f&quot;Loaded {count} metrics from organized structure&quot;)
+</code></pre></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.core.metrics" href="../index.html">fin_statement_model.core.metrics</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.core.metrics.metric_defn.advanced" href="advanced/index.html">fin_statement_model.core.metrics.metric_defn.advanced</a></code></li>
+<li><code><a title="fin_statement_model.core.metrics.metric_defn.banking" href="banking/index.html">fin_statement_model.core.metrics.metric_defn.banking</a></code></li>
+<li><code><a title="fin_statement_model.core.metrics.metric_defn.cash_flow" href="cash_flow/index.html">fin_statement_model.core.metrics.metric_defn.cash_flow</a></code></li>
+<li><code><a title="fin_statement_model.core.metrics.metric_defn.coverage" href="coverage/index.html">fin_statement_model.core.metrics.metric_defn.coverage</a></code></li>
+<li><code><a title="fin_statement_model.core.metrics.metric_defn.credit_risk" href="credit_risk/index.html">fin_statement_model.core.metrics.metric_defn.credit_risk</a></code></li>
+<li><code><a title="fin_statement_model.core.metrics.metric_defn.efficiency" href="efficiency/index.html">fin_statement_model.core.metrics.metric_defn.efficiency</a></code></li>
+<li><code><a title="fin_statement_model.core.metrics.metric_defn.growth" href="growth/index.html">fin_statement_model.core.metrics.metric_defn.growth</a></code></li>
+<li><code><a title="fin_statement_model.core.metrics.metric_defn.leverage" href="leverage/index.html">fin_statement_model.core.metrics.metric_defn.leverage</a></code></li>
+<li><code><a title="fin_statement_model.core.metrics.metric_defn.liquidity" href="liquidity/index.html">fin_statement_model.core.metrics.metric_defn.liquidity</a></code></li>
+<li><code><a title="fin_statement_model.core.metrics.metric_defn.per_share" href="per_share/index.html">fin_statement_model.core.metrics.metric_defn.per_share</a></code></li>
+<li><code><a title="fin_statement_model.core.metrics.metric_defn.profitability" href="profitability/index.html">fin_statement_model.core.metrics.metric_defn.profitability</a></code></li>
+<li><code><a title="fin_statement_model.core.metrics.metric_defn.real_estate" href="real_estate/index.html">fin_statement_model.core.metrics.metric_defn.real_estate</a></code></li>
+<li><code><a title="fin_statement_model.core.metrics.metric_defn.valuation" href="valuation/index.html">fin_statement_model.core.metrics.metric_defn.valuation</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.core.metrics.metric_defn.load_organized_metrics" href="#fin_statement_model.core.metrics.metric_defn.load_organized_metrics">load_organized_metrics</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

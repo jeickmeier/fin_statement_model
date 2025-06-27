@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.statements.formatting.markdown.formatter API documentation</title>
+<meta name="description" content="Formatter for converting statement items to markdown table format …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.statements.formatting.markdown.formatter</code></h1>
+</header>
+<section id="section-intro">
+<p>Formatter for converting statement items to markdown table format.</p>
+<p>Moved from <code>io.formats.markdown.formatter</code>.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.statements.formatting.markdown.formatter.MarkdownTableFormatter"><code class="flex name class">
+<span>class <span class="ident">MarkdownTableFormatter</span></span>
+<span>(</span><span>indent_spaces: int = 4)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MarkdownTableFormatter:
+    &#34;&#34;&#34;Formats statement items into markdown table format.&#34;&#34;&#34;
+
+    def __init__(self, indent_spaces: int = 4):
+        &#34;&#34;&#34;Create a new table formatter.
+
+        Args:
+            indent_spaces: Number of spaces used per hierarchy level when
+                indenting descriptions.
+        &#34;&#34;&#34;
+        self.indent_spaces = indent_spaces
+
+    def format_table(
+        self,
+        items: list[MarkdownStatementItem],
+        periods: list[str],
+        historical_periods: list[str] | None = None,
+        forecast_periods: list[str] | None = None,
+    ) -&gt; list[str]:
+        &#34;&#34;&#34;Return a Markdown table representing *items* for *periods*.
+
+        Args:
+            items: Pre-rendered items coming from
+                :class:`~fin_statement_model.statements.formatting.markdown.renderer.MarkdownStatementRenderer`.
+            periods: Ordered list of period labels (columns).
+            historical_periods: Sub-set of *periods* considered *historical* -
+                appended with &#34;(H)&#34; in the header.
+            forecast_periods: Sub-set of *periods* considered *forecast* -
+                appended with &#34;(F)&#34; in the header.
+
+        Returns:
+            A list of strings where each element represents one Markdown table
+            row (header, separator and data rows).
+        &#34;&#34;&#34;
+        if not items:
+            logger.warning(&#34;No items to format into table&#34;)
+            return []
+        hist_set = set(historical_periods or [])
+        fc_set = set(forecast_periods or [])
+        max_desc, period_widths, lines = self._calculate_widths_and_format(items, periods)
+        out: list[str] = []
+        header = [&#34;Description&#34;.ljust(max_desc)]
+        for p in periods:
+            label = p + (&#34; (H)&#34; if p in hist_set else &#34; (F)&#34; if p in fc_set else &#34;&#34;)
+            header.append(label.rjust(period_widths[p]))
+        out.append(f&#34;| {&#39; | &#39;.join(header)} |&#34;)
+        sep = [&#34;-&#34; * max_desc] + [&#34;-&#34; * period_widths[p] for p in periods]
+        out.append(f&#34;| {&#39; | &#39;.join(sep)} |&#34;)
+        for ld in lines:
+            row = [ld[&#34;name&#34;].ljust(max_desc)]
+            row.extend(ld[&#34;values&#34;].get(p, &#34;&#34;).rjust(period_widths[p]) for p in periods)
+            out.append(f&#34;| {&#39; | &#39;.join(row)} |&#34;)
+        return out
+
+    def _calculate_widths_and_format(
+        self, items: list[MarkdownStatementItem], periods: list[str]
+    ) -&gt; tuple[int, dict[str, int], list[dict[str, Any]]]:
+        max_desc = 0
+        period_widths = dict.fromkeys(periods, 0)
+        formatted = []
+        for item in items:
+            indent = &#34; &#34; * (item[&#34;level&#34;] * self.indent_spaces)
+            name = f&#34;{indent}{item[&#39;name&#39;]}&#34;
+            is_sub = item[&#34;is_subtotal&#34;]
+            is_contra = item.get(&#34;is_contra&#34;, False)
+            if is_sub:
+                name = f&#34;**{name}**&#34;
+            if is_contra:
+                name = f&#34;_{name}_&#34;
+            max_desc = max(max_desc, len(name))
+            vals: dict[str, str] = {}
+            for p in periods:
+                raw = item[&#34;values&#34;].get(p)
+                v = self._format_value(raw, item)
+                if is_sub:
+                    v = f&#34;**{v}**&#34;
+                elif is_contra:
+                    v = f&#34;_{v}_&#34;
+                vals[p] = v
+                period_widths[p] = max(period_widths[p], len(v))
+            formatted.append({
+                &#34;name&#34;: name,
+                &#34;values&#34;: vals,
+                &#34;is_subtotal&#34;: is_sub,
+                &#34;is_contra&#34;: is_contra,
+            })
+        return max_desc, period_widths, formatted
+
+    def _format_value(self, value: float | int | str | None, item: MarkdownStatementItem) -&gt; str:
+        if value is None:
+            return &#34;&#34;
+        if isinstance(value, str):
+            return value
+        if isinstance(value, int | float):
+            fmt = item.get(&#34;display_format&#34;)
+            if fmt:
+                try:
+                    return format(value, fmt)
+                except (ValueError, TypeError) as exc:
+                    logger.warning(&#34;Invalid display_format &#39;%s&#39;: %s&#34;, fmt, exc)
+            return f&#34;{value:,.2f}&#34; if isinstance(value, float) else f&#34;{value:,}&#34;
+        return str(value)</code></pre>
+</details>
+<div class="desc"><p>Formats statement items into markdown table format.</p>
+<p>Create a new table formatter.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>indent_spaces</code></strong></dt>
+<dd>Number of spaces used per hierarchy level when
+indenting descriptions.</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.statements.formatting.markdown.formatter.MarkdownTableFormatter.format_table"><code class="name flex">
+<span>def <span class="ident">format_table</span></span>(<span>self,<br>items: list[MarkdownStatementItem],<br>periods: list[str],<br>historical_periods: list[str] | None = None,<br>forecast_periods: list[str] | None = None) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_table(
+    self,
+    items: list[MarkdownStatementItem],
+    periods: list[str],
+    historical_periods: list[str] | None = None,
+    forecast_periods: list[str] | None = None,
+) -&gt; list[str]:
+    &#34;&#34;&#34;Return a Markdown table representing *items* for *periods*.
+
+    Args:
+        items: Pre-rendered items coming from
+            :class:`~fin_statement_model.statements.formatting.markdown.renderer.MarkdownStatementRenderer`.
+        periods: Ordered list of period labels (columns).
+        historical_periods: Sub-set of *periods* considered *historical* -
+            appended with &#34;(H)&#34; in the header.
+        forecast_periods: Sub-set of *periods* considered *forecast* -
+            appended with &#34;(F)&#34; in the header.
+
+    Returns:
+        A list of strings where each element represents one Markdown table
+        row (header, separator and data rows).
+    &#34;&#34;&#34;
+    if not items:
+        logger.warning(&#34;No items to format into table&#34;)
+        return []
+    hist_set = set(historical_periods or [])
+    fc_set = set(forecast_periods or [])
+    max_desc, period_widths, lines = self._calculate_widths_and_format(items, periods)
+    out: list[str] = []
+    header = [&#34;Description&#34;.ljust(max_desc)]
+    for p in periods:
+        label = p + (&#34; (H)&#34; if p in hist_set else &#34; (F)&#34; if p in fc_set else &#34;&#34;)
+        header.append(label.rjust(period_widths[p]))
+    out.append(f&#34;| {&#39; | &#39;.join(header)} |&#34;)
+    sep = [&#34;-&#34; * max_desc] + [&#34;-&#34; * period_widths[p] for p in periods]
+    out.append(f&#34;| {&#39; | &#39;.join(sep)} |&#34;)
+    for ld in lines:
+        row = [ld[&#34;name&#34;].ljust(max_desc)]
+        row.extend(ld[&#34;values&#34;].get(p, &#34;&#34;).rjust(period_widths[p]) for p in periods)
+        out.append(f&#34;| {&#39; | &#39;.join(row)} |&#34;)
+    return out</code></pre>
+</details>
+<div class="desc"><p>Return a Markdown table representing <em>items</em> for <em>periods</em>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>items</code></strong></dt>
+<dd>Pre-rendered items coming from
+:class:<code>~fin_statement_model.statements.formatting.markdown.renderer.MarkdownStatementRenderer</code>.</dd>
+<dt><strong><code>periods</code></strong></dt>
+<dd>Ordered list of period labels (columns).</dd>
+<dt><strong><code>historical_periods</code></strong></dt>
+<dd>Sub-set of <em>periods</em> considered <em>historical</em> -
+appended with "(H)" in the header.</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>Sub-set of <em>periods</em> considered <em>forecast</em> -
+appended with "(F)" in the header.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A list of strings where each element represents one Markdown table
+row (header, separator and data rows).</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.statements.formatting.markdown" href="index.html">fin_statement_model.statements.formatting.markdown</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.statements.formatting.markdown.formatter.MarkdownTableFormatter" href="#fin_statement_model.statements.formatting.markdown.formatter.MarkdownTableFormatter">MarkdownTableFormatter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.statements.formatting.markdown.formatter.MarkdownTableFormatter.format_table" href="#fin_statement_model.statements.formatting.markdown.formatter.MarkdownTableFormatter.format_table">format_table</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

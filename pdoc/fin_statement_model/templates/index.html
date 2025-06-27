@@ -1,0 +1,1714 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.templates API documentation</title>
+<meta name="description" content="Template Registry &amp; Engine (TRE) - Financial Statement Templates …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.templates</code></h1>
+</header>
+<section id="section-intro">
+<p>Template Registry &amp; Engine (TRE) - Financial Statement Templates.</p>
+<p>The Template Registry &amp; Engine provides a complete solution for creating, storing,
+and managing reusable financial statement templates. Templates encapsulate graph
+structures, forecasting configurations, and preprocessing pipelines in a portable format.</p>
+<p>Key Features:
+- <strong>Template Storage</strong>: Local filesystem-backed registry with JSON serialization
+- <strong>Built-in Templates</strong>: Pre-configured templates for common financial models (LBO, real estate, etc.)
+- <strong>Template Comparison</strong>: Structural and value-based diffing between templates
+- <strong>Forecasting Integration</strong>: Declarative forecast specifications embedded in templates
+- <strong>Preprocessing Pipelines</strong>: Automated data transformation workflows
+- <strong>Version Management</strong>: Semantic versioning with automatic increment</p>
+<p>Basic Usage:
+&gt;&gt;&gt; from fin_statement_model.templates import TemplateRegistry, install_builtin_templates
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Install built-in templates
+&gt;&gt;&gt; install_builtin_templates()
+&gt;&gt;&gt;
+&gt;&gt;&gt; # List available templates
+&gt;&gt;&gt; templates = TemplateRegistry.list()
+&gt;&gt;&gt; print(templates)
+# ['lbo.standard_v1', 'real_estate_lending_v3']
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Instantiate a template as a working graph
+&gt;&gt;&gt; graph = TemplateRegistry.instantiate("lbo.standard_v1")
+&gt;&gt;&gt; print(f"Graph has {len(graph.nodes)} nodes and {len(graph.periods)} periods")</p>
+<p>Advanced Usage:
+&gt;&gt;&gt; # Register a custom template
+&gt;&gt;&gt; template_id = TemplateRegistry.register_graph(
+&hellip;
+my_graph, name="custom.model", meta={"category": "custom", "description": "My custom model"}
+&hellip; )
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Compare templates
+&gt;&gt;&gt; diff_result = TemplateRegistry.diff("lbo.standard_v1", template_id)
+&gt;&gt;&gt; print(f"Added nodes: {diff_result.structure.added_nodes}")
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Instantiate with customizations
+&gt;&gt;&gt; customized_graph = TemplateRegistry.instantiate(
+&hellip;
+"lbo.standard_v1", periods=["2029", "2030"], rename_map={"Revenue": "TopLineRevenue"}
+&hellip; )</p>
+<p>See Also:
+- User Guide → Statement Templates: <code>docs/registry_templates.md</code>
+- Built-in template data: <code>fin_statement_model.templates.builtin.data</code></p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.templates.builtin" href="builtin/index.html">fin_statement_model.templates.builtin</a></code></dt>
+<dd>
+<div class="desc"><p>Built-in Template Loader for Financial Statement Models …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.templates.diff" href="diff.html">fin_statement_model.templates.diff</a></code></dt>
+<dd>
+<div class="desc"><p>Template comparison utilities for the Template Registry &amp; Engine (TRE) …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.templates.models" href="models.html">fin_statement_model.templates.models</a></code></dt>
+<dd>
+<div class="desc"><p>Domain models for the Template Registry &amp; Engine (TRE) …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.templates.registry" href="registry.html">fin_statement_model.templates.registry</a></code></dt>
+<dd>
+<div class="desc"><p>Filesystem-backed Template Registry for Financial Statement Models …</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.templates.install_builtin_templates"><code class="name flex">
+<span>def <span class="ident">install_builtin_templates</span></span>(<span>*, force: bool = False) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def install_builtin_templates(*, force: bool = False) -&gt; None:
+    &#34;&#34;&#34;Install built-in financial statement templates into the local registry.
+
+    Discovers and loads all JSON template bundles from the built-in data directory,
+    validates their integrity, and registers them with the TemplateRegistry. The
+    function is idempotent and safe to call multiple times.
+
+    Args:
+        force: When True, unconditionally re-install all templates even if they
+            already exist with matching checksums. When False (default), only
+            installs templates that are missing or have changed checksums.
+
+    Raises:
+        ValueError: If a template bundle is malformed or conflicts with existing
+            registrations (only in non-force mode).
+        OSError: If template files cannot be read from the data directory.
+
+    Examples:
+        Basic installation:
+        &gt;&gt;&gt; from fin_statement_model.templates.builtin import install_builtin_templates
+        &gt;&gt;&gt; install_builtin_templates()  # Install all built-in templates
+
+        Force reinstallation:
+        &gt;&gt;&gt; install_builtin_templates(force=True)  # Overwrite existing templates
+
+        Check what was installed:
+        &gt;&gt;&gt; from fin_statement_model.templates import TemplateRegistry
+        &gt;&gt;&gt; templates = TemplateRegistry.list()
+        &gt;&gt;&gt; builtin_templates = [t for t in templates if not t.startswith(&#34;custom&#34;)]
+        &gt;&gt;&gt; print(f&#34;Installed {len(builtin_templates)} built-in templates&#34;)
+
+    Note:
+        The function automatically detects changes to template JSON files via
+        checksum comparison and updates the registry accordingly. This makes
+        development workflows smoother when editing template definitions.
+    &#34;&#34;&#34;
+    bundle_paths = _iter_bundle_files()
+    if not bundle_paths:
+        logger.info(&#34;No built-in template bundles found - nothing to install.&#34;)
+        return
+
+    existing = set(TemplateRegistry.list())
+    installed: list[str] = []
+
+    for path in bundle_paths:
+        try:
+            data: dict[str, Any] = json.loads(path.read_text(encoding=&#34;utf-8&#34;))
+            bundle = TemplateBundle.model_validate(data)
+        except (OSError, ValueError) as exc:  # pragma: no cover - defensive only
+            logger.warning(&#34;Skipping malformed bundle &#39;%s&#39;: %s&#34;, getattr(path, &#34;name&#34;, path), exc)
+            continue
+
+        template_id = f&#34;{bundle.meta.name}_{bundle.meta.version}&#34;
+        if template_id in existing:
+            # ------------------------------------------------------------------
+            # Detect changes in the packaged bundle (via checksum) and decide
+            # whether the existing registry entry must be replaced.  This makes
+            # the loader workflow smoother for analysts who tweak JSON files -
+            # their edits will be picked-up automatically on the next run.
+            # ------------------------------------------------------------------
+            if not force:
+                try:
+                    current_bundle = TemplateRegistry.get(template_id)
+                except KeyError:
+                    # Index is out-of-sync - fall back to re-install logic below.
+                    pass
+                else:
+                    if current_bundle.checksum == bundle.checksum:
+                        logger.debug(&#34;Template &#39;%s&#39; already registered and up-to-date - skipping.&#34;, template_id)
+                        continue  # No changes - keep as-is
+            # Either *force* is True OR checksum differs - replace existing
+            TemplateRegistry.delete(template_id)
+            existing.discard(template_id)
+
+        # Re-hydrate Graph and register ------------------------------------------------
+        graph = read_data(&#34;graph_definition_dict&#34;, bundle.graph_dict)
+
+        try:
+            TemplateRegistry.register_graph(
+                graph,
+                name=bundle.meta.name,
+                version=bundle.meta.version,
+                meta=bundle.meta.model_dump(exclude={&#34;name&#34;, &#34;version&#34;}),
+                forecast=bundle.forecast,
+                preprocessing=bundle.preprocessing,
+            )
+        except ValueError as exc:
+            # Duplicate template_id - possible race condition; skip in force mode
+            if force:
+                logger.debug(&#34;Could not overwrite existing template &#39;%s&#39;: %s&#34;, template_id, exc)
+                continue
+            raise
+
+        installed.append(template_id)
+
+    if installed:
+        logger.info(&#34;Installed %d built-in templates: %s&#34;, len(installed), &#34;, &#34;.join(installed))
+    else:
+        logger.info(&#34;All built-in templates already installed.&#34;)</code></pre>
+</details>
+<div class="desc"><p>Install built-in financial statement templates into the local registry.</p>
+<p>Discovers and loads all JSON template bundles from the built-in data directory,
+validates their integrity, and registers them with the TemplateRegistry. The
+function is idempotent and safe to call multiple times.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>force</code></strong></dt>
+<dd>When True, unconditionally re-install all templates even if they
+already exist with matching checksums. When False (default), only
+installs templates that are missing or have changed checksums.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If a template bundle is malformed or conflicts with existing
+registrations (only in non-force mode).</dd>
+<dt><code>OSError</code></dt>
+<dd>If template files cannot be read from the data directory.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<p>Basic installation:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.templates.builtin import install_builtin_templates
+&gt;&gt;&gt; install_builtin_templates()  # Install all built-in templates
+</code></pre>
+<p>Force reinstallation:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; install_builtin_templates(force=True)  # Overwrite existing templates
+</code></pre>
+<p>Check what was installed:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.templates import TemplateRegistry
+&gt;&gt;&gt; templates = TemplateRegistry.list()
+&gt;&gt;&gt; builtin_templates = [t for t in templates if not t.startswith(&quot;custom&quot;)]
+&gt;&gt;&gt; print(f&quot;Installed {len(builtin_templates)} built-in templates&quot;)
+</code></pre>
+<h2 id="note">Note</h2>
+<p>The function automatically detects changes to template JSON files via
+checksum comparison and updates the registry accordingly. This makes
+development workflows smoother when editing template definitions.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.templates.DiffResult"><code class="flex name class">
+<span>class <span class="ident">DiffResult</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DiffResult(BaseModel):
+    &#34;&#34;&#34;Comprehensive comparison result between two financial statement templates.
+
+    Aggregates both structural (topology) and value-level differences into
+    a single result object. Value comparison is optional and can be disabled
+    for performance when only structural changes are needed.
+
+    Attributes:
+        structure: Structural differences (nodes, configuration changes)
+        values: Optional value-level differences (numerical deltas)
+
+    Example:
+        &gt;&gt;&gt; structure = StructureDiff(added_nodes=[&#34;NewNode&#34;])
+        &gt;&gt;&gt; values = ValuesDiff(changed_cells={&#34;Revenue|2024&#34;: 100.0})
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; diff_result = DiffResult(structure=structure, values=values)
+        &gt;&gt;&gt; len(diff_result.structure.added_nodes)
+        1
+        &gt;&gt;&gt; diff_result.values.max_delta
+        100.0
+    &#34;&#34;&#34;
+
+    model_config = ConfigDict(frozen=True, extra=&#34;forbid&#34;)
+
+    structure: StructureDiff = Field(..., description=&#34;Structural differences (nodes, edges, metadata).&#34;)
+    values: ValuesDiff | None = Field(default=None, description=&#34;Optional value-level differences.&#34;)</code></pre>
+</details>
+<div class="desc"><p>Comprehensive comparison result between two financial statement templates.</p>
+<p>Aggregates both structural (topology) and value-level differences into
+a single result object. Value comparison is optional and can be disabled
+for performance when only structural changes are needed.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>structure</code></strong></dt>
+<dd>Structural differences (nodes, configuration changes)</dd>
+<dt><strong><code>values</code></strong></dt>
+<dd>Optional value-level differences (numerical deltas)</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; structure = StructureDiff(added_nodes=[&quot;NewNode&quot;])
+&gt;&gt;&gt; values = ValuesDiff(changed_cells={&quot;Revenue|2024&quot;: 100.0})
+&gt;&gt;&gt;
+&gt;&gt;&gt; diff_result = DiffResult(structure=structure, values=values)
+&gt;&gt;&gt; len(diff_result.structure.added_nodes)
+1
+&gt;&gt;&gt; diff_result.values.max_delta
+100.0
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.templates.DiffResult.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.DiffResult.structure"><code class="name">var <span class="ident">structure</span> : <a title="fin_statement_model.templates.models.StructureDiff" href="models.html#fin_statement_model.templates.models.StructureDiff">StructureDiff</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.DiffResult.values"><code class="name">var <span class="ident">values</span> : <a title="fin_statement_model.templates.models.ValuesDiff" href="models.html#fin_statement_model.templates.models.ValuesDiff">ValuesDiff</a> | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.templates.TemplateBundle"><code class="flex name class">
+<span>class <span class="ident">TemplateBundle</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TemplateBundle(BaseModel):
+    &#34;&#34;&#34;Complete serializable template with graph definition and configurations.
+
+    A TemplateBundle represents a fully-specified financial statement template
+    that can be persisted, transmitted, and instantiated. It includes the core
+    graph structure plus optional forecasting and preprocessing specifications.
+
+    The bundle&#39;s integrity is verified via SHA-256 checksum of the graph_dict
+    to detect tampering or corruption during storage/transmission.
+
+    Attributes:
+        meta: Template metadata (name, version, description, etc.)
+        graph_dict: Serialized graph definition with nodes, periods, adjustments
+        checksum: SHA-256 hash of graph_dict for integrity verification
+        forecast: Optional declarative forecasting configuration
+        preprocessing: Optional data transformation pipeline
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.templates.models import TemplateMeta, TemplateBundle
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; meta = TemplateMeta(name=&#34;test&#34;, version=&#34;v1&#34;, category=&#34;test&#34;)
+        &gt;&gt;&gt; graph_dict = {&#34;periods&#34;: [&#34;2024&#34;], &#34;nodes&#34;: {}, &#34;adjustments&#34;: []}
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Checksum is calculated automatically if not provided
+        &gt;&gt;&gt; bundle = TemplateBundle(meta=meta, graph_dict=graph_dict, checksum=_calculate_sha256_checksum(graph_dict))
+        &gt;&gt;&gt; bundle.meta.name
+        &#39;test&#39;
+    &#34;&#34;&#34;
+
+    model_config = ConfigDict(frozen=True, extra=&#34;forbid&#34;)
+
+    meta: TemplateMeta = Field(..., description=&#34;Immutable template metadata.&#34;)
+    graph_dict: dict[str, Any] = Field(..., description=&#34;Graph definition exported via IO facade.&#34;)
+    checksum: str = Field(..., description=&#34;SHA-256 checksum of *graph_dict* JSON.&#34;)
+
+    # Optional declarative forecast specification
+    forecast: ForecastSpec | None = Field(
+        default=None,
+        description=&#34;Optional forecast recipe applied on instantiation.&#34;,
+    )
+
+    # Optional preprocessing pipeline specification
+    preprocessing: PreprocessingSpec | None = Field(
+        default=None,
+        description=&#34;Optional preprocessing pipeline applied on instantiation.&#34;,
+    )
+
+    # ---------------------------------------------------------------------
+    # Validation helpers
+    # ---------------------------------------------------------------------
+
+    @model_validator(mode=&#34;after&#34;)
+    def _validate_checksum(self) -&gt; TemplateBundle:
+        &#34;&#34;&#34;Validate that checksum matches the SHA-256 hash of graph_dict.
+
+        Raises:
+            ValueError: If the provided checksum doesn&#39;t match the calculated
+                hash of graph_dict, indicating potential data corruption.
+        &#34;&#34;&#34;
+        expected = _calculate_sha256_checksum(self.graph_dict)
+        if expected != self.checksum:
+            raise ValueError(&#34;Checksum does not match the provided graph_dict.&#34;)
+        return self</code></pre>
+</details>
+<div class="desc"><p>Complete serializable template with graph definition and configurations.</p>
+<p>A TemplateBundle represents a fully-specified financial statement template
+that can be persisted, transmitted, and instantiated. It includes the core
+graph structure plus optional forecasting and preprocessing specifications.</p>
+<p>The bundle's integrity is verified via SHA-256 checksum of the graph_dict
+to detect tampering or corruption during storage/transmission.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>meta</code></strong></dt>
+<dd>Template metadata (name, version, description, etc.)</dd>
+<dt><strong><code>graph_dict</code></strong></dt>
+<dd>Serialized graph definition with nodes, periods, adjustments</dd>
+<dt><strong><code>checksum</code></strong></dt>
+<dd>SHA-256 hash of graph_dict for integrity verification</dd>
+<dt><strong><code>forecast</code></strong></dt>
+<dd>Optional declarative forecasting configuration</dd>
+<dt><strong><code>preprocessing</code></strong></dt>
+<dd>Optional data transformation pipeline</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.templates.models import TemplateMeta, TemplateBundle
+&gt;&gt;&gt;
+&gt;&gt;&gt; meta = TemplateMeta(name=&quot;test&quot;, version=&quot;v1&quot;, category=&quot;test&quot;)
+&gt;&gt;&gt; graph_dict = {&quot;periods&quot;: [&quot;2024&quot;], &quot;nodes&quot;: {}, &quot;adjustments&quot;: []}
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Checksum is calculated automatically if not provided
+&gt;&gt;&gt; bundle = TemplateBundle(meta=meta, graph_dict=graph_dict, checksum=_calculate_sha256_checksum(graph_dict))
+&gt;&gt;&gt; bundle.meta.name
+'test'
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.templates.TemplateBundle.checksum"><code class="name">var <span class="ident">checksum</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateBundle.forecast"><code class="name">var <span class="ident">forecast</span> : <a title="fin_statement_model.templates.models.ForecastSpec" href="models.html#fin_statement_model.templates.models.ForecastSpec">ForecastSpec</a> | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateBundle.graph_dict"><code class="name">var <span class="ident">graph_dict</span> : dict[str, typing.Any]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateBundle.meta"><code class="name">var <span class="ident">meta</span> : <a title="fin_statement_model.templates.models.TemplateMeta" href="models.html#fin_statement_model.templates.models.TemplateMeta">TemplateMeta</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateBundle.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateBundle.preprocessing"><code class="name">var <span class="ident">preprocessing</span> : <a title="fin_statement_model.templates.models.PreprocessingSpec" href="models.html#fin_statement_model.templates.models.PreprocessingSpec">PreprocessingSpec</a> | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.templates.TemplateMeta"><code class="flex name class">
+<span>class <span class="ident">TemplateMeta</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TemplateMeta(BaseModel):
+    &#34;&#34;&#34;Immutable metadata for a financial statement template.
+
+    Contains identifying information, versioning, categorization, and
+    free-form metadata tags for organizing and discovering templates.
+
+    Attributes:
+        name: Template identifier (e.g., &#34;lbo.standard&#34;, &#34;real_estate.lending&#34;)
+        version: Semantic version string (e.g., &#34;v1&#34;, &#34;v2.1&#34;)
+        category: High-level grouping for organization (e.g., &#34;lbo&#34;, &#34;real_estate&#34;)
+        description: Optional human-readable description
+        created_at: UTC timestamp of template creation
+        tags: Free-form key-value metadata for custom categorization
+
+    Example:
+        &gt;&gt;&gt; meta = TemplateMeta(
+        ...     name=&#34;lbo.standard&#34;,
+        ...     version=&#34;v1&#34;,
+        ...     category=&#34;lbo&#34;,
+        ...     description=&#34;Standard LBO model with 3-statement integration&#34;,
+        ...     tags={&#34;complexity&#34;: &#34;basic&#34;, &#34;industry&#34;: &#34;general&#34;},
+        ... )
+        &gt;&gt;&gt; f&#34;{meta.name}_{meta.version}&#34;
+        &#39;lbo.standard_v1&#39;
+    &#34;&#34;&#34;
+
+    model_config = ConfigDict(frozen=True, extra=&#34;forbid&#34;)
+
+    name: str = Field(..., description=&#34;Template short-name, e.g. &#39;lbo&#39;.&#34;)
+    version: str = Field(..., description=&#34;Semantic version, e.g. &#39;v1&#39;.&#34;)
+    category: str = Field(..., description=&#34;High-level grouping, e.g. &#39;real_estate&#39;.&#34;)
+    description: str | None = Field(default=None, description=&#34;Optional human-readable description.&#34;)
+    created_at: datetime = Field(default_factory=datetime.utcnow, description=&#34;UTC creation timestamp.&#34;)
+    tags: dict[str, str] = Field(default_factory=dict, description=&#34;Free-form key/value metadata tags.&#34;)</code></pre>
+</details>
+<div class="desc"><p>Immutable metadata for a financial statement template.</p>
+<p>Contains identifying information, versioning, categorization, and
+free-form metadata tags for organizing and discovering templates.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Template identifier (e.g., "lbo.standard", "real_estate.lending")</dd>
+<dt><strong><code>version</code></strong></dt>
+<dd>Semantic version string (e.g., "v1", "v2.1")</dd>
+<dt><strong><code>category</code></strong></dt>
+<dd>High-level grouping for organization (e.g., "lbo", "real_estate")</dd>
+<dt><strong><code>description</code></strong></dt>
+<dd>Optional human-readable description</dd>
+<dt><strong><code>created_at</code></strong></dt>
+<dd>UTC timestamp of template creation</dd>
+<dt><strong><code>tags</code></strong></dt>
+<dd>Free-form key-value metadata for custom categorization</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; meta = TemplateMeta(
+...     name=&quot;lbo.standard&quot;,
+...     version=&quot;v1&quot;,
+...     category=&quot;lbo&quot;,
+...     description=&quot;Standard LBO model with 3-statement integration&quot;,
+...     tags={&quot;complexity&quot;: &quot;basic&quot;, &quot;industry&quot;: &quot;general&quot;},
+... )
+&gt;&gt;&gt; f&quot;{meta.name}_{meta.version}&quot;
+'lbo.standard_v1'
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.templates.TemplateMeta.category"><code class="name">var <span class="ident">category</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateMeta.created_at"><code class="name">var <span class="ident">created_at</span> : datetime.datetime</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateMeta.description"><code class="name">var <span class="ident">description</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateMeta.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateMeta.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateMeta.tags"><code class="name">var <span class="ident">tags</span> : dict[str, str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateMeta.version"><code class="name">var <span class="ident">version</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.templates.TemplateRegistry"><code class="flex name class">
+<span>class <span class="ident">TemplateRegistry</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TemplateRegistry:
+    &#34;&#34;&#34;Local filesystem-backed registry for financial statement templates.
+
+    A singleton-style class providing centralized template storage, versioning,
+    and retrieval. Templates are persisted as JSON bundles with automatic
+    indexing for efficient discovery and integrity verification.
+
+    The registry supports the complete template lifecycle:
+    - Registration of new templates with automatic versioning
+    - Retrieval and instantiation of stored templates
+    - Comparison between different template versions
+    - Deletion and cleanup of obsolete templates
+
+    All operations are thread-safe and atomic where possible to support
+    concurrent access patterns.
+
+    Class Attributes:
+        _ENV_VAR: Environment variable name for custom registry path
+        _INDEX_FILE: Name of the JSON index file
+        _STORE_DIR: Directory name for template storage
+
+    Example:
+        &gt;&gt;&gt; # Basic registry operations
+        &gt;&gt;&gt; templates = TemplateRegistry.list()
+        &gt;&gt;&gt; bundle = TemplateRegistry.get(&#34;lbo.standard_v1&#34;)
+        &gt;&gt;&gt; graph = TemplateRegistry.instantiate(&#34;lbo.standard_v1&#34;)
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Register new template
+        &gt;&gt;&gt; template_id = TemplateRegistry.register_graph(my_graph, name=&#34;custom.model&#34;)
+
+    Note:
+        The registry creates secure storage with restrictive permissions
+        (0700 for directories, 0600 for files) to protect potentially
+        sensitive financial data.
+    &#34;&#34;&#34;
+
+    _ENV_VAR: str = &#34;FSM_TEMPLATES_PATH&#34;
+    _INDEX_FILE: str = &#34;index.json&#34;
+    _STORE_DIR: str = &#34;store&#34;
+
+    # ------------------------------------------------------------------
+    # Path helpers
+    # ------------------------------------------------------------------
+    @classmethod
+    def _registry_root(cls) -&gt; Path:
+        &#34;&#34;&#34;Determine and create the root directory for template storage.
+
+        Follows a precedence order for locating the registry:
+        1. Environment variable FSM_TEMPLATES_PATH (if set)
+        2. Default: ~/.fin_statement_model/templates
+
+        The directory is created with secure permissions (0700) on first access
+        to ensure private storage of potentially sensitive financial data.
+
+        Returns:
+            Absolute path to the registry root directory
+
+        Example:
+            &gt;&gt;&gt; root = TemplateRegistry._registry_root()
+            &gt;&gt;&gt; print(root)  # /home/user/.fin_statement_model/templates
+            &gt;&gt;&gt; root.exists()
+            True
+        &#34;&#34;&#34;
+        custom = os.getenv(cls._ENV_VAR)
+        root = Path(custom).expanduser().resolve() if custom else Path.home() / &#34;.fin_statement_model&#34; / &#34;templates&#34;
+        # `mkdir` is no-op if the directory already exists.
+        root.mkdir(parents=True, exist_ok=True)
+        try:
+            root.chmod(0o700)
+        except PermissionError:  # pragma: no cover - best effort on non-POSIX
+            logger.debug(&#34;Unable to set registry root permissions; continuing anyway.&#34;)
+        return root
+
+    @classmethod
+    def _index_path(cls) -&gt; Path:
+        &#34;&#34;&#34;Return the absolute path to the registry index file.
+
+        Returns:
+            Path to index.json within the registry root
+
+        Example:
+            &gt;&gt;&gt; index_path = TemplateRegistry._index_path()
+            &gt;&gt;&gt; print(index_path.name)
+            &#39;index.json&#39;
+        &#34;&#34;&#34;
+        return cls._registry_root() / cls._INDEX_FILE
+
+    # ------------------------------------------------------------------
+    # Index helpers
+    # ------------------------------------------------------------------
+    @classmethod
+    def _load_index(cls) -&gt; MutableMapping[str, str]:
+        &#34;&#34;&#34;Load the registry index from disk.
+
+        Reads the JSON index file mapping template IDs to relative bundle paths.
+        Returns an empty mapping if the index doesn&#39;t exist or is corrupted.
+
+        Returns:
+            Mutable mapping of template_id → relative_bundle_path
+
+        Example:
+            &gt;&gt;&gt; index = TemplateRegistry._load_index()
+            &gt;&gt;&gt; print(index)  # {&#39;lbo.standard_v1&#39;: &#39;store/lbo/standard/v1/bundle.json&#39;}
+        &#34;&#34;&#34;
+        idx_path = cls._index_path()
+        if not idx_path.exists():
+            return {}
+        try:
+            with idx_path.open(encoding=&#34;utf-8&#34;) as fh:
+                data = json.load(fh)
+            if not isinstance(data, dict):
+                raise TypeError(&#34;Registry index JSON must be an object mapping template_id→relative_path.&#34;)
+        except Exception:  # pragma: no cover - defensive, should never occur in tests
+            logger.exception(&#34;Failed to parse registry index - resetting to empty.&#34;)
+            return {}
+        else:
+            return data
+
+    @classmethod
+    def _atomic_write(cls, target: Path, payload: str) -&gt; None:
+        &#34;&#34;&#34;Atomically write text payload to target path with secure permissions.
+
+        Uses a temporary file in the same directory followed by atomic rename
+        to ensure the write operation is either fully completed or has no effect.
+        Sets restrictive permissions (0600) for security.
+
+        Args:
+            target: Destination file path
+            payload: Text content to write
+
+        Example:
+            &gt;&gt;&gt; content = &#39;{&#34;template&#34;: &#34;data&#34;}&#39;
+            &gt;&gt;&gt; TemplateRegistry._atomic_write(Path(&#34;/tmp/test.json&#34;), content)
+        &#34;&#34;&#34;
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(&#34;w&#34;, dir=str(target.parent), delete=False, encoding=&#34;utf-8&#34;) as tmp:
+            tmp.write(payload)
+            tmp.flush()
+            os.fsync(tmp.fileno())
+            tmp_path = Path(tmp.name)
+        try:
+            tmp_path.chmod(0o600)
+        except PermissionError:  # pragma: no cover
+            logger.debug(&#34;Unable to set permissions on temp file; continuing anyway.&#34;)
+        # `Path.replace` is atomic on POSIX and Windows (NTFS)
+        tmp_path.replace(target)
+
+    @classmethod
+    def _save_index(cls, index: Mapping[str, str]) -&gt; None:
+        &#34;&#34;&#34;Persist the registry index to disk atomically.
+
+        Args:
+            index: Template ID to relative path mapping
+
+        Example:
+            &gt;&gt;&gt; index = {&#34;my_template_v1&#34;: &#34;store/my/template/v1/bundle.json&#34;}
+            &gt;&gt;&gt; TemplateRegistry._save_index(index)
+        &#34;&#34;&#34;
+        payload = json.dumps(index, indent=2, sort_keys=True)
+        cls._atomic_write(cls._index_path(), payload)
+
+    # ------------------------------------------------------------------
+    # Public helper - deletion (used by install_builtin_templates overwrite)
+    # ------------------------------------------------------------------
+    @classmethod
+    def delete(cls, template_id: str) -&gt; None:
+        &#34;&#34;&#34;Remove a template from the registry permanently.
+
+        Deletes both the template bundle file and its index entry. The operation
+        is destructive and cannot be undone. Silently ignores unknown template IDs
+        to support idempotent cleanup scenarios.
+
+        Args:
+            template_id: Template identifier to delete (e.g., &#34;lbo.standard_v1&#34;)
+
+        Example:
+            &gt;&gt;&gt; TemplateRegistry.delete(&#34;old_template_v1&#34;)  # Removes completely
+            &gt;&gt;&gt; TemplateRegistry.delete(&#34;nonexistent&#34;)  # Silently ignored
+
+        Note:
+            The function also attempts to clean up empty parent directories
+            after deletion to maintain a tidy registry structure.
+        &#34;&#34;&#34;
+        with _INDEX_LOCK:
+            index = cls._load_index()
+            rel_path = index.pop(template_id, None)
+            if rel_path is None:
+                logger.debug(&#34;Template &#39;%s&#39; not found - nothing to delete.&#34;, template_id)
+                cls._save_index(index)
+                return
+
+            # Delete bundle JSON (ignore if already gone)
+            try:
+                abs_path = cls._resolve_bundle_path(rel_path)
+                if abs_path.exists():
+                    abs_path.unlink()
+                    # Remove now-empty parent directories up to registry root
+                    for parent in abs_path.parent.parents:
+                        try:
+                            parent.rmdir()
+                        except OSError:
+                            break  # not empty - stop ascent
+                        if parent == cls._registry_root():
+                            break
+            except Exception:  # pragma: no cover - cautious cleanup
+                logger.exception(&#34;Failed to remove bundle for &#39;%s&#39;&#34;, template_id)
+            finally:
+                cls._save_index(index)
+
+    # ------------------------------------------------------------------
+    # Path validation helpers
+    # ------------------------------------------------------------------
+    @classmethod
+    def _resolve_bundle_path(cls, rel: str | Path) -&gt; Path:
+        &#34;&#34;&#34;Resolve relative bundle path to absolute path with security validation.
+
+        Converts relative paths from the index to absolute filesystem paths while
+        defending against directory traversal attacks. Rejects paths that attempt
+        to escape the registry root directory.
+
+        Args:
+            rel: Relative path from registry index
+
+        Returns:
+            Validated absolute path within registry root
+
+        Raises:
+            ValueError: If path is absolute, contains traversal components (..),
+                or resolves outside the registry root
+
+        Example:
+            &gt;&gt;&gt; path = TemplateRegistry._resolve_bundle_path(&#34;store/lbo/standard/v1/bundle.json&#34;)
+            &gt;&gt;&gt; print(path.is_absolute())
+            True
+            &gt;&gt;&gt; path.relative_to(TemplateRegistry._registry_root())  # Validates containment
+            PosixPath(&#39;store/lbo/standard/v1/bundle.json&#39;)
+        &#34;&#34;&#34;
+        rel_path = Path(rel)
+        # Reject absolute paths outright
+        if rel_path.is_absolute():
+            raise ValueError(&#34;Registry index contains absolute bundle path - potential security risk.&#34;)
+        # Reject parent directory traversal (&#34;..&#34;) components
+        if any(part == &#34;..&#34; for part in rel_path.parts):
+            raise ValueError(&#34;Registry index contains path traversal components (..).&#34;)
+
+        root = cls._registry_root().resolve()
+        abs_path = (root / rel_path).resolve()
+        try:
+            abs_path.relative_to(root)
+        except ValueError as exc:  # pragma: no cover - defensive
+            raise ValueError(&#34;Resolved bundle path escapes registry root.&#34;) from exc
+        return abs_path
+
+    # ------------------------------------------------------------------
+    # Public API - foundational subset (list / register / get)
+    # ------------------------------------------------------------------
+    @classmethod
+    def list(cls) -&gt; list[str]:
+        &#34;&#34;&#34;List all registered template identifiers.
+
+        Returns:
+            Sorted list of template IDs in the registry
+
+        Example:
+            &gt;&gt;&gt; templates = TemplateRegistry.list()
+            &gt;&gt;&gt; print(templates)
+            [&#39;lbo.standard_v1&#39;, &#39;real_estate_lending_v3&#39;, &#39;custom.model_v1&#39;]
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Check if specific template exists
+            &gt;&gt;&gt; if &#34;lbo.standard_v1&#34; in TemplateRegistry.list():
+            ...     print(&#34;LBO template available&#34;)
+        &#34;&#34;&#34;
+        return sorted(cls._load_index())
+
+    @classmethod
+    def _resolve_next_version(cls, name: str, existing_index: Mapping[str, str]) -&gt; str:
+        &#34;&#34;&#34;Calculate the next semantic version for a template name.
+
+        Scans existing template IDs with the same name prefix to determine
+        the next available version number in the v&lt;N&gt; format.
+
+        Args:
+            name: Template name (e.g., &#34;lbo.standard&#34;)
+            existing_index: Current registry index
+
+        Returns:
+            Next version string (e.g., &#34;v2&#34;, &#34;v3&#34;)
+
+        Example:
+            &gt;&gt;&gt; # Assuming lbo.standard_v1 and lbo.standard_v2 exist
+            &gt;&gt;&gt; next_ver = TemplateRegistry._resolve_next_version(
+            ...     &#34;lbo.standard&#34;, {&#34;lbo.standard_v1&#34;: &#34;path1&#34;, &#34;lbo.standard_v2&#34;: &#34;path2&#34;}
+            ... )
+            &gt;&gt;&gt; print(next_ver)  # &#34;v3&#34;
+        &#34;&#34;&#34;
+        prefix = f&#34;{name}_v&#34;
+        max_ver = 0
+        for key in existing_index:
+            if key.startswith(prefix):
+                try:
+                    candidate = int(key[len(prefix) :])
+                    max_ver = max(max_ver, candidate)
+                except ValueError:
+                    continue
+        return f&#34;v{max_ver + 1}&#34;
+
+    @classmethod
+    def register_graph(
+        cls,
+        graph: Graph,
+        *,
+        name: str,
+        version: str | None = None,
+        meta: Mapping[str, Any] | None = None,
+        forecast: ForecastSpec | None = None,
+        preprocessing: PreprocessingSpec | None = None,
+    ) -&gt; str:
+        &#34;&#34;&#34;Register a financial statement graph as a reusable template.
+
+        Serializes the graph and stores it in the registry with metadata,
+        optional forecasting configuration, and preprocessing pipeline.
+        Automatically calculates version numbers if not specified.
+
+        Args:
+            graph: Graph instance to persist as a template
+            name: Template name (e.g., &#34;lbo.standard&#34;, &#34;real_estate.construction&#34;)
+            version: Explicit version string (&#34;v1&#34;, &#34;v2&#34;). If None, automatically
+                calculates the next available version
+            meta: Additional metadata fields. Standard fields (name, version, category)
+                are set automatically and override any duplicates in meta
+            forecast: Optional declarative forecasting specification
+            preprocessing: Optional data transformation pipeline
+
+        Returns:
+            Complete template identifier (e.g., &#34;lbo.standard_v1&#34;)
+
+        Raises:
+            TypeError: If name is not a non-empty string
+            ValueError: If template_id already exists in registry
+            OSError: If filesystem operations fail
+
+        Example:
+            &gt;&gt;&gt; # Basic registration with auto-versioning
+            &gt;&gt;&gt; template_id = TemplateRegistry.register_graph(
+            ...     my_graph, name=&#34;custom.model&#34;, meta={&#34;description&#34;: &#34;Custom financial model&#34;, &#34;category&#34;: &#34;custom&#34;}
+            ... )
+            &gt;&gt;&gt; print(template_id)  # &#34;custom.model_v1&#34;
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Registration with forecasting
+            &gt;&gt;&gt; from fin_statement_model.templates.models import ForecastSpec
+            &gt;&gt;&gt; forecast_spec = ForecastSpec(
+            ...     periods=[&#34;2027&#34;, &#34;2028&#34;], node_configs={&#34;Revenue&#34;: {&#34;method&#34;: &#34;simple&#34;, &#34;config&#34;: 0.1}}
+            ... )
+            &gt;&gt;&gt; template_id = TemplateRegistry.register_graph(my_graph, name=&#34;forecast.model&#34;, forecast=forecast_spec)
+
+        Note:
+            The graph is deep-cloned during serialization to ensure the stored
+            template is independent of the original graph instance. Template
+            bundles include SHA-256 checksums for integrity verification.
+        &#34;&#34;&#34;
+        if not name or not isinstance(name, str):
+            raise TypeError(&#34;Template name must be a non-empty string.&#34;)
+
+        with _INDEX_LOCK:
+            index = cls._load_index()
+            if version is None:
+                version = cls._resolve_next_version(name, index)
+
+            template_id = f&#34;{name}_{version}&#34;
+            if template_id in index:
+                raise ValueError(f&#34;Template &#39;{template_id}&#39; already exists.&#34;)
+
+            # ------------------------------------------------------------------
+            # Build filesystem path (store/&lt;name&gt;/&lt;version&gt;/bundle.json)
+            # ------------------------------------------------------------------
+            rel_path = Path(cls._STORE_DIR) / Path(*name.split(&#34;.&#34;)) / version / &#34;bundle.json&#34;
+            bundle_path = cls._registry_root() / rel_path
+            bundle_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # ------------------------------------------------------------------
+            # Serialize graph ➜ dict ➜ TemplateBundle ➜ JSON
+            # ------------------------------------------------------------------
+            graph_dict = cast(&#34;dict[str, Any]&#34;, write_data(&#34;graph_definition_dict&#34;, graph, target=None))
+            checksum = _calculate_sha256_checksum(graph_dict)
+
+            meta_payload: dict[str, Any] = {
+                &#34;name&#34;: name,
+                &#34;version&#34;: version,
+                &#34;category&#34;: meta.get(&#34;category&#34;) if meta else name.split(&#34;.&#34;)[0],
+            }
+            if meta:
+                meta_payload.update(meta)
+
+            bundle = TemplateBundle(
+                meta=TemplateMeta.model_validate(meta_payload),
+                graph_dict=graph_dict,
+                checksum=checksum,
+                forecast=forecast,
+                preprocessing=preprocessing,
+            )
+            payload = json.dumps(bundle.model_dump(mode=&#34;json&#34;), indent=2)
+
+            # Atomic write of bundle then update index
+            cls._atomic_write(bundle_path, payload)
+
+            # Update index in-memory and persist
+            index[template_id] = rel_path.as_posix()
+            cls._save_index(index)
+
+            logger.info(&#34;Registered template &#39;%s&#39; (path=%s)&#34;, template_id, bundle_path)
+            return template_id
+
+    @classmethod
+    def get(cls, template_id: str) -&gt; TemplateBundle:
+        &#34;&#34;&#34;Retrieve a template bundle by identifier.
+
+        Loads and validates the stored template bundle from disk, including
+        checksum verification to ensure data integrity.
+
+        Args:
+            template_id: Template identifier (e.g., &#34;lbo.standard_v1&#34;)
+
+        Returns:
+            Validated TemplateBundle instance
+
+        Raises:
+            KeyError: If template_id is not found in registry
+            ValueError: If bundle checksum validation fails
+            OSError: If bundle file cannot be read
+
+        Example:
+            &gt;&gt;&gt; bundle = TemplateRegistry.get(&#34;lbo.standard_v1&#34;)
+            &gt;&gt;&gt; print(f&#34;Template: {bundle.meta.name} v{bundle.meta.version}&#34;)
+            &gt;&gt;&gt; print(f&#34;Category: {bundle.meta.category}&#34;)
+            &gt;&gt;&gt; print(f&#34;Checksum: {bundle.checksum[:8]}...&#34;)
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Access graph structure
+            &gt;&gt;&gt; graph_dict = bundle.graph_dict
+            &gt;&gt;&gt; periods = graph_dict.get(&#34;periods&#34;, [])
+            &gt;&gt;&gt; nodes = graph_dict.get(&#34;nodes&#34;, {})
+        &#34;&#34;&#34;
+        index = cls._load_index()
+        try:
+            rel = index[template_id]
+        except KeyError as exc:  # pragma: no cover - explicit failure expected in tests
+            raise KeyError(f&#34;Template &#39;{template_id}&#39; not found in registry.&#34;) from exc
+        bundle_path = cls._resolve_bundle_path(rel)
+        with bundle_path.open(encoding=&#34;utf-8&#34;) as fh:
+            data = json.load(fh)
+        return TemplateBundle.model_validate(data)
+
+    # ------------------------------------------------------------------
+    # Public API - instantiation (clone + optional transforms)
+    # ------------------------------------------------------------------
+    @classmethod
+    def instantiate(  # noqa: C901
+        cls,
+        template_id: str,
+        *,
+        periods: builtins.list[str] | None = None,
+        rename_map: Mapping[str, str] | None = None,
+    ) -&gt; Graph:
+        &#34;&#34;&#34;Create a working graph instance from a stored template.
+
+        Loads the template bundle, reconstructs the graph, applies any embedded
+        forecast and preprocessing specifications, and optionally customizes
+        the result with additional periods and node renaming.
+
+        Args:
+            template_id: Template identifier (e.g., &#34;lbo.standard_v1&#34;)
+            periods: Additional periods to append to the graph. Existing periods
+                are preserved; duplicates are ignored
+            rename_map: Node renaming mapping (old_name → new_name). Maintains
+                all calculation relationships and edge connections
+
+        Returns:
+            Independent Graph instance ready for analysis and modification
+
+        Raises:
+            KeyError: If template_id is not found or old node names don&#39;t exist
+            TypeError: If periods or rename_map have incorrect types
+            ValueError: If rename target names already exist in the graph
+
+        Example:
+            &gt;&gt;&gt; # Basic instantiation
+            &gt;&gt;&gt; graph = TemplateRegistry.instantiate(&#34;lbo.standard_v1&#34;)
+            &gt;&gt;&gt; revenue_2024 = graph.calculate(&#34;Revenue&#34;, &#34;2024&#34;)
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Instantiation with customizations
+            &gt;&gt;&gt; custom_graph = TemplateRegistry.instantiate(
+            ...     &#34;lbo.standard_v1&#34;,
+            ...     periods=[&#34;2029&#34;, &#34;2030&#34;],  # Add forecast periods
+            ...     rename_map={  # Rename nodes
+            ...         &#34;Revenue&#34;: &#34;TotalRevenue&#34;,
+            ...         &#34;COGS&#34;: &#34;DirectCosts&#34;,
+            ...     },
+            ... )
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Verify customizations
+            &gt;&gt;&gt; print(custom_graph.periods)  # Includes 2029, 2030
+            &gt;&gt;&gt; print(&#34;TotalRevenue&#34; in custom_graph.nodes)  # True
+            &gt;&gt;&gt; print(&#34;Revenue&#34; in custom_graph.nodes)  # False
+
+        Template Processing Order:
+            1. Load template bundle and reconstruct base graph
+            2. Apply embedded forecast specification (if present)
+            3. Deep clone for independence from registry caches
+            4. Add additional periods (if specified)
+            5. Apply node renaming (if specified)
+            6. Apply preprocessing pipeline (if embedded)
+            7. Clear caches and return clean graph
+
+        Note:
+            The returned graph is completely independent of the template registry
+            and can be modified without affecting the stored template. All
+            forecasting and preprocessing happens automatically based on the
+            template&#39;s embedded specifications.
+        &#34;&#34;&#34;
+        # ------------------------------------------------------------------
+        # 1. Load bundle &amp; re-construct Graph via IO facade
+        # ------------------------------------------------------------------
+        bundle = cls.get(template_id)
+
+        from fin_statement_model.io import read_data
+
+        graph = read_data(&#34;graph_definition_dict&#34;, bundle.graph_dict)
+
+        # ------------------------------------------------------------------
+        # 1b. Apply forecast recipe if present
+        # ------------------------------------------------------------------
+        if bundle.forecast is not None:
+            try:
+                from fin_statement_model.forecasting import StatementForecaster
+
+                fc = StatementForecaster(graph)
+                fc.create_forecast(
+                    forecast_periods=bundle.forecast.periods,
+                    node_configs=bundle.forecast.node_configs,
+                )
+            except Exception:
+                logger.exception(&#34;Failed to apply forecast for template &#39;%s&#39;&#34;, template_id)
+                raise
+
+        # ------------------------------------------------------------------
+        # 2. Deep-clone to decouple from in-memory caches (safety &amp; perf)
+        # ------------------------------------------------------------------
+        graph = graph.clone(deep=True)
+
+        # ------------------------------------------------------------------
+        # 3. Extend periods if requested
+        # ------------------------------------------------------------------
+        if periods:
+            if not isinstance(periods, list):
+                raise TypeError(&#34;&#39;periods&#39; must be a list of strings if provided.&#34;)
+            graph.add_periods([p for p in periods if p not in graph.periods])
+
+        # ------------------------------------------------------------------
+        # 4. Apply node renames - maintain edge wiring
+        # ------------------------------------------------------------------
+        if rename_map:
+            if not isinstance(rename_map, Mapping):
+                raise TypeError(&#34;&#39;rename_map&#39; must be a mapping of old→new node IDs.&#34;)
+
+            # Basic validations -------------------------------------------------
+            for old_name, new_name in rename_map.items():
+                if old_name not in graph.nodes:
+                    raise KeyError(f&#34;Node &#39;{old_name}&#39; not found in graph - cannot rename.&#34;)
+                if new_name in graph.nodes:
+                    raise ValueError(f&#34;Target node name &#39;{new_name}&#39; already exists in graph.&#34;)
+
+            # Perform the rename ------------------------------------------------
+            for old_name, new_name in rename_map.items():
+                node = graph.nodes.pop(old_name)
+                node.name = new_name
+                graph.nodes[new_name] = node
+
+            # Refresh calculation nodes&#39; input references ----------------------
+            try:
+                graph.manipulator._update_calculation_nodes()  # pylint: disable=protected-access
+            except AttributeError:
+                # Fallback - update input_names manually where present
+                for nd in graph.nodes.values():
+                    if hasattr(nd, &#34;input_names&#34;) and isinstance(nd.input_names, list):
+                        nd.input_names = [rename_map.get(n, n) for n in nd.input_names]
+
+        # ------------------------------------------------------------------
+        # 5. Apply preprocessing pipeline if declared
+        # ------------------------------------------------------------------
+        if bundle.preprocessing is not None:
+            try:
+                from fin_statement_model.preprocessing.utils import apply_pipeline_to_graph
+
+                apply_pipeline_to_graph(graph, bundle.preprocessing, in_place=True)
+            except Exception:
+                logger.exception(&#34;Failed to apply preprocessing for template &#39;%s&#39;&#34;, template_id)
+                raise
+
+        # Clear caches again to ensure a clean state after preprocessing
+        graph.clear_all_caches()
+
+        logger.info(
+            &#34;Instantiated template &#39;%s&#39; as graph - periods=%s, rename_map=%s&#34;,
+            template_id,
+            periods,
+            rename_map,
+        )
+
+        return graph
+
+    # ------------------------------------------------------------------
+    # Public API - diffing
+    # ------------------------------------------------------------------
+    @classmethod
+    def diff(
+        cls,
+        template_id_a: str,
+        template_id_b: str,
+        *,
+        include_values: bool = True,
+        periods: builtins.list[str] | None = None,
+        atol: float = 1e-9,
+    ) -&gt; DiffResult:
+        &#34;&#34;&#34;Compare two registered templates for structural and value differences.
+
+        Loads both templates, reconstructs their graphs (including forecast
+        application), and performs comprehensive comparison analysis. Useful
+        for understanding evolution between template versions or comparing
+        different modeling approaches.
+
+        Args:
+            template_id_a: Base template identifier (left-hand side of comparison)
+            template_id_b: Target template identifier (right-hand side of comparison)
+            include_values: Whether to include numerical value comparison in
+                addition to structural analysis. Set False for faster topology-only diffs
+            periods: Specific periods to compare. If None, uses intersection of
+                periods from both templates
+            atol: Absolute tolerance for value comparison. Differences below this
+                threshold are considered equal and excluded from results
+
+        Returns:
+            DiffResult containing:
+                - structure: Structural differences (added/removed/changed nodes)
+                - values: Numerical differences (only if include_values=True)
+
+        Raises:
+            KeyError: If either template_id is not found in registry
+
+        Example:
+            &gt;&gt;&gt; # Compare template versions
+            &gt;&gt;&gt; diff_result = TemplateRegistry.diff(&#34;lbo.standard_v1&#34;, &#34;lbo.standard_v2&#34;, include_values=True)
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Analyze structural changes
+            &gt;&gt;&gt; structure = diff_result.structure
+            &gt;&gt;&gt; print(f&#34;Added nodes: {structure.added_nodes}&#34;)
+            &gt;&gt;&gt; print(f&#34;Removed nodes: {structure.removed_nodes}&#34;)
+            &gt;&gt;&gt; print(f&#34;Changed nodes: {list(structure.changed_nodes.keys())}&#34;)
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Analyze value changes (if enabled)
+            &gt;&gt;&gt; if diff_result.values:
+            ...     values = diff_result.values
+            ...     print(f&#34;Changed cells: {len(values.changed_cells)}&#34;)
+            ...     print(f&#34;Max delta: ${values.max_delta:,.2f}&#34;)
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Compare specific periods with tolerance
+            &gt;&gt;&gt; focused_diff = TemplateRegistry.diff(
+            ...     &#34;template_a_v1&#34;,
+            ...     &#34;template_b_v1&#34;,
+            ...     periods=[&#34;2024&#34;, &#34;2025&#34;],
+            ...     atol=1.0,  # Ignore sub-dollar differences
+            ... )
+
+        Processing Details:
+            Both templates are loaded and their embedded forecast specifications
+            are applied to create fully-realized graphs before comparison. This
+            ensures the diff reflects the complete template behavior, not just
+            the base graph structure.
+
+        Performance Notes:
+            - Structure comparison is always fast (O(N) in number of nodes)
+            - Value comparison can be expensive for large graphs/many periods
+            - Use include_values=False when only topology matters
+            - Specify focused period lists for faster value comparison
+        &#34;&#34;&#34;
+        # Lazy import to avoid heavyweight dependencies on registry import
+        from fin_statement_model.io import read_data
+        from fin_statement_model.templates import diff as _diff_helpers
+
+        # ------------------------------------------------------------------
+        # Re-hydrate both graphs via IO facade (no mutation - read-only path)
+        # ------------------------------------------------------------------
+        bundle_a = cls.get(template_id_a)
+        bundle_b = cls.get(template_id_b)
+
+        graph_a = read_data(&#34;graph_definition_dict&#34;, bundle_a.graph_dict)
+        graph_b = read_data(&#34;graph_definition_dict&#34;, bundle_b.graph_dict)
+
+        # Apply forecast recipes when present so diff works on fully realised graphs
+        from fin_statement_model.forecasting import StatementForecaster
+
+        for graph, bundle in ((graph_a, bundle_a), (graph_b, bundle_b)):
+            if bundle.forecast is not None:
+                try:
+                    fc = StatementForecaster(graph)
+                    fc.create_forecast(
+                        forecast_periods=bundle.forecast.periods,
+                        node_configs=bundle.forecast.node_configs,
+                    )
+                except Exception:  # pragma: no cover
+                    logger.exception(
+                        &#34;Failed to apply forecast while diffing templates &#39;%s&#39; and &#39;%s&#39;&#34;, template_id_a, template_id_b
+                    )
+                    raise
+
+        # Deep clone to avoid accidental shared caches / state
+        graph_a = graph_a.clone(deep=True)
+        graph_b = graph_b.clone(deep=True)
+
+        # ------------------------------------------------------------------
+        # Delegate to diff helpers
+        # ------------------------------------------------------------------
+        result = _diff_helpers.diff(
+            graph_a,
+            graph_b,
+            include_values=include_values,
+            periods=periods,
+            atol=atol,
+        )
+
+        logger.info(
+            &#34;Diff between &#39;%s&#39; and &#39;%s&#39; - added=%d removed=%d changed=%d value_cells=%d&#34;,
+            template_id_a,
+            template_id_b,
+            len(result.structure.added_nodes),
+            len(result.structure.removed_nodes),
+            len(result.structure.changed_nodes),
+            0 if result.values is None else len(result.values.changed_cells),
+        )
+
+        return result</code></pre>
+</details>
+<div class="desc"><p>Local filesystem-backed registry for financial statement templates.</p>
+<p>A singleton-style class providing centralized template storage, versioning,
+and retrieval. Templates are persisted as JSON bundles with automatic
+indexing for efficient discovery and integrity verification.</p>
+<p>The registry supports the complete template lifecycle:
+- Registration of new templates with automatic versioning
+- Retrieval and instantiation of stored templates
+- Comparison between different template versions
+- Deletion and cleanup of obsolete templates</p>
+<p>All operations are thread-safe and atomic where possible to support
+concurrent access patterns.</p>
+<p>Class Attributes:
+_ENV_VAR: Environment variable name for custom registry path
+_INDEX_FILE: Name of the JSON index file
+_STORE_DIR: Directory name for template storage</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Basic registry operations
+&gt;&gt;&gt; templates = TemplateRegistry.list()
+&gt;&gt;&gt; bundle = TemplateRegistry.get(&quot;lbo.standard_v1&quot;)
+&gt;&gt;&gt; graph = TemplateRegistry.instantiate(&quot;lbo.standard_v1&quot;)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Register new template
+&gt;&gt;&gt; template_id = TemplateRegistry.register_graph(my_graph, name=&quot;custom.model&quot;)
+</code></pre>
+<h2 id="note">Note</h2>
+<p>The registry creates secure storage with restrictive permissions
+(0700 for directories, 0600 for files) to protect potentially
+sensitive financial data.</p></div>
+<h3>Static methods</h3>
+<dl>
+<dt id="fin_statement_model.templates.TemplateRegistry.delete"><code class="name flex">
+<span>def <span class="ident">delete</span></span>(<span>template_id: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Remove a template from the registry permanently.</p>
+<p>Deletes both the template bundle file and its index entry. The operation
+is destructive and cannot be undone. Silently ignores unknown template IDs
+to support idempotent cleanup scenarios.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>template_id</code></strong></dt>
+<dd>Template identifier to delete (e.g., "lbo.standard_v1")</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; TemplateRegistry.delete(&quot;old_template_v1&quot;)  # Removes completely
+&gt;&gt;&gt; TemplateRegistry.delete(&quot;nonexistent&quot;)  # Silently ignored
+</code></pre>
+<h2 id="note">Note</h2>
+<p>The function also attempts to clean up empty parent directories
+after deletion to maintain a tidy registry structure.</p></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateRegistry.diff"><code class="name flex">
+<span>def <span class="ident">diff</span></span>(<span>template_id_a: str,<br>template_id_b: str,<br>*,<br>include_values: bool = True,<br>periods: builtins.list[str] | None = None,<br>atol: float = 1e-09)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Compare two registered templates for structural and value differences.</p>
+<p>Loads both templates, reconstructs their graphs (including forecast
+application), and performs comprehensive comparison analysis. Useful
+for understanding evolution between template versions or comparing
+different modeling approaches.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>template_id_a</code></strong></dt>
+<dd>Base template identifier (left-hand side of comparison)</dd>
+<dt><strong><code>template_id_b</code></strong></dt>
+<dd>Target template identifier (right-hand side of comparison)</dd>
+<dt><strong><code>include_values</code></strong></dt>
+<dd>Whether to include numerical value comparison in
+addition to structural analysis. Set False for faster topology-only diffs</dd>
+<dt><strong><code>periods</code></strong></dt>
+<dd>Specific periods to compare. If None, uses intersection of
+periods from both templates</dd>
+<dt><strong><code>atol</code></strong></dt>
+<dd>Absolute tolerance for value comparison. Differences below this
+threshold are considered equal and excluded from results</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>DiffResult containing:
+- structure: Structural differences (added/removed/changed nodes)
+- values: Numerical differences (only if include_values=True)</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>KeyError</code></dt>
+<dd>If either template_id is not found in registry</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Compare template versions
+&gt;&gt;&gt; diff_result = TemplateRegistry.diff(&quot;lbo.standard_v1&quot;, &quot;lbo.standard_v2&quot;, include_values=True)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Analyze structural changes
+&gt;&gt;&gt; structure = diff_result.structure
+&gt;&gt;&gt; print(f&quot;Added nodes: {structure.added_nodes}&quot;)
+&gt;&gt;&gt; print(f&quot;Removed nodes: {structure.removed_nodes}&quot;)
+&gt;&gt;&gt; print(f&quot;Changed nodes: {list(structure.changed_nodes.keys())}&quot;)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Analyze value changes (if enabled)
+&gt;&gt;&gt; if diff_result.values:
+...     values = diff_result.values
+...     print(f&quot;Changed cells: {len(values.changed_cells)}&quot;)
+...     print(f&quot;Max delta: ${values.max_delta:,.2f}&quot;)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Compare specific periods with tolerance
+&gt;&gt;&gt; focused_diff = TemplateRegistry.diff(
+...     &quot;template_a_v1&quot;,
+...     &quot;template_b_v1&quot;,
+...     periods=[&quot;2024&quot;, &quot;2025&quot;],
+...     atol=1.0,  # Ignore sub-dollar differences
+... )
+</code></pre>
+<p>Processing Details:
+Both templates are loaded and their embedded forecast specifications
+are applied to create fully-realized graphs before comparison. This
+ensures the diff reflects the complete template behavior, not just
+the base graph structure.</p>
+<p>Performance Notes:
+- Structure comparison is always fast (O(N) in number of nodes)
+- Value comparison can be expensive for large graphs/many periods
+- Use include_values=False when only topology matters
+- Specify focused period lists for faster value comparison</p></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateRegistry.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>template_id: str) ‑> <a title="fin_statement_model.templates.models.TemplateBundle" href="models.html#fin_statement_model.templates.models.TemplateBundle">TemplateBundle</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrieve a template bundle by identifier.</p>
+<p>Loads and validates the stored template bundle from disk, including
+checksum verification to ensure data integrity.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>template_id</code></strong></dt>
+<dd>Template identifier (e.g., "lbo.standard_v1")</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Validated TemplateBundle instance</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>KeyError</code></dt>
+<dd>If template_id is not found in registry</dd>
+<dt><code>ValueError</code></dt>
+<dd>If bundle checksum validation fails</dd>
+<dt><code>OSError</code></dt>
+<dd>If bundle file cannot be read</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; bundle = TemplateRegistry.get(&quot;lbo.standard_v1&quot;)
+&gt;&gt;&gt; print(f&quot;Template: {bundle.meta.name} v{bundle.meta.version}&quot;)
+&gt;&gt;&gt; print(f&quot;Category: {bundle.meta.category}&quot;)
+&gt;&gt;&gt; print(f&quot;Checksum: {bundle.checksum[:8]}...&quot;)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Access graph structure
+&gt;&gt;&gt; graph_dict = bundle.graph_dict
+&gt;&gt;&gt; periods = graph_dict.get(&quot;periods&quot;, [])
+&gt;&gt;&gt; nodes = graph_dict.get(&quot;nodes&quot;, {})
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateRegistry.instantiate"><code class="name flex">
+<span>def <span class="ident">instantiate</span></span>(<span>template_id: str,<br>*,<br>periods: builtins.list[str] | None = None,<br>rename_map: Mapping[str, str] | None = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a working graph instance from a stored template.</p>
+<p>Loads the template bundle, reconstructs the graph, applies any embedded
+forecast and preprocessing specifications, and optionally customizes
+the result with additional periods and node renaming.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>template_id</code></strong></dt>
+<dd>Template identifier (e.g., "lbo.standard_v1")</dd>
+<dt><strong><code>periods</code></strong></dt>
+<dd>Additional periods to append to the graph. Existing periods
+are preserved; duplicates are ignored</dd>
+<dt><strong><code>rename_map</code></strong></dt>
+<dd>Node renaming mapping (old_name → new_name). Maintains
+all calculation relationships and edge connections</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Independent Graph instance ready for analysis and modification</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>KeyError</code></dt>
+<dd>If template_id is not found or old node names don't exist</dd>
+<dt><code>TypeError</code></dt>
+<dd>If periods or rename_map have incorrect types</dd>
+<dt><code>ValueError</code></dt>
+<dd>If rename target names already exist in the graph</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Basic instantiation
+&gt;&gt;&gt; graph = TemplateRegistry.instantiate(&quot;lbo.standard_v1&quot;)
+&gt;&gt;&gt; revenue_2024 = graph.calculate(&quot;Revenue&quot;, &quot;2024&quot;)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Instantiation with customizations
+&gt;&gt;&gt; custom_graph = TemplateRegistry.instantiate(
+...     &quot;lbo.standard_v1&quot;,
+...     periods=[&quot;2029&quot;, &quot;2030&quot;],  # Add forecast periods
+...     rename_map={  # Rename nodes
+...         &quot;Revenue&quot;: &quot;TotalRevenue&quot;,
+...         &quot;COGS&quot;: &quot;DirectCosts&quot;,
+...     },
+... )
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Verify customizations
+&gt;&gt;&gt; print(custom_graph.periods)  # Includes 2029, 2030
+&gt;&gt;&gt; print(&quot;TotalRevenue&quot; in custom_graph.nodes)  # True
+&gt;&gt;&gt; print(&quot;Revenue&quot; in custom_graph.nodes)  # False
+</code></pre>
+<p>Template Processing Order:
+1. Load template bundle and reconstruct base graph
+2. Apply embedded forecast specification (if present)
+3. Deep clone for independence from registry caches
+4. Add additional periods (if specified)
+5. Apply node renaming (if specified)
+6. Apply preprocessing pipeline (if embedded)
+7. Clear caches and return clean graph</p>
+<h2 id="note">Note</h2>
+<p>The returned graph is completely independent of the template registry
+and can be modified without affecting the stored template. All
+forecasting and preprocessing happens automatically based on the
+template's embedded specifications.</p></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateRegistry.list"><code class="name flex">
+<span>def <span class="ident">list</span></span>(<span>) ‑> list[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>List all registered template identifiers.</p>
+<h2 id="returns">Returns</h2>
+<p>Sorted list of template IDs in the registry</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; templates = TemplateRegistry.list()
+&gt;&gt;&gt; print(templates)
+['lbo.standard_v1', 'real_estate_lending_v3', 'custom.model_v1']
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Check if specific template exists
+&gt;&gt;&gt; if &quot;lbo.standard_v1&quot; in TemplateRegistry.list():
+...     print(&quot;LBO template available&quot;)
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.templates.TemplateRegistry.register_graph"><code class="name flex">
+<span>def <span class="ident">register_graph</span></span>(<span>graph: Graph,<br>*,<br>name: str,<br>version: str | None = None,<br>meta: Mapping[str, Any] | None = None,<br>forecast: ForecastSpec | None = None,<br>preprocessing: PreprocessingSpec | None = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Register a financial statement graph as a reusable template.</p>
+<p>Serializes the graph and stores it in the registry with metadata,
+optional forecasting configuration, and preprocessing pipeline.
+Automatically calculates version numbers if not specified.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>Graph instance to persist as a template</dd>
+<dt><strong><code>name</code></strong></dt>
+<dd>Template name (e.g., "lbo.standard", "real_estate.construction")</dd>
+<dt><strong><code>version</code></strong></dt>
+<dd>Explicit version string ("v1", "v2"). If None, automatically
+calculates the next available version</dd>
+<dt><strong><code>meta</code></strong></dt>
+<dd>Additional metadata fields. Standard fields (name, version, category)
+are set automatically and override any duplicates in meta</dd>
+<dt><strong><code>forecast</code></strong></dt>
+<dd>Optional declarative forecasting specification</dd>
+<dt><strong><code>preprocessing</code></strong></dt>
+<dd>Optional data transformation pipeline</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Complete template identifier (e.g., "lbo.standard_v1")</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TypeError</code></dt>
+<dd>If name is not a non-empty string</dd>
+<dt><code>ValueError</code></dt>
+<dd>If template_id already exists in registry</dd>
+<dt><code>OSError</code></dt>
+<dd>If filesystem operations fail</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; # Basic registration with auto-versioning
+&gt;&gt;&gt; template_id = TemplateRegistry.register_graph(
+...     my_graph, name=&quot;custom.model&quot;, meta={&quot;description&quot;: &quot;Custom financial model&quot;, &quot;category&quot;: &quot;custom&quot;}
+... )
+&gt;&gt;&gt; print(template_id)  # &quot;custom.model_v1&quot;
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Registration with forecasting
+&gt;&gt;&gt; from fin_statement_model.templates.models import ForecastSpec
+&gt;&gt;&gt; forecast_spec = ForecastSpec(
+...     periods=[&quot;2027&quot;, &quot;2028&quot;], node_configs={&quot;Revenue&quot;: {&quot;method&quot;: &quot;simple&quot;, &quot;config&quot;: 0.1}}
+... )
+&gt;&gt;&gt; template_id = TemplateRegistry.register_graph(my_graph, name=&quot;forecast.model&quot;, forecast=forecast_spec)
+</code></pre>
+<h2 id="note">Note</h2>
+<p>The graph is deep-cloned during serialization to ensure the stored
+template is independent of the original graph instance. Template
+bundles include SHA-256 checksums for integrity verification.</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model" href="../index.html">fin_statement_model</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.templates.builtin" href="builtin/index.html">fin_statement_model.templates.builtin</a></code></li>
+<li><code><a title="fin_statement_model.templates.diff" href="diff.html">fin_statement_model.templates.diff</a></code></li>
+<li><code><a title="fin_statement_model.templates.models" href="models.html">fin_statement_model.templates.models</a></code></li>
+<li><code><a title="fin_statement_model.templates.registry" href="registry.html">fin_statement_model.templates.registry</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.templates.install_builtin_templates" href="#fin_statement_model.templates.install_builtin_templates">install_builtin_templates</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.templates.DiffResult" href="#fin_statement_model.templates.DiffResult">DiffResult</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.templates.DiffResult.model_config" href="#fin_statement_model.templates.DiffResult.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.templates.DiffResult.structure" href="#fin_statement_model.templates.DiffResult.structure">structure</a></code></li>
+<li><code><a title="fin_statement_model.templates.DiffResult.values" href="#fin_statement_model.templates.DiffResult.values">values</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.templates.TemplateBundle" href="#fin_statement_model.templates.TemplateBundle">TemplateBundle</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.templates.TemplateBundle.checksum" href="#fin_statement_model.templates.TemplateBundle.checksum">checksum</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateBundle.forecast" href="#fin_statement_model.templates.TemplateBundle.forecast">forecast</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateBundle.graph_dict" href="#fin_statement_model.templates.TemplateBundle.graph_dict">graph_dict</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateBundle.meta" href="#fin_statement_model.templates.TemplateBundle.meta">meta</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateBundle.model_config" href="#fin_statement_model.templates.TemplateBundle.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateBundle.preprocessing" href="#fin_statement_model.templates.TemplateBundle.preprocessing">preprocessing</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.templates.TemplateMeta" href="#fin_statement_model.templates.TemplateMeta">TemplateMeta</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.templates.TemplateMeta.category" href="#fin_statement_model.templates.TemplateMeta.category">category</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateMeta.created_at" href="#fin_statement_model.templates.TemplateMeta.created_at">created_at</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateMeta.description" href="#fin_statement_model.templates.TemplateMeta.description">description</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateMeta.model_config" href="#fin_statement_model.templates.TemplateMeta.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateMeta.name" href="#fin_statement_model.templates.TemplateMeta.name">name</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateMeta.tags" href="#fin_statement_model.templates.TemplateMeta.tags">tags</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateMeta.version" href="#fin_statement_model.templates.TemplateMeta.version">version</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.templates.TemplateRegistry" href="#fin_statement_model.templates.TemplateRegistry">TemplateRegistry</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.templates.TemplateRegistry.delete" href="#fin_statement_model.templates.TemplateRegistry.delete">delete</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateRegistry.diff" href="#fin_statement_model.templates.TemplateRegistry.diff">diff</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateRegistry.get" href="#fin_statement_model.templates.TemplateRegistry.get">get</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateRegistry.instantiate" href="#fin_statement_model.templates.TemplateRegistry.instantiate">instantiate</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateRegistry.list" href="#fin_statement_model.templates.TemplateRegistry.list">list</a></code></li>
+<li><code><a title="fin_statement_model.templates.TemplateRegistry.register_graph" href="#fin_statement_model.templates.TemplateRegistry.register_graph">register_graph</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

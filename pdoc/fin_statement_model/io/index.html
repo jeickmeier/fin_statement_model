@@ -1,0 +1,1339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.io API documentation</title>
+<meta name="description" content="Input/Output components for the Financial Statement Model …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.io</code></h1>
+</header>
+<section id="section-intro">
+<p>Input/Output components for the Financial Statement Model.</p>
+<p>This package provides a unified interface for reading and writing financial model
+data from/to various formats using a registry-based approach.</p>
+<p>The subpackages are organized as follows:
+- <code><a title="fin_statement_model.io.core" href="core/index.html">fin_statement_model.io.core</a></code>: Contains the foundational components, including base classes, the
+handler registry, and shared mixins.
+- <code><a title="fin_statement_model.io.formats" href="formats/index.html">fin_statement_model.io.formats</a></code>: Provides concrete reader and writer implementations for specific
+data formats (e.g., CSV, Excel, API).
+- <code><a title="fin_statement_model.io.adjustments" href="adjustments/index.html">fin_statement_model.io.adjustments</a></code>, <code><a title="fin_statement_model.io.graph" href="graph/index.html">fin_statement_model.io.graph</a></code>, <code>statements</code>: Offer specialized, high-level I/O
+functions for specific use cases.</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.io.adjustments" href="adjustments/index.html">fin_statement_model.io.adjustments</a></code></dt>
+<dd>
+<div class="desc"><p>Specialized I/O for financial adjustments …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.config" href="config/index.html">fin_statement_model.io.config</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.core" href="core/index.html">fin_statement_model.io.core</a></code></dt>
+<dd>
+<div class="desc"><p>Core IO components including base classes, registry, and utilities.</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.exceptions" href="exceptions.html">fin_statement_model.io.exceptions</a></code></dt>
+<dd>
+<div class="desc"><p>Custom exceptions for the I/O subpackage …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.formats" href="formats/index.html">fin_statement_model.io.formats</a></code></dt>
+<dd>
+<div class="desc"><p>Format-specific IO implementations …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.graph" href="graph/index.html">fin_statement_model.io.graph</a></code></dt>
+<dd>
+<div class="desc"><p>Graph IO helpers (definition serialization &amp; cell-based import).</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.io.export_adjustments_to_excel"><code class="name flex">
+<span>def <span class="ident">export_adjustments_to_excel</span></span>(<span>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>path: str | pathlib.Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_adjustments_to_excel(graph: Graph, path: str | Path) -&gt; None:
+    &#34;&#34;&#34;Export all adjustments from the graph to an Excel file.
+
+    This is a convenience function that retrieves all adjustments from a `Graph`
+    instance and writes them to a specified Excel file using `write_excel`.
+
+    Args:
+        graph: The `Graph` instance containing the adjustments to export.
+        path: Path for the output Excel file.
+    &#34;&#34;&#34;
+    logger.info(&#34;Exporting all adjustments from graph to Excel (%s).&#34;, path)
+    all_adjustments = graph.list_all_adjustments()
+    write_excel(all_adjustments, path)</code></pre>
+</details>
+<div class="desc"><p>Export all adjustments from the graph to an Excel file.</p>
+<p>This is a convenience function that retrieves all adjustments from a <code>Graph</code>
+instance and writes them to a specified Excel file using <code>write_excel</code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The <code>Graph</code> instance containing the adjustments to export.</dd>
+<dt><strong><code>path</code></strong></dt>
+<dd>Path for the output Excel file.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.get_reader"><code class="name flex">
+<span>def <span class="ident">get_reader</span></span>(<span>format_type: str, **kwargs: Any) ‑> <a title="fin_statement_model.io.core.base.DataReader" href="core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_reader(format_type: str, **kwargs: Any) -&gt; DataReader:
+    &#34;&#34;&#34;Get an instance of the registered DataReader for the given format type.
+
+    Args:
+        format_type: The string identifier for the format.
+        **kwargs: Keyword arguments to pass to the reader&#39;s constructor.
+
+    Returns:
+        An initialized DataReader instance.
+
+    Raises:
+        FormatNotSupportedError: If no reader is registered for the format type.
+        ReadError: If validation fails for known reader types.
+    &#34;&#34;&#34;
+    return cast(
+        &#34;DataReader&#34;,
+        _get_handler(
+            format_type=format_type,
+            registry=_reader_registry,
+            handler_type=&#34;read&#34;,
+            error_class=ReadError,
+            **kwargs,
+        ),
+    )</code></pre>
+</details>
+<div class="desc"><p>Get an instance of the registered DataReader for the given format type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The string identifier for the format.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Keyword arguments to pass to the reader's constructor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>An initialized DataReader instance.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.io.FormatNotSupportedError" href="#fin_statement_model.io.FormatNotSupportedError">FormatNotSupportedError</a></code></dt>
+<dd>If no reader is registered for the format type.</dd>
+<dt><code><a title="fin_statement_model.io.ReadError" href="#fin_statement_model.io.ReadError">ReadError</a></code></dt>
+<dd>If validation fails for known reader types.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.get_writer"><code class="name flex">
+<span>def <span class="ident">get_writer</span></span>(<span>format_type: str, **kwargs: Any) ‑> <a title="fin_statement_model.io.core.base.DataWriter" href="core/base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_writer(format_type: str, **kwargs: Any) -&gt; DataWriter:
+    &#34;&#34;&#34;Get an instance of the registered DataWriter for the given format type.
+
+    Args:
+        format_type: The string identifier for the format.
+        **kwargs: Keyword arguments to pass to the writer&#39;s constructor.
+
+    Returns:
+        An initialized DataWriter instance.
+
+    Raises:
+        FormatNotSupportedError: If no writer is registered for the format type.
+        WriteError: If validation fails for known writer types.
+    &#34;&#34;&#34;
+    return cast(
+        &#34;DataWriter&#34;,
+        _get_handler(
+            format_type=format_type,
+            registry=_writer_registry,
+            handler_type=&#34;write&#34;,
+            error_class=WriteError,
+            **kwargs,
+        ),
+    )</code></pre>
+</details>
+<div class="desc"><p>Get an instance of the registered DataWriter for the given format type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The string identifier for the format.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Keyword arguments to pass to the writer's constructor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>An initialized DataWriter instance.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.io.FormatNotSupportedError" href="#fin_statement_model.io.FormatNotSupportedError">FormatNotSupportedError</a></code></dt>
+<dd>If no writer is registered for the format type.</dd>
+<dt><code><a title="fin_statement_model.io.WriteError" href="#fin_statement_model.io.WriteError">WriteError</a></code></dt>
+<dd>If validation fails for known writer types.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.import_from_cells"><code class="name flex">
+<span>def <span class="ident">import_from_cells</span></span>(<span>cells_info: list[dict[str, typing.Any]]) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_from_cells(cells_info: list[dict[str, Any]]) -&gt; Graph:
+    &#34;&#34;&#34;Create a `Graph` from a list of cell data dictionaries.
+
+    This function processes a list of dictionaries, where each dictionary
+    represents a single data point (a &#34;cell&#34;). It groups the cells by item name,
+    collects all unique periods, and then constructs a `Graph` populated with
+    `FinancialStatementItemNode` instances.
+
+    Args:
+        cells_info: A list of dictionaries, where each dictionary must contain
+            &#39;row_name&#39;, &#39;column_name&#39;, and &#39;value&#39; keys.
+
+    Returns:
+        A new `Graph` object populated with the data from the cells.
+    &#34;&#34;&#34;
+    # Group cells by row_name to aggregate values per financial statement item
+    items: dict[str, dict[str, Any]] = {}
+    unique_periods: set[str] = set()
+
+    for cell in cells_info:
+        # Clean the item name and period
+        item_name = cell.get(&#34;row_name&#34;, &#34;&#34;).strip()
+        period = cell.get(&#34;column_name&#34;, &#34;&#34;).strip()
+        value = cell.get(&#34;value&#34;)
+
+        if not item_name or not period:
+            continue
+
+        unique_periods.add(period)
+        if item_name not in items:
+            items[item_name] = {}
+        items[item_name][period] = value
+
+    # Sort periods and create the graph
+    graph = Graph(periods=sorted(unique_periods))
+
+    # Create data nodes directly; avoids older convenience wrappers
+    from fin_statement_model.core.nodes import FinancialStatementItemNode
+
+    for name, values in items.items():
+        graph.add_node(FinancialStatementItemNode(name=name, values=values))
+
+    return graph</code></pre>
+</details>
+<div class="desc"><p>Create a <code>Graph</code> from a list of cell data dictionaries.</p>
+<p>This function processes a list of dictionaries, where each dictionary
+represents a single data point (a "cell"). It groups the cells by item name,
+collects all unique periods, and then constructs a <code>Graph</code> populated with
+<code>FinancialStatementItemNode</code> instances.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cells_info</code></strong></dt>
+<dd>A list of dictionaries, where each dictionary must contain
+'row_name', 'column_name', and 'value' keys.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A new <code>Graph</code> object populated with the data from the cells.</p></div>
+</dd>
+<dt id="fin_statement_model.io.list_available_builtin_configs"><code class="name flex">
+<span>def <span class="ident">list_available_builtin_configs</span></span>(<span>) ‑> list[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_available_builtin_configs() -&gt; list[str]:
+    &#34;&#34;&#34;Return IDs of built-in statement configs (always empty for now).
+
+    The Financial Statement Model library used to ship a collection of YAML/JSON
+    templates describing common financial statements.  These were accessed via
+    this helper, which delegated to ``fin_statement_model.statements``.
+
+    As the *statements* package has been removed pending a redesign, this
+    function now returns an empty list.  The stub remains to avoid breaking
+    existing user code that still calls the helper.
+    &#34;&#34;&#34;
+    # NOTE: Once the new statements implementation lands, this function can be
+    # updated to forward the call to the appropriate helper again.
+    return []</code></pre>
+</details>
+<div class="desc"><p>Return IDs of built-in statement configs (always empty for now).</p>
+<p>The Financial Statement Model library used to ship a collection of YAML/JSON
+templates describing common financial statements.
+These were accessed via
+this helper, which delegated to <code>fin_statement_model.statements</code>.</p>
+<p>As the <em>statements</em> package has been removed pending a redesign, this
+function now returns an empty list.
+The stub remains to avoid breaking
+existing user code that still calls the helper.</p></div>
+</dd>
+<dt id="fin_statement_model.io.list_readers"><code class="name flex">
+<span>def <span class="ident">list_readers</span></span>(<span>) ‑> dict[str, type[<a title="fin_statement_model.io.core.base.DataReader" href="core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a>]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_readers() -&gt; dict[str, type[DataReader]]:
+    &#34;&#34;&#34;Return a copy of the registered reader classes.&#34;&#34;&#34;
+    return _reader_registry.list_formats()</code></pre>
+</details>
+<div class="desc"><p>Return a copy of the registered reader classes.</p></div>
+</dd>
+<dt id="fin_statement_model.io.list_writers"><code class="name flex">
+<span>def <span class="ident">list_writers</span></span>(<span>) ‑> dict[str, type[<a title="fin_statement_model.io.core.base.DataWriter" href="core/base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a>]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_writers() -&gt; dict[str, type[DataWriter]]:
+    &#34;&#34;&#34;Return a copy of the registered writer classes.&#34;&#34;&#34;
+    return _writer_registry.list_formats()</code></pre>
+</details>
+<div class="desc"><p>Return a copy of the registered writer classes.</p></div>
+</dd>
+<dt id="fin_statement_model.io.load_adjustments_from_excel"><code class="name flex">
+<span>def <span class="ident">load_adjustments_from_excel</span></span>(<span>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>path: str | pathlib.Path,<br>replace: bool = False) ‑> tuple[list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="../core/adjustments/models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>], pandas.core.frame.DataFrame]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_adjustments_from_excel(
+    graph: Graph, path: str | Path, replace: bool = False
+) -&gt; tuple[list[Adjustment], pd.DataFrame]:
+    &#34;&#34;&#34;Read adjustments from Excel and add them to the graph.
+
+    This is a convenience function that orchestrates reading adjustments from an
+    Excel file and loading them into a `Graph`&#39;s `AdjustmentManager`.
+
+    Args:
+        graph: The Graph instance to add adjustments to.
+        path: Path to the Excel file.
+        replace: If True, all existing adjustments in the graph&#39;s
+            `AdjustmentManager` will be cleared before adding the new ones.
+            Defaults to False.
+
+    Returns:
+        A tuple containing:
+            - A list of valid `Adjustment` objects that were successfully
+              read from the file (some of which may have failed to be added
+              to the graph).
+            - A pandas DataFrame containing rows from the Excel file that
+              failed initial validation.
+    &#34;&#34;&#34;
+    logger.info(&#34;Loading adjustments from Excel (%s) into graph. Replace=%s&#34;, path, replace)
+    valid_adjustments, error_report_df = read_excel(path)
+
+    if replace:
+        logger.debug(&#34;Clearing existing adjustments before loading.&#34;)
+        graph.adjustment_manager.clear_all()
+
+    added_count = 0
+    for adj in valid_adjustments:
+        try:
+            graph.adjustment_manager.add_adjustment(adj)
+            added_count += 1
+        except Exception as e:
+            logger.exception(&#34;Failed to add valid adjustment %s to graph&#34;, adj.id)
+            # Optionally add this failure to the error report?
+            error_row = adj.model_dump(mode=&#34;json&#34;)
+            error_row[&#34;error&#34;] = f&#34;Failed to add to graph: {e}&#34;
+            # Need to handle DataFrame append carefully if modifying during iteration
+            # Simplest is to report read errors, log add errors.
+
+    logger.info(&#34;Added %s adjustments to the graph from %s.&#34;, added_count, path)
+    if not error_report_df.empty:
+        logger.warning(&#34;Encountered %s errors during Excel read process.&#34;, len(error_report_df))
+
+    return valid_adjustments, error_report_df</code></pre>
+</details>
+<div class="desc"><p>Read adjustments from Excel and add them to the graph.</p>
+<p>This is a convenience function that orchestrates reading adjustments from an
+Excel file and loading them into a <code>Graph</code>'s <code>AdjustmentManager</code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The Graph instance to add adjustments to.</dd>
+<dt><strong><code>path</code></strong></dt>
+<dd>Path to the Excel file.</dd>
+<dt><strong><code>replace</code></strong></dt>
+<dd>If True, all existing adjustments in the graph's
+<code>AdjustmentManager</code> will be cleared before adding the new ones.
+Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A tuple containing:
+- A list of valid <code>Adjustment</code> objects that were successfully
+read from the file (some of which may have failed to be added
+to the graph).
+- A pandas DataFrame containing rows from the Excel file that
+failed initial validation.</p></div>
+</dd>
+<dt id="fin_statement_model.io.read_data"><code class="name flex">
+<span>def <span class="ident">read_data</span></span>(<span>format_type: str,<br>source: Any,<br>*,<br>config: dict[str, typing.Any] | typing.Any | None = None,<br>**read_kwargs: Any) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read_data(
+    format_type: str,
+    source: Any,
+    *,
+    config: dict[str, Any] | Any | None = None,
+    **read_kwargs: Any,
+) -&gt; Graph:
+    &#34;&#34;&#34;Reads data from a source using the specified format.
+
+    This function acts as a facade for the underlying reader implementations.
+    It uses the `format_type` to look up the appropriate reader class in the registry.
+    The `source` and `**kwargs` are combined and validated against the specific
+    reader&#39;s Pydantic configuration model (e.g., `CsvReaderConfig`).
+
+    The validated configuration is used to initialize the reader instance.
+    The `source` (which might be the original object for dict/dataframe formats, or
+    the validated string path/ticker otherwise) and the original `**kwargs` are then
+    passed to the reader instance&#39;s `.read()` method, which handles format-specific
+    read-time options.
+
+    Args:
+        format_type (str): The format identifier (e.g., &#39;excel&#39;, &#39;csv&#39;, &#39;fmp&#39;, &#39;dict&#39;).
+        source (Any): The data source. Its type depends on `format_type`:
+            - `str`: file path (for &#39;excel&#39;, &#39;csv&#39;), ticker symbol (for &#39;fmp&#39;).
+            - `pd.DataFrame`: for &#39;dataframe&#39;.
+            - `dict`: for &#39;dict&#39;.
+        config: Optional dictionary or Pydantic model instance for reader
+            configuration (e.g., `api_key`, `delimiter`, `sheet_name`).
+        **read_kwargs: Additional keyword arguments passed directly to the
+            reader&#39;s `.read()` method (e.g., `periods`). Consult the specific
+            reader&#39;s documentation for available options.
+
+    Returns:
+        Graph: A new Graph object populated with the read data.
+
+    Raises:
+        ReadError: If reading fails.
+        FormatNotSupportedError: If the format_type is not registered.
+        Exception: Other errors during reader initialization or reading.
+
+    Examples:
+        Reading a CSV file with a custom delimiter:
+        ```python
+        # from fin_statement_model.io import read_data
+        # # Assume &#39;my_data.csv&#39; exists and is pipe-delimited
+        # graph = read_data(
+        #     format_type=&#34;csv&#34;,
+        #     source=&#34;my_data.csv&#34;,
+        #     config={&#34;delimiter&#34;: &#34;|&#34;}
+        # )
+        ```
+
+        Reading from the FMP API:
+        ```python
+        # from fin_statement_model.io import read_data
+        # graph = read_data(
+        #     format_type=&#34;fmp&#34;,
+        #     source=&#34;AAPL&#34;,
+        #     config={
+        #         &#34;statement_type&#34;: &#34;income_statement&#34;,
+        #         &#34;api_key&#34;: &#34;YOUR_API_KEY&#34;,
+        #     }
+        # )
+        ```
+    &#34;&#34;&#34;
+    logger.info(&#34;Attempting to read data using format &#39;%s&#39; from source type &#39;%s&#39;&#34;, format_type, type(source).__name__)
+
+    # Build the constructor-time config strictly from the *config* argument.
+    # Runtime-specific options stay in **read_kwargs** and are forwarded untouched.
+    if config is None:
+        config_kwargs: dict[str, Any] = {&#34;source&#34;: source, &#34;format_type&#34;: format_type}
+    else:
+        if isinstance(config, dict):
+            config_kwargs = config.copy()
+        elif hasattr(config, &#34;model_dump&#34;):
+            # The `model_dump` method is provided by Pydantic&#39;s BaseModel.
+            config_kwargs = config.model_dump()
+        else:
+            config_kwargs = dict(config.__dict__)
+        config_kwargs.update({&#34;source&#34;: source, &#34;format_type&#34;: format_type})
+
+    reader = get_reader(**config_kwargs)
+    return reader.read(config_kwargs[&#34;source&#34;], **read_kwargs)</code></pre>
+</details>
+<div class="desc"><p>Reads data from a source using the specified format.</p>
+<p>This function acts as a facade for the underlying reader implementations.
+It uses the <code>format_type</code> to look up the appropriate reader class in the registry.
+The <code>source</code> and <code>**kwargs</code> are combined and validated against the specific
+reader's Pydantic configuration model (e.g., <code>CsvReaderConfig</code>).</p>
+<p>The validated configuration is used to initialize the reader instance.
+The <code>source</code> (which might be the original object for dict/dataframe formats, or
+the validated string path/ticker otherwise) and the original <code>**kwargs</code> are then
+passed to the reader instance's <code>.read()</code> method, which handles format-specific
+read-time options.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>The format identifier (e.g., 'excel', 'csv', 'fmp', 'dict').</dd>
+<dt><strong><code>source</code></strong> :&ensp;<code>Any</code></dt>
+<dd>The data source. Its type depends on <code>format_type</code>:
+- <code>str</code>: file path (for 'excel', 'csv'), ticker symbol (for 'fmp').
+- <code>pd.DataFrame</code>: for 'dataframe'.
+- <code>dict</code>: for 'dict'.</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional dictionary or Pydantic model instance for reader
+configuration (e.g., <code>api_key</code>, <code>delimiter</code>, <code>sheet_name</code>).</dd>
+<dt><strong><code>**read_kwargs</code></strong></dt>
+<dd>Additional keyword arguments passed directly to the
+reader's <code>.read()</code> method (e.g., <code>periods</code>). Consult the specific
+reader's documentation for available options.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Graph</code></dt>
+<dd>A new Graph object populated with the read data.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.io.ReadError" href="#fin_statement_model.io.ReadError">ReadError</a></code></dt>
+<dd>If reading fails.</dd>
+<dt><code><a title="fin_statement_model.io.FormatNotSupportedError" href="#fin_statement_model.io.FormatNotSupportedError">FormatNotSupportedError</a></code></dt>
+<dd>If the format_type is not registered.</dd>
+<dt><code>Exception</code></dt>
+<dd>Other errors during reader initialization or reading.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<p>Reading a CSV file with a custom delimiter:</p>
+<pre><code class="language-python"># from fin_statement_model.io import read_data
+# # Assume 'my_data.csv' exists and is pipe-delimited
+# graph = read_data(
+#     format_type=&quot;csv&quot;,
+#     source=&quot;my_data.csv&quot;,
+#     config={&quot;delimiter&quot;: &quot;|&quot;}
+# )
+</code></pre>
+<p>Reading from the FMP API:</p>
+<pre><code class="language-python"># from fin_statement_model.io import read_data
+# graph = read_data(
+#     format_type=&quot;fmp&quot;,
+#     source=&quot;AAPL&quot;,
+#     config={
+#         &quot;statement_type&quot;: &quot;income_statement&quot;,
+#         &quot;api_key&quot;: &quot;YOUR_API_KEY&quot;,
+#     }
+# )
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.io.write_data"><code class="name flex">
+<span>def <span class="ident">write_data</span></span>(<span>format_type: str,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: Any,<br>*,<br>config: dict[str, typing.Any] | typing.Any | None = None,<br>**write_kwargs: Any) ‑> object</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_data(
+    format_type: str,
+    graph: Graph,
+    target: Any,
+    *,
+    config: dict[str, Any] | Any | None = None,
+    **write_kwargs: Any,
+) -&gt; object:
+    &#34;&#34;&#34;Writes graph data to a target using the specified format.
+
+    Similar to `read_data`, this acts as a facade for writer implementations.
+    It uses `format_type` to find the writer class in the registry.
+    The `target` and `**kwargs` are combined and validated against the specific
+    writer&#39;s Pydantic configuration model (e.g., `ExcelWriterConfig`).
+
+    The validated configuration initializes the writer instance.
+    The original `graph`, `target`, and `**kwargs` are then passed to the writer
+    instance&#39;s `.write()` method for format-specific write-time options.
+
+    Args:
+        format_type (str): The format identifier (e.g., &#39;excel&#39;, &#39;dataframe&#39;, &#39;dict&#39;).
+        graph (Graph): The graph object containing data to write.
+        target (Any): The destination target. Its type depends on `format_type`:
+            - `str`: file path (usually required for file-based writers like &#39;excel&#39;).
+            - Ignored: for writers that return objects (like &#39;dataframe&#39;, &#39;dict&#39;).
+        config: Optional dictionary or Pydantic model for writer
+            configuration (e.g., `sheet_name`, `recalculate`).
+        **write_kwargs: Additional keyword arguments passed directly to the
+            writer&#39;s `.write()` method. Consult the specific writer&#39;s
+            documentation for available options.
+
+    Returns:
+        object: The result of the write operation. For writers like DataFrameWriter
+                or DictWriter, this is the created object. For file writers, it&#39;s None.
+
+    Raises:
+        WriteError: If writing fails.
+        FormatNotSupportedError: If the format_type is not registered.
+        Exception: Other errors during writer initialization or writing.
+
+    Examples:
+        Writing graph data to an Excel file:
+        ```python
+        # from fin_statement_model.io import write_data
+        # from fin_statement_model.core import Graph
+        # g = Graph(periods=[&#34;2023&#34;])
+        # # ... populate graph with nodes ...
+        # write_data(
+        #     format_type=&#34;excel&#34;,
+        #     graph=g,
+        #     target=&#34;output.xlsx&#34;,
+        #     config={&#34;sheet_name&#34;: &#34;MyData&#34;}
+        # )
+        ```
+
+        Getting data as a dictionary:
+        ```python
+        # from fin_statement_model.io import write_data
+        # from fin_statement_model.core import Graph
+        # g = Graph(periods=[&#34;2023&#34;])
+        # # ... populate graph with nodes ...
+        # data_dict = write_data(
+        #     format_type=&#34;dict&#34;,
+        #     graph=g,
+        #     target=None  # Target is ignored for dict writer
+        # )
+        ```
+    &#34;&#34;&#34;
+    logger.info(
+        &#34;Attempting to write graph data using format &#39;%s&#39; to target type &#39;%s&#39;&#34;, format_type, type(target).__name__
+    )
+
+    # Build constructor-time config strictly from *config* argument.
+    if config is None:
+        config_kwargs: dict[str, Any] = {&#34;target&#34;: target, &#34;format_type&#34;: format_type}
+    else:
+        if isinstance(config, dict):
+            config_kwargs = config.copy()
+        elif hasattr(config, &#34;model_dump&#34;):
+            # Pydantic v2 models - see note above.
+            config_kwargs = config.model_dump()
+        else:
+            config_kwargs = dict(config.__dict__)
+        config_kwargs.update({&#34;target&#34;: target, &#34;format_type&#34;: format_type})
+
+    writer = get_writer(**config_kwargs)
+    return writer.write(graph, target, **write_kwargs)</code></pre>
+</details>
+<div class="desc"><p>Writes graph data to a target using the specified format.</p>
+<p>Similar to <code><a title="fin_statement_model.io.read_data" href="#fin_statement_model.io.read_data">read_data()</a></code>, this acts as a facade for writer implementations.
+It uses <code>format_type</code> to find the writer class in the registry.
+The <code>target</code> and <code>**kwargs</code> are combined and validated against the specific
+writer's Pydantic configuration model (e.g., <code>ExcelWriterConfig</code>).</p>
+<p>The validated configuration initializes the writer instance.
+The original <code><a title="fin_statement_model.io.graph" href="graph/index.html">fin_statement_model.io.graph</a></code>, <code>target</code>, and <code>**kwargs</code> are then passed to the writer
+instance's <code>.write()</code> method for format-specific write-time options.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>The format identifier (e.g., 'excel', 'dataframe', 'dict').</dd>
+<dt><strong><code>graph</code></strong> :&ensp;<code>Graph</code></dt>
+<dd>The graph object containing data to write.</dd>
+<dt><strong><code>target</code></strong> :&ensp;<code>Any</code></dt>
+<dd>The destination target. Its type depends on <code>format_type</code>:
+- <code>str</code>: file path (usually required for file-based writers like 'excel').
+- Ignored: for writers that return objects (like 'dataframe', 'dict').</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional dictionary or Pydantic model for writer
+configuration (e.g., <code>sheet_name</code>, <code>recalculate</code>).</dd>
+<dt><strong><code>**write_kwargs</code></strong></dt>
+<dd>Additional keyword arguments passed directly to the
+writer's <code>.write()</code> method. Consult the specific writer's
+documentation for available options.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>object</code></dt>
+<dd>The result of the write operation. For writers like DataFrameWriter
+or DictWriter, this is the created object. For file writers, it's None.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.io.WriteError" href="#fin_statement_model.io.WriteError">WriteError</a></code></dt>
+<dd>If writing fails.</dd>
+<dt><code><a title="fin_statement_model.io.FormatNotSupportedError" href="#fin_statement_model.io.FormatNotSupportedError">FormatNotSupportedError</a></code></dt>
+<dd>If the format_type is not registered.</dd>
+<dt><code>Exception</code></dt>
+<dd>Other errors during writer initialization or writing.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<p>Writing graph data to an Excel file:</p>
+<pre><code class="language-python"># from fin_statement_model.io import write_data
+# from fin_statement_model.core import Graph
+# g = Graph(periods=[&quot;2023&quot;])
+# # ... populate graph with nodes ...
+# write_data(
+#     format_type=&quot;excel&quot;,
+#     graph=g,
+#     target=&quot;output.xlsx&quot;,
+#     config={&quot;sheet_name&quot;: &quot;MyData&quot;}
+# )
+</code></pre>
+<p>Getting data as a dictionary:</p>
+<pre><code class="language-python"># from fin_statement_model.io import write_data
+# from fin_statement_model.core import Graph
+# g = Graph(periods=[&quot;2023&quot;])
+# # ... populate graph with nodes ...
+# data_dict = write_data(
+#     format_type=&quot;dict&quot;,
+#     graph=g,
+#     target=None  # Target is ignored for dict writer
+# )
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.io.write_statement_to_excel"><code class="name flex">
+<span>def <span class="ident">write_statement_to_excel</span></span>(<span>df: pd.DataFrame, target: str | pathlib.Path, **kwargs: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_statement_to_excel(
+    df: &#34;pd.DataFrame&#34;,
+    target: str | Path,
+    **kwargs: Any,
+) -&gt; None:
+    &#34;&#34;&#34;Persist a single statement DataFrame to an Excel file.
+
+    This helper is intentionally lightweight and avoids additional
+    dependencies by delegating directly to ``pandas.DataFrame.to_excel``.
+
+    Args:
+        df: The pandas ``DataFrame`` representing the statement.  Rows should
+            correspond to line items, columns to periods.
+        target: Destination path of the ``.xlsx`` file. Missing parent
+            directories are created automatically.
+        **kwargs: Additional keyword arguments forwarded verbatim to
+            ``DataFrame.to_excel`` (e.g., ``sheet_name``, ``engine``).
+    &#34;&#34;&#34;
+    output_path = Path(target)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    df.to_excel(output_path, index=False, **kwargs)</code></pre>
+</details>
+<div class="desc"><p>Persist a single statement DataFrame to an Excel file.</p>
+<p>This helper is intentionally lightweight and avoids additional
+dependencies by delegating directly to <code>pandas.DataFrame.to_excel</code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>df</code></strong></dt>
+<dd>The pandas <code>DataFrame</code> representing the statement.
+Rows should
+correspond to line items, columns to periods.</dd>
+<dt><strong><code>target</code></strong></dt>
+<dd>Destination path of the <code>.xlsx</code> file. Missing parent
+directories are created automatically.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional keyword arguments forwarded verbatim to
+<code>DataFrame.to_excel</code> (e.g., <code>sheet_name</code>, <code>engine</code>).</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.write_statement_to_json"><code class="name flex">
+<span>def <span class="ident">write_statement_to_json</span></span>(<span>df: pd.DataFrame,<br>target: str | pathlib.Path,<br>*,<br>orient: str = 'records',<br>indent: int = 2,<br>**kwargs: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_statement_to_json(
+    df: &#34;pd.DataFrame&#34;,
+    target: str | Path,
+    *,
+    orient: str = &#34;records&#34;,
+    indent: int = 2,
+    **kwargs: Any,
+) -&gt; None:
+    &#34;&#34;&#34;Persist a single statement DataFrame to a JSON file.
+
+    Args:
+        df: The pandas ``DataFrame`` representing the statement.
+        target: Destination path of the ``.json`` file.
+        orient: JSON orientation (see ``pandas.DataFrame.to_json`` docs).
+        indent: Number of spaces for indentation (only used for ``orient != &#39;split&#39;``).
+        **kwargs: Additional keyword arguments forwarded to
+            ``DataFrame.to_json``.
+    &#34;&#34;&#34;
+    output_path = Path(target)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if orient == &#34;records&#34;:
+        df.to_json(  # type: ignore[call-overload]
+            output_path, orient=orient, indent=indent, **kwargs
+        )
+    else:
+        # pandas stubs only accept &#39;indent&#39; for orient=&#39;records&#39;
+        df.to_json(  # type: ignore[call-overload]
+            output_path, orient=orient, **kwargs
+        )</code></pre>
+</details>
+<div class="desc"><p>Persist a single statement DataFrame to a JSON file.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>df</code></strong></dt>
+<dd>The pandas <code>DataFrame</code> representing the statement.</dd>
+<dt><strong><code>target</code></strong></dt>
+<dd>Destination path of the <code>.json</code> file.</dd>
+<dt><strong><code>orient</code></strong></dt>
+<dd>JSON orientation (see <code>pandas.DataFrame.to_json</code> docs).</dd>
+<dt><strong><code>indent</code></strong></dt>
+<dd>Number of spaces for indentation (only used for <code>orient != 'split'</code>).</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional keyword arguments forwarded to
+<code>DataFrame.to_json</code>.</dd>
+</dl></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.io.DataReader"><code class="flex name class">
+<span>class <span class="ident">DataReader</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataReader(ABC):
+    &#34;&#34;&#34;Abstract base class for all data readers.
+
+    This ABC defines the contract for all reader classes in the I/O subpackage.
+    Any class that reads data from an external source (like a file or API) and
+    transforms it into a `Graph` object should inherit from `DataReader`.
+
+    Subclasses must implement the `read` method.
+    &#34;&#34;&#34;
+
+    @abstractmethod
+    def read(self, source: Any, **kwargs: dict[str, Any]) -&gt; Graph:
+        &#34;&#34;&#34;Read data from the specified source and return a Graph.
+
+        Args:
+            source: The data source. Type depends on the reader implementation
+                (e.g., file path `str`, ticker `str`, `pd.DataFrame`, `dict`).
+            **kwargs: Additional format-specific options for reading.
+
+        Returns:
+            A Graph object populated with the data from the source.
+
+        Raises:
+            ReadError: If an error occurs during the reading process.
+            NotImplementedError: If the method is not implemented by a subclass.
+        &#34;&#34;&#34;
+        raise NotImplementedError</code></pre>
+</details>
+<div class="desc"><p>Abstract base class for all data readers.</p>
+<p>This ABC defines the contract for all reader classes in the I/O subpackage.
+Any class that reads data from an external source (like a file or API) and
+transforms it into a <code>Graph</code> object should inherit from <code><a title="fin_statement_model.io.DataReader" href="#fin_statement_model.io.DataReader">DataReader</a></code>.</p>
+<p>Subclasses must implement the <code>read</code> method.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader" href="core/mixins/file_based_reader.html#fin_statement_model.io.core.mixins.file_based_reader.FileBasedReader">FileBasedReader</a></li>
+<li><a title="fin_statement_model.io.formats.dict_reader.DictReader" href="formats/dict_reader.html#fin_statement_model.io.formats.dict_reader.DictReader">DictReader</a></li>
+<li><a title="fin_statement_model.io.formats.fmp_reader.FmpReader" href="formats/fmp_reader.html#fin_statement_model.io.formats.fmp_reader.FmpReader">FmpReader</a></li>
+<li><a title="fin_statement_model.io.graph.definition_io.GraphDefinitionReader" href="graph/definition_io.html#fin_statement_model.io.graph.definition_io.GraphDefinitionReader">GraphDefinitionReader</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.DataReader.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self, source: Any, **kwargs: dict[str, typing.Any]) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def read(self, source: Any, **kwargs: dict[str, Any]) -&gt; Graph:
+    &#34;&#34;&#34;Read data from the specified source and return a Graph.
+
+    Args:
+        source: The data source. Type depends on the reader implementation
+            (e.g., file path `str`, ticker `str`, `pd.DataFrame`, `dict`).
+        **kwargs: Additional format-specific options for reading.
+
+    Returns:
+        A Graph object populated with the data from the source.
+
+    Raises:
+        ReadError: If an error occurs during the reading process.
+        NotImplementedError: If the method is not implemented by a subclass.
+    &#34;&#34;&#34;
+    raise NotImplementedError</code></pre>
+</details>
+<div class="desc"><p>Read data from the specified source and return a Graph.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source</code></strong></dt>
+<dd>The data source. Type depends on the reader implementation
+(e.g., file path <code>str</code>, ticker <code>str</code>, <code>pd.DataFrame</code>, <code>dict</code>).</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional format-specific options for reading.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A Graph object populated with the data from the source.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.io.ReadError" href="#fin_statement_model.io.ReadError">ReadError</a></code></dt>
+<dd>If an error occurs during the reading process.</dd>
+<dt><code>NotImplementedError</code></dt>
+<dd>If the method is not implemented by a subclass.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.DataWriter"><code class="flex name class">
+<span>class <span class="ident">DataWriter</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataWriter(ABC):
+    &#34;&#34;&#34;Abstract base class for all data writers.
+
+    This ABC defines the contract for all writer classes in the I/O subpackage.
+    Any class that serializes a `Graph` object into an external format (like a
+    file or a dictionary) should inherit from `DataWriter`.
+
+    Subclasses must implement the `write` method.
+    &#34;&#34;&#34;
+
+    @abstractmethod
+    def write(self, graph: Graph, target: Any, **kwargs: dict[str, Any]) -&gt; object:
+        &#34;&#34;&#34;Write data from the Graph object to the specified target.
+
+        Args:
+            graph: The Graph object containing the data to write.
+            target: The destination target. Type depends on the writer implementation
+                (e.g., file path `str`, or ignored if the writer returns an object).
+            **kwargs: Additional format-specific options for writing.
+
+        Raises:
+            WriteError: If an error occurs during the writing process.
+            NotImplementedError: If the method is not implemented by a subclass.
+        &#34;&#34;&#34;
+        raise NotImplementedError</code></pre>
+</details>
+<div class="desc"><p>Abstract base class for all data writers.</p>
+<p>This ABC defines the contract for all writer classes in the I/O subpackage.
+Any class that serializes a <code>Graph</code> object into an external format (like a
+file or a dictionary) should inherit from <code><a title="fin_statement_model.io.DataWriter" href="#fin_statement_model.io.DataWriter">DataWriter</a></code>.</p>
+<p>Subclasses must implement the <code>write</code> method.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter" href="core/mixins/value_extraction.html#fin_statement_model.io.core.mixins.value_extraction.DataFrameBasedWriter">DataFrameBasedWriter</a></li>
+<li><a title="fin_statement_model.io.graph.definition_io.GraphDefinitionWriter" href="graph/definition_io.html#fin_statement_model.io.graph.definition_io.GraphDefinitionWriter">GraphDefinitionWriter</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.DataWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: Any,<br>**kwargs: dict[str, typing.Any]) ‑> object</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def write(self, graph: Graph, target: Any, **kwargs: dict[str, Any]) -&gt; object:
+    &#34;&#34;&#34;Write data from the Graph object to the specified target.
+
+    Args:
+        graph: The Graph object containing the data to write.
+        target: The destination target. Type depends on the writer implementation
+            (e.g., file path `str`, or ignored if the writer returns an object).
+        **kwargs: Additional format-specific options for writing.
+
+    Raises:
+        WriteError: If an error occurs during the writing process.
+        NotImplementedError: If the method is not implemented by a subclass.
+    &#34;&#34;&#34;
+    raise NotImplementedError</code></pre>
+</details>
+<div class="desc"><p>Write data from the Graph object to the specified target.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The Graph object containing the data to write.</dd>
+<dt><strong><code>target</code></strong></dt>
+<dd>The destination target. Type depends on the writer implementation
+(e.g., file path <code>str</code>, or ignored if the writer returns an object).</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional format-specific options for writing.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code><a title="fin_statement_model.io.WriteError" href="#fin_statement_model.io.WriteError">WriteError</a></code></dt>
+<dd>If an error occurs during the writing process.</dd>
+<dt><code>NotImplementedError</code></dt>
+<dd>If the method is not implemented by a subclass.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.FormatNotSupportedError"><code class="flex name class">
+<span>class <span class="ident">FormatNotSupportedError</span></span>
+<span>(</span><span>format_type: str, operation: str = 'read/write')</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class FormatNotSupportedError(IOError):
+    &#34;&#34;&#34;Exception raised when a requested IO format is not registered or supported.&#34;&#34;&#34;
+
+    def __init__(self, format_type: str, operation: str = &#34;read/write&#34;):
+        &#34;&#34;&#34;Initializes the FormatNotSupportedError.
+
+        Args:
+            format_type: The requested format identifier (e.g., &#39;excel&#39;, &#39;json&#39;).
+            operation: The operation being attempted (&#39;read&#39; or &#39;write&#39;).
+        &#34;&#34;&#34;
+        message = f&#34;Format &#39;{format_type}&#39; is not supported for {operation} operations.&#34;
+        super().__init__(message=message, format_type=format_type)</code></pre>
+</details>
+<div class="desc"><p>Exception raised when a requested IO format is not registered or supported.</p>
+<p>Initializes the FormatNotSupportedError.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The requested format identifier (e.g., 'excel', 'json').</dd>
+<dt><strong><code>operation</code></strong></dt>
+<dd>The operation being attempted ('read' or 'write').</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.exceptions.IOError" href="exceptions.html#fin_statement_model.io.exceptions.IOError">IOError</a></li>
+<li><a title="fin_statement_model.core.errors.FinancialModelError" href="../core/errors.html#fin_statement_model.core.errors.FinancialModelError">FinancialModelError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.IOError"><code class="flex name class">
+<span>class <span class="ident">IOError</span></span>
+<span>(</span><span>message: str,<br>source_or_target: str | None = None,<br>format_type: str | None = None,<br>original_error: Exception | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IOError(FinancialModelError):
+    &#34;&#34;&#34;Base exception for all Input/Output errors in the IO package.&#34;&#34;&#34;
+
+    def __init__(
+        self,
+        message: str,
+        source_or_target: str | None = None,
+        format_type: str | None = None,
+        original_error: Exception | None = None,
+    ):
+        &#34;&#34;&#34;Initializes the IOError.
+
+        Args:
+            message: The base error message.
+            source_or_target: Optional identifier for the source (read) or target (write).
+            format_type: Optional name of the format or handler involved.
+            original_error: Optional underlying exception that caused the failure.
+        &#34;&#34;&#34;
+        self.source_or_target = source_or_target
+        self.format_type = format_type
+        self.original_error = original_error
+
+        context = []
+        if source_or_target:
+            context.append(f&#34;source/target &#39;{source_or_target}&#39;&#34;)
+        if format_type:
+            context.append(f&#34;format &#39;{format_type}&#39;&#34;)
+
+        full_message = f&#34;{message} involving {&#39; and &#39;.join(context)}&#34; if context else message
+
+        if original_error:
+            full_message = f&#34;{full_message}: {original_error!s}&#34;
+
+        super().__init__(full_message)</code></pre>
+</details>
+<div class="desc"><p>Base exception for all Input/Output errors in the IO package.</p>
+<p>Initializes the IOError.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong></dt>
+<dd>The base error message.</dd>
+<dt><strong><code>source_or_target</code></strong></dt>
+<dd>Optional identifier for the source (read) or target (write).</dd>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>Optional name of the format or handler involved.</dd>
+<dt><strong><code>original_error</code></strong></dt>
+<dd>Optional underlying exception that caused the failure.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.errors.FinancialModelError" href="../core/errors.html#fin_statement_model.core.errors.FinancialModelError">FinancialModelError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.exceptions.FormatNotSupportedError" href="exceptions.html#fin_statement_model.io.exceptions.FormatNotSupportedError">FormatNotSupportedError</a></li>
+<li><a title="fin_statement_model.io.exceptions.ReadError" href="exceptions.html#fin_statement_model.io.exceptions.ReadError">ReadError</a></li>
+<li><a title="fin_statement_model.io.exceptions.WriteError" href="exceptions.html#fin_statement_model.io.exceptions.WriteError">WriteError</a></li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.ReadError"><code class="flex name class">
+<span>class <span class="ident">ReadError</span></span>
+<span>(</span><span>message: str,<br>source: str | None = None,<br>reader_type: str | None = None,<br>original_error: Exception | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ReadError(IOError):
+    &#34;&#34;&#34;Exception raised specifically for errors during data read/import operations.&#34;&#34;&#34;
+
+    def __init__(
+        self,
+        message: str,
+        source: str | None = None,
+        reader_type: str | None = None,
+        original_error: Exception | None = None,
+    ):
+        &#34;&#34;&#34;Initializes the ReadError.
+
+        Args:
+            message: The base error message.
+            source: Optional identifier for the data source (e.g., file path, URL).
+            reader_type: Optional name of the reader class used for importing.
+            original_error: Optional underlying exception that caused the import failure.
+        &#34;&#34;&#34;
+        super().__init__(
+            message=message,
+            source_or_target=source,
+            format_type=reader_type,
+            original_error=original_error,
+        )</code></pre>
+</details>
+<div class="desc"><p>Exception raised specifically for errors during data read/import operations.</p>
+<p>Initializes the ReadError.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong></dt>
+<dd>The base error message.</dd>
+<dt><strong><code>source</code></strong></dt>
+<dd>Optional identifier for the data source (e.g., file path, URL).</dd>
+<dt><strong><code>reader_type</code></strong></dt>
+<dd>Optional name of the reader class used for importing.</dd>
+<dt><strong><code>original_error</code></strong></dt>
+<dd>Optional underlying exception that caused the import failure.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.exceptions.IOError" href="exceptions.html#fin_statement_model.io.exceptions.IOError">IOError</a></li>
+<li><a title="fin_statement_model.core.errors.FinancialModelError" href="../core/errors.html#fin_statement_model.core.errors.FinancialModelError">FinancialModelError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.io.WriteError"><code class="flex name class">
+<span>class <span class="ident">WriteError</span></span>
+<span>(</span><span>message: str,<br>target: str | None = None,<br>writer_type: str | None = None,<br>original_error: Exception | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class WriteError(IOError):
+    &#34;&#34;&#34;Exception raised specifically for errors during data write/export operations.&#34;&#34;&#34;
+
+    def __init__(
+        self,
+        message: str,
+        target: str | None = None,
+        writer_type: str | None = None,
+        original_error: Exception | None = None,
+    ):
+        &#34;&#34;&#34;Initializes the WriteError.
+
+        Args:
+            message: The base error message.
+            target: Optional identifier for the export destination (e.g., file path).
+            writer_type: Optional name of the writer class being used.
+            original_error: Optional underlying exception that caused the export failure.
+        &#34;&#34;&#34;
+        super().__init__(
+            message=message,
+            source_or_target=target,
+            format_type=writer_type,
+            original_error=original_error,
+        )</code></pre>
+</details>
+<div class="desc"><p>Exception raised specifically for errors during data write/export operations.</p>
+<p>Initializes the WriteError.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong></dt>
+<dd>The base error message.</dd>
+<dt><strong><code>target</code></strong></dt>
+<dd>Optional identifier for the export destination (e.g., file path).</dd>
+<dt><strong><code>writer_type</code></strong></dt>
+<dd>Optional name of the writer class being used.</dd>
+<dt><strong><code>original_error</code></strong></dt>
+<dd>Optional underlying exception that caused the export failure.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.exceptions.IOError" href="exceptions.html#fin_statement_model.io.exceptions.IOError">IOError</a></li>
+<li><a title="fin_statement_model.core.errors.FinancialModelError" href="../core/errors.html#fin_statement_model.core.errors.FinancialModelError">FinancialModelError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model" href="../index.html">fin_statement_model</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.io.adjustments" href="adjustments/index.html">fin_statement_model.io.adjustments</a></code></li>
+<li><code><a title="fin_statement_model.io.config" href="config/index.html">fin_statement_model.io.config</a></code></li>
+<li><code><a title="fin_statement_model.io.core" href="core/index.html">fin_statement_model.io.core</a></code></li>
+<li><code><a title="fin_statement_model.io.exceptions" href="exceptions.html">fin_statement_model.io.exceptions</a></code></li>
+<li><code><a title="fin_statement_model.io.formats" href="formats/index.html">fin_statement_model.io.formats</a></code></li>
+<li><code><a title="fin_statement_model.io.graph" href="graph/index.html">fin_statement_model.io.graph</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.io.export_adjustments_to_excel" href="#fin_statement_model.io.export_adjustments_to_excel">export_adjustments_to_excel</a></code></li>
+<li><code><a title="fin_statement_model.io.get_reader" href="#fin_statement_model.io.get_reader">get_reader</a></code></li>
+<li><code><a title="fin_statement_model.io.get_writer" href="#fin_statement_model.io.get_writer">get_writer</a></code></li>
+<li><code><a title="fin_statement_model.io.import_from_cells" href="#fin_statement_model.io.import_from_cells">import_from_cells</a></code></li>
+<li><code><a title="fin_statement_model.io.list_available_builtin_configs" href="#fin_statement_model.io.list_available_builtin_configs">list_available_builtin_configs</a></code></li>
+<li><code><a title="fin_statement_model.io.list_readers" href="#fin_statement_model.io.list_readers">list_readers</a></code></li>
+<li><code><a title="fin_statement_model.io.list_writers" href="#fin_statement_model.io.list_writers">list_writers</a></code></li>
+<li><code><a title="fin_statement_model.io.load_adjustments_from_excel" href="#fin_statement_model.io.load_adjustments_from_excel">load_adjustments_from_excel</a></code></li>
+<li><code><a title="fin_statement_model.io.read_data" href="#fin_statement_model.io.read_data">read_data</a></code></li>
+<li><code><a title="fin_statement_model.io.write_data" href="#fin_statement_model.io.write_data">write_data</a></code></li>
+<li><code><a title="fin_statement_model.io.write_statement_to_excel" href="#fin_statement_model.io.write_statement_to_excel">write_statement_to_excel</a></code></li>
+<li><code><a title="fin_statement_model.io.write_statement_to_json" href="#fin_statement_model.io.write_statement_to_json">write_statement_to_json</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.io.DataReader" href="#fin_statement_model.io.DataReader">DataReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.DataReader.read" href="#fin_statement_model.io.DataReader.read">read</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.DataWriter" href="#fin_statement_model.io.DataWriter">DataWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.DataWriter.write" href="#fin_statement_model.io.DataWriter.write">write</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.FormatNotSupportedError" href="#fin_statement_model.io.FormatNotSupportedError">FormatNotSupportedError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.IOError" href="#fin_statement_model.io.IOError">IOError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.ReadError" href="#fin_statement_model.io.ReadError">ReadError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.WriteError" href="#fin_statement_model.io.WriteError">WriteError</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

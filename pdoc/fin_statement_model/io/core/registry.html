@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.io.core.registry API documentation</title>
+<meta name="description" content="Registry system for managing I/O format handlers …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.io.core.registry</code></h1>
+</header>
+<section id="section-intro">
+<p>Registry system for managing I/O format handlers.</p>
+<p>This module provides a generic <code><a title="fin_statement_model.io.core.registry.HandlerRegistry" href="#fin_statement_model.io.core.registry.HandlerRegistry">HandlerRegistry</a></code> class and specific, pre-configured
+instances for managing <code>DataReader</code> and <code>DataWriter</code> classes. It allows for a
+decoupled, extensible I/O system where new formats can be added without
+modifying the core logic.</p>
+<p>The key features are:
+- <code><a title="fin_statement_model.io.core.registry.register_reader" href="#fin_statement_model.io.core.registry.register_reader">register_reader()</a></code> and <code><a title="fin_statement_model.io.core.registry.register_writer" href="#fin_statement_model.io.core.registry.register_writer">register_writer()</a></code> decorators for associating a handler
+class with a format identifier (e.g., 'csv').
+- A mandatory Pydantic schema for each handler, ensuring that all configurations
+are validated before a handler is instantiated.
+- <code><a title="fin_statement_model.io.core.registry.get_reader" href="#fin_statement_model.io.core.registry.get_reader">get_reader()</a></code> and <code><a title="fin_statement_model.io.core.registry.get_writer" href="#fin_statement_model.io.core.registry.get_writer">get_writer()</a></code> functions that look up a handler, validate the
+provided configuration against its schema, and return an initialized instance.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.io.core.registry.get_reader"><code class="name flex">
+<span>def <span class="ident">get_reader</span></span>(<span>format_type: str, **kwargs: Any) ‑> <a title="fin_statement_model.io.core.base.DataReader" href="base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_reader(format_type: str, **kwargs: Any) -&gt; DataReader:
+    &#34;&#34;&#34;Get an instance of the registered DataReader for the given format type.
+
+    Args:
+        format_type: The string identifier for the format.
+        **kwargs: Keyword arguments to pass to the reader&#39;s constructor.
+
+    Returns:
+        An initialized DataReader instance.
+
+    Raises:
+        FormatNotSupportedError: If no reader is registered for the format type.
+        ReadError: If validation fails for known reader types.
+    &#34;&#34;&#34;
+    return cast(
+        &#34;DataReader&#34;,
+        _get_handler(
+            format_type=format_type,
+            registry=_reader_registry,
+            handler_type=&#34;read&#34;,
+            error_class=ReadError,
+            **kwargs,
+        ),
+    )</code></pre>
+</details>
+<div class="desc"><p>Get an instance of the registered DataReader for the given format type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The string identifier for the format.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Keyword arguments to pass to the reader's constructor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>An initialized DataReader instance.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>FormatNotSupportedError</code></dt>
+<dd>If no reader is registered for the format type.</dd>
+<dt><code>ReadError</code></dt>
+<dd>If validation fails for known reader types.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.registry.get_writer"><code class="name flex">
+<span>def <span class="ident">get_writer</span></span>(<span>format_type: str, **kwargs: Any) ‑> <a title="fin_statement_model.io.core.base.DataWriter" href="base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_writer(format_type: str, **kwargs: Any) -&gt; DataWriter:
+    &#34;&#34;&#34;Get an instance of the registered DataWriter for the given format type.
+
+    Args:
+        format_type: The string identifier for the format.
+        **kwargs: Keyword arguments to pass to the writer&#39;s constructor.
+
+    Returns:
+        An initialized DataWriter instance.
+
+    Raises:
+        FormatNotSupportedError: If no writer is registered for the format type.
+        WriteError: If validation fails for known writer types.
+    &#34;&#34;&#34;
+    return cast(
+        &#34;DataWriter&#34;,
+        _get_handler(
+            format_type=format_type,
+            registry=_writer_registry,
+            handler_type=&#34;write&#34;,
+            error_class=WriteError,
+            **kwargs,
+        ),
+    )</code></pre>
+</details>
+<div class="desc"><p>Get an instance of the registered DataWriter for the given format type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The string identifier for the format.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Keyword arguments to pass to the writer's constructor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>An initialized DataWriter instance.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>FormatNotSupportedError</code></dt>
+<dd>If no writer is registered for the format type.</dd>
+<dt><code>WriteError</code></dt>
+<dd>If validation fails for known writer types.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.registry.list_readers"><code class="name flex">
+<span>def <span class="ident">list_readers</span></span>(<span>) ‑> dict[str, type[<a title="fin_statement_model.io.core.base.DataReader" href="base.html#fin_statement_model.io.core.base.DataReader">DataReader</a>]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_readers() -&gt; dict[str, type[DataReader]]:
+    &#34;&#34;&#34;Return a copy of the registered reader classes.&#34;&#34;&#34;
+    return _reader_registry.list_formats()</code></pre>
+</details>
+<div class="desc"><p>Return a copy of the registered reader classes.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.registry.list_writers"><code class="name flex">
+<span>def <span class="ident">list_writers</span></span>(<span>) ‑> dict[str, type[<a title="fin_statement_model.io.core.base.DataWriter" href="base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a>]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_writers() -&gt; dict[str, type[DataWriter]]:
+    &#34;&#34;&#34;Return a copy of the registered writer classes.&#34;&#34;&#34;
+    return _writer_registry.list_formats()</code></pre>
+</details>
+<div class="desc"><p>Return a copy of the registered writer classes.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.registry.register_reader"><code class="name flex">
+<span>def <span class="ident">register_reader</span></span>(<span>format_type: str, *, schema: type[pydantic.main.BaseModel] | None = None) ‑> Callable[[type[<a title="fin_statement_model.io.core.base.DataReader" href="base.html#fin_statement_model.io.core.base.DataReader">DataReader</a>]], type[<a title="fin_statement_model.io.core.base.DataReader" href="base.html#fin_statement_model.io.core.base.DataReader">DataReader</a>]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def register_reader(
+    format_type: str,
+    *,
+    schema: type[BaseModel] | None = None,
+) -&gt; Callable[[type[DataReader]], type[DataReader]]:
+    &#34;&#34;&#34;Decorator to register a DataReader class for a specific format type.
+
+    Args:
+        format_type: The string identifier for the format (e.g., &#39;excel&#39;, &#39;csv&#39;).
+        schema: Optional Pydantic schema class for configuration validation.
+
+    Returns:
+        A decorator function that registers the class and returns it unmodified.
+
+    Raises:
+        ValueError: If the format_type is already registered for a reader.
+    &#34;&#34;&#34;
+    # Require schema at registration time (legacy schema-less removed)
+    if schema is None:
+        raise ValueError(f&#34;Schema required for reader &#39;{format_type}&#39;; legacy schema-less mode removed.&#34;)
+    return _reader_registry.register(format_type, schema=schema)</code></pre>
+</details>
+<div class="desc"><p>Decorator to register a DataReader class for a specific format type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The string identifier for the format (e.g., 'excel', 'csv').</dd>
+<dt><strong><code>schema</code></strong></dt>
+<dd>Optional Pydantic schema class for configuration validation.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A decorator function that registers the class and returns it unmodified.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the format_type is already registered for a reader.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.registry.register_writer"><code class="name flex">
+<span>def <span class="ident">register_writer</span></span>(<span>format_type: str, *, schema: type[pydantic.main.BaseModel] | None = None) ‑> Callable[[type[<a title="fin_statement_model.io.core.base.DataWriter" href="base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a>]], type[<a title="fin_statement_model.io.core.base.DataWriter" href="base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a>]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def register_writer(
+    format_type: str,
+    *,
+    schema: type[BaseModel] | None = None,
+) -&gt; Callable[[type[DataWriter]], type[DataWriter]]:
+    &#34;&#34;&#34;Decorator to register a DataWriter class for a specific format type.
+
+    Args:
+        format_type: The string identifier for the format (e.g., &#39;excel&#39;, &#39;json&#39;).
+        schema: Optional Pydantic schema class for configuration validation.
+
+    Returns:
+        A decorator function that registers the class and returns it unmodified.
+
+    Raises:
+        ValueError: If the format_type is already registered for a writer.
+    &#34;&#34;&#34;
+    # Require schema at registration time (legacy schema-less removed)
+    if schema is None:
+        raise ValueError(f&#34;Schema required for writer &#39;{format_type}&#39;; legacy schema-less mode removed.&#34;)
+    return _writer_registry.register(format_type, schema=schema)</code></pre>
+</details>
+<div class="desc"><p>Decorator to register a DataWriter class for a specific format type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The string identifier for the format (e.g., 'excel', 'json').</dd>
+<dt><strong><code>schema</code></strong></dt>
+<dd>Optional Pydantic schema class for configuration validation.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A decorator function that registers the class and returns it unmodified.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the format_type is already registered for a writer.</dd>
+</dl></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.io.core.registry.HandlerRegistry"><code class="flex name class">
+<span>class <span class="ident">HandlerRegistry</span></span>
+<span>(</span><span>handler_type: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class HandlerRegistry(Generic[T]):
+    &#34;&#34;&#34;Generic registry for managing format handlers (readers or writers).
+
+    This class provides a reusable registry pattern for registering and
+    retrieving handler classes by format type.
+
+    Attributes:
+        _registry: Internal dictionary mapping format types to handler classes.
+        _handler_type: String describing the handler type (&#39;reader&#39; or &#39;writer&#39;).
+        _schema_map: Internal dictionary mapping format types to Pydantic schema classes.
+    &#34;&#34;&#34;
+
+    def __init__(self, handler_type: str):
+        &#34;&#34;&#34;Initialize the registry.
+
+        Args:
+            handler_type: Type of handlers (&#39;reader&#39; or &#39;writer&#39;) for error messages.
+        &#34;&#34;&#34;
+        self._registry: dict[str, type[T]] = {}
+        self._handler_type = handler_type
+        self._schema_map: dict[str, type[BaseModel]] = {}
+
+    def register(self, format_type: str, *, schema: type[BaseModel] | None = None) -&gt; Callable[[type[T]], type[T]]:
+        &#34;&#34;&#34;Create a decorator to register a handler class for a format type.
+
+        Args:
+            format_type: The format identifier (e.g., &#39;excel&#39;, &#39;csv&#39;).
+            schema: Optional Pydantic schema for the format.
+
+        Returns:
+            A decorator function that registers the class.
+
+        Raises:
+            ValueError: If the format is already registered to a different class.
+        &#34;&#34;&#34;
+
+        def decorator(cls: type[T]) -&gt; type[T]:
+            if format_type in self._registry:
+                # Allow re-registration of the same class (idempotent)
+                if self._registry[format_type] is not cls:
+                    raise ValueError(
+                        f&#34;{self._handler_type.capitalize()} format type &#39;{format_type}&#39; &#34;
+                        f&#34;already registered to {self._registry[format_type]}.&#34;
+                    )
+                logger.debug(&#34;Re-registering %s format type &#39;%s&#39; to %s&#34;, self._handler_type, format_type, cls.__name__)
+            else:
+                logger.debug(&#34;Registering %s format type &#39;%s&#39; to %s&#34;, self._handler_type, format_type, cls.__name__)
+
+            self._registry[format_type] = cls
+            if schema is not None:
+                self._schema_map[format_type] = schema
+            return cls
+
+        return decorator
+
+    def get(self, format_type: str) -&gt; type[T]:
+        &#34;&#34;&#34;Get the registered handler class for a format type.
+
+        Args:
+            format_type: The format identifier.
+
+        Returns:
+            The registered handler class.
+
+        Raises:
+            FormatNotSupportedError: If no handler is registered for the format.
+        &#34;&#34;&#34;
+        if format_type not in self._registry:
+            raise FormatNotSupportedError(format_type=format_type, operation=f&#34;{self._handler_type} operations&#34;)
+
+        return self._registry[format_type]
+
+    def list_formats(self) -&gt; dict[str, type[T]]:
+        &#34;&#34;&#34;Return a copy of all registered format handlers.
+
+        Returns:
+            Dictionary mapping format types to handler classes.
+        &#34;&#34;&#34;
+        return self._registry.copy()
+
+    def is_registered(self, format_type: str) -&gt; bool:
+        &#34;&#34;&#34;Check if a format type is registered.
+
+        Args:
+            format_type: The format identifier to check.
+
+        Returns:
+            True if the format is registered, False otherwise.
+        &#34;&#34;&#34;
+        return format_type in self._registry
+
+    def unregister(self, format_type: str) -&gt; type[T] | None:
+        &#34;&#34;&#34;Remove a format handler from the registry.
+
+        This method is primarily useful for testing.
+
+        Args:
+            format_type: The format identifier to remove.
+
+        Returns:
+            The removed handler class, or None if not found.
+        &#34;&#34;&#34;
+        return self._registry.pop(format_type, None)
+
+    def clear(self) -&gt; None:
+        &#34;&#34;&#34;Clear all registered handlers.
+
+        This method is primarily useful for testing.
+        &#34;&#34;&#34;
+        self._registry.clear()
+
+    def __contains__(self, format_type: str) -&gt; bool:
+        &#34;&#34;&#34;Check if a format type is registered using &#39;in&#39; operator.
+
+        Args:
+            format_type: The format identifier to check.
+
+        Returns:
+            True if the format is registered, False otherwise.
+        &#34;&#34;&#34;
+        return format_type in self._registry
+
+    def __len__(self) -&gt; int:
+        &#34;&#34;&#34;Return the number of registered formats.
+
+        Returns:
+            Number of registered format handlers.
+        &#34;&#34;&#34;
+        return len(self._registry)
+
+    def get_schema(self, format_type: str) -&gt; type[BaseModel] | None:
+        &#34;&#34;&#34;Return the Pydantic schema for a registered format type, if any.&#34;&#34;&#34;
+        return self._schema_map.get(format_type)</code></pre>
+</details>
+<div class="desc"><p>Generic registry for managing format handlers (readers or writers).</p>
+<p>This class provides a reusable registry pattern for registering and
+retrieving handler classes by format type.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>_registry</code></strong></dt>
+<dd>Internal dictionary mapping format types to handler classes.</dd>
+<dt><strong><code>_handler_type</code></strong></dt>
+<dd>String describing the handler type ('reader' or 'writer').</dd>
+<dt><strong><code>_schema_map</code></strong></dt>
+<dd>Internal dictionary mapping format types to Pydantic schema classes.</dd>
+</dl>
+<p>Initialize the registry.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>handler_type</code></strong></dt>
+<dd>Type of handlers ('reader' or 'writer') for error messages.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>typing.Generic</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.core.registry.HandlerRegistry.clear"><code class="name flex">
+<span>def <span class="ident">clear</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear(self) -&gt; None:
+    &#34;&#34;&#34;Clear all registered handlers.
+
+    This method is primarily useful for testing.
+    &#34;&#34;&#34;
+    self._registry.clear()</code></pre>
+</details>
+<div class="desc"><p>Clear all registered handlers.</p>
+<p>This method is primarily useful for testing.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.registry.HandlerRegistry.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>self, format_type: str) ‑> type[~T]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get(self, format_type: str) -&gt; type[T]:
+    &#34;&#34;&#34;Get the registered handler class for a format type.
+
+    Args:
+        format_type: The format identifier.
+
+    Returns:
+        The registered handler class.
+
+    Raises:
+        FormatNotSupportedError: If no handler is registered for the format.
+    &#34;&#34;&#34;
+    if format_type not in self._registry:
+        raise FormatNotSupportedError(format_type=format_type, operation=f&#34;{self._handler_type} operations&#34;)
+
+    return self._registry[format_type]</code></pre>
+</details>
+<div class="desc"><p>Get the registered handler class for a format type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The format identifier.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The registered handler class.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>FormatNotSupportedError</code></dt>
+<dd>If no handler is registered for the format.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.registry.HandlerRegistry.get_schema"><code class="name flex">
+<span>def <span class="ident">get_schema</span></span>(<span>self, format_type: str) ‑> type[pydantic.main.BaseModel] | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_schema(self, format_type: str) -&gt; type[BaseModel] | None:
+    &#34;&#34;&#34;Return the Pydantic schema for a registered format type, if any.&#34;&#34;&#34;
+    return self._schema_map.get(format_type)</code></pre>
+</details>
+<div class="desc"><p>Return the Pydantic schema for a registered format type, if any.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.registry.HandlerRegistry.is_registered"><code class="name flex">
+<span>def <span class="ident">is_registered</span></span>(<span>self, format_type: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_registered(self, format_type: str) -&gt; bool:
+    &#34;&#34;&#34;Check if a format type is registered.
+
+    Args:
+        format_type: The format identifier to check.
+
+    Returns:
+        True if the format is registered, False otherwise.
+    &#34;&#34;&#34;
+    return format_type in self._registry</code></pre>
+</details>
+<div class="desc"><p>Check if a format type is registered.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The format identifier to check.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if the format is registered, False otherwise.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.registry.HandlerRegistry.list_formats"><code class="name flex">
+<span>def <span class="ident">list_formats</span></span>(<span>self) ‑> dict[str, type[~T]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_formats(self) -&gt; dict[str, type[T]]:
+    &#34;&#34;&#34;Return a copy of all registered format handlers.
+
+    Returns:
+        Dictionary mapping format types to handler classes.
+    &#34;&#34;&#34;
+    return self._registry.copy()</code></pre>
+</details>
+<div class="desc"><p>Return a copy of all registered format handlers.</p>
+<h2 id="returns">Returns</h2>
+<p>Dictionary mapping format types to handler classes.</p></div>
+</dd>
+<dt id="fin_statement_model.io.core.registry.HandlerRegistry.register"><code class="name flex">
+<span>def <span class="ident">register</span></span>(<span>self, format_type: str, *, schema: type[pydantic.main.BaseModel] | None = None) ‑> Callable[[type[~T]], type[~T]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def register(self, format_type: str, *, schema: type[BaseModel] | None = None) -&gt; Callable[[type[T]], type[T]]:
+    &#34;&#34;&#34;Create a decorator to register a handler class for a format type.
+
+    Args:
+        format_type: The format identifier (e.g., &#39;excel&#39;, &#39;csv&#39;).
+        schema: Optional Pydantic schema for the format.
+
+    Returns:
+        A decorator function that registers the class.
+
+    Raises:
+        ValueError: If the format is already registered to a different class.
+    &#34;&#34;&#34;
+
+    def decorator(cls: type[T]) -&gt; type[T]:
+        if format_type in self._registry:
+            # Allow re-registration of the same class (idempotent)
+            if self._registry[format_type] is not cls:
+                raise ValueError(
+                    f&#34;{self._handler_type.capitalize()} format type &#39;{format_type}&#39; &#34;
+                    f&#34;already registered to {self._registry[format_type]}.&#34;
+                )
+            logger.debug(&#34;Re-registering %s format type &#39;%s&#39; to %s&#34;, self._handler_type, format_type, cls.__name__)
+        else:
+            logger.debug(&#34;Registering %s format type &#39;%s&#39; to %s&#34;, self._handler_type, format_type, cls.__name__)
+
+        self._registry[format_type] = cls
+        if schema is not None:
+            self._schema_map[format_type] = schema
+        return cls
+
+    return decorator</code></pre>
+</details>
+<div class="desc"><p>Create a decorator to register a handler class for a format type.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The format identifier (e.g., 'excel', 'csv').</dd>
+<dt><strong><code>schema</code></strong></dt>
+<dd>Optional Pydantic schema for the format.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A decorator function that registers the class.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the format is already registered to a different class.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.core.registry.HandlerRegistry.unregister"><code class="name flex">
+<span>def <span class="ident">unregister</span></span>(<span>self, format_type: str) ‑> type[~T] | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unregister(self, format_type: str) -&gt; type[T] | None:
+    &#34;&#34;&#34;Remove a format handler from the registry.
+
+    This method is primarily useful for testing.
+
+    Args:
+        format_type: The format identifier to remove.
+
+    Returns:
+        The removed handler class, or None if not found.
+    &#34;&#34;&#34;
+    return self._registry.pop(format_type, None)</code></pre>
+</details>
+<div class="desc"><p>Remove a format handler from the registry.</p>
+<p>This method is primarily useful for testing.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_type</code></strong></dt>
+<dd>The format identifier to remove.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The removed handler class, or None if not found.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.core.registry.IOFormat"><code class="flex name class">
+<span>class <span class="ident">IOFormat</span></span>
+<span>(</span><span>*args, **kwds)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>str(object='') -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.<strong>str</strong>() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to 'strict'.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.str</li>
+<li>enum.Enum</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.io.core" href="index.html">fin_statement_model.io.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.io.core.registry.get_reader" href="#fin_statement_model.io.core.registry.get_reader">get_reader</a></code></li>
+<li><code><a title="fin_statement_model.io.core.registry.get_writer" href="#fin_statement_model.io.core.registry.get_writer">get_writer</a></code></li>
+<li><code><a title="fin_statement_model.io.core.registry.list_readers" href="#fin_statement_model.io.core.registry.list_readers">list_readers</a></code></li>
+<li><code><a title="fin_statement_model.io.core.registry.list_writers" href="#fin_statement_model.io.core.registry.list_writers">list_writers</a></code></li>
+<li><code><a title="fin_statement_model.io.core.registry.register_reader" href="#fin_statement_model.io.core.registry.register_reader">register_reader</a></code></li>
+<li><code><a title="fin_statement_model.io.core.registry.register_writer" href="#fin_statement_model.io.core.registry.register_writer">register_writer</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.io.core.registry.HandlerRegistry" href="#fin_statement_model.io.core.registry.HandlerRegistry">HandlerRegistry</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.io.core.registry.HandlerRegistry.clear" href="#fin_statement_model.io.core.registry.HandlerRegistry.clear">clear</a></code></li>
+<li><code><a title="fin_statement_model.io.core.registry.HandlerRegistry.get" href="#fin_statement_model.io.core.registry.HandlerRegistry.get">get</a></code></li>
+<li><code><a title="fin_statement_model.io.core.registry.HandlerRegistry.get_schema" href="#fin_statement_model.io.core.registry.HandlerRegistry.get_schema">get_schema</a></code></li>
+<li><code><a title="fin_statement_model.io.core.registry.HandlerRegistry.is_registered" href="#fin_statement_model.io.core.registry.HandlerRegistry.is_registered">is_registered</a></code></li>
+<li><code><a title="fin_statement_model.io.core.registry.HandlerRegistry.list_formats" href="#fin_statement_model.io.core.registry.HandlerRegistry.list_formats">list_formats</a></code></li>
+<li><code><a title="fin_statement_model.io.core.registry.HandlerRegistry.register" href="#fin_statement_model.io.core.registry.HandlerRegistry.register">register</a></code></li>
+<li><code><a title="fin_statement_model.io.core.registry.HandlerRegistry.unregister" href="#fin_statement_model.io.core.registry.HandlerRegistry.unregister">unregister</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.core.registry.IOFormat" href="#fin_statement_model.io.core.registry.IOFormat">IOFormat</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

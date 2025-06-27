@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.io.adjustments.excel_io API documentation</title>
+<meta name="description" content="Functions for bulk import and export of adjustments via Excel files …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.io.adjustments.excel_io</code></h1>
+</header>
+<section id="section-intro">
+<p>Functions for bulk import and export of adjustments via Excel files.</p>
+<p>This module provides high-level functions and a dedicated reader class for handling
+the import and export of financial adjustments from and to Microsoft Excel files.
+The expected Excel format consists of specific columns that map to the fields of
+an <code>Adjustment</code> object.</p>
+<p>The required columns are:
+- <code>node_name</code>: The name of the node to which the adjustment applies.
+- <code>period</code>: The period (e.g., '2023-12-31') for the adjustment.
+- <code>value</code>: The numeric value of the adjustment.
+- <code>reason</code>: A string explaining the reason for the adjustment.</p>
+<p>A range of optional columns are also supported, including <code>type</code>, <code>tags</code>, <code>scenario</code>,
+<code>start_period</code>, <code>end_period</code>, <code>priority</code>, and <code>user</code>.</p>
+<p>The primary functions are:
+- <code><a title="fin_statement_model.io.adjustments.excel_io.load_adjustments_from_excel" href="#fin_statement_model.io.adjustments.excel_io.load_adjustments_from_excel">load_adjustments_from_excel()</a></code>: Reads adjustments from an Excel file and applies them
+to a <code>Graph</code> instance.
+- <code><a title="fin_statement_model.io.adjustments.excel_io.export_adjustments_to_excel" href="#fin_statement_model.io.adjustments.excel_io.export_adjustments_to_excel">export_adjustments_to_excel()</a></code>: Exports all adjustments from a <code>Graph</code> instance
+to an Excel file, grouping them by scenario into separate sheets.
+- <code><a title="fin_statement_model.io.adjustments.excel_io.read_excel" href="#fin_statement_model.io.adjustments.excel_io.read_excel">read_excel()</a></code>: A lower-level function to parse an Excel file into a list of
+<code>Adjustment</code> objects and an error report, without modifying a graph.
+- <code><a title="fin_statement_model.io.adjustments.excel_io.write_excel" href="#fin_statement_model.io.adjustments.excel_io.write_excel">write_excel()</a></code>: A lower-level function to write a list of <code>Adjustment</code> objects
+to an Excel file.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.io.adjustments.excel_io.export_adjustments_to_excel"><code class="name flex">
+<span>def <span class="ident">export_adjustments_to_excel</span></span>(<span>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>path: str | pathlib.Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_adjustments_to_excel(graph: Graph, path: str | Path) -&gt; None:
+    &#34;&#34;&#34;Export all adjustments from the graph to an Excel file.
+
+    This is a convenience function that retrieves all adjustments from a `Graph`
+    instance and writes them to a specified Excel file using `write_excel`.
+
+    Args:
+        graph: The `Graph` instance containing the adjustments to export.
+        path: Path for the output Excel file.
+    &#34;&#34;&#34;
+    logger.info(&#34;Exporting all adjustments from graph to Excel (%s).&#34;, path)
+    all_adjustments = graph.list_all_adjustments()
+    write_excel(all_adjustments, path)</code></pre>
+</details>
+<div class="desc"><p>Export all adjustments from the graph to an Excel file.</p>
+<p>This is a convenience function that retrieves all adjustments from a <code>Graph</code>
+instance and writes them to a specified Excel file using <code><a title="fin_statement_model.io.adjustments.excel_io.write_excel" href="#fin_statement_model.io.adjustments.excel_io.write_excel">write_excel()</a></code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The <code>Graph</code> instance containing the adjustments to export.</dd>
+<dt><strong><code>path</code></strong></dt>
+<dd>Path for the output Excel file.</dd>
+</dl></div>
+</dd>
+<dt id="fin_statement_model.io.adjustments.excel_io.load_adjustments_from_excel"><code class="name flex">
+<span>def <span class="ident">load_adjustments_from_excel</span></span>(<span>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>path: str | pathlib.Path,<br>replace: bool = False) ‑> tuple[list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="../../core/adjustments/models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>], pandas.core.frame.DataFrame]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_adjustments_from_excel(
+    graph: Graph, path: str | Path, replace: bool = False
+) -&gt; tuple[list[Adjustment], pd.DataFrame]:
+    &#34;&#34;&#34;Read adjustments from Excel and add them to the graph.
+
+    This is a convenience function that orchestrates reading adjustments from an
+    Excel file and loading them into a `Graph`&#39;s `AdjustmentManager`.
+
+    Args:
+        graph: The Graph instance to add adjustments to.
+        path: Path to the Excel file.
+        replace: If True, all existing adjustments in the graph&#39;s
+            `AdjustmentManager` will be cleared before adding the new ones.
+            Defaults to False.
+
+    Returns:
+        A tuple containing:
+            - A list of valid `Adjustment` objects that were successfully
+              read from the file (some of which may have failed to be added
+              to the graph).
+            - A pandas DataFrame containing rows from the Excel file that
+              failed initial validation.
+    &#34;&#34;&#34;
+    logger.info(&#34;Loading adjustments from Excel (%s) into graph. Replace=%s&#34;, path, replace)
+    valid_adjustments, error_report_df = read_excel(path)
+
+    if replace:
+        logger.debug(&#34;Clearing existing adjustments before loading.&#34;)
+        graph.adjustment_manager.clear_all()
+
+    added_count = 0
+    for adj in valid_adjustments:
+        try:
+            graph.adjustment_manager.add_adjustment(adj)
+            added_count += 1
+        except Exception as e:
+            logger.exception(&#34;Failed to add valid adjustment %s to graph&#34;, adj.id)
+            # Optionally add this failure to the error report?
+            error_row = adj.model_dump(mode=&#34;json&#34;)
+            error_row[&#34;error&#34;] = f&#34;Failed to add to graph: {e}&#34;
+            # Need to handle DataFrame append carefully if modifying during iteration
+            # Simplest is to report read errors, log add errors.
+
+    logger.info(&#34;Added %s adjustments to the graph from %s.&#34;, added_count, path)
+    if not error_report_df.empty:
+        logger.warning(&#34;Encountered %s errors during Excel read process.&#34;, len(error_report_df))
+
+    return valid_adjustments, error_report_df</code></pre>
+</details>
+<div class="desc"><p>Read adjustments from Excel and add them to the graph.</p>
+<p>This is a convenience function that orchestrates reading adjustments from an
+Excel file and loading them into a <code>Graph</code>'s <code>AdjustmentManager</code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The Graph instance to add adjustments to.</dd>
+<dt><strong><code>path</code></strong></dt>
+<dd>Path to the Excel file.</dd>
+<dt><strong><code>replace</code></strong></dt>
+<dd>If True, all existing adjustments in the graph's
+<code>AdjustmentManager</code> will be cleared before adding the new ones.
+Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A tuple containing:
+- A list of valid <code>Adjustment</code> objects that were successfully
+read from the file (some of which may have failed to be added
+to the graph).
+- A pandas DataFrame containing rows from the Excel file that
+failed initial validation.</p></div>
+</dd>
+<dt id="fin_statement_model.io.adjustments.excel_io.read_excel"><code class="name flex">
+<span>def <span class="ident">read_excel</span></span>(<span>path: str | pathlib.Path) ‑> tuple[list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="../../core/adjustments/models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>], pandas.core.frame.DataFrame]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read_excel(path: str | Path) -&gt; tuple[list[Adjustment], pd.DataFrame]:
+    &#34;&#34;&#34;Read adjustments from an Excel file.
+
+    This function serves as a convenient wrapper around `AdjustmentsExcelReader`.
+    It reads adjustment data from the specified Excel file and separates the
+    data into valid `Adjustment` objects and a report of rows that failed
+    validation.
+
+    Args:
+        path: Path to the Excel file.
+
+    Returns:
+        A tuple containing:
+            - A list of successfully parsed `Adjustment` objects.
+            - A pandas DataFrame containing rows that failed validation. This
+              DataFrame will be empty if all rows were valid.
+    &#34;&#34;&#34;
+    return AdjustmentsExcelReader().read(path)</code></pre>
+</details>
+<div class="desc"><p>Read adjustments from an Excel file.</p>
+<p>This function serves as a convenient wrapper around <code><a title="fin_statement_model.io.adjustments.excel_io.AdjustmentsExcelReader" href="#fin_statement_model.io.adjustments.excel_io.AdjustmentsExcelReader">AdjustmentsExcelReader</a></code>.
+It reads adjustment data from the specified Excel file and separates the
+data into valid <code>Adjustment</code> objects and a report of rows that failed
+validation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong></dt>
+<dd>Path to the Excel file.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A tuple containing:
+- A list of successfully parsed <code>Adjustment</code> objects.
+- A pandas DataFrame containing rows that failed validation. This
+DataFrame will be empty if all rows were valid.</p></div>
+</dd>
+<dt id="fin_statement_model.io.adjustments.excel_io.write_excel"><code class="name flex">
+<span>def <span class="ident">write_excel</span></span>(<span>adjustments: list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="../../core/adjustments/models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>],<br>path: str | pathlib.Path) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write_excel(adjustments: list[Adjustment], path: str | Path) -&gt; None:
+    &#34;&#34;&#34;Write a list of adjustments to an Excel file.
+
+    This function takes a list of `Adjustment` objects, groups them by their
+    `scenario` attribute, and writes each group to a separate sheet in an
+
+    Args:
+        adjustments: A list of Adjustment objects to write.
+        path: The path to the output Excel file. The directory will be created
+              if it does not exist.
+
+    Raises:
+        WriteError: If writing to the file fails for any reason, such as
+            permission errors or issues with the underlying Excel engine.
+    &#34;&#34;&#34;
+    file_path = Path(path)
+    logger.info(&#34;Writing %s adjustments to Excel file: %s&#34;, len(adjustments), file_path)
+
+    # Group adjustments by scenario
+    grouped_by_scenario: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for adj in adjustments:
+        # Use model_dump for serialization, exclude fields we don&#39;t usually export
+        adj_dict = adj.model_dump(exclude={&#34;timestamp&#34;})  # Exclude timestamp by default
+        # Convert complex types to simple types for Excel
+        adj_dict[&#34;id&#34;] = str(adj_dict.get(&#34;id&#34;))
+        raw_type = adj_dict.get(&#34;type&#34;)
+        # Cast to AdjustmentType to access .value safely if present
+        adj_dict[&#34;type&#34;] = cast(&#34;AdjustmentType&#34;, raw_type).value if raw_type else None
+        adj_dict[&#34;tags&#34;] = &#34;,&#34;.join(sorted(adj_dict.get(&#34;tags&#34;, set())))
+        grouped_by_scenario[adj.scenario].append(adj_dict)
+
+    if not grouped_by_scenario:
+        logger.warning(&#34;No adjustments provided to write_excel. Creating empty file.&#34;)
+        # Create an empty file or handle as desired
+        try:
+            pd.DataFrame().to_excel(file_path, index=False)
+        except Exception as e:
+            raise WriteError(
+                f&#34;Failed to write empty Excel file {file_path}: {e}&#34;,
+                target=str(file_path),
+                original_error=e,
+            ) from e
+        return
+
+    try:
+        with pd.ExcelWriter(file_path, engine=&#34;openpyxl&#34;) as writer:
+            for scenario, scenario_adjustments in grouped_by_scenario.items():
+                df = pd.DataFrame(scenario_adjustments)
+                # Reorder columns for consistency
+                cols_ordered = [c for c in COL_TO_FIELD_MAP if c in df.columns]
+                cols_ordered += [c for c in df.columns if c not in cols_ordered]
+                df = df[cols_ordered]
+                # Sheet names must be valid
+                safe_scenario_name = scenario.replace(&#34;:&#34;, &#34;-&#34;).replace(&#34;/&#34;, &#34;-&#34;).replace(&#34;\\&#34;, &#34;-&#34;)[:31]
+                df.to_excel(writer, sheet_name=safe_scenario_name, index=False)
+        logger.info(&#34;Successfully wrote adjustments to %s&#34;, file_path)
+    except Exception as e:
+        logger.exception(&#34;Failed to write adjustments to Excel file %s&#34;, file_path)
+        raise WriteError(
+            f&#34;Failed to write adjustments to Excel: {e}&#34;,
+            target=str(file_path),
+            original_error=e,
+        ) from e</code></pre>
+</details>
+<div class="desc"><p>Write a list of adjustments to an Excel file.</p>
+<p>This function takes a list of <code>Adjustment</code> objects, groups them by their
+<code>scenario</code> attribute, and writes each group to a separate sheet in an</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>adjustments</code></strong></dt>
+<dd>A list of Adjustment objects to write.</dd>
+<dt><strong><code>path</code></strong></dt>
+<dd>The path to the output Excel file. The directory will be created
+if it does not exist.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>WriteError</code></dt>
+<dd>If writing to the file fails for any reason, such as
+permission errors or issues with the underlying Excel engine.</dd>
+</dl></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.io.adjustments.excel_io.AdjustmentsExcelReader"><code class="flex name class">
+<span>class <span class="ident">AdjustmentsExcelReader</span></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AdjustmentsExcelReader(_FileValidationMixin):
+    &#34;&#34;&#34;DataReader for reading adjustments from an Excel file.
+
+    Combines basic *file existence/extension* checks provided by
+    :class:`FileBasedReader` with the row-level validation logic previously
+    implemented in the private ``_read_excel_impl`` helper.  Removing an extra
+    indirection both simplifies stack traces and reduces cognitive load for
+    maintainers.
+    &#34;&#34;&#34;
+
+    file_extensions = (&#34;.xls&#34;, &#34;.xlsx&#34;)
+
+    @handle_read_errors()
+    def read(self, source: str | Path, **_kw: Any) -&gt; tuple[list[Adjustment], pd.DataFrame]:
+        &#34;&#34;&#34;Read and parse adjustments from an Excel file.
+
+        This method validates the file&#39;s existence and extension, then reads the
+        first sheet into a pandas DataFrame. It normalizes column names, validates
+        that all required columns are present, and then processes each row.
+
+        Each row is parsed and validated against the `AdjustmentRowModel`. Valid
+        rows are converted to `Adjustment` objects, while invalid rows are
+        collected into an error report.
+
+        Args:
+            source (str | Path): The path to the Excel file.
+            **_kw (Any): Unused keyword arguments, present for interface compatibility.
+
+        Returns:
+            tuple[list[Adjustment], pd.DataFrame]: A tuple containing:
+                - A list of valid `Adjustment` objects.
+                - A pandas DataFrame containing rows that failed validation,
+                  along with an &#39;error&#39; column detailing the issues.
+
+        Raises:
+            ReadError: If the file cannot be found, read, or is missing required columns.
+        &#34;&#34;&#34;
+        path_str = str(source)
+
+        # Basic file checks ---------------------------------------------------
+        self.validate_file_exists(path_str)
+        self.validate_file_extension(path_str)
+
+        file_path = Path(path_str)
+        logger.info(&#34;Reading adjustments from Excel file: %s&#34;, file_path)
+
+        # ------------------------------------------------------------------
+        # Load sheet into DataFrame
+        # ------------------------------------------------------------------
+        try:
+            df = pd.read_excel(file_path, sheet_name=0)
+        except FileNotFoundError as err:
+            raise ReadError(
+                f&#34;Adjustment Excel file not found: {file_path}&#34;,
+                source=str(file_path),
+            ) from err
+        except Exception as e:
+            raise ReadError(
+                f&#34;Failed to read Excel file {file_path}: {e}&#34;,
+                source=str(file_path),
+                original_error=e,
+            ) from e
+
+        # ------------------------------------------------------------------
+        # Normalise + validate columns
+        # ------------------------------------------------------------------
+        df.columns = pd.Index([str(col).lower().strip() for col in df.columns])
+        _validate_required_columns(df.columns)
+
+        records = cast(&#34;list[dict[str, Any]]&#34;, df.to_dict(orient=&#34;records&#34;))
+        valid_adjustments: list[Adjustment] = []
+        error_rows: list[dict[str, Any]] = []
+
+        for idx, raw in enumerate(records, start=2):  # Account for header row
+            try:
+                row_model = AdjustmentRowModel(**raw)
+                valid_adjustments.append(row_model.to_adjustment())
+            except ValidationError as ve:
+                error_rows.append(_build_error_row(raw, ve, idx))
+
+        error_report_df = pd.DataFrame(error_rows)
+        if not error_report_df.empty:
+            logger.warning(
+                &#34;Completed reading adjustments from %s. Found %s valid adjustments and %s errors.&#34;,
+                file_path,
+                len(valid_adjustments),
+                len(error_rows),
+            )
+        else:
+            logger.info(
+                &#34;Successfully read %s adjustments from %s with no errors.&#34;,
+                len(valid_adjustments),
+                file_path,
+            )
+
+        return valid_adjustments, error_report_df</code></pre>
+</details>
+<div class="desc"><p>DataReader for reading adjustments from an Excel file.</p>
+<p>Combines basic <em>file existence/extension</em> checks provided by
+:class:<code>FileBasedReader</code> with the row-level validation logic previously
+implemented in the private <code>_read_excel_impl</code> helper.
+Removing an extra
+indirection both simplifies stack traces and reduces cognitive load for
+maintainers.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>fin_statement_model.io.adjustments.excel_io._FileValidationMixin</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.io.adjustments.excel_io.AdjustmentsExcelReader.file_extensions"><code class="name">var <span class="ident">file_extensions</span> : tuple[str, ...] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.adjustments.excel_io.AdjustmentsExcelReader.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self, source: str | pathlib.Path, **_kw: Any) ‑> tuple[list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="../../core/adjustments/models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>], pandas.core.frame.DataFrame]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@handle_read_errors()
+def read(self, source: str | Path, **_kw: Any) -&gt; tuple[list[Adjustment], pd.DataFrame]:
+    &#34;&#34;&#34;Read and parse adjustments from an Excel file.
+
+    This method validates the file&#39;s existence and extension, then reads the
+    first sheet into a pandas DataFrame. It normalizes column names, validates
+    that all required columns are present, and then processes each row.
+
+    Each row is parsed and validated against the `AdjustmentRowModel`. Valid
+    rows are converted to `Adjustment` objects, while invalid rows are
+    collected into an error report.
+
+    Args:
+        source (str | Path): The path to the Excel file.
+        **_kw (Any): Unused keyword arguments, present for interface compatibility.
+
+    Returns:
+        tuple[list[Adjustment], pd.DataFrame]: A tuple containing:
+            - A list of valid `Adjustment` objects.
+            - A pandas DataFrame containing rows that failed validation,
+              along with an &#39;error&#39; column detailing the issues.
+
+    Raises:
+        ReadError: If the file cannot be found, read, or is missing required columns.
+    &#34;&#34;&#34;
+    path_str = str(source)
+
+    # Basic file checks ---------------------------------------------------
+    self.validate_file_exists(path_str)
+    self.validate_file_extension(path_str)
+
+    file_path = Path(path_str)
+    logger.info(&#34;Reading adjustments from Excel file: %s&#34;, file_path)
+
+    # ------------------------------------------------------------------
+    # Load sheet into DataFrame
+    # ------------------------------------------------------------------
+    try:
+        df = pd.read_excel(file_path, sheet_name=0)
+    except FileNotFoundError as err:
+        raise ReadError(
+            f&#34;Adjustment Excel file not found: {file_path}&#34;,
+            source=str(file_path),
+        ) from err
+    except Exception as e:
+        raise ReadError(
+            f&#34;Failed to read Excel file {file_path}: {e}&#34;,
+            source=str(file_path),
+            original_error=e,
+        ) from e
+
+    # ------------------------------------------------------------------
+    # Normalise + validate columns
+    # ------------------------------------------------------------------
+    df.columns = pd.Index([str(col).lower().strip() for col in df.columns])
+    _validate_required_columns(df.columns)
+
+    records = cast(&#34;list[dict[str, Any]]&#34;, df.to_dict(orient=&#34;records&#34;))
+    valid_adjustments: list[Adjustment] = []
+    error_rows: list[dict[str, Any]] = []
+
+    for idx, raw in enumerate(records, start=2):  # Account for header row
+        try:
+            row_model = AdjustmentRowModel(**raw)
+            valid_adjustments.append(row_model.to_adjustment())
+        except ValidationError as ve:
+            error_rows.append(_build_error_row(raw, ve, idx))
+
+    error_report_df = pd.DataFrame(error_rows)
+    if not error_report_df.empty:
+        logger.warning(
+            &#34;Completed reading adjustments from %s. Found %s valid adjustments and %s errors.&#34;,
+            file_path,
+            len(valid_adjustments),
+            len(error_rows),
+        )
+    else:
+        logger.info(
+            &#34;Successfully read %s adjustments from %s with no errors.&#34;,
+            len(valid_adjustments),
+            file_path,
+        )
+
+    return valid_adjustments, error_report_df</code></pre>
+</details>
+<div class="desc"><p>Read and parse adjustments from an Excel file.</p>
+<p>This method validates the file's existence and extension, then reads the
+first sheet into a pandas DataFrame. It normalizes column names, validates
+that all required columns are present, and then processes each row.</p>
+<p>Each row is parsed and validated against the <code>AdjustmentRowModel</code>. Valid
+rows are converted to <code>Adjustment</code> objects, while invalid rows are
+collected into an error report.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source</code></strong> :&ensp;<code>str | Path</code></dt>
+<dd>The path to the Excel file.</dd>
+<dt><strong><code>**_kw</code></strong> :&ensp;<code>Any</code></dt>
+<dd>Unused keyword arguments, present for interface compatibility.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple[list[Adjustment], pd.DataFrame]</code></dt>
+<dd>A tuple containing:
+- A list of valid <code>Adjustment</code> objects.
+- A pandas DataFrame containing rows that failed validation,
+along with an 'error' column detailing the issues.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If the file cannot be found, read, or is missing required columns.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.io.adjustments" href="index.html">fin_statement_model.io.adjustments</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.io.adjustments.excel_io.export_adjustments_to_excel" href="#fin_statement_model.io.adjustments.excel_io.export_adjustments_to_excel">export_adjustments_to_excel</a></code></li>
+<li><code><a title="fin_statement_model.io.adjustments.excel_io.load_adjustments_from_excel" href="#fin_statement_model.io.adjustments.excel_io.load_adjustments_from_excel">load_adjustments_from_excel</a></code></li>
+<li><code><a title="fin_statement_model.io.adjustments.excel_io.read_excel" href="#fin_statement_model.io.adjustments.excel_io.read_excel">read_excel</a></code></li>
+<li><code><a title="fin_statement_model.io.adjustments.excel_io.write_excel" href="#fin_statement_model.io.adjustments.excel_io.write_excel">write_excel</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.io.adjustments.excel_io.AdjustmentsExcelReader" href="#fin_statement_model.io.adjustments.excel_io.AdjustmentsExcelReader">AdjustmentsExcelReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.adjustments.excel_io.AdjustmentsExcelReader.file_extensions" href="#fin_statement_model.io.adjustments.excel_io.AdjustmentsExcelReader.file_extensions">file_extensions</a></code></li>
+<li><code><a title="fin_statement_model.io.adjustments.excel_io.AdjustmentsExcelReader.read" href="#fin_statement_model.io.adjustments.excel_io.AdjustmentsExcelReader.read">read</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

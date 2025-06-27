@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.templates.models API documentation</title>
+<meta name="description" content="Domain models for the Template Registry &amp; Engine (TRE) …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.templates.models</code></h1>
+</header>
+<section id="section-intro">
+<p>Domain models for the Template Registry &amp; Engine (TRE).</p>
+<p>This module defines immutable Pydantic v2 data models that form the foundation
+of the Template Registry &amp; Engine subsystem. These models provide type-safe
+contracts for template serialization, metadata management, and diff operations.</p>
+<p>The models are intentionally isolated from the core graph implementation to
+maintain stable APIs for persistence and inter-service communication.</p>
+<p>Key Model Types:
+- <strong>TemplateMeta</strong>: Template metadata (name, version, categories, tags)
+- <strong>TemplateBundle</strong>: Complete serializable template with graph and configs
+- <strong>ForecastSpec</strong>: Declarative forecasting configuration
+- <strong>PreprocessingSpec</strong>: Data transformation pipeline definition
+- <strong>DiffResult</strong>: Template comparison results (structure + values)</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.templates.models import TemplateMeta, TemplateBundle
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Create template metadata
+&gt;&gt;&gt; meta = TemplateMeta(name=&quot;my.model&quot;, version=&quot;v1&quot;, category=&quot;custom&quot;, description=&quot;Custom financial model&quot;)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Bundle includes graph dict and checksum
+&gt;&gt;&gt; bundle = TemplateBundle(meta=meta, graph_dict={&quot;periods&quot;: [&quot;2024&quot;], &quot;nodes&quot;: {}}, checksum=&quot;abc123...&quot;)
+</code></pre>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.templates.models.DiffResult"><code class="flex name class">
+<span>class <span class="ident">DiffResult</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DiffResult(BaseModel):
+    &#34;&#34;&#34;Comprehensive comparison result between two financial statement templates.
+
+    Aggregates both structural (topology) and value-level differences into
+    a single result object. Value comparison is optional and can be disabled
+    for performance when only structural changes are needed.
+
+    Attributes:
+        structure: Structural differences (nodes, configuration changes)
+        values: Optional value-level differences (numerical deltas)
+
+    Example:
+        &gt;&gt;&gt; structure = StructureDiff(added_nodes=[&#34;NewNode&#34;])
+        &gt;&gt;&gt; values = ValuesDiff(changed_cells={&#34;Revenue|2024&#34;: 100.0})
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; diff_result = DiffResult(structure=structure, values=values)
+        &gt;&gt;&gt; len(diff_result.structure.added_nodes)
+        1
+        &gt;&gt;&gt; diff_result.values.max_delta
+        100.0
+    &#34;&#34;&#34;
+
+    model_config = ConfigDict(frozen=True, extra=&#34;forbid&#34;)
+
+    structure: StructureDiff = Field(..., description=&#34;Structural differences (nodes, edges, metadata).&#34;)
+    values: ValuesDiff | None = Field(default=None, description=&#34;Optional value-level differences.&#34;)</code></pre>
+</details>
+<div class="desc"><p>Comprehensive comparison result between two financial statement templates.</p>
+<p>Aggregates both structural (topology) and value-level differences into
+a single result object. Value comparison is optional and can be disabled
+for performance when only structural changes are needed.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>structure</code></strong></dt>
+<dd>Structural differences (nodes, configuration changes)</dd>
+<dt><strong><code>values</code></strong></dt>
+<dd>Optional value-level differences (numerical deltas)</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; structure = StructureDiff(added_nodes=[&quot;NewNode&quot;])
+&gt;&gt;&gt; values = ValuesDiff(changed_cells={&quot;Revenue|2024&quot;: 100.0})
+&gt;&gt;&gt;
+&gt;&gt;&gt; diff_result = DiffResult(structure=structure, values=values)
+&gt;&gt;&gt; len(diff_result.structure.added_nodes)
+1
+&gt;&gt;&gt; diff_result.values.max_delta
+100.0
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.templates.models.DiffResult.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.DiffResult.structure"><code class="name">var <span class="ident">structure</span> : <a title="fin_statement_model.templates.models.StructureDiff" href="#fin_statement_model.templates.models.StructureDiff">StructureDiff</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.DiffResult.values"><code class="name">var <span class="ident">values</span> : <a title="fin_statement_model.templates.models.ValuesDiff" href="#fin_statement_model.templates.models.ValuesDiff">ValuesDiff</a> | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.templates.models.ForecastSpec"><code class="flex name class">
+<span>class <span class="ident">ForecastSpec</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ForecastSpec(BaseModel):
+    &#34;&#34;&#34;Declarative forecasting configuration for template instantiation.
+
+    Defines how future periods should be generated when a template is
+    instantiated. Mirrors the parameter structure expected by
+    StatementForecaster to enable automated forecasting workflows.
+
+    Attributes:
+        periods: List of future period identifiers to generate
+        node_configs: Mapping of node names to their forecast configurations,
+            where each config specifies the method and parameters
+
+    Example:
+        &gt;&gt;&gt; forecast_spec = ForecastSpec(
+        ...     periods=[&#34;2027&#34;, &#34;2028&#34;],
+        ...     node_configs={
+        ...         &#34;Revenue&#34;: {&#34;method&#34;: &#34;simple&#34;, &#34;config&#34;: 0.1},
+        ...         &#34;COGS&#34;: {&#34;method&#34;: &#34;historical_growth&#34;, &#34;config&#34;: {&#34;aggregation&#34;: &#34;mean&#34;}},
+        ...     },
+        ... )
+        &gt;&gt;&gt; forecast_spec.periods
+        [&#39;2027&#39;, &#39;2028&#39;]
+    &#34;&#34;&#34;
+
+    model_config = ConfigDict(frozen=True, extra=&#34;forbid&#34;)
+
+    periods: list[str] = Field(..., description=&#34;Future periods to generate via forecasting.&#34;)
+    node_configs: dict[str, Any] = Field(
+        default_factory=dict,
+        description=&#34;Mapping node-name ➜ forecast configuration (method &amp; config) exactly as expected by StatementForecaster.&#34;,
+    )</code></pre>
+</details>
+<div class="desc"><p>Declarative forecasting configuration for template instantiation.</p>
+<p>Defines how future periods should be generated when a template is
+instantiated. Mirrors the parameter structure expected by
+StatementForecaster to enable automated forecasting workflows.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>periods</code></strong></dt>
+<dd>List of future period identifiers to generate</dd>
+<dt><strong><code>node_configs</code></strong></dt>
+<dd>Mapping of node names to their forecast configurations,
+where each config specifies the method and parameters</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; forecast_spec = ForecastSpec(
+...     periods=[&quot;2027&quot;, &quot;2028&quot;],
+...     node_configs={
+...         &quot;Revenue&quot;: {&quot;method&quot;: &quot;simple&quot;, &quot;config&quot;: 0.1},
+...         &quot;COGS&quot;: {&quot;method&quot;: &quot;historical_growth&quot;, &quot;config&quot;: {&quot;aggregation&quot;: &quot;mean&quot;}},
+...     },
+... )
+&gt;&gt;&gt; forecast_spec.periods
+['2027', '2028']
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.templates.models.ForecastSpec.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.ForecastSpec.node_configs"><code class="name">var <span class="ident">node_configs</span> : dict[str, typing.Any]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.ForecastSpec.periods"><code class="name">var <span class="ident">periods</span> : list[str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.templates.models.PreprocessingSpec"><code class="flex name class">
+<span>class <span class="ident">PreprocessingSpec</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PreprocessingSpec(BaseModel):
+    &#34;&#34;&#34;Ordered data transformation pipeline for template instantiation.
+
+    Defines a sequence of preprocessing steps that are automatically applied
+    when a template is instantiated. Each step references a registered
+    transformer with its configuration parameters.
+
+    Attributes:
+        pipeline: Ordered list of preprocessing steps to execute
+
+    Example:
+        &gt;&gt;&gt; preprocessing = PreprocessingSpec(
+        ...     pipeline=[
+        ...         PreprocessingStep(name=&#34;normalization&#34;, params={&#34;method&#34;: &#34;min_max&#34;, &#34;feature_range&#34;: (0, 1)}),
+        ...         PreprocessingStep(name=&#34;time_series&#34;, params={&#34;transformation_type&#34;: &#34;yoy&#34;}),
+        ...     ]
+        ... )
+        &gt;&gt;&gt; len(preprocessing.pipeline)
+        2
+    &#34;&#34;&#34;
+
+    model_config = ConfigDict(frozen=True, extra=&#34;forbid&#34;)
+
+    pipeline: list[PreprocessingStep] = Field(
+        ..., description=&#34;Ordered list of preprocessing steps to run at instantiation time.&#34;
+    )</code></pre>
+</details>
+<div class="desc"><p>Ordered data transformation pipeline for template instantiation.</p>
+<p>Defines a sequence of preprocessing steps that are automatically applied
+when a template is instantiated. Each step references a registered
+transformer with its configuration parameters.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>pipeline</code></strong></dt>
+<dd>Ordered list of preprocessing steps to execute</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; preprocessing = PreprocessingSpec(
+...     pipeline=[
+...         PreprocessingStep(name=&quot;normalization&quot;, params={&quot;method&quot;: &quot;min_max&quot;, &quot;feature_range&quot;: (0, 1)}),
+...         PreprocessingStep(name=&quot;time_series&quot;, params={&quot;transformation_type&quot;: &quot;yoy&quot;}),
+...     ]
+... )
+&gt;&gt;&gt; len(preprocessing.pipeline)
+2
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.templates.models.PreprocessingSpec.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.PreprocessingSpec.pipeline"><code class="name">var <span class="ident">pipeline</span> : list[<a title="fin_statement_model.templates.models.PreprocessingStep" href="#fin_statement_model.templates.models.PreprocessingStep">PreprocessingStep</a>]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.templates.models.PreprocessingStep"><code class="flex name class">
+<span>class <span class="ident">PreprocessingStep</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PreprocessingStep(BaseModel):
+    &#34;&#34;&#34;Single data transformation step in a preprocessing pipeline.
+
+    Represents one transformer invocation with its parameters. Steps are
+    executed sequentially in the order they appear in a PreprocessingSpec.
+
+    Attributes:
+        name: Registered transformer name (e.g., &#34;time_series&#34;, &#34;normalization&#34;)
+        params: Keyword arguments passed to the transformer
+
+    Example:
+        &gt;&gt;&gt; step = PreprocessingStep(
+        ...     name=&#34;time_series&#34;, params={&#34;transformation_type&#34;: &#34;yoy&#34;, &#34;periods&#34;: 1, &#34;as_percent&#34;: True}
+        ... )
+        &gt;&gt;&gt; step.name
+        &#39;time_series&#39;
+    &#34;&#34;&#34;
+
+    model_config = ConfigDict(frozen=True, extra=&#34;forbid&#34;)
+
+    name: str = Field(..., description=&#34;Registered transformer name to execute.&#34;)
+    params: dict[str, Any] = Field(
+        default_factory=dict,
+        description=&#34;Keyword arguments forwarded to the transformer constructor/executor.&#34;,
+    )</code></pre>
+</details>
+<div class="desc"><p>Single data transformation step in a preprocessing pipeline.</p>
+<p>Represents one transformer invocation with its parameters. Steps are
+executed sequentially in the order they appear in a PreprocessingSpec.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Registered transformer name (e.g., "time_series", "normalization")</dd>
+<dt><strong><code>params</code></strong></dt>
+<dd>Keyword arguments passed to the transformer</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; step = PreprocessingStep(
+...     name=&quot;time_series&quot;, params={&quot;transformation_type&quot;: &quot;yoy&quot;, &quot;periods&quot;: 1, &quot;as_percent&quot;: True}
+... )
+&gt;&gt;&gt; step.name
+'time_series'
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.templates.models.PreprocessingStep.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.PreprocessingStep.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.PreprocessingStep.params"><code class="name">var <span class="ident">params</span> : dict[str, typing.Any]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.templates.models.StructureDiff"><code class="flex name class">
+<span>class <span class="ident">StructureDiff</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StructureDiff(BaseModel):
+    &#34;&#34;&#34;Structural differences between two financial statement templates.
+
+    Captures topology changes at the node level, identifying additions,
+    removals, and configuration changes. Does not include value-level
+    differences which are handled separately by ValuesDiff.
+
+    Attributes:
+        added_nodes: Node IDs present only in the comparison template
+        removed_nodes: Node IDs present only in the base template
+        changed_nodes: Nodes present in both but with different configurations
+
+    Example:
+        &gt;&gt;&gt; diff = StructureDiff(
+        ...     added_nodes=[&#34;NewMetric&#34;], removed_nodes=[&#34;OldMetric&#34;], changed_nodes={&#34;Revenue&#34;: &#34;formula updated&#34;}
+        ... )
+        &gt;&gt;&gt; len(diff.added_nodes + diff.removed_nodes + list(diff.changed_nodes))
+        3
+    &#34;&#34;&#34;
+
+    model_config = ConfigDict(frozen=True, extra=&#34;forbid&#34;)
+
+    added_nodes: list[str] = Field(default_factory=list, description=&#34;Node IDs present only in B.&#34;)
+    removed_nodes: list[str] = Field(default_factory=list, description=&#34;Node IDs present only in A.&#34;)
+    changed_nodes: dict[str, str] = Field(
+        default_factory=dict,
+        description=&#34;Mapping node-id → change description (e.g. &#39;formula&#39;).&#34;,
+    )</code></pre>
+</details>
+<div class="desc"><p>Structural differences between two financial statement templates.</p>
+<p>Captures topology changes at the node level, identifying additions,
+removals, and configuration changes. Does not include value-level
+differences which are handled separately by ValuesDiff.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>added_nodes</code></strong></dt>
+<dd>Node IDs present only in the comparison template</dd>
+<dt><strong><code>removed_nodes</code></strong></dt>
+<dd>Node IDs present only in the base template</dd>
+<dt><strong><code>changed_nodes</code></strong></dt>
+<dd>Nodes present in both but with different configurations</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; diff = StructureDiff(
+...     added_nodes=[&quot;NewMetric&quot;], removed_nodes=[&quot;OldMetric&quot;], changed_nodes={&quot;Revenue&quot;: &quot;formula updated&quot;}
+... )
+&gt;&gt;&gt; len(diff.added_nodes + diff.removed_nodes + list(diff.changed_nodes))
+3
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.templates.models.StructureDiff.added_nodes"><code class="name">var <span class="ident">added_nodes</span> : list[str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.StructureDiff.changed_nodes"><code class="name">var <span class="ident">changed_nodes</span> : dict[str, str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.StructureDiff.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.StructureDiff.removed_nodes"><code class="name">var <span class="ident">removed_nodes</span> : list[str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.templates.models.TemplateBundle"><code class="flex name class">
+<span>class <span class="ident">TemplateBundle</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TemplateBundle(BaseModel):
+    &#34;&#34;&#34;Complete serializable template with graph definition and configurations.
+
+    A TemplateBundle represents a fully-specified financial statement template
+    that can be persisted, transmitted, and instantiated. It includes the core
+    graph structure plus optional forecasting and preprocessing specifications.
+
+    The bundle&#39;s integrity is verified via SHA-256 checksum of the graph_dict
+    to detect tampering or corruption during storage/transmission.
+
+    Attributes:
+        meta: Template metadata (name, version, description, etc.)
+        graph_dict: Serialized graph definition with nodes, periods, adjustments
+        checksum: SHA-256 hash of graph_dict for integrity verification
+        forecast: Optional declarative forecasting configuration
+        preprocessing: Optional data transformation pipeline
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.templates.models import TemplateMeta, TemplateBundle
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; meta = TemplateMeta(name=&#34;test&#34;, version=&#34;v1&#34;, category=&#34;test&#34;)
+        &gt;&gt;&gt; graph_dict = {&#34;periods&#34;: [&#34;2024&#34;], &#34;nodes&#34;: {}, &#34;adjustments&#34;: []}
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Checksum is calculated automatically if not provided
+        &gt;&gt;&gt; bundle = TemplateBundle(meta=meta, graph_dict=graph_dict, checksum=_calculate_sha256_checksum(graph_dict))
+        &gt;&gt;&gt; bundle.meta.name
+        &#39;test&#39;
+    &#34;&#34;&#34;
+
+    model_config = ConfigDict(frozen=True, extra=&#34;forbid&#34;)
+
+    meta: TemplateMeta = Field(..., description=&#34;Immutable template metadata.&#34;)
+    graph_dict: dict[str, Any] = Field(..., description=&#34;Graph definition exported via IO facade.&#34;)
+    checksum: str = Field(..., description=&#34;SHA-256 checksum of *graph_dict* JSON.&#34;)
+
+    # Optional declarative forecast specification
+    forecast: ForecastSpec | None = Field(
+        default=None,
+        description=&#34;Optional forecast recipe applied on instantiation.&#34;,
+    )
+
+    # Optional preprocessing pipeline specification
+    preprocessing: PreprocessingSpec | None = Field(
+        default=None,
+        description=&#34;Optional preprocessing pipeline applied on instantiation.&#34;,
+    )
+
+    # ---------------------------------------------------------------------
+    # Validation helpers
+    # ---------------------------------------------------------------------
+
+    @model_validator(mode=&#34;after&#34;)
+    def _validate_checksum(self) -&gt; TemplateBundle:
+        &#34;&#34;&#34;Validate that checksum matches the SHA-256 hash of graph_dict.
+
+        Raises:
+            ValueError: If the provided checksum doesn&#39;t match the calculated
+                hash of graph_dict, indicating potential data corruption.
+        &#34;&#34;&#34;
+        expected = _calculate_sha256_checksum(self.graph_dict)
+        if expected != self.checksum:
+            raise ValueError(&#34;Checksum does not match the provided graph_dict.&#34;)
+        return self</code></pre>
+</details>
+<div class="desc"><p>Complete serializable template with graph definition and configurations.</p>
+<p>A TemplateBundle represents a fully-specified financial statement template
+that can be persisted, transmitted, and instantiated. It includes the core
+graph structure plus optional forecasting and preprocessing specifications.</p>
+<p>The bundle's integrity is verified via SHA-256 checksum of the graph_dict
+to detect tampering or corruption during storage/transmission.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>meta</code></strong></dt>
+<dd>Template metadata (name, version, description, etc.)</dd>
+<dt><strong><code>graph_dict</code></strong></dt>
+<dd>Serialized graph definition with nodes, periods, adjustments</dd>
+<dt><strong><code>checksum</code></strong></dt>
+<dd>SHA-256 hash of graph_dict for integrity verification</dd>
+<dt><strong><code>forecast</code></strong></dt>
+<dd>Optional declarative forecasting configuration</dd>
+<dt><strong><code>preprocessing</code></strong></dt>
+<dd>Optional data transformation pipeline</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.templates.models import TemplateMeta, TemplateBundle
+&gt;&gt;&gt;
+&gt;&gt;&gt; meta = TemplateMeta(name=&quot;test&quot;, version=&quot;v1&quot;, category=&quot;test&quot;)
+&gt;&gt;&gt; graph_dict = {&quot;periods&quot;: [&quot;2024&quot;], &quot;nodes&quot;: {}, &quot;adjustments&quot;: []}
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Checksum is calculated automatically if not provided
+&gt;&gt;&gt; bundle = TemplateBundle(meta=meta, graph_dict=graph_dict, checksum=_calculate_sha256_checksum(graph_dict))
+&gt;&gt;&gt; bundle.meta.name
+'test'
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.templates.models.TemplateBundle.checksum"><code class="name">var <span class="ident">checksum</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.TemplateBundle.forecast"><code class="name">var <span class="ident">forecast</span> : <a title="fin_statement_model.templates.models.ForecastSpec" href="#fin_statement_model.templates.models.ForecastSpec">ForecastSpec</a> | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.TemplateBundle.graph_dict"><code class="name">var <span class="ident">graph_dict</span> : dict[str, typing.Any]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.TemplateBundle.meta"><code class="name">var <span class="ident">meta</span> : <a title="fin_statement_model.templates.models.TemplateMeta" href="#fin_statement_model.templates.models.TemplateMeta">TemplateMeta</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.TemplateBundle.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.TemplateBundle.preprocessing"><code class="name">var <span class="ident">preprocessing</span> : <a title="fin_statement_model.templates.models.PreprocessingSpec" href="#fin_statement_model.templates.models.PreprocessingSpec">PreprocessingSpec</a> | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.templates.models.TemplateMeta"><code class="flex name class">
+<span>class <span class="ident">TemplateMeta</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TemplateMeta(BaseModel):
+    &#34;&#34;&#34;Immutable metadata for a financial statement template.
+
+    Contains identifying information, versioning, categorization, and
+    free-form metadata tags for organizing and discovering templates.
+
+    Attributes:
+        name: Template identifier (e.g., &#34;lbo.standard&#34;, &#34;real_estate.lending&#34;)
+        version: Semantic version string (e.g., &#34;v1&#34;, &#34;v2.1&#34;)
+        category: High-level grouping for organization (e.g., &#34;lbo&#34;, &#34;real_estate&#34;)
+        description: Optional human-readable description
+        created_at: UTC timestamp of template creation
+        tags: Free-form key-value metadata for custom categorization
+
+    Example:
+        &gt;&gt;&gt; meta = TemplateMeta(
+        ...     name=&#34;lbo.standard&#34;,
+        ...     version=&#34;v1&#34;,
+        ...     category=&#34;lbo&#34;,
+        ...     description=&#34;Standard LBO model with 3-statement integration&#34;,
+        ...     tags={&#34;complexity&#34;: &#34;basic&#34;, &#34;industry&#34;: &#34;general&#34;},
+        ... )
+        &gt;&gt;&gt; f&#34;{meta.name}_{meta.version}&#34;
+        &#39;lbo.standard_v1&#39;
+    &#34;&#34;&#34;
+
+    model_config = ConfigDict(frozen=True, extra=&#34;forbid&#34;)
+
+    name: str = Field(..., description=&#34;Template short-name, e.g. &#39;lbo&#39;.&#34;)
+    version: str = Field(..., description=&#34;Semantic version, e.g. &#39;v1&#39;.&#34;)
+    category: str = Field(..., description=&#34;High-level grouping, e.g. &#39;real_estate&#39;.&#34;)
+    description: str | None = Field(default=None, description=&#34;Optional human-readable description.&#34;)
+    created_at: datetime = Field(default_factory=datetime.utcnow, description=&#34;UTC creation timestamp.&#34;)
+    tags: dict[str, str] = Field(default_factory=dict, description=&#34;Free-form key/value metadata tags.&#34;)</code></pre>
+</details>
+<div class="desc"><p>Immutable metadata for a financial statement template.</p>
+<p>Contains identifying information, versioning, categorization, and
+free-form metadata tags for organizing and discovering templates.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Template identifier (e.g., "lbo.standard", "real_estate.lending")</dd>
+<dt><strong><code>version</code></strong></dt>
+<dd>Semantic version string (e.g., "v1", "v2.1")</dd>
+<dt><strong><code>category</code></strong></dt>
+<dd>High-level grouping for organization (e.g., "lbo", "real_estate")</dd>
+<dt><strong><code>description</code></strong></dt>
+<dd>Optional human-readable description</dd>
+<dt><strong><code>created_at</code></strong></dt>
+<dd>UTC timestamp of template creation</dd>
+<dt><strong><code>tags</code></strong></dt>
+<dd>Free-form key-value metadata for custom categorization</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; meta = TemplateMeta(
+...     name=&quot;lbo.standard&quot;,
+...     version=&quot;v1&quot;,
+...     category=&quot;lbo&quot;,
+...     description=&quot;Standard LBO model with 3-statement integration&quot;,
+...     tags={&quot;complexity&quot;: &quot;basic&quot;, &quot;industry&quot;: &quot;general&quot;},
+... )
+&gt;&gt;&gt; f&quot;{meta.name}_{meta.version}&quot;
+'lbo.standard_v1'
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.templates.models.TemplateMeta.category"><code class="name">var <span class="ident">category</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.TemplateMeta.created_at"><code class="name">var <span class="ident">created_at</span> : datetime.datetime</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.TemplateMeta.description"><code class="name">var <span class="ident">description</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.TemplateMeta.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.TemplateMeta.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.TemplateMeta.tags"><code class="name">var <span class="ident">tags</span> : dict[str, str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.TemplateMeta.version"><code class="name">var <span class="ident">version</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.templates.models.ValuesDiff"><code class="flex name class">
+<span>class <span class="ident">ValuesDiff</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ValuesDiff(BaseModel):
+    &#34;&#34;&#34;Numerical value differences between two templates on a per-cell basis.
+
+    Captures period-by-period value deltas for nodes that exist in both
+    templates. Only includes cells where the absolute difference exceeds
+    the specified tolerance threshold.
+
+    Attributes:
+        changed_cells: Mapping of &#34;node|period&#34; keys to numerical deltas
+        max_delta: Largest absolute difference found (useful for summaries)
+
+    Example:
+        &gt;&gt;&gt; values_diff = ValuesDiff(changed_cells={&#34;Revenue|2024&#34;: 100.0, &#34;COGS|2025&#34;: -50.0}, max_delta=100.0)
+        &gt;&gt;&gt; values_diff.max_delta
+        100.0
+        &gt;&gt;&gt; len(values_diff.changed_cells)
+        2
+    &#34;&#34;&#34;
+
+    model_config = ConfigDict(frozen=True, extra=&#34;forbid&#34;)
+
+    changed_cells: dict[str, float] = Field(
+        default_factory=dict,
+        description=&#34;Mapping &#39;&lt;node_id&gt;|&lt;period&gt;&#39; → Δ (GraphB - GraphA).&#34;,
+    )
+    max_delta: float | None = Field(
+        default=None,
+        description=&#34;Largest absolute delta observed, useful for quick summaries.&#34;,
+    )</code></pre>
+</details>
+<div class="desc"><p>Numerical value differences between two templates on a per-cell basis.</p>
+<p>Captures period-by-period value deltas for nodes that exist in both
+templates. Only includes cells where the absolute difference exceeds
+the specified tolerance threshold.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>changed_cells</code></strong></dt>
+<dd>Mapping of "node|period" keys to numerical deltas</dd>
+<dt><strong><code>max_delta</code></strong></dt>
+<dd>Largest absolute difference found (useful for summaries)</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; values_diff = ValuesDiff(changed_cells={&quot;Revenue|2024&quot;: 100.0, &quot;COGS|2025&quot;: -50.0}, max_delta=100.0)
+&gt;&gt;&gt; values_diff.max_delta
+100.0
+&gt;&gt;&gt; len(values_diff.changed_cells)
+2
+</code></pre>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.templates.models.ValuesDiff.changed_cells"><code class="name">var <span class="ident">changed_cells</span> : dict[str, float]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.ValuesDiff.max_delta"><code class="name">var <span class="ident">max_delta</span> : float | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.templates.models.ValuesDiff.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.templates" href="index.html">fin_statement_model.templates</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.templates.models.DiffResult" href="#fin_statement_model.templates.models.DiffResult">DiffResult</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.templates.models.DiffResult.model_config" href="#fin_statement_model.templates.models.DiffResult.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.DiffResult.structure" href="#fin_statement_model.templates.models.DiffResult.structure">structure</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.DiffResult.values" href="#fin_statement_model.templates.models.DiffResult.values">values</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.templates.models.ForecastSpec" href="#fin_statement_model.templates.models.ForecastSpec">ForecastSpec</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.templates.models.ForecastSpec.model_config" href="#fin_statement_model.templates.models.ForecastSpec.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.ForecastSpec.node_configs" href="#fin_statement_model.templates.models.ForecastSpec.node_configs">node_configs</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.ForecastSpec.periods" href="#fin_statement_model.templates.models.ForecastSpec.periods">periods</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.templates.models.PreprocessingSpec" href="#fin_statement_model.templates.models.PreprocessingSpec">PreprocessingSpec</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.templates.models.PreprocessingSpec.model_config" href="#fin_statement_model.templates.models.PreprocessingSpec.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.PreprocessingSpec.pipeline" href="#fin_statement_model.templates.models.PreprocessingSpec.pipeline">pipeline</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.templates.models.PreprocessingStep" href="#fin_statement_model.templates.models.PreprocessingStep">PreprocessingStep</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.templates.models.PreprocessingStep.model_config" href="#fin_statement_model.templates.models.PreprocessingStep.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.PreprocessingStep.name" href="#fin_statement_model.templates.models.PreprocessingStep.name">name</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.PreprocessingStep.params" href="#fin_statement_model.templates.models.PreprocessingStep.params">params</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.templates.models.StructureDiff" href="#fin_statement_model.templates.models.StructureDiff">StructureDiff</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.templates.models.StructureDiff.added_nodes" href="#fin_statement_model.templates.models.StructureDiff.added_nodes">added_nodes</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.StructureDiff.changed_nodes" href="#fin_statement_model.templates.models.StructureDiff.changed_nodes">changed_nodes</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.StructureDiff.model_config" href="#fin_statement_model.templates.models.StructureDiff.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.StructureDiff.removed_nodes" href="#fin_statement_model.templates.models.StructureDiff.removed_nodes">removed_nodes</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.templates.models.TemplateBundle" href="#fin_statement_model.templates.models.TemplateBundle">TemplateBundle</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.templates.models.TemplateBundle.checksum" href="#fin_statement_model.templates.models.TemplateBundle.checksum">checksum</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.TemplateBundle.forecast" href="#fin_statement_model.templates.models.TemplateBundle.forecast">forecast</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.TemplateBundle.graph_dict" href="#fin_statement_model.templates.models.TemplateBundle.graph_dict">graph_dict</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.TemplateBundle.meta" href="#fin_statement_model.templates.models.TemplateBundle.meta">meta</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.TemplateBundle.model_config" href="#fin_statement_model.templates.models.TemplateBundle.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.TemplateBundle.preprocessing" href="#fin_statement_model.templates.models.TemplateBundle.preprocessing">preprocessing</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.templates.models.TemplateMeta" href="#fin_statement_model.templates.models.TemplateMeta">TemplateMeta</a></code></h4>
+<ul class="two-column">
+<li><code><a title="fin_statement_model.templates.models.TemplateMeta.category" href="#fin_statement_model.templates.models.TemplateMeta.category">category</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.TemplateMeta.created_at" href="#fin_statement_model.templates.models.TemplateMeta.created_at">created_at</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.TemplateMeta.description" href="#fin_statement_model.templates.models.TemplateMeta.description">description</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.TemplateMeta.model_config" href="#fin_statement_model.templates.models.TemplateMeta.model_config">model_config</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.TemplateMeta.name" href="#fin_statement_model.templates.models.TemplateMeta.name">name</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.TemplateMeta.tags" href="#fin_statement_model.templates.models.TemplateMeta.tags">tags</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.TemplateMeta.version" href="#fin_statement_model.templates.models.TemplateMeta.version">version</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.templates.models.ValuesDiff" href="#fin_statement_model.templates.models.ValuesDiff">ValuesDiff</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.templates.models.ValuesDiff.changed_cells" href="#fin_statement_model.templates.models.ValuesDiff.changed_cells">changed_cells</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.ValuesDiff.max_delta" href="#fin_statement_model.templates.models.ValuesDiff.max_delta">max_delta</a></code></li>
+<li><code><a title="fin_statement_model.templates.models.ValuesDiff.model_config" href="#fin_statement_model.templates.models.ValuesDiff.model_config">model_config</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.templates.diff API documentation</title>
+<meta name="description" content="Template comparison utilities for the Template Registry &amp; Engine (TRE) …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.templates.diff</code></h1>
+</header>
+<section id="section-intro">
+<p>Template comparison utilities for the Template Registry &amp; Engine (TRE).</p>
+<p>This module provides stateless, side-effect-free comparison functions for
+analyzing differences between financial statement template graphs. The utilities
+support both structural analysis (node topology changes) and value-level
+comparison (numerical deltas).</p>
+<p>The functions are designed to be composable and reusable across different
+parts of the system, including the TemplateRegistry.diff() API and standalone
+template analysis workflows.</p>
+<p>Key Functions:
+- <strong>compare_structure()</strong>: Analyze topology differences (added/removed/changed nodes)
+- <strong>compare_values()</strong>: Calculate numerical deltas between corresponding cells
+- <strong>diff()</strong>: Comprehensive comparison combining structure and values</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.templates.diff import diff
+&gt;&gt;&gt; from fin_statement_model.templates import TemplateRegistry
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Get two template graphs
+&gt;&gt;&gt; graph_a = TemplateRegistry.instantiate(&quot;lbo.standard_v1&quot;)
+&gt;&gt;&gt; graph_b = graph_a.clone()
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Make some changes to graph_b
+&gt;&gt;&gt; graph_b.add_periods([&quot;2029&quot;])
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Compare the graphs
+&gt;&gt;&gt; result = diff(graph_a, graph_b, include_values=True)
+&gt;&gt;&gt; print(f&quot;Structure changes: {len(result.structure.added_nodes)} added&quot;)
+&gt;&gt;&gt; print(f&quot;Value changes: {len(result.values.changed_cells)} cells&quot;)
+</code></pre>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.templates.diff.compare_structure"><code class="name flex">
+<span>def <span class="ident">compare_structure</span></span>(<span>graph_a: Graph, graph_b: Graph) ‑> StructureDiff</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def compare_structure(graph_a: Graph, graph_b: Graph) -&gt; StructureDiff:
+    &#34;&#34;&#34;Analyze topological differences between two financial statement graphs.
+
+    Performs a comprehensive structural comparison identifying added nodes,
+    removed nodes, and nodes with changed configurations. The algorithm
+    focuses on graph topology and node configuration while ignoring
+    time-series values.
+
+    Args:
+        graph_a: Base graph for comparison (left-hand side)
+        graph_b: Target graph to compare against graph_a (right-hand side)
+
+    Returns:
+        StructureDiff containing categorized structural changes:
+            - added_nodes: Nodes present only in graph_b
+            - removed_nodes: Nodes present only in graph_a
+            - changed_nodes: Nodes in both graphs with different configurations
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.templates.diff import compare_structure
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Create two graphs with different structures
+        &gt;&gt;&gt; structure_diff = compare_structure(base_graph, modified_graph)
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; print(f&#34;Added: {structure_diff.added_nodes}&#34;)
+        &gt;&gt;&gt; print(f&#34;Removed: {structure_diff.removed_nodes}&#34;)
+        &gt;&gt;&gt; print(f&#34;Changed: {list(structure_diff.changed_nodes.keys())}&#34;)
+
+    Note:
+        The comparison uses each node&#39;s to_dict() representation for
+        configuration analysis. Time-series values are excluded to focus
+        on structural rather than data changes. Complexity is O(N) where
+        N is the number of nodes.
+    &#34;&#34;&#34;
+    nodes_a = graph_a.nodes
+    nodes_b = graph_b.nodes
+
+    added_nodes = [n for n in nodes_b if n not in nodes_a]
+    removed_nodes = [n for n in nodes_a if n not in nodes_b]
+
+    changed_nodes: dict[str, str] = {}
+
+    common_nodes = (n for n in nodes_a if n in nodes_b)
+    for name in common_nodes:
+        sig_a = _node_signature(nodes_a[name])
+        sig_b = _node_signature(nodes_b[name])
+        if sig_a != sig_b:
+            changed_nodes[name] = &#34;config&#34;
+
+    return StructureDiff(
+        added_nodes=sorted(added_nodes),
+        removed_nodes=sorted(removed_nodes),
+        changed_nodes=dict(sorted(changed_nodes.items())),
+    )</code></pre>
+</details>
+<div class="desc"><p>Analyze topological differences between two financial statement graphs.</p>
+<p>Performs a comprehensive structural comparison identifying added nodes,
+removed nodes, and nodes with changed configurations. The algorithm
+focuses on graph topology and node configuration while ignoring
+time-series values.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph_a</code></strong></dt>
+<dd>Base graph for comparison (left-hand side)</dd>
+<dt><strong><code>graph_b</code></strong></dt>
+<dd>Target graph to compare against graph_a (right-hand side)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>StructureDiff containing categorized structural changes:
+- added_nodes: Nodes present only in graph_b
+- removed_nodes: Nodes present only in graph_a
+- changed_nodes: Nodes in both graphs with different configurations</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.templates.diff import compare_structure
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Create two graphs with different structures
+&gt;&gt;&gt; structure_diff = compare_structure(base_graph, modified_graph)
+&gt;&gt;&gt;
+&gt;&gt;&gt; print(f&quot;Added: {structure_diff.added_nodes}&quot;)
+&gt;&gt;&gt; print(f&quot;Removed: {structure_diff.removed_nodes}&quot;)
+&gt;&gt;&gt; print(f&quot;Changed: {list(structure_diff.changed_nodes.keys())}&quot;)
+</code></pre>
+<h2 id="note">Note</h2>
+<p>The comparison uses each node's to_dict() representation for
+configuration analysis. Time-series values are excluded to focus
+on structural rather than data changes. Complexity is O(N) where
+N is the number of nodes.</p></div>
+</dd>
+<dt id="fin_statement_model.templates.diff.compare_values"><code class="name flex">
+<span>def <span class="ident">compare_values</span></span>(<span>graph_a: Graph,<br>graph_b: Graph,<br>*,<br>periods: Sequence[str] | None = None,<br>atol: float = 1e-09) ‑> ValuesDiff</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def compare_values(
+    graph_a: Graph,
+    graph_b: Graph,
+    *,
+    periods: Sequence[str] | None = None,
+    atol: float = 1e-9,
+) -&gt; ValuesDiff:
+    &#34;&#34;&#34;Calculate period-by-period numerical differences between two graphs.
+
+    Compares calculated values for corresponding nodes and periods between
+    two graphs, identifying cells where numerical values differ beyond the
+    specified tolerance threshold.
+
+    Args:
+        graph_a: Base graph for comparison (left-hand side)
+        graph_b: Target graph to compare against graph_a (right-hand side)
+        periods: Explicit list of periods to compare. If None, uses the
+            intersection of periods from both graphs
+        atol: Absolute tolerance threshold. Differences smaller than this
+            value are considered equal and excluded from results
+
+    Returns:
+        ValuesDiff containing:
+            - changed_cells: Mapping of &#34;node|period&#34; to numerical delta (B - A)
+            - max_delta: Largest absolute difference found (useful for summaries)
+
+    Raises:
+        ValueError: If no common periods exist and periods parameter is None
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.templates.diff import compare_values
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Compare values between base and modified graphs
+        &gt;&gt;&gt; values_diff = compare_values(
+        ...     base_graph,
+        ...     modified_graph,
+        ...     periods=[&#34;2024&#34;, &#34;2025&#34;],
+        ...     atol=0.01,  # Ignore differences &lt; 1 cent
+        ... )
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Show significant changes
+        &gt;&gt;&gt; for cell, delta in values_diff.changed_cells.items():
+        ...     node, period = cell.split(&#34;|&#34;)
+        ...     print(f&#34;{node} {period}: ${delta:,.2f} change&#34;)
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; print(f&#34;Largest change: ${values_diff.max_delta:,.2f}&#34;)
+
+    Note:
+        Only compares nodes that exist in both graphs. Calculation errors
+        for individual cells are logged but don&#39;t stop the overall comparison.
+        The function calls graph.calculate() for each node/period combination.
+    &#34;&#34;&#34;
+    # Determine periods to iterate ----------------------------------------------
+    period_list = list(periods) if periods is not None else [p for p in graph_a.periods if p in graph_b.periods]
+
+    if not period_list:
+        raise ValueError(&#34;No common periods to compare - provide explicit &#39;periods&#39; argument?&#34;)
+
+    changed_cells: dict[str, float] = {}
+    max_delta: float | None = None
+
+    common_nodes = [n for n in graph_a.nodes if n in graph_b.nodes]
+
+    calc_a = graph_a.calculate  # local bindings for speed
+    calc_b = graph_b.calculate
+
+    for node in common_nodes:
+        for period in period_list:
+            try:
+                val_a = calc_a(node, period)
+                val_b = calc_b(node, period)
+            except Exception as exc:  # pragma: no cover  # noqa: BLE001 - propagate
+                logger.debug(&#34;Error calculating values for node &#39;%s&#39; period &#39;%s&#39;: %s&#34;, node, period, exc)
+                continue
+
+            delta = float(val_b) - float(val_a)
+            if abs(delta) &gt; atol:
+                key = f&#34;{node}|{period}&#34;
+                changed_cells[key] = delta
+                abs_delta = abs(delta)
+                if max_delta is None or abs_delta &gt; max_delta:
+                    max_delta = abs_delta
+
+    return ValuesDiff(changed_cells=changed_cells, max_delta=max_delta)</code></pre>
+</details>
+<div class="desc"><p>Calculate period-by-period numerical differences between two graphs.</p>
+<p>Compares calculated values for corresponding nodes and periods between
+two graphs, identifying cells where numerical values differ beyond the
+specified tolerance threshold.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph_a</code></strong></dt>
+<dd>Base graph for comparison (left-hand side)</dd>
+<dt><strong><code>graph_b</code></strong></dt>
+<dd>Target graph to compare against graph_a (right-hand side)</dd>
+<dt><strong><code>periods</code></strong></dt>
+<dd>Explicit list of periods to compare. If None, uses the
+intersection of periods from both graphs</dd>
+<dt><strong><code>atol</code></strong></dt>
+<dd>Absolute tolerance threshold. Differences smaller than this
+value are considered equal and excluded from results</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>ValuesDiff containing:
+- changed_cells: Mapping of "node|period" to numerical delta (B - A)
+- max_delta: Largest absolute difference found (useful for summaries)</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If no common periods exist and periods parameter is None</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.templates.diff import compare_values
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Compare values between base and modified graphs
+&gt;&gt;&gt; values_diff = compare_values(
+...     base_graph,
+...     modified_graph,
+...     periods=[&quot;2024&quot;, &quot;2025&quot;],
+...     atol=0.01,  # Ignore differences &lt; 1 cent
+... )
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Show significant changes
+&gt;&gt;&gt; for cell, delta in values_diff.changed_cells.items():
+...     node, period = cell.split(&quot;|&quot;)
+...     print(f&quot;{node} {period}: ${delta:,.2f} change&quot;)
+&gt;&gt;&gt;
+&gt;&gt;&gt; print(f&quot;Largest change: ${values_diff.max_delta:,.2f}&quot;)
+</code></pre>
+<h2 id="note">Note</h2>
+<p>Only compares nodes that exist in both graphs. Calculation errors
+for individual cells are logged but don't stop the overall comparison.
+The function calls graph.calculate() for each node/period combination.</p></div>
+</dd>
+<dt id="fin_statement_model.templates.diff.diff"><code class="name flex">
+<span>def <span class="ident">diff</span></span>(<span>graph_a: Graph,<br>graph_b: Graph,<br>*,<br>include_values: bool = True,<br>periods: Sequence[str] | None = None,<br>atol: float = 1e-09) ‑> DiffResult</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def diff(
+    graph_a: Graph,
+    graph_b: Graph,
+    *,
+    include_values: bool = True,
+    periods: Sequence[str] | None = None,
+    atol: float = 1e-9,
+) -&gt; DiffResult:
+    &#34;&#34;&#34;Perform comprehensive comparison between two financial statement graphs.
+
+    Combines structural and optional value-level analysis into a single
+    comprehensive diff result. This is the primary entry point for template
+    comparison workflows.
+
+    Args:
+        graph_a: Base graph for comparison (left-hand side)
+        graph_b: Target graph to compare against graph_a (right-hand side)
+        include_values: Whether to include numerical value comparison in addition
+            to structural analysis. Set to False for faster topology-only diffs
+        periods: Explicit list of periods for value comparison. If None, uses
+            intersection of periods from both graphs
+        atol: Absolute tolerance for value comparison. Differences below this
+            threshold are considered equal
+
+    Returns:
+        DiffResult containing:
+            - structure: Structural differences (always included)
+            - values: Value differences (only if include_values=True)
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.templates.diff import diff
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Full comparison with values
+        &gt;&gt;&gt; full_diff = diff(graph_a, graph_b, include_values=True)
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Structure-only comparison (faster)
+        &gt;&gt;&gt; structure_diff = diff(graph_a, graph_b, include_values=False)
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Custom period subset and tolerance
+        &gt;&gt;&gt; custom_diff = diff(
+        ...     graph_a,
+        ...     graph_b,
+        ...     periods=[&#34;2024&#34;, &#34;2025&#34;],
+        ...     atol=1.0,  # Ignore sub-dollar differences
+        ... )
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; # Check for any changes
+        &gt;&gt;&gt; has_structural_changes = (
+        ...     len(full_diff.structure.added_nodes) &gt; 0
+        ...     or len(full_diff.structure.removed_nodes) &gt; 0
+        ...     or len(full_diff.structure.changed_nodes) &gt; 0
+        ... )
+        &gt;&gt;&gt;
+        &gt;&gt;&gt; has_value_changes = full_diff.values is not None and len(full_diff.values.changed_cells) &gt; 0
+
+    Note:
+        The function always performs structural comparison as it&#39;s fast and
+        essential for understanding template differences. Value comparison
+        can be disabled via include_values=False when only topology matters.
+    &#34;&#34;&#34;
+    structure = compare_structure(graph_a, graph_b)
+    values = None
+    if include_values:
+        values = compare_values(graph_a, graph_b, periods=periods, atol=atol)
+
+    return DiffResult(structure=structure, values=values)</code></pre>
+</details>
+<div class="desc"><p>Perform comprehensive comparison between two financial statement graphs.</p>
+<p>Combines structural and optional value-level analysis into a single
+comprehensive diff result. This is the primary entry point for template
+comparison workflows.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph_a</code></strong></dt>
+<dd>Base graph for comparison (left-hand side)</dd>
+<dt><strong><code>graph_b</code></strong></dt>
+<dd>Target graph to compare against graph_a (right-hand side)</dd>
+<dt><strong><code>include_values</code></strong></dt>
+<dd>Whether to include numerical value comparison in addition
+to structural analysis. Set to False for faster topology-only diffs</dd>
+<dt><strong><code>periods</code></strong></dt>
+<dd>Explicit list of periods for value comparison. If None, uses
+intersection of periods from both graphs</dd>
+<dt><strong><code>atol</code></strong></dt>
+<dd>Absolute tolerance for value comparison. Differences below this
+threshold are considered equal</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>DiffResult containing:
+- structure: Structural differences (always included)
+- values: Value differences (only if include_values=True)</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.templates.diff import diff
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Full comparison with values
+&gt;&gt;&gt; full_diff = diff(graph_a, graph_b, include_values=True)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Structure-only comparison (faster)
+&gt;&gt;&gt; structure_diff = diff(graph_a, graph_b, include_values=False)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Custom period subset and tolerance
+&gt;&gt;&gt; custom_diff = diff(
+...     graph_a,
+...     graph_b,
+...     periods=[&quot;2024&quot;, &quot;2025&quot;],
+...     atol=1.0,  # Ignore sub-dollar differences
+... )
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Check for any changes
+&gt;&gt;&gt; has_structural_changes = (
+...     len(full_diff.structure.added_nodes) &gt; 0
+...     or len(full_diff.structure.removed_nodes) &gt; 0
+...     or len(full_diff.structure.changed_nodes) &gt; 0
+... )
+&gt;&gt;&gt;
+&gt;&gt;&gt; has_value_changes = full_diff.values is not None and len(full_diff.values.changed_cells) &gt; 0
+</code></pre>
+<h2 id="note">Note</h2>
+<p>The function always performs structural comparison as it's fast and
+essential for understanding template differences. Value comparison
+can be disabled via include_values=False when only topology matters.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.templates" href="index.html">fin_statement_model.templates</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.templates.diff.compare_structure" href="#fin_statement_model.templates.diff.compare_structure">compare_structure</a></code></li>
+<li><code><a title="fin_statement_model.templates.diff.compare_values" href="#fin_statement_model.templates.diff.compare_values">compare_values</a></code></li>
+<li><code><a title="fin_statement_model.templates.diff.diff" href="#fin_statement_model.templates.diff.diff">diff</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

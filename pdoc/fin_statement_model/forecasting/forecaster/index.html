@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.forecasting.forecaster API documentation</title>
+<meta name="description" content="Forecaster sub-package entry-point …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.forecasting.forecaster</code></h1>
+</header>
+<section id="section-intro">
+<p>Forecaster sub-package entry-point.</p>
+<p>This file simply re-exports the public <code><a title="fin_statement_model.forecasting.forecaster.StatementForecaster" href="#fin_statement_model.forecasting.forecaster.StatementForecaster">StatementForecaster</a></code> class so that
+end-users can continue importing it from
+<code><a title="fin_statement_model.forecasting" href="../index.html">fin_statement_model.forecasting</a></code> <em>or</em> from the new
+<code><a title="fin_statement_model.forecasting.forecaster" href="#fin_statement_model.forecasting.forecaster">fin_statement_model.forecasting.forecaster</a></code> namespace.</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.forecasting.forecaster.batch" href="batch.html">fin_statement_model.forecasting.forecaster.batch</a></code></dt>
+<dd>
+<div class="desc"><p>Helpers for multi-node / batch forecasting operations …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.forecasting.forecaster.controller" href="controller.html">fin_statement_model.forecasting.forecaster.controller</a></code></dt>
+<dd>
+<div class="desc"><p>User-facing forecasting façade …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.forecasting.forecaster.node_forecast" href="node_forecast.html">fin_statement_model.forecasting.forecaster.node_forecast</a></code></dt>
+<dd>
+<div class="desc"><p>Helpers for single-node forecasting operations …</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.forecasting.forecaster.StatementForecaster"><code class="flex name class">
+<span>class <span class="ident">StatementForecaster</span></span>
+<span>(</span><span>fsg: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StatementForecaster:
+    &#34;&#34;&#34;Coordinate forecasting operations on a FinancialStatementGraph.
+
+    This controller provides three high-level entry points:
+
+    1. ``create_forecast`` - Mutates the graph and adds forecast values.
+    2. ``forecast_value`` - Returns forecast values for a node without mutating the graph.
+    3. ``forecast_multiple`` - Returns forecast results for multiple nodes in a batch.
+
+    Args:
+        fsg: The FinancialStatementGraph instance to operate on.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.forecasting import StatementForecaster
+        &gt;&gt;&gt; forecaster = StatementForecaster(graph)
+        &gt;&gt;&gt; # Mutating forecast
+        &gt;&gt;&gt; forecaster.create_forecast(
+        ...     forecast_periods=[&#34;2024&#34;, &#34;2025&#34;], node_configs={&#34;revenue&#34;: {&#34;method&#34;: &#34;simple&#34;, &#34;config&#34;: 0.05}}
+        ... )
+        &gt;&gt;&gt; # Non-mutating forecast
+        &gt;&gt;&gt; values = forecaster.forecast_value(&#34;revenue&#34;, [&#34;2024&#34;, &#34;2025&#34;])
+        &gt;&gt;&gt; assert isinstance(values, dict)
+    &#34;&#34;&#34;
+
+    def __init__(self, fsg: Any) -&gt; None:
+        &#34;&#34;&#34;Initialize the StatementForecaster.
+
+        Args:
+            fsg: The FinancialStatementGraph instance this forecaster will operate on.
+        &#34;&#34;&#34;
+        self.fsg = fsg
+
+    def create_forecast(
+        self,
+        forecast_periods: list[str],
+        node_configs: dict[str, dict[str, Any]] | None = None,
+        historical_periods: list[str] | None = None,
+        **kwargs: Any,
+    ) -&gt; None:
+        &#34;&#34;&#34;Add forecast data to the underlying graph (in-place).
+
+        This method mutates the graph by adding new forecast periods and updating node values.
+        It is suitable for scenarios where you want to persist forecast results.
+
+        Args:
+            forecast_periods: List of future periods to forecast (e.g., [&#34;2024&#34;, &#34;2025&#34;]).
+            node_configs: Mapping of node names to their forecast configurations.
+                Each config should contain:
+                    - &#39;method&#39;: Forecasting method (e.g., &#39;simple&#39;, &#39;curve&#39;).
+                    - &#39;config&#39;: Method-specific parameters (e.g., growth rate).
+            historical_periods: Optional list of historical periods to use as base.
+            **kwargs: Additional arguments (e.g., add_missing_periods: bool).
+
+        Returns:
+            None. The graph is modified in-place.
+
+        Raises:
+            ForecastNodeError: If a node is not found or configuration is invalid.
+
+        Example:
+            &gt;&gt;&gt; from fin_statement_model.forecasting import StatementForecaster
+            &gt;&gt;&gt; forecaster = StatementForecaster(graph)
+            &gt;&gt;&gt; forecaster.create_forecast(
+            ...     forecast_periods=[&#34;2024&#34;], node_configs={&#34;revenue&#34;: {&#34;method&#34;: &#34;simple&#34;, &#34;config&#34;: 0.05}}
+            ... )
+        &#34;&#34;&#34;
+        logger.info(&#34;Creating forecast for periods %s&#34;, forecast_periods)
+        historical_periods = PeriodManager.infer_historical_periods(self.fsg, forecast_periods, historical_periods)
+        ForecastValidator.validate_forecast_inputs(historical_periods, forecast_periods, node_configs)
+        add_missing = kwargs.get(&#34;add_missing_periods&#34;, cfg(&#34;forecasting.add_missing_periods&#34;))
+        PeriodManager.ensure_periods_exist(self.fsg, forecast_periods, add_missing=add_missing)
+        node_configs = node_configs or {}
+        for node_name, raw_config in node_configs.items():
+            node: Node | None = self.fsg.get_node(node_name)
+            if node is None:
+                raise ForecastNodeError(
+                    f&#34;Node {node_name} not found in graph&#34;,
+                    node_id=node_name,
+                    available_nodes=list(self.fsg.nodes.keys()),
+                )
+            forecast_config = ForecastValidator.validate_forecast_config(raw_config)
+            ForecastValidator.validate_node_for_forecast(node, forecast_config.method)
+            _forecast_node_mutating(
+                node=node,
+                historical_periods=historical_periods,
+                forecast_periods=forecast_periods,
+                forecast_config=forecast_config,
+                **kwargs,
+            )
+
+    def forecast_value(
+        self,
+        node_name: str,
+        forecast_periods: list[str],
+        base_period: str | None = None,
+        forecast_config: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -&gt; dict[str, float]:
+        &#34;&#34;&#34;Return forecast values for a single node without mutating the graph.
+
+        This method is ideal for what-if analysis, scenario comparison, or retrieving
+        forecast values without persisting them to the graph.
+
+        Args:
+            node_name: Name of the node to forecast (e.g., &#39;revenue&#39;).
+            forecast_periods: List of future periods to forecast.
+            base_period: Optional base period to use for forecasting.
+            forecast_config: Optional forecast configuration dict.
+            **kwargs: Additional arguments (e.g., bad_forecast_value, allow_negative_forecasts).
+
+        Returns:
+            Dictionary mapping forecast periods to their calculated values.
+            Example: {&#34;2024&#34;: 1050.0, &#34;2025&#34;: 1102.5}
+
+        Raises:
+            ForecastNodeError: If the node is not found or configuration is invalid.
+
+        Example:
+            &gt;&gt;&gt; from fin_statement_model.forecasting import StatementForecaster
+            &gt;&gt;&gt; forecaster = StatementForecaster(graph)
+            &gt;&gt;&gt; values = forecaster.forecast_value(&#34;revenue&#34;, [&#34;2024&#34;, &#34;2025&#34;])
+            &gt;&gt;&gt; assert isinstance(values, dict)
+        &#34;&#34;&#34;
+        return forecast_node_non_mutating(
+            self.fsg,
+            node_name=node_name,
+            forecast_periods=forecast_periods,
+            base_period=base_period,
+            forecast_config=forecast_config,
+            **kwargs,
+        )
+
+    def forecast_multiple(
+        self,
+        node_names: list[str],
+        forecast_periods: list[str],
+        forecast_configs: dict[str, dict[str, Any]] | None = None,
+        base_period: str | None = None,
+        **kwargs: Any,
+    ) -&gt; dict[str, ForecastResult]:
+        &#34;&#34;&#34;Return forecast results for multiple nodes without mutating the graph.
+
+        This method is a convenience wrapper for batch forecasting. It returns a dictionary
+        mapping node names to ForecastResult objects, each containing forecasted values and metadata.
+
+        Args:
+            node_names: List of node names to forecast.
+            forecast_periods: List of future periods to forecast.
+            forecast_configs: Optional mapping of node names to their forecast configs.
+            base_period: Optional base period to use for all nodes.
+            **kwargs: Additional arguments (e.g., continue_on_error).
+
+        Returns:
+            Dictionary mapping node names to ForecastResult objects.
+
+        Raises:
+            ForecastNodeError: If a node is not found and continue_on_error is False.
+
+        Example:
+            &gt;&gt;&gt; from fin_statement_model.forecasting import StatementForecaster
+            &gt;&gt;&gt; forecaster = StatementForecaster(graph)
+            &gt;&gt;&gt; results = forecaster.forecast_multiple([&#34;revenue&#34;, &#34;costs&#34;], [&#34;2024&#34;, &#34;2025&#34;])
+            &gt;&gt;&gt; assert &#34;revenue&#34; in results
+            &gt;&gt;&gt; assert hasattr(results[&#34;revenue&#34;], &#34;values&#34;)
+        &#34;&#34;&#34;
+        return batch_forecast_values(
+            fsg=self.fsg,
+            node_names=node_names,
+            forecast_periods=forecast_periods,
+            forecast_configs=forecast_configs,
+            base_period=base_period,
+            **kwargs,
+        )</code></pre>
+</details>
+<div class="desc"><p>Coordinate forecasting operations on a FinancialStatementGraph.</p>
+<p>This controller provides three high-level entry points:</p>
+<ol>
+<li><code>create_forecast</code> - Mutates the graph and adds forecast values.</li>
+<li><code>forecast_value</code> - Returns forecast values for a node without mutating the graph.</li>
+<li><code>forecast_multiple</code> - Returns forecast results for multiple nodes in a batch.</li>
+</ol>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>fsg</code></strong></dt>
+<dd>The FinancialStatementGraph instance to operate on.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.forecasting import StatementForecaster
+&gt;&gt;&gt; forecaster = StatementForecaster(graph)
+&gt;&gt;&gt; # Mutating forecast
+&gt;&gt;&gt; forecaster.create_forecast(
+...     forecast_periods=[&quot;2024&quot;, &quot;2025&quot;], node_configs={&quot;revenue&quot;: {&quot;method&quot;: &quot;simple&quot;, &quot;config&quot;: 0.05}}
+... )
+&gt;&gt;&gt; # Non-mutating forecast
+&gt;&gt;&gt; values = forecaster.forecast_value(&quot;revenue&quot;, [&quot;2024&quot;, &quot;2025&quot;])
+&gt;&gt;&gt; assert isinstance(values, dict)
+</code></pre>
+<p>Initialize the StatementForecaster.</p>
+<h2 id="args_1">Args</h2>
+<dl>
+<dt><strong><code>fsg</code></strong></dt>
+<dd>The FinancialStatementGraph instance this forecaster will operate on.</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.forecasting.forecaster.StatementForecaster.create_forecast"><code class="name flex">
+<span>def <span class="ident">create_forecast</span></span>(<span>self,<br>forecast_periods: list[str],<br>node_configs: dict[str, dict[str, Any]] | None = None,<br>historical_periods: list[str] | None = None,<br>**kwargs: Any) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_forecast(
+    self,
+    forecast_periods: list[str],
+    node_configs: dict[str, dict[str, Any]] | None = None,
+    historical_periods: list[str] | None = None,
+    **kwargs: Any,
+) -&gt; None:
+    &#34;&#34;&#34;Add forecast data to the underlying graph (in-place).
+
+    This method mutates the graph by adding new forecast periods and updating node values.
+    It is suitable for scenarios where you want to persist forecast results.
+
+    Args:
+        forecast_periods: List of future periods to forecast (e.g., [&#34;2024&#34;, &#34;2025&#34;]).
+        node_configs: Mapping of node names to their forecast configurations.
+            Each config should contain:
+                - &#39;method&#39;: Forecasting method (e.g., &#39;simple&#39;, &#39;curve&#39;).
+                - &#39;config&#39;: Method-specific parameters (e.g., growth rate).
+        historical_periods: Optional list of historical periods to use as base.
+        **kwargs: Additional arguments (e.g., add_missing_periods: bool).
+
+    Returns:
+        None. The graph is modified in-place.
+
+    Raises:
+        ForecastNodeError: If a node is not found or configuration is invalid.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.forecasting import StatementForecaster
+        &gt;&gt;&gt; forecaster = StatementForecaster(graph)
+        &gt;&gt;&gt; forecaster.create_forecast(
+        ...     forecast_periods=[&#34;2024&#34;], node_configs={&#34;revenue&#34;: {&#34;method&#34;: &#34;simple&#34;, &#34;config&#34;: 0.05}}
+        ... )
+    &#34;&#34;&#34;
+    logger.info(&#34;Creating forecast for periods %s&#34;, forecast_periods)
+    historical_periods = PeriodManager.infer_historical_periods(self.fsg, forecast_periods, historical_periods)
+    ForecastValidator.validate_forecast_inputs(historical_periods, forecast_periods, node_configs)
+    add_missing = kwargs.get(&#34;add_missing_periods&#34;, cfg(&#34;forecasting.add_missing_periods&#34;))
+    PeriodManager.ensure_periods_exist(self.fsg, forecast_periods, add_missing=add_missing)
+    node_configs = node_configs or {}
+    for node_name, raw_config in node_configs.items():
+        node: Node | None = self.fsg.get_node(node_name)
+        if node is None:
+            raise ForecastNodeError(
+                f&#34;Node {node_name} not found in graph&#34;,
+                node_id=node_name,
+                available_nodes=list(self.fsg.nodes.keys()),
+            )
+        forecast_config = ForecastValidator.validate_forecast_config(raw_config)
+        ForecastValidator.validate_node_for_forecast(node, forecast_config.method)
+        _forecast_node_mutating(
+            node=node,
+            historical_periods=historical_periods,
+            forecast_periods=forecast_periods,
+            forecast_config=forecast_config,
+            **kwargs,
+        )</code></pre>
+</details>
+<div class="desc"><p>Add forecast data to the underlying graph (in-place).</p>
+<p>This method mutates the graph by adding new forecast periods and updating node values.
+It is suitable for scenarios where you want to persist forecast results.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of future periods to forecast (e.g., ["2024", "2025"]).</dd>
+<dt><strong><code>node_configs</code></strong></dt>
+<dd>Mapping of node names to their forecast configurations.
+Each config should contain:
+- 'method': Forecasting method (e.g., 'simple', 'curve').
+- 'config': Method-specific parameters (e.g., growth rate).</dd>
+<dt><strong><code>historical_periods</code></strong></dt>
+<dd>Optional list of historical periods to use as base.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional arguments (e.g., add_missing_periods: bool).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None. The graph is modified in-place.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ForecastNodeError</code></dt>
+<dd>If a node is not found or configuration is invalid.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.forecasting import StatementForecaster
+&gt;&gt;&gt; forecaster = StatementForecaster(graph)
+&gt;&gt;&gt; forecaster.create_forecast(
+...     forecast_periods=[&quot;2024&quot;], node_configs={&quot;revenue&quot;: {&quot;method&quot;: &quot;simple&quot;, &quot;config&quot;: 0.05}}
+... )
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.forecasting.forecaster.StatementForecaster.forecast_multiple"><code class="name flex">
+<span>def <span class="ident">forecast_multiple</span></span>(<span>self,<br>node_names: list[str],<br>forecast_periods: list[str],<br>forecast_configs: dict[str, dict[str, Any]] | None = None,<br>base_period: str | None = None,<br>**kwargs: Any) ‑> dict[str, ForecastResult]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def forecast_multiple(
+    self,
+    node_names: list[str],
+    forecast_periods: list[str],
+    forecast_configs: dict[str, dict[str, Any]] | None = None,
+    base_period: str | None = None,
+    **kwargs: Any,
+) -&gt; dict[str, ForecastResult]:
+    &#34;&#34;&#34;Return forecast results for multiple nodes without mutating the graph.
+
+    This method is a convenience wrapper for batch forecasting. It returns a dictionary
+    mapping node names to ForecastResult objects, each containing forecasted values and metadata.
+
+    Args:
+        node_names: List of node names to forecast.
+        forecast_periods: List of future periods to forecast.
+        forecast_configs: Optional mapping of node names to their forecast configs.
+        base_period: Optional base period to use for all nodes.
+        **kwargs: Additional arguments (e.g., continue_on_error).
+
+    Returns:
+        Dictionary mapping node names to ForecastResult objects.
+
+    Raises:
+        ForecastNodeError: If a node is not found and continue_on_error is False.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.forecasting import StatementForecaster
+        &gt;&gt;&gt; forecaster = StatementForecaster(graph)
+        &gt;&gt;&gt; results = forecaster.forecast_multiple([&#34;revenue&#34;, &#34;costs&#34;], [&#34;2024&#34;, &#34;2025&#34;])
+        &gt;&gt;&gt; assert &#34;revenue&#34; in results
+        &gt;&gt;&gt; assert hasattr(results[&#34;revenue&#34;], &#34;values&#34;)
+    &#34;&#34;&#34;
+    return batch_forecast_values(
+        fsg=self.fsg,
+        node_names=node_names,
+        forecast_periods=forecast_periods,
+        forecast_configs=forecast_configs,
+        base_period=base_period,
+        **kwargs,
+    )</code></pre>
+</details>
+<div class="desc"><p>Return forecast results for multiple nodes without mutating the graph.</p>
+<p>This method is a convenience wrapper for batch forecasting. It returns a dictionary
+mapping node names to ForecastResult objects, each containing forecasted values and metadata.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_names</code></strong></dt>
+<dd>List of node names to forecast.</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of future periods to forecast.</dd>
+<dt><strong><code>forecast_configs</code></strong></dt>
+<dd>Optional mapping of node names to their forecast configs.</dd>
+<dt><strong><code>base_period</code></strong></dt>
+<dd>Optional base period to use for all nodes.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional arguments (e.g., continue_on_error).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dictionary mapping node names to ForecastResult objects.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ForecastNodeError</code></dt>
+<dd>If a node is not found and continue_on_error is False.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.forecasting import StatementForecaster
+&gt;&gt;&gt; forecaster = StatementForecaster(graph)
+&gt;&gt;&gt; results = forecaster.forecast_multiple([&quot;revenue&quot;, &quot;costs&quot;], [&quot;2024&quot;, &quot;2025&quot;])
+&gt;&gt;&gt; assert &quot;revenue&quot; in results
+&gt;&gt;&gt; assert hasattr(results[&quot;revenue&quot;], &quot;values&quot;)
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.forecasting.forecaster.StatementForecaster.forecast_value"><code class="name flex">
+<span>def <span class="ident">forecast_value</span></span>(<span>self,<br>node_name: str,<br>forecast_periods: list[str],<br>base_period: str | None = None,<br>forecast_config: dict[str, Any] | None = None,<br>**kwargs: Any) ‑> dict[str, float]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def forecast_value(
+    self,
+    node_name: str,
+    forecast_periods: list[str],
+    base_period: str | None = None,
+    forecast_config: dict[str, Any] | None = None,
+    **kwargs: Any,
+) -&gt; dict[str, float]:
+    &#34;&#34;&#34;Return forecast values for a single node without mutating the graph.
+
+    This method is ideal for what-if analysis, scenario comparison, or retrieving
+    forecast values without persisting them to the graph.
+
+    Args:
+        node_name: Name of the node to forecast (e.g., &#39;revenue&#39;).
+        forecast_periods: List of future periods to forecast.
+        base_period: Optional base period to use for forecasting.
+        forecast_config: Optional forecast configuration dict.
+        **kwargs: Additional arguments (e.g., bad_forecast_value, allow_negative_forecasts).
+
+    Returns:
+        Dictionary mapping forecast periods to their calculated values.
+        Example: {&#34;2024&#34;: 1050.0, &#34;2025&#34;: 1102.5}
+
+    Raises:
+        ForecastNodeError: If the node is not found or configuration is invalid.
+
+    Example:
+        &gt;&gt;&gt; from fin_statement_model.forecasting import StatementForecaster
+        &gt;&gt;&gt; forecaster = StatementForecaster(graph)
+        &gt;&gt;&gt; values = forecaster.forecast_value(&#34;revenue&#34;, [&#34;2024&#34;, &#34;2025&#34;])
+        &gt;&gt;&gt; assert isinstance(values, dict)
+    &#34;&#34;&#34;
+    return forecast_node_non_mutating(
+        self.fsg,
+        node_name=node_name,
+        forecast_periods=forecast_periods,
+        base_period=base_period,
+        forecast_config=forecast_config,
+        **kwargs,
+    )</code></pre>
+</details>
+<div class="desc"><p>Return forecast values for a single node without mutating the graph.</p>
+<p>This method is ideal for what-if analysis, scenario comparison, or retrieving
+forecast values without persisting them to the graph.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_name</code></strong></dt>
+<dd>Name of the node to forecast (e.g., 'revenue').</dd>
+<dt><strong><code>forecast_periods</code></strong></dt>
+<dd>List of future periods to forecast.</dd>
+<dt><strong><code>base_period</code></strong></dt>
+<dd>Optional base period to use for forecasting.</dd>
+<dt><strong><code>forecast_config</code></strong></dt>
+<dd>Optional forecast configuration dict.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional arguments (e.g., bad_forecast_value, allow_negative_forecasts).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt>Dictionary mapping forecast periods to their calculated values.</dt>
+<dt><code>Example</code></dt>
+<dd>{"2024": 1050.0, "2025": 1102.5}</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ForecastNodeError</code></dt>
+<dd>If the node is not found or configuration is invalid.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.forecasting import StatementForecaster
+&gt;&gt;&gt; forecaster = StatementForecaster(graph)
+&gt;&gt;&gt; values = forecaster.forecast_value(&quot;revenue&quot;, [&quot;2024&quot;, &quot;2025&quot;])
+&gt;&gt;&gt; assert isinstance(values, dict)
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.forecasting" href="../index.html">fin_statement_model.forecasting</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.forecasting.forecaster.batch" href="batch.html">fin_statement_model.forecasting.forecaster.batch</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.forecaster.controller" href="controller.html">fin_statement_model.forecasting.forecaster.controller</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.forecaster.node_forecast" href="node_forecast.html">fin_statement_model.forecasting.forecaster.node_forecast</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.forecasting.forecaster.StatementForecaster" href="#fin_statement_model.forecasting.forecaster.StatementForecaster">StatementForecaster</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.forecasting.forecaster.StatementForecaster.create_forecast" href="#fin_statement_model.forecasting.forecaster.StatementForecaster.create_forecast">create_forecast</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.forecaster.StatementForecaster.forecast_multiple" href="#fin_statement_model.forecasting.forecaster.StatementForecaster.forecast_multiple">forecast_multiple</a></code></li>
+<li><code><a title="fin_statement_model.forecasting.forecaster.StatementForecaster.forecast_value" href="#fin_statement_model.forecasting.forecaster.StatementForecaster.forecast_value">forecast_value</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

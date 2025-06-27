@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.io.graph API documentation</title>
+<meta name="description" content="Graph IO helpers (definition serialization &amp; cell-based import).">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.io.graph</code></h1>
+</header>
+<section id="section-intro">
+<p>Graph IO helpers (definition serialization &amp; cell-based import).</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="fin_statement_model.io.graph.cells_io" href="cells_io.html">fin_statement_model.io.graph.cells_io</a></code></dt>
+<dd>
+<div class="desc"><p>Importer for converting a list of cell dictionaries into a Graph …</p></div>
+</dd>
+<dt><code class="name"><a title="fin_statement_model.io.graph.definition_io" href="definition_io.html">fin_statement_model.io.graph.definition_io</a></code></dt>
+<dd>
+<div class="desc"><p>Graph definition serialization and deserialization …</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.io.graph.import_from_cells"><code class="name flex">
+<span>def <span class="ident">import_from_cells</span></span>(<span>cells_info: list[dict[str, typing.Any]]) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_from_cells(cells_info: list[dict[str, Any]]) -&gt; Graph:
+    &#34;&#34;&#34;Create a `Graph` from a list of cell data dictionaries.
+
+    This function processes a list of dictionaries, where each dictionary
+    represents a single data point (a &#34;cell&#34;). It groups the cells by item name,
+    collects all unique periods, and then constructs a `Graph` populated with
+    `FinancialStatementItemNode` instances.
+
+    Args:
+        cells_info: A list of dictionaries, where each dictionary must contain
+            &#39;row_name&#39;, &#39;column_name&#39;, and &#39;value&#39; keys.
+
+    Returns:
+        A new `Graph` object populated with the data from the cells.
+    &#34;&#34;&#34;
+    # Group cells by row_name to aggregate values per financial statement item
+    items: dict[str, dict[str, Any]] = {}
+    unique_periods: set[str] = set()
+
+    for cell in cells_info:
+        # Clean the item name and period
+        item_name = cell.get(&#34;row_name&#34;, &#34;&#34;).strip()
+        period = cell.get(&#34;column_name&#34;, &#34;&#34;).strip()
+        value = cell.get(&#34;value&#34;)
+
+        if not item_name or not period:
+            continue
+
+        unique_periods.add(period)
+        if item_name not in items:
+            items[item_name] = {}
+        items[item_name][period] = value
+
+    # Sort periods and create the graph
+    graph = Graph(periods=sorted(unique_periods))
+
+    # Create data nodes directly; avoids older convenience wrappers
+    from fin_statement_model.core.nodes import FinancialStatementItemNode
+
+    for name, values in items.items():
+        graph.add_node(FinancialStatementItemNode(name=name, values=values))
+
+    return graph</code></pre>
+</details>
+<div class="desc"><p>Create a <code>Graph</code> from a list of cell data dictionaries.</p>
+<p>This function processes a list of dictionaries, where each dictionary
+represents a single data point (a "cell"). It groups the cells by item name,
+collects all unique periods, and then constructs a <code>Graph</code> populated with
+<code>FinancialStatementItemNode</code> instances.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cells_info</code></strong></dt>
+<dd>A list of dictionaries, where each dictionary must contain
+'row_name', 'column_name', and 'value' keys.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A new <code>Graph</code> object populated with the data from the cells.</p></div>
+</dd>
+<dt id="fin_statement_model.io.graph.load_graph_definition"><code class="name flex">
+<span>def <span class="ident">load_graph_definition</span></span>(<span>filepath: str) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_graph_definition(filepath: str) -&gt; Graph:
+    &#34;&#34;&#34;Load a graph definition from a JSON file.
+
+    Args:
+        filepath: Path to the JSON file containing the graph definition.
+
+    Returns:
+        The reconstructed Graph object.
+    &#34;&#34;&#34;
+    import json
+
+    path = Path(filepath)
+    with path.open(encoding=&#34;utf-8&#34;) as f:
+        definition = json.load(f)
+
+    reader = GraphDefinitionReader()
+    graph = reader.read(definition)
+
+    logger.info(&#34;Loaded graph definition from %s&#34;, filepath)
+    return graph</code></pre>
+</details>
+<div class="desc"><p>Load a graph definition from a JSON file.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>filepath</code></strong></dt>
+<dd>Path to the JSON file containing the graph definition.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The reconstructed Graph object.</p></div>
+</dd>
+<dt id="fin_statement_model.io.graph.save_graph_definition"><code class="name flex">
+<span>def <span class="ident">save_graph_definition</span></span>(<span>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>filepath: str) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_graph_definition(graph: Graph, filepath: str) -&gt; None:
+    &#34;&#34;&#34;Save a graph definition to a JSON file.
+
+    Args:
+        graph: The graph to save.
+        filepath: Path to the output JSON file.
+    &#34;&#34;&#34;
+    import json
+
+    writer = GraphDefinitionWriter()
+    definition = writer.write(graph)
+
+    path = Path(filepath)
+    with path.open(&#34;w&#34;, encoding=&#34;utf-8&#34;) as f:
+        json.dump(definition, f, indent=2)
+
+    logger.info(&#34;Saved graph definition to %s&#34;, filepath)</code></pre>
+</details>
+<div class="desc"><p>Save a graph definition to a JSON file.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The graph to save.</dd>
+<dt><strong><code>filepath</code></strong></dt>
+<dd>Path to the output JSON file.</dd>
+</dl></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.io.graph.GraphDefinitionReader"><code class="flex name class">
+<span>class <span class="ident">GraphDefinitionReader</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.GraphDefinitionReaderConfig" href="../config/models.html#fin_statement_model.io.config.models.GraphDefinitionReaderConfig">GraphDefinitionReaderConfig</a> | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_reader(&#34;graph_definition_dict&#34;, schema=GraphDefinitionReaderConfig)
+class GraphDefinitionReader(DataReader):
+    &#34;&#34;&#34;Reads a graph definition dictionary to reconstruct a Graph object.
+
+    Handles reconstructing nodes based on their serialized type and configuration,
+    and loads adjustments.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: GraphDefinitionReaderConfig | None = None) -&gt; None:
+        &#34;&#34;&#34;Initialize the GraphDefinitionReader. Config currently unused.&#34;&#34;&#34;
+        self.cfg = cfg
+
+    # --- Internal helper ---------------------------------------------------------------
+    class _TempNode(Node):
+        &#34;&#34;&#34;Lightweight stand-in used only for dependency analysis during deserialization.&#34;&#34;&#34;
+
+        def __init__(self, name: str) -&gt; None:
+            super().__init__(name)
+            # GraphTraverser expects a list[Node] attribute named ``inputs``
+            self.inputs: list[Node] = []
+
+        # Stub implementations required by the Node ABC ---------------------------------
+        def calculate(self, period: str) -&gt; float:
+            _ = period  # Parameter intentionally unused
+            return 0.0
+
+        def to_dict(self) -&gt; dict[str, Any]:
+            # Serialization is irrelevant for the temp node - return minimal payload.
+            return {}
+
+        @classmethod
+        def from_dict(
+            cls, data: dict[str, Any], context: dict[str, Node] | None = None
+        ) -&gt; &#34;GraphDefinitionReader._TempNode&#34;:
+            &#34;&#34;&#34;Construct a _TempNode from a dictionary payload.
+
+            This is only to satisfy the Node ABC for mypy/static type checkers; the
+            deserialiser never actually needs to recreate temporary nodes from a
+            serialized form, so the method raises *NotImplementedError* at
+            runtime.
+            &#34;&#34;&#34;
+            raise NotImplementedError(&#34;_TempNode is an internal stub; it cannot be deserialized.&#34;)
+
+    def _get_node_dependencies(self, _node_name_key: str, node_def: dict[str, Any]) -&gt; list[str]:
+        &#34;&#34;&#34;Extract dependency names from a node definition.
+
+        Args:
+            _node_name_key: The key of the node being processed.
+            node_def: Dictionary containing node definition.
+
+        Returns:
+            List of dependency node names.
+        &#34;&#34;&#34;
+        node_type = node_def.get(&#34;type&#34;)
+
+        if node_type == &#34;financial_statement_item&#34;:
+            return []  # No dependencies
+
+        if node_type in [&#34;calculation&#34;, &#34;formula_calculation&#34;]:
+            return cast(&#34;list[str]&#34;, node_def.get(&#34;inputs&#34;, []))
+
+        if node_type == &#34;forecast&#34;:
+            raise ReadError(
+                message=&#34;Forecast nodes are deprecated in template graph definitions. Use &#39;forecast&#39; section instead.&#34;,
+                source=&#34;graph_definition_dict&#34;,
+                reader_type=&#34;GraphDefinitionReader&#34;,
+            )
+
+        if node_type == &#34;custom_calculation&#34;:
+            return cast(&#34;list[str]&#34;, node_def.get(&#34;inputs&#34;, []))
+
+        # Fallback - treat &#39;inputs&#39; as dependency list when present
+        return cast(&#34;list[str]&#34;, node_def.get(&#34;inputs&#34;, []))
+
+    # --- Private helpers -------------------------------------------------------------
+    def _load_adjustments(
+        self,
+        graph: Graph,
+        adjustments_list: Any,
+    ) -&gt; None:
+        &#34;&#34;&#34;Validate, deserialize, and load adjustments onto *graph*.
+
+        Args:
+            graph: The target ``Graph`` instance.
+            adjustments_list: Raw adjustments payload extracted from the source
+                definition. *None* indicates that the key was absent.
+
+        Raises:
+            ReadError: If *adjustments_list* is not ``None`` or ``list``.
+        &#34;&#34;&#34;
+        if adjustments_list is None:
+            # Nothing to do - early exit to avoid counting extra statements in the
+            # caller and keep ``read`` lean.
+            return
+
+        if not isinstance(adjustments_list, list):
+            raise ReadError(&#34;Invalid format: &#39;adjustments&#39; must be a list if present.&#34;)
+
+        deserialized_adjustments: list[Adjustment] = []
+        for i, adj_dict in enumerate(adjustments_list):
+            try:
+                # Use model_validate for Pydantic V2
+                deserialized_adjustments.append(Adjustment.model_validate(adj_dict))
+            except Exception:
+                # Log error but continue processing remaining adjustments
+                logger.exception(
+                    &#34;Failed to deserialize adjustment at index %s: %s. Skipping.&#34;,
+                    i,
+                    adj_dict,
+                )
+
+        if deserialized_adjustments:
+            graph.adjustment_manager.load_adjustments(deserialized_adjustments)
+            logger.info(
+                &#34;Loaded %s adjustments into the graph.&#34;,
+                len(deserialized_adjustments),
+            )
+
+    def read(self, source: dict[str, Any], **kwargs: Any) -&gt; Graph:
+        &#34;&#34;&#34;Reconstruct a Graph instance from its definition dictionary.
+
+        Args:
+            source: Dictionary containing the graph definition (periods, nodes, adjustments).
+            **kwargs: Currently unused.
+
+        Returns:
+            A new Graph instance populated from the definition.
+
+        Raises:
+            ReadError: If the source format is invalid or graph reconstruction fails.
+        &#34;&#34;&#34;
+        _ = kwargs  # Parameters intentionally unused
+        logger.info(&#34;Starting graph reconstruction from definition dictionary.&#34;)
+
+        if not isinstance(source, dict) or &#34;periods&#34; not in source or &#34;nodes&#34; not in source:
+            raise ReadError(
+                message=&#34;Invalid source format for GraphDefinitionReader. Expected dict with &#39;periods&#39; and &#39;nodes&#39; keys.&#34;,
+                source=&#34;graph_definition_dict&#34;,
+                reader_type=&#34;GraphDefinitionReader&#34;,
+            )
+
+        try:
+            # 1. Initialize Graph with Periods
+            periods = source.get(&#34;periods&#34;, [])
+            if not isinstance(periods, list):
+                raise ReadError(&#34;Invalid format: &#39;periods&#39; must be a list.&#34;)
+            graph = Graph(periods=periods)
+
+            # 2. Reconstruct Nodes using topological sort of definitions -----------------
+            nodes_dict = source.get(&#34;nodes&#34;, {})
+            if not isinstance(nodes_dict, dict):
+                raise ReadError(&#34;Invalid format: &#39;nodes&#39; must be a dictionary.&#34;)
+
+            # Build *temporary* graph comprised of minimal stub nodes so we can delegate
+            # the topological ordering to `GraphTraverser`, the single source of truth
+            # for graph algorithms in the core layer.
+            from_nodes: dict[str, GraphDefinitionReader._TempNode] = {}
+            temp_graph = Graph(periods=[])  # periods are irrelevant for dependency sort
+
+            # First pass - create all stub nodes so dependencies can be resolved regardless of order
+            for node_name in nodes_dict:
+                temp_node = GraphDefinitionReader._TempNode(node_name)
+                temp_graph.add_node(temp_node)
+                from_nodes[node_name] = temp_node
+
+            # Second pass - wire up the inputs attribute based on serialized dependencies
+            for node_name, node_def in nodes_dict.items():
+                dep_names = self._get_node_dependencies(node_name, node_def)
+                try:
+                    from_nodes[node_name].inputs = [from_nodes[d] for d in dep_names]
+                except KeyError as missing:
+                    raise ReadError(
+                        message=f&#34;Dependency &#39;{missing.args[0]}&#39; for node &#39;{node_name}&#39; not found in definitions.&#34;,
+                        source=&#34;graph_definition_dict&#34;,
+                    ) from None
+
+            # Delegate ordering to GraphTraverser ----------------------------------------
+            try:
+                sorted_names: list[str] = temp_graph.traverser.topological_sort()
+            except ValueError as e:
+                raise ReadError(
+                    message=str(e),
+                    source=&#34;graph_definition_dict&#34;,
+                ) from e
+
+            # Create and add real nodes in topological order -----------------------------
+            for node_name in sorted_names:
+                node_def = nodes_dict[node_name]
+                existing_nodes = {name: graph.nodes[name] for name in graph.nodes}
+                node = NodeFactory.create_from_dict(node_def, context=existing_nodes)
+                graph.add_node(node)
+
+            # 3. Load Adjustments --------------------------------------------------------
+            self._load_adjustments(graph, source.get(&#34;adjustments&#34;))
+
+            logger.info(&#34;Successfully reconstructed graph with %s nodes.&#34;, len(graph.nodes))
+        except ReadError:  # Re-raise ReadErrors directly
+            raise
+        except Exception as e:
+            logger.exception(&#34;Failed to reconstruct graph from definition&#34;)
+            raise ReadError(
+                message=f&#34;Failed to reconstruct graph from definition: {e}&#34;,
+                source=&#34;graph_definition_dict&#34;,
+                reader_type=&#34;GraphDefinitionReader&#34;,
+                original_error=e,
+            ) from e
+        else:
+            return graph</code></pre>
+</details>
+<div class="desc"><p>Reads a graph definition dictionary to reconstruct a Graph object.</p>
+<p>Handles reconstructing nodes based on their serialized type and configuration,
+and loads adjustments.</p>
+<p>Initialize the GraphDefinitionReader. Config currently unused.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base.DataReader" href="../core/base.html#fin_statement_model.io.core.base.DataReader">DataReader</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.graph.GraphDefinitionReader.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self, source: dict[str, typing.Any], **kwargs: Any) ‑> <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read(self, source: dict[str, Any], **kwargs: Any) -&gt; Graph:
+    &#34;&#34;&#34;Reconstruct a Graph instance from its definition dictionary.
+
+    Args:
+        source: Dictionary containing the graph definition (periods, nodes, adjustments).
+        **kwargs: Currently unused.
+
+    Returns:
+        A new Graph instance populated from the definition.
+
+    Raises:
+        ReadError: If the source format is invalid or graph reconstruction fails.
+    &#34;&#34;&#34;
+    _ = kwargs  # Parameters intentionally unused
+    logger.info(&#34;Starting graph reconstruction from definition dictionary.&#34;)
+
+    if not isinstance(source, dict) or &#34;periods&#34; not in source or &#34;nodes&#34; not in source:
+        raise ReadError(
+            message=&#34;Invalid source format for GraphDefinitionReader. Expected dict with &#39;periods&#39; and &#39;nodes&#39; keys.&#34;,
+            source=&#34;graph_definition_dict&#34;,
+            reader_type=&#34;GraphDefinitionReader&#34;,
+        )
+
+    try:
+        # 1. Initialize Graph with Periods
+        periods = source.get(&#34;periods&#34;, [])
+        if not isinstance(periods, list):
+            raise ReadError(&#34;Invalid format: &#39;periods&#39; must be a list.&#34;)
+        graph = Graph(periods=periods)
+
+        # 2. Reconstruct Nodes using topological sort of definitions -----------------
+        nodes_dict = source.get(&#34;nodes&#34;, {})
+        if not isinstance(nodes_dict, dict):
+            raise ReadError(&#34;Invalid format: &#39;nodes&#39; must be a dictionary.&#34;)
+
+        # Build *temporary* graph comprised of minimal stub nodes so we can delegate
+        # the topological ordering to `GraphTraverser`, the single source of truth
+        # for graph algorithms in the core layer.
+        from_nodes: dict[str, GraphDefinitionReader._TempNode] = {}
+        temp_graph = Graph(periods=[])  # periods are irrelevant for dependency sort
+
+        # First pass - create all stub nodes so dependencies can be resolved regardless of order
+        for node_name in nodes_dict:
+            temp_node = GraphDefinitionReader._TempNode(node_name)
+            temp_graph.add_node(temp_node)
+            from_nodes[node_name] = temp_node
+
+        # Second pass - wire up the inputs attribute based on serialized dependencies
+        for node_name, node_def in nodes_dict.items():
+            dep_names = self._get_node_dependencies(node_name, node_def)
+            try:
+                from_nodes[node_name].inputs = [from_nodes[d] for d in dep_names]
+            except KeyError as missing:
+                raise ReadError(
+                    message=f&#34;Dependency &#39;{missing.args[0]}&#39; for node &#39;{node_name}&#39; not found in definitions.&#34;,
+                    source=&#34;graph_definition_dict&#34;,
+                ) from None
+
+        # Delegate ordering to GraphTraverser ----------------------------------------
+        try:
+            sorted_names: list[str] = temp_graph.traverser.topological_sort()
+        except ValueError as e:
+            raise ReadError(
+                message=str(e),
+                source=&#34;graph_definition_dict&#34;,
+            ) from e
+
+        # Create and add real nodes in topological order -----------------------------
+        for node_name in sorted_names:
+            node_def = nodes_dict[node_name]
+            existing_nodes = {name: graph.nodes[name] for name in graph.nodes}
+            node = NodeFactory.create_from_dict(node_def, context=existing_nodes)
+            graph.add_node(node)
+
+        # 3. Load Adjustments --------------------------------------------------------
+        self._load_adjustments(graph, source.get(&#34;adjustments&#34;))
+
+        logger.info(&#34;Successfully reconstructed graph with %s nodes.&#34;, len(graph.nodes))
+    except ReadError:  # Re-raise ReadErrors directly
+        raise
+    except Exception as e:
+        logger.exception(&#34;Failed to reconstruct graph from definition&#34;)
+        raise ReadError(
+            message=f&#34;Failed to reconstruct graph from definition: {e}&#34;,
+            source=&#34;graph_definition_dict&#34;,
+            reader_type=&#34;GraphDefinitionReader&#34;,
+            original_error=e,
+        ) from e
+    else:
+        return graph</code></pre>
+</details>
+<div class="desc"><p>Reconstruct a Graph instance from its definition dictionary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source</code></strong></dt>
+<dd>Dictionary containing the graph definition (periods, nodes, adjustments).</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Currently unused.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A new Graph instance populated from the definition.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ReadError</code></dt>
+<dd>If the source format is invalid or graph reconstruction fails.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.io.graph.GraphDefinitionWriter"><code class="flex name class">
+<span>class <span class="ident">GraphDefinitionWriter</span></span>
+<span>(</span><span>cfg: <a title="fin_statement_model.io.config.models.GraphDefinitionWriterConfig" href="../config/models.html#fin_statement_model.io.config.models.GraphDefinitionWriterConfig">GraphDefinitionWriterConfig</a> | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@register_writer(&#34;graph_definition_dict&#34;, schema=GraphDefinitionWriterConfig)
+class GraphDefinitionWriter(DataWriter):
+    &#34;&#34;&#34;Writes the full graph definition (nodes, periods, adjustments) to a dictionary.
+
+    This writer serializes the structure and configuration of the graph, suitable
+    for saving and reloading the entire model state.
+    &#34;&#34;&#34;
+
+    def __init__(self, cfg: GraphDefinitionWriterConfig | None = None) -&gt; None:
+        &#34;&#34;&#34;Initialize the GraphDefinitionWriter.&#34;&#34;&#34;
+        self.cfg = cfg
+
+    def _serialize_node(self, node: Node) -&gt; SerializedNode | None:
+        &#34;&#34;&#34;Serialize a single node using its to_dict() method.
+
+        Args:
+            node: The node to serialize.
+
+        Returns:
+            Dictionary representation of the node, or None if serialization fails.
+        &#34;&#34;&#34;
+        try:
+            return node.to_dict()
+        except Exception:
+            logger.exception(&#34;Failed to serialize node &#39;%s&#39;&#34;, node.name)
+            logger.warning(&#34;Skipping node &#39;%s&#39; due to serialization error.&#34;, node.name)
+            return None
+
+    def write(self, graph: Graph, target: Any = None, **kwargs: dict[str, Any]) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Export the full graph definition to a dictionary.
+
+        Args:
+            graph: The Graph instance to serialize.
+            target: Ignored by this writer; the dictionary is returned directly.
+            **kwargs: Currently unused.
+
+        Returns:
+            Dictionary representing the graph definition, including periods,
+            node definitions, and adjustments.
+
+        Raises:
+            WriteError: If an unexpected error occurs during export.
+        &#34;&#34;&#34;
+        _ = (target, kwargs)  # Parameters intentionally unused
+        logger.info(&#34;Starting export of graph definition for: %r&#34;, graph)
+        graph_definition: dict[str, Any] = {
+            &#34;periods&#34;: [],
+            &#34;nodes&#34;: {},
+            &#34;adjustments&#34;: [],
+        }
+
+        # Determine strictness: runtime kwarg overrides config default
+        strict_cfg = True
+        if isinstance(self.cfg, GraphDefinitionWriterConfig):
+            strict_cfg = self.cfg.strict
+        strict = kwargs.get(&#34;strict&#34;, strict_cfg)
+
+        try:
+            # 1. Serialize Periods
+            graph_definition[&#34;periods&#34;] = list(graph.periods)
+
+            # 2. Serialize Nodes using their to_dict() methods
+            serialized_nodes: dict[str, SerializedNode] = {}
+            for node_name, node in graph.nodes.items():
+                node_dict = self._serialize_node(node)
+                if node_dict is None:
+                    if strict:
+                        raise WriteError(
+                            message=f&#34;Failed to serialize node &#39;{node_name}&#39;. Aborting export (strict mode).&#34;,
+                            target=&#34;graph_definition_dict&#34;,
+                            writer_type=&#34;GraphDefinitionWriter&#34;,
+                        )
+                    logger.warning(
+                        &#34;Skipping node &#39;%s&#39; due to serialization error (strict=%s).&#34;,
+                        node_name,
+                        strict,
+                    )
+                else:
+                    serialized_nodes[node_name] = node_dict
+
+            # Persist nodes into graph_definition
+            graph_definition[&#34;nodes&#34;] = serialized_nodes
+
+            # 3. Serialize Adjustments
+            adjustments = graph.list_all_adjustments()
+            serialized_adjustments = []
+            for adj in adjustments:
+                try:
+                    # Use model_dump for Pydantic V2, ensure mode=&#39;json&#39; for types like UUID/datetime
+                    serialized_adjustments.append(adj.model_dump(mode=&#34;json&#34;))
+                except (ValueError, TypeError) as exc:
+                    logger.warning(
+                        &#34;Failed to serialize adjustment %s: %s. Skipping.&#34;,
+                        adj.id,
+                        exc,
+                    )
+            graph_definition[&#34;adjustments&#34;] = serialized_adjustments
+
+            logger.info(
+                &#34;Successfully created graph definition dictionary with %s nodes and %s adjustments.&#34;,
+                len(serialized_nodes),
+                len(serialized_adjustments),
+            )
+        except Exception as e:
+            logger.exception(&#34;Failed to create graph definition dictionary&#34;)
+            raise WriteError(
+                message=f&#34;Failed to create graph definition dictionary: {e}&#34;,
+                target=&#34;graph_definition_dict&#34;,
+                writer_type=&#34;GraphDefinitionWriter&#34;,
+                original_error=e,
+            ) from e
+        else:
+            return graph_definition</code></pre>
+</details>
+<div class="desc"><p>Writes the full graph definition (nodes, periods, adjustments) to a dictionary.</p>
+<p>This writer serializes the structure and configuration of the graph, suitable
+for saving and reloading the entire model state.</p>
+<p>Initialize the GraphDefinitionWriter.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.io.core.base.DataWriter" href="../core/base.html#fin_statement_model.io.core.base.DataWriter">DataWriter</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.io.graph.GraphDefinitionWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self,<br>graph: <a title="fin_statement_model.core.graph.graph.Graph" href="../../core/graph/graph.html#fin_statement_model.core.graph.graph.Graph">Graph</a>,<br>target: Any = None,<br>**kwargs: dict[str, typing.Any]) ‑> dict[str, typing.Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write(self, graph: Graph, target: Any = None, **kwargs: dict[str, Any]) -&gt; dict[str, Any]:
+    &#34;&#34;&#34;Export the full graph definition to a dictionary.
+
+    Args:
+        graph: The Graph instance to serialize.
+        target: Ignored by this writer; the dictionary is returned directly.
+        **kwargs: Currently unused.
+
+    Returns:
+        Dictionary representing the graph definition, including periods,
+        node definitions, and adjustments.
+
+    Raises:
+        WriteError: If an unexpected error occurs during export.
+    &#34;&#34;&#34;
+    _ = (target, kwargs)  # Parameters intentionally unused
+    logger.info(&#34;Starting export of graph definition for: %r&#34;, graph)
+    graph_definition: dict[str, Any] = {
+        &#34;periods&#34;: [],
+        &#34;nodes&#34;: {},
+        &#34;adjustments&#34;: [],
+    }
+
+    # Determine strictness: runtime kwarg overrides config default
+    strict_cfg = True
+    if isinstance(self.cfg, GraphDefinitionWriterConfig):
+        strict_cfg = self.cfg.strict
+    strict = kwargs.get(&#34;strict&#34;, strict_cfg)
+
+    try:
+        # 1. Serialize Periods
+        graph_definition[&#34;periods&#34;] = list(graph.periods)
+
+        # 2. Serialize Nodes using their to_dict() methods
+        serialized_nodes: dict[str, SerializedNode] = {}
+        for node_name, node in graph.nodes.items():
+            node_dict = self._serialize_node(node)
+            if node_dict is None:
+                if strict:
+                    raise WriteError(
+                        message=f&#34;Failed to serialize node &#39;{node_name}&#39;. Aborting export (strict mode).&#34;,
+                        target=&#34;graph_definition_dict&#34;,
+                        writer_type=&#34;GraphDefinitionWriter&#34;,
+                    )
+                logger.warning(
+                    &#34;Skipping node &#39;%s&#39; due to serialization error (strict=%s).&#34;,
+                    node_name,
+                    strict,
+                )
+            else:
+                serialized_nodes[node_name] = node_dict
+
+        # Persist nodes into graph_definition
+        graph_definition[&#34;nodes&#34;] = serialized_nodes
+
+        # 3. Serialize Adjustments
+        adjustments = graph.list_all_adjustments()
+        serialized_adjustments = []
+        for adj in adjustments:
+            try:
+                # Use model_dump for Pydantic V2, ensure mode=&#39;json&#39; for types like UUID/datetime
+                serialized_adjustments.append(adj.model_dump(mode=&#34;json&#34;))
+            except (ValueError, TypeError) as exc:
+                logger.warning(
+                    &#34;Failed to serialize adjustment %s: %s. Skipping.&#34;,
+                    adj.id,
+                    exc,
+                )
+        graph_definition[&#34;adjustments&#34;] = serialized_adjustments
+
+        logger.info(
+            &#34;Successfully created graph definition dictionary with %s nodes and %s adjustments.&#34;,
+            len(serialized_nodes),
+            len(serialized_adjustments),
+        )
+    except Exception as e:
+        logger.exception(&#34;Failed to create graph definition dictionary&#34;)
+        raise WriteError(
+            message=f&#34;Failed to create graph definition dictionary: {e}&#34;,
+            target=&#34;graph_definition_dict&#34;,
+            writer_type=&#34;GraphDefinitionWriter&#34;,
+            original_error=e,
+        ) from e
+    else:
+        return graph_definition</code></pre>
+</details>
+<div class="desc"><p>Export the full graph definition to a dictionary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>graph</code></strong></dt>
+<dd>The Graph instance to serialize.</dd>
+<dt><strong><code>target</code></strong></dt>
+<dd>Ignored by this writer; the dictionary is returned directly.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Currently unused.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Dictionary representing the graph definition, including periods,
+node definitions, and adjustments.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>WriteError</code></dt>
+<dd>If an unexpected error occurs during export.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.io" href="../index.html">fin_statement_model.io</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="fin_statement_model.io.graph.cells_io" href="cells_io.html">fin_statement_model.io.graph.cells_io</a></code></li>
+<li><code><a title="fin_statement_model.io.graph.definition_io" href="definition_io.html">fin_statement_model.io.graph.definition_io</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.io.graph.import_from_cells" href="#fin_statement_model.io.graph.import_from_cells">import_from_cells</a></code></li>
+<li><code><a title="fin_statement_model.io.graph.load_graph_definition" href="#fin_statement_model.io.graph.load_graph_definition">load_graph_definition</a></code></li>
+<li><code><a title="fin_statement_model.io.graph.save_graph_definition" href="#fin_statement_model.io.graph.save_graph_definition">save_graph_definition</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.io.graph.GraphDefinitionReader" href="#fin_statement_model.io.graph.GraphDefinitionReader">GraphDefinitionReader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.graph.GraphDefinitionReader.read" href="#fin_statement_model.io.graph.GraphDefinitionReader.read">read</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.io.graph.GraphDefinitionWriter" href="#fin_statement_model.io.graph.GraphDefinitionWriter">GraphDefinitionWriter</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.io.graph.GraphDefinitionWriter.write" href="#fin_statement_model.io.graph.GraphDefinitionWriter.write">write</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

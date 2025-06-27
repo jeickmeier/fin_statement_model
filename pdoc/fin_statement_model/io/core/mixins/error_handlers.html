@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.io.core.mixins.error_handlers API documentation</title>
+<meta name="description" content="Error-handling decorators extracted from the legacy *mixins.py* module …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.io.core.mixins.error_handlers</code></h1>
+</header>
+<section id="section-intro">
+<p>Error-handling decorators extracted from the legacy <em>mixins.py</em> module.</p>
+<p>These decorators should be applied to <code>read()</code> and <code>write()</code> implementations
+of concrete readers/writers to standardise exception conversion into
+:class:<code><a title="fin_statement_model.io.exceptions.ReadError" href="../../exceptions.html#fin_statement_model.io.exceptions.ReadError">ReadError</a></code> / <code>WriteError</code>.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="fin_statement_model.io.core.mixins.error_handlers.handle_read_errors"><code class="name flex">
+<span>def <span class="ident">handle_read_errors</span></span>(<span>) ‑> Callable[[~F], ~F]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def handle_read_errors() -&gt; Callable[[F], F]:
+    &#34;&#34;&#34;Create a decorator to wrap reader methods and convert generic exceptions.
+
+    This decorator is designed to be applied to the `read` method of any `DataReader`
+    subclass. It catches common exceptions that may occur during a read operation—such
+    as `FileNotFoundError` or `ValueError`—and re-raises them as a `ReadError`,
+    enriching them with contextual information like the source and reader type.
+
+    This standardization allows callers to handle all read-related failures by
+    catching a single, specific exception type.
+
+    Returns:
+        A decorator that can be applied to a reader&#39;s `read` method.
+
+    Example:
+        ```python
+        # class MyReader(DataReader):
+        #     @handle_read_errors()
+        #     def read(self, source: str, **kwargs) -&gt; Graph:
+        #         # ... implementation that might raise FileNotFoundError, etc.
+        #         if not os.path.exists(source):
+        #             raise FileNotFoundError(f&#34;Can&#39;t find {source}&#34;)
+        #         return Graph()
+        #
+        # # Calling MyReader().read(&#34;bad_path.txt&#34;) will raise a ReadError.
+        ```
+    &#34;&#34;&#34;
+
+    def decorator(func: F) -&gt; F:
+        @functools.wraps(func)
+        def wrapper(self: Any, source: Any, **kwargs: Any) -&gt; Any:
+            try:
+                return func(self, source, **kwargs)
+            except ReadError:
+                raise  # Re-raise as-is so callers can pattern-match
+            except FileNotFoundError as e:
+                err = ReadError(
+                    f&#34;File not found: {source}&#34;,
+                    source=str(source),
+                    reader_type=self.__class__.__name__,
+                    original_error=e,
+                )
+                raise err.with_traceback(e.__traceback__) from e
+            except ValueError as e:
+                err = ReadError(
+                    f&#34;Invalid value encountered: {e}&#34;,
+                    source=str(source),
+                    reader_type=self.__class__.__name__,
+                    original_error=e,
+                )
+                raise err.with_traceback(e.__traceback__) from e
+            except Exception as e:
+                logger.exception(&#34;Failed to read from %s&#34;, source)
+                err = ReadError(
+                    f&#34;Failed to process source: {e}&#34;,
+                    source=str(source),
+                    reader_type=self.__class__.__name__,
+                    original_error=e,
+                )
+                raise err.with_traceback(e.__traceback__) from e
+
+        return wrapper  # type: ignore[return-value]
+
+    return decorator</code></pre>
+</details>
+<div class="desc"><p>Create a decorator to wrap reader methods and convert generic exceptions.</p>
+<p>This decorator is designed to be applied to the <code>read</code> method of any <code>DataReader</code>
+subclass. It catches common exceptions that may occur during a read operation—such
+as <code>FileNotFoundError</code> or <code>ValueError</code>—and re-raises them as a <code>ReadError</code>,
+enriching them with contextual information like the source and reader type.</p>
+<p>This standardization allows callers to handle all read-related failures by
+catching a single, specific exception type.</p>
+<h2 id="returns">Returns</h2>
+<p>A decorator that can be applied to a reader's <code>read</code> method.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python"># class MyReader(DataReader):
+#     @handle_read_errors()
+#     def read(self, source: str, **kwargs) -&gt; Graph:
+#         # ... implementation that might raise FileNotFoundError, etc.
+#         if not os.path.exists(source):
+#             raise FileNotFoundError(f&quot;Can't find {source}&quot;)
+#         return Graph()
+#
+# # Calling MyReader().read(&quot;bad_path.txt&quot;) will raise a ReadError.
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.io.core.mixins.error_handlers.handle_write_errors"><code class="name flex">
+<span>def <span class="ident">handle_write_errors</span></span>(<span>) ‑> Callable[[~F], ~F]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def handle_write_errors() -&gt; Callable[[F], F]:
+    &#34;&#34;&#34;Create a decorator to wrap writer methods and convert generic exceptions.
+
+    This decorator is designed to be applied to the `write` method of any `DataWriter`
+    subclass. It catches generic `Exception` instances that may occur during a write
+    operation and re-raises them as a `WriteError`, enriching them with context
+    such as the target and writer type.
+
+    This standardization allows callers to handle all write-related failures by
+    catching a single, specific exception type.
+
+    Returns:
+        A decorator that can be applied to a writer&#39;s `write` method.
+
+    Example:
+        ```python
+        # class MyWriter(DataWriter):
+        #     @handle_write_errors()
+        #     def write(self, graph: Graph, target: str, **kwargs):
+        #         # ... implementation that might raise IOError, etc.
+        #         with open(target, &#39;w&#39;) as f: # This could fail
+        #             f.write(&#34;data&#34;)
+        #
+        # # Calling MyWriter().write(g, &#34;/no_permission/file.txt&#34;) will raise WriteError.
+        ```
+    &#34;&#34;&#34;
+
+    def decorator(func: F) -&gt; F:
+        @functools.wraps(func)
+        def wrapper(self: Any, graph: Any, target: Any = None, **kwargs: Any) -&gt; Any:
+            try:
+                return func(self, graph, target, **kwargs)
+            except WriteError:
+                raise
+            except Exception as e:
+                logger.exception(&#34;Failed to write to %s&#34;, target)
+                err = WriteError(
+                    f&#34;Failed to write data: {e}&#34;,
+                    target=str(target) if target else &#34;unknown&#34;,
+                    writer_type=self.__class__.__name__,
+                    original_error=e,
+                )
+                raise err.with_traceback(e.__traceback__) from e
+
+        return wrapper  # type: ignore[return-value]
+
+    return decorator</code></pre>
+</details>
+<div class="desc"><p>Create a decorator to wrap writer methods and convert generic exceptions.</p>
+<p>This decorator is designed to be applied to the <code>write</code> method of any <code>DataWriter</code>
+subclass. It catches generic <code>Exception</code> instances that may occur during a write
+operation and re-raises them as a <code>WriteError</code>, enriching them with context
+such as the target and writer type.</p>
+<p>This standardization allows callers to handle all write-related failures by
+catching a single, specific exception type.</p>
+<h2 id="returns">Returns</h2>
+<p>A decorator that can be applied to a writer's <code>write</code> method.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-python"># class MyWriter(DataWriter):
+#     @handle_write_errors()
+#     def write(self, graph: Graph, target: str, **kwargs):
+#         # ... implementation that might raise IOError, etc.
+#         with open(target, 'w') as f: # This could fail
+#             f.write(&quot;data&quot;)
+#
+# # Calling MyWriter().write(g, &quot;/no_permission/file.txt&quot;) will raise WriteError.
+</code></pre></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.io.core.mixins" href="index.html">fin_statement_model.io.core.mixins</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="fin_statement_model.io.core.mixins.error_handlers.handle_read_errors" href="#fin_statement_model.io.core.mixins.error_handlers.handle_read_errors">handle_read_errors</a></code></li>
+<li><code><a title="fin_statement_model.io.core.mixins.error_handlers.handle_write_errors" href="#fin_statement_model.io.core.mixins.error_handlers.handle_write_errors">handle_write_errors</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

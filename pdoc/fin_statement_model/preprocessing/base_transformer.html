@@ -1,0 +1,1148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.preprocessing.base_transformer API documentation</title>
+<meta name="description" content="Define the base DataTransformer interface for the preprocessing layer …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.preprocessing.base_transformer</code></h1>
+</header>
+<section id="section-intro">
+<p>Define the base DataTransformer interface for the preprocessing layer.</p>
+<p>This module provides the DataTransformer abstract base class and CompositeTransformer
+for building and composing data transformation pipelines. The design follows the
+Strategy pattern, allowing different transformation algorithms to be encapsulated
+in separate classes while sharing a common interface.</p>
+<h2 id="examples">Examples</h2>
+<p>Create a simple transformer:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class UppercaseTransformer(DataTransformer):
+...     def _transform_impl(self, data):
+...         return data.str.upper()
+...
+...     def validate_input(self, data):
+...         return isinstance(data, (pd.Series, pd.DataFrame))
+</code></pre>
+<p>Create a composite pipeline:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; uppercase = UppercaseTransformer()
+&gt;&gt;&gt; pipeline = CompositeTransformer([uppercase])
+&gt;&gt;&gt; result = pipeline.execute(pd.Series([&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]))
+&gt;&gt;&gt; print(result)
+0    A
+1    B
+2    C
+dtype: object
+</code></pre>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.preprocessing.base_transformer.CompositeTransformer"><code class="flex name class">
+<span>class <span class="ident">CompositeTransformer</span></span>
+<span>(</span><span>transformers: list[<a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a>],<br>config: dict[str, object] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CompositeTransformer(DataTransformer):
+    &#34;&#34;&#34;Compose multiple transformers into a pipeline.
+
+    The CompositeTransformer implements the Composite pattern, allowing
+    multiple transformers to be treated as a single transformer. This enables
+    building complex transformation pipelines from simple components.
+
+    Key Features:
+        - Sequential application of transformers
+        - Dynamic pipeline modification (add/remove)
+        - Unified configuration
+        - Automatic input validation propagation
+
+    Examples:
+        Create a pipeline that scales then normalizes:
+
+        &gt;&gt;&gt; scale = ScaleTransformer(scale_factor=0.001)  # Scale to thousands
+        &gt;&gt;&gt; normalize = NormalizationTransformer(method=&#34;percent_of&#34;, ref=&#34;revenue&#34;)
+        &gt;&gt;&gt; pipeline = CompositeTransformer([scale, normalize])
+        &gt;&gt;&gt; result = pipeline.execute(df)
+
+        Dynamically modify the pipeline:
+
+        &gt;&gt;&gt; moving_avg = MovingAverageTransformer(window=3)
+        &gt;&gt;&gt; pipeline.add_transformer(moving_avg)
+        &gt;&gt;&gt; pipeline.remove_transformer(0)  # Remove scaling
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        transformers: list[DataTransformer],
+        config: dict[str, object] | None = None,
+    ):
+        &#34;&#34;&#34;Initialize with a list of transformers.
+
+        Args:
+            transformers: List of transformers to apply in sequence. Each
+                        transformer must be an instance of DataTransformer.
+            config: Optional configuration dictionary that applies to the
+                   entire pipeline.
+
+        Examples:
+            &gt;&gt;&gt; t1 = ScaleTransformer(scale_factor=0.001)
+            &gt;&gt;&gt; t2 = NormalizationTransformer(method=&#34;percent_of&#34;, ref=&#34;revenue&#34;)
+            &gt;&gt;&gt; pipeline = CompositeTransformer(transformers=[t1, t2], config={&#34;name&#34;: &#34;scale_and_normalize&#34;})
+        &#34;&#34;&#34;
+        super().__init__(config)
+        self.transformers = transformers
+
+    def _transform_impl(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+        &#34;&#34;&#34;Apply each transformer in sequence.
+
+        This implementation follows the Composite pattern, delegating to
+        each transformer in the pipeline while maintaining error handling
+        and type consistency.
+
+        Args:
+            data: The input data to transform
+
+        Returns:
+            Data transformed by the complete pipeline
+
+        Examples:
+            &gt;&gt;&gt; pipeline = CompositeTransformer([
+            ...     ScaleTransformer(scale_factor=0.001),
+            ...     NormalizationTransformer(method=&#34;percent_of&#34;, ref=&#34;revenue&#34;),
+            ... ])
+            &gt;&gt;&gt; result = pipeline._transform_impl(df)
+        &#34;&#34;&#34;
+        result: pd.DataFrame | pd.Series[Any] = data
+        for transformer in self.transformers:
+            result = cast(&#34;pd.DataFrame | pd.Series[Any]&#34;, transformer.execute(result))
+        return result
+
+    def add_transformer(self, transformer: DataTransformer) -&gt; None:
+        &#34;&#34;&#34;Add a transformer to the pipeline.
+
+        This method allows dynamic extension of the transformation pipeline.
+        New transformers are added to the end of the sequence.
+
+        Args:
+            transformer: The transformer to add. Must be an instance of
+                       DataTransformer.
+
+        Examples:
+            &gt;&gt;&gt; pipeline = CompositeTransformer([])
+            &gt;&gt;&gt; pipeline.add_transformer(ScaleTransformer(scale_factor=0.001))
+            &gt;&gt;&gt; pipeline.add_transformer(NormalizationTransformer(method=&#34;percent_of&#34;, ref=&#34;revenue&#34;))
+        &#34;&#34;&#34;
+        self.transformers.append(transformer)
+
+    def remove_transformer(self, index: int) -&gt; DataTransformer | None:
+        &#34;&#34;&#34;Remove a transformer from the pipeline.
+
+        This method allows dynamic modification of the transformation pipeline
+        by removing transformers at specific positions.
+
+        Args:
+            index: Index of the transformer to remove (0-based)
+
+        Returns:
+            The removed transformer or None if index is invalid
+
+        Examples:
+            &gt;&gt;&gt; pipeline = CompositeTransformer([
+            ...     ScaleTransformer(scale_factor=0.001),
+            ...     NormalizationTransformer(method=&#34;percent_of&#34;, ref=&#34;revenue&#34;),
+            ... ])
+            &gt;&gt;&gt; removed = pipeline.remove_transformer(0)  # Remove scaling
+            &gt;&gt;&gt; isinstance(removed, ScaleTransformer)
+            True
+        &#34;&#34;&#34;
+        if 0 &lt;= index &lt; len(self.transformers):
+            return self.transformers.pop(index)
+        return None
+
+    def validate_input(self, data: object) -&gt; bool:
+        &#34;&#34;&#34;Validate input for the composite transformer.
+
+        For a composite transformer, input validation is delegated to the
+        first transformer in the pipeline (if any exist). This ensures that
+        the initial data format matches what the pipeline expects.
+
+        Args:
+            data: Input data to validate.
+
+        Returns:
+            bool: True if the pipeline is empty or if the first transformer
+                 accepts the input.
+
+        Examples:
+            &gt;&gt;&gt; pipeline = CompositeTransformer([
+            ...     ScaleTransformer(scale_factor=0.001)  # Accepts DataFrame only
+            ... ])
+            &gt;&gt;&gt; pipeline.validate_input(pd.DataFrame({&#34;A&#34;: [1, 2, 3]}))
+            True
+            &gt;&gt;&gt; pipeline.validate_input(pd.Series([1, 2, 3]))
+            False
+        &#34;&#34;&#34;
+        if not hasattr(self, &#34;transformers&#34;) or not self.transformers:
+            return True
+        return self.transformers[0].validate_input(data)</code></pre>
+</details>
+<div class="desc"><p>Compose multiple transformers into a pipeline.</p>
+<p>The CompositeTransformer implements the Composite pattern, allowing
+multiple transformers to be treated as a single transformer. This enables
+building complex transformation pipelines from simple components.</p>
+<p>Key Features:
+- Sequential application of transformers
+- Dynamic pipeline modification (add/remove)
+- Unified configuration
+- Automatic input validation propagation</p>
+<h2 id="examples">Examples</h2>
+<p>Create a pipeline that scales then normalizes:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; scale = ScaleTransformer(scale_factor=0.001)  # Scale to thousands
+&gt;&gt;&gt; normalize = NormalizationTransformer(method=&quot;percent_of&quot;, ref=&quot;revenue&quot;)
+&gt;&gt;&gt; pipeline = CompositeTransformer([scale, normalize])
+&gt;&gt;&gt; result = pipeline.execute(df)
+</code></pre>
+<p>Dynamically modify the pipeline:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; moving_avg = MovingAverageTransformer(window=3)
+&gt;&gt;&gt; pipeline.add_transformer(moving_avg)
+&gt;&gt;&gt; pipeline.remove_transformer(0)  # Remove scaling
+</code></pre>
+<p>Initialize with a list of transformers.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>transformers</code></strong></dt>
+<dd>List of transformers to apply in sequence. Each
+transformer must be an instance of DataTransformer.</dd>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional configuration dictionary that applies to the
+entire pipeline.</dd>
+</dl>
+<h2 id="examples_1">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; t1 = ScaleTransformer(scale_factor=0.001)
+&gt;&gt;&gt; t2 = NormalizationTransformer(method=&quot;percent_of&quot;, ref=&quot;revenue&quot;)
+&gt;&gt;&gt; pipeline = CompositeTransformer(transformers=[t1, t2], config={&quot;name&quot;: &quot;scale_and_normalize&quot;})
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.base_transformer.CompositeTransformer.add_transformer"><code class="name flex">
+<span>def <span class="ident">add_transformer</span></span>(<span>self,<br>transformer: <a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_transformer(self, transformer: DataTransformer) -&gt; None:
+    &#34;&#34;&#34;Add a transformer to the pipeline.
+
+    This method allows dynamic extension of the transformation pipeline.
+    New transformers are added to the end of the sequence.
+
+    Args:
+        transformer: The transformer to add. Must be an instance of
+                   DataTransformer.
+
+    Examples:
+        &gt;&gt;&gt; pipeline = CompositeTransformer([])
+        &gt;&gt;&gt; pipeline.add_transformer(ScaleTransformer(scale_factor=0.001))
+        &gt;&gt;&gt; pipeline.add_transformer(NormalizationTransformer(method=&#34;percent_of&#34;, ref=&#34;revenue&#34;))
+    &#34;&#34;&#34;
+    self.transformers.append(transformer)</code></pre>
+</details>
+<div class="desc"><p>Add a transformer to the pipeline.</p>
+<p>This method allows dynamic extension of the transformation pipeline.
+New transformers are added to the end of the sequence.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>transformer</code></strong></dt>
+<dd>The transformer to add. Must be an instance of
+DataTransformer.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; pipeline = CompositeTransformer([])
+&gt;&gt;&gt; pipeline.add_transformer(ScaleTransformer(scale_factor=0.001))
+&gt;&gt;&gt; pipeline.add_transformer(NormalizationTransformer(method=&quot;percent_of&quot;, ref=&quot;revenue&quot;))
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.base_transformer.CompositeTransformer.remove_transformer"><code class="name flex">
+<span>def <span class="ident">remove_transformer</span></span>(<span>self, index: int) ‑> <a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a> | None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_transformer(self, index: int) -&gt; DataTransformer | None:
+    &#34;&#34;&#34;Remove a transformer from the pipeline.
+
+    This method allows dynamic modification of the transformation pipeline
+    by removing transformers at specific positions.
+
+    Args:
+        index: Index of the transformer to remove (0-based)
+
+    Returns:
+        The removed transformer or None if index is invalid
+
+    Examples:
+        &gt;&gt;&gt; pipeline = CompositeTransformer([
+        ...     ScaleTransformer(scale_factor=0.001),
+        ...     NormalizationTransformer(method=&#34;percent_of&#34;, ref=&#34;revenue&#34;),
+        ... ])
+        &gt;&gt;&gt; removed = pipeline.remove_transformer(0)  # Remove scaling
+        &gt;&gt;&gt; isinstance(removed, ScaleTransformer)
+        True
+    &#34;&#34;&#34;
+    if 0 &lt;= index &lt; len(self.transformers):
+        return self.transformers.pop(index)
+    return None</code></pre>
+</details>
+<div class="desc"><p>Remove a transformer from the pipeline.</p>
+<p>This method allows dynamic modification of the transformation pipeline
+by removing transformers at specific positions.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>index</code></strong></dt>
+<dd>Index of the transformer to remove (0-based)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The removed transformer or None if index is invalid</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; pipeline = CompositeTransformer([
+...     ScaleTransformer(scale_factor=0.001),
+...     NormalizationTransformer(method=&quot;percent_of&quot;, ref=&quot;revenue&quot;),
+... ])
+&gt;&gt;&gt; removed = pipeline.remove_transformer(0)  # Remove scaling
+&gt;&gt;&gt; isinstance(removed, ScaleTransformer)
+True
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.base_transformer.CompositeTransformer.validate_input"><code class="name flex">
+<span>def <span class="ident">validate_input</span></span>(<span>self, data: object) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_input(self, data: object) -&gt; bool:
+    &#34;&#34;&#34;Validate input for the composite transformer.
+
+    For a composite transformer, input validation is delegated to the
+    first transformer in the pipeline (if any exist). This ensures that
+    the initial data format matches what the pipeline expects.
+
+    Args:
+        data: Input data to validate.
+
+    Returns:
+        bool: True if the pipeline is empty or if the first transformer
+             accepts the input.
+
+    Examples:
+        &gt;&gt;&gt; pipeline = CompositeTransformer([
+        ...     ScaleTransformer(scale_factor=0.001)  # Accepts DataFrame only
+        ... ])
+        &gt;&gt;&gt; pipeline.validate_input(pd.DataFrame({&#34;A&#34;: [1, 2, 3]}))
+        True
+        &gt;&gt;&gt; pipeline.validate_input(pd.Series([1, 2, 3]))
+        False
+    &#34;&#34;&#34;
+    if not hasattr(self, &#34;transformers&#34;) or not self.transformers:
+        return True
+    return self.transformers[0].validate_input(data)</code></pre>
+</details>
+<div class="desc"><p>Validate input for the composite transformer.</p>
+<p>For a composite transformer, input validation is delegated to the
+first transformer in the pipeline (if any exist). This ensures that
+the initial data format matches what the pipeline expects.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>Input data to validate.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the pipeline is empty or if the first transformer
+accepts the input.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; pipeline = CompositeTransformer([
+...     ScaleTransformer(scale_factor=0.001)  # Accepts DataFrame only
+... ])
+&gt;&gt;&gt; pipeline.validate_input(pd.DataFrame({&quot;A&quot;: [1, 2, 3]}))
+True
+&gt;&gt;&gt; pipeline.validate_input(pd.Series([1, 2, 3]))
+False
+</code></pre></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></b></code>:
+<ul class="hlist">
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.execute" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer.execute">execute</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.transform" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer.transform">transform</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config">validate_config</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="fin_statement_model.preprocessing.base_transformer.DataTransformer"><code class="flex name class">
+<span>class <span class="ident">DataTransformer</span></span>
+<span>(</span><span>config: dict[str, object] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataTransformer(ABC):
+    &#34;&#34;&#34;Define base class for data transformers.
+
+    The DataTransformer class provides a common interface for all data transformation
+    operations in the preprocessing layer. It follows the Template Method pattern,
+    defining the skeleton of the transformation algorithm in the execute() method
+    while letting subclasses override specific steps.
+
+    Key Features:
+        - Configuration management via __init__
+        - Pre/post transformation hooks
+        - Input validation
+        - Error handling and logging
+        - Support for both DataFrame and Series inputs
+
+    The transformation workflow is:
+        1. validate_input() - Check if input data is valid
+        2. _pre_transform_hook() - Optional preprocessing
+        3. transform() - Core transformation logic
+        4. _post_transform_hook() - Optional postprocessing
+
+    Examples:
+        Create a simple transformer that adds a constant:
+
+        &gt;&gt;&gt; class AddConstantTransformer(DataTransformer):
+        ...     def __init__(self, constant=1):
+        ...         super().__init__({&#34;constant&#34;: constant})
+        ...         self.constant = constant
+        ...
+        ...     def _transform_impl(self, data):
+        ...         return data + self.constant
+        ...
+        ...     def validate_input(self, data):
+        ...         return isinstance(data, (pd.Series, pd.DataFrame))
+        &gt;&gt;&gt; transformer = AddConstantTransformer(constant=5)
+        &gt;&gt;&gt; result = transformer.execute(pd.Series([1, 2, 3]))
+        &gt;&gt;&gt; print(result)
+        0    6
+        1    7
+        2    8
+        dtype: int64
+
+    Notes:
+        - Subclasses must implement _transform_impl() and validate_input()
+        - The execute() method orchestrates the complete transformation pipeline
+        - Use pre/post hooks for setup/cleanup rather than overriding execute()
+    &#34;&#34;&#34;
+
+    def __init__(self, config: dict[str, object] | None = None):
+        &#34;&#34;&#34;Initialize the transformer with optional configuration.
+
+        The config dictionary can contain any parameters needed by the transformer.
+        These parameters are stored and can be validated via validate_config().
+
+        Args:
+            config: Optional configuration dictionary for the transformer.
+                   Common keys might include:
+                   - &#39;input_columns&#39;: List of columns to transform
+                   - &#39;output_format&#39;: Desired output format
+                   - &#39;parameters&#39;: Algorithm-specific parameters
+
+        Examples:
+            &gt;&gt;&gt; transformer = DataTransformer({&#34;scale&#34;: 2.0, &#34;offset&#34;: 1.0})
+            &gt;&gt;&gt; transformer.config
+            {&#39;scale&#39;: 2.0, &#39;offset&#39;: 1.0}
+        &#34;&#34;&#34;
+        self.config = config or {}
+        logger.debug(
+            &#34;Initialized %s with config: %s&#34;,
+            self.__class__.__name__,
+            self.config,
+        )
+
+    def transform(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+        &#34;&#34;&#34;Transform the input data.
+
+        This is the main public interface for transformation. It wraps the internal
+        _transform_impl() method with error handling and logging.
+
+        Args:
+            data: The data to transform. Can be either:
+                - pandas.DataFrame: For multi-column transformations
+                - pandas.Series: For single-column transformations
+
+        Returns:
+            The transformed data, maintaining the same type as the input
+            (DataFrame → DataFrame, Series → Series).
+
+        Raises:
+            TransformationError: If any step of the transformation fails.
+                The error will include:
+                - The transformer type that failed
+                - The original exception as context
+                - Any relevant parameters
+
+        Examples:
+            &gt;&gt;&gt; df = pd.DataFrame({&#34;A&#34;: [1, 2, 3], &#34;B&#34;: [4, 5, 6]})
+            &gt;&gt;&gt; transformer = MyTransformer()
+            &gt;&gt;&gt; try:
+            ...     result = transformer.transform(df)
+            ... except TransformationError as e:
+            ...     print(f&#34;Transform failed: {e}&#34;)
+        &#34;&#34;&#34;
+        try:
+            logger.debug(&#34;Transforming data with %s&#34;, self.__class__.__name__)
+            return self._transform_impl(data)
+        except Exception as e:
+            logger.exception(&#34;Error transforming data with %s&#34;, self.__class__.__name__)
+            raise TransformationError(
+                &#34;Error transforming data&#34;,
+                transformer_type=self.__class__.__name__,
+            ) from e
+
+    @abstractmethod
+    def _transform_impl(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+        &#34;&#34;&#34;Apply the transformation logic.
+
+        This is the core method that subclasses must implement to define their
+        specific transformation algorithm.
+
+        Args:
+            data: The data to transform. Will be either:
+                - pandas.DataFrame: For multi-column transformations
+                - pandas.Series: For single-column transformations
+
+        Returns:
+            The transformed data, maintaining the same type as the input.
+
+        Raises:
+            TransformationError: If the transformation fails.
+
+        Examples:
+            Implementation for a scaling transformer:
+
+            &gt;&gt;&gt; def _transform_impl(self, data):
+            ...     scale = self.config.get(&#34;scale&#34;, 1.0)
+            ...     return data * scale
+        &#34;&#34;&#34;
+
+    @abstractmethod
+    def validate_input(self, data: object) -&gt; bool:
+        &#34;&#34;&#34;Return *True* if *data* is valid for this transformer.
+
+        This method defines the contract for what kind of data the transformer
+        can handle. Subclasses must implement this to specify their input
+        requirements.
+
+        Args:
+            data: The data to validate, typically one of:
+                - pandas.DataFrame
+                - pandas.Series
+                - numpy.ndarray
+                - Other domain-specific types
+
+        Returns:
+            bool: True if the data is valid for this transformer.
+
+        Examples:
+            Validate only numeric DataFrames:
+
+            &gt;&gt;&gt; def validate_input(self, data):
+            ...     if not isinstance(data, pd.DataFrame):
+            ...         return False
+            ...     return data.select_dtypes(include=[&#34;number&#34;]).shape[1] &gt; 0
+
+            Accept both Series and DataFrame:
+
+            &gt;&gt;&gt; def validate_input(self, data):
+            ...     return isinstance(data, (pd.Series, pd.DataFrame))
+        &#34;&#34;&#34;
+
+    def _pre_transform_hook(self, data: object) -&gt; object:
+        &#34;&#34;&#34;Hook method called before transformation.
+
+        This hook allows subclasses to perform setup or preprocessing without
+        overriding the main execute() method. Common uses include:
+        - Data type conversion
+        - Missing value handling
+        - Input validation
+        - Resource allocation
+
+        Args:
+            data: The input data to preprocess
+
+        Returns:
+            Processed data to be passed to the transform method
+
+        Examples:
+            Handle missing values:
+
+            &gt;&gt;&gt; def _pre_transform_hook(self, data):
+            ...     if isinstance(data, pd.DataFrame):
+            ...         return data.fillna(0)
+            ...     return data
+        &#34;&#34;&#34;
+        return data
+
+    def _post_transform_hook(self, data: object) -&gt; object:
+        &#34;&#34;&#34;Hook method called after transformation.
+
+        This hook allows subclasses to perform cleanup or post-processing without
+        overriding the main execute() method. Common uses include:
+        - Result validation
+        - Format conversion
+        - Resource cleanup
+        - Logging/metrics collection
+
+        Args:
+            data: The transformed data to post-process
+
+        Returns:
+            Final processed data
+
+        Examples:
+            Round numeric results:
+
+            &gt;&gt;&gt; def _post_transform_hook(self, data):
+            ...     if isinstance(data, pd.DataFrame):
+            ...         return data.round(decimals=2)
+            ...     return data
+        &#34;&#34;&#34;
+        return data
+
+    def execute(self, data: object) -&gt; object:
+        &#34;&#34;&#34;Execute the complete transformation pipeline.
+
+        This method orchestrates the entire transformation process:
+        1. Validates the input data
+        2. Applies pre-transformation hook
+        3. Performs the core transformation
+        4. Applies post-transformation hook
+        5. Handles any errors
+
+        Args:
+            data: The input data to transform. The type must be compatible
+                 with what validate_input() accepts.
+
+        Returns:
+            The fully transformed and processed data.
+
+        Raises:
+            ValueError: If the data is invalid or any step fails.
+
+        Examples:
+            &gt;&gt;&gt; transformer = MyTransformer({&#34;scale&#34;: 2.0})
+            &gt;&gt;&gt; try:
+            ...     result = transformer.execute(pd.DataFrame({&#34;A&#34;: [1, 2, 3]}))
+            ... except ValueError as e:
+            ...     print(f&#34;Transformation failed: {e}&#34;)
+        &#34;&#34;&#34;
+        if not self.validate_input(data):
+            raise ValueError(f&#34;Invalid input data for {self.__class__.__name__}&#34;)
+
+        try:
+            # Apply pre-transform hook
+            processed_data = self._pre_transform_hook(data)
+
+            # Perform transformation with explicit type cast for static type checker
+            result = self.transform(cast(&#34;pd.DataFrame | pd.Series[Any]&#34;, processed_data))
+            result = cast(&#34;pd.DataFrame | pd.Series[Any]&#34;, self._post_transform_hook(result))
+            logger.debug(&#34;Successfully transformed data with %s&#34;, self.__class__.__name__)
+        except Exception as e:
+            # Don&#39;t log here - transform() already logs exceptions
+            raise ValueError(&#34;Error transforming data&#34;) from e
+        else:
+            return result
+
+    def validate_config(self) -&gt; None:
+        &#34;&#34;&#34;Validate the transformer configuration.
+
+        This method verifies that the configuration provided to __init__
+        is valid for this transformer. Subclasses should override this to
+        add specific validation rules.
+
+        Raises:
+            TransformationError: If the configuration is invalid.
+
+        Examples:
+            Validate required config parameters:
+
+            &gt;&gt;&gt; def validate_config(self):
+            ...     super().validate_config()  # Always call parent
+            ...     if &#34;scale_factor&#34; not in self.config:
+            ...         raise TransformationError(
+            ...             &#34;Missing required config &#39;scale_factor&#39;&#34;, transformer_type=self.__class__.__name__
+            ...         )
+        &#34;&#34;&#34;
+        if self.config is None:
+            raise TransformationError(
+                f&#34;Invalid input data for {self.__class__.__name__}&#34;,
+                transformer_type=self.__class__.__name__,
+            )
+
+    # ------------------------------------------------------------------
+    # Shared helpers
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _coerce_to_dataframe(
+        data: pd.DataFrame | pd.Series[Any],
+    ) -&gt; tuple[pd.DataFrame, bool]:
+        &#34;&#34;&#34;Return ``(df, was_series)`` ensuring *data* is a DataFrame.
+
+        This method is **deprecated** and will be removed in a future release.
+        It now simply delegates to :func:`fin_statement_model.preprocessing.utils.ensure_dataframe`.
+        &#34;&#34;&#34;
+        # Delegation keeps backward-compatibility without duplicating logic.
+        return ensure_dataframe(data)</code></pre>
+</details>
+<div class="desc"><p>Define base class for data transformers.</p>
+<p>The DataTransformer class provides a common interface for all data transformation
+operations in the preprocessing layer. It follows the Template Method pattern,
+defining the skeleton of the transformation algorithm in the execute() method
+while letting subclasses override specific steps.</p>
+<p>Key Features:
+- Configuration management via <strong>init</strong>
+- Pre/post transformation hooks
+- Input validation
+- Error handling and logging
+- Support for both DataFrame and Series inputs</p>
+<p>The transformation workflow is:
+1. validate_input() - Check if input data is valid
+2. _pre_transform_hook() - Optional preprocessing
+3. transform() - Core transformation logic
+4. _post_transform_hook() - Optional postprocessing</p>
+<h2 id="examples">Examples</h2>
+<p>Create a simple transformer that adds a constant:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; class AddConstantTransformer(DataTransformer):
+...     def __init__(self, constant=1):
+...         super().__init__({&quot;constant&quot;: constant})
+...         self.constant = constant
+...
+...     def _transform_impl(self, data):
+...         return data + self.constant
+...
+...     def validate_input(self, data):
+...         return isinstance(data, (pd.Series, pd.DataFrame))
+&gt;&gt;&gt; transformer = AddConstantTransformer(constant=5)
+&gt;&gt;&gt; result = transformer.execute(pd.Series([1, 2, 3]))
+&gt;&gt;&gt; print(result)
+0    6
+1    7
+2    8
+dtype: int64
+</code></pre>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Subclasses must implement _transform_impl() and validate_input()</li>
+<li>The execute() method orchestrates the complete transformation pipeline</li>
+<li>Use pre/post hooks for setup/cleanup rather than overriding execute()</li>
+</ul>
+<p>Initialize the transformer with optional configuration.</p>
+<p>The config dictionary can contain any parameters needed by the transformer.
+These parameters are stored and can be validated via validate_config().</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config</code></strong></dt>
+<dd>Optional configuration dictionary for the transformer.
+Common keys might include:
+- 'input_columns': List of columns to transform
+- 'output_format': Desired output format
+- 'parameters': Algorithm-specific parameters</dd>
+</dl>
+<h2 id="examples_1">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; transformer = DataTransformer({&quot;scale&quot;: 2.0, &quot;offset&quot;: 1.0})
+&gt;&gt;&gt; transformer.config
+{'scale': 2.0, 'offset': 1.0}
+</code></pre></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.preprocessing.base_transformer.CompositeTransformer" href="#fin_statement_model.preprocessing.base_transformer.CompositeTransformer">CompositeTransformer</a></li>
+<li><a title="fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer" href="transformers/normalization.html#fin_statement_model.preprocessing.transformers.normalization.NormalizationTransformer">NormalizationTransformer</a></li>
+<li><a title="fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer" href="transformers/period_conversion.html#fin_statement_model.preprocessing.transformers.period_conversion.PeriodConversionTransformer">PeriodConversionTransformer</a></li>
+<li><a title="fin_statement_model.preprocessing.transformers.time_series.TimeSeriesTransformer" href="transformers/time_series.html#fin_statement_model.preprocessing.transformers.time_series.TimeSeriesTransformer">TimeSeriesTransformer</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.preprocessing.base_transformer.DataTransformer.execute"><code class="name flex">
+<span>def <span class="ident">execute</span></span>(<span>self, data: object) ‑> object</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def execute(self, data: object) -&gt; object:
+    &#34;&#34;&#34;Execute the complete transformation pipeline.
+
+    This method orchestrates the entire transformation process:
+    1. Validates the input data
+    2. Applies pre-transformation hook
+    3. Performs the core transformation
+    4. Applies post-transformation hook
+    5. Handles any errors
+
+    Args:
+        data: The input data to transform. The type must be compatible
+             with what validate_input() accepts.
+
+    Returns:
+        The fully transformed and processed data.
+
+    Raises:
+        ValueError: If the data is invalid or any step fails.
+
+    Examples:
+        &gt;&gt;&gt; transformer = MyTransformer({&#34;scale&#34;: 2.0})
+        &gt;&gt;&gt; try:
+        ...     result = transformer.execute(pd.DataFrame({&#34;A&#34;: [1, 2, 3]}))
+        ... except ValueError as e:
+        ...     print(f&#34;Transformation failed: {e}&#34;)
+    &#34;&#34;&#34;
+    if not self.validate_input(data):
+        raise ValueError(f&#34;Invalid input data for {self.__class__.__name__}&#34;)
+
+    try:
+        # Apply pre-transform hook
+        processed_data = self._pre_transform_hook(data)
+
+        # Perform transformation with explicit type cast for static type checker
+        result = self.transform(cast(&#34;pd.DataFrame | pd.Series[Any]&#34;, processed_data))
+        result = cast(&#34;pd.DataFrame | pd.Series[Any]&#34;, self._post_transform_hook(result))
+        logger.debug(&#34;Successfully transformed data with %s&#34;, self.__class__.__name__)
+    except Exception as e:
+        # Don&#39;t log here - transform() already logs exceptions
+        raise ValueError(&#34;Error transforming data&#34;) from e
+    else:
+        return result</code></pre>
+</details>
+<div class="desc"><p>Execute the complete transformation pipeline.</p>
+<p>This method orchestrates the entire transformation process:
+1. Validates the input data
+2. Applies pre-transformation hook
+3. Performs the core transformation
+4. Applies post-transformation hook
+5. Handles any errors</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The input data to transform. The type must be compatible
+with what validate_input() accepts.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The fully transformed and processed data.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the data is invalid or any step fails.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; transformer = MyTransformer({&quot;scale&quot;: 2.0})
+&gt;&gt;&gt; try:
+...     result = transformer.execute(pd.DataFrame({&quot;A&quot;: [1, 2, 3]}))
+... except ValueError as e:
+...     print(f&quot;Transformation failed: {e}&quot;)
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.base_transformer.DataTransformer.transform"><code class="name flex">
+<span>def <span class="ident">transform</span></span>(<span>self, data: pd.DataFrame | pd.Series[Any]) ‑> pd.DataFrame | pd.Series[Any]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def transform(self, data: pd.DataFrame | pd.Series[Any]) -&gt; pd.DataFrame | pd.Series[Any]:
+    &#34;&#34;&#34;Transform the input data.
+
+    This is the main public interface for transformation. It wraps the internal
+    _transform_impl() method with error handling and logging.
+
+    Args:
+        data: The data to transform. Can be either:
+            - pandas.DataFrame: For multi-column transformations
+            - pandas.Series: For single-column transformations
+
+    Returns:
+        The transformed data, maintaining the same type as the input
+        (DataFrame → DataFrame, Series → Series).
+
+    Raises:
+        TransformationError: If any step of the transformation fails.
+            The error will include:
+            - The transformer type that failed
+            - The original exception as context
+            - Any relevant parameters
+
+    Examples:
+        &gt;&gt;&gt; df = pd.DataFrame({&#34;A&#34;: [1, 2, 3], &#34;B&#34;: [4, 5, 6]})
+        &gt;&gt;&gt; transformer = MyTransformer()
+        &gt;&gt;&gt; try:
+        ...     result = transformer.transform(df)
+        ... except TransformationError as e:
+        ...     print(f&#34;Transform failed: {e}&#34;)
+    &#34;&#34;&#34;
+    try:
+        logger.debug(&#34;Transforming data with %s&#34;, self.__class__.__name__)
+        return self._transform_impl(data)
+    except Exception as e:
+        logger.exception(&#34;Error transforming data with %s&#34;, self.__class__.__name__)
+        raise TransformationError(
+            &#34;Error transforming data&#34;,
+            transformer_type=self.__class__.__name__,
+        ) from e</code></pre>
+</details>
+<div class="desc"><p>Transform the input data.</p>
+<p>This is the main public interface for transformation. It wraps the internal
+_transform_impl() method with error handling and logging.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The data to transform. Can be either:
+- pandas.DataFrame: For multi-column transformations
+- pandas.Series: For single-column transformations</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>The transformed data, maintaining the same type as the input
+(DataFrame → DataFrame, Series → Series).</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TransformationError</code></dt>
+<dd>If any step of the transformation fails.
+The error will include:
+- The transformer type that failed
+- The original exception as context
+- Any relevant parameters</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; df = pd.DataFrame({&quot;A&quot;: [1, 2, 3], &quot;B&quot;: [4, 5, 6]})
+&gt;&gt;&gt; transformer = MyTransformer()
+&gt;&gt;&gt; try:
+...     result = transformer.transform(df)
+... except TransformationError as e:
+...     print(f&quot;Transform failed: {e}&quot;)
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config"><code class="name flex">
+<span>def <span class="ident">validate_config</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_config(self) -&gt; None:
+    &#34;&#34;&#34;Validate the transformer configuration.
+
+    This method verifies that the configuration provided to __init__
+    is valid for this transformer. Subclasses should override this to
+    add specific validation rules.
+
+    Raises:
+        TransformationError: If the configuration is invalid.
+
+    Examples:
+        Validate required config parameters:
+
+        &gt;&gt;&gt; def validate_config(self):
+        ...     super().validate_config()  # Always call parent
+        ...     if &#34;scale_factor&#34; not in self.config:
+        ...         raise TransformationError(
+        ...             &#34;Missing required config &#39;scale_factor&#39;&#34;, transformer_type=self.__class__.__name__
+        ...         )
+    &#34;&#34;&#34;
+    if self.config is None:
+        raise TransformationError(
+            f&#34;Invalid input data for {self.__class__.__name__}&#34;,
+            transformer_type=self.__class__.__name__,
+        )</code></pre>
+</details>
+<div class="desc"><p>Validate the transformer configuration.</p>
+<p>This method verifies that the configuration provided to <strong>init</strong>
+is valid for this transformer. Subclasses should override this to
+add specific validation rules.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>TransformationError</code></dt>
+<dd>If the configuration is invalid.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<p>Validate required config parameters:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; def validate_config(self):
+...     super().validate_config()  # Always call parent
+...     if &quot;scale_factor&quot; not in self.config:
+...         raise TransformationError(
+...             &quot;Missing required config 'scale_factor'&quot;, transformer_type=self.__class__.__name__
+...         )
+</code></pre></div>
+</dd>
+<dt id="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_input"><code class="name flex">
+<span>def <span class="ident">validate_input</span></span>(<span>self, data: object) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def validate_input(self, data: object) -&gt; bool:
+    &#34;&#34;&#34;Return *True* if *data* is valid for this transformer.
+
+    This method defines the contract for what kind of data the transformer
+    can handle. Subclasses must implement this to specify their input
+    requirements.
+
+    Args:
+        data: The data to validate, typically one of:
+            - pandas.DataFrame
+            - pandas.Series
+            - numpy.ndarray
+            - Other domain-specific types
+
+    Returns:
+        bool: True if the data is valid for this transformer.
+
+    Examples:
+        Validate only numeric DataFrames:
+
+        &gt;&gt;&gt; def validate_input(self, data):
+        ...     if not isinstance(data, pd.DataFrame):
+        ...         return False
+        ...     return data.select_dtypes(include=[&#34;number&#34;]).shape[1] &gt; 0
+
+        Accept both Series and DataFrame:
+
+        &gt;&gt;&gt; def validate_input(self, data):
+        ...     return isinstance(data, (pd.Series, pd.DataFrame))
+    &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Return <em>True</em> if <em>data</em> is valid for this transformer.</p>
+<p>This method defines the contract for what kind of data the transformer
+can handle. Subclasses must implement this to specify their input
+requirements.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The data to validate, typically one of:
+- pandas.DataFrame
+- pandas.Series
+- numpy.ndarray
+- Other domain-specific types</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the data is valid for this transformer.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<p>Validate only numeric DataFrames:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; def validate_input(self, data):
+...     if not isinstance(data, pd.DataFrame):
+...         return False
+...     return data.select_dtypes(include=[&quot;number&quot;]).shape[1] &gt; 0
+</code></pre>
+<p>Accept both Series and DataFrame:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; def validate_input(self, data):
+...     return isinstance(data, (pd.Series, pd.DataFrame))
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.preprocessing" href="index.html">fin_statement_model.preprocessing</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.base_transformer.CompositeTransformer" href="#fin_statement_model.preprocessing.base_transformer.CompositeTransformer">CompositeTransformer</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.CompositeTransformer.add_transformer" href="#fin_statement_model.preprocessing.base_transformer.CompositeTransformer.add_transformer">add_transformer</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.CompositeTransformer.remove_transformer" href="#fin_statement_model.preprocessing.base_transformer.CompositeTransformer.remove_transformer">remove_transformer</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.CompositeTransformer.validate_input" href="#fin_statement_model.preprocessing.base_transformer.CompositeTransformer.validate_input">validate_input</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer">DataTransformer</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.execute" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer.execute">execute</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.transform" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer.transform">transform</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_config">validate_config</a></code></li>
+<li><code><a title="fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_input" href="#fin_statement_model.preprocessing.base_transformer.DataTransformer.validate_input">validate_input</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

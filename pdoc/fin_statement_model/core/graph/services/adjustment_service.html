@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.core.graph.services.adjustment_service API documentation</title>
+<meta name="description" content="AdjustmentService stub - wraps ``AdjustmentManager`` for Graph refactor …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.core.graph.services.adjustment_service</code></h1>
+</header>
+<section id="section-intro">
+<p>AdjustmentService stub - wraps <code>AdjustmentManager</code> for Graph refactor.</p>
+<p>AdjustmentService encapsulates adjustment storage and application logic for the graph. It provides methods
+for adding, removing, and listing adjustments, as well as applying adjustments to node values for scenario
+analysis and what-if modeling. All adjustment logic is delegated here from the Graph and its mix-ins.</p>
+<p>Key responsibilities:
+- Add, remove, and list adjustments for nodes and periods
+- Apply adjustments to node values
+- Retrieve and filter adjustments by scenario or tags
+- Clear all adjustments
+- Check if a value was adjusted</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; from fin_statement_model.core.graph.services.adjustment_service import AdjustmentService
+&gt;&gt;&gt; service = AdjustmentService()
+&gt;&gt;&gt; adj_id = service.add_adjustment(&quot;Revenue&quot;, &quot;2023&quot;, 10.0, reason=&quot;Scenario boost&quot;)
+&gt;&gt;&gt; service.list_all_adjustments()  # doctest: +SKIP
+</code></pre>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService"><code class="flex name class">
+<span>class <span class="ident">AdjustmentService</span></span>
+<span>(</span><span>manager: AdjustmentManager | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AdjustmentService:  # pylint: disable=too-few-public-methods
+    &#34;&#34;&#34;Encapsulate adjustment storage and application logic.
+
+    During step 1.2 this is a thin wrapper exposing the same API surface used
+    by ``Graph`` so that later migrations are trivial.
+    &#34;&#34;&#34;
+
+    def __init__(self, manager: AdjustmentManager | None = None) -&gt; None:
+        &#34;&#34;&#34;Create a new AdjustmentService.
+
+        Args:
+            manager: Optional pre-configured :class:`AdjustmentManager` to use.
+                When *None*, a fresh instance is created.
+        &#34;&#34;&#34;
+        self._manager: AdjustmentManager = manager or AdjustmentManager()
+
+    # ------------------------------------------------------------------
+    # Delegate helpers (minimal implementations) -----------------------
+    # ------------------------------------------------------------------
+    # Public API mirrors Graph methods exactly - signatures copied.
+
+    def add_adjustment(
+        self,
+        node_name: str,
+        period: str,
+        value: float,
+        reason: str,
+        adj_type: AdjustmentType = AdjustmentType.ADDITIVE,
+        scale: float = 1.0,
+        priority: int = 0,
+        tags: set[AdjustmentTag] | None = None,
+        scenario: str | None = None,
+        user: str | None = None,
+        *,
+        adj_id: UUID | None = None,
+    ) -&gt; UUID:
+        &#34;&#34;&#34;Create ``Adjustment`` and add to manager (stub).&#34;&#34;&#34;
+        scenario = scenario or DEFAULT_SCENARIO
+        adj = Adjustment(
+            id=adj_id or uuid4(),
+            node_name=node_name,
+            period=period,
+            value=value,
+            reason=reason,
+            type=adj_type,
+            scale=scale,
+            priority=priority,
+            tags=tags or set(),
+            scenario=scenario,
+            user=user,
+        )
+        self._manager.add_adjustment(adj)
+        return adj.id
+
+    # Basic delegations -------------------------------------------------
+    def remove_adjustment(self, adj_id: UUID) -&gt; bool:
+        &#34;&#34;&#34;Remove an adjustment from the manager.
+
+        Args:
+            adj_id: Unique identifier of the adjustment to remove.
+
+        Returns:
+            True if an adjustment with *adj_id* was found and removed, False otherwise.
+        &#34;&#34;&#34;
+        return self._manager.remove_adjustment(adj_id)
+
+    def get_adjustments(self, node_name: str, period: str, *, scenario: str | None = None) -&gt; list[Adjustment]:
+        &#34;&#34;&#34;Return all adjustments for *node_name*/*period*.
+
+        Args:
+            node_name: Canonical node identifier (e.g. &#34;revenue&#34;).
+            period: Period label (e.g. &#34;2024&#34;).
+            scenario: Scenario name - defaults to ``&#34;default&#34;`` when *None*.
+
+        Returns:
+            A list of matching :class:`fin_statement_model.core.adjustments.models.Adjustment` instances.
+        &#34;&#34;&#34;
+        return self._manager.get_adjustments(node_name, period, scenario=scenario or DEFAULT_SCENARIO)
+
+    def get_filtered_adjustments(
+        self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None
+    ) -&gt; list[Adjustment]:
+        &#34;&#34;&#34;Return adjustments matching an *AdjustmentFilterInput*.
+
+        Args:
+            node_name: Target node name.
+            period: Period identifier.
+            filter_input: Additional filter specifying scenarios/tags.
+
+        Returns:
+            List of adjustments that satisfy all filter criteria.
+        &#34;&#34;&#34;
+        return self._manager.get_filtered_adjustments(node_name, period, filter_input)
+
+    def apply_adjustments(self, base_value: float, adjustments: list[Adjustment]) -&gt; tuple[float, bool]:
+        &#34;&#34;&#34;Apply *adjustments* to *base_value*.
+
+        Args:
+            base_value: Original numeric value before adjustments.
+            adjustments: Sequence of adjustments to apply.
+
+        Returns:
+            Tuple of ``(adjusted_value, was_adjusted)`` where *was_adjusted* is
+            True if at least one adjustment modified the value.
+        &#34;&#34;&#34;
+        return self._manager.apply_adjustments(base_value, adjustments)
+
+    def list_all_adjustments(self) -&gt; list[Adjustment]:
+        &#34;&#34;&#34;Return **all** adjustments currently stored in the manager.&#34;&#34;&#34;
+        return self._manager.get_all_adjustments()
+
+    def clear_all(self) -&gt; None:
+        &#34;&#34;&#34;Remove **every** adjustment from the underlying manager.&#34;&#34;&#34;
+        self._manager.clear_all()
+
+    def was_adjusted(self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None) -&gt; bool:
+        &#34;&#34;&#34;Return True if any adjustments match the criteria (cheap helper).&#34;&#34;&#34;
+        return bool(self._manager.get_filtered_adjustments(node_name, period, filter_input))</code></pre>
+</details>
+<div class="desc"><p>Encapsulate adjustment storage and application logic.</p>
+<p>During step 1.2 this is a thin wrapper exposing the same API surface used
+by <code>Graph</code> so that later migrations are trivial.</p>
+<p>Create a new AdjustmentService.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>manager</code></strong></dt>
+<dd>Optional pre-configured :class:<code>AdjustmentManager</code> to use.
+When <em>None</em>, a fresh instance is created.</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.add_adjustment"><code class="name flex">
+<span>def <span class="ident">add_adjustment</span></span>(<span>self,<br>node_name: str,<br>period: str,<br>value: float,<br>reason: str,<br>adj_type: AdjustmentType = AdjustmentType.ADDITIVE,<br>scale: float = 1.0,<br>priority: int = 0,<br>tags: set[AdjustmentTag] | None = None,<br>scenario: str | None = None,<br>user: str | None = None,<br>*,<br>adj_id: UUID | None = None) ‑> uuid.UUID</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_adjustment(
+    self,
+    node_name: str,
+    period: str,
+    value: float,
+    reason: str,
+    adj_type: AdjustmentType = AdjustmentType.ADDITIVE,
+    scale: float = 1.0,
+    priority: int = 0,
+    tags: set[AdjustmentTag] | None = None,
+    scenario: str | None = None,
+    user: str | None = None,
+    *,
+    adj_id: UUID | None = None,
+) -&gt; UUID:
+    &#34;&#34;&#34;Create ``Adjustment`` and add to manager (stub).&#34;&#34;&#34;
+    scenario = scenario or DEFAULT_SCENARIO
+    adj = Adjustment(
+        id=adj_id or uuid4(),
+        node_name=node_name,
+        period=period,
+        value=value,
+        reason=reason,
+        type=adj_type,
+        scale=scale,
+        priority=priority,
+        tags=tags or set(),
+        scenario=scenario,
+        user=user,
+    )
+    self._manager.add_adjustment(adj)
+    return adj.id</code></pre>
+</details>
+<div class="desc"><p>Create <code>Adjustment</code> and add to manager (stub).</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.apply_adjustments"><code class="name flex">
+<span>def <span class="ident">apply_adjustments</span></span>(<span>self, base_value: float, adjustments: list[Adjustment]) ‑> tuple[float, bool]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def apply_adjustments(self, base_value: float, adjustments: list[Adjustment]) -&gt; tuple[float, bool]:
+    &#34;&#34;&#34;Apply *adjustments* to *base_value*.
+
+    Args:
+        base_value: Original numeric value before adjustments.
+        adjustments: Sequence of adjustments to apply.
+
+    Returns:
+        Tuple of ``(adjusted_value, was_adjusted)`` where *was_adjusted* is
+        True if at least one adjustment modified the value.
+    &#34;&#34;&#34;
+    return self._manager.apply_adjustments(base_value, adjustments)</code></pre>
+</details>
+<div class="desc"><p>Apply <em>adjustments</em> to <em>base_value</em>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>base_value</code></strong></dt>
+<dd>Original numeric value before adjustments.</dd>
+<dt><strong><code>adjustments</code></strong></dt>
+<dd>Sequence of adjustments to apply.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>Tuple of <code>(adjusted_value, was_adjusted)</code> where <em>was_adjusted</em> is
+True if at least one adjustment modified the value.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.clear_all"><code class="name flex">
+<span>def <span class="ident">clear_all</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear_all(self) -&gt; None:
+    &#34;&#34;&#34;Remove **every** adjustment from the underlying manager.&#34;&#34;&#34;
+    self._manager.clear_all()</code></pre>
+</details>
+<div class="desc"><p>Remove <strong>every</strong> adjustment from the underlying manager.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.get_adjustments"><code class="name flex">
+<span>def <span class="ident">get_adjustments</span></span>(<span>self, node_name: str, period: str, *, scenario: str | None = None) ‑> list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="../../adjustments/models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_adjustments(self, node_name: str, period: str, *, scenario: str | None = None) -&gt; list[Adjustment]:
+    &#34;&#34;&#34;Return all adjustments for *node_name*/*period*.
+
+    Args:
+        node_name: Canonical node identifier (e.g. &#34;revenue&#34;).
+        period: Period label (e.g. &#34;2024&#34;).
+        scenario: Scenario name - defaults to ``&#34;default&#34;`` when *None*.
+
+    Returns:
+        A list of matching :class:`fin_statement_model.core.adjustments.models.Adjustment` instances.
+    &#34;&#34;&#34;
+    return self._manager.get_adjustments(node_name, period, scenario=scenario or DEFAULT_SCENARIO)</code></pre>
+</details>
+<div class="desc"><p>Return all adjustments for <em>node_name</em>/<em>period</em>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_name</code></strong></dt>
+<dd>Canonical node identifier (e.g. "revenue").</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>Period label (e.g. "2024").</dd>
+<dt><strong><code>scenario</code></strong></dt>
+<dd>Scenario name - defaults to <code>"default"</code> when <em>None</em>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A list of matching :class:<code><a title="fin_statement_model.core.adjustments.models.Adjustment" href="../../adjustments/models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a></code> instances.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.get_filtered_adjustments"><code class="name flex">
+<span>def <span class="ident">get_filtered_adjustments</span></span>(<span>self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None) ‑> list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="../../adjustments/models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_filtered_adjustments(
+    self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None
+) -&gt; list[Adjustment]:
+    &#34;&#34;&#34;Return adjustments matching an *AdjustmentFilterInput*.
+
+    Args:
+        node_name: Target node name.
+        period: Period identifier.
+        filter_input: Additional filter specifying scenarios/tags.
+
+    Returns:
+        List of adjustments that satisfy all filter criteria.
+    &#34;&#34;&#34;
+    return self._manager.get_filtered_adjustments(node_name, period, filter_input)</code></pre>
+</details>
+<div class="desc"><p>Return adjustments matching an <em>AdjustmentFilterInput</em>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>node_name</code></strong></dt>
+<dd>Target node name.</dd>
+<dt><strong><code>period</code></strong></dt>
+<dd>Period identifier.</dd>
+<dt><strong><code>filter_input</code></strong></dt>
+<dd>Additional filter specifying scenarios/tags.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>List of adjustments that satisfy all filter criteria.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.list_all_adjustments"><code class="name flex">
+<span>def <span class="ident">list_all_adjustments</span></span>(<span>self) ‑> list[<a title="fin_statement_model.core.adjustments.models.Adjustment" href="../../adjustments/models.html#fin_statement_model.core.adjustments.models.Adjustment">Adjustment</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_all_adjustments(self) -&gt; list[Adjustment]:
+    &#34;&#34;&#34;Return **all** adjustments currently stored in the manager.&#34;&#34;&#34;
+    return self._manager.get_all_adjustments()</code></pre>
+</details>
+<div class="desc"><p>Return <strong>all</strong> adjustments currently stored in the manager.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.remove_adjustment"><code class="name flex">
+<span>def <span class="ident">remove_adjustment</span></span>(<span>self, adj_id: UUID) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_adjustment(self, adj_id: UUID) -&gt; bool:
+    &#34;&#34;&#34;Remove an adjustment from the manager.
+
+    Args:
+        adj_id: Unique identifier of the adjustment to remove.
+
+    Returns:
+        True if an adjustment with *adj_id* was found and removed, False otherwise.
+    &#34;&#34;&#34;
+    return self._manager.remove_adjustment(adj_id)</code></pre>
+</details>
+<div class="desc"><p>Remove an adjustment from the manager.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>adj_id</code></strong></dt>
+<dd>Unique identifier of the adjustment to remove.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>True if an adjustment with <em>adj_id</em> was found and removed, False otherwise.</p></div>
+</dd>
+<dt id="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.was_adjusted"><code class="name flex">
+<span>def <span class="ident">was_adjusted</span></span>(<span>self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def was_adjusted(self, node_name: str, period: str, filter_input: AdjustmentFilterInput = None) -&gt; bool:
+    &#34;&#34;&#34;Return True if any adjustments match the criteria (cheap helper).&#34;&#34;&#34;
+    return bool(self._manager.get_filtered_adjustments(node_name, period, filter_input))</code></pre>
+</details>
+<div class="desc"><p>Return True if any adjustments match the criteria (cheap helper).</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.core.graph.services" href="index.html">fin_statement_model.core.graph.services</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService" href="#fin_statement_model.core.graph.services.adjustment_service.AdjustmentService">AdjustmentService</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.add_adjustment" href="#fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.add_adjustment">add_adjustment</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.apply_adjustments" href="#fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.apply_adjustments">apply_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.clear_all" href="#fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.clear_all">clear_all</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.get_adjustments" href="#fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.get_adjustments">get_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.get_filtered_adjustments" href="#fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.get_filtered_adjustments">get_filtered_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.list_all_adjustments" href="#fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.list_all_adjustments">list_all_adjustments</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.remove_adjustment" href="#fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.remove_adjustment">remove_adjustment</a></code></li>
+<li><code><a title="fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.was_adjusted" href="#fin_statement_model.core.graph.services.adjustment_service.AdjustmentService.was_adjusted">was_adjusted</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

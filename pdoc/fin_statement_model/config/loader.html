@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>fin_statement_model.config.loader API documentation</title>
+<meta name="description" content="Pure configuration loading/merging logic for `fin_statement_model` …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>fin_statement_model.config.loader</code></h1>
+</header>
+<section id="section-intro">
+<p>Pure configuration loading/merging logic for <code><a title="fin_statement_model" href="../index.html">fin_statement_model</a></code>.</p>
+<p>This module is intentionally <strong>side-effect free</strong> except for <em>reading</em> the
+filesystem and environment variables. It does <strong>not</strong> mutate global state or
+re-configure logging.</p>
+<p>Its primary export is the <code><a title="fin_statement_model.config.loader.ConfigLoader" href="#fin_statement_model.config.loader.ConfigLoader">ConfigLoader</a></code> class, which is responsible for:
+1.
+Discovering configuration files (<code>.fsm_config.yaml</code>, <code>fsm_config.yaml</code>).
+2.
+Loading <code>.env</code> files.
+3.
+Parsing environment variables (prefixed with <code>FSM_</code>).
+4.
+Merging all sources in the correct order of precedence.
+5.
+Returning a validated <code>Config</code> object.</p>
+<p>This class is used internally by the <code>ConfigStore</code> and is not typically
+instantiated directly by end-users.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="fin_statement_model.config.loader.ConfigLoader"><code class="flex name class">
+<span>class <span class="ident">ConfigLoader</span></span>
+<span>(</span><span>config_file: Path | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ConfigLoader:
+    &#34;&#34;&#34;Load and merge configuration from all supported sources.
+
+    The loader is **stateless**: each call to `load()` inspects the environment
+    and filesystem afresh, returning a fully validated `Config` object. It
+    follows a strict precedence order:
+    Defaults &lt; Project Config &lt; User Config &lt; .env &lt; Environment &lt; Runtime Overrides.
+    &#34;&#34;&#34;
+
+    # --- Constants ---------------------------------------------------------
+    ENV_PREFIX = &#34;FSM_&#34;
+    USER_CONFIG_FILE = &#34;fsm_config.yaml&#34;
+    PROJECT_CONFIG_FILE = &#34;.fsm_config.yaml&#34;
+
+    # ---------------------------------------------------------------------
+    # Construction helpers
+    # ---------------------------------------------------------------------
+
+    def __init__(self, config_file: Path | None = None):
+        &#34;&#34;&#34;Create a new :class:`ConfigLoader`.
+
+        Args:
+            config_file: Optional path explicitly pointing to the *user* config
+                file that should override the discovery algorithm.
+        &#34;&#34;&#34;
+        self._config_file = config_file
+
+    # ---------------------------------------------------------------------
+    # Public API
+    # ---------------------------------------------------------------------
+
+    def load(self, runtime_overrides: dict[str, Any] | None | None = None) -&gt; Config:
+        &#34;&#34;&#34;Load, merge, and validate configuration from all sources.
+
+        This is the main entry point for the class. It orchestrates the
+        layered merge and returns the final, validated configuration.
+
+        Args:
+            runtime_overrides: A dictionary of values to be merged with the
+                highest precedence, overriding all other sources.
+
+        Returns:
+            A validated `Config` instance representing the effective configuration.
+        &#34;&#34;&#34;
+        # Ensure .env variables are made available before we inspect os.environ.
+        self._load_dotenv()
+
+        # Start with defaults defined by the *Config* pydantic model.
+        config_dict: dict[str, Any] = Config(
+            project_name=&#34;fin_statement_model&#34;,
+            config_file_path=None,
+            auto_save_config=False,
+        ).to_dict()
+
+        # Layer 1 - project-level config
+        if (project_cfg := self._find_project_config()) is not None:
+            logger.debug(&#34;Loading project config from %s&#34;, project_cfg)
+            config_dict = deep_merge(config_dict, self._load_file(project_cfg))
+
+        # Layer 2 - user-level config
+        if (user_cfg := self._find_user_config()) is not None:
+            logger.debug(&#34;Loading user config from %s&#34;, user_cfg)
+            config_dict = deep_merge(config_dict, self._load_file(user_cfg))
+
+        # Layer 3 - environment overrides
+        env_overrides = self._extract_env_overrides()
+        if env_overrides:
+            logger.debug(&#34;Applying environment variable overrides&#34;)
+            config_dict = deep_merge(config_dict, env_overrides)
+
+        # Layer 4 - runtime overrides
+        if runtime_overrides:
+            logger.debug(&#34;Applying runtime overrides (in-memory)&#34;)
+            config_dict = deep_merge(config_dict, runtime_overrides)
+
+        # Validate and return
+        return Config.from_dict(config_dict)
+
+    # ---------------------------------------------------------------------
+    # Discovery helpers (private)
+    # ---------------------------------------------------------------------
+
+    def _find_project_config(self) -&gt; Path | None:
+        &#34;&#34;&#34;Locate the project-level config file (``.fsm_config.yaml``).&#34;&#34;&#34;
+        current = Path.cwd()
+        while current != current.parent:
+            candidate = current / self.PROJECT_CONFIG_FILE
+            if candidate.exists():
+                return candidate
+            current = current.parent
+        return None
+
+    def _find_user_config(self) -&gt; Path | None:
+        &#34;&#34;&#34;Locate the user-level config file (``fsm_config.yaml``).&#34;&#34;&#34;
+        if self._config_file and self._config_file.exists():
+            return self._config_file
+
+        # Look in current working directory first
+        cwd_cfg = Path.cwd() / self.USER_CONFIG_FILE
+        if cwd_cfg.exists():
+            return cwd_cfg
+
+        # Fallback to *home*.
+        home_cfg = Path.home() / f&#34;.{self.USER_CONFIG_FILE}&#34;
+        if home_cfg.exists():
+            return home_cfg
+        return None
+
+    # ------------------------------------------------------------------
+    # File loaders (static)
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _load_file(path: Path) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Load configuration from a YAML or JSON file.&#34;&#34;&#34;
+
+        def _unsupported_format() -&gt; NoReturn:
+            &#34;&#34;&#34;Raise a ConfigurationError for unsupported file types.&#34;&#34;&#34;
+            raise ConfigurationError(f&#34;Unsupported config file format: {path.suffix}&#34;)
+
+        try:
+            if path.suffix in {&#34;.yaml&#34;, &#34;.yml&#34;}:
+                result = yaml.safe_load(path.read_text()) or {}
+                return cast(&#34;dict[str, Any]&#34;, result)
+            if path.suffix == &#34;.json&#34;:
+                result = json.loads(path.read_text())
+                return cast(&#34;dict[str, Any]&#34;, result)
+            # Unsupported suffix - delegate to helper to comply with TRY301
+            _unsupported_format()
+        except (OSError, ValueError, yaml.YAMLError, json.JSONDecodeError) as exc:
+            # Re-raise as domain-specific ConfigurationError for callers.
+            raise ConfigurationError(f&#34;Failed to load config from {path}: {exc}&#34;) from exc
+
+    # ------------------------------------------------------------------
+    # Environment variable helpers (static)
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def _extract_env_overrides(cls) -&gt; dict[str, Any]:
+        &#34;&#34;&#34;Convert ``FSM_*`` environment variables into a nested dict.&#34;&#34;&#34;
+        overrides: dict[str, Any] = {}
+
+        for key, raw_value in os.environ.items():
+            if not key.startswith(cls.ENV_PREFIX):
+                continue
+
+            parts = parse_env_var(key, prefix=cls.ENV_PREFIX)
+            value = parse_env_value(raw_value)
+
+            current: dict[str, Any] = overrides
+            for segment in parts[:-1]:
+                current = current.setdefault(segment, {})
+            current[parts[-1]] = value
+
+        return overrides
+
+    @staticmethod
+    def _find_dotenv_file(start_dir: Path) -&gt; Path | None:
+        &#34;&#34;&#34;Return the first ``.env`` file found when ascending the directory tree.
+
+        Args:
+            start_dir: The directory to start searching from.
+
+        Returns:
+            The path of the discovered ``.env`` file or ``None`` if none could be found.
+        &#34;&#34;&#34;
+        current = start_dir
+        while True:
+            candidate = current / &#34;.env&#34;
+            if candidate.exists() and candidate.is_file():
+                return candidate
+            if current.parent == current:
+                # Reached filesystem root without finding a .env file
+                return None
+            current = current.parent
+
+    @staticmethod
+    def _parse_dotenv_file(path: Path) -&gt; dict[str, str]:
+        &#34;&#34;&#34;Parse a ``.env`` file into a mapping.
+
+        Args:
+            path: The ``.env`` file to parse.
+
+        Returns:
+            A mapping from environment variable names to their string values.
+        &#34;&#34;&#34;
+        env_vars: dict[str, str] = {}
+        for raw_line in path.read_text().splitlines():
+            line = raw_line.strip()
+            # Skip blanks &amp; comments
+            if not line or line.startswith(&#34;#&#34;) or &#34;=&#34; not in line:
+                continue
+            key, value = line.split(&#34;=&#34;, 1)
+            env_vars[key.strip()] = value.strip().strip(&#34;&#39;\&#34;&#34;)
+        return env_vars
+
+    @staticmethod
+    def _apply_env_vars(env_vars: dict[str, str]) -&gt; None:
+        &#34;&#34;&#34;Apply the parsed environment variable mapping to ``os.environ``.
+
+        Existing keys in ``os.environ`` are **not** overridden.
+        &#34;&#34;&#34;
+        for key, value in env_vars.items():
+            if key and key not in os.environ:
+                os.environ[key] = value
+
+        # Backwards-compat mapping for FMP_API_KEY
+        if &#34;FMP_API_KEY&#34; in os.environ and &#34;FSM_API__FMP_API_KEY&#34; not in os.environ:
+            os.environ[&#34;FSM_API__FMP_API_KEY&#34;] = os.environ[&#34;FMP_API_KEY&#34;]
+
+    # ------------------------------------------------------------------
+    # .env handling (static)
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _load_dotenv() -&gt; None:
+        &#34;&#34;&#34;Populate ``os.environ`` from the first ``.env`` file found upward.&#34;&#34;&#34;
+        try:
+            env_path = ConfigLoader._find_dotenv_file(Path.cwd())
+            if not env_path:
+                return
+
+            try:
+                env_vars = ConfigLoader._parse_dotenv_file(env_path)
+                ConfigLoader._apply_env_vars(env_vars)
+                logger.debug(&#34;Loaded environment variables from %s&#34;, env_path)
+            except (OSError, UnicodeDecodeError, ValueError) as err:
+                # Log and continue when .env cannot be read or parsed.
+                logger.warning(&#34;Failed to load .env file %s: %s&#34;, env_path, err)
+        except (OSError, RuntimeError) as err:
+            # Non-critical errors while walking the directory tree should not abort execution.
+            logger.debug(&#34;_load_dotenv encountered an error: %s&#34;, err, exc_info=False)</code></pre>
+</details>
+<div class="desc"><p>Load and merge configuration from all supported sources.</p>
+<p>The loader is <strong>stateless</strong>: each call to <code>load()</code> inspects the environment
+and filesystem afresh, returning a fully validated <code>Config</code> object. It
+follows a strict precedence order:
+Defaults &lt; Project Config &lt; User Config &lt; .env &lt; Environment &lt; Runtime Overrides.</p>
+<p>Create a new :class:<code><a title="fin_statement_model.config.loader.ConfigLoader" href="#fin_statement_model.config.loader.ConfigLoader">ConfigLoader</a></code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>config_file</code></strong></dt>
+<dd>Optional path explicitly pointing to the <em>user</em> config
+file that should override the discovery algorithm.</dd>
+</dl></div>
+<h3>Class variables</h3>
+<dl>
+<dt id="fin_statement_model.config.loader.ConfigLoader.ENV_PREFIX"><code class="name">var <span class="ident">ENV_PREFIX</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.loader.ConfigLoader.PROJECT_CONFIG_FILE"><code class="name">var <span class="ident">PROJECT_CONFIG_FILE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="fin_statement_model.config.loader.ConfigLoader.USER_CONFIG_FILE"><code class="name">var <span class="ident">USER_CONFIG_FILE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="fin_statement_model.config.loader.ConfigLoader.load"><code class="name flex">
+<span>def <span class="ident">load</span></span>(<span>self, runtime_overrides: dict[str, Any] | None | None = None) ‑> <a title="fin_statement_model.config.models.Config" href="models.html#fin_statement_model.config.models.Config">Config</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load(self, runtime_overrides: dict[str, Any] | None | None = None) -&gt; Config:
+    &#34;&#34;&#34;Load, merge, and validate configuration from all sources.
+
+    This is the main entry point for the class. It orchestrates the
+    layered merge and returns the final, validated configuration.
+
+    Args:
+        runtime_overrides: A dictionary of values to be merged with the
+            highest precedence, overriding all other sources.
+
+    Returns:
+        A validated `Config` instance representing the effective configuration.
+    &#34;&#34;&#34;
+    # Ensure .env variables are made available before we inspect os.environ.
+    self._load_dotenv()
+
+    # Start with defaults defined by the *Config* pydantic model.
+    config_dict: dict[str, Any] = Config(
+        project_name=&#34;fin_statement_model&#34;,
+        config_file_path=None,
+        auto_save_config=False,
+    ).to_dict()
+
+    # Layer 1 - project-level config
+    if (project_cfg := self._find_project_config()) is not None:
+        logger.debug(&#34;Loading project config from %s&#34;, project_cfg)
+        config_dict = deep_merge(config_dict, self._load_file(project_cfg))
+
+    # Layer 2 - user-level config
+    if (user_cfg := self._find_user_config()) is not None:
+        logger.debug(&#34;Loading user config from %s&#34;, user_cfg)
+        config_dict = deep_merge(config_dict, self._load_file(user_cfg))
+
+    # Layer 3 - environment overrides
+    env_overrides = self._extract_env_overrides()
+    if env_overrides:
+        logger.debug(&#34;Applying environment variable overrides&#34;)
+        config_dict = deep_merge(config_dict, env_overrides)
+
+    # Layer 4 - runtime overrides
+    if runtime_overrides:
+        logger.debug(&#34;Applying runtime overrides (in-memory)&#34;)
+        config_dict = deep_merge(config_dict, runtime_overrides)
+
+    # Validate and return
+    return Config.from_dict(config_dict)</code></pre>
+</details>
+<div class="desc"><p>Load, merge, and validate configuration from all sources.</p>
+<p>This is the main entry point for the class. It orchestrates the
+layered merge and returns the final, validated configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>runtime_overrides</code></strong></dt>
+<dd>A dictionary of values to be merged with the
+highest precedence, overriding all other sources.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>A validated <code>Config</code> instance representing the effective configuration.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="fin_statement_model.config.loader.ConfigurationError"><code class="flex name class">
+<span>class <span class="ident">ConfigurationError</span></span>
+<span>(</span><span>message: str)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ConfigurationError(FinStatementModelError):
+    &#34;&#34;&#34;Exception raised for configuration-related errors.&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>Exception raised for configuration-related errors.</p>
+<p>Initialize the FinancialModelError.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong></dt>
+<dd>A human-readable description of the error.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="fin_statement_model.core.errors.FinancialModelError" href="../core/errors.html#fin_statement_model.core.errors.FinancialModelError">FinancialModelError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="fin_statement_model.config" href="index.html">fin_statement_model.config</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="fin_statement_model.config.loader.ConfigLoader" href="#fin_statement_model.config.loader.ConfigLoader">ConfigLoader</a></code></h4>
+<ul class="">
+<li><code><a title="fin_statement_model.config.loader.ConfigLoader.ENV_PREFIX" href="#fin_statement_model.config.loader.ConfigLoader.ENV_PREFIX">ENV_PREFIX</a></code></li>
+<li><code><a title="fin_statement_model.config.loader.ConfigLoader.PROJECT_CONFIG_FILE" href="#fin_statement_model.config.loader.ConfigLoader.PROJECT_CONFIG_FILE">PROJECT_CONFIG_FILE</a></code></li>
+<li><code><a title="fin_statement_model.config.loader.ConfigLoader.USER_CONFIG_FILE" href="#fin_statement_model.config.loader.ConfigLoader.USER_CONFIG_FILE">USER_CONFIG_FILE</a></code></li>
+<li><code><a title="fin_statement_model.config.loader.ConfigLoader.load" href="#fin_statement_model.config.loader.ConfigLoader.load">load</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="fin_statement_model.config.loader.ConfigurationError" href="#fin_statement_model.config.loader.ConfigurationError">ConfigurationError</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>
