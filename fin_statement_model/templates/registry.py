@@ -1,13 +1,72 @@
-"""Filesystem-backed Template Registry implementation.
+"""Filesystem-backed Template Registry for Financial Statement Models.
 
-This module provides a minimal, *local-only* registry that can:
-1. Persist a :class:`~fin_statement_model.core.graph.Graph` to disk as a
-   :class:`~fin_statement_model.templates.models.TemplateBundle`.
-2. Maintain a JSON index for quick discovery.
-3. Retrieve previously registered bundles.
+The TemplateRegistry provides a local, persistent storage solution for financial
+statement templates with built-in versioning, integrity checking, and powerful
+instantiation capabilities. Templates are stored as JSON bundles on the local
+filesystem with automatic indexing for fast discovery.
 
-It purposefully **does not** implement cloning, diffing or remote storage - these
-features will be introduced in later roadmap PRs.
+Core Features:
+    - **Local Storage**: Templates stored in user's home directory with secure permissions
+    - **Automatic Versioning**: Semantic version management with auto-increment
+    - **Integrity Verification**: SHA-256 checksums prevent data corruption
+    - **Template Instantiation**: Clone templates with customizations (periods, node renaming)
+    - **Diff Analysis**: Compare templates structurally and numerically
+    - **Forecasting Integration**: Automatic application of forecast specifications
+    - **Preprocessing Support**: Built-in data transformation pipeline execution
+
+Registry Structure:
+    ```
+    ~/.fin_statement_model/templates/
+    ├── index.json                    # Fast lookup index
+    └── store/                        # Template storage
+        ├── lbo.standard/
+        │   ├── v1/
+        │   │   └── bundle.json       # Template bundle
+        │   └── v2/
+        │       └── bundle.json
+        └── real_estate_lending/
+            └── v3/
+                └── bundle.json
+    ```
+
+Basic Usage:
+    >>> from fin_statement_model.templates import TemplateRegistry
+    >>>
+    >>> # List available templates
+    >>> templates = TemplateRegistry.list()
+    >>> print(templates)  # ['lbo.standard_v1', 'real_estate_lending_v3']
+    >>>
+    >>> # Instantiate a template
+    >>> graph = TemplateRegistry.instantiate("lbo.standard_v1")
+    >>> print(f"Graph: {len(graph.nodes)} nodes, {len(graph.periods)} periods")
+    >>>
+    >>> # Register a custom template
+    >>> template_id = TemplateRegistry.register_graph(
+    ...     my_graph, name="custom.model", meta={"category": "custom", "description": "My model"}
+    ... )
+
+Advanced Usage:
+    >>> # Compare templates
+    >>> diff_result = TemplateRegistry.diff("lbo.standard_v1", "custom.model_v1")
+    >>> print(f"Structural changes: {len(diff_result.structure.added_nodes)} added")
+    >>>
+    >>> # Instantiate with customizations
+    >>> customized = TemplateRegistry.instantiate(
+    ...     "lbo.standard_v1",
+    ...     periods=["2029", "2030"],  # Add extra periods
+    ...     rename_map={"Revenue": "TotalRevenue"},  # Rename nodes
+    ... )
+
+Environment Configuration:
+    Set ``FSM_TEMPLATES_PATH`` environment variable to customize the registry location:
+    ```bash
+    export FSM_TEMPLATES_PATH=/path/to/custom/templates
+    ```
+
+Security Notes:
+    - Registry directory created with 0700 permissions (user-only access)
+    - Template bundles stored with 0600 permissions (user read/write only)
+    - SHA-256 checksums verify template integrity on load
 """
 
 from __future__ import annotations
@@ -47,7 +106,40 @@ _INDEX_LOCK = threading.Lock()  # process-level lock safeguarding index writes
 
 
 class TemplateRegistry:
-    """Local filesystem-backed template registry (singleton-style class)."""
+    """Local filesystem-backed registry for financial statement templates.
+
+    A singleton-style class providing centralized template storage, versioning,
+    and retrieval. Templates are persisted as JSON bundles with automatic
+    indexing for efficient discovery and integrity verification.
+
+    The registry supports the complete template lifecycle:
+    - Registration of new templates with automatic versioning
+    - Retrieval and instantiation of stored templates
+    - Comparison between different template versions
+    - Deletion and cleanup of obsolete templates
+
+    All operations are thread-safe and atomic where possible to support
+    concurrent access patterns.
+
+    Class Attributes:
+        _ENV_VAR: Environment variable name for custom registry path
+        _INDEX_FILE: Name of the JSON index file
+        _STORE_DIR: Directory name for template storage
+
+    Example:
+        >>> # Basic registry operations
+        >>> templates = TemplateRegistry.list()
+        >>> bundle = TemplateRegistry.get("lbo.standard_v1")
+        >>> graph = TemplateRegistry.instantiate("lbo.standard_v1")
+        >>>
+        >>> # Register new template
+        >>> template_id = TemplateRegistry.register_graph(my_graph, name="custom.model")
+
+    Note:
+        The registry creates secure storage with restrictive permissions
+        (0700 for directories, 0600 for files) to protect potentially
+        sensitive financial data.
+    """
 
     _ENV_VAR: str = "FSM_TEMPLATES_PATH"
     _INDEX_FILE: str = "index.json"
@@ -58,13 +150,23 @@ class TemplateRegistry:
     # ------------------------------------------------------------------
     @classmethod
     def _registry_root(cls) -> Path:
-        """Return the root directory used to persist registry data.
+        """Determine and create the root directory for template storage.
 
-        Precedence order:
-        1. Environment variable ``FSM_TEMPLATES_PATH`` (absolute or relative).
-        2. ``~/.fin_statement_model/templates`` default.
-        The directory is created on first access with POSIX permissions ``0700``
+        Follows a precedence order for locating the registry:
+        1. Environment variable FSM_TEMPLATES_PATH (if set)
+        2. Default: ~/.fin_statement_model/templates
+
+        The directory is created with secure permissions (0700) on first access
         to ensure private storage of potentially sensitive financial data.
+
+        Returns:
+            Absolute path to the registry root directory
+
+        Example:
+            >>> root = TemplateRegistry._registry_root()
+            >>> print(root)  # /home/user/.fin_statement_model/templates
+            >>> root.exists()
+            True
         """
         custom = os.getenv(cls._ENV_VAR)
         root = Path(custom).expanduser().resolve() if custom else Path.home() / ".fin_statement_model" / "templates"
@@ -78,6 +180,16 @@ class TemplateRegistry:
 
     @classmethod
     def _index_path(cls) -> Path:
+        """Return the absolute path to the registry index file.
+
+        Returns:
+            Path to index.json within the registry root
+
+        Example:
+            >>> index_path = TemplateRegistry._index_path()
+            >>> print(index_path.name)
+            'index.json'
+        """
         return cls._registry_root() / cls._INDEX_FILE
 
     # ------------------------------------------------------------------
@@ -85,7 +197,18 @@ class TemplateRegistry:
     # ------------------------------------------------------------------
     @classmethod
     def _load_index(cls) -> MutableMapping[str, str]:
-        """Load registry index from disk or return empty mapping."""
+        """Load the registry index from disk.
+
+        Reads the JSON index file mapping template IDs to relative bundle paths.
+        Returns an empty mapping if the index doesn't exist or is corrupted.
+
+        Returns:
+            Mutable mapping of template_id → relative_bundle_path
+
+        Example:
+            >>> index = TemplateRegistry._load_index()
+            >>> print(index)  # {'lbo.standard_v1': 'store/lbo/standard/v1/bundle.json'}
+        """
         idx_path = cls._index_path()
         if not idx_path.exists():
             return {}
@@ -102,7 +225,20 @@ class TemplateRegistry:
 
     @classmethod
     def _atomic_write(cls, target: Path, payload: str) -> None:
-        """Atomically write *payload* text to *target* path (600 perms)."""
+        """Atomically write text payload to target path with secure permissions.
+
+        Uses a temporary file in the same directory followed by atomic rename
+        to ensure the write operation is either fully completed or has no effect.
+        Sets restrictive permissions (0600) for security.
+
+        Args:
+            target: Destination file path
+            payload: Text content to write
+
+        Example:
+            >>> content = '{"template": "data"}'
+            >>> TemplateRegistry._atomic_write(Path("/tmp/test.json"), content)
+        """
         target.parent.mkdir(parents=True, exist_ok=True)
         with tempfile.NamedTemporaryFile("w", dir=str(target.parent), delete=False, encoding="utf-8") as tmp:
             tmp.write(payload)
@@ -118,7 +254,15 @@ class TemplateRegistry:
 
     @classmethod
     def _save_index(cls, index: Mapping[str, str]) -> None:
-        """Persist *index* mapping atomically."""
+        """Persist the registry index to disk atomically.
+
+        Args:
+            index: Template ID to relative path mapping
+
+        Example:
+            >>> index = {"my_template_v1": "store/my/template/v1/bundle.json"}
+            >>> TemplateRegistry._save_index(index)
+        """
         payload = json.dumps(index, indent=2, sort_keys=True)
         cls._atomic_write(cls._index_path(), payload)
 
@@ -127,12 +271,22 @@ class TemplateRegistry:
     # ------------------------------------------------------------------
     @classmethod
     def delete(cls, template_id: str) -> None:
-        """Remove *template_id* from the registry (bundle & index).
+        """Remove a template from the registry permanently.
 
-        Silently ignores unknown *template_id* so callers may blindly attempt
-        deletion.  The operation is **destructive** - the bundle file is
-        unlinked.  Errors are logged but not raised to avoid cascading
-        failures during best-effort clean-up scenarios (e.g. reinstall).
+        Deletes both the template bundle file and its index entry. The operation
+        is destructive and cannot be undone. Silently ignores unknown template IDs
+        to support idempotent cleanup scenarios.
+
+        Args:
+            template_id: Template identifier to delete (e.g., "lbo.standard_v1")
+
+        Example:
+            >>> TemplateRegistry.delete("old_template_v1")  # Removes completely
+            >>> TemplateRegistry.delete("nonexistent")  # Silently ignored
+
+        Note:
+            The function also attempts to clean up empty parent directories
+            after deletion to maintain a tidy registry structure.
         """
         with _INDEX_LOCK:
             index = cls._load_index()
@@ -165,11 +319,28 @@ class TemplateRegistry:
     # ------------------------------------------------------------------
     @classmethod
     def _resolve_bundle_path(cls, rel: str | Path) -> Path:
-        """Return absolute *bundle* path ensuring it remains within registry root.
+        """Resolve relative bundle path to absolute path with security validation.
 
-        The function defends against malicious index entries that attempt to
-        traverse outside the registry directory or use absolute paths.  Any
-        violation raises ``ValueError``.
+        Converts relative paths from the index to absolute filesystem paths while
+        defending against directory traversal attacks. Rejects paths that attempt
+        to escape the registry root directory.
+
+        Args:
+            rel: Relative path from registry index
+
+        Returns:
+            Validated absolute path within registry root
+
+        Raises:
+            ValueError: If path is absolute, contains traversal components (..),
+                or resolves outside the registry root
+
+        Example:
+            >>> path = TemplateRegistry._resolve_bundle_path("store/lbo/standard/v1/bundle.json")
+            >>> print(path.is_absolute())
+            True
+            >>> path.relative_to(TemplateRegistry._registry_root())  # Validates containment
+            PosixPath('store/lbo/standard/v1/bundle.json')
         """
         rel_path = Path(rel)
         # Reject absolute paths outright
@@ -192,12 +363,43 @@ class TemplateRegistry:
     # ------------------------------------------------------------------
     @classmethod
     def list(cls) -> list[str]:
-        """Return sorted list of registered template identifiers."""
+        """List all registered template identifiers.
+
+        Returns:
+            Sorted list of template IDs in the registry
+
+        Example:
+            >>> templates = TemplateRegistry.list()
+            >>> print(templates)
+            ['lbo.standard_v1', 'real_estate_lending_v3', 'custom.model_v1']
+            >>>
+            >>> # Check if specific template exists
+            >>> if "lbo.standard_v1" in TemplateRegistry.list():
+            ...     print("LBO template available")
+        """
         return sorted(cls._load_index())
 
     @classmethod
     def _resolve_next_version(cls, name: str, existing_index: Mapping[str, str]) -> str:
-        """Return the next semantic version tag ("v<int>")."""
+        """Calculate the next semantic version for a template name.
+
+        Scans existing template IDs with the same name prefix to determine
+        the next available version number in the v<N> format.
+
+        Args:
+            name: Template name (e.g., "lbo.standard")
+            existing_index: Current registry index
+
+        Returns:
+            Next version string (e.g., "v2", "v3")
+
+        Example:
+            >>> # Assuming lbo.standard_v1 and lbo.standard_v2 exist
+            >>> next_ver = TemplateRegistry._resolve_next_version(
+            ...     "lbo.standard", {"lbo.standard_v1": "path1", "lbo.standard_v2": "path2"}
+            ... )
+            >>> print(next_ver)  # "v3"
+        """
         prefix = f"{name}_v"
         max_ver = 0
         for key in existing_index:
@@ -220,21 +422,48 @@ class TemplateRegistry:
         forecast: ForecastSpec | None = None,
         preprocessing: PreprocessingSpec | None = None,
     ) -> str:
-        """Register *graph* under *name* returning the full template identifier.
+        """Register a financial statement graph as a reusable template.
+
+        Serializes the graph and stores it in the registry with metadata,
+        optional forecasting configuration, and preprocessing pipeline.
+        Automatically calculates version numbers if not specified.
 
         Args:
-            graph: Graph instance to persist.
-            name: Template name, e.g. ``"lbo.standard"``.
-            version: Explicit semantic version ("v1" / "v2"). If *None*, the
-                next minor version is calculated automatically.
-            meta: Optional additional metadata fields. Keys ``name``,
-                ``version`` and ``category`` are filled in automatically and override
-                duplicates.
-            forecast: Optional forecast specification for the template.
-            preprocessing: Optional preprocessing configuration for the template.
+            graph: Graph instance to persist as a template
+            name: Template name (e.g., "lbo.standard", "real_estate.construction")
+            version: Explicit version string ("v1", "v2"). If None, automatically
+                calculates the next available version
+            meta: Additional metadata fields. Standard fields (name, version, category)
+                are set automatically and override any duplicates in meta
+            forecast: Optional declarative forecasting specification
+            preprocessing: Optional data transformation pipeline
 
         Returns:
-            The canonical template identifier (e.g. ``"lbo.standard_v1"``).
+            Complete template identifier (e.g., "lbo.standard_v1")
+
+        Raises:
+            TypeError: If name is not a non-empty string
+            ValueError: If template_id already exists in registry
+            OSError: If filesystem operations fail
+
+        Example:
+            >>> # Basic registration with auto-versioning
+            >>> template_id = TemplateRegistry.register_graph(
+            ...     my_graph, name="custom.model", meta={"description": "Custom financial model", "category": "custom"}
+            ... )
+            >>> print(template_id)  # "custom.model_v1"
+            >>>
+            >>> # Registration with forecasting
+            >>> from fin_statement_model.templates.models import ForecastSpec
+            >>> forecast_spec = ForecastSpec(
+            ...     periods=["2027", "2028"], node_configs={"Revenue": {"method": "simple", "config": 0.1}}
+            ... )
+            >>> template_id = TemplateRegistry.register_graph(my_graph, name="forecast.model", forecast=forecast_spec)
+
+        Note:
+            The graph is deep-cloned during serialization to ensure the stored
+            template is independent of the original graph instance. Template
+            bundles include SHA-256 checksums for integrity verification.
         """
         if not name or not isinstance(name, str):
             raise TypeError("Template name must be a non-empty string.")
@@ -290,9 +519,32 @@ class TemplateRegistry:
 
     @classmethod
     def get(cls, template_id: str) -> TemplateBundle:
-        """Return :class:`TemplateBundle` for *template_id*.
+        """Retrieve a template bundle by identifier.
 
-        Raises ``KeyError`` if *template_id* is unknown.
+        Loads and validates the stored template bundle from disk, including
+        checksum verification to ensure data integrity.
+
+        Args:
+            template_id: Template identifier (e.g., "lbo.standard_v1")
+
+        Returns:
+            Validated TemplateBundle instance
+
+        Raises:
+            KeyError: If template_id is not found in registry
+            ValueError: If bundle checksum validation fails
+            OSError: If bundle file cannot be read
+
+        Example:
+            >>> bundle = TemplateRegistry.get("lbo.standard_v1")
+            >>> print(f"Template: {bundle.meta.name} v{bundle.meta.version}")
+            >>> print(f"Category: {bundle.meta.category}")
+            >>> print(f"Checksum: {bundle.checksum[:8]}...")
+            >>>
+            >>> # Access graph structure
+            >>> graph_dict = bundle.graph_dict
+            >>> periods = graph_dict.get("periods", [])
+            >>> nodes = graph_dict.get("nodes", {})
         """
         index = cls._load_index()
         try:
@@ -315,22 +567,61 @@ class TemplateRegistry:
         periods: builtins.list[str] | None = None,
         rename_map: Mapping[str, str] | None = None,
     ) -> Graph:
-        """Instantiate a :class:`~fin_statement_model.core.graph.Graph` from *template_id*.
+        """Create a working graph instance from a stored template.
 
-        The helper first loads the stored :class:`TemplateBundle`, reconstructs
-        the original graph via the IO facade and finally performs a deep clone
-        to ensure the returned graph is **independent** from the internal cache
-        of the registry.  Optional extra periods and node-renaming are applied
-        on the cloned instance.
+        Loads the template bundle, reconstructs the graph, applies any embedded
+        forecast and preprocessing specifications, and optionally customizes
+        the result with additional periods and node renaming.
 
         Args:
-            template_id: Canonical identifier, e.g. ``"lbo.standard_v1"``.
-            periods: Optional list of additional periods to append. Existing
-                periods are preserved - duplicates are ignored.
-            rename_map: Optional mapping ``old_node_name → new_node_name``.
+            template_id: Template identifier (e.g., "lbo.standard_v1")
+            periods: Additional periods to append to the graph. Existing periods
+                are preserved; duplicates are ignored
+            rename_map: Node renaming mapping (old_name → new_name). Maintains
+                all calculation relationships and edge connections
 
         Returns:
-            A ready-to-use :class:`Graph` instance.
+            Independent Graph instance ready for analysis and modification
+
+        Raises:
+            KeyError: If template_id is not found or old node names don't exist
+            TypeError: If periods or rename_map have incorrect types
+            ValueError: If rename target names already exist in the graph
+
+        Example:
+            >>> # Basic instantiation
+            >>> graph = TemplateRegistry.instantiate("lbo.standard_v1")
+            >>> revenue_2024 = graph.calculate("Revenue", "2024")
+            >>>
+            >>> # Instantiation with customizations
+            >>> custom_graph = TemplateRegistry.instantiate(
+            ...     "lbo.standard_v1",
+            ...     periods=["2029", "2030"],  # Add forecast periods
+            ...     rename_map={  # Rename nodes
+            ...         "Revenue": "TotalRevenue",
+            ...         "COGS": "DirectCosts",
+            ...     },
+            ... )
+            >>>
+            >>> # Verify customizations
+            >>> print(custom_graph.periods)  # Includes 2029, 2030
+            >>> print("TotalRevenue" in custom_graph.nodes)  # True
+            >>> print("Revenue" in custom_graph.nodes)  # False
+
+        Template Processing Order:
+            1. Load template bundle and reconstruct base graph
+            2. Apply embedded forecast specification (if present)
+            3. Deep clone for independence from registry caches
+            4. Add additional periods (if specified)
+            5. Apply node renaming (if specified)
+            6. Apply preprocessing pipeline (if embedded)
+            7. Clear caches and return clean graph
+
+        Note:
+            The returned graph is completely independent of the template registry
+            and can be modified without affecting the stored template. All
+            forecasting and preprocessing happens automatically based on the
+            template's embedded specifications.
         """
         # ------------------------------------------------------------------
         # 1. Load bundle & re-construct Graph via IO facade
@@ -436,17 +727,66 @@ class TemplateRegistry:
         periods: builtins.list[str] | None = None,
         atol: float = 1e-9,
     ) -> DiffResult:
-        """Return structural / value diff between two registered templates.
+        """Compare two registered templates for structural and value differences.
+
+        Loads both templates, reconstructs their graphs (including forecast
+        application), and performs comprehensive comparison analysis. Useful
+        for understanding evolution between template versions or comparing
+        different modeling approaches.
 
         Args:
-            template_id_a: Identifier for *base* template (left-hand side).
-            template_id_b: Identifier for *comparison* template (right-hand side).
-            include_values: When *True* (default) numerical deltas are computed in addition to topology.
-            periods: Optional subset of periods to compare.  When *None* the intersection of periods is used.
-            atol: Absolute tolerance used by value comparison (`compare_values`).
+            template_id_a: Base template identifier (left-hand side of comparison)
+            template_id_b: Target template identifier (right-hand side of comparison)
+            include_values: Whether to include numerical value comparison in
+                addition to structural analysis. Set False for faster topology-only diffs
+            periods: Specific periods to compare. If None, uses intersection of
+                periods from both templates
+            atol: Absolute tolerance for value comparison. Differences below this
+                threshold are considered equal and excluded from results
 
         Returns:
-            DiffResult: Frozen Pydantic model capturing structure and, optionally, value differences.
+            DiffResult containing:
+                - structure: Structural differences (added/removed/changed nodes)
+                - values: Numerical differences (only if include_values=True)
+
+        Raises:
+            KeyError: If either template_id is not found in registry
+
+        Example:
+            >>> # Compare template versions
+            >>> diff_result = TemplateRegistry.diff("lbo.standard_v1", "lbo.standard_v2", include_values=True)
+            >>>
+            >>> # Analyze structural changes
+            >>> structure = diff_result.structure
+            >>> print(f"Added nodes: {structure.added_nodes}")
+            >>> print(f"Removed nodes: {structure.removed_nodes}")
+            >>> print(f"Changed nodes: {list(structure.changed_nodes.keys())}")
+            >>>
+            >>> # Analyze value changes (if enabled)
+            >>> if diff_result.values:
+            ...     values = diff_result.values
+            ...     print(f"Changed cells: {len(values.changed_cells)}")
+            ...     print(f"Max delta: ${values.max_delta:,.2f}")
+            >>>
+            >>> # Compare specific periods with tolerance
+            >>> focused_diff = TemplateRegistry.diff(
+            ...     "template_a_v1",
+            ...     "template_b_v1",
+            ...     periods=["2024", "2025"],
+            ...     atol=1.0,  # Ignore sub-dollar differences
+            ... )
+
+        Processing Details:
+            Both templates are loaded and their embedded forecast specifications
+            are applied to create fully-realized graphs before comparison. This
+            ensures the diff reflects the complete template behavior, not just
+            the base graph structure.
+
+        Performance Notes:
+            - Structure comparison is always fast (O(N) in number of nodes)
+            - Value comparison can be expensive for large graphs/many periods
+            - Use include_values=False when only topology matters
+            - Specify focused period lists for faster value comparison
         """
         # Lazy import to avoid heavyweight dependencies on registry import
         from fin_statement_model.io import read_data

@@ -144,6 +144,15 @@ def _forecast_node_mutating(
             val = bad_value
         node.values[period] = float(val)
 
+    # ------------------------------------------------------------------
+    # Attach simple metadata for downstream reporting. If the node refuses
+    # new attributes, let the error propagate - this should be extremely rare
+    # and indicates a non-standard node implementation.
+    # ------------------------------------------------------------------
+    node.forecast_periods = forecast_periods  # type: ignore[attr-defined]
+    node.forecast_type = params.get("forecast_type")  # type: ignore[attr-defined]
+    node.growth_params = params.get("growth_params")  # type: ignore[attr-defined]
+
     if hasattr(node, "clear_cache") and callable(node.clear_cache):
         node.clear_cache()
 
