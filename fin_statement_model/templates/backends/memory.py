@@ -9,7 +9,7 @@ not need to persist on disk.  **Not thread-safe** beyond the single-process
 
 import copy
 import threading
-from typing import Dict
+from typing import Dict, override
 
 from fin_statement_model.templates.models import TemplateBundle
 from .base import StorageBackend
@@ -27,10 +27,12 @@ class InMemoryStorageBackend(StorageBackend):
     # ------------------------------------------------------------------
     # StorageBackend implementation
     # ------------------------------------------------------------------
+    @override
     def list(self) -> list[str]:  # noqa: D401 – concise name preferred
         with self._lock:
             return sorted(self._store)
 
+    @override
     def save(self, bundle: TemplateBundle) -> str:  # noqa: D401 – concise name preferred
         template_id = f"{bundle.meta.name}_{bundle.meta.version}"
         with self._lock:
@@ -40,6 +42,7 @@ class InMemoryStorageBackend(StorageBackend):
             self._store[template_id] = copy.deepcopy(bundle)
         return template_id
 
+    @override
     def load(self, template_id: str) -> TemplateBundle:
         with self._lock:
             try:
@@ -49,6 +52,7 @@ class InMemoryStorageBackend(StorageBackend):
             # Return a defensive copy so callers cannot mutate internal state
             return copy.deepcopy(bundle)
 
+    @override
     def delete(self, template_id: str) -> None:  # noqa: D401 – keep name short
         with self._lock:
             self._store.pop(template_id, None)

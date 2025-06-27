@@ -16,7 +16,7 @@ import os
 from pathlib import Path
 import tempfile
 import threading
-from typing import MutableMapping
+from typing import MutableMapping, override
 
 from fin_statement_model.templates.models import TemplateBundle
 from .base import StorageBackend
@@ -112,10 +112,12 @@ class FileSystemStorageBackend(StorageBackend):
     # ------------------------------------------------------------------
     # StorageBackend implementation
     # ------------------------------------------------------------------
+    @override
     def list(self) -> list[str]:
         with self._lock:
             return sorted(self._load_index())
 
+    @override
     def load(self, template_id: str) -> TemplateBundle:
         idx = self._load_index()
         try:
@@ -128,6 +130,7 @@ class FileSystemStorageBackend(StorageBackend):
             data = json.load(fh)
         return TemplateBundle.model_validate(data)
 
+    @override
     def save(self, bundle: TemplateBundle) -> str:  # noqa: D401 – concise name preferred
         template_id = f"{bundle.meta.name}_{bundle.meta.version}"
         rel_path = Path(self._STORE_DIR) / Path(*bundle.meta.name.split(".")) / bundle.meta.version / "bundle.json"
@@ -146,6 +149,7 @@ class FileSystemStorageBackend(StorageBackend):
         logger.info("Registered template '%s' (path=%s)", template_id, bundle_path)
         return template_id
 
+    @override
     def delete(self, template_id: str) -> None:  # noqa: D401 – concise name preferred
         with self._lock:
             idx = self._load_index()

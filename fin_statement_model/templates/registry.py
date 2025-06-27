@@ -58,6 +58,15 @@ def _resolve_backend_from_env() -> StorageBackend:
     Falls back to :class:`FileSystemStorageBackend` if the variable is unset or
     cannot be resolved.
     """
+    # Feature flag – new backend resolution path only active when explicitly
+    # enabled.  Any value other than "0" / "false" activates experimental
+    # behaviour.
+    experimental_flag = os.getenv("FSM_EXPERIMENTAL_BACKEND", "0").lower() in {"1", "true", "yes"}
+
+    # Always use legacy file-system backend when experimental flag is *off*.
+    if not experimental_flag:
+        return FileSystemStorageBackend()
+
     path = os.getenv("FSM_TEMPLATES_BACKEND")
     if not path:
         return FileSystemStorageBackend()
